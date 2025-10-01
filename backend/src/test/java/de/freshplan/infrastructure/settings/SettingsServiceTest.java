@@ -2,6 +2,7 @@ package de.freshplan.infrastructure.settings;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
@@ -12,14 +13,18 @@ import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
  * Tests for Settings Registry Service (Sprint 1.2 PR #2). Verifies hierarchical resolution, ETag
- * support, and caching behavior.
+ * support, and caching behavior. Sprint 2.1.4 Fix: Added @TestTransaction to fix
+ * ContextNotActiveException
  */
 @QuarkusTest
+@TestTransaction
 @DisplayName("Settings Service Tests")
+@Tag("integration")
 class SettingsServiceTest {
 
   @Inject SettingsService settingsService;

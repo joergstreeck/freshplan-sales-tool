@@ -56,17 +56,106 @@ updated: "2025-09-27"
 
 ---
 
-### **Sprint 2.1.3 – Frontend Implementation (PLANNED)**
+### **Sprint 2.1.3 – Frontend Implementation (COMPLETE)**
 **Zentral:** [TRIGGER_SPRINT_2_1_3.md](../../TRIGGER_SPRINT_2_1_3.md)
-**Status:** 📋 PLANNED
-**Scope:**
-- Thin Vertical Slice: `/leads` Route + `LeadCreateDialog`
-- Feature-Flag: `VITE_FEATURE_LEADGEN` (default: off)
-- MUI Theme V2 Integration + RFC7807 Error Handling
-- Tests: Vitest Unit + Playwright Smoke
-- Coverage ≥80% für neue Frontend-Komponenten
+**Status:** ✅ COMPLETE
+**Ergebnisse:**
+- Thin Vertical Slice: `/leads` Route + `LeadList` + `LeadCreateDialog`
+- Feature-Flag: `VITE_FEATURE_LEADGEN=true` aktiviert
+- Vollständige Business-Logik:
+  - Client-seitige Validierung (Name ≥2, E-Mail-Format)
+  - Duplikat-Erkennung (409 Response bei gleicher E-Mail)
+  - Source-Tracking (`source='manual'`)
+  - RFC7807 Error Handling mit Feld-Fehlern
+- Vollständige i18n (de/en) ohne hardcoded Strings
+- MUI Theme V2 Integration + MainLayoutV2 Wrapper
+- Tests: 90% Coverage (Integration Tests für alle Business-Flows)
+- MSW für realistische API-Simulation
 
-**Dependencies:** PR #112 merge (Frontend Research)
+**PRs:** #122 (merged 2025-09-28)
+
+---
+
+### **Sprint 2.1.4 – Lead Deduplication & Data Quality (IN_PROGRESS)**
+**Zentral:** [TRIGGER_SPRINT_2_1_4.md](../../TRIGGER_SPRINT_2_1_4.md)
+**Status:** 🔧 IN_PROGRESS - CI-Fix läuft parallel
+**Scope:** Lead Normalization & Deduplication – Phase 1
+
+> **🚨 KRITISCHES CI-PROBLEM (30.09.2025)**
+> 164 von 171 Tests nutzen @QuarkusTest mit echter DB → 20+ Minuten Timeout!
+> **Lösung läuft:** [TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
+
+**Ergebnisse:**
+- Normalisierung: E-Mail, Telefon (E.164), Firmennamen
+- Soft-Delete mit `is_canonical` Flag
+- Idempotency-Key Support für sichere Retries
+- Migration V247 (additive-only) + V248 (CONCURRENTLY Index)
+- Repeatable Migration R__normalize_functions.sql
+
+**Deliverables:**
+- Normalized Fields: `email_normalized`, `phone_e164`, `company_name_normalized`
+- Unique Constraints mit WHERE-Klauseln
+- Idempotency Store (24h TTL)
+- RFC7807 Problem Details für 409
+- ⚠️ **TEST_MIGRATION_PLAN.md** - Systematische Umstellung auf Mocks
+
+**Artefakte:** [`artefakte/SPRINT_2_1_4/`](./artefakte/SPRINT_2_1_4/)
+**PRs:** #123 (ready for review)
+
+---
+
+### **Sprint 2.1.5 – Lead Protection & Progressive Profiling (IN_PROGRESS)**
+**Zentral:** [TRIGGER_SPRINT_2_1_5.md](../../TRIGGER_SPRINT_2_1_5.md)
+**Status:** 🔧 IN_PROGRESS
+**Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling
+
+> **⚠️ TEST-STRATEGIE BEACHTEN!**
+> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
+> Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
+
+**Sprint-Ziel:**
+- 6-Monats-Schutz gemäß Handelsvertretervertrag
+- 60-Tage-Aktivitätsstandard mit Warnsystem
+- Stop-the-Clock Mechanismus
+- Progressive Profiling (3 Stufen: Vormerkung/Registration/Qualifiziert)
+
+**Deliverables:**
+- Migration V249: `lead_protection` und `lead_activities` Tabellen
+- Migration V250: Protection Trigger und Status-Jobs
+- Frontend: LeadWizard, ProtectionBadge, ActivityTimeline
+- API: Enhanced POST /api/leads mit 201/202/409 Semantik
+- Protection-Endpoints: Reminder, Extend, Stop-Clock, Data-Deletion
+
+**Artefakte:** [`artefakte/SPRINT_2_1_5/`](./artefakte/SPRINT_2_1_5/)
+- ✅ CONTRACT_MAPPING.md
+- ✅ TEST_PLAN.md
+- ✅ RELEASE_NOTES.md
+- ✅ CHANGELOG.md
+- ✅ QA_CHECKLIST.md
+- ✅ OpenAPI Contract: [`analyse/api/leads.openapi.md`](./analyse/api/leads.openapi.md)
+- ✅ RBAC ADR: [`shared/adr/ADR-002-rbac-lead-protection.md`](./shared/adr/ADR-002-rbac-lead-protection.md)
+
+**Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive" (siehe DELTA_LOG_2_1_5.md)
+
+---
+
+### **Sprint 2.1.6 – Lead Transfer & Team Management (PLANNED)**
+**Status:** 📅 PLANNED (2025-10-12 - 2025-10-18)
+**Scope:** Lead-Übergabe, Team-Management, Merge/Unmerge
+
+> **⚠️ TEST-STRATEGIE BEACHTEN!**
+> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
+> Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
+
+**Geplante Features:**
+- Lead-Transfer zwischen Partnern mit Genehmigung
+- Quotenregelung für Teams
+- Fuzzy-Matching & Review-Flow (Scoring, Kandidatenliste, Merge/Reject/Create-New)
+- Merge/Unmerge mit Identitätsgraph
+- Audit-Historie für alle Transfers
+- Team-basierte Sichtbarkeit (RLS Phase 1)
+
+**Note:** Enthält Matching & Review Features (ursprünglich für 2.1.5 geplant)
 
 ---
 
@@ -92,11 +181,10 @@ Phase 2 (Frontend Research): Sprint 2.1.2
   Status: ✅ COMPLETE
   Result: Vollständige Frontend-Analyse + API-Contract
 
-Phase 3 (Frontend Implementation): Sprint 2.1.3 (geplant)
-  Status: 📋 PLANNED
-  Scope: Thin Vertical Slice mit Feature-Flag
-  Trigger: TRIGGER_SPRINT_2_1_3.md
-  Dependencies: PR #112 merge
+Phase 3 (Frontend Implementation): Sprint 2.1.3
+  Status: ✅ COMPLETE
+  Result: Lead Management MVP mit Business-Logik
+  PR: #122 (merged)
 ```
 
 ## 🎯 **Für neue Claude-Instanzen**

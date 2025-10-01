@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * flow through the facade to command and query services.
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestProfile(ContactInteractionServiceCQRSTestProfile.class)
 class ContactInteractionServiceCQRSIntegrationTest {
 

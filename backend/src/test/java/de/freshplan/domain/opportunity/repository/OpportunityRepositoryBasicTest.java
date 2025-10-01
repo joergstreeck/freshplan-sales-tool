@@ -33,7 +33,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -211,7 +211,7 @@ public class OpportunityRepositoryBasicTest {
     Customer customer = customerBuilder.withCompanyName("[TEST] " + companyName).build();
 
     // Ensure unique customer number
-    customer.setCustomerNumber("BASIC-" + UUID.randomUUID().toString().substring(0, 8));
+    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
     customer.setIsTestData(true);
 
     customerRepository.persist(customer);

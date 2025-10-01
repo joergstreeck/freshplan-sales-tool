@@ -56,7 +56,7 @@ class CustomerTimelineResourceIT {
             .withType(CustomerType.UNTERNEHMEN)
             .withIndustry(Industry.SONSTIGE)
             .build();
-    customer.setCustomerNumber("IT-TEST-001");
+    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
     customer.setCompanyName("[TEST] Integration Test Company"); // Keep [TEST] prefix
     customer.setIsTestData(true); // Mark as test data
     customerRepository.persist(customer);

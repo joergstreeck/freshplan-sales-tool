@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
  * Validation tests for Phase 2B - Builder Advanced Features. Verifies that all builders have unique
  * ID generation and proper features.
  */
-@Tag("migrate")
+@Tag("unit")
 class Phase2BValidationTest {
 
   @Test

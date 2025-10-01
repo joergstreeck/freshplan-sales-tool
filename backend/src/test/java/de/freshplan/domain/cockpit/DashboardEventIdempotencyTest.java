@@ -9,6 +9,7 @@ import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.1 P0 HOTFIX - Deduplizierung via Caffeine Cache
  */
 @QuarkusTest
+@Tag("integration")
 class DashboardEventIdempotencyTest {
 
   @Inject DashboardEventListener listener;

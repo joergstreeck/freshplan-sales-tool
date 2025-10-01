@@ -6,9 +6,11 @@ import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.service.LeadProtectionService;
 import de.freshplan.modules.leads.service.LeadService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /** Simple unit tests for Lead API components. */
+@Tag("unit")
 class LeadResourceSimpleTest {
 
   @Test

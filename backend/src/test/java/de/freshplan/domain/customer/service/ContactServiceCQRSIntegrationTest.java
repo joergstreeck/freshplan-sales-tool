@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * implementation or the new CQRS pattern.
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestProfile(ContactServiceCQRSIntegrationTest.CQRSTestProfile.class)
 class ContactServiceCQRSIntegrationTest extends BaseIntegrationTestWithCleanup {
 

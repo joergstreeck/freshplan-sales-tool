@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * switching via feature flag.
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerQueryService queryService;

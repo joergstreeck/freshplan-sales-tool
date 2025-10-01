@@ -3,14 +3,18 @@ module: "02_neukundengewinnung"
 sprint_id: "2.1.3"
 title: "Thin Vertical Slice – Frontend Minimum (Lead-Management)"
 doc_type: "trigger"
-status: "planned"
+status: "complete"
 owner: "team/frontend"
-updated: "2025-09-27"
+updated: "2025-09-28"
+date_start: "2025-09-27"
+date_end: "2025-09-28"
+pr_refs: ["#122"]
 entry_points:
   # Nur existierende Pfade (Dir → _index.md Fallback) – Compliance-sicher:
   - "features-neu/02_neukundengewinnung/_index.md"
-  - "features-neu/02_neukundengewinnung/analyse/_index.md"
+  - "features-neu/02_neukundengewinnung/frontend/_index.md"
   - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_3/SUMMARY.md"
 ---
 
 # 🎯 Ziel
@@ -34,12 +38,12 @@ Minimal lauffähige **Lead-Management UI** für Modul 02:
   - **Playwright** Smoke (Seite lädt, Create funktioniert)
 - Doku-Updates: SPRINT_MAP (Status), Analyse-Hinweise (kurzer „Was wurde umgesetzt"‑Block)
 
-# ✅ Akzeptanzkriterien
-- Liste rendert **erste Seite** Daten, Ladespinner & leere Zustände korrekt
-- Create‑Dialog erzeugt neuen Lead und zeigt Bestätigung/Toast
-- Fehlerfälle (4xx/5xx, Validation) werden **sichtbar & verständlich** abgebildet
-- Tests grün, Coverage ≥ **80%** für neue Komponenten/Client
-- CI **grün** (Docs‑Compliance, Lint, Tests)
+# ✅ Akzeptanzkriterien (ERFÜLLT)
+- [x] Liste rendert **erste Seite** Daten, Ladespinner & leere Zustände korrekt
+- [x] Create‑Dialog erzeugt neuen Lead und zeigt Bestätigung/Toast
+- [x] Fehlerfälle (4xx/5xx, Validation) werden **sichtbar & verständlich** abgebildet
+- [x] Tests grün, Coverage-Ziel **erreicht** (≥80% laut CI)
+- [x] CI **grün** (Docs‑Compliance, Lint, Tests)
 
 # ⚙️ Technische Leitplanken
 - **Env:** `VITE_API_BASE_URL`, `VITE_FEATURE_LEADGEN`
@@ -65,3 +69,9 @@ Minimal lauffähige **Lead-Management UI** für Modul 02:
 - Lead‑Statuswechsel (State Machine UI)
 - Realtime Updates (WebSocket), leise Refresh‑Strategie
 - Export/CSV, Column‑Customizer
+
+# ✅ Definition of Done (Sprint)
+- [x] **Ergebnis erreicht** – Lead Management MVP läuft auf main, PR #122 gemerged
+- [x] **Relevante Modul‑Docs aktualisiert** – Frontend-Doku erstellt, SPRINT_MAP aktualisiert
+- [x] **Link‑Check grün** – Alle Entry-Points existieren und verweisen korrekt
+- [x] **Stubs gesetzt** – Keine Pfadänderungen in diesem Sprint

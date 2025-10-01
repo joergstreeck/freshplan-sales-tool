@@ -46,8 +46,17 @@ public class SessionSettingsFilter implements ContainerRequestFilter {
   @ConfigProperty(name = "app.default.territory", defaultValue = "DE")
   String defaultTerritory;
 
+  @ConfigProperty(name = "app.security.context-filter.enabled", defaultValue = "true")
+  boolean filterEnabled;
+
   @Override
   public void filter(ContainerRequestContext requestContext) {
+    // Feature toggle for tests
+    if (!filterEnabled) {
+      LOG.trace("SessionSettingsFilter disabled via configuration");
+      return;
+    }
+
     // Skip für anonyme Requests und System-Endpoints
     if (identity.isAnonymous() || isSystemPath(requestContext.getUriInfo().getPath())) {
       LOG.trace("Skipping session settings for anonymous/system request");

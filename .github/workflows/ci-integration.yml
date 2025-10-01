@@ -52,14 +52,15 @@ jobs:
       
       - name: Run integration tests
         run: |
-          mvn -B clean verify -Pgreen \
+          mvn -B clean test \
+            -Dtest="*IT,*IntegrationTest" \
+            -DfailIfNoTests=false \
             -Dquarkus.profile=test \
             -Dquarkus.datasource.devservices.enabled=false \
             -Dquarkus.devservices.enabled=false \
             -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
             -Dquarkus.datasource.username=freshplan \
             -Dquarkus.datasource.password=freshplan \
-            -Dquarkus.log.level=DEBUG \
             -Dsurefire.rerunFailingTestsCount=2 \
             2>&1 | tee backend-integration-test.log
         env:

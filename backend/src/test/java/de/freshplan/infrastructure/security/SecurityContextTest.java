@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @DisplayName("Security Context Foundation Tests")
+@Tag("integration")
 public class SecurityContextTest {
 
   @Inject DataSource dataSource;

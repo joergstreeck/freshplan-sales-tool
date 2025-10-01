@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /** Unit tests for UserPrincipal class. Tests the builder pattern, getters, and immutability. */
-@Tag("migrate")
+@Tag("unit")
 class UserPrincipalTest {
 
   @Nested

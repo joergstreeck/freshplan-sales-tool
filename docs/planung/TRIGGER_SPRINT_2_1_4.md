@@ -1,19 +1,26 @@
 ---
 sprint_id: "2.1.4"
 title: "Lead Deduplication & Data Quality – Phase 1"
-status: "draft"
-date_start: "2025-09-30"
+doc_type: "konzept"
+status: "in_progress"
+owner: "team/leads-backend"
+date_start: "2025-09-28"
 date_end: "2025-10-04"
 modules: ["02_neukundengewinnung"]
 entry_points:
-  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
-  - "features-neu/02_neukundengewinnung/shared/adr/"
+  - "features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md"  # KRITISCH: CI-Fix
+  - "features-neu/02_neukundengewinnung/analysis/_index.md"
+  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md"
 pr_refs: []
-updated: "2025-09-27"
+updated: "2025-09-28"
 ---
 
 # Sprint 2.1.4 – Lead Deduplication & Data Quality (Phase 1)
+
+**📍 Navigation:** Home → Planung → Sprint 2.1.4
 
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
@@ -21,6 +28,12 @@ updated: "2025-09-27"
 > 3. **Backend-Overlay:** `backend/` für Normalisierung & Unique-Indizes
 > 4. **Shared für ADRs:** `shared/adr/` für Architekturentscheidungen
 > 5. **Artefakte:** DB-Migrationen in `backend/migrations/`
+
+## 🚨 KRITISCHES CI-PROBLEM ENTDECKT (30.09.2025)
+
+**Problem:** 164 von 171 Tests nutzen @QuarkusTest mit echter DB → 20+ Minuten CI-Timeout!
+**Lösung:** Test-Migrationsstrategie läuft parallel → siehe [`backend/TEST_MIGRATION_PLAN.md`](features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md)
+**Impact:** CI blockiert alle PRs! Höchste Priorität!
 
 ## Sprint-Ziel
 

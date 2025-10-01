@@ -4,14 +4,14 @@ domain: "backend"
 doc_type: "guideline"
 status: "approved"
 owner: "team/leads"
-updated: "2025-09-27"
+updated: "2025-09-28"
 ---
 
 # 🔧 Backend – Modul 02 Neukundengewinnung
 
 **📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Backend
 
-**Status:** ✅ PRODUCTION-READY (Sprint 2.1 + 2.1.1 complete)
+**Status:** 🔧 IN DEVELOPMENT (Sprint 2.1.4 in progress)
 
 ## 🎯 Executive Summary
 
@@ -94,9 +94,32 @@ Metrics (ohne _total suffix):
 - ✅ Performance <7ms P95
 - ✅ Security Gates (Gemini Review adressiert)
 
-## 📋 **Next Steps (Frontend Integration)**
+## 📋 **Current Sprint (2.1.4)**
 
-1. **API Stabilität:** Backend-Endpoints für Frontend Thin Vertical Slice
-2. **SSE/WebSocket:** Optional für Phase 2 (nach Polling v1)
+### **Sprint 2.1.4 – Lead Deduplication & Data Quality**
+**Status:** 🔧 IN_PROGRESS (2025-09-28)
+
+#### **Datenmodell-Erweiterungen:**
+- `email_normalized` (CITEXT) - Normalisierte E-Mail
+- `name_normalized` (TEXT) - Normalisierter Name
+- `phone_e164` (TEXT) - E.164 Telefonnummer
+- Partial UNIQUE Index auf `(tenant_id, email_normalized) WHERE email_normalized IS NOT NULL`
+
+#### **Normalisierungsregeln:**
+- **E-Mail:** `lower(trim(email))` + optional Plus-Tag-Entfernung
+- **Name:** Whitespace normalisieren, Kleinbuchstaben, Diakritika entfernen
+- **Telefon:** libphonenumber → E.164 Format
+
+#### **Idempotenz-Support:**
+- Header: `Idempotency-Key: <uuid|hash>`
+- Store: 24h TTL mit Request-Hash-Validierung
+- Semantik: Identische Response bei Wiederholung
+
+#### **Migration:** V247 (dynamisch ermittelt)
+
+## 📋 **Next Steps**
+
+1. **Sprint 2.1.5:** Lead Matching & Review-Flow (Phase 2)
+2. **Sprint 2.1.6:** Merge/Unmerge + Historie
 3. **Cross-Module Events:** Integration mit anderen Modulen
 4. **Seasonal Scaling:** KEDA-Integration für Peak-Loads

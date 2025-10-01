@@ -7,8 +7,11 @@ import de.freshplan.test.builders.ContactTestDataFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import java.util.Set;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -20,16 +23,29 @@ import org.junit.jupiter.api.Test;
  * protection, and access control.
  */
 @DisplayName("Contact Security Tests")
-@Tag("migrate")
+@Tag("unit")
 public class ContactSecurityTest {
 
+  private static ValidatorFactory validatorFactory;
   private Validator validator;
   private CustomerContact contact;
 
+  @BeforeAll
+  static void setUpFactory() {
+    validatorFactory = Validation.buildDefaultValidatorFactory();
+  }
+
   @BeforeEach
   void setUp() {
-    validator = Validation.buildDefaultValidatorFactory().getValidator();
+    validator = validatorFactory.getValidator();
     contact = ContactTestDataFactory.builder().build();
+  }
+
+  @AfterAll
+  static void tearDownFactory() {
+    if (validatorFactory != null) {
+      validatorFactory.close();
+    }
   }
 
   @Nested

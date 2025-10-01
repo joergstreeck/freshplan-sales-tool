@@ -35,7 +35,7 @@ import org.junit.jupiter.api.Test;
  * @since Test-Pollution Fix
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestProfile(HtmlExportCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",

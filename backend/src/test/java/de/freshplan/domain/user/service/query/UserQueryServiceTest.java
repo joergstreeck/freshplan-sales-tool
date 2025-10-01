@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Test;
  * Verifies that NO write operations are performed.
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 class UserQueryServiceTest {
 
   @Inject UserQueryService queryService;

@@ -17,7 +17,7 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ 75% IMPLEMENTED – PR #103, #105, #110 merged
+- **Module 02 Neukundengewinnung:** ✅ 85% IMPLEMENTED – PR #103, #105, #110, #111, #122 merged
   - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
   - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
   - [Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) ✅
@@ -36,15 +36,21 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (26.09.2025):**
-- ✅ **PR #110 MERGED:** FP-236 Security-Integration complete (23 Tests, P95 < 7ms, Gemini Review adressiert)
+**📋 LATEST UPDATE (28.09.2025):**
+- ✅ **PR #122 MERGED:** Sprint 2.1.3 Frontend Lead Management MVP COMPLETE
+  - Lead-Liste und Lead-Erfassung mit vollständiger Business-Logik
+  - Client-seitige Validierung + Duplikat-Erkennung (409 Handling)
+  - RFC7807 Error Handling mit Feld-spezifischen Fehlern
+  - Vollständige i18n (de/en) ohne hardcoded Strings
+  - MSW für realistische API-Simulation
+  - 90% Test-Coverage, CI/CD komplett grün
 - ✅ **PR #111 MERGED:** Sprint 2.1.1 P0 HOTFIX + FP-235 Follow-up Automation COMPLETE
   - Event Distribution via LISTEN/NOTIFY mit AFTER_COMMIT Pattern
   - Dashboard Widget mit T+3/T+7 Lead-Metriken operational
   - Prometheus Metrics für Follow-up Performance Tracking
   - RBAC/RLS mit konfigurierbarem Test-Bypass
   - 25 Tests alle grün, Migration V250
-- 🚀 **Next:** Sprint 2.2 Kundenmanagement (FP-237 bis FP-241)
+- 🔧 **IN PROGRESS:** Sprint 2.1.4 Backend-Integration (V247 Migration, Normalization Service, Idempotency)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -201,43 +207,50 @@
   - Dashboard Widget integriert (LeadWidget, aber RBAC fehlt)
   - Delta-Log erstellt: 55% complete, 7-9h für Fertigstellung
   - Migration: n/a, Tests: PENDING
+- 2025-09-28 01:10 — **Sprint 2.1.3 Frontend Lead Management:** PR #122 COMPLETE & MERGED
+  - Lead Management MVP mit vollständiger Business-Logik implementiert
+  - Client-seitige Validierung + Duplikat-Erkennung (409 Handling)
+  - Vollständige i18n (de/en), 90% Test-Coverage
+  - Sprint-Dokumentation gemäß Planungsmethodik.md erstellt
+  - Migration: n/a, Tests: OK
+- 2025-09-28 14:30 — **Sprint 2.1.4 Lead Deduplication:** Backend-Integration COMPLETE
+  - V247 Migration für Normalisierung und partielle UNIQUE Indizes erstellt
+  - V250 Migration für Idempotency unique constraint fix
+  - LeadNormalizationService + IdempotencyService implementiert
+  - 39 Tests (8 Idempotency + 31 Normalisierung) alle grün
+  - Migration: V247+V250, Tests: OK
+- 2025-09-28 16:30 — **Sprint 2.1.5 Documentation:** Vertragliche Anforderungen dokumentiert
+  - CONTRACT_MAPPING.md mit vollständiger § 2(8) Abdeckung erweitert
+  - Data-Retention-Plan für DSGVO-Compliance erstellt (/docs/compliance/)
+  - ADR-003 für Row-Level-Security (RLS) dokumentiert
+  - OpenAPI Protection-Endpoints spezifiziert
+  - Migration: n/a, Tests: n/a
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🚧 Sprint 2.1.1 P0 HOTFIX fertigstellen:** [TRIGGER_SPRINT_2_1_1.md](./TRIGGER_SPRINT_2_1_1.md)
-  - AFTER_COMMIT Pattern implementieren (2h)
-  - Idempotency Keys + RBAC hinzufügen (1h)
-  - Prometheus Metrics implementieren (2h)
-  - Tests schreiben (2h)
-  - Siehe [Delta-Log](./SPRINT_2_1_1_DELTA_LOG.md) für Details
-- **Sprint 2.2 Kundenmanagement:** Nach PR #111 Merge
-  - Field-based Customer Architecture mit 39 Artefakten
-  - RLS Migration für Customer Services (FP-273)
-  - 10-12h, 5 PRs geplant (FP-237 bis FP-241)
-- **Follow-up RLS Migration:** Domain Services
-  - FP-274: 15+ Domain Services mit @RlsContext
-  - CI-Guard implementieren und aktivieren
-  - RLS-Badge in alle Module 01-08 einfügen
-- Sprint 2.1: Kann erst nach Sprint 1.6 fortfahren
-- Follow-up Tickets:
-  - FP-272: Modul 02 Services annotieren (P0)
-  - FP-273: Modul 03 Migration planen (P1)
-  - FP-274: CI-Rule für @RlsContext (P1)
-  - FP-275: Import/Batch RLS-sicher machen (P1)
-  - FP-276: Monitoring via Agroal/Micrometer (P2)
+- **Implement PUT /api/leads/{id}/registered-at** inkl. Audit & RBAC
+- **Idempotency: Konflikt-Pfad liefert gespeicherte Antwort** (UX-konform)
+- Sprint 2.1.5: Protection-Endpoints implementieren (Reminder, Extend, Stop-Clock)
+- Sprint 2.1.5: Retention-Jobs für Pseudonymisierung implementieren
+- Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
+- Sprint 2.1.6: Lead-Transfer-Flow mit Genehmigung implementieren
+- Sprint 2.1.6: Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
 <!-- MP5:RISKS:START -->
 - ✅ ~~GUC-Context auf falscher Connection~~ - BEHOBEN durch Sprint 1.5 Connection Affinity
-- **Sprint 2.1 blockiert:** Modul 02 Services ohne @RlsContext - Mitigation: Sprint 1.6 mit P0
+- **8 npm dev Server laufen parallel** - Mitigation: Beim nächsten Start mit killall bereinigen
 - 33+ Services ohne RLS-Schutz - Mitigation: Systematische Migration via Sprint 1.6
-- Zwei Dev-Server laufen parallel (Bash IDs: 64b7dc, 1db55e) - Mitigation: Beim nächsten Start bereinigen
 <!-- MP5:RISKS:END -->
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+- 2025-09-28 — **Entscheidung: Backdating von `registered_at` für Admin/Manager** mit Audit-Reason eingeführt (konform §2(8)(a))
+- 2025-09-28 — ADR-003: Row-Level-Security für Lead-Management (proposed für Sprint 2.1.6)
+- 2025-09-28 — Scope-Änderung: Fuzzy-Matching von Sprint 2.1.5 zu 2.1.6 verschoben
+- 2025-09-28 — Data-Retention-Policy: 60-Tage-Pseudonymisierung für inaktive Leads
 - 2025-09-25 — ADR-0007: RLS Connection Affinity Pattern für alle Module verbindlich
 - 2025-09-25 — Sprint 1.6 eingefügt: Module-Migration zu @RlsContext vor Phase 2
 - 2025-09-25 — CI-Guard Pattern: Heuristik statt Regex für FP-arme Prüfung
@@ -373,6 +386,16 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 ```
 
 **Feature-Module-Mapping:** [Sidebar-basierte Module](./features-neu/)
+
+## 📚 Wichtige Dokumentationen
+
+**Compliance & Security:**
+- [Data-Retention-Plan für Leads](/docs/compliance/data-retention-leads.md)
+- [ADR-002 RBAC Lead Protection](./features-neu/02_neukundengewinnung/shared/adr/ADR-002-rbac-lead-protection.md)
+- [ADR-003 Row-Level-Security](./features-neu/02_neukundengewinnung/shared/adr/ADR-003-rls-leads-row-level-security.md)
+
+**Sprint Artefakte:**
+- [Sprint 2.1.5 CONTRACT_MAPPING](./features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/CONTRACT_MAPPING.md)
 
 ## 🔗 Infrastruktur-Koordination
 
@@ -535,10 +558,10 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- Sprint 2.1 PR #2: Lead Endpoints implementieren (User-basierte Protection)
-- Sprint 2.1 PR #3: Lead UI Components (Territory nur für Currency/Tax Display)
-- Frontend Bundle-Optimierung von 750KB auf <200KB angehen
-- Legacy-Docs: Territory-Missverständnisse in älteren Dokumenten korrigieren
+- Sprint 2.1.4: Backend-Integration mit Normalisierung & Deduplizierung
+- Sprint 2.1.5: Match-API & Review-Flow für erweiterte Duplikat-Behandlung
+- Sprint 2.1.6: Merge/Unmerge-Funktionalität mit Historie
+- Frontend Bundle-Optimierung von 750KB auf <200KB fortführen
 <!-- MP5:NEXT_STEPS:END -->
 
 ## 🎯 Critical Success Metrics

@@ -21,7 +21,8 @@ import org.junit.jupiter.api.Test;
  * sicher, dass beide Services denselben Count zurückgeben.
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
+@TestTransaction // Sprint 2.1.4: Fix ContextNotActiveException
 public class ContactsCountConsistencyTest {
 
   @Inject CustomerRepository customerRepository;

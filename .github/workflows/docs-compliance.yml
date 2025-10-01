@@ -303,18 +303,22 @@ jobs:
         if: steps.analyze.outputs.analysis_completed == 'true'
         run: |
           python3 -c "
-          import json
+          import json, os
           with open('compliance_report.json') as f:
               r = json.load(f)
           violations = [k for k,v in r.get('compliance_summary',{}).items() if not v.get('ok')]
           if violations:
               print(f'❌ Compliance violations in: {violations}')
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write('has_violations=true\n')
               exit(1)
           print('✅ All modules compliant')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('has_violations=false\n')
           "
 
       - name: Comment summary on PR
-        if: steps.analyze.outputs.analysis_completed == 'true'
+        if: steps.check_violations.outputs.has_violations == 'true'
         uses: actions/github-script@v7
         with:
           script: |

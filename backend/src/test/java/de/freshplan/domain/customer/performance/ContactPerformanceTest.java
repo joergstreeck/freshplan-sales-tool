@@ -33,7 +33,7 @@ import org.junit.jupiter.api.condition.EnabledIfSystemProperty;
  * <p>Run with: mvn test -Dtest=ContactPerformanceTest -Dperformance.tests.enabled=true
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("performance")
 @DisplayName("Contact Performance Tests")
 @EnabledIfSystemProperty(named = "performance.tests.enabled", matches = "true")
 public class ContactPerformanceTest {

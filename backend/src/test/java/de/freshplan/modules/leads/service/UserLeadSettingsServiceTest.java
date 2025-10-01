@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import de.freshplan.modules.leads.domain.UserLeadSettings;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -11,9 +12,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+// Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
 @QuarkusTest
+@TestTransaction
+@Tag("integration")
 class UserLeadSettingsServiceTest {
 
   @Inject UserLeadSettingsService service;

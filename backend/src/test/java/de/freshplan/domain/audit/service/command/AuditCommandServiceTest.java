@@ -43,7 +43,7 @@ import org.mockito.quality.Strictness;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@Tag("migrate")
+@Tag("unit")
 class AuditCommandServiceTest {
 
   @Mock private AuditRepository auditRepository;
@@ -291,13 +291,17 @@ class AuditCommandServiceTest {
         .persist(any(AuditEntry.class));
 
     // When & Then
-    assertThrows(
-        AuditService.AuditException.class,
-        () -> {
-          commandService.logSync(testContext);
-        });
+    AuditService.AuditException exception =
+        assertThrows(
+            AuditService.AuditException.class,
+            () -> {
+              commandService.logSync(testContext);
+            });
 
-    // Verify fallback logging happened (check logs in real implementation)
+    // Verify the exception contains expected message
+    assertTrue(exception.getMessage().contains("Failed to log audit event"));
+    assertNotNull(exception.getCause());
+    assertEquals("Database error", exception.getCause().getMessage());
   }
 
   @Test

@@ -11,12 +11,12 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.2 Kundenmanagement bereit (FP-237 bis FP-241)
-- **Progress:** 15/37 PRs - 40.5% (PR #111 merged - FP-235 COMPLETE)
-- **Blockers:** Keine - Sprint 2.2 kann starten
-- **Active Branch:** main (PR #111 merged)
+- **Current Sprint:** Sprint 2.1.3 Frontend COMPLETE → 2.1.4 Backend-Integration bereit
+- **Progress:** 9/36 PRs - 25% done (PR #122 merged)
+- **Blockers:** Keine - Sprint 2.1.4 kann starten
+- **Active Branch:** feat/mod02-frontend-sprint-2.1.3 (noch auf main zu mergen)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
-- **Performance:** ✅ P95 <7ms (Lead-Module) + ETags operational
+- **Performance:** ✅ P95 <7ms (Lead-Module) + Frontend 90% Test-Coverage
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -86,11 +86,12 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: █░░░░░░░░░ 10% (0.5/5 Sprints)
+Progress: ██░░░░░░░░ 20% (1/5 Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
 Sprint 2.1.2: Frontend Research       ✅ Complete → PR #112 merged - Research & Patterns für UI
+Sprint 2.1.3: Frontend Lead Mgmt      ✅ Complete → PR #122 merged - Lead Management MVP
                                      → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
@@ -107,7 +108,7 @@ Sprint 3.2: 07+08 Hilfe + Admin      🟡 Planning → CAR-Strategy + User Mgmt
 Sprint 3.3: Final Integration        🟡 Planning → Kong/Envoy Policies
 ```
 
-**🎯 GESAMT-FORTSCHRITT: 8/36 PRs ✅ | 3/15 Wochen | ETA: 2025-05-15**
+**🎯 GESAMT-FORTSCHRITT: 9/36 PRs ✅ (25% done) | 3.5/15 Wochen | ETA: 2025-05-15**
 
 ---
 

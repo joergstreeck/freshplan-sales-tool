@@ -13,6 +13,7 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.List;
@@ -37,12 +38,13 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14 - Integration Tests
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 @TestProfile(CustomerCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @TestTransaction
+@ActivateRequestContext // Sprint 2.1.4 Fix: Activate RequestContext for Resource calls
 @DisplayName("Customer CQRS Integration Test")
 class CustomerCQRSIntegrationTest {
 

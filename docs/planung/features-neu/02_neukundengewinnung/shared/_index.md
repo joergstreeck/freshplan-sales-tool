@@ -30,6 +30,8 @@ Zentrale Verträge und Standards, die von Frontend und Backend gemeinsam genutzt
 - **Rollen:** SALES | MANAGER | ADMIN
 - **Territory-Scoping:** Deutschland/Schweiz RLS
 - **Lead-Ownership:** User-basiert, kein Gebietsschutz
+- **ADR-002 RBAC:** [ADR-002-rbac-lead-protection.md](./adr/ADR-002-rbac-lead-protection.md)
+- **ADR-003 RLS:** [ADR-003-rls-leads-row-level-security.md](./adr/ADR-003-rls-leads-row-level-security.md)
 
 ### **Performance-Contracts:**
 - **API Response:** <200ms P95 (aktuell <7ms)

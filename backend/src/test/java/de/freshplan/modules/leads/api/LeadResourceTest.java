@@ -15,6 +15,7 @@ import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -22,13 +23,18 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Integration tests for Lead REST API. Tests user-based protection system and lead lifecycle
  * management.
+ *
+ * <p>Phase 5C Fix: Removed class-level @TestTransaction - REST tests need data visible to HTTP
+ * endpoints. Cleanup in @BeforeEach ensures test isolation.
  */
 @QuarkusTest
 @TestHTTPEndpoint(LeadResource.class)
+@Tag("e2e")
 class LeadResourceTest {
 
   @Inject EntityManager em;
@@ -36,7 +42,7 @@ class LeadResourceTest {
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean up test data
+    // Phase 5C Fix: Re-added cleanup for REST tests (no class-level @TestTransaction)
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
     em.createQuery("DELETE FROM UserLeadSettings").executeUpdate();
@@ -355,6 +361,7 @@ class LeadResourceTest {
   }
 
   @Test
+  @ActivateRequestContext
   @TestSecurity(
       user = "user1",
       roles = {"USER"})

@@ -5,20 +5,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.freshplan.domain.customer.service.SmartSortService.SmartSortStrategy;
 import de.freshplan.domain.customer.service.dto.SortCriteria;
 import io.quarkus.panache.common.Sort;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
-/** Tests for SmartSortService functionality. */
-@QuarkusTest
-@Tag("migrate")
+/**
+ * Unit tests for SmartSortService business logic.
+ *
+ * <p><b>Migration:</b> Converted from @QuarkusTest to plain JUnit (saves ~15s per test run)
+ *
+ * <p>Tests smart sorting strategies, sort criteria generation, and strategy descriptions without
+ * requiring Quarkus boot or database operations.
+ */
+@Tag("unit")
+@DisplayName("SmartSortService - Strategy Logic")
 class SmartSortServiceTest {
 
-  @Inject SmartSortService smartSortService;
+  private SmartSortService smartSortService;
+
+  @BeforeEach
+  void setUp() {
+    smartSortService = new SmartSortService();
+  }
 
   @Test
+  @DisplayName("SALES_PRIORITY strategy should return correct sort order")
   void createSmartSort_withSalesPriority_shouldReturnCorrectOrder() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.SALES_PRIORITY;
@@ -39,6 +52,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("RISK_MITIGATION strategy should return correct sort order")
   void createSmartSort_withRiskMitigation_shouldReturnCorrectOrder() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.RISK_MITIGATION;
@@ -59,6 +73,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("ENGAGEMENT_FOCUS strategy should return correct sort order")
   void createSmartSort_withEngagementFocus_shouldReturnCorrectOrder() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.ENGAGEMENT_FOCUS;
@@ -79,6 +94,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("REVENUE_POTENTIAL strategy should return correct sort order")
   void createSmartSort_withRevenuePotential_shouldReturnCorrectOrder() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.REVENUE_POTENTIAL;
@@ -99,6 +115,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("CONTACT_FREQUENCY strategy should return correct sort order")
   void createSmartSort_withContactFrequency_shouldReturnCorrectOrder() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.CONTACT_FREQUENCY;
@@ -119,6 +136,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("Panache Sort for SALES_PRIORITY should be valid")
   void createPanacheSort_withSalesPriority_shouldReturnValidSort() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.SALES_PRIORITY;
@@ -133,6 +151,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("SALES_PRIORITY strategy should have valid description")
   void getStrategyDescription_withValidStrategy_shouldReturnDescription() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.SALES_PRIORITY;
@@ -147,6 +166,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("RISK_MITIGATION strategy should have risk-focused description")
   void getStrategyDescription_withRiskMitigation_shouldReturnRiskDescription() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.RISK_MITIGATION;
@@ -160,6 +180,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("ENGAGEMENT_FOCUS strategy should have engagement description")
   void getStrategyDescription_withEngagementFocus_shouldReturnEngagementDescription() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.ENGAGEMENT_FOCUS;
@@ -173,6 +194,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("REVENUE_POTENTIAL strategy should have revenue description")
   void getStrategyDescription_withRevenuePotential_shouldReturnRevenueDescription() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.REVENUE_POTENTIAL;
@@ -185,6 +207,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("CONTACT_FREQUENCY strategy should have contact description")
   void getStrategyDescription_withContactFrequency_shouldReturnContactDescription() {
     // Given
     SmartSortStrategy strategy = SmartSortStrategy.CONTACT_FREQUENCY;
@@ -197,6 +220,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("All strategies should have valid descriptions")
   void allStrategies_shouldHaveValidDescriptions() {
     // Given: All available strategies
     SmartSortStrategy[] strategies = SmartSortStrategy.values();
@@ -213,6 +237,7 @@ class SmartSortServiceTest {
   }
 
   @Test
+  @DisplayName("All strategies should create valid sort criteria")
   void allStrategies_shouldCreateValidSortCriteria() {
     // Given: All available strategies
     SmartSortStrategy[] strategies = SmartSortStrategy.values();

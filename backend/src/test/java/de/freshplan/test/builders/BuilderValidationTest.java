@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
  * Validation tests for Phase 2A - Builder Core improvements. Verifies that builders generate
  * collision-free IDs and proper test data.
  */
-@Tag("migrate")
+@Tag("unit")
 class BuilderValidationTest {
 
   @Test
@@ -75,7 +75,8 @@ class BuilderValidationTest {
 
     assertThat(user).isNotNull();
     assertThat(user.isTestData()).isTrue();
-    assertThat(user.getUsername()).isEqualTo("manual.user");
-    assertThat(user.getEmail()).isEqualTo("manual@test.com");
+    // Username and email get a suffix added for uniqueness, so we check for prefix
+    assertThat(user.getUsername()).startsWith("manual.user");
+    assertThat(user.getEmail()).startsWith("manual");
   }
 }

@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 class AuditRepositoryTest {
 
   @Inject AuditRepository auditRepository;

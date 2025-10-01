@@ -4,7 +4,7 @@ domain: "shared"
 doc_type: "guideline"
 status: "approved"
 owner: "team/leads"
-updated: "2025-09-27"
+updated: "2025-09-28"
 ---
 
 # 📋 Planungsmethodik – Einstieg über Sprints, Arbeit in Modulen
@@ -54,17 +54,26 @@ NN_modulname/
 ---
 sprint_id: "2.1.2"
 title: "Frontend Research – Modul 02"
-status: "complete"        # draft | in_progress | complete
+doc_type: "konzept"        # PFLICHT: Trigger nutzen IMMER "konzept"!
+status: "complete"         # draft | in_progress | complete
+owner: "team/leads"        # PFLICHT: Sprint-Owner
 date_start: "2025-09-24"
 date_end: "2025-09-27"
 modules: ["02_neukundengewinnung"]
 entry_points:
-  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
-  - "features-neu/02_neukundengewinnung/frontend/_index.md"
+  - "features-neu/02_neukundengewinnung/_index.md"           # PFLICHT: Modul-Start
+  - "features-neu/02_neukundengewinnung/backend/_index.md"   # Overlay-Entry
+  - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"       # Sprint-Map
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_X/SUMMARY.md"  # Artefakte
 pr_refs: ["#112"]
-updated: "2025-09-27"
+updated: "2025-09-28"
 ---
 ```
+
+**⚠️ WICHTIG für Trigger-Dokumente:**
+- **doc_type ist IMMER "konzept"** (niemals "trigger" - das ist kein gültiger Wert!)
+- **entry_points MÜSSEN Modul-Start und relevante Artefakte enthalten**
+- **owner ist PFLICHTFELD**
 
 **Arbeitsanweisung (Pflichtkasten, direkt unter dem Header):**
 
@@ -74,6 +83,11 @@ updated: "2025-09-27"
 > 3. **Overlay wählen:** `backend/` oder `frontend/` (Cross‑Cutting: `shared/`)
 > 4. **Details:** `analyse/` (Research, Contracts)
 > 5. **Muster:** `artefakte/` (Patterns kopieren, wo sinnvoll)
+
+**📍 Breadcrumbs (PFLICHT direkt nach H1 in JEDEM Sprint-Dokument):**
+```markdown
+**📍 Navigation:** Home → Planung → Sprint X.Y.Z
+```
 
 **Definition of Done (Sprint):**
 - [ ] **Ergebnis erreicht** (1–2 Sätze Beleg)
@@ -108,25 +122,38 @@ Modul‑Root zeigt max. **8 Kern‑Items** (`_index.md`, `SPRINT_MAP.md`, `backe
 
 ## 4) Dokument‑Standards (Front‑Matter, Breadcrumbs, Links)
 
-**Front‑Matter (Pflicht in jedem Doc):**
+**Front‑Matter (Pflicht in JEDEM Doc):**
 
 ```yaml
 ---
 module: "02_neukundengewinnung"     # NN_modulname oder "shared"
 domain: "frontend"                  # backend | frontend | shared
-doc_type: "analyse"                 # analyse | konzept | contract | guideline | deltalog | adr
+doc_type: "analyse"                 # NUR: analyse | konzept | contract | guideline | deltalog | adr
+                                   # NIEMALS: "trigger" (ungültig!)
 status: "approved"                  # draft | approved | obsoleted
 sprint: "2.1.2"                     # optional – wenn sprintbezogen
-owner: "team/leads"
-updated: "2025-09-27"
+owner: "team/leads"                 # PFLICHT - niemals weglassen!
+updated: "2025-09-28"              # PFLICHT - immer aktualisieren!
 ---
 ```
 
-**Breadcrumb (Pflicht direkt nach H1):**
+**⚠️ ERLAUBTE doc_type Werte (ABSCHLIESSENDE LISTE):**
+- `analyse` - Recherchen, Untersuchungen
+- `konzept` - Konzepte, Planungen, **TRIGGER**
+- `contract` - API-Contracts, Schnittstellen
+- `guideline` - Richtlinien, Standards
+- `deltalog` - Änderungsprotokolle
+- `adr` - Architecture Decision Records
+
+**Breadcrumb (PFLICHT direkt nach H1 in JEDEM Dokument):**
 
 ```markdown
-**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Frontend → Analyse → API_CONTRACT
+# Dokumenttitel
+
+**📍 Navigation:** Home → Planung → [Modul] → [Domain] → [Pfad]
 ```
+
+**⚠️ KEINE AUSNAHMEN:** Jedes Dokument MUSS Breadcrumbs haben!
 
 **Link‑Regeln:**
 - Relative Pfade innerhalb von `docs/planung/`.
@@ -156,7 +183,7 @@ updated: "2025-09-27"
 ---
 status: "moved"
 moved_to: "./legacy-planning/lead-erfassung/technical-concept.md"
-updated: "2025-09-27"
+updated: "2025-09-28"
 ---
 
 # ➡️ Dokument verschoben
@@ -182,7 +209,131 @@ updated: "2025-09-27"
 
 ---
 
-## 8) Quick‑Start für neue Claude‑Instanzen
+## 8) Datenbank-Migrationen (KRITISCHE REGELN)
+
+**⚠️ PFLICHT-REGELN für alle Migrationen:**
+
+### Idempotenz ist PFLICHT
+```sql
+-- FALSCH:
+ALTER TABLE leads ADD COLUMN email_normalized VARCHAR(320);
+
+-- RICHTIG:
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'leads' AND column_name = 'email_normalized'
+  ) THEN
+    ALTER TABLE leads ADD COLUMN email_normalized VARCHAR(320);
+  END IF;
+END$$;
+```
+
+### NIEMALS hardcodierte Versionsnummern
+```bash
+# FALSCH:
+echo "Ich nutze V247"
+
+# RICHTIG:
+MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+# Fallback: ls -la backend/src/main/resources/db/migration/ | tail -3
+```
+
+### Production-Safety: CONCURRENTLY nur via Java-Migration
+```sql
+-- FALSCH in SQL-Migration (läuft in Transaktion):
+CREATE INDEX CONCURRENTLY idx_example ON table(column);
+
+-- RICHTIG (Java-Migration für Production):
+public class V248__CreateIndexConcurrently extends BaseJavaMigration {
+    @Override
+    public boolean canExecuteInTransaction() {
+        return false;  // Erlaubt CONCURRENTLY
+    }
+}
+```
+
+### Immer kompatibel mit existierendem Schema
+- Prüfe IMMER vorherige Migrationen (V1 bis VN-1)
+- Droppe existierende Constraints/Indizes VOR Updates
+- Berücksichtige Single-/Multi-Tenant-Status
+
+---
+
+## 9) Test-Ablage-Strategie
+
+### Backend-Tests
+
+**Tests nach Verantwortlichkeit organisiert** (siehe `TEST_MIGRATION_PLAN.md` für Details):
+
+```
+backend/src/test/java/de/freshplan/
+├── api/            # REST-Tests (10% - leichtgewichtig mit Mocks)
+├── domain/         # Unit-Tests (70% - reines Mockito, KEIN @QuarkusTest)
+├── integration/    # Integration-Tests (20% - @QuarkusTest mit DB)
+├── infrastructure/ # Security/Infra-Tests
+├── modules/        # Modul-spezifische Tests
+├── test/           # Test-Infrastruktur (A00_EnvDiagTest, etc.)
+└── testsupport/    # Hilfs-Utilities
+```
+
+### Frontend-Tests
+
+**Co-Location first, zentrale Tests für Übergreifendes:**
+
+```
+frontend/
+├── src/                    # App-Code mit co-located Tests
+│   ├── components/
+│   │   ├── Button.tsx
+│   │   └── Button.test.tsx    # Co-located Unit-Test
+│   └── features/leads/
+│       ├── LeadList.tsx
+│       └── LeadList.test.tsx   # Co-located Feature-Test
+├── tests/                  # Zentrale Tests & Test-Infra
+│   ├── app/               # Shell/Router/Layout-Tests
+│   ├── features/          # Feature-übergreifende Tests
+│   ├── integration/       # MSW-gestützte Integrationsfälle
+│   ├── infra/            # Security, i18n, Theme, ErrorBoundary
+│   ├── greenpath/        # Smoke/Happy-Path Flows
+│   ├── test/             # Test-Infra (setupTests.ts, A00_EnvDiag.test.ts)
+│   └── testsupport/      # Utilities (custom render, helpers)
+└── e2e/                   # Playwright/Cypress E2E
+    ├── specs/
+    └── playwright.config.ts
+```
+
+### Gemeinsame Namenskonventionen
+- `A00_*` - Gatekeeper/Diagnose zuerst
+- `*Test.[ts|tsx|java]` - Standard Tests
+- `*IntegrationTest.*` - Integration Tests
+- `ZZZ_*` - Final-Verification am Ende
+
+### Test-Werkzeuge & CI-Strategie
+
+**Backend:**
+- **Unit:** Mockito (70% - KEIN @QuarkusTest)
+- **Integration:** @QuarkusTest mit DB (20%)
+- **API:** RestAssured (10%)
+- **Ziel:** < 5 Minuten CI
+
+**Frontend:**
+- **Unit/Component:** Vitest + @testing-library/react
+- **Integration:** MSW (Mock Service Worker)
+- **E2E:** Playwright
+- **CI-Split:**
+  - PR: Co-located Tests (< 3-4 Min)
+  - Integration: MSW-Tests
+  - Nightly: E2E-Suite
+
+### Prinzipien
+- **Backend:** Tests nach Verantwortlichkeit, nicht nach Modulen
+- **Frontend:** Co-Location first, zentral nur für Übergreifendes
+- **Performance:** Mockito/MSW statt echte DB/API wo möglich
+- **Migration:** Neue Tests schreiben → validieren → alte löschen
+
+## 10) Quick‑Start für neue Claude‑Instanzen
 
 1. **Sprint öffnen** → Arbeitsanweisung lesen.
 2. **SPRINT_MAP des Moduls** aufrufen.
@@ -190,7 +341,8 @@ updated: "2025-09-27"
 4. **In `backend/` oder `frontend/` arbeiten**.
 5. **`analyse/` für Details, `artefakte/` für Muster**.
 6. **Historie in `legacy-planning/`**.
+7. **Tests gemäß Ablage-Strategie** (siehe Abschnitt 9).
 
 ---
 
-**Letzte Aktualisierung:** 2025‑09‑27
+**Letzte Aktualisierung:** 2025-09-30 (Test-Ablage-Strategie ergänzt)

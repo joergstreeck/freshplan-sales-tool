@@ -31,6 +31,10 @@ public class Lead extends PanacheEntityBase {
   public String companyName;
 
   @Size(max = 255)
+  @Column(name = "company_name_normalized")
+  public String companyNameNormalized;
+
+  @Size(max = 255)
   @Column(name = "contact_person")
   public String contactPerson;
 
@@ -45,8 +49,16 @@ public class Lead extends PanacheEntityBase {
   @Size(max = 50)
   public String phone;
 
+  @Size(max = 50)
+  @Column(name = "phone_e164")
+  public String phoneE164;
+
   @Size(max = 255)
   public String website;
+
+  @Size(max = 255)
+  @Column(name = "website_domain")
+  public String websiteDomain;
 
   // Address and territory
   @Size(max = 255)
@@ -103,6 +115,21 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "registered_at", nullable = false)
   public LocalDateTime registeredAt = LocalDateTime.now();
 
+  @Size(max = 250)
+  @Column(name = "registered_at_override_reason")
+  public String registeredAtOverrideReason;
+
+  @Size(max = 100)
+  @Column(name = "registered_at_set_by")
+  public String registeredAtSetBy;
+
+  @Column(name = "registered_at_set_at")
+  public LocalDateTime registeredAtSetAt;
+
+  @Size(max = 20)
+  @Column(name = "registered_at_source")
+  public String registeredAtSource = "system";
+
   @Column(name = "last_activity_at")
   public LocalDateTime lastActivityAt;
 
@@ -138,6 +165,10 @@ public class Lead extends PanacheEntityBase {
 
   @Column(name = "protection_days_10", nullable = false)
   public Integer protectionDays10 = 10;
+
+  // Deduplication flag (Sprint 2.1.4)
+  @Column(name = "is_canonical", nullable = false)
+  public Boolean isCanonical = true;
 
   // Metadata
   @Size(max = 100)

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.*;
  * Performance-Anforderungen aus Sprint 2.1
  */
 @QuarkusTest
+@Tag("performance")
 @DisplayName("Lead Performance Validation - FP-236")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class LeadPerformanceValidationTest {

@@ -192,8 +192,13 @@
           </systemPropertyVariables>
           <!-- CI Fix: Set German locale for consistent test behavior -->
           <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
-          <!-- Default: Run all tests without tag filtering -->
-          <!-- Profile-specific configuration overrides this -->
+          <!-- Exclude performance tests by default -->
+          <excludedGroups>performance</excludedGroups>
+          <!-- Parallel execution for speed (can be overridden via CLI with -Dparallel=none) -->
+          <parallel>classes</parallel>
+          <threadCount>4</threadCount>
+          <forkCount>1</forkCount>
+          <reuseForks>true</reuseForks>
         </configuration>
       </plugin>
       <!-- JaCoCo Plugin für Code Coverage -->
@@ -415,6 +420,107 @@
       </build>
     </profile>
     
+    <!-- Unit-Suite für schnelle lokale Tests (~5-10s) -->
+    <profile>
+      <id>unit</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire-plugin.version}</version>
+            <configuration>
+              <systemPropertyVariables>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <maven.home>${maven.home}</maven.home>
+              </systemPropertyVariables>
+              <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
+              <!-- Nur Unit-Tests ausführen (keine Quarkus-Container) -->
+              <groups>unit</groups>
+              <trimStackTrace>false</trimStackTrace>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Integration-Suite für Service/Repository Tests (~5-8 min) -->
+    <profile>
+      <id>integration</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire-plugin.version}</version>
+            <configuration>
+              <systemPropertyVariables>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <maven.home>${maven.home}</maven.home>
+                <quarkus.profile>test</quarkus.profile>
+              </systemPropertyVariables>
+              <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
+              <!-- Nur Integration-Tests ausführen (Service/Repository-Layer) -->
+              <groups>integration</groups>
+              <trimStackTrace>false</trimStackTrace>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- E2E-Suite für REST-API Tests (~2-3 min) -->
+    <profile>
+      <id>e2e</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire-plugin.version}</version>
+            <configuration>
+              <systemPropertyVariables>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <maven.home>${maven.home}</maven.home>
+                <quarkus.profile>test</quarkus.profile>
+              </systemPropertyVariables>
+              <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
+              <!-- Nur E2E-Tests ausführen (REST-API) -->
+              <groups>e2e</groups>
+              <trimStackTrace>false</trimStackTrace>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Performance-Suite für wöchentliche/monatliche Performance-Tests -->
+    <profile>
+      <id>performance</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>${surefire-plugin.version}</version>
+            <configuration>
+              <systemPropertyVariables>
+                <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+                <maven.home>${maven.home}</maven.home>
+                <quarkus.profile>test</quarkus.profile>
+                <performance.tests.enabled>true</performance.tests.enabled>
+              </systemPropertyVariables>
+              <argLine>${jacocoArgLine} -Duser.language=de -Duser.country=DE</argLine>
+              <!-- Nur Performance-Tests ausführen -->
+              <groups>performance</groups>
+              <!-- Für saubere Fehlersuche -->
+              <trimStackTrace>false</trimStackTrace>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
     <!-- Stable-Suite für Release (alle außer quarantine) -->
     <profile>
       <id>stable-tests</id>

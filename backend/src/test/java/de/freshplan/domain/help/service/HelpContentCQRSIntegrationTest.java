@@ -34,7 +34,7 @@ import org.junit.jupiter.api.Test;
  * Performance und Reliability
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 @TestProfile(HelpContentCQRSIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.2: HelpContentService Event-Driven CQRS Integration")
 class HelpContentCQRSIntegrationTest {

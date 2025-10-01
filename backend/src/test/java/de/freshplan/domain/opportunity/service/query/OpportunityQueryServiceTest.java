@@ -16,9 +16,6 @@ import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.panache.common.Page;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -27,24 +24,32 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 /**
- * Unit Tests für OpportunityQueryService
+ * Pure Mockito unit tests for OpportunityQueryService. Sprint 2.1.4: Test Migration for CI
+ * Performance. Uses LENIENT mode to avoid UnnecessaryStubbingException.
  *
  * <p>Diese Tests stellen sicher, dass der OpportunityQueryService nur lesende Operationen
  * durchführt und keine Transaktionen verwendet.
  */
-@QuarkusTest
-@Tag("core")
+@ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@Tag("unit")
 class OpportunityQueryServiceTest {
 
-  @Inject OpportunityQueryService queryService;
+  @InjectMocks OpportunityQueryService queryService;
 
-  @InjectMock OpportunityRepository opportunityRepository;
+  @Mock OpportunityRepository opportunityRepository;
 
-  @InjectMock UserRepository userRepository;
+  @Mock UserRepository userRepository;
 
-  @InjectMock OpportunityMapper opportunityMapper;
+  @Mock OpportunityMapper opportunityMapper;
 
   private User testUser;
   private Opportunity testOpportunity1;

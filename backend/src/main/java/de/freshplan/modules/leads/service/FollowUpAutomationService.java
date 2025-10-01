@@ -78,6 +78,7 @@ public class FollowUpAutomationService {
   @Transactional
   @RlsContext
   public void processScheduledFollowUps() {
+    LOG.infof("DEBUG: processScheduledFollowUps called, followUpEnabled=%s", followUpEnabled);
     if (!followUpEnabled) {
       LOG.debug("Follow-up automation is disabled");
       return;
@@ -115,7 +116,24 @@ public class FollowUpAutomationService {
     LocalDateTime t3Threshold = now.minus(T3_DAYS, ChronoUnit.DAYS);
 
     // Finde Leads die für T+3 Follow-up qualifiziert sind
-    List<Lead> eligibleLeads = findLeadsForFollowUp(t3Threshold, T3_DAYS);
+    List<Lead> eligibleLeads =
+        em.createQuery(
+                """
+        SELECT l FROM Lead l
+        WHERE l.status = 'ACTIVE'
+        AND l.registeredAt <= :threshold
+        AND l.clockStoppedAt IS NULL
+        AND l.t3FollowupSent = false
+        ORDER BY l.registeredAt ASC
+        """,
+                Lead.class)
+            .setParameter("threshold", t3Threshold)
+            .setMaxResults(batchSize)
+            .getResultList();
+
+    LOG.infof(
+        "DEBUG: Found %d eligible leads for T+3 follow-up (threshold: %s)",
+        eligibleLeads.size(), t3Threshold);
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -199,8 +217,27 @@ public class FollowUpAutomationService {
   private int processT7FollowUps(LocalDateTime now) {
     LocalDateTime t7Threshold = now.minus(T7_DAYS, ChronoUnit.DAYS);
 
-    // Finde Leads die für T+7 Follow-up qualifiziert sind
-    List<Lead> eligibleLeads = findLeadsForFollowUp(t7Threshold, T7_DAYS);
+    // Finde Leads die für T+7 Follow-up qualifiziert sind (T+3 muss bereits gesendet sein!)
+    // Kann nicht die generische findLeadsForFollowUp verwenden, da T+7 spezielle Bedingungen hat
+    List<Lead> eligibleLeads =
+        em.createQuery(
+                """
+        SELECT l FROM Lead l
+        WHERE l.status = 'ACTIVE'
+        AND l.registeredAt <= :threshold
+        AND l.clockStoppedAt IS NULL
+        AND l.t3FollowupSent = true
+        AND l.t7FollowupSent = false
+        ORDER BY l.registeredAt ASC
+        """,
+                Lead.class)
+            .setParameter("threshold", t7Threshold)
+            .setMaxResults(batchSize)
+            .getResultList();
+
+    LOG.infof(
+        "DEBUG: Found %d leads eligible for T+7 follow-up (threshold: %s)",
+        eligibleLeads.size(), t7Threshold);
 
     int processed = 0;
     for (Lead lead : eligibleLeads) {
@@ -243,6 +280,7 @@ public class FollowUpAutomationService {
         // Erstelle personalisierte Bulk-Order-Campaign
         CampaignTemplate template =
             CampaignTemplate.findActiveByType(CampaignTemplate.TemplateType.FOLLOW_UP);
+        LOG.infof("DEBUG: Found template for T+7: %s", template != null ? template.name : "NULL");
 
         if (template == null) {
           LOG.warn("No active FOLLOW_UP template found, reverting T+7 flag");
@@ -269,6 +307,11 @@ public class FollowUpAutomationService {
         boolean sent = emailService.sendCampaignEmail(lead, template, templateData);
 
         if (sent) {
+          // Update lead status to REMINDER after T+7
+          lead.status = LeadStatus.REMINDER;
+          lead.reminderSentAt = now;
+          em.merge(lead);
+
           // Erstelle Activity für Tracking
           createFollowUpActivity(
               lead,
@@ -312,8 +355,8 @@ public class FollowUpAutomationService {
             AND NOT EXISTS (
                 SELECT 1 FROM LeadActivity a
                 WHERE a.lead = l
-                AND a.type IN (:meaningfulTypes)
-                AND a.occurredAt > :recentActivity
+                AND a.activityType IN (:meaningfulTypes)
+                AND a.activityDate > :recentActivity
             )
             ORDER BY l.registeredAt ASC
             """;
@@ -338,8 +381,8 @@ public class FollowUpAutomationService {
         """
             SELECT COUNT(a) FROM LeadActivity a
             WHERE a.lead = :lead
-            AND a.type IN (:meaningfulTypes)
-            AND a.occurredAt > :since
+            AND a.activityType IN (:meaningfulTypes)
+            AND a.activityDate > :since
             """;
 
     Long count =
@@ -354,15 +397,14 @@ public class FollowUpAutomationService {
 
   /** Erstellt Follow-up Activity für Tracking */
   private void createFollowUpActivity(Lead lead, String activityCode, String description) {
-    LeadActivity activity = new LeadActivity();
-    activity.lead = lead;
-    activity.setType(ActivityType.NOTE); // Follow-ups als NOTE tracken
-    activity.userId = SYSTEM_USER_ID;
-    activity.description = description;
-    activity.setOccurredAt(LocalDateTime.now(clock));
+    LeadActivity activity =
+        LeadActivity.createActivity(lead, SYSTEM_USER_ID, ActivityType.NOTE, description);
+    activity.activityDate = LocalDateTime.now(clock);
     activity.metadata.put("followup_type", activityCode);
     activity.metadata.put("automated", "true");
     activity.persist();
+
+    LOG.debugf("Created follow-up activity for lead %s: %s", lead.id, activityCode);
   }
 
   /** Baut Template-Daten für Personalisierung */

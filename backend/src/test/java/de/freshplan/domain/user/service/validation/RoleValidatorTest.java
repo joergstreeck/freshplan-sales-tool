@@ -16,7 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  * @author FreshPlan Team
  * @since 2.0.0
  */
-@Tag("migrate")
+@Tag("unit")
 class RoleValidatorTest {
 
   @Test

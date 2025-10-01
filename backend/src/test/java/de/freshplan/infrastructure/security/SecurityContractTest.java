@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @DisplayName("Security Contract Tests - Sprint 1.3")
+@Tag("integration")
 public class SecurityContractTest {
 
   @Inject DataSource dataSource;

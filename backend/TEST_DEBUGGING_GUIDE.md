@@ -1,164 +1,358 @@
-# Test Debugging Guide für Backend
+# Backend Testing Guide
 
-## Quick Reference
+**Version:** 3.0 (Sprint 2.1.4) | **Ziel:** Schnell (<20 Min), stabil, vorhersehbar
 
-### Test isoliert ausführen
+---
+
+## 🎯 Test-Strategie: Wann welcher Test-Typ?
+
+```
+Braucht mein Test echte...
+├─ REST API Endpoints? → @QuarkusTest (Integration)
+├─ Datenbank + Transaktionen? → @QuarkusTest + @TestTransaction
+├─ Security/RBAC/Events? → @QuarkusTest + @TestProfile
+└─ Nur Service-Logik? → Mockito Unit Test (KEIN @QuarkusTest!)
+```
+
+**Performance-Impact:**
+- **@QuarkusTest:** 15-20s Boot-Zeit → sparsam nutzen!
+- **Mock-basiert:** <1s → Standard für Service-Logik
+
+**Aktuell:** 153 @QuarkusTest = ~20-28 Min CI-Zeit
+**Ziel:** 70% Mock / 30% @QuarkusTest für neue Tests
+
+---
+
+## 📁 Ablage-Strategie
+
+```
+backend/src/test/java/de/freshplan/
+├─ api/              # REST Resource-Tests (@QuarkusTest, leichtgewichtig)
+├─ domain/           # Service Unit-Tests (Mockito, KEINE DB)
+├─ integration/      # CQRS/Stack-Tests (@QuarkusTest, selektiv)
+├─ infrastructure/   # Security/RBAC/Caching
+├─ modules/          # Modul-Tests (z.B. Leads)
+├─ greenpath/        # Schnelle Smoke-Tests (Happy Path)
+├─ test/             # A00_/ZZZ_-Tests, Profiles, Builders
+└─ testsupport/      # TestIds, TestTx, Fixtures
+```
+
+**Namenskonventionen:**
+- `A00_EnvDiagTest` → Gatekeeper (zuerst laufen)
+- `ZZZ_FinalVerificationTest` → Abschluss-Validierung
+
+---
+
+## 📋 Templates: Quick Copy & Paste
+
+### Unit Test (Mock-basiert) - Standard für Services
+
+```java
+@ExtendWith(MockitoExtension.class)
+@DisplayName("Customer Validation Service")
+class CustomerValidationServiceTest {
+    @Mock CustomerRepository repository;
+    @InjectMocks CustomerValidationService service;
+
+    @Test
+    void shouldRejectDuplicateCustomerNumber() {
+        // Given
+        String number = TestIds.uniqueCustomerNumber(); // ✅ Eindeutige ID!
+        when(repository.findByCustomerNumber(number))
+            .thenReturn(Optional.of(new Customer()));
+
+        // When
+        var result = service.validateCustomerNumber(number);
+
+        // Then
+        assertThat(result.isValid()).isFalse();
+        verify(repository).findByCustomerNumber(number);
+    }
+}
+```
+
+### Integration Test (@QuarkusTest) - Nur wenn DB/Events nötig
+
+```java
+@QuarkusTest
+@TestTransaction // ✅ Auto-Rollback nach jedem Test
+@DisplayName("Customer Service Integration")
+class CustomerServiceIntegrationTest {
+    @Inject CustomerService service;
+    @Inject CustomerRepository repository;
+
+    @Test
+    void shouldPersistCustomerWithAuditTrail() {
+        // Given - Eindeutige Test-Daten!
+        var request = CustomerCreateRequest.builder()
+            .customerNumber(TestIds.uniqueCustomerNumber())
+            .companyName("Test AG " + UUID.randomUUID())
+            .build();
+
+        // When
+        var response = service.createCustomer(request);
+
+        // Then - DB + Events + Audit
+        assertThat(repository.findById(response.id())).isNotNull();
+    }
+}
+```
+
+---
+
+## 🔧 Kritische Patterns
+
+### 1. ValidatorFactory Performance (DTO-Tests)
+
+```java
+// ❌ LANGSAM: Factory-Erstellung in @BeforeEach (300ms pro Test!)
+private Validator validator;
+
+@BeforeEach
+void setUp() {
+    ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+    validator = factory.getValidator();
+}
+
+// ✅ SCHNELL: Shared Factory in @BeforeAll (~300ms für ALLE Tests)
+private static ValidatorFactory validatorFactory;
+private Validator validator;
+
+@BeforeAll
+static void setUpFactory() {
+    validatorFactory = Validation.buildDefaultValidatorFactory();
+}
+
+@BeforeEach
+void setUp() {
+    validator = validatorFactory.getValidator();
+}
+
+@AfterAll
+static void tearDownFactory() {
+    if (validatorFactory != null) {
+        validatorFactory.close();
+    }
+}
+```
+
+**Impact:** 22 Tests mit `@BeforeEach` Factory = 7.3s → mit `@BeforeAll` = 0.5s (14x schneller!)
+
+### 2. Eindeutige Test-IDs (PFLICHT!)
+
+```java
+// ❌ NIEMALS statische IDs
+createCustomer("TEST-001"); // Race Conditions, Duplikate!
+
+// ✅ IMMER eindeutige IDs
+createCustomer(TestIds.uniqueCustomerNumber());
+createCustomer("CUST-" + UUID.randomUUID());
+```
+
+**TestIds Utility** (`testsupport/TestIds.java`):
+```java
+public class TestIds {
+    private static final AtomicInteger counter = new AtomicInteger(1000);
+
+    public static String uniqueCustomerNumber() {
+        return "TEST-CUST-" + counter.incrementAndGet() + "-" + UUID.randomUUID().toString().substring(0, 8);
+    }
+}
+```
+
+### 3. JUnit vs Maven Parallel Execution
+
+**Problem:** Maven Surefire `pom.xml` parallel settings werden ignoriert.
+
+**Ursache:** `src/test/resources/junit-platform.properties` überschreibt Maven-Konfiguration!
+
+```properties
+# ❌ BLOCKIERT Maven Surefire parallel execution
+junit.jupiter.execution.parallel.enabled=false
+junit.jupiter.execution.parallel.mode.default=same_thread
+
+# ✅ LÖSUNG: JUnit parallel config auskommentieren/entfernen
+# Lass Maven Surefire die Kontrolle (via pom.xml)
+# junit.jupiter.execution.parallel.enabled=true
+```
+
+**Impact:** Tests liefen 24 Minuten serial → 7 Minuten parallel (70% schneller!)
+
+### 4. Commit-Grenzen bei Transaktionen
+
+```java
+// ❌ Problem: Service liest in neuer TX, sieht Daten nicht
+@Test
+void testRead() {
+    em.persist(customer); // Noch nicht committed!
+    var result = service.findById(customer.getId()); // Leere DB!
+}
+
+// ✅ Lösung: TestTx.committed() wrapper
+@Test
+void testRead() {
+    var id = TestTx.committed(() -> {
+        em.persist(customer);
+        em.flush();
+        return customer.getId();
+    });
+    var result = service.findById(id); // Findet Daten!
+}
+```
+
+**TestTx Utility** (`testsupport/TestTx.java`):
+```java
+@ApplicationScoped
+public class TestTx {
+    @Inject UserTransaction tx;
+
+    public <T> T committed(Callable<T> action) throws Exception {
+        tx.begin();
+        try {
+            T result = action.call();
+            tx.commit();
+            return result;
+        } catch (Exception e) {
+            tx.rollback();
+            throw e;
+        }
+    }
+}
+```
+
+### 5. Relative Assertions (Phase 5C Standard)
+
+```java
+// ❌ Absolut - schlägt fehl bei Pollution
+@Test
+void testFindActive() {
+    createCustomer();
+    assertThat(repository.findAllActive()).hasSize(1);
+}
+
+// ✅ Relativ - robust
+@Test
+void testFindActive() {
+    long before = repository.findAllActive().size();
+    createCustomer();
+    assertThat(repository.findAllActive()).hasSize((int)(before + 1));
+}
+```
+
+### 6. Event-Listener deaktivieren (CI)
+
+**In `application.properties` (test/ci):**
+```properties
+# Listener/NOTIFY blockieren Test-Suite → deaktivieren
+quarkus.arc.selected-alternatives=de.freshplan.infrastructure.pg.TestPgNotifySender
+freshplan.event.listener.enabled=false
+```
+
+---
+
+## ⚙️ CI-Profile & DB-Config
+
+**`application-ci.properties`:**
+```properties
+# DevServices AUS in CI
+quarkus.datasource.devservices.enabled=false
+quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan
+quarkus.datasource.username=freshplan
+quarkus.datasource.password=freshplan
+
+# Flyway: Clean für Determinismus
+quarkus.flyway.clean-at-start=true
+quarkus.flyway.migrate-at-start=true
+quarkus.flyway.locations=classpath:db/migration
+
+# Connection Pool (CI-optimiert)
+quarkus.datasource.jdbc.min-size=2
+quarkus.datasource.jdbc.max-size=5
+
+# Hang-Detection
+quarkus.test.hang-detection-timeout=60s
+```
+
+**Warum `clean-at-start=true`?**
+- Deterministisch (jeder Test startet bei 0)
+- Versuch mit `false`: Tests hängen (Transaction-Deadlocks)
+- Kosten: +2-3s pro @QuarkusTest Boot → akzeptabel
+
+---
+
+## 🏷️ Test-Tags
+
+```java
+@Tag("unit")        // Mock-Tests (schnell)
+@Tag("integration") // @QuarkusTest (langsam, selektiv)
+@Tag("slow")        // Performance-Tests >5s
+@Tag("migrate")     // Legacy-Tests (V2XX Migrations)
+```
+
+**Nutzung:**
+```bash
+# Nur schnelle Unit-Tests
+./mvnw test -DexcludedGroups="integration,slow"
+
+# Nur Integration-Tests
+./mvnw test -Dgroups="integration"
+```
+
+---
+
+## ✅ PR-Checkliste (Test-Aspekte)
+
+- [ ] Unit-Tests für neue Logik (Mockito bevorzugen)
+- [ ] @QuarkusTest nur wo wirklich nötig
+- [ ] Keine hardcoded IDs (nutze `TestIds.unique…()`)
+- [ ] Relative Assertions bei DB-Queries
+- [ ] Tests laufen lokal im CI-Profil
+- [ ] Event-Listener deaktiviert in Tests
+- [ ] Suite-Laufzeit plausibel (<20 Min)
+
+---
+
+## 🚀 Quick Commands
+
 ```bash
 # Einzelner Test
-./mvnw test -Dtest=UserServiceTest#testGetAllUsers
+./mvnw test -Dtest=CustomerServiceTest#shouldValidate
 
 # Alle Tests einer Klasse
-./mvnw test -Dtest=UserServiceTest
+./mvnw test -Dtest=CustomerServiceTest
 
-# Mit Pattern
-./mvnw test -Dtest=*ServiceTest
+# CI-Modus (wie Pipeline)
+./mvnw -q -Dquarkus.profile=ci test
 
-# Mit Debug-Output
-./mvnw test -Dtest=UserServiceTest -X
+# Nur schnelle Tests
+./mvnw test -DexcludedGroups="integration,slow"
+
+# Langsamste Tests finden
+./mvnw test | grep "Time elapsed" | sort -k4 -n -r | head -10
 ```
 
-### Debug-Helper für Tests
+---
 
-Erstelle diese Utility-Klasse in `src/test/java/de/freshplan/test/util/`:
+## 🔥 Häufige Fehler → Quick-Fix
 
-```java
-package de.freshplan.test.util;
+| Fehler | Ursache | Lösung |
+|--------|---------|--------|
+| `duplicate key TEST-001` | Statische IDs | `TestIds.uniqueCustomerNumber()` |
+| `Failed to start quarkus` | DevServices/Listener | CI-Profile prüfen, Events aus |
+| Test sieht keine Daten | Commit-Grenze | `TestTx.committed(…)` wrapper |
+| Mock nicht aufgerufen | Feature-Flag/Pfad | Preconditions checken |
+| Tests hängen | Event-Listener aktiv | `freshplan.event.listener.enabled=false` |
+| Tests laufen serial trotz `pom.xml` | `junit-platform.properties` override | JUnit parallel config entfernen/auskommentieren |
+| DTO-Tests mit Validator zu langsam | `ValidatorFactory` in `@BeforeEach` | Factory nach `@BeforeAll` static verschieben |
 
-public class TestDebugHelper {
-    private static final boolean DEBUG_ENABLED = 
-        Boolean.parseBoolean(System.getProperty("test.debug", "false")) ||
-        System.getenv("CI") != null;
-    
-    public static void debug(String format, Object... args) {
-        if (DEBUG_ENABLED) {
-            System.out.printf("[DEBUG] " + format + "%n", args);
-        }
-    }
-    
-    public static void debugEntity(String label, Object entity) {
-        if (DEBUG_ENABLED) {
-            System.out.printf("[DEBUG] %s: %s%n", label, 
-                entity != null ? entity.toString() : "null");
-        }
-    }
-    
-    public static void debugException(String label, Exception e) {
-        if (DEBUG_ENABLED) {
-            System.out.printf("[DEBUG] %s: %s%n", label, e.getMessage());
-            e.printStackTrace(System.out);
-        }
-    }
-}
-```
+---
 
-### Verwendung in Tests
+## 📚 Weiterführend
 
-```java
-import static de.freshplan.test.util.TestDebugHelper.*;
+- **Backend Debug Plan:** `BACKEND_TEST_DEBUG_PLAN.md`
+- **Master Plan V5:** `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
+- **Quarkus Testing:** https://quarkus.io/guides/getting-started-testing
 
-@Test
-void problematicTest() {
-    // Setup
-    debug("Setting up test data");
-    var user = createTestUser();
-    debugEntity("Created user", user);
-    
-    // Execution
-    debug("Calling service method");
-    try {
-        var result = service.updateUser(user);
-        debugEntity("Update result", result);
-    } catch (Exception e) {
-        debugException("Service call failed", e);
-        throw e;
-    }
-    
-    // Verification
-    debug("Verifying results");
-    assertThat(result).isNotNull();
-}
-```
+---
 
-### Aktivierung
-
-```bash
-# Lokal mit Debug
-./mvnw test -Dtest.debug=true
-
-# In CI wird automatisch aktiviert (CI env variable)
-```
-
-## Häufige Probleme und Lösungen
-
-### 1. Mock gibt immer dasselbe zurück
-
-**Problem:**
-```java
-when(mapper.toResponse(any())).thenReturn(response1);
-// Alle Aufrufe geben response1 zurück
-```
-
-**Lösung:**
-```java
-when(mapper.toResponse(any())).thenAnswer(invocation -> {
-    User user = invocation.getArgument(0);
-    return createResponseFor(user);
-});
-```
-
-### 2. Entity wird nicht aktualisiert
-
-**Problem:**
-```java
-repository.persist(entity);
-var loaded = repository.findById(entity.getId());
-// loaded hat alte Werte
-```
-
-**Lösung:**
-```java
-repository.persist(entity);
-repository.flush(); // Force DB write
-em.clear();         // Clear cache
-var loaded = repository.findById(entity.getId());
-```
-
-### 3. Transactional Test schlägt fehl
-
-**Problem:**
-```java
-// Test ohne @Transactional
-service.updateUser(user); // Fails
-```
-
-**Lösung:**
-```java
-@Test
-@Transactional  // Wichtig!
-void testUpdate() {
-    service.updateUser(user);
-}
-```
-
-## CI-spezifische Tipps
-
-1. **Immer flush() nach persist()**
-2. **@Transactional bei DB-Tests**
-3. **Timeouts großzügiger setzen**
-4. **Debug-Output nur in CI**
-
-## Nützliche Maven-Befehle
-
-```bash
-# Nur fehlgeschlagene Tests wiederholen
-./mvnw test -Dsurefire.rerunFailingTestsCount=2
-
-# Tests parallel ausführen
-./mvnw test -Dparallel=methods -DthreadCount=4
-
-# Bestimmte Tests überspringen
-./mvnw test -Dtest=!LongRunningTest
-
-# Mit mehr Speicher
-./mvnw test -DargLine="-Xmx1024m"
-```
+**💡 Faustregel:** Mock first, @QuarkusTest only when necessary!

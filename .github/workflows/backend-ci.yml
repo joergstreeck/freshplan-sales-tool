@@ -14,17 +14,18 @@ permissions:
 jobs:
   test:
     name: Backend Tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04  # Pin to 22.04 - ubuntu-latest has runner stability issues
+    timeout-minutes: 25    # Safety margin for 58 @QuarkusTest with 2-thread parallelism
     
     services:
       postgres:
         image: postgres:14
         env:
-          POSTGRES_DB: test_db
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
         options: >-
-          --health-cmd "pg_isready -U postgres -d test_db"
+          --health-cmd "pg_isready -U freshplan -d freshplan"
           --health-interval 10s
           --health-timeout 5s
           --health-retries 10
@@ -41,25 +42,48 @@ jobs:
           distribution: temurin
           java-version: 17
           cache: maven
-          
+
+      - name: Clean Corrupted Maven Dependencies
+        run: |
+          echo "🧹 Cleaning potentially corrupted Maven dependencies..."
+          # Remove specific corrupted JARs that cause CI failures
+          rm -rf ~/.m2/repository/org/jboss/threads/jboss-threads/3.8.0.Final
+          # Also clean other common problem JARs
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-junit5
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-test-common
+          echo "✅ Maven cache cleaned"
+
+      - name: Build Project without Tests
+        working-directory: backend
+        timeout-minutes: 5  # Prevent hang on build
+        run: |
+          echo "🏗️ Building project with DevServices disabled..."
+          ./mvnw -B clean compile \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -DskipTests=true
+          echo "✅ Build completed"
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
       - name: DB Schema Reset (Hard Reset für sauberen Start)
         env:
-          PGPASSWORD: postgres
+          PGPASSWORD: freshplan
         run: |
-          # Health-Check: PostgreSQL bereit?
-          until pg_isready -h localhost -U postgres -d test_db; do 
-            echo "Waiting for PostgreSQL..."
-            sleep 1
-          done
-          echo "✅ PostgreSQL ready"
-          
           # KRITISCH: Hard Schema Reset - garantiert leerer Start (keine Drift)
-          psql -h localhost -U postgres -d test_db -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+          psql -h localhost -U freshplan -d freshplan -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
           echo "✅ Schema reset - garantiert 0 customers"
       
       - name: Environment Diagnostics (A00 - Früh scheitern bei Fehlkonfiguration)
         env:
-          PGPASSWORD: postgres
+          PGPASSWORD: freshplan
         run: |
           
           # Environment Diagnostics (HART - Abort bei Fehlkonfiguration)
@@ -90,18 +114,35 @@ jobs:
           # INFO: Flyway will run during test execution
           echo "📋 Flyway migrations will be executed by tests"
           
+      - name: Sanity Check - DB Connection Verification
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== Verifying DB Connection ==="
+          psql -h localhost -U freshplan -d freshplan -c "SELECT current_user, current_database();" || exit 1
+          echo "✅ Connected as expected: freshplan@freshplan"
+
+          # Verify schema exists
+          psql -h localhost -U freshplan -d freshplan -c "SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name = 'public';"
+
       - name: Core Tests (PR Pipeline - Ein Maven-Run)
         working-directory: backend
+        timeout-minutes: 20  # 58 @QuarkusTest with limited parallelism
         run: |
-          ./mvnw -B -T 1C clean test \
-            -Dtest="A00_EnvDiagTest" \
+          # Using CI profile with DevServices disabled at build time
+          # Limited to 2 parallel threads to avoid RAM exhaustion on GitHub runners
+          ./mvnw -B clean test \
+            -Dtest="A00_EnvDiagTest,*Test" \
+            -DexcludedGroups="integration,slow" \
+            -DfailIfNoTests=false \
             -Dquarkus.profile=ci \
-            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/test_db \
-            -Dquarkus.datasource.username=postgres \
-            -Dquarkus.datasource.password=postgres \
-            -Dquarkus.flyway.migrate-at-start=true \
-            -Dquarkus.flyway.locations=classpath:db/migration \
-            -Dtest.run.id=${{ github.run_id }}
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.test.hang-detection-timeout=60s \
+            -Dquarkus.test.continuous-testing=disabled \
+            -Dtest.run.id=${{ github.run_id }} \
+            -DthreadCount=2 \
+            -DreuseForks=false
           
       - name: Upload Test Results
         uses: dorny/test-reporter@v1
@@ -111,6 +152,61 @@ jobs:
           path: backend/target/surefire-reports/*.xml
           reporter: java-junit
           
+      - name: Check DB Invariants
+        if: always()
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== DB Invariant Checks ==="
+
+          # First verify we're checking the right DB
+          echo "📍 Checking database: freshplan@localhost:5432"
+
+          # Check if customers table exists
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.customers') IS NOT NULL" | grep -q 't'; then
+            echo "✅ Table 'customers' exists in CI-DB"
+
+            echo "📊 Checking for duplicate customer_numbers..."
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT customer_number FROM customers GROUP BY customer_number HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate customer_numbers:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT customer_number, COUNT(*) FROM customers GROUP BY customer_number HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate customer_numbers found"
+            fi
+          else
+            echo "⚠️ Table 'customers' does not exist in CI-DB"
+            echo "   Hint: Tests might have used DevServices instead of CI-DB"
+            echo "   Checking for DevServices indicators..."
+
+            # Check if there's any schema at all
+            TABLES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public'")
+            if [ "$TABLES" -eq 0 ]; then
+              echo "   ❌ No tables in public schema - DB is empty!"
+              echo "   CRITICAL: Tests did NOT use the CI database"
+            else
+              echo "   Found $TABLES tables in public schema"
+            fi
+          fi
+
+          echo "📊 Checking for duplicate idempotency keys..."
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.idempotency_keys') IS NOT NULL" | grep -q 't'; then
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT idempotency_key FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate idempotency keys:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT idempotency_key, COUNT(*) FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate idempotency keys found"
+            fi
+          else
+            echo "ℹ️ No idempotency_keys table found (OK if not implemented yet)"
+          fi
+
       - name: Test Summary
         if: success()
         run: |

@@ -6,6 +6,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -15,6 +16,7 @@ import org.junit.jupiter.params.provider.ValueSource;
  * uppercase and policies work correctly.
  */
 @QuarkusTest
+@Tag("integration")
 public class RlsRoleConsistencyTest {
 
   @Inject EntityManager em;

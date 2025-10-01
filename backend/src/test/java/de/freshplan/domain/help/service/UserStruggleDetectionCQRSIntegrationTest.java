@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  * Struggle Detection Logic in beiden Modi - Session Management und Cleanup
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestProfile(UserStruggleDetectionCQRSIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.1: UserStruggleDetectionService CQRS Integration")
 class UserStruggleDetectionCQRSIntegrationTest {

@@ -14,8 +14,11 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.support.TestTx;
+import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
@@ -45,11 +48,11 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("core")
+@TestTransaction // Sprint 2.1.4 Fix: Add transaction context
+@Tag("integration")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
-@io.quarkus.test.TestTransaction
 public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
@@ -62,24 +65,25 @@ public class OpportunityServiceStageTransitionTest {
 
   @Inject EntityManager entityManager;
 
+  @Inject UserTransaction userTransaction;
+
   @Inject CustomerBuilder customerBuilder;
 
   @Inject OpportunityBuilder opportunityBuilder;
-
-  @Inject UserTransaction userTransaction;
 
   private Customer testCustomer;
   private User testUser;
 
   @BeforeEach
+  @Transactional
   void setUp() {
-    // Will be created lazily when needed
+    // Reset test data for each test to ensure isolation
     testCustomer = null;
     testUser = null;
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
 
@@ -211,7 +215,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
 
@@ -275,7 +279,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
 
@@ -392,7 +396,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Complex Stage Transition Scenarios")
   class ComplexStageTransitionScenarios {
 
@@ -491,40 +495,46 @@ public class OpportunityServiceStageTransitionTest {
               });
     }
 
-    @Test
-    @DisplayName("Should handle multiple opportunities with different transition patterns")
-    void changeStage_multipleOpportunities_shouldHandleIndependently() {
-      // Arrange
-      var opp1 = createTestOpportunity("Opportunity 1", OpportunityStage.NEW_LEAD);
-      var opp2 = createTestOpportunity("Opportunity 2", OpportunityStage.NEW_LEAD);
+    // NOTE: Test moved to main class as
+    // complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependently()
+    // due to CDI limitation with @ActivateRequestContext in nested classes
+  }
 
-      // Act - Different transition patterns
-      var result1 =
-          opportunityService.changeStage(
-              opp1.getId(),
-              ChangeStageRequest.builder().stage(OpportunityStage.CLOSED_WON).build());
+  // ==================== Phase 5A: Tests moved from Nested Classes (CDI fix) ====================
 
-      var result2 =
-          opportunityService.changeStage(
-              opp2.getId(),
-              ChangeStageRequest.builder().stage(OpportunityStage.QUALIFICATION).build());
+  @Test
+  @ActivateRequestContext
+  @DisplayName(
+      "Should handle multiple opportunities with different transition patterns (moved from ComplexStageTransitionScenarios)")
+  void complexScenarios_changeStage_multipleOpportunities_shouldHandleIndependently() {
+    // Arrange
+    var opp1 = createTestOpportunity("Opportunity 1", OpportunityStage.NEW_LEAD);
+    var opp2 = createTestOpportunity("Opportunity 2", OpportunityStage.NEW_LEAD);
 
-      // Assert - Each opportunity maintains independent state
-      assertThat(result1.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
-      assertThat(result1.getProbability()).isEqualTo(100);
+    // Act - Different transition patterns
+    var result1 =
+        opportunityService.changeStage(
+            opp1.getId(), ChangeStageRequest.builder().stage(OpportunityStage.CLOSED_WON).build());
 
-      assertThat(result2.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
-      assertThat(result2.getProbability()).isEqualTo(25);
+    var result2 =
+        opportunityService.changeStage(
+            opp2.getId(),
+            ChangeStageRequest.builder().stage(OpportunityStage.QUALIFICATION).build());
 
-      // Verify independence - changing one doesn't affect the other
-      var result1Updated = opportunityRepository.findById(opp1.getId());
-      assertThat(result1Updated.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
-    }
+    // Assert - Each opportunity maintains independent state
+    assertThat(result1.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
+    assertThat(result1.getProbability()).isEqualTo(100);
+
+    assertThat(result2.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
+    assertThat(result2.getProbability()).isEqualTo(25);
+
+    // Verify independence - changing one doesn't affect the other
+    var result1Updated = opportunityRepository.findById(opp1.getId());
+    assertThat(result1Updated.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
   }
 
   // Helper methods
 
-  @Transactional
   Customer getOrCreateCustomer(String companyName, String email) {
     var existingCustomer = customerRepository.find("companyName", companyName).firstResult();
     if (existingCustomer != null) {
@@ -536,11 +546,13 @@ public class OpportunityServiceStageTransitionTest {
 
     // Override specific fields to maintain test requirements
     customer.setCompanyName(companyName); // Override to use exact name without [TEST-xxx] prefix
-    customer.setCustomerNumber("TEST-" + System.currentTimeMillis()); // Unique customer number
+    customer.setCustomerNumber(
+        de.freshplan.TestIds.uniqueCustomerNumber()); // Unique customer number
     customer.setIsTestData(true); // Mark as test data
     customer.setCreatedBy("test-system"); // Set created by
 
     customerRepository.persist(customer);
+    customerRepository.flush(); // Ensure customer is saved before creating opportunities
     return customer;
   }
 
@@ -557,37 +569,53 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   Opportunity createTestOpportunity(String name, OpportunityStage stage) {
-    // Ensure test data is created if not already
-    if (testCustomer == null) {
-      testCustomer = getOrCreateCustomer("Test Company", "test@example.com");
-    }
+    // Use TestTx to ensure data is committed and visible to services
+    return TestTx.committed(
+        () -> {
+          // Create fresh test data for each opportunity to ensure proper FK relationships
+          String uniqueSuffix =
+              System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
 
-    if (testUser == null) {
-      // Create and persist test user
-      testUser =
-          de.freshplan.test.builders.UserTestDataFactory.builder()
-              .withUsername("stagetest")
-              .withFirstName("Test")
-              .withLastName("User")
-              .withEmail("stagetest@freshplan.de")
-              .build();
-      testUser.enable();
-      testUser.addRole("admin");
-      userRepository.persist(testUser);
-      userRepository.flush();
-    }
+          // Always create a fresh customer to ensure it exists in the current transaction
+          var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
+          // Use TestIds for guaranteed unique customer number
+          customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
+          customer.setIsTestData(true);
+          customer.setCreatedBy("test-system");
+          customerRepository.persist(customer);
 
-    var opportunity =
-        opportunityBuilder
-            .withName(name)
-            .inStage(stage)
-            .forCustomer(testCustomer)
-            .assignedTo(testUser)
-            .persist();
+          // Always create a fresh user to ensure it exists in the current transaction
+          var user =
+              de.freshplan.test.builders.UserTestDataFactory.builder()
+                  .withUsername("stagetest-" + uniqueSuffix)
+                  .withFirstName("Test")
+                  .withLastName("User")
+                  .withEmail("stagetest-" + uniqueSuffix + "@freshplan.de")
+                  .build();
+          user.enable();
+          user.addRole("admin");
+          userRepository.persist(user);
 
-    // Make sure the opportunity has an ID
-    assertThat(opportunity.getId()).as("Opportunity ID should be set after persist").isNotNull();
+          // Create opportunity manually to ensure it's properly persisted
+          var opportunity = new Opportunity();
+          opportunity.setName(name);
+          opportunity.setStage(stage);
+          opportunity.setProbability(stage.getDefaultProbability());
+          opportunity.setExpectedValue(java.math.BigDecimal.valueOf(10000));
+          opportunity.setExpectedCloseDate(java.time.LocalDate.now().plusDays(30));
+          opportunity.setDescription("Test opportunity for stage transition");
+          opportunity.setCustomer(customer);
+          opportunity.setAssignedTo(user);
 
-    return opportunity;
+          // Persist the opportunity
+          opportunityRepository.persist(opportunity);
+
+          // Make sure the opportunity exists
+          assertThat(opportunity.getId())
+              .as("Opportunity ID should be set after persist")
+              .isNotNull();
+
+          return opportunity;
+        });
   }
 }

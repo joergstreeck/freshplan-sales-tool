@@ -7,6 +7,7 @@ import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
  * correctness with cache annotations present.
  */
 @QuarkusTest
+@Tag("integration")
 class SettingsServiceCachingTest {
 
   @Inject SettingsService service;

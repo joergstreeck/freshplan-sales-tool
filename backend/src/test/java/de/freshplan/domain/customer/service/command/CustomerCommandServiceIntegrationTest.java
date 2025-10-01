@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
  * <p>This is critical for safe switching via feature flag.
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 class CustomerCommandServiceIntegrationTest {
 
   @Inject CustomerService originalService;
@@ -86,6 +86,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void createCustomer_withNullRequest_shouldFailSameWay() {
     // Both services should throw the same exception for null request
     try {
@@ -104,6 +105,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void createCustomer_withNullCreatedBy_shouldFailSameWay() {
     // Given
     CreateCustomerRequest request =
@@ -191,6 +193,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void updateCustomer_withNullId_shouldFailSameWay() {
     // Given
     UpdateCustomerRequest request =
@@ -531,6 +534,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void addChildCustomer_withNonExistentParent_shouldFail() {
     // Given - create only a child customer
     CreateCustomerRequest childRequest =
@@ -553,6 +557,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void addChildCustomer_withNonExistentChild_shouldFail() {
     // Given - create only a parent customer
     CreateCustomerRequest parentRequest =
@@ -834,6 +839,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void mergeCustomers_withNonExistentTarget_shouldFailSameWay() {
     // Given - create only source customer
     CreateCustomerRequest sourceRequest =
@@ -858,6 +864,7 @@ class CustomerCommandServiceIntegrationTest {
   }
 
   @Test
+  @TestTransaction
   void mergeCustomers_withNonExistentSource_shouldFailSameWay() {
     // Given - create only target customer
     CreateCustomerRequest targetRequest =

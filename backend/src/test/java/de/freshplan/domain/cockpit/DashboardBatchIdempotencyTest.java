@@ -7,6 +7,7 @@ import de.freshplan.infrastructure.pg.TestPgNotifySender;
 import de.freshplan.modules.leads.events.FollowUpProcessedEvent;
 import io.quarkus.test.junit.QuarkusTest;
 import io.vertx.core.json.JsonObject;
+import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
 import jakarta.transaction.UserTransaction;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,6 +25,8 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.1 P1 - BATCH Event Key Robustheit
  */
 @QuarkusTest
+@ActivateRequestContext // Sprint 2.1.4: Fix transaction collision with UserTransaction
+@Tag("integration")
 class DashboardBatchIdempotencyTest {
 
   @Inject DashboardEventPublisher publisher;

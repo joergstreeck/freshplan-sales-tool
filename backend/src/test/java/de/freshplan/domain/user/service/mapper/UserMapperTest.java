@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * @author FreshPlan Team
  * @since 2.0.0 - Updated in Migration Phase 4
  */
-@Tag("core")
+@Tag("unit")
 class UserMapperTest {
 
   private UserMapper mapper;

@@ -3,8 +3,8 @@ package de.freshplan.domain.customer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.*;
-import de.freshplan.test.BaseIntegrationTest;
 import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.utils.BaseIntegrationTest;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("performance")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -54,7 +54,7 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
             .withIndustry(Industry.SONSTIGE)
             .build();
     // Override auto-generated values
-    customer.setCustomerNumber("PERF-TEST-001");
+    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
     customer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(customer);
     testCustomerId = customer.getId();

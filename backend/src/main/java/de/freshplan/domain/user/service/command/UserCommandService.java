@@ -259,8 +259,11 @@ public class UserCommandService {
     // Normalize and validate all roles in one step - exact copy
     List<String> normalizedRoles = RoleValidator.normalizeAndValidateRoles(request.getRoles());
 
+    // Deduplicate roles to avoid unique constraint violation (Phase 5B.1 fix)
+    List<String> uniqueRoles = normalizedRoles.stream().distinct().toList();
+
     // Update user roles
-    user.setRoles(normalizedRoles);
+    user.setRoles(uniqueRoles);
     userRepository.flush();
 
     LOG.infof("User roles updated successfully for ID: %s. New roles: %s", id, normalizedRoles);

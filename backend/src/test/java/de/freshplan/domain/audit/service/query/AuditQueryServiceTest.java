@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  * @since 2.0.0
  */
 @ExtendWith(MockitoExtension.class)
-@Tag("migrate")
+@Tag("unit")
 class AuditQueryServiceTest {
 
   @Mock private AuditRepository auditRepository;
