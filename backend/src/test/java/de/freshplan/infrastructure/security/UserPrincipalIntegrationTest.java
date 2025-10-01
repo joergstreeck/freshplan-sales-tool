@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
  * Integration tests for UserPrincipal class. These tests call the actual UserPrincipal methods to
  * increase coverage.
  */
-@Tag("migrate")
+@Tag("unit")
 class UserPrincipalIntegrationTest {
 
   @Nested

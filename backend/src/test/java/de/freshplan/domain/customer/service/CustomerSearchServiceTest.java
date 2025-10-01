@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
  * <p>Consolidates: BasicTest + FilterTest + SortTest (34 tests total)
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @DisplayName("CustomerSearchService - Core Functionality")
 class CustomerSearchServiceTest {
 

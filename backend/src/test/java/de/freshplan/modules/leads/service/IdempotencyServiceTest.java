@@ -8,9 +8,11 @@ import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /** Integration tests for IdempotencyService. Sprint 2.1.4: Lead Deduplication & Data Quality */
 @QuarkusTest
+@Tag("integration")
 class IdempotencyServiceTest {
 
   @Inject IdempotencyService idempotencyService;

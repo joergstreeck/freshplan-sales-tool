@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Pure unit test for CustomerResource delegation logic using reflection. Tests feature flag
@@ -26,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("CustomerResource Delegation Unit Tests")
+@Tag("unit")
 class CustomerResourceDelegationTest {
 
   @Mock private CustomerService customerService;

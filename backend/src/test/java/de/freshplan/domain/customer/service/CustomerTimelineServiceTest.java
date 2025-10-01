@@ -34,7 +34,7 @@ import org.mockito.ArgumentCaptor;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})

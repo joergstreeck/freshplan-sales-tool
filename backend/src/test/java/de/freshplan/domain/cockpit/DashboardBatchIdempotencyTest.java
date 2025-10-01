@@ -16,6 +16,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Test für BATCH-Event Idempotency-Key Stabilität. Verifiziert Minute-Boundary Handling und
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @ActivateRequestContext // Sprint 2.1.4: Fix transaction collision with UserTransaction
+@Tag("integration")
 class DashboardBatchIdempotencyTest {
 
   @Inject DashboardEventPublisher publisher;

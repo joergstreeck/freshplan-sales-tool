@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14 - Integration Tests
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 @TestProfile(CustomerCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",

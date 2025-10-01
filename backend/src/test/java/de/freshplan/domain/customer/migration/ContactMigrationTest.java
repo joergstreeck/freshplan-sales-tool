@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
  * migrations create the correct database structure.
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @DisplayName("Contact Migration Tests")
 public class ContactMigrationTest {
 

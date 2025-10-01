@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Tests SettingsService with cache annotations. Sprint 1.4: Foundation Quick-Wins - Cache
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
  * correctness with cache annotations present.
  */
 @QuarkusTest
+@Tag("integration")
 class SettingsServiceCachingTest {
 
   @Inject SettingsService service;

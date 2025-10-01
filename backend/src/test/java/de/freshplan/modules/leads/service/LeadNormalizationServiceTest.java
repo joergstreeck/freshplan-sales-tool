@@ -16,6 +16,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Pure Mockito unit tests for LeadNormalizationService. Sprint 2.1.4: Test Migration for CI
@@ -23,6 +24,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("LeadNormalizationService Unit Tests")
+@Tag("integration")
 class LeadNormalizationServiceTest {
 
   @Mock private EntityManager entityManager;

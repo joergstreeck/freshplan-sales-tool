@@ -14,6 +14,7 @@ import jakarta.transaction.UserTransaction;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Test für NOTIFY Payload Truncation. Stellt sicher, dass große Payloads korrekt gekürzt werden.
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @ActivateRequestContext // Sprint 2.1.4: Fix transaction collision with UserTransaction
+@Tag("integration")
 class DashboardTruncationTest {
 
   @Inject DashboardEventPublisher publisher;

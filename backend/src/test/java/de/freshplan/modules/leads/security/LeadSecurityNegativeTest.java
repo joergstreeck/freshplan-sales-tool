@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Negative Security Test Cases für das Lead-Modul (FP-236).
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.*;
 @QuarkusTest
 @DisplayName("Lead Negative Security Tests - FP-236")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("integration")
 public class LeadSecurityNegativeTest {
 
   @Inject DataSource dataSource;

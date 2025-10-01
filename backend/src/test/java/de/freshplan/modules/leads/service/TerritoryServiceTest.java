@@ -11,6 +11,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Tests for TerritoryService. Sprint 2.1: Validates territory management without geographical
@@ -20,6 +21,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @TestTransaction // Sprint 2.1.4 Fix: Add transaction context for all test methods
+@Tag("integration")
 class TerritoryServiceTest {
 
   @Inject TerritoryService territoryService;

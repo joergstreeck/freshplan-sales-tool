@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
  * @see TEST_DEBUGGING_GUIDE.md
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @DisplayName("Permission Entity Persistence Tests")
 class PermissionTest {
 

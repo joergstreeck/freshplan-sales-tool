@@ -13,12 +13,14 @@ import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Test class for CQRS Light Event Publisher Validates event publishing with <200ms performance
  * target
  */
 @QuarkusTest
+@Tag("integration")
 public class EventPublisherTest {
 
   @Inject EventPublisher eventPublisher;

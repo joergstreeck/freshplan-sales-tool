@@ -22,7 +22,7 @@ import org.junit.jupiter.api.Test;
  * conditions or duplicate entries.
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 class PermissionHelperPgTest {
 
   @Inject PermissionHelperPg permissionHelper;

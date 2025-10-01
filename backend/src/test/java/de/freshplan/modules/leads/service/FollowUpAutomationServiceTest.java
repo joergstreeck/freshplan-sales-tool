@@ -19,6 +19,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Tests für T+3/T+7 Follow-up Automation Service
@@ -28,6 +29,7 @@ import org.mockito.ArgumentCaptor;
  */
 @QuarkusTest
 @TestTransaction
+@Tag("integration")
 class FollowUpAutomationServiceTest {
 
   @Inject FollowUpAutomationService followUpService;

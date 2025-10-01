@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Test für AFTER_COMMIT Pattern. Stellt sicher, dass Events nur nach erfolgreicher Transaktion
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @ActivateRequestContext // Sprint 2.1.4: Fix transaction collision with UserTransaction
+@Tag("integration")
 class DashboardAfterCommitTest {
 
   @Inject DashboardEventPublisher publisher;

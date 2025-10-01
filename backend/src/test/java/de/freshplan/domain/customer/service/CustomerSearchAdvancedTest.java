@@ -26,7 +26,7 @@ import org.junit.jupiter.api.Test;
  * <p>Consolidates: SmartSortTest + PaginationTest (38 tests total)
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @DisplayName("CustomerSearchService - Advanced Features")
 class CustomerSearchAdvancedTest {
 

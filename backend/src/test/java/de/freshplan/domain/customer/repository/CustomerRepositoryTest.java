@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * delete support, search functionality, hierarchy management, and specialized queries.
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 @TestTransaction // Sprint 2.1.4: Fix ContextNotActiveException
 class CustomerRepositoryTest {
 

@@ -31,7 +31,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @since 2.0.0
  */
 @DisplayName("Opportunity Entity Stage Transition Tests")
-@Tag("core")
+@Tag("unit")
 public class OpportunityEntityStageTest {
 
   private Customer testCustomer;
@@ -55,7 +55,7 @@ public class OpportunityEntityStageTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("unit")
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
 
@@ -159,7 +159,7 @@ public class OpportunityEntityStageTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("unit")
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
 
@@ -197,7 +197,7 @@ public class OpportunityEntityStageTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("unit")
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
 
@@ -252,7 +252,7 @@ public class OpportunityEntityStageTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("unit")
   @DisplayName("Edge Cases and Boundary Tests")
   class EdgeCaseTests {
 

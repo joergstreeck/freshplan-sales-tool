@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import javax.sql.DataSource;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Basic Security Tests für das Lead-Modul (FP-236).
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.*;
 @QuarkusTest
 @DisplayName("Lead Basic Security Tests - FP-236")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@Tag("integration")
 public class LeadSecurityBasicTest {
 
   @Inject DataSource dataSource;

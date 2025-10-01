@@ -14,6 +14,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Tests for Settings Registry Service (Sprint 1.2 PR #2). Verifies hierarchical resolution, ETag
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestTransaction
 @DisplayName("Settings Service Tests")
+@Tag("integration")
 class SettingsServiceTest {
 
   @Inject SettingsService settingsService;

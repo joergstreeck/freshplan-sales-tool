@@ -43,7 +43,7 @@ import org.mockito.quality.Strictness;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@Tag("migrate")
+@Tag("unit")
 class AuditCommandServiceTest {
 
   @Mock private AuditRepository auditRepository;

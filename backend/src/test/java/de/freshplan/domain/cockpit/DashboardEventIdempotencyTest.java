@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Test für Idempotenz der Event-Verarbeitung. Stellt sicher, dass doppelte Events nur einmal
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.1 P0 HOTFIX - Deduplizierung via Caffeine Cache
  */
 @QuarkusTest
+@Tag("integration")
 class DashboardEventIdempotencyTest {
 
   @Inject DashboardEventListener listener;

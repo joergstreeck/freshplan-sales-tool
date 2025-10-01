@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Test;
  * dependencies. IMPORTANT: Verifies that NO write operations are performed.
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 class ContactInteractionQueryServiceTest {
 
   @Inject ContactInteractionQueryService queryService;

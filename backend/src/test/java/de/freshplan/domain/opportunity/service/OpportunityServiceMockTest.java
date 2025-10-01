@@ -40,7 +40,7 @@ import org.mockito.ArgumentCaptor;
  * <p>Diese vereinfachte Version testet die Core Business Logic ohne echte Datenbankzugriffe.
  */
 @QuarkusTest
-@Tag("core")
+@Tag("integration")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})

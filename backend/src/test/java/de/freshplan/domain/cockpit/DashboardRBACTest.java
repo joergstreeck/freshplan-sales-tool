@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Test für RBAC-Protection im Event-Publisher. Stellt sicher, dass unauthentifizierte Events nur
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestProfile(DashboardRBACTest.RBACDeniedProfile.class)
 @ActivateRequestContext // Sprint 2.1.4: Fix ContextNotActiveException without transaction collision
+@Tag("integration")
 class DashboardRBACTest {
 
   @Inject DashboardEventPublisher publisher;

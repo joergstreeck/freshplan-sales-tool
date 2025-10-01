@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
  * protection, and access control.
  */
 @DisplayName("Contact Security Tests")
-@Tag("migrate")
+@Tag("unit")
 public class ContactSecurityTest {
 
   private Validator validator;

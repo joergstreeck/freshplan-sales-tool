@@ -89,7 +89,7 @@ class OpportunityMapperTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("toResponse - Entity zu DTO Mapping")
   class ToResponseTests {
 
@@ -233,7 +233,7 @@ class OpportunityMapperTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Stage Mapping Tests")
   class StageMappingTests {
 
@@ -267,7 +267,7 @@ class OpportunityMapperTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Value Object Mapping Tests")
   class ValueObjectMappingTests {
 
@@ -331,7 +331,7 @@ class OpportunityMapperTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Data Consistency Tests")
   class DataConsistencyTests {
 
@@ -380,7 +380,7 @@ class OpportunityMapperTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Performance and Isolation Tests")
   class PerformanceAndIsolationTests {
 

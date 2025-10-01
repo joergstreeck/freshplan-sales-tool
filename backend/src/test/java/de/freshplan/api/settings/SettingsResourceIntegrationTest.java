@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Integration tests for Settings REST API (Sprint 1.2 PR #2). Verifies ETag headers, conditional
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 @TestHTTPEndpoint(SettingsResource.class)
 @DisplayName("Settings REST API Integration Tests")
+@Tag("e2e")
 class SettingsResourceIntegrationTest {
 
   private static final String TEST_KEY = "api.test.setting";

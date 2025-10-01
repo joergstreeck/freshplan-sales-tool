@@ -29,7 +29,7 @@ import org.mockito.MockitoAnnotations;
  * handling, and audit functionality.
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestProfile(SecurityDisabledTestProfile.class)
 @TestTransaction // Sprint 2.1.4 Fix: Provide transaction context which includes RequestContext
 class SecurityContextProviderTest {

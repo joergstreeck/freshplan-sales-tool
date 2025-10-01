@@ -49,7 +49,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 @QuarkusTest
 @TestTransaction // Sprint 2.1.4 Fix: Add transaction context
-@Tag("core")
+@Tag("integration")
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -83,7 +83,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Valid Stage Transition Tests")
   class ValidStageTransitionTests {
 
@@ -215,7 +215,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Invalid Stage Transition Tests")
   class InvalidStageTransitionTests {
 
@@ -279,7 +279,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
 
@@ -396,7 +396,7 @@ public class OpportunityServiceStageTransitionTest {
   }
 
   @Nested
-  @Tag("core")
+  @Tag("integration")
   @DisplayName("Complex Stage Transition Scenarios")
   class ComplexStageTransitionScenarios {
 

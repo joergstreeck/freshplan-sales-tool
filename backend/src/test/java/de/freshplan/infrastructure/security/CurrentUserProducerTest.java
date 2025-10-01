@@ -18,7 +18,7 @@ import org.mockito.MockitoAnnotations;
  * Unit tests for CurrentUserProducer class. Tests CDI producer methods for current user
  * information.
  */
-@Tag("migrate")
+@Tag("unit")
 class CurrentUserProducerTest {
 
   private CurrentUserProducer currentUserProducer;

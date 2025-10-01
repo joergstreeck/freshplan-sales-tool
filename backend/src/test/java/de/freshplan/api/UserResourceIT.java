@@ -34,7 +34,7 @@ import org.junit.jupiter.api.TestMethodOrder;
  * @since 2.0.0
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("e2e")
 @TestHTTPEndpoint(UserResource.class)
 @TestMethodOrder(OrderAnnotation.class)
 class UserResourceIT {

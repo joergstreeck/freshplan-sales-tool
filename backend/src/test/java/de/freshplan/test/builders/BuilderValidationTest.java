@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
  * Validation tests for Phase 2A - Builder Core improvements. Verifies that builders generate
  * collision-free IDs and proper test data.
  */
-@Tag("migrate")
+@Tag("unit")
 class BuilderValidationTest {
 
   @Test

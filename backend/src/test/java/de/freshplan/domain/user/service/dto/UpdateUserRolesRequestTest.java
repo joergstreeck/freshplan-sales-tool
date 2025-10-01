@@ -18,7 +18,7 @@ import org.junit.jupiter.api.Test;
  * @author FreshPlan Team
  * @since 2.0.0
  */
-@Tag("migrate")
+@Tag("unit")
 class UpdateUserRolesRequestTest {
 
   private Validator validator;

@@ -41,7 +41,7 @@ import org.junit.jupiter.api.Test;
  * @since Phase 14.3 - Feature Flag Switching Tests
  */
 @QuarkusTest
-@Tag("migrate")
+@Tag("integration")
 @TestProfile(TimelineCQRSTestProfile.class)
 @TestSecurity(
     user = "testuser",

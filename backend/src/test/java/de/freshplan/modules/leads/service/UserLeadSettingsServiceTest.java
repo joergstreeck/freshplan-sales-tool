@@ -13,10 +13,12 @@ import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 // Sprint 2.1.4 Fix: Added @TestTransaction to fix ContextNotActiveException
 @QuarkusTest
 @TestTransaction
+@Tag("integration")
 class UserLeadSettingsServiceTest {
 
   @Inject UserLeadSettingsService service;

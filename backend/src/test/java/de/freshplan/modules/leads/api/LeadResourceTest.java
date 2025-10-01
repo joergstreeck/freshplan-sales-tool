@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Tag;
 
 /**
  * Integration tests for Lead REST API. Tests user-based protection system and lead lifecycle
@@ -33,6 +34,7 @@ import org.junit.jupiter.api.*;
  */
 @QuarkusTest
 @TestHTTPEndpoint(LeadResource.class)
+@Tag("e2e")
 class LeadResourceTest {
 
   @Inject EntityManager em;

@@ -52,7 +52,7 @@ import org.mockito.quality.Strictness;
  */
 @ExtendWith(MockitoExtension.class)
 @MockitoSettings(strictness = Strictness.LENIENT)
-@Tag("core")
+@Tag("unit")
 class OpportunityCommandServiceTest {
 
   @InjectMocks OpportunityCommandService commandService;
