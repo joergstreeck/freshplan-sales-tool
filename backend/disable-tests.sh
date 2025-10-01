@@ -6,6 +6,13 @@ set -e
 MODE=${1:-disable}
 PATTERN=${2:-"*Test.java"}
 
+# Detect OS for sed compatibility
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    SED_INPLACE="sed -i ''"
+else
+    SED_INPLACE="sed -i"
+fi
+
 if [ "$MODE" = "disable" ]; then
     echo "🔴 Disabling all @QuarkusTest tests matching pattern: $PATTERN"
 
@@ -16,10 +23,10 @@ if [ "$MODE" = "disable" ]; then
             if ! grep -q "@Disabled.*DEBUG: Finding hang" "$file"; then
                 # Add import if not present
                 if ! grep -q "import org.junit.jupiter.api.Disabled;" "$file"; then
-                    sed -i '/import org.junit.jupiter.api.Test;/a import org.junit.jupiter.api.Disabled;' "$file"
+                    $SED_INPLACE '/import org.junit.jupiter.api.Test;/a import org.junit.jupiter.api.Disabled;' "$file"
                 fi
                 # Add @Disabled before @QuarkusTest
-                sed -i '/@QuarkusTest/i @Disabled("DEBUG: Finding hang")' "$file"
+                $SED_INPLACE '/@QuarkusTest/i @Disabled("DEBUG: Finding hang")' "$file"
                 echo "  ✓ Disabled: $(basename $file)"
             fi
         fi
@@ -31,7 +38,7 @@ elif [ "$MODE" = "enable" ]; then
     find src/test -name "$PATTERN" -type f | while read file; do
         if grep -q "@Disabled.*DEBUG: Finding hang" "$file"; then
             # Remove the @Disabled annotation
-            sed -i '/@Disabled("DEBUG: Finding hang")/d' "$file"
+            $SED_INPLACE '/@Disabled("DEBUG: Finding hang")/d' "$file"
             echo "  ✓ Enabled: $(basename $file)"
         fi
     done

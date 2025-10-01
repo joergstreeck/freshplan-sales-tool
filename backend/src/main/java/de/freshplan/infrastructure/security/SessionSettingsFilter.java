@@ -115,31 +115,11 @@ public class SessionSettingsFilter implements ContainerRequestFilter {
     try {
       // Try JWT subject first
       if (!jwt.isUnsatisfied() && jwt.get() != null && jwt.get().getSubject() != null) {
-        String userId = jwt.get().getSubject();
-        // Early UUID validation
-        if (userId != null && !userId.isEmpty()) {
-          try {
-            UUID.fromString(userId);
-            return userId;
-          } catch (IllegalArgumentException e) {
-            LOG.warnf("Invalid UUID format in JWT subject: %s", userId);
-            return null;
-          }
-        }
+        return jwt.get().getSubject();
       }
       // Fallback to principal name
       if (identity.getPrincipal() != null) {
-        String userId = identity.getPrincipal().getName();
-        // Validate UUID format
-        if (userId != null && !userId.isEmpty()) {
-          try {
-            UUID.fromString(userId);
-            return userId;
-          } catch (IllegalArgumentException e) {
-            LOG.warnf("Invalid UUID format in principal name: %s", userId);
-            return null;
-          }
-        }
+        return identity.getPrincipal().getName();
       }
     } catch (Exception e) {
       LOG.debug("Could not extract user ID", e);

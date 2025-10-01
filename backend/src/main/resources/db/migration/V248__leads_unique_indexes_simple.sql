@@ -2,6 +2,13 @@
 -- Sprint 2.1.4: Create unique indexes for lead deduplication
 -- SIMPLIFIED VERSION: No CONCURRENTLY to avoid CI hangs
 --
+-- ⚠️ WARNING: This migration is for DEV/TEST environments ONLY
+-- ⚠️ Creates UNIQUE indexes WITHOUT CONCURRENTLY which locks tables
+-- ⚠️ For PRODUCTION deployments:
+-- ⚠️   1. Skip this migration (add to flyway.ignoreMigrationPatterns)
+-- ⚠️   2. Use manual CONCURRENTLY index creation:
+-- ⚠️      CREATE UNIQUE INDEX CONCURRENTLY uq_leads_email_canonical_v2 ...
+--
 -- This migration creates unique indexes for:
 -- 1. Email deduplication
 -- 2. Phone deduplication

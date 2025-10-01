@@ -346,13 +346,18 @@ public class FollowUpAutomationService {
 
   /** Findet Leads die für Follow-up fällig sind Berücksichtigt Stop-the-Clock Perioden */
   private List<Lead> findLeadsForFollowUp(LocalDateTime threshold, int daysAfterCreation) {
-    // TEMPORARY: Simplified query for debugging - remove activity check
     String jpql =
         """
             SELECT l FROM Lead l
             WHERE l.status IN (:activeStatuses)
             AND l.registeredAt <= :threshold
             AND l.clockStoppedAt IS NULL
+            AND NOT EXISTS (
+                SELECT 1 FROM LeadActivity a
+                WHERE a.lead = l
+                AND a.type IN (:meaningfulTypes)
+                AND a.occurredAt > :recentActivity
+            )
             ORDER BY l.registeredAt ASC
             """;
 
@@ -362,27 +367,21 @@ public class FollowUpAutomationService {
     return em.createQuery(jpql, Lead.class)
         .setParameter("activeStatuses", List.of(LeadStatus.REGISTERED, LeadStatus.ACTIVE))
         .setParameter("threshold", threshold)
-        // .setParameter("meaningfulTypes", MEANINGFUL_ACTIVITY_TYPES)  // Removed for debug
-        // .setParameter("recentActivity", recentActivity)  // Removed for debug
+        .setParameter("meaningfulTypes", MEANINGFUL_ACTIVITY_TYPES)
+        .setParameter("recentActivity", recentActivity)
         .setMaxResults(batchSize) // Konfigurierbare Batch-Size
         .getResultList();
   }
 
   /** Prüft ob Lead kürzliche meaningful Aktivität hatte */
   private boolean hasRecentMeaningfulActivity(Lead lead, int daysBack) {
-    // TEMPORARY: LeadActivity table does not exist yet
-    // Return false to always send follow-ups until activity tracking is implemented
-    // TODO: Re-enable when Sprint 2.x implements activity tracking
-    return false; // Always send follow-ups for now
-
-    /* The code below will be re-enabled when LeadActivity table is created:
     LocalDateTime since = LocalDateTime.now(clock).minus(daysBack, ChronoUnit.DAYS);
 
     String jpql =
         """
             SELECT COUNT(a) FROM LeadActivity a
             WHERE a.lead = :lead
-            AND a.activityType IN (:meaningfulTypes)
+            AND a.type IN (:meaningfulTypes)
             AND a.occurredAt > :since
             """;
 
@@ -394,27 +393,18 @@ public class FollowUpAutomationService {
             .getSingleResult();
 
     return count > 0;
-    */
   }
 
   /** Erstellt Follow-up Activity für Tracking */
   private void createFollowUpActivity(Lead lead, String activityCode, String description) {
-    // TEMPORARY: LeadActivity table does not exist yet
-    // This method will create activities when the table is available
-    // TODO: Re-enable when Sprint 2.x implements activity tracking
-    LOG.debugf("Would create activity for lead %s: %s - %s", lead.id, activityCode, description);
-
-    /* The code below will be re-enabled when LeadActivity table is created:
-    LeadActivity activity = new LeadActivity();
-    activity.lead = lead;
-    activity.setType(ActivityType.NOTE); // Follow-ups als NOTE tracken
-    activity.userId = SYSTEM_USER_ID;
-    activity.description = description;
-    activity.setOccurredAt(LocalDateTime.now(clock));
+    LeadActivity activity =
+        LeadActivity.createActivity(lead, SYSTEM_USER_ID, ActivityType.NOTE, description);
+    activity.activityDate = LocalDateTime.now(clock);
     activity.metadata.put("followup_type", activityCode);
     activity.metadata.put("automated", "true");
     activity.persist();
-    */
+
+    LOG.debugf("Created follow-up activity for lead %s: %s", lead.id, activityCode);
   }
 
   /** Baut Template-Daten für Personalisierung */
