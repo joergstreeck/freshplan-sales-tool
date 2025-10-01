@@ -10,7 +10,7 @@ decision_date: "2025-10-01"
 
 # ADR-004: Lead Protection Inline-First Architecture
 
-**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Shared → ADR → 004
+**📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Shared → ADR-004
 
 ## Status
 

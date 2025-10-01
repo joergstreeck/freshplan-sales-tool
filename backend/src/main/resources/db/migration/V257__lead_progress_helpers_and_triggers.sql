@@ -24,7 +24,8 @@ AS $$
 BEGIN
   -- Vertrag §3.2: 6 Monate ab Registrierung
   -- Verwendung: SELECT calculate_protection_until(registered_at, protection_months)
-  RETURN p_registered_at + (p_protection_months || ' months')::INTERVAL;
+  -- Using MAKE_INTERVAL for type-safety (Copilot Review)
+  RETURN p_registered_at + MAKE_INTERVAL(months => p_protection_months);
 END;
 $$;
 

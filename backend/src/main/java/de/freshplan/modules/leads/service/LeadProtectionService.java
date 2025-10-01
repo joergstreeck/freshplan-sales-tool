@@ -259,6 +259,18 @@ public class LeadProtectionService {
   // Sprint 2.1.5: Progressive Profiling & Progress Tracking
   // ============================================================================
 
+  /** Progressive Profiling Stage: Vormerkung (Minimal Company Data). */
+  private static final int STAGE_MIN = 0;
+
+  /** Progressive Profiling Stage: Qualifiziert (Full Qualification). */
+  private static final int STAGE_MAX = 2;
+
+  /** Contract §3.3: 60-day activity standard - belegbarer Fortschritt alle 60 Tage. */
+  private static final int PROGRESS_DEADLINE_DAYS = 60;
+
+  /** Contract §3.3: Warning at 53 days (7 days before 60-day deadline). */
+  private static final int PROGRESS_WARNING_DAYS_BEFORE_DEADLINE = 7;
+
   /**
    * Validate stage transition for Progressive Profiling (Sprint 2.1.5).
    *
@@ -271,8 +283,9 @@ public class LeadProtectionService {
    */
   public boolean canTransitionStage(int currentStage, int newStage) {
     // Stage range validation
-    if (currentStage < 0 || currentStage > 2 || newStage < 0 || newStage > 2) {
-      LOG.errorf("Invalid stage values: current=%d, new=%d", currentStage, newStage);
+    if (currentStage < STAGE_MIN || currentStage > STAGE_MAX || newStage < STAGE_MIN || newStage > STAGE_MAX) {
+      LOG.errorf("Invalid stage values: current=%d, new=%d (valid range: %d-%d)",
+          currentStage, newStage, STAGE_MIN, STAGE_MAX);
       return false;
     }
 
@@ -302,9 +315,13 @@ public class LeadProtectionService {
    * <p>Implements: calculate_protection_until(registered_at, protection_months)
    *
    * @param lead the lead to calculate for
-   * @return protection end date
+   * @return protection end date, or null if lead/registeredAt is null
    */
   public LocalDateTime calculateProtectionUntil(Lead lead) {
+    if (lead == null || lead.registeredAt == null) {
+      LOG.warn("Lead or registeredAt is null, cannot calculate protection date");
+      return null;
+    }
     // Use V257 function logic: registered_at + protection_months
     return lead.registeredAt.plusMonths(lead.protectionMonths);
   }
@@ -324,8 +341,8 @@ public class LeadProtectionService {
       LOG.warn("lastActivityAt is null, cannot calculate progress deadline");
       return null;
     }
-    // Use V257 function logic: last_activity_at + 60 days
-    return lastActivityAt.plusDays(60);
+    // Use V257 function logic: last_activity_at + PROGRESS_DEADLINE_DAYS
+    return lastActivityAt.plusDays(PROGRESS_DEADLINE_DAYS);
   }
 
   /**
@@ -346,7 +363,7 @@ public class LeadProtectionService {
     }
 
     LocalDateTime now = LocalDateTime.now();
-    LocalDateTime warningThreshold = lead.progressDeadline.minusDays(7);
+    LocalDateTime warningThreshold = lead.progressDeadline.minusDays(PROGRESS_WARNING_DAYS_BEFORE_DEADLINE);
 
     return now.isAfter(warningThreshold);
   }
