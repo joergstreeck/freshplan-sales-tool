@@ -12,29 +12,38 @@ import de.freshplan.domain.profile.service.dto.UpdateProfileRequest;
 import de.freshplan.domain.profile.service.exception.DuplicateProfileException;
 import de.freshplan.domain.profile.service.exception.ProfileNotFoundException;
 import de.freshplan.domain.profile.service.mapper.ProfileMapper;
-import io.quarkus.test.InjectMock;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
- * Unit tests for ProfileCommandService. Tests all write operations for profiles with CQRS pattern.
+ * Mock-based tests for ProfileCommandService (migrated from @QuarkusTest).
+ *
+ * <p>Sprint 2.1.4: Migriert von @QuarkusTest zu Mockito (~15s Ersparnis pro Run).
+ *
+ * <p>Testet CQRS Command-Operationen (Create, Update, Delete) ohne DB-Zugriff.
+ *
+ * @see TEST_DEBUGGING_GUIDE.md
  */
-@QuarkusTest
-@Tag("migrate")
-class ProfileCommandServiceTest {
+@ExtendWith(MockitoExtension.class)
+@Tag("unit")
+@DisplayName("ProfileCommandService Mock Tests")
+class ProfileCommandServiceMockTest {
 
-  @Inject ProfileCommandService commandService;
+  @Mock private ProfileRepository profileRepository;
 
-  @InjectMock ProfileRepository profileRepository;
+  @Mock private ProfileMapper profileMapper;
 
-  @InjectMock ProfileMapper profileMapper;
+  @InjectMocks private ProfileCommandService commandService;
 
   private Profile testProfile;
   private ProfileResponse testResponse;
