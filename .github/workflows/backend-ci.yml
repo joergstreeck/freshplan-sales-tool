@@ -14,8 +14,8 @@ permissions:
 jobs:
   test:
     name: Backend Tests
-    runs-on: ubuntu-latest
-    timeout-minutes: 30  # Kill job after 30 minutes to prevent infinite hangs
+    runs-on: ubuntu-22.04  # Pin to 22.04 - ubuntu-latest has runner stability issues
+    timeout-minutes: 15    # Reduced from 30: only 58 @QuarkusTest now (~6-10 min expected)
     
     services:
       postgres:
