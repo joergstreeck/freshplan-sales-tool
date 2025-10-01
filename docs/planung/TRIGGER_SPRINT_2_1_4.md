@@ -22,6 +22,13 @@ updated: "2025-09-28"
 
 **📍 Navigation:** Home → Planung → Sprint 2.1.4
 
+> **⚠️ DATENBANK-MIGRATIONEN BEACHTEN!**
+> Vor Migration-Arbeit IMMER [`MIGRATIONS.md`](MIGRATIONS.md) lesen!
+> - V247: Normalisierungs-Spalten
+> - V10012: UNIQUE Indizes (ursprünglich V248, verschoben nach Test/Dev-Range)
+> - V251-V254: Idempotency, Events, Backdating
+> - Siehe MIGRATIONS.md für vollständige V248 → V10012 Dokumentation
+>
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
 > 2. **Modul-Start (_index.md) → Status prüfen**

@@ -1,6 +1,6 @@
 # Database Migrations Registry
 
-**📍 Navigation:** Backend → MIGRATIONS.md
+**📍 Navigation:** Home → Planung → MIGRATIONS.md
 
 **Status:** Living Document - wird automatisch bei jeder neuen Migration aktualisiert
 
@@ -192,7 +192,7 @@ CREATE UNIQUE INDEX CONCURRENTLY ui_leads_company_city ON leads(company_name_nor
   WHERE company_name_normalized IS NOT NULL AND city IS NOT NULL AND is_canonical = true AND status != 'DELETED';
 ```
 
-**Referenz:** [Sprint 2.1.4 SUMMARY.md](../docs/planung/features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md#-migration-notes)
+**Referenz:** [Sprint 2.1.4 SUMMARY.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md#-migration-notes)
 
 ---
 

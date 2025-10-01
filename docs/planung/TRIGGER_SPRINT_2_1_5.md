@@ -25,10 +25,17 @@ updated: "2025-09-28"
 > Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
 > Siehe: [`backend/TEST_MIGRATION_PLAN.md`](features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md)
 >
+> **⚠️ DATENBANK-MIGRATIONEN BEACHTEN!**
+> Vor Migration-Arbeit IMMER [`MIGRATIONS.md`](MIGRATIONS.md) lesen!
+> - Alle Migrations V1-V257 dokumentiert (inkl. V255-V257 für diesen Sprint)
+> - V10xxx Test/Dev-Range erklärt (Production Skip)
+> - CONCURRENTLY-Regeln für Production
+> - Nächste Nummer: `./scripts/get-next-migration.sh`
+>
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
 > 2. **Modul-Start (_index.md) → Status prüfen**
-> 3. **Backend:** V249 Migration für Lead Protection
+> 3. **Backend:** V255-V257 Migrations für Lead Protection (siehe MIGRATIONS.md)
 > 4. **Frontend:** Progressive Profiling UI (3 Stufen)
 > 5. **Shared:** Vertragliche Anforderungen dokumentieren
 > 6. **Compliance:** Data-Retention-Plan umsetzen
