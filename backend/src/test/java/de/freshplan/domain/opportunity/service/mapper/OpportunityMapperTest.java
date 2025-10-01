@@ -9,8 +9,6 @@ import de.freshplan.domain.user.entity.User;
 import de.freshplan.test.builders.CustomerBuilder;
 import de.freshplan.test.builders.OpportunityBuilder;
 import de.freshplan.test.builders.UserTestDataFactory;
-import io.quarkus.test.junit.QuarkusTest;
-import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -23,20 +21,21 @@ import org.junit.jupiter.api.Test;
 /**
  * Unit Tests für OpportunityMapper - DTO Mapping
  *
+ * <p><b>Migration:</b> Converted from @QuarkusTest to Plain JUnit (saves ~15s per test run)
+ *
  * <p>Tests decken ab: - Entity zu Response DTO Mapping - Null-Handling - Vollständige Feldabbildung
  * - Edge Cases und Grenzfälle
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
-@QuarkusTest
-@Tag("core")
-public class OpportunityMapperTest {
+@Tag("unit")
+@DisplayName("OpportunityMapper - DTO Mapping")
+class OpportunityMapperTest {
 
-  @Inject OpportunityMapper opportunityMapper;
-
-  @Inject CustomerBuilder customerBuilder;
-  @Inject OpportunityBuilder opportunityBuilder;
+  private OpportunityMapper opportunityMapper;
+  private CustomerBuilder customerBuilder;
+  private OpportunityBuilder opportunityBuilder;
 
   private Opportunity testOpportunity;
   private Customer testCustomer;
@@ -44,6 +43,11 @@ public class OpportunityMapperTest {
 
   @BeforeEach
   void setUp() {
+    // Initialize mappers and builders
+    opportunityMapper = new OpportunityMapper();
+    customerBuilder = new CustomerBuilder();
+    opportunityBuilder = new OpportunityBuilder();
+
     // Create test customer using CustomerBuilder
     testCustomer = customerBuilder.withCompanyName("Test Company Ltd.").build();
     testCustomer.setId(UUID.randomUUID());
@@ -119,7 +123,8 @@ public class OpportunityMapperTest {
     void toResponse_minimalEntity_shouldMapRequiredFields() {
       // Arrange
       // Need to provide a customer for the builder
-      Customer mockCustomer = customerBuilder.withCompanyName("[TEST] Mock Customer").persist();
+      Customer mockCustomer = customerBuilder.withCompanyName("[TEST] Mock Customer").build();
+      mockCustomer.setId(UUID.randomUUID());
 
       var minimalOpportunity =
           opportunityBuilder
