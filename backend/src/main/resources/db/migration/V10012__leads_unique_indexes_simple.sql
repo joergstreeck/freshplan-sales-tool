@@ -1,4 +1,4 @@
--- V248__leads_unique_indexes_simple.sql
+-- V10012__leads_unique_indexes_simple.sql
 -- Sprint 2.1.4: Create unique indexes for lead deduplication
 -- SIMPLIFIED VERSION: No CONCURRENTLY to avoid CI hangs
 --
@@ -57,9 +57,10 @@ COMMENT ON INDEX ui_leads_company_city IS
 -- =====================================================
 DO $$
 BEGIN
-  RAISE NOTICE 'V248 Migration completed successfully:';
+  RAISE NOTICE 'V10012 Migration completed successfully:';
   RAISE NOTICE '- Created unique email index';
   RAISE NOTICE '- Created unique phone index';
   RAISE NOTICE '- Created unique company+city index';
   RAISE NOTICE 'All indexes created WITHOUT CONCURRENTLY for CI compatibility';
+  RAISE NOTICE 'This is a TEST/DEV-ONLY migration (V10xxx range)';
 END$$;
