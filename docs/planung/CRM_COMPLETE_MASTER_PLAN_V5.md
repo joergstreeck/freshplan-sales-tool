@@ -213,12 +213,18 @@
   - Vollständige i18n (de/en), 90% Test-Coverage
   - Sprint-Dokumentation gemäß Planungsmethodik.md erstellt
   - Migration: n/a, Tests: OK
-- 2025-09-28 14:30 — **Sprint 2.1.4 Lead Deduplication:** Backend-Integration COMPLETE
-  - V247 Migration für Normalisierung und partielle UNIQUE Indizes erstellt
-  - V250 Migration für Idempotency unique constraint fix
-  - LeadNormalizationService + IdempotencyService implementiert
-  - 39 Tests (8 Idempotency + 31 Normalisierung) alle grün
-  - Migration: V247+V250, Tests: OK
+- 2025-10-01 18:40 — **Sprint 2.1.4 Lead Deduplication & Data Quality:** COMPLETE (PR #123 MERGED)
+  - Normalisierung: email (lowercase), phone (E.164), company (ohne Suffixe)
+  - Partielle UNIQUE Indizes (WHERE status != 'DELETED') für email/phone/company
+  - IdempotencyService: 24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT
+  - LeadNormalizationService mit 31 Tests implementiert
+  - CI Performance Breakthrough: 24min → 7min (70% schneller)
+    - Root Cause 1: junit-platform.properties override (blockierte Maven Surefire parallel)
+    - Root Cause 2: ValidatorFactory in @BeforeEach (56s verschwendet)
+    - Fix: JUnit parallel config entfernt, ValidatorFactory → @BeforeAll static
+  - Test-Migration: @QuarkusTest ↓27% (8 DTO-Tests → Plain JUnit mit Mockito)
+  - Migrations: V247 (normalisierung), V10012 (CI-only indizes), V251-V254 (fixes)
+  - Tests: 1196 Tests in 7m29s, 0 Failures, Performance dokumentiert in TEST_DEBUGGING_GUIDE.md
 - 2025-09-28 16:30 — **Sprint 2.1.5 Documentation:** Vertragliche Anforderungen dokumentiert
   - CONTRACT_MAPPING.md mit vollständiger § 2(8) Abdeckung erweitert
   - Data-Retention-Plan für DSGVO-Compliance erstellt (/docs/compliance/)
@@ -229,8 +235,10 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Implement PUT /api/leads/{id}/registered-at** inkl. Audit & RBAC
-- **Idempotency: Konflikt-Pfad liefert gespeicherte Antwort** (UX-konform)
+- **Backfill-Job für historische Leads:** Normalisierung für bestehende Daten
+- **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance
+- **Production Index Build:** CONCURRENTLY-Indizes für email/phone/company (siehe Runbook)
+- **Idempotency Parallelitätstests:** Race Conditions bei gleichzeitigen Requests
 - Sprint 2.1.5: Protection-Endpoints implementieren (Reminder, Extend, Stop-Clock)
 - Sprint 2.1.5: Retention-Jobs für Pseudonymisierung implementieren
 - Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
@@ -247,6 +255,9 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+- 2025-10-01 — **Test-Performance Optimization:** JUnit Platform Parallel Override entfernt (Maven Surefire steuert Parallelität), ValidatorFactory → @BeforeAll Pattern für DTO-Tests
+- 2025-10-01 — **CI-only Migrations:** V10xxx-Serie für Test-/Dev-Umgebungen (CONCURRENTLY nicht nötig), Prod verwendet CONCURRENTLY-Indizes
+- 2025-10-01 — **Test-Tag-Pyramide:** @Tag("unit")/@Tag("integration") verbindlich, CI excludes integration/slow in PR-Pipeline
 - 2025-09-28 — **Entscheidung: Backdating von `registered_at` für Admin/Manager** mit Audit-Reason eingeführt (konform §2(8)(a))
 - 2025-09-28 — ADR-003: Row-Level-Security für Lead-Management (proposed für Sprint 2.1.6)
 - 2025-09-28 — Scope-Änderung: Fuzzy-Matching von Sprint 2.1.5 zu 2.1.6 verschoben

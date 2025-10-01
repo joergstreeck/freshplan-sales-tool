@@ -76,31 +76,37 @@ updated: "2025-09-27"
 
 ---
 
-### **Sprint 2.1.4 – Lead Deduplication & Data Quality (IN_PROGRESS)**
+### **Sprint 2.1.4 – Lead Deduplication & Data Quality (COMPLETE)**
 **Zentral:** [TRIGGER_SPRINT_2_1_4.md](../../TRIGGER_SPRINT_2_1_4.md)
-**Status:** 🔧 IN_PROGRESS - CI-Fix läuft parallel
+**Status:** ✅ COMPLETE
 **Scope:** Lead Normalization & Deduplication – Phase 1
 
-> **🚨 KRITISCHES CI-PROBLEM (30.09.2025)**
-> 164 von 171 Tests nutzen @QuarkusTest mit echter DB → 20+ Minuten Timeout!
-> **Lösung läuft:** [TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
-
 **Ergebnisse:**
-- Normalisierung: E-Mail, Telefon (E.164), Firmennamen
-- Soft-Delete mit `is_canonical` Flag
-- Idempotency-Key Support für sichere Retries
-- Migration V247 (additive-only) + V248 (CONCURRENTLY Index)
-- Repeatable Migration R__normalize_functions.sql
+- **Normalisierung:** email (lowercase), phone (E.164), company (ohne Suffixe/Rechtsformen)
+- **Partielle UNIQUE Indizes:** WHERE status != 'DELETED' für email/phone/company
+- **IdempotencyService:** 24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT
+- **LeadNormalizationService:** 31 Tests, vollständige Normalisierungs-Logik
+- **CI Performance Breakthrough:** 24min → 7min (70% schneller!)
+  - Root Cause 1: junit-platform.properties override (blockierte Maven Surefire parallel)
+  - Root Cause 2: ValidatorFactory in @BeforeEach (56s verschwendet)
+  - Fix: JUnit parallel config entfernt, ValidatorFactory → @BeforeAll static
+- **Test-Migration:** @QuarkusTest ↓27% (8 DTO-Tests → Plain JUnit mit Mockito)
+
+**Migrations:**
+- V247: Normalisierung (email_normalized, phone_e164, company_name_normalized)
+- V10012: CI-only Indizes (non-CONCURRENTLY für Tests)
+- V251-V254: Idempotency-Fixes, Events published column
+- R__normalize_functions.sql: Repeatable normalization functions
 
 **Deliverables:**
-- Normalized Fields: `email_normalized`, `phone_e164`, `company_name_normalized`
-- Unique Constraints mit WHERE-Klauseln
-- Idempotency Store (24h TTL)
-- RFC7807 Problem Details für 409
-- ⚠️ **TEST_MIGRATION_PLAN.md** - Systematische Umstellung auf Mocks
+- LeadNormalizationService mit 31 Tests
+- IdempotencyService mit 8 Tests + Integration Tests
+- Partielle UNIQUE Constraints mit WHERE-Klauseln
+- RFC7807 Problem Details für 409 Conflicts
+- TEST_DEBUGGING_GUIDE.md mit Performance Patterns aktualisiert
 
 **Artefakte:** [`artefakte/SPRINT_2_1_4/`](./artefakte/SPRINT_2_1_4/)
-**PRs:** #123 (ready for review)
+**PRs:** #123 (merged 2025-10-01)
 
 ---
 

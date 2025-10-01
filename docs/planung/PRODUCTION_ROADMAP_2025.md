@@ -11,12 +11,11 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.1.3 Frontend COMPLETE → 2.1.4 Backend-Integration bereit
-- **Progress:** 9/36 PRs - 25% done (PR #122 merged)
-- **Blockers:** Keine - Sprint 2.1.4 kann starten
-- **Active Branch:** feat/mod02-frontend-sprint-2.1.3 (noch auf main zu mergen)
+- **Current Sprint:** Sprint 2.1.4 COMPLETE → 2.1.5 Protection & Progressive Profiling bereit
+- **Progress:** 10/36 PRs - 28% done (PR #123 merged)
+- **Blockers:** Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
-- **Performance:** ✅ P95 <7ms (Lead-Module) + Frontend 90% Test-Coverage
+- **Performance:** ✅ P95 <7ms (Lead-Module) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -86,17 +85,20 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: ██░░░░░░░░ 20% (1/5 Sprints)
+Progress: ███░░░░░░░ 30% (2/5 Sprints + 2 Sub-Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
-Sprint 2.1.2: Frontend Research       ✅ Complete → PR #112 merged - Research & Patterns für UI
-Sprint 2.1.3: Frontend Lead Mgmt      ✅ Complete → PR #122 merged - Lead Management MVP
-                                     → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
-Sprint 2.2: 03 Kundenmanagement      📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
-Sprint 2.3: 05 Kommunikation         📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
-Sprint 2.4: 01 Cockpit               🟡 Planning → CQRS-optimiert
-Sprint 2.5: 06 Einstellungen         🟡 Planning → Settings Foundation
+Sprint 2.1.2: Frontend Research       ✅ COMPLETE → PR #112 merged - Research & Patterns für UI
+Sprint 2.1.3: Frontend Lead Mgmt      ✅ COMPLETE → PR #122 merged - Lead Management MVP
+                                      → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
+Sprint 2.1.4: Lead Dedup & Quality    ✅ COMPLETE → PR #123 merged - Normalisierung, Idempotenz, CI 24min→7min
+                                      → [Operations Runbook](../operations/lead-deduplication-runbook.md)
+Sprint 2.1.5: Protection & Profiling  📋 Ready → § 2(8) Handelsvertretervertrag + Progressive Profiling
+Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
+Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
+Sprint 2.4: 01 Cockpit                🟡 Planning → CQRS-optimiert
+Sprint 2.5: 06 Einstellungen          🟡 Planning → Settings Foundation
 ```
 
 ### 📋 **Phase 3: Enhancement (4.5 Wochen)**
@@ -108,7 +110,7 @@ Sprint 3.2: 07+08 Hilfe + Admin      🟡 Planning → CAR-Strategy + User Mgmt
 Sprint 3.3: Final Integration        🟡 Planning → Kong/Envoy Policies
 ```
 
-**🎯 GESAMT-FORTSCHRITT: 9/36 PRs ✅ (25% done) | 3.5/15 Wochen | ETA: 2025-05-15**
+**🎯 GESAMT-FORTSCHRITT: 10/36 PRs ✅ (28% done) | 4.0/15 Wochen | ETA: 2025-05-15**
 
 ---
 
