@@ -1,15 +1,19 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-09-21
+**📅 Letzte Aktualisierung:** 2025-10-01
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
-> **🏗️ Architecture Flags (Stand: 2025-09-27)**
+> **🏗️ Architecture Flags (Stand: 2025-10-01)**
 > - **CQRS Light aktiv** (`features.cqrs.enabled=true`), **eine Datenbank**, getrennte Command/Query-Services
 > - **Events:** **PostgreSQL LISTEN/NOTIFY mit Envelope v2** (siehe Event-Backbone unten)
 > - **Security:** Territory = **RLS-Datenraum** (DE/CH/AT), **Lead-Protection = userbasiertes Ownership**
 > - **Settings-Registry (Hybrid JSONB + Registry)** produktiv, ETag + LISTEN/NOTIFY Cache-Invalidation
+> - **Lead Deduplication aktiv** (V247: email/phone/company normalisiert, partielle UNIQUE Indizes)
+> - **Idempotency Service operational** (24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT)
+> - **CI optimiert:** 24min → 7min (70% schneller) - JUnit parallel (Surefire gesteuert), ValidatorFactory @BeforeAll
+> - **Migrations-Hygiene:** Prod-Migrations <V8000, **V10xxx** = Test/Dev-only (z.B. V10012 Indizes ohne CONCURRENTLY)
 > - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
 
 ---
@@ -91,7 +95,18 @@ MODULE-STRUKTUR (Business-Value-orientiert):
 
 🔍 MODUL 02 - NEUKUNDENGEWINNUNG (Lead-Management):
   Purpose: Lead-Capture + Multi-Contact-Workflows + Sample-Management
-  Status: ✅ PRODUCTION-READY - Lead-Protection + Territory-Management
+  Status: ✅ 85% IMPLEMENTED - Lead-Management MVP + Frontend + Deduplication
+  PRs: #103, #105, #110, #111 (Integration), #122 (Frontend), #123 (Dedup/Quality)
+  Delivered:
+    - Frontend MVP: Lead List + Create Dialog · Feature-Flag VITE_FEATURE_LEADGEN
+    - Lead-Normalisierung: email lowercase · phone E.164 · company ohne Rechtsform-Suffixe
+    - Idempotenz: 24h TTL · SHA-256 Hashing · atomic Upsert (ON CONFLICT)
+    - Production Patterns: Security (23 Tests), Performance (P95 <7ms), Event (AFTER_COMMIT)
+  Pending (Sprint 2.1.5):
+    - Lead Protection: 6 Monate Basisschutz + 60-Tage-Aktivitätsstandard + 10-Tage Nachfrist (Stop-the-Clock)
+    - Progressive Profiling: Stufe 0 (Vormerkung), Stufe 1 (Registrierung), Stufe 2 (Qualifiziert)
+    - Protection-Endpoints: Reminder, Extend, Stop-Clock, Personal-Data Deletion
+    - Compliance: Automatische Retention-Jobs + 60-Tage-Pseudonymisierung
   Key-Features: KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B
 
 👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations):
@@ -235,7 +250,7 @@ DEVELOPMENT-TOOLS:
   Documentation: OpenAPI 3.1 + ADRs (Architecture Decision Records)
 ```
 
-### **🔔 Event-Backbone (aktuell, Stand 2025-09-27)**
+### **🔔 Event-Backbone (aktuell, Stand 2025-10-01)**
 
 ```yaml
 Transport: PostgreSQL LISTEN/NOTIFY
@@ -249,10 +264,11 @@ Idempotenz:
   Batch: followUpType=="BATCH" → Fenster = processedAt auf Minute gerundet
   Stabiler Key: UUID.v5 über (userId|t3Count|t7Count|minute-window)
 
-8KB Guard:
-  Nur data wird bei Überschreitung ersetzt durch:
-  { truncated: true, reference: <idempotencyKey>, original_size_bytes: <n>, hint: "payload >8KB, fetch via API" }
-  Envelope bleibt erhalten
+Payload-Limit:
+  Max: 7900 Bytes (PostgreSQL NOTIFY limit ~8KB)
+  Validation: Events > maxPayloadSize werden mit Exception abgelehnt
+  Config: cqrs.events.max-payload-size (default: 7900)
+  Implementation: EventPublisher.java validiert Payload-Größe vor Publishing
 
 RBAC:
   Erlaubte Rollen: MANAGER | SALES | ADMIN
@@ -267,11 +283,42 @@ Metriken (Micrometer/Prometheus):
   freshplan_dedupe_cache_hit_rate
 
 Implementation-Details:
-  Publisher: AFTER_COMMIT Pattern (nur in Publishern, nie in Listeners)
+  Publisher: AFTER_COMMIT Pattern (nur in Publishern, nie in Listeners) - verbindlich seit PR #111
   Listener: Caffeine Cache für Deduplizierung (500k entries, 24h TTL)
   Channels: dashboard_updates, cross_module_events, settings_invalidated
   Performance SLO: listen_notify_lag_ms < 10000
 ```
+
+---
+
+## 🎯 **Sprint 2.1.4 - Results (Lead Deduplication & Data Quality)**
+
+**Status:** ✅ COMPLETE (PR #123 merged 2025-10-01)
+
+**Kernfeatures implementiert:**
+- **Normalisierung:** email (lowercase), phone (E.164), company (ohne Suffixe/Rechtsformen)
+- **Unique Indizes:** Partiell mit `WHERE status != 'DELETED'` für email/phone/company
+- **Idempotency Service:** 24h TTL · SHA-256 Request-Hash · atomic `INSERT … ON CONFLICT`
+- **CI Performance Breakthrough:** ~24 min → **~7 min** (-70%)
+  - JUnit Platform-Parallelisierung aktiv (Maven Surefire gesteuert)
+  - ValidatorFactory in **@BeforeAll** (statt @BeforeEach) - 56s gespart über 8 Test-Klassen
+  - Test-Migration: @QuarkusTest ↓27% (8 DTO-Tests → Plain JUnit mit Mockito)
+
+**Migrations deployed:**
+- **V247:** Normalisierungs-Spalten (email_normalized, phone_e164, company_name_normalized)
+- **V10012:** Test/Dev-only Indizes (non-CONCURRENTLY für schnelle CI-Tests)
+- **V251-V254:** Idempotency-Fixes, Events published column, Registered-at backdating
+- **R__normalize_functions.sql:** Repeatable normalization functions (PostgreSQL)
+
+**Tests & Qualität:**
+- 1196 Tests in 7m29s, 0 Failures
+- Performance dokumentiert in `backend/TEST_DEBUGGING_GUIDE.md`
+- Operations Runbook: `/docs/operations/lead-deduplication-runbook.md`
+
+**Referenzen:**
+- [TRIGGER_SPRINT_2_1_4.md](TRIGGER_SPRINT_2_1_4.md)
+- [Sprint-Map Modul 02](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
+- [Operations Runbook](../operations/lead-deduplication-runbook.md)
 
 ### **📁 Codebase-Structure Reality**
 ```yaml
@@ -408,7 +455,9 @@ MONITORING & OBSERVABILITY:
 ```yaml
 PLANNING-COMPLETE (Ready für Implementation):
   ✅ Modul 01 Mein-Cockpit: 44 Artefakte (A+ Enterprise-Assessment)
-  ✅ Modul 02 Neukundengewinnung: Lead-Protection + Territory-Management
+  ✅ Modul 02 Neukundengewinnung: 85% IMPLEMENTED
+     Backend: Lead CRUD, Territory, Follow-ups ✅ · Frontend: List+Create ✅ · Qualität: Normalisierung + Idempotenz ✅
+     Pending: Protection (6M+60T+10T) + Progressive Profiling (3 Stufen)
   ✅ Modul 03 Kundenmanagement: Field-based Architecture + ABAC-Security
   ✅ Modul 04 Auswertungen: Advanced Analytics + Territory-Insights
   ✅ Modul 05 Kommunikation: Enterprise Email-Engine + SLA-Automation
