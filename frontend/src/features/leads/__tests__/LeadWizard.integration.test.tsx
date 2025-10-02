@@ -2,7 +2,7 @@
 // Test Coverage: Progressive Flow, DSGVO Consent Validation, Stage-Transition Rules
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
@@ -246,7 +246,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
     it('should send consentGivenAt timestamp in API payload when consent is given', async () => {
       const user = userEvent.setup();
-      let capturedPayload: any;
+      let capturedPayload: unknown;
 
       server.use(
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
@@ -284,7 +284,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
     it('should NOT send consentGivenAt when consent is not given', async () => {
       const user = userEvent.setup();
-      let capturedPayload: any;
+      let capturedPayload: unknown;
 
       server.use(
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
@@ -321,7 +321,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
   describe('Stage-Transition Rules', () => {
     it('should correctly determine stage=0 when only company data is provided', async () => {
       const user = userEvent.setup();
-      let capturedPayload: any;
+      let capturedPayload: unknown;
 
       server.use(
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
@@ -356,7 +356,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
     it('should correctly determine stage=1 when contact data + consent is provided', async () => {
       const user = userEvent.setup();
-      let capturedPayload: any;
+      let capturedPayload: unknown;
 
       server.use(
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
@@ -395,7 +395,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
     it('should correctly determine stage=2 when business data is provided', async () => {
       const user = userEvent.setup();
-      let capturedPayload: any;
+      let capturedPayload: unknown;
 
       server.use(
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
