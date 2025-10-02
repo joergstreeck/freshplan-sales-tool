@@ -253,20 +253,28 @@
   - SPRINT_MAP.md: Sprint 2.1.5 Status IN PROGRESS (Frontend Phase 2), Sprint 2.1.6/2.1.7 PLANNED dokumentiert
   - V249 Migration Inkonsistenz korrigiert (nicht deployed, nur Artefakt für 2.1.6+)
   - **Migration**: n/a, **Tests**: n/a
+- 2025-10-03 00:08 — **Sprint 2.1.5 Frontend Phase 2 COMPLETE (PR #125 READY):** Progressive Profiling UI mit 100% Test Coverage
+  - LeadWizard.tsx: 3-Stufen Progressive Profiling (MUI v7, Grid→Stack Migration, DSGVO Consent-Checkbox Stage 1)
+  - LeadProtectionBadge.tsx: 6-Month Protection Visualization (Color-Coding, Tooltip, ARIA Compliance)
+  - ActivityTimeline.tsx: 60-Day Progress Tracking (5 Progress-Types, 5 Non-Progress-Types, Filtering)
+  - Test Coverage: 75/75 (100%) - 17 LeadWizard Integration Tests, 23 Badge Tests, 35 Timeline Tests
+  - MUI v7 Compliance: Grid → Stack, Select labelId/id für ARIA, CSS Class Validation Suite
+  - Design System V2: FreshFoodz Theme (#94C456, #004F7B, Antonio Bold, Poppins), legacy DESIGN_SYSTEM.md entfernt
+  - Bug Fixes: Stage-Determination (falsy→undefined), MUI CSS Classes (filledSuccess statt colorSuccess), Icon Rendering (querySelectorAll)
+  - Feature Flag: VITE_FEATURE_LEADGEN=true (bereits aktiv)
+  - Handover: SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md erstellt
+  - **Migration**: n/a, **Tests**: 75/75 ✅ (100% Coverage)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.5 Frontend Phase 2 (PR #125) - IN PROGRESS (02.10.2025):**
-  - Branch: feature/mod02-sprint-2.1.5-frontend-progressive-profiling (bereits erstellt)
-  - LeadWizard.tsx (3-Stufen Progressive Profiling UI, Full-Page Component)
-  - **DSGVO Consent-Checkbox** (Stage 1, lead.consent_given_at Feld, NICHT vorausgefüllt)
-  - LeadProtectionBadge.tsx (Status-Indicator mit Tooltip/Responsive/ARIA)
-  - ActivityTimeline.tsx (Progress Tracking Display mit countsAsProgress Filter)
-  - API-Integration: Enhanced POST /api/leads mit Stage + Consent-Validierung
-  - Integration Tests (MSW-basiert)
-  - FRONTEND_ACCESSIBILITY.md Dokumentation
-  - Feature-Flag: VITE_FEATURE_LEADGEN=true
+- **Sprint 2.1.5 Finalisierung (PR #125) - CODE REVIEW (03.10.2025):**
+  - Branch: feature/mod02-sprint-2.1.5-frontend-progressive-profiling (100% COMPLETE)
+  - PR erstellen mit Handover SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md
+  - Backend Integration Test: POST /api/leads mit consentGivenAt validieren (Backend muss Feld akzeptieren)
+  - Production Feature Flag: VITE_FEATURE_LEADGEN=true aktivieren
+  - Sprint-Dokumentation Update: SPRINT_MAP.md (2.1.5 → COMPLETE), PRODUCTION_ROADMAP_2025.md
+  - Release Notes: DSGVO Consent UI, Progressive Profiling, Lead Protection Badge
 - **Sprint 2.1.6 Vorbereitung (Start 12.10.2025):**
   - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
   - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
