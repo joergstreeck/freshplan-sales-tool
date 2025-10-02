@@ -261,14 +261,18 @@ const detectContentType = (children: ReactNode): ContentType => {
 ## 🖼️ **LOGO-STANDARDS & GUIDELINES**
 
 ### **Offizielles Logo:**
-- **Datei:** `freshfoodzlogo.png`
-- **Größe:** 19 KB, PNG mit Transparenz
-- **Pfad:** `/frontend/public/freshfoodzlogo.png`
+- **Datei (Empfohlen):** `freshplan-logo.png` (Full) / `freshplan-logo-icon.png` (Icon)
+- **Größe:** 19 KB, PNG mit Transparenz, @2x Retina-ready
+- **Pfad:** `/frontend/public/freshplan-logo.png`
 - **Mindestgröße:** 32px Höhe (Mobile)
 - **Standardgröße:** 40px Höhe (Desktop)
+- **Legacy:** `freshfoodzlogo.png` (181 KB - ZU GROSS, bitte migrieren!)
 
 ### **Logo-Verwendung (Verbindlich):**
 ```typescript
+// ✅ EMPFOHLEN: Logo.tsx Component verwenden (19 KB optimiert)
+import { Logo } from '@/components/common/Logo';
+
 // Desktop - Volles Logo
 <Logo
   variant="full"
@@ -282,6 +286,10 @@ const detectContentType = (children: ReactNode): ContentType => {
   height={32}
   onClick={() => navigate('/')}
 />
+
+// ⚠️ LEGACY (bitte migrieren):
+// CockpitHeader.tsx, Header.tsx: <img src="/freshfoodzlogo.png" /> (181 KB)
+// SidebarNavigation.tsx: <img src="/freshfoodz-logo.svg" /> (existiert nicht!)
 ```
 
 ### **Logo-Schutzregeln:**
@@ -482,6 +490,48 @@ const CorrectButton = styled.button`
 `;
 ```
 
+## 🚨 **LOGO-MIGRATION (DRINGEND - Performance-Optimierung)**
+
+### **Problem:**
+Legacy-Komponenten verwenden `freshfoodzlogo.png` (181 KB) statt optimierter `freshplan-logo.png` (19 KB)
+
+### **Betroffene Dateien:**
+```typescript
+// ⚠️ ZU MIGRIEREN:
+frontend/src/features/cockpit/components/CockpitHeader.tsx:35
+  <img src="/freshfoodzlogo.png" alt="FreshFoodz Logo" />
+
+frontend/src/components/original/Header.tsx:19
+  <img src="/freshfoodzlogo.png" alt="FreshFoodz Logo" />
+
+frontend/src/components/layout/SidebarNavigation.tsx:137
+  <img src="/freshfoodz-logo.svg" /> // Existiert nicht!
+```
+
+### **Migration:**
+```typescript
+// ❌ VORHER (181 KB - Performance-Problem!)
+<img src="/freshfoodzlogo.png" alt="FreshFoodz Logo" className="brand-logo" />
+
+// ✅ NACHHER (19 KB - 90% kleiner!)
+import { Logo } from '@/components/common/Logo';
+<Logo variant="full" height={40} onClick={() => navigate('/')} />
+```
+
+### **Performance-Impact:**
+- **Aktuell:** 181 KB × 3 Komponenten = **543 KB** Logo-Daten
+- **Nach Migration:** 19 KB × 1 Logo-Komponente = **19 KB** (mit Browser-Cache)
+- **Einsparung:** **524 KB** (~96% weniger!)
+
+### **Action Items:**
+- [ ] CockpitHeader.tsx auf Logo.tsx migrieren
+- [ ] Header.tsx auf Logo.tsx migrieren
+- [ ] SidebarNavigation.tsx auf Logo.tsx migrieren
+- [ ] freshfoodzlogo.png (181 KB) löschen nach Migration
+- [ ] freshfoodz-logo.svg erstellen ODER Logo.tsx verwenden
+
+---
+
 ## 🚀 **IMPLEMENTIERUNGSREIHENFOLGE**
 
 ### **Phase 1: Design-Tokens (SOFORT)**
@@ -499,7 +549,8 @@ const CorrectButton = styled.button`
 1. Button-Komponenten CI-konform machen
 2. Navigation/Headers aktualisieren
 3. Form-Elemente anpassen
-4. Logo-Komponente optimieren
+4. ✅ Logo-Komponente optimiert (Logo.tsx - 19 KB)
+5. ⚠️ Logo-Migration Legacy-Komponenten (siehe oben)
 
 ### **Phase 4: Qualitätssicherung (PERMANENT)**
 1. CI-Compliance Tests implementieren

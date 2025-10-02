@@ -164,10 +164,13 @@ UI-SPRACHE (DEUTSCH, kein Denglisch):
   Stil: "Sie"-Form, höflich, keine Abkürzungen
 
 LOGO-VERWENDUNG:
-  File: /frontend/public/freshfoodzlogo.png (19 KB PNG)
+  File: /frontend/public/freshplan-logo.png (19 KB PNG, @2x Retina)
+  Component: <Logo> aus @/components/common/Logo (empfohlen!)
   Desktop: 40px Höhe | Mobile: 32px Höhe
+  Variants: "full" (mit Text) | "icon" (nur Icon)
   Schutzzone: min. 16px Freiraum
   Nur auf weißem/hellem Hintergrund!
+  Legacy: freshfoodzlogo.png (181 KB - NICHT verwenden!)
 
 IMPLEMENTATION-REFERENCE:
   Design-System-Spec: /docs/planung/grundlagen/DESIGN_SYSTEM.md (verbindlich!)
