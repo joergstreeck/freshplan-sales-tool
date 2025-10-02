@@ -32,11 +32,20 @@ updated: "2025-09-28"
 > - CONCURRENTLY-Regeln für Production
 > - Nächste Nummer: `./scripts/get-next-migration.sh`
 >
+> **🎨 FRONTEND DESIGN SYSTEM BEACHTEN!**
+> Vor Frontend-Arbeit IMMER [`/docs/planung/grundlagen/DESIGN_SYSTEM.md`](grundlagen/DESIGN_SYSTEM.md) lesen!
+> - **FreshFoodz CI:** #94C456 (Green), #004F7B (Blue), Antonio Bold, Poppins
+> - **UI-Framework:** MUI v7 + Emotion (KEIN Tailwind!)
+> - **SmartLayout:** Intelligente Content-Breiten (Tables 100%, Forms 800px)
+> - **Accessibility:** WCAG 2.1 AA/AAA Standards
+> - **Sprache:** Deutsch (Dashboard → Übersicht, Save → Speichern)
+> - **AI-Kontext:** [`CRM_AI_CONTEXT_SCHNELL.md`](CRM_AI_CONTEXT_SCHNELL.md) für kompakten Überblick
+>
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
 > 2. **Modul-Start (_index.md) → Status prüfen**
 > 3. **Backend:** V255-V257 Migrations für Lead Protection (siehe MIGRATIONS.md)
-> 4. **Frontend:** Progressive Profiling UI (3 Stufen)
+> 4. **Frontend:** Progressive Profiling UI (3 Stufen) - **Design System beachten!**
 > 5. **Shared:** Vertragliche Anforderungen dokumentieren
 > 6. **Compliance:** Data-Retention-Plan umsetzen
 
@@ -92,7 +101,7 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 
 ### Backend Changes:
 ```sql
--- V249: Lead Protection Tables
+-- V249 wurde zu 10012: Lead Protection Tables
 CREATE TABLE lead_protection (
   lead_id, registered_at, protection_until,
   last_progress_at, status, stop_the_clock_reason
