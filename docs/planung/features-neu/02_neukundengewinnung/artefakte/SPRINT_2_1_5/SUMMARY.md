@@ -5,7 +5,7 @@ doc_type: "konzept"
 status: "in_progress"
 sprint: "2.1.5"
 owner: "team/leads-backend"
-updated: "2025-10-01"
+updated: "2025-10-02"
 ---
 
 # Sprint 2.1.5 – Artefakte Summary
@@ -66,31 +66,56 @@ Sprint 2.1.5 implementiert die **vertraglichen Lead-Schutz-Mechanismen** und **P
 - ✅ SUMMARY (diese Datei)
 - ✅ TRIGGER_SPRINT_2_1_6 (verschobene Features)
 
-### Phase 2: Frontend (PR #125) ⏸️ PENDING
+### Phase 2: Frontend (PR #125) 🔄 IN PROGRESS
 **Branch:** `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
-**Status:** NOT STARTED
+**Status:** IN PROGRESS (02.10.2025)
 
-#### Frontend Components
-- ⏸️ `LeadWizard.vue` - Progressive 3-Stufen-Form (Stage 0/1/2)
-- ⏸️ `LeadProtectionBadge.vue` - Schutzstatus-Indikator
-- ⏸️ `ActivityTimeline.vue` - 60-Tage-Progress Tracking
+#### Business Rules Defined (02.10.2025)
+- ✅ **DSGVO Consent-Management:** Consent-Checkbox PFLICHT in Stage 1 (nicht vorausgefüllt)
+  - Backend: `lead.consent_given_at TIMESTAMPTZ` speichern
+  - Validierung: Ohne Consent KEIN Stage 1 Submit möglich
+  - 📄 [DSGVO_CONSENT_SPECIFICATION.md](./DSGVO_CONSENT_SPECIFICATION.md)
+
+- ✅ **Activity-Types Progress-Mapping:** countsAsProgress Regeln definiert
+  - TRUE: QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT (5 Types)
+  - FALSE: NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK (5 Types)
+  - 📄 [ACTIVITY_TYPES_PROGRESS_MAPPING.md](./ACTIVITY_TYPES_PROGRESS_MAPPING.md)
+
+- ✅ **Stop-the-Clock RBAC Rules:** Manager + Admin only
+  - RBAC: Nur MANAGER + ADMIN dürfen pausieren/resumen
+  - UI-Button verschoben auf Sprint 2.1.6
+  - 📄 [STOP_THE_CLOCK_RBAC_RULES.md](./STOP_THE_CLOCK_RBAC_RULES.md)
+
+#### Frontend Components (React + MUI v7)
+- ⏸️ `LeadWizard.tsx` - Progressive 3-Stufen-Form (Stage 0/1/2, Full-Page Component)
+- ⏸️ `LeadProtectionBadge.tsx` - Schutzstatus-Indikator (Tooltip/Responsive/ARIA)
+- ⏸️ `ActivityTimeline.tsx` - 60-Tage-Progress Tracking (countsAsProgress Filter)
 
 #### API Integration
-- ⏸️ Enhanced `POST /api/leads` mit Stage-Validierung
+- ⏸️ Enhanced `POST /api/leads` mit Stage + Consent-Validierung
 - ⏸️ Stage-Transition-Rules (0→1→2, kein Skip)
-- ⏸️ 201/409 Response-Handling
+- ⏸️ 201/409 Response-Handling (RFC7807)
 
 #### Tests
-- ⏸️ Integration Tests für Progressive Profiling Flow
+- ⏸️ Integration Tests für Progressive Profiling Flow (MSW-basiert)
 - ⏸️ Stage-Transition-Tests
 - ⏸️ UI-Component-Tests (Vitest)
+- ⏸️ DSGVO Consent Tests (Checkbox required, Backend validation)
+
+#### Feature-Flag
+- ⏸️ `VITE_FEATURE_LEADGEN=true` für Feature-Toggle
 
 ### Verschoben auf Sprint 2.1.6
-- ❌ V258 lead_transfers Tabelle
-- ❌ PUT /api/leads/{id}/registered-at (Backdating Endpoint)
-- ❌ Nightly Jobs (Warning/Expiry/Pseudonymisierung)
-- ❌ Vollständiger Fuzzy-Matching Algorithmus
-- ❌ DuplicateReviewModal.vue (Merge/Unmerge UI)
+- ❌ **V258 lead_transfers Tabelle** - Lead-Transfer zwischen Partnern
+- ❌ **PUT /api/leads/{id}/registered-at** - Backdating Endpoint für Bestandsleads
+- ❌ **POST /api/admin/migration/leads/import** - Bestandsleads-Migrations-API (Modul 08)
+  - 📄 [BESTANDSLEADS_MIGRATION_API_SPEC.md](../SPRINT_2_1_6/BESTANDSLEADS_MIGRATION_API_SPEC.md)
+- ❌ **Lead → Kunde Convert Flow** - Automatische Übernahme bei QUALIFIED → CONVERTED
+  - 📄 [LEAD_TO_CUSTOMER_CONVERT_FLOW.md](../SPRINT_2_1_6/LEAD_TO_CUSTOMER_CONVERT_FLOW.md)
+- ❌ **StopTheClockDialog UI** - Manager-only Dialog für Pausierung
+- ❌ **Nightly Jobs** - Warning/Expiry/Pseudonymisierung (Scheduled Tasks)
+- ❌ **Vollständiger Fuzzy-Matching Algorithmus** - Levenshtein-Distance, pg_trgm
+- ❌ **DuplicateReviewModal** - Merge/Unmerge UI mit Identitätsgraph
 
 ## Risiken & Mitigationen
 
