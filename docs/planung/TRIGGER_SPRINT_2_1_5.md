@@ -163,14 +163,13 @@ DELETE /lead-protection/{leadId}/personal-data
 - LeadProtectionBadge.vue (Status-Indicator)
 - ActivityTimeline.vue (Progress Tracking Display)
 - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
-- **Logo-Performance-Fix:** CockpitHeader.tsx (181 KB → 19 KB)
-  - **AKTIV - HeaderV2:** ✅ Verwendet bereits Logo.tsx (19 KB freshplan-logo.png)
-  - **AKTIV - SidebarNavigation:** ✅ Nur "FreshPlan" Text, kein Logo nötig
-  - **FIX - CockpitHeader.tsx:** `/freshfoodzlogo.png` (181 KB) → `/freshplan-logo.png` (19 KB)
-  - **IGNORE - Header.tsx:** Legacy, wird nicht verwendet
-  - Einsparung: **162 KB** (-90% für CockpitHeader!)
 - Tests: Integration Tests für Progressive Profiling Flow
 - **Status:** PENDING
+
+**Logo-Status (Bereits optimiert ✅):**
+- `/cockpit` Route verwendet MainLayoutV2 + HeaderV2 (Logo.tsx 19 KB) ✅
+- SalesCockpitV2 hat KEINEN eigenen CockpitHeader ✅
+- Alle aktiven Routen verwenden HeaderV2 mit optimiertem Logo ✅
 
 **Verschoben auf Sprint 2.1.6:**
 - V258 lead_transfers Tabelle
@@ -198,7 +197,6 @@ DELETE /lead-protection/{leadId}/personal-data
 - [ ] **Activity Tracking UI funktioniert**
 - [ ] **Protection Status Badge implementiert**
 - [ ] **API-Integration mit Stage-Validierung**
-- [ ] **Logo-Performance-Fix (CockpitHeader.tsx, 181 KB → 19 KB)**
 - [ ] **Tests: Integration Tests grün**
 
 ## Risiken & Mitigation
