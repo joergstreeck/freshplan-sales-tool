@@ -165,12 +165,12 @@ UI-SPRACHE (DEUTSCH, kein Denglisch):
 
 LOGO-VERWENDUNG:
   File: /frontend/public/freshplan-logo.png (19 KB PNG, @2x Retina)
-  Component: <Logo> aus @/components/common/Logo (empfohlen!)
+  Component: <Logo> aus @/components/common/Logo
   Desktop: 40px Höhe | Mobile: 32px Höhe
   Variants: "full" (mit Text) | "icon" (nur Icon)
   Schutzzone: min. 16px Freiraum
   Nur auf weißem/hellem Hintergrund!
-  Legacy: freshfoodzlogo.png (181 KB - NICHT verwenden!)
+  Fallback: Automatisches FreshPlan Icon + Text (bei fehlenden Dateien)
 
 IMPLEMENTATION-REFERENCE:
   Design-System-Spec: /docs/planung/grundlagen/DESIGN_SYSTEM.md (verbindlich!)
