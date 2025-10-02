@@ -49,7 +49,18 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 - Audit-Trail für alle Transfers
 - Email-Benachrichtigungen
 
-### 2. Backdating Endpoint (verschoben aus 2.1.5)
+### 2. Bestandsleads-Migrations-API (verschoben aus 2.1.5, NEU in Modul 08)
+**Akzeptanzkriterien:**
+- POST /api/admin/migration/leads/import (Admin-only, Modul 08)
+- Dry-Run Mode PFLICHT (dryRun=true vor echtem Import)
+- Batch-Import mit Validierung (max. 1000 Leads/Batch)
+- Historische Datumsfelder korrekt übernehmen (registeredAt, activities)
+- countsAsProgress explizit setzen (NICHT automatisch berechnen!)
+- Duplikaten-Check + Warning-Report
+- Audit-Log für alle Import-Vorgänge (importId, source, user, timestamp)
+- Re-Import-Fähigkeit bei Fehlern (nur fehlerhafte Datensätze)
+
+### 3. Backdating Endpoint (verschoben aus 2.1.5)
 **Akzeptanzkriterien:**
 - PUT /api/leads/{id}/registered-at (Admin/Manager)
 - Validierung: nicht in Zukunft; Reason Pflicht
@@ -57,7 +68,31 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 - Felder bereits vorhanden: `registered_at_override_reason`, etc.
 - Recalc Protection-/Activity-Fristen
 
-### 3. Automated Jobs (verschoben aus 2.1.5)
+### 4. Lead → Kunde Convert Flow (NEU aus 2.1.5)
+**Akzeptanzkriterien:**
+- Automatische Übernahme bei Status QUALIFIED → CONVERTED
+- POST /api/leads/{id}/convert-to-customer (ODER automatischer Trigger)
+- Alle Lead-Daten übernehmen (ZERO Doppeleingabe)
+- Duplikaten-Check gegen existierende Kunden
+- Lead-ID Verknüpfung in customer.original_lead_id
+- Historie vollständig erhalten (Lead-Activities → Customer-Activities)
+- Navigation nach Convert: /customer-management/customers/{id}
+- Success-Message: "Lead erfolgreich als Kunde angelegt"
+
+### 5. Stop-the-Clock UI (NEU aus 2.1.5)
+**Akzeptanzkriterien:**
+- StopTheClockDialog Component (Manager + Admin only)
+- Pause/Resume Buttons in LeadProtectionBadge
+- Grund-Auswahl (Dropdown):
+  - "FreshFoodz Verzögerung" (vertraglicher Grace-Period-Trigger +10 Tage)
+  - "Kunde im Urlaub" (temporäre Pausierung)
+  - "Andere" (mit Freitext-Begründung Pflicht)
+- Audit-Log für alle Stop/Resume Events
+- Maximale Pausendauer konfigurierbar (z.B. 30 Tage)
+- UI zeigt Pause-Grund + Pause-Dauer + Resume-Datum
+- RBAC: Nur MANAGER + ADMIN sehen Buttons
+
+### 6. Automated Jobs (verschoben aus 2.1.5)
 **Akzeptanzkriterien:**
 - Nightly Job: Progress Warning Check (Tag 53)
 - Nightly Job: Protection Expiry (Tag 70)

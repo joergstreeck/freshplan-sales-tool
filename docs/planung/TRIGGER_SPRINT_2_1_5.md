@@ -101,16 +101,25 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 
 ### Backend Changes:
 ```sql
--- V249 wurde zu 10012: Lead Protection Tables
-CREATE TABLE lead_protection (
-  lead_id, registered_at, protection_until,
-  last_progress_at, status, stop_the_clock_reason
-);
+-- V255-V257: Inline-First Architecture (ADR-004)
+-- Separate lead_protection Table NICHT implementiert (siehe ADR-004)
+-- V249 als Materiallager verfügbar für Sprint 2.1.6+ falls benötigt
 
-CREATE TABLE lead_activities (
-  lead_id, activity_type, activity_date,
-  counts_as_progress, performed_by
-);
+-- V255: Protection Felder in leads Table (Inline)
+ALTER TABLE leads ADD COLUMN progress_warning_sent_at TIMESTAMPTZ;
+ALTER TABLE leads ADD COLUMN progress_deadline TIMESTAMPTZ;
+ALTER TABLE leads ADD COLUMN stage SMALLINT NOT NULL DEFAULT 0;
+
+-- V256: lead_activities Augmentation
+ALTER TABLE lead_activities ADD COLUMN counts_as_progress BOOLEAN DEFAULT FALSE;
+ALTER TABLE lead_activities ADD COLUMN summary VARCHAR(500);
+ALTER TABLE lead_activities ADD COLUMN outcome VARCHAR(50);
+ALTER TABLE lead_activities ADD COLUMN performed_by VARCHAR(50);
+
+-- V257: Helper Functions + Triggers
+CREATE FUNCTION calculate_protection_until(...);
+CREATE FUNCTION calculate_progress_deadline(...);
+CREATE TRIGGER update_progress_on_activity ...;
 ```
 
 ### API Extensions:
@@ -142,11 +151,47 @@ DELETE /lead-protection/{leadId}/personal-data
 ```
 
 ### Frontend Components:
-- `LeadWizard.vue` - Progressive form (3 Stufen)
-- `LeadProtectionBadge.vue` - Status indicator
-- `ActivityTimeline.vue` - Progress tracking
-- `ExtensionRequestDialog.vue` - Verlängerungsantrag
-- `StopTheClockDialog.vue` - Pausierung mit Grund
+- `LeadWizard.tsx` - Progressive form (3 Stufen), Full-Page Component
+- `LeadProtectionBadge.tsx` - Status indicator mit Tooltip/ARIA
+- `ActivityTimeline.tsx` - Progress tracking display
+- **NICHT in 2.1.5:** `ExtensionRequestDialog` - verschoben auf 2.1.6
+- **NICHT in 2.1.5:** `StopTheClockDialog` - verschoben auf 2.1.6 (Manager-only UI)
+
+### DSGVO & Compliance (KRITISCH):
+**Consent-Management (Pflicht ab Phase 2):**
+- **Stage 0**: Keine personenbezogenen Daten → Kein Consent nötig
+- **Stage 1**: Consent-Checkbox PFLICHT (nicht vorausgefüllt)
+  - Text: "Ich stimme zu, dass meine Kontaktdaten gespeichert werden (Widerruf jederzeit möglich)"
+  - Backend: `lead.consent_given_at TIMESTAMPTZ` speichern
+  - Validierung: Ohne Consent KEIN Submit möglich
+- **Rechtsgrundlage**: Consent (sauberste Lösung für B2B-Neu-Erfassung)
+- **Widerrufsrecht**: Link zu Datenschutzrichtlinie, einfacher Widerruf-Prozess
+
+### Activity-Types Progress-Mapping:
+**countsAsProgress = true:**
+- `QUALIFIED_CALL` - Echtes Gespräch mit Entscheider
+- `MEETING` - Physisches Treffen
+- `DEMO` - Produktdemonstration
+- `ROI_PRESENTATION` - Business-Value-Präsentation
+- `SAMPLE_SENT` - Sample-Box versendet
+
+**countsAsProgress = false:**
+- `NOTE` - Nur interne Notiz
+- `FOLLOW_UP` - Automatisches Follow-up
+- `EMAIL` - Zu low-touch
+- `CALL` - Nur wenn nicht QUALIFIED_CALL
+- `SAMPLE_FEEDBACK` - Passives Feedback-Logging
+
+### Stop-the-Clock Rules (Backend-only in 2.1.5):
+**RBAC-Policy:**
+- **Pausieren/Resume**: Nur MANAGER + ADMIN Role
+- **UI-Button**: NICHT in Phase 2 (verschoben auf 2.1.6)
+- **Erlaubte Gründe**:
+  - "FreshFoodz Verzögerung" (vertraglicher Grace-Period-Trigger)
+  - "Kunde im Urlaub" (temporäre Pausierung)
+  - "Andere" (mit Freitext-Begründung)
+- **Audit-Log**: PFLICHT für jeden Stop/Resume Event
+- **Max. Pausendauer**: TBD (Business-Regel in 2.1.6)
 
 ## PR-Strategie (Backend/Frontend Split)
 
@@ -159,12 +204,15 @@ DELETE /lead-protection/{leadId}/personal-data
 - **Status:** READY FOR PR
 
 **Phase 2: Frontend (PR #125)** - Branch: `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
-- LeadWizard.vue (3-Stufen Progressive Profiling UI)
-- LeadProtectionBadge.vue (Status-Indicator)
-- ActivityTimeline.vue (Progress Tracking Display)
-- API-Integration: Enhanced POST /api/leads mit Stage-Validierung
-- Tests: Integration Tests für Progressive Profiling Flow
-- **Status:** PENDING
+- ⏸️ LeadWizard.tsx (3-Stufen Progressive Profiling UI, Full-Page Component)
+- ⏸️ DSGVO Consent-Checkbox (Stage 1, lead.consent_given_at Feld)
+- ⏸️ LeadProtectionBadge.tsx (Status-Indicator mit Tooltip/Responsive/ARIA)
+- ⏸️ ActivityTimeline.tsx (Progress Tracking Display mit countsAsProgress Filter)
+- ⏸️ API-Integration: Enhanced POST /api/leads mit Stage-Validierung + Consent
+- ⏸️ Integration Tests für Progressive Profiling Flow
+- ⏸️ FRONTEND_ACCESSIBILITY.md Dokumentation
+- ⏸️ Feature-Flag: `VITE_FEATURE_LEADGEN=true`
+- **Status:** IN PROGRESS (02.10.2025)
 
 **Logo-Status (Bereits optimiert ✅):**
 - `/cockpit` Route verwendet MainLayoutV2 + HeaderV2 (Logo.tsx 19 KB) ✅
@@ -172,10 +220,15 @@ DELETE /lead-protection/{leadId}/personal-data
 - Alle aktiven Routen verwenden HeaderV2 mit optimiertem Logo ✅
 
 **Verschoben auf Sprint 2.1.6:**
-- V258 lead_transfers Tabelle
-- PUT /api/leads/{id}/registered-at (Backdating Endpoint)
-- Nightly Jobs (Warning/Expiry/Pseudonymisierung)
-- Vollständiger Fuzzy-Matching Algorithmus + DuplicateReviewModal.vue
+- V258 lead_transfers Tabelle (Lead-Transfer zwischen Partnern)
+- PUT /api/leads/{id}/registered-at (Backdating Endpoint für Bestandsleads)
+- POST /api/admin/migration/leads/import (Bestandsleads-Migrations-API, Modul 08)
+- Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
+- StopTheClockDialog UI (Manager-only, mit Approval-Workflow)
+- ExtensionRequestDialog UI (Schutzfrist-Verlängerung auf Antrag)
+- Nightly Jobs (Warning/Expiry/Pseudonymisierung - Scheduled Tasks)
+- Vollständiger Fuzzy-Matching Algorithmus (Levenshtein-Distance, pg_trgm)
+- DuplicateReviewModal (Merge/Unmerge UI mit Identitätsgraph)
 
 **Begründung für Split:**
 - Konsistent mit Sprint 2.1.2/2.1.3 Pattern (Frontend/Backend getrennt)
@@ -193,17 +246,22 @@ DELETE /lead-protection/{leadId}/personal-data
 - [x] **Dokumentation: ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN**
 
 **Phase 2 (Frontend - PR #125):**
-- [ ] **Progressive UI (3 Stufen) implementiert**
-- [ ] **Activity Tracking UI funktioniert**
-- [ ] **Protection Status Badge implementiert**
-- [ ] **API-Integration mit Stage-Validierung**
-- [ ] **Tests: Integration Tests grün**
+- [ ] **LeadWizard.tsx (3 Stufen) implementiert (Full-Page Component)**
+- [ ] **DSGVO Consent-Checkbox (Stage 1) mit lead.consent_given_at**
+- [ ] **LeadProtectionBadge.tsx implementiert (Tooltip/Responsive/ARIA)**
+- [ ] **ActivityTimeline.tsx implementiert (countsAsProgress Filter)**
+- [ ] **API-Integration mit Stage + Consent-Validierung**
+- [ ] **Integration Tests grün (MSW-basiert)**
+- [ ] **FRONTEND_ACCESSIBILITY.md Dokumentation**
+- [ ] **Feature-Flag VITE_FEATURE_LEADGEN=true aktiv**
 
 ## Risiken & Mitigation
 
-- **Datenmigration bestehender Leads**: Batch-Job für Protection-Records
-- **Performance bei Fuzzy-Matching**: pg_trgm Indizes, Pagination
-- **Stop-the-Clock Missbrauch**: Audit-Log, Manager-Approval
+- **Datenmigration bestehender Leads**: Dedizierte Backend-API (Modul 08, Sprint 2.1.6), keine manuellen Datumsfelder im Frontend
+- **DSGVO Consent-Verweigerung**: Fallback auf "Legitimate Interest" nur bei existierenden Geschäftsbeziehungen, sonst KEIN Lead-Create
+- **Performance bei Fuzzy-Matching**: pg_trgm Indizes, Pagination, verschoben auf 2.1.6
+- **Stop-the-Clock Missbrauch**: Audit-Log, Manager-Approval, RBAC-Policy (UI erst in 2.1.6)
+- **Activity-Type Progress-Mapping unklar**: Verbindliche Liste in TRIGGER dokumentiert, Backend-Enum mit Default-Werten
 
 ## Abhängigkeiten
 
