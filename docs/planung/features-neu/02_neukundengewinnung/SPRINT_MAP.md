@@ -4,7 +4,7 @@ domain: "shared"
 doc_type: "guideline"
 status: "approved"
 owner: "team/leads"
-updated: "2025-09-27"
+updated: "2025-10-02"
 ---
 
 # 🗺️ Sprint-Map – Modul 02 Neukundengewinnung
@@ -52,7 +52,7 @@ updated: "2025-09-27"
 - **RESEARCH_ANSWERS.md:** 11 offene Fragen beantwortet
 - **VALIDATED_FOUNDATION_PATTERNS.md:** Konsolidierte Patterns aus grundlagen/ & infrastruktur/
 
-**Nächster Schritt:** Thin Vertical Slice mit Feature-Flag `VITE_FEATURE_LEADGEN`
+**Nächster Schritt:** Thin Vertical Slice (Thin Vertical Slice implemented in Sprint 2.1.3)
 
 ---
 
@@ -61,7 +61,6 @@ updated: "2025-09-27"
 **Status:** ✅ COMPLETE
 **Ergebnisse:**
 - Thin Vertical Slice: `/leads` Route + `LeadList` + `LeadCreateDialog`
-- Feature-Flag: `VITE_FEATURE_LEADGEN=true` aktiviert
 - Vollständige Business-Logik:
   - Client-seitige Validierung (Name ≥2, E-Mail-Format)
   - Duplikat-Erkennung (409 Response bei gleicher E-Mail)
@@ -112,8 +111,8 @@ updated: "2025-09-27"
 
 ### **Sprint 2.1.5 – Lead Protection & Progressive Profiling (IN_PROGRESS)**
 **Zentral:** [TRIGGER_SPRINT_2_1_5.md](../../TRIGGER_SPRINT_2_1_5.md)
-**Status:** 🔄 Backend Phase 1 COMPLETE (01.10.2025), Frontend Phase 2 ausstehend
-**Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling
+**Status:** 🔄 Backend Phase 1 COMPLETE (01.10.2025), Frontend Phase 2 IN PROGRESS (02.10.2025)
+**Scope:** Vertragliche Lead-Schutz-Mechanismen + B2B Progressive Profiling + DSGVO Consent
 
 **✅ Backend Phase 1 COMPLETE (PR #124):**
 **Branch:** `feature/mod02-sprint-2.1.5-lead-protection`
@@ -129,21 +128,39 @@ updated: "2025-09-27"
 - **Tests:** 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
 - **Dokumentation:** ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_2_1_6
 
-**⏸️ Frontend Phase 2 (PR #125 - ausstehend):**
+**⏸️ Frontend Phase 2 (PR #125 - IN PROGRESS):**
 **Branch:** `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
-**Status:** NOT STARTED
+**Status:** IN PROGRESS (02.10.2025)
 
-- LeadWizard.vue (3-Stufen Progressive Profiling UI)
-- LeadProtectionBadge.vue (Status-Indicator)
-- ActivityTimeline.vue (Progress Tracking Display)
-- API-Integration: Enhanced POST /api/leads mit Stage-Validierung
-- Tests: Integration Tests für Progressive Profiling Flow
+- LeadWizard.tsx (3-Stufen Progressive Profiling UI, Full-Page Component)
+- **DSGVO Consent-Checkbox** (Stage 1, lead.consent_given_at Feld, NICHT vorausgefüllt)
+- LeadProtectionBadge.tsx (Status-Indicator mit Tooltip/Responsive/ARIA)
+- ActivityTimeline.tsx (Progress Tracking Display mit countsAsProgress Filter)
+- API-Integration: Enhanced POST /api/leads mit Stage + Consent-Validierung
+- Integration Tests für Progressive Profiling Flow (MSW-basiert)
+- FRONTEND_ACCESSIBILITY.md Dokumentation
+- LeadWizard ist Standard (keine Alternative UI)
+
+**Activity-Types Progress-Mapping (definiert 02.10.2025):**
+- ✅ countsAsProgress=true: QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT
+- ❌ countsAsProgress=false: NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK
+
+**Stop-the-Clock Rules (Backend-only in 2.1.5):**
+- RBAC: Nur MANAGER + ADMIN Role
+- UI-Button: NICHT in Phase 2 (verschoben auf 2.1.6)
+- Erlaubte Gründe: "FreshFoodz Verzögerung", "Kunde im Urlaub", "Andere"
+- Audit-Log PFLICHT für jeden Stop/Resume Event
 
 **📋 Verschoben auf Sprint 2.1.6:**
-- V258 lead_transfers Tabelle
+- V258 lead_transfers Tabelle (Lead-Transfer zwischen Partnern)
+- POST /api/admin/migration/leads/import (Bestandsleads-Migrations-API, Modul 08)
 - PUT /api/leads/{id}/registered-at (Backdating Endpoint)
-- Nightly Jobs (Warning/Expiry/Pseudonymisierung)
-- Vollständiger Fuzzy-Matching Algorithmus + DuplicateReviewModal.vue
+- Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
+- StopTheClockDialog UI (Manager-only, mit Approval-Workflow)
+- ExtensionRequestDialog UI (Schutzfrist-Verlängerung)
+- Nightly Jobs (Warning/Expiry/Pseudonymisierung - Scheduled Tasks)
+- Vollständiger Fuzzy-Matching Algorithmus (Levenshtein-Distance, pg_trgm)
+- DuplicateReviewModal (Merge/Unmerge UI mit Identitätsgraph)
 
 **Artefakte:** [`artefakte/SPRINT_2_1_5/`](./artefakte/SPRINT_2_1_5/)
 - ✅ [ADR-004-lead-protection-inline-first.md](./shared/adr/ADR-004-lead-protection-inline-first.md)
@@ -156,23 +173,106 @@ updated: "2025-09-27"
 
 ---
 
-### **Sprint 2.1.6 – Lead Transfer & Team Management (PLANNED)**
+### **Sprint 2.1.6 – Lead Transfer & Bestandsleads-Migration (PLANNED)**
+**Zentral:** [TRIGGER_SPRINT_2_1_6.md](../../TRIGGER_SPRINT_2_1_6.md)
 **Status:** 📅 PLANNED (2025-10-12 - 2025-10-18)
-**Scope:** Lead-Übergabe, Team-Management, Merge/Unmerge
+**Scope:** Lead-Transfer, Bestandsleads-Migration (Modul 08), Lead → Kunde Convert, Stop-the-Clock UI
 
 > **⚠️ TEST-STRATEGIE BEACHTEN!**
 > Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
 > Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
 
-**Geplante Features:**
-- Lead-Transfer zwischen Partnern mit Genehmigung
-- Quotenregelung für Teams
-- Fuzzy-Matching & Review-Flow (Scoring, Kandidatenliste, Merge/Reject/Create-New)
-- Merge/Unmerge mit Identitätsgraph
-- Audit-Historie für alle Transfers
-- Team-basierte Sichtbarkeit (RLS Phase 1)
+**Geplante Features (aus 2.1.5 verschoben + NEU):**
+- **Bestandsleads-Migrations-API** (Modul 08):
+  - POST /api/admin/migration/leads/import (Admin-only, Dry-Run Mode PFLICHT)
+  - Batch-Import mit Validierung (max. 1000 Leads/Batch)
+  - Historische Datumsfelder korrekt übernehmen (registeredAt, activities)
+  - countsAsProgress explizit setzen (NICHT automatisch berechnen!)
+  - Duplikaten-Check + Warning-Report
+  - Audit-Log für alle Import-Vorgänge
+  - Re-Import-Fähigkeit bei Fehlern
+- **Lead → Kunde Convert Flow:**
+  - Automatische Übernahme bei Status QUALIFIED → CONVERTED
+  - Alle Lead-Daten übernehmen (ZERO Doppeleingabe)
+  - Lead-ID Verknüpfung in customer.original_lead_id
+  - Historie vollständig erhalten
+- **Stop-the-Clock UI:**
+  - StopTheClockDialog Component (Manager + Admin only)
+  - Pause/Resume Buttons in LeadProtectionBadge
+  - Grund-Auswahl mit Audit-Log
+  - Maximale Pausendauer konfigurierbar
+- **Lead-Transfer zwischen Partnern:**
+  - V258 lead_transfers Tabelle
+  - Transfer-Request mit Begründung
+  - Genehmigungsprozess (Manager/Admin)
+  - 48h SLA für Entscheidung
+- **Backdating Endpoint:**
+  - PUT /api/leads/{id}/registered-at (Admin/Manager)
+  - Validierung: nicht in Zukunft; Reason Pflicht
+  - Recalc Protection-/Activity-Fristen
+- **Automated Jobs:**
+  - Nightly Job: Progress Warning Check (Tag 53)
+  - Nightly Job: Protection Expiry (Tag 70)
+  - Nightly Job: Pseudonymisierung (60 Tage ohne Progress)
+- **Fuzzy-Matching & Review:**
+  - Vollständiger Scoring-Algorithmus (Email, Phone, Company, Address)
+  - Schwellwerte konfigurierbar (hard/soft duplicates)
+  - DuplicateReviewModal (Merge/Reject/Create-New)
+  - Merge-Historie mit Undo-Möglichkeit
+- **Team Management (OPTIONAL):**
+  - Team CRUD Operations
+  - Team-Member Assignment
+  - Quotenregelung für Teams
+  - Team-Dashboard mit Metriken
+- **Row-Level-Security (OPTIONAL):**
+  - Owner kann eigene Leads sehen (lead_owner_policy)
+  - Team-Mitglieder sehen Team-Leads (lead_team_policy)
+  - Admin hat Vollzugriff (lead_admin_policy)
 
-**Note:** Enthält Matching & Review Features (ursprünglich für 2.1.5 geplant)
+**Note:** Enthält Features aus Sprint 2.1.5 (verschoben) + Matching & Review
+
+---
+
+### **Sprint 2.1.7 – Lead Scoring & Mobile Optimization (PLANNED)**
+**Zentral:** [TRIGGER_SPRINT_2_1_7.md](../../TRIGGER_SPRINT_2_1_7.md)
+**Status:** 📅 PLANNED (2025-10-19 - 2025-10-25)
+**Scope:** Lead-Scoring, Activity-Templates, Mobile-First UI, Offline-Fähigkeit, QR-Code-Scanner
+
+**Geplante Features:**
+- **Lead-Scoring Algorithmus:**
+  - Lead-Score Berechnung (0-100 Punkte)
+  - Faktoren: Stage, Estimated Volume, Business Type, Activity Frequency, Response Time
+  - Backend: lead.score INT Feld (V259 Migration)
+  - Scheduled Job: Score-Recalc täglich
+  - UI: Score-Spalte mit Color-Coding, Filter, Score-Breakdown
+- **Activity-Templates System:**
+  - Backend: activity_templates Tabelle (V260 Migration)
+  - Standard-Templates (Seeds): "Erstkontakt Küchenchef", "Sample-Box Versand", etc.
+  - Frontend: ActivityTimeline → "Template verwenden" Dropdown
+  - User-spezifische Templates erstellen/editieren/löschen
+- **Mobile-First UI Optimierung:**
+  - LeadWizard: Touch-optimiert (Button-Größen ≥ 44px)
+  - LeadList: Card-View auf Mobile, Infinite Scroll, Swipe-Aktionen
+  - Performance: Bundle <200KB, First Contentful Paint <1.5s (3G)
+- **Offline-Fähigkeit (Progressive Web App):**
+  - Service Worker für Offline-Support
+  - IndexedDB für lokale Lead-Speicherung
+  - Sync-Strategy: Online/Offline/Reconnect
+  - UI-Indikator: "Offline-Modus aktiv" Badge
+  - Conflict-Resolution: Server-Wins
+- **QR-Code-Scanner Integration:**
+  - QR-Code-Scanner Component (Camera-API)
+  - Unterstützte Formate: vCard, meCard, Plain Text
+  - Automatisches Parsing in LeadWizard Felder
+  - Desktop-Fallback: File-Upload
+
+**Deliverables:**
+- LeadScoringService mit konfigurierbaren Gewichtungen
+- QRCodeScanner.tsx Component
+- ActivityTemplateSelector.tsx Component
+- LeadScoreBreakdown.tsx Component
+- OfflineIndicator.tsx Component
+- Lighthouse Score: Performance >90, PWA >90
 
 ---
 

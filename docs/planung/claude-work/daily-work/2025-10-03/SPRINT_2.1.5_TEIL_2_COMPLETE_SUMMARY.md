@@ -1164,9 +1164,9 @@ describe.skip('Lead Management Integration Tests', () => {
 - 5 Bugs dokumentiert
 - Code-Beispiele Before/After
 
-**6. Feature Flag Integration**
-- VITE_FEATURE_LEADGEN=true
-- Usage in LeadList.tsx
+**6. LeadWizard Standard UI (Feature-Flag entfernt)**
+- LeadWizard ist die einzige Lead-Erstellung
+- Kein Feature-Flag mehr (VITE_FEATURE_LEADGEN entfernt)
 
 **7. Next Steps**
 - Sprint 2.1.5 Finalisierung
@@ -1204,9 +1204,9 @@ describe.skip('Lead Management Integration Tests', () => {
   - MUI v7 Compliance: Grid → Stack, Select labelId/id für ARIA, CSS Class Validation Suite
   - Design System V2: FreshFoodz Theme (#94C456, #004F7B, Antonio Bold, Poppins), legacy DESIGN_SYSTEM.md entfernt
   - Bug Fixes: Stage-Determination (falsy→undefined), MUI CSS Classes (filledSuccess statt colorSuccess), Icon Rendering (querySelectorAll)
-  - Feature Flag: VITE_FEATURE_LEADGEN=true (bereits aktiv)
+  - LeadWizard ist Standard (Feature-Flag entfernt, keine Alternative UI)
   - Handover: SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md erstellt
-  - **Migration**: n/a, **Tests**: 75/75 ✅ (100% Coverage)
+  - **Migration**: n/a, **Tests**: 81/81 ✅ (100% Coverage)
 ```
 
 #### NEXT_STEPS Update
@@ -1216,7 +1216,6 @@ describe.skip('Lead Management Integration Tests', () => {
   - Branch: feature/mod02-sprint-2.1.5-frontend-progressive-profiling (100% COMPLETE)
   - PR erstellen mit Handover SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md
   - Backend Integration Test: POST /api/leads mit consentGivenAt validieren (Backend muss Feld akzeptieren)
-  - Production Feature Flag: VITE_FEATURE_LEADGEN=true aktivieren
   - Sprint-Dokumentation Update: SPRINT_MAP.md (2.1.5 → COMPLETE), PRODUCTION_ROADMAP_2025.md
   - Release Notes: DSGVO Consent UI, Progressive Profiling, Lead Protection Badge
 ```
@@ -1373,7 +1372,7 @@ docs: create comprehensive handover for Sprint 2.1.5-2.1.7 planning session
 | 5 | **API-Integration mit Stage + Consent** | ✅ | Stage-Ermittlung, Consent-Validierung |
 | 6 | **Integration Tests grün (MSW-basiert)** | ✅ | 81/81 (100%), MSW Mock Handlers |
 | 7 | **FRONTEND_ACCESSIBILITY.md Dokumentation** | ✅ | 519 LOC, WCAG 2.1 AA/AAA |
-| 8 | **Feature-Flag VITE_FEATURE_LEADGEN=true** | ✅ | .env configured, LeadList.tsx integrated |
+| 8 | **LeadWizard ist Standard (Feature-Flag entfernt)** | ✅ | LeadWizard einzige Lead-Erstellung |
 
 **GESAMT-ERFÜLLUNG:** 8/8 (100%) ✅
 
@@ -1585,15 +1584,11 @@ gh pr create --title "Sprint 2.1.5 Frontend Phase 2: Progressive Profiling UI" \
 - POST /api/leads mit consentGivenAt validieren
 - Backend muss Feld akzeptieren (Lead.consent_given_at TIMESTAMPTZ)
 
-**3. Production Feature Flag:**
-- VITE_FEATURE_LEADGEN=true in Production .env
-- Rollout-Strategie dokumentieren
-
-**4. Sprint-Dokumentation Update:**
+**3. Sprint-Dokumentation Update:**
 - SPRINT_MAP.md: 2.1.5 → COMPLETE
 - PRODUCTION_ROADMAP_2025.md: Frontend Phase 2 COMPLETE
 
-**5. Release Notes:**
+**4. Release Notes:**
 - DSGVO Consent UI (Art. 6 Abs. 1 lit. a)
 - Progressive Profiling (3 Stufen)
 - Lead Protection Badge (6-Month Visualization)
