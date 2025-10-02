@@ -245,23 +245,50 @@
   - Frontend Phase 2 ausstehend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
   - Verschobene Features auf Sprint 2.1.6: V258 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
   - Migration: V255-V257, Tests: OK
+- 2025-10-02 04:13 — **Documentation:** Frontend Theme V2 zu AI Context hinzugefügt, DESIGN_SYSTEM.md entrümpelt (563→474 lines, -16%), Logo-Performance validiert (19 KB bereits optimiert), **Migration**: n/a, **Tests**: n/a
+- 2025-10-02 14:30 — **Sprint Planning 2.1.5-2.1.7:** Dokumentations-Update COMPLETE - DSGVO Consent, Activity-Types Progress-Mapping, Stop-the-Clock Rules definiert
+  - TRIGGER_SPRINT_2_1_5.md: DSGVO Consent-Checkbox (Stage 1, consent_given_at), Activity-Types Progress-Mapping (QUALIFIED_CALL/MEETING/DEMO/ROI_PRESENTATION/SAMPLE_SENT = true), Stop-the-Clock RBAC (Manager+Admin only, UI in 2.1.6)
+  - TRIGGER_SPRINT_2_1_6.md: Bestandsleads-Migrations-API (Modul 08, Dry-Run PFLICHT), Lead → Kunde Convert Flow, Stop-the-Clock UI, Extended Lead-Transfer Workflow, Nightly Jobs
+  - TRIGGER_SPRINT_2_1_7.md: NEU erstellt - Lead-Scoring (V259), Activity-Templates (V260), Mobile-First UI, Offline-Fähigkeit (Service Worker + IndexedDB), QR-Code-Scanner (vCard/meCard)
+  - SPRINT_MAP.md: Sprint 2.1.5 Status IN PROGRESS (Frontend Phase 2), Sprint 2.1.6/2.1.7 PLANNED dokumentiert
+  - V249 Migration Inkonsistenz korrigiert (nicht deployed, nur Artefakt für 2.1.6+)
+  - **Migration**: n/a, **Tests**: n/a
+- 2025-10-03 00:08 — **Sprint 2.1.5 Frontend Phase 2 COMPLETE (PR #125 READY):** Progressive Profiling UI mit 100% Test Coverage
+  - LeadWizard.tsx: 3-Stufen Progressive Profiling (MUI v7, Grid→Stack Migration, DSGVO Consent-Checkbox Stage 1)
+  - LeadProtectionBadge.tsx: 6-Month Protection Visualization (Color-Coding, Tooltip, ARIA Compliance)
+  - ActivityTimeline.tsx: 60-Day Progress Tracking (5 Progress-Types, 5 Non-Progress-Types, Filtering)
+  - Test Coverage: 75/75 (100%) - 17 LeadWizard Integration Tests, 23 Badge Tests, 35 Timeline Tests
+  - MUI v7 Compliance: Grid → Stack, Select labelId/id für ARIA, CSS Class Validation Suite
+  - Design System V2: FreshFoodz Theme (#94C456, #004F7B, Antonio Bold, Poppins), legacy DESIGN_SYSTEM.md entfernt
+  - Bug Fixes: Stage-Determination (falsy→undefined), MUI CSS Classes (filledSuccess statt colorSuccess), Icon Rendering (querySelectorAll)
+  - Feature Flag: VITE_FEATURE_LEADGEN=true (bereits aktiv)
+  - Handover: SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md erstellt
+  - **Migration**: n/a, **Tests**: 75/75 ✅ (100% Coverage)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.5 Backend Phase 1 (PR #124):** Push + PR erstellen für feature/mod02-sprint-2.1.5-lead-protection
-- **Sprint 2.1.5 Frontend Phase 2 (PR #125):** Branch feature/mod02-sprint-2.1.5-frontend-progressive-profiling
-  - LeadWizard.vue (3-Stufen Progressive Profiling UI)
-  - LeadProtectionBadge.vue (Status-Indicator)
-  - ActivityTimeline.vue (Progress Tracking Display)
-  - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
-- **Sprint 2.1.6 Vorbereitung:** V258 lead_transfers Tabelle, Backdating-Endpoint, Nightly Jobs, Fuzzy-Matching
-- **Backfill-Job für historische Leads:** Normalisierung für bestehende Daten
-- **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance, Progress-Deadlines
-- **Production Index Build:** CONCURRENTLY-Indizes für email/phone/company (siehe Runbook)
-- Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
-- Sprint 2.1.6: Lead-Transfer-Flow mit Genehmigung implementieren
-- Sprint 2.1.6: Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
+- **Sprint 2.1.5 Finalisierung (PR #125) - CODE REVIEW (03.10.2025):**
+  - Branch: feature/mod02-sprint-2.1.5-frontend-progressive-profiling (100% COMPLETE)
+  - PR erstellen mit Handover SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md
+  - Backend Integration Test: POST /api/leads mit consentGivenAt validieren (Backend muss Feld akzeptieren)
+  - Production Feature Flag: VITE_FEATURE_LEADGEN=true aktivieren
+  - Sprint-Dokumentation Update: SPRINT_MAP.md (2.1.5 → COMPLETE), PRODUCTION_ROADMAP_2025.md
+  - Release Notes: DSGVO Consent UI, Progressive Profiling, Lead Protection Badge
+- **Sprint 2.1.6 Vorbereitung (Start 12.10.2025):**
+  - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
+  - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
+  - Stop-the-Clock UI (StopTheClockDialog, Manager-only, Audit-Log)
+  - V258 lead_transfers Tabelle (Lead-Transfer zwischen Partnern)
+  - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
+  - Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+  - Fuzzy-Matching & DuplicateReviewModal
+- **Sprint 2.1.7 Vorbereitung (Start 19.10.2025):**
+  - Lead-Scoring Algorithmus (V259, 0-100 Punkte, konfigurierbare Gewichtungen)
+  - Activity-Templates System (V260, Standard-Seeds + User-Templates)
+  - Mobile-First UI Optimierung (Touch, Breakpoints, Performance <3.5s 3G)
+  - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
+  - QR-Code-Scanner (Camera-API, vCard/meCard, Desktop-Fallback)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
@@ -273,6 +300,11 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+- 2025-10-02 — **DSGVO Consent-Management:** Consent-Checkbox PFLICHT in Stage 1 (nicht vorausgefüllt), lead.consent_given_at Timestamp speichern, keine Stage-1-Erfassung ohne Consent
+- 2025-10-02 — **Activity-Types Progress-Mapping:** countsAsProgress=true für QUALIFIED_CALL/MEETING/DEMO/ROI_PRESENTATION/SAMPLE_SENT; countsAsProgress=false für NOTE/FOLLOW_UP/EMAIL/CALL/SAMPLE_FEEDBACK
+- 2025-10-02 — **Stop-the-Clock RBAC:** Nur MANAGER + ADMIN dürfen pausieren/resumen, UI-Button verschoben auf Sprint 2.1.6, Audit-Log PFLICHT für alle Events
+- 2025-10-02 — **Bestandsleads-Migration:** Dedizierte Backend-API (Modul 08), Dry-Run Mode PFLICHT, historische Datumsfelder explizit übergeben (NICHT automatisch berechnen), keine Frontend-Override-Felder
+- 2025-10-02 — **Sprint-Scope 2.1.5-2.1.7:** Feature-Aufteilung definiert (2.1.5: Progressive Profiling + DSGVO, 2.1.6: Migration + Convert + Transfer, 2.1.7: Scoring + Mobile + Offline)
 - 2025-10-01 — **Test-Performance Optimization:** JUnit Platform Parallel Override entfernt (Maven Surefire steuert Parallelität), ValidatorFactory → @BeforeAll Pattern für DTO-Tests
 - 2025-10-01 — **CI-only Migrations:** V10xxx-Serie für Test-/Dev-Umgebungen (CONCURRENTLY nicht nötig), Prod verwendet CONCURRENTLY-Indizes
 - 2025-10-01 — **Test-Tag-Pyramide:** @Tag("unit")/@Tag("integration") verbindlich, CI excludes integration/slow in PR-Pipeline
