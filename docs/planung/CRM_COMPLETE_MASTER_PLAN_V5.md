@@ -245,23 +245,18 @@
   - Frontend Phase 2 ausstehend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
   - Verschobene Features auf Sprint 2.1.6: V258 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
   - Migration: V255-V257, Tests: OK
+- 2025-10-02 04:13 — **Documentation:** Frontend Theme V2 zu AI Context hinzugefügt, DESIGN_SYSTEM.md entrümpelt (563→474 lines, -16%), Logo-Performance validiert (19 KB bereits optimiert), **Migration**: n/a, **Tests**: n/a
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.5 Backend Phase 1 (PR #124):** Push + PR erstellen für feature/mod02-sprint-2.1.5-lead-protection
-- **Sprint 2.1.5 Frontend Phase 2 (PR #125):** Branch feature/mod02-sprint-2.1.5-frontend-progressive-profiling
-  - LeadWizard.vue (3-Stufen Progressive Profiling UI)
-  - LeadProtectionBadge.vue (Status-Indicator)
-  - ActivityTimeline.vue (Progress Tracking Display)
+- **Sprint 2.1.5 Frontend Phase 2 (PR #125):** Branch feature/mod02-sprint-2.1.5-frontend-progressive-profiling erstellen
+  - LeadWizard Component (3-Stufen Progressive Profiling UI)
+  - LeadProtectionBadge Component (Status-Indicator)
+  - ActivityTimeline Component (Progress Tracking Display)
   - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
+  - Integration Tests für Progressive Profiling Flow
 - **Sprint 2.1.6 Vorbereitung:** V258 lead_transfers Tabelle, Backdating-Endpoint, Nightly Jobs, Fuzzy-Matching
-- **Backfill-Job für historische Leads:** Normalisierung für bestehende Daten
-- **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance, Progress-Deadlines
-- **Production Index Build:** CONCURRENTLY-Indizes für email/phone/company (siehe Runbook)
-- Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
-- Sprint 2.1.6: Lead-Transfer-Flow mit Genehmigung implementieren
-- Sprint 2.1.6: Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
