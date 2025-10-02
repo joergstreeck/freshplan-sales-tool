@@ -105,11 +105,29 @@ CORPORATE-DESIGN:
     Font-Sizes: Minimum 14px Body, 16px+ Interactive Elements
     Mobile-First: Responsive Design für Außendienst-Nutzung
 
+STYLING-TECH-STACK:
+  UI-Framework: MUI v7 (Material-UI) - Primary Component Library
+  CSS-Engine: Emotion (CSS-in-JS) - @emotion/react + @emotion/styled
+  Utilities:
+    - tailwind-merge (KEIN Tailwind CSS! Nur className merge utility)
+    - class-variance-authority (Component Variants Pattern)
+    - clsx (Conditional Classes)
+  Icon-System:
+    - @mui/icons-material (Primary Icons)
+    - lucide-react (Secondary Icon Set)
+
+  Theme-Customization:
+    Location: /frontend/src/theme/freshfoodz-theme.ts
+    Pattern: MUI createTheme() mit FreshFoodz-Overrides
+    Colors: MUI Palette Override für primary/secondary
+    Components: MUI Component-Overrides für Buttons/Cards/Navigation
+
 IMPLEMENTATION-REFERENCE:
-  Location: Sprint Summary unter "Frontend Changes"
-  Documentation: Frontend Modul _index.md → "Design System" Sektion
-  MUI-Theme-Config: /frontend/src/theme/freshfoodz-theme.ts
+  Sprint-Docs: Sprint Summary unter "Frontend Changes"
+  Module-Docs: Frontend Modul _index.md → "Design System" Sektion
+  Theme-Config: /frontend/src/theme/freshfoodz-theme.ts
   Components: FreshFoodz-branded Header, CTA-Buttons, Status-Badges
+  Storybook: Component-Katalog mit FreshFoodz CI (npm run storybook)
 ```
 
 ---
