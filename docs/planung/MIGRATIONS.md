@@ -22,7 +22,42 @@
 
 ---
 
+## 📝 Quick-Template (Copy/Paste für neue Migration)
+
+```markdown
+| Field | Value |
+|-------|-------|
+| **Version** | V{NR} (via ./scripts/get-next-migration.sh) |
+| **Beschreibung** | {Kurzbeschreibung} |
+| **Sprint** | {X.Y.Z} |
+| **Owner** | @{github-user} |
+| **PR** | #{pr-nummer} |
+| **Rollback** | ✅ Yes / ⚠️ Manual / ❌ No |
+| **Risk** | 🟢 Low / 🟡 Medium / 🔴 High |
+| **Downtime** | None / Requires window |
+
+**SQL Preview:**
+\`\`\`sql
+ALTER TABLE {table} ADD COLUMN {column} {type};
+\`\`\`
+
+**Rollback SQL:**
+\`\`\`sql
+ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
+\`\`\`
+```
+
+**Verwendung:**
+1. `./scripts/get-next-migration.sh` → Nächste V-Nummer
+2. Migration in Tabelle unten eintragen (nur Version, Beschreibung, Sprint, Status, Notes)
+3. Für wichtige Migrations (Sprint 2.1.x+): Owner, PR, Rollback, Risk, Downtime ergänzen
+4. `updated` Datum am Dateiende aktualisieren
+
+---
+
 ## 🗂️ Migrations Übersicht
+
+**Hinweis:** Spalten Owner/PR/Rollback/Risk/Downtime nur für neueste Migrations (V245+) gepflegt.
 
 ### Repeatable Migrations (R__)
 
@@ -140,9 +175,9 @@
 | **V251** | Idempotency Tenant Unique Forward Fix | 2.1.4 | ✅ Deployed | FP-234: Idempotenz-Store Fix |
 | **V252** | Leads registered_at Backdating | 2.1.4 | ✅ Deployed | FP-234: Timestamp Override System |
 | **V254** | Events Add published Column | 2.1.4 | ✅ Deployed | FP-234: Event Publishing State |
-| **V255** | Leads Protection Basics & Stage | 2.1.5 | 🚧 In Progress | FP-235: Protection + Progressive Profiling |
-| **V256** | Lead Activities Augment | 2.1.5 | 🚧 In Progress | FP-235: counts_as_progress + Vertriebsdoku |
-| **V257** | Lead Progress Helpers & Triggers | 2.1.5 | 🚧 In Progress | FP-235: DB Functions + Triggers |
+| **V255** | Leads Protection Basics & Stage | 2.1.5 | ✅ Deployed | @joergstreeck | #124 | ✅ Yes | 🟢 Low | None | FP-235 Protection |
+| **V256** | Lead Activities Augment | 2.1.5 | ✅ Deployed | @joergstreeck | #124 | ✅ Yes | 🟢 Low | None | FP-235 Activities |
+| **V257** | Lead Progress Helpers & Triggers | 2.1.5 | ✅ Deployed | @joergstreeck | #124 | ✅ Yes | 🟢 Low | None | FP-235 Triggers |
 
 ---
 
