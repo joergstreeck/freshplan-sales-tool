@@ -1,4 +1,4 @@
-import type { Lead, Problem } from './types';
+import type { Lead, Problem, LeadStage, BusinessType } from './types';
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
@@ -20,11 +20,11 @@ export async function listLeads(): Promise<Lead[]> {
 // Sprint 2.1.5 - Progressive Profiling API
 export async function createLead(payload: {
   // Stage 0: Company Basics
-  stage?: number;
+  stage?: LeadStage;
   companyName: string;
   city?: string;
   postalCode?: string;
-  businessType?: string;
+  businessType?: BusinessType;
   // Stage 1: Contact + DSGVO Consent
   contact?: {
     firstName?: string;
@@ -35,7 +35,7 @@ export async function createLead(payload: {
   consentGivenAt?: string; // ISO 8601 timestamp
   // Stage 2: Business Details
   estimatedVolume?: number;
-  kitchenSize?: string;
+  kitchenSize?: 'small' | 'medium' | 'large';
   employeeCount?: number;
   website?: string;
   industry?: string;

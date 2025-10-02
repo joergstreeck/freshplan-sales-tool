@@ -53,7 +53,7 @@ export default function LeadProtectionBadge({
       case 'protected':
         return 'Geschützt';
       case 'warning':
-        return `Warnung (${daysUntilExpiry}T)`;
+        return daysUntilExpiry != null ? `Warnung (${daysUntilExpiry}T)` : 'Warnung';
       case 'expired':
         return 'Abgelaufen';
       default:
