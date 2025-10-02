@@ -11,7 +11,9 @@ jobs:
     name: Backend Tests
     if: |
       github.ref == 'refs/heads/feature/user-management' ||
-      contains(github.head_ref, 'user-management')
+      contains(github.head_ref, 'user-management') ||
+      contains(github.ref, 'mod02-sprint-2.1.5') ||
+      contains(github.head_ref, 'mod02-sprint-2.1.5')
     runs-on: ubuntu-latest
     
     steps:
@@ -45,7 +47,9 @@ jobs:
     name: Frontend Tests
     if: |
       github.ref == 'refs/heads/feature/react-migration' ||
-      contains(github.head_ref, 'react-migration')
+      contains(github.head_ref, 'react-migration') ||
+      contains(github.ref, 'mod02-sprint-2.1.5') ||
+      contains(github.head_ref, 'mod02-sprint-2.1.5')
     runs-on: ubuntu-latest
     
     steps:
