@@ -17,7 +17,32 @@ export async function listLeads(): Promise<Lead[]> {
   return res.json();
 }
 
-export async function createLead(payload: { name: string; email?: string }) {
+// Sprint 2.1.5 - Progressive Profiling API
+export async function createLead(payload: {
+  // Stage 0: Company Basics
+  stage?: number;
+  companyName: string;
+  city?: string;
+  postalCode?: string;
+  businessType?: string;
+  // Stage 1: Contact + DSGVO Consent
+  contact?: {
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    phone?: string;
+  };
+  consentGivenAt?: string; // ISO 8601 timestamp
+  // Stage 2: Business Details
+  estimatedVolume?: number;
+  kitchenSize?: string;
+  employeeCount?: number;
+  website?: string;
+  industry?: string;
+  // Legacy support
+  name?: string;
+  email?: string;
+}) {
   const res = await fetch(`${BASE}/api/leads`, {
     method: 'POST',
     headers: {
