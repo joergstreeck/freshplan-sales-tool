@@ -96,12 +96,13 @@ Sprint 2.1.3: Frontend Lead Mgmt      ✅ COMPLETE → PR #122 merged - Lead Man
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 Sprint 2.1.4: Lead Dedup & Quality    ✅ COMPLETE → PR #123 merged - Normalisierung, Idempotenz, CI 24min→7min
                                       → [Operations Runbook](../operations/lead-deduplication-runbook.md)
-Sprint 2.1.5: Protection & Profiling  🔄 Backend Phase 1 COMPLETE (01.10.2025) → Frontend Phase 2 IN PROGRESS (02.10.2025)
+Sprint 2.1.5: Protection & Profiling  ✅ COMPLETE (03.10.2025) → Backend + Frontend 100%
                                       → V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First)
-                                      → 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+                                      → Backend: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+                                      → Frontend: 81 Tests (LeadWizard + Badge + Timeline, 100% passed)
                                       → DSGVO Consent-Checkbox (Stage 1, consent_given_at), Activity-Types Progress-Mapping definiert
                                       → LeadWizard.tsx + LeadProtectionBadge.tsx + ActivityTimeline.tsx (Full-Page Components)
-                                      → Feature-Flag: VITE_FEATURE_LEADGEN=true
+                                      → LeadWizard ist Standard (keine Alternative UI)
                                       → Features verschoben: V258, Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
 
 Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
@@ -295,7 +296,7 @@ Day 22: feature/02-leads-security-integration-FP-236  📋
 
 **Status:** Research abgeschlossen → PR #112 (Draft, docs-only)
 
-**Nächster Schritt:** Thin Vertical Slice mit Feature-Flag `VITE_FEATURE_LEADGEN`
+**Nächster Schritt:** Sprint 2.1.3 implementiert Thin Vertical Slice
 
 ---
 

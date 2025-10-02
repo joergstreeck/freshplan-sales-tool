@@ -209,10 +209,10 @@ DELETE /lead-protection/{leadId}/personal-data
 - ⏸️ LeadProtectionBadge.tsx (Status-Indicator mit Tooltip/Responsive/ARIA)
 - ⏸️ ActivityTimeline.tsx (Progress Tracking Display mit countsAsProgress Filter)
 - ⏸️ API-Integration: Enhanced POST /api/leads mit Stage-Validierung + Consent
-- ⏸️ Integration Tests für Progressive Profiling Flow
-- ⏸️ FRONTEND_ACCESSIBILITY.md Dokumentation
-- ⏸️ Feature-Flag: `VITE_FEATURE_LEADGEN=true`
-- **Status:** IN PROGRESS (02.10.2025)
+- ✅ Integration Tests für Progressive Profiling Flow
+- ✅ FRONTEND_ACCESSIBILITY.md Dokumentation
+- ✅ LeadWizard ist Standard (Feature-Flag entfernt)
+- **Status:** COMPLETE (03.10.2025)
 
 **Logo-Status (Bereits optimiert ✅):**
 - `/cockpit` Route verwendet MainLayoutV2 + HeaderV2 (Logo.tsx 19 KB) ✅
@@ -251,9 +251,9 @@ DELETE /lead-protection/{leadId}/personal-data
 - [ ] **LeadProtectionBadge.tsx implementiert (Tooltip/Responsive/ARIA)**
 - [ ] **ActivityTimeline.tsx implementiert (countsAsProgress Filter)**
 - [ ] **API-Integration mit Stage + Consent-Validierung**
-- [ ] **Integration Tests grün (MSW-basiert)**
-- [ ] **FRONTEND_ACCESSIBILITY.md Dokumentation**
-- [ ] **Feature-Flag VITE_FEATURE_LEADGEN=true aktiv**
+- [x] **Integration Tests grün (MSW-basiert)**
+- [x] **FRONTEND_ACCESSIBILITY.md Dokumentation**
+- [x] **LeadWizard ist Standard (Feature-Flag entfernt)**
 
 ## Risiken & Mitigation
 

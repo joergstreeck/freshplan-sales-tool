@@ -52,7 +52,7 @@ updated: "2025-10-02"
 - **RESEARCH_ANSWERS.md:** 11 offene Fragen beantwortet
 - **VALIDATED_FOUNDATION_PATTERNS.md:** Konsolidierte Patterns aus grundlagen/ & infrastruktur/
 
-**Nächster Schritt:** Thin Vertical Slice mit Feature-Flag `VITE_FEATURE_LEADGEN`
+**Nächster Schritt:** Thin Vertical Slice (Thin Vertical Slice implemented in Sprint 2.1.3)
 
 ---
 
@@ -61,7 +61,6 @@ updated: "2025-10-02"
 **Status:** ✅ COMPLETE
 **Ergebnisse:**
 - Thin Vertical Slice: `/leads` Route + `LeadList` + `LeadCreateDialog`
-- Feature-Flag: `VITE_FEATURE_LEADGEN=true` aktiviert
 - Vollständige Business-Logik:
   - Client-seitige Validierung (Name ≥2, E-Mail-Format)
   - Duplikat-Erkennung (409 Response bei gleicher E-Mail)
@@ -140,7 +139,7 @@ updated: "2025-10-02"
 - API-Integration: Enhanced POST /api/leads mit Stage + Consent-Validierung
 - Integration Tests für Progressive Profiling Flow (MSW-basiert)
 - FRONTEND_ACCESSIBILITY.md Dokumentation
-- Feature-Flag: `VITE_FEATURE_LEADGEN=true`
+- LeadWizard ist Standard (keine Alternative UI)
 
 **Activity-Types Progress-Mapping (definiert 02.10.2025):**
 - ✅ countsAsProgress=true: QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT

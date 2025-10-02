@@ -261,9 +261,9 @@
   - MUI v7 Compliance: Grid → Stack, Select labelId/id für ARIA, CSS Class Validation Suite
   - Design System V2: FreshFoodz Theme (#94C456, #004F7B, Antonio Bold, Poppins), legacy DESIGN_SYSTEM.md entfernt
   - Bug Fixes: Stage-Determination (falsy→undefined), MUI CSS Classes (filledSuccess statt colorSuccess), Icon Rendering (querySelectorAll)
-  - Feature Flag: VITE_FEATURE_LEADGEN=true (bereits aktiv)
+  - LeadWizard ist Standard (Feature-Flag entfernt, keine Alternative UI)
   - Handover: SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md erstellt
-  - **Migration**: n/a, **Tests**: 75/75 ✅ (100% Coverage)
+  - **Migration**: n/a, **Tests**: 81/81 ✅ (100% Coverage)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
@@ -272,7 +272,6 @@
   - Branch: feature/mod02-sprint-2.1.5-frontend-progressive-profiling (100% COMPLETE)
   - PR erstellen mit Handover SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md
   - Backend Integration Test: POST /api/leads mit consentGivenAt validieren (Backend muss Feld akzeptieren)
-  - Production Feature Flag: VITE_FEATURE_LEADGEN=true aktivieren
   - Sprint-Dokumentation Update: SPRINT_MAP.md (2.1.5 → COMPLETE), PRODUCTION_ROADMAP_2025.md
   - Release Notes: DSGVO Consent UI, Progressive Profiling, Lead Protection Badge
 - **Sprint 2.1.6 Vorbereitung (Start 12.10.2025):**

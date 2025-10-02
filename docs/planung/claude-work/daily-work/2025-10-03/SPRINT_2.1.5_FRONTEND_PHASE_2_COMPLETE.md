@@ -243,29 +243,26 @@ const hasBusinessData = formData.estimatedVolume !== undefined ||
 
 ---
 
-## 🚀 FEATURE FLAG INTEGRATION
+## ✅ LEADWIZARD INTEGRATION (STANDARD UI)
 
-**Datei:** `/frontend/.env`
-```bash
-# Sprint 2.1.5 Frontend Phase 2 - Progressive Profiling Feature Flag
-VITE_FEATURE_LEADGEN=true
-```
+**LeadWizard ist jetzt Standard** - Kein Feature-Flag mehr.
 
-**Usage in LeadList.tsx:**
+**LeadList.tsx Implementation:**
 ```typescript
-const featureLeadGen = import.meta.env.VITE_FEATURE_LEADGEN === 'true';
-
 return (
   <Box>
-    {featureLeadGen && (
-      <Button variant="contained" onClick={() => setWizardOpen(true)}>
-        Neuer Lead
-      </Button>
-    )}
+    <Button variant="contained" onClick={() => setWizardOpen(true)}>
+      {t('create.button')}
+    </Button>
     <LeadWizard open={wizardOpen} onClose={() => setWizardOpen(false)} onCreated={refetchLeads} />
   </Box>
 );
 ```
+
+**Warum kein Feature-Flag:**
+- LeadWizard ist die EINZIGE Lead-Erstellung (keine Alternative)
+- Kein A/B-Testing oder gestaffelter Rollout geplant
+- Feature ist sofort aktiv
 
 ---
 
@@ -278,13 +275,13 @@ return (
    - 🔄 API-Validierung: `POST /api/leads` mit `consentGivenAt` testen
 
 2. **Code Review:**
-   - ✅ 75/75 Tests passing
+   - ✅ 81/81 Tests passing
    - ✅ Design System compliant
    - ✅ MUI v7 migration complete
+   - ✅ LeadWizard ist Standard (Feature-Flag entfernt)
    - 📝 PR erstellen: `feature/mod02-sprint-2.1.5-frontend-progressive-profiling → main`
 
 3. **Deployment:**
-   - 🔄 Feature Flag: `VITE_FEATURE_LEADGEN=true` in Production setzen
    - 📝 Release Notes: DSGVO Consent UI, Progressive Profiling, Lead Protection Badge
 
 ### Sprint 2.1.6 Preparation (12-18.10.2025)
