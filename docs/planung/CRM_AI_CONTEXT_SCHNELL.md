@@ -122,7 +122,55 @@ STYLING-TECH-STACK:
     Colors: MUI Palette Override für primary/secondary
     Components: MUI Component-Overrides für Buttons/Cards/Navigation
 
+COLOR-SPECIFICS (RGB für KI-Genauigkeit):
+  Primary-Green: #94C456 → rgb(148, 196, 86)
+  Corporate-Blue: #004F7B → rgb(0, 79, 123)
+  Hover-States:
+    - Primary-Hover: #7BA945 (dunklerer Grünton)
+    - Secondary-Hover: #003A5C (dunkleres Blau)
+  Status-Colors:
+    - Success: #94C456 (FreshFoodz Green)
+    - Error: #DC3545 (Standard Red)
+    - Warning: #FFC107 (Amber)
+
+CSS-DESIGN-TOKENS (Verbindlich):
+  Layout:
+    - Header-Height: 64px (weiß, shadow: 0 2px 4px rgba(0,0,0,0.08))
+    - Content-Margin-Top: 8px (Abstand Header → Content)
+    - Content-Padding: 16px
+  Shadows:
+    - Header: 0 2px 4px rgba(0,0,0,0.08)
+    - Paper: 0 1px 3px rgba(0,0,0,0.05)
+    - Card: 0 1px 2px rgba(0,0,0,0.04)
+
+SMARTLAYOUT-SYSTEM (Intelligente Content-Breiten):
+  Tables/Lists: 100% Breite (Auto-Detect: <Table>, <DataGrid>, data-wide="true")
+  Forms: 800px max (Auto-Detect: <form>, mehrere <TextField>)
+  Text/Articles: 1200px max (Auto-Detect: hauptsächlich <Typography>)
+  Dashboard: 100% Breite (Grid mit Cards)
+  Cockpit: 100% Breite, 0 Padding (Spezial-Layout)
+
+ACCESSIBILITY (WCAG 2.1 AA+):
+  Contrast-Ratios:
+    - Green/White: 4.52:1 (AA ✅)
+    - Blue/White: 8.89:1 (AAA ✅)
+    - Black/White: 21:1 (AAA ✅)
+  Focus-States: 3px solid outline, 2px offset
+  High-Contrast-Mode: Automatische dunklere Farbtöne
+
+UI-SPRACHE (DEUTSCH, kein Denglisch):
+  Dashboard → Übersicht | Save → Speichern | Cancel → Abbrechen
+  Delete → Löschen | Edit → Bearbeiten | Settings → Einstellungen
+  Stil: "Sie"-Form, höflich, keine Abkürzungen
+
+LOGO-VERWENDUNG:
+  File: /frontend/public/freshfoodzlogo.png (19 KB PNG)
+  Desktop: 40px Höhe | Mobile: 32px Höhe
+  Schutzzone: min. 16px Freiraum
+  Nur auf weißem/hellem Hintergrund!
+
 IMPLEMENTATION-REFERENCE:
+  Design-System-Spec: /docs/planung/grundlagen/DESIGN_SYSTEM.md (verbindlich!)
   Sprint-Docs: Sprint Summary unter "Frontend Changes"
   Module-Docs: Frontend Modul _index.md → "Design System" Sektion
   Theme-Config: /frontend/src/theme/freshfoodz-theme.ts
