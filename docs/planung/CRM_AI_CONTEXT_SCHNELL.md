@@ -82,6 +82,38 @@ COMPETITIVE-DIFFERENTIATORS:
 
 ---
 
+## 🎨 **FRONTEND THEME V2 – FRESHFOODZ CI**
+
+```yaml
+CORPORATE-DESIGN:
+  Primary-Colors:
+    Main-Green: #94C456 (FreshFoodz Green - Primary Brand Color)
+    Corporate-Blue: #004F7B (Vertrauenswürdig, Professional)
+
+  Typography:
+    Headlines: Antonio Bold (Impactful, Modern, Attention-grabbing)
+    Body-Text: Poppins (Readable, Professional, Web-optimiert)
+
+  UI-Pattern-Usage:
+    Buttons-Primary: #94C456 (Call-to-Action)
+    Navigation: #004F7B (Header, Sidebar)
+    Alerts-Success: #94C456 (Lead converted, Sample shipped)
+    Alerts-Info: #004F7B (Follow-up reminder, Territory info)
+
+  Accessibility:
+    Contrast-Ratio: AAA-Standard (WCAG 2.1) - alle Text-/Background-Kombinationen
+    Font-Sizes: Minimum 14px Body, 16px+ Interactive Elements
+    Mobile-First: Responsive Design für Außendienst-Nutzung
+
+IMPLEMENTATION-REFERENCE:
+  Location: Sprint Summary unter "Frontend Changes"
+  Documentation: Frontend Modul _index.md → "Design System" Sektion
+  MUI-Theme-Config: /frontend/src/theme/freshfoodz-theme.ts
+  Components: FreshFoodz-branded Header, CTA-Buttons, Status-Badges
+```
+
+---
+
 ## 🏗️ **SEKTION 2: SYSTEM-ARCHITEKTUR-VISION** (35%)
 
 ### **📊 8-Module CRM-Ecosystem Übersicht**
