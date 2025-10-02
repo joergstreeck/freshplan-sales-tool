@@ -90,20 +90,42 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - Status: ✅ COMPLETE (Backend fertig)
 
 🔧 TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling
-   - 6-Monats-Schutz + 60-Tage-Aktivitätsstandard
-   - Stop-the-Clock Mechanismus
-   - Progressive Profiling (Stage 0/1/2)
-   - Protection-Endpoints (Reminder, Extend, Stop-Clock)
-   - Data-Retention-Plan + Compliance
-   - Status: 🔧 IN PROGRESS
+   - 6-Monats-Schutz + 60-Tage-Aktivitätsstandard + Progressive Profiling (Stage 0/1/2)
+   - **Backend Phase 1 COMPLETE (01.10.2025):**
+     - V255-V257 (Progress Tracking + Stage + Functions/Trigger)
+     - ADR-004 Inline-First Architecture (keine separate lead_protection Tabelle)
+     - 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
+   - **Frontend Phase 2 IN PROGRESS (02.10.2025):**
+     - DSGVO Consent-Checkbox (Stage 1, lead.consent_given_at PFLICHT)
+     - Activity-Types Progress-Mapping (5 true, 5 false)
+     - LeadWizard.tsx + LeadProtectionBadge.tsx + ActivityTimeline.tsx
+     - Feature-Flag: VITE_FEATURE_LEADGEN=true
+   - **Stop-the-Clock Rules:** Backend-only, MANAGER+ADMIN RBAC, UI verschoben auf 2.1.6
+   - Status: 🔧 Backend Phase 1 ✅ | Frontend Phase 2 IN PROGRESS
 
-📋 TRIGGER_SPRINT_2_1_6.md - Lead Transfer & Team Management
-   - Lead-Transfer zwischen Partnern
-   - Team-basierte Sichtbarkeit (RLS Phase 1)
-   - Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
-   - Merge/Unmerge mit Identitätsgraph
-   - ADR-003 Row-Level-Security Design
-   - Status: 📋 PLANNED
+📋 TRIGGER_SPRINT_2_1_6.md - Lead Transfer & Team Management (verschoben aus 2.1.5)
+   - Lead-Transfer zwischen Partnern (mit Genehmigung, 48h SLA)
+   - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)
+     - Dry-Run Mode PFLICHT, Historische Daten explizit, Duplikaten-Check
+   - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
+   - Stop-the-Clock UI (StopTheClockDialog, Manager-only)
+   - Extended Lead-Transfer Workflow + Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+   - Fuzzy-Matching & Scoring (Levenshtein-Distance, pg_trgm, DuplicateReviewModal)
+   - V258 lead_transfers + Backdating Endpoint
+   - Status: 📋 PLANNED (12-18.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_7.md - Lead Scoring & Mobile Optimization (NEU erstellt 02.10.2025)
+   - Lead-Scoring Algorithmus (0-100 Punkte, V259 Migration)
+     - Faktoren: Stage (20-80), Volume (+10/+15), Business Type (+5/+10), Activity Frequency (+2/5)
+   - Activity-Templates System (V260 Migration, CRUD-API)
+     - Standard-Templates: Erstkontakt, Sample-Box, ROI-Präsentation, Follow-up
+   - Mobile-First UI Optimierung
+     - Touch-optimiert (Button ≥44px), Breakpoints <768px Single-Column
+     - Bundle <200KB, First Contentful Paint <1.5s (3G)
+   - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
+   - QR-Code-Scanner für schnelle Kontakterfassung (vCard/meCard Import)
+   - Lead-Scoring UI mit Color-Coding + Filter + Score-Breakdown
+   - Status: 📋 PLANNED (19-25.10.2025)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture
