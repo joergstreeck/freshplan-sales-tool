@@ -365,7 +365,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                         formData.contact.phone
                       )
                     }
-                    aria-required="true"
+                    aria-required={
+                      !!(
+                        formData.contact.firstName ||
+                        formData.contact.lastName ||
+                        formData.contact.email ||
+                        formData.contact.phone
+                      )
+                    }
                   />
                 }
                 label={

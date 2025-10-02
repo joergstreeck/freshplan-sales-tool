@@ -78,9 +78,9 @@ const server = setupServer(
   })
 );
 
-beforeEach(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
 afterEach(() => server.resetHandlers());
-afterEach(() => server.close());
+afterAll(() => server.close());
 
 describe('LeadWizard - Progressive Profiling Integration Tests', () => {
   const mockOnClose = vi.fn();
