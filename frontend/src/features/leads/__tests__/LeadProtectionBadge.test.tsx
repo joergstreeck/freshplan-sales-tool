@@ -197,7 +197,7 @@ describe('LeadProtectionBadge', () => {
       const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
 
       const badge = container.querySelector('.MuiChip-root');
-      badge && await user.hover(badge);
+      if (badge) await user.hover(badge);
 
       // Tooltip content should appear (after delay)
       await screen.findByText(/lead ist geschützt/i, {}, { timeout: 5000 });
@@ -217,7 +217,7 @@ describe('LeadProtectionBadge', () => {
       const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
 
       const badge = container.querySelector('.MuiChip-root');
-      badge && await user.hover(badge);
+      if (badge) await user.hover(badge);
 
       await screen.findByText(/lead-schutz läuft bald ab/i, {}, { timeout: 3000 });
       expect(screen.getByText(/nur noch 5 tage bis progress-deadline/i)).toBeInTheDocument();
@@ -235,7 +235,7 @@ describe('LeadProtectionBadge', () => {
       const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
 
       const badge = container.querySelector('.MuiChip-root');
-      badge && await user.hover(badge);
+      if (badge) await user.hover(badge);
 
       await screen.findByText(/lead-schutz abgelaufen/i, {}, { timeout: 3000 });
       expect(screen.getByText(/keine progress-aktivität seit 60\+ tagen/i)).toBeInTheDocument();
@@ -251,7 +251,7 @@ describe('LeadProtectionBadge', () => {
       const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
 
       const badge = container.querySelector('.MuiChip-root');
-      badge && await user.hover(badge);
+      if (badge) await user.hover(badge);
 
       await screen.findByText(/vertrag §3\.2: 6 monate ab registrierung/i, {}, { timeout: 3000 });
     });

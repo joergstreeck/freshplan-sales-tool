@@ -2,13 +2,13 @@
 // Test Coverage: Filtering modes, Progress/Non-Progress split, Warning display logic, Timeline rendering
 
 import { describe, it, expect } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import ActivityTimeline from '../ActivityTimeline';
 import freshfoodzTheme from '../../../theme/freshfoodz';
-import type { LeadActivity } from '../types';
+import type { LeadActivity, ActivityType } from '../types';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
   <ThemeProvider theme={freshfoodzTheme}>{children}</ThemeProvider>
@@ -407,7 +407,7 @@ describe('ActivityTimeline', () => {
           id: 'test-act',
           leadId: 'lead-1',
           userId: 'user-1',
-          activityType: type as any,
+          activityType: type as ActivityType,
           activityDate: '2025-10-01T10:00:00Z',
           countsAsProgress,
           createdAt: '2025-10-01T10:00:00Z',
