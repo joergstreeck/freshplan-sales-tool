@@ -163,11 +163,12 @@ DELETE /lead-protection/{leadId}/personal-data
 - LeadProtectionBadge.vue (Status-Indicator)
 - ActivityTimeline.vue (Progress Tracking Display)
 - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
-- **Logo-Performance-Fix:** freshfoodzlogo.png (181 KB) → freshplan-logo.png (19 KB)
-  - CockpitHeader.tsx: `/freshfoodzlogo.png` → `/freshplan-logo.png`
-  - Header.tsx (Legacy): `/freshfoodzlogo.png` → `/freshplan-logo.png`
-  - SidebarNavigation.tsx: `/freshfoodz-logo.svg` → `/freshplan-logo.png`
-  - Einsparung: **524 KB** (-96% Bundle Size!)
+- **Logo-Performance-Fix:** CockpitHeader.tsx (181 KB → 19 KB)
+  - **AKTIV - HeaderV2:** ✅ Verwendet bereits Logo.tsx (19 KB freshplan-logo.png)
+  - **AKTIV - SidebarNavigation:** ✅ Nur "FreshPlan" Text, kein Logo nötig
+  - **FIX - CockpitHeader.tsx:** `/freshfoodzlogo.png` (181 KB) → `/freshplan-logo.png` (19 KB)
+  - **IGNORE - Header.tsx:** Legacy, wird nicht verwendet
+  - Einsparung: **162 KB** (-90% für CockpitHeader!)
 - Tests: Integration Tests für Progressive Profiling Flow
 - **Status:** PENDING
 
@@ -197,7 +198,7 @@ DELETE /lead-protection/{leadId}/personal-data
 - [ ] **Activity Tracking UI funktioniert**
 - [ ] **Protection Status Badge implementiert**
 - [ ] **API-Integration mit Stage-Validierung**
-- [ ] **Logo-Performance-Fix (3 Dateien, 181 KB → 19 KB)**
+- [ ] **Logo-Performance-Fix (CockpitHeader.tsx, 181 KB → 19 KB)**
 - [ ] **Tests: Integration Tests grün**
 
 ## Risiken & Mitigation
