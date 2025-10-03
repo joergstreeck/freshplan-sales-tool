@@ -78,7 +78,11 @@ const server = setupServer(
   })
 );
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'error' });
+  // Force German language for tests
+  i18n.changeLanguage('de');
+});
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
@@ -532,8 +536,12 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Should show 409 duplicate error
       await waitFor(() => {
-        expect(screen.getByText(/lead mit dieser e.?mail existiert bereits/i)).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
+
+      // Verify error message contains duplicate email text
+      const alert = screen.getByRole('alert');
+      expect(alert).toHaveTextContent(/lead.*e[-\s]?mail.*existiert bereits/i);
 
       // Should NOT call onCreated
       expect(mockOnCreated).not.toHaveBeenCalled();
