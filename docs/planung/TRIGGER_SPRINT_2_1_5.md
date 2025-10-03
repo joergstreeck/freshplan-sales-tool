@@ -20,7 +20,7 @@ entry_points:
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md"
   - "frontend/FRONTEND_ACCESSIBILITY.md"
 pr_refs: []
-updated: "2025-10-03"
+updated: "2025-10-04"
 ---
 
 # Sprint 2.1.5 – Lead Protection & Progressive Profiling (B2B)
@@ -212,9 +212,9 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 
 ### Backend Changes:
 ```sql
--- V255-V257: Inline-First Architecture (ADR-004)
+-- V255-V258: Sprint 2.1.5 Migrations (Inline-First Architecture, ADR-004)
 -- Separate lead_protection Table NICHT implementiert (siehe ADR-004)
--- Nächste Migration: V258 (für Sprint 2.1.6 Lead-Transfers + Migration-API)
+-- Nächste Migration: V259 (für Sprint 2.1.6 Lead-Transfers + consent_given_at)
 
 -- V255: Protection Felder in leads Table (Inline)
 ALTER TABLE leads ADD COLUMN progress_warning_sent_at TIMESTAMPTZ;
@@ -388,14 +388,20 @@ DELETE /lead-protection/{leadId}/personal-data
 
 **Basierend auf ChatGPT/Claude Implementierungsplan validiert 2025-10-03:**
 
-### Backend (Phase 1 - COMPLETE):
+### Backend (Phase 1 - COMPLETE 01.10.2025):
 - [x] **V255-V257 Migrations deployed & tested**
 - [x] **Entity Updates (Lead.java, LeadActivity.java)**
 - [x] **Service Extensions (LeadProtectionService)**
 - [x] **Unit Tests grün (24 Tests, 100% passed)**
 - [x] **Dokumentation: ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN**
 
-### Frontend (Phase 2 - Backend Phase 2 PENDING):
+### Backend (Phase 2 - COMPLETE 04.10.2025):
+- [x] **V258 Migration deployed & tested (13 Activity-Types)**
+- [x] **ActivityType.java Enum erweitert (3 neue System-Types)**
+- [x] **Unit Tests grün (7 V258 Tests, 100% passed)**
+- [x] **Dokumentation: MIGRATIONS.md, ACTIVITY_TYPES_PROGRESS_MAPPING.md**
+
+### Frontend (Phase 2 - IN PROGRESS):
 - [ ] **Pre-Claim Logic implementiert:**
   - [ ] `registered_at = NULL` → Pre-Claim (kein Schutz, 10 Tage Frist)
   - [ ] Erstkontakt-Pflichtblock UI (Kanal, Datum, Notiz) wenn kein Kontakt
