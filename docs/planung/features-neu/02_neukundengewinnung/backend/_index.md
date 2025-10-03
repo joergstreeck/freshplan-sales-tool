@@ -72,6 +72,51 @@ MetricsCollector        # freshplan_* Prometheus Metrics
 ### **API Specifications:**
 Siehe Frontend [API_CONTRACT.md](../frontend/analyse/API_CONTRACT.md) für vollständige REST-Endpoints und Event-Schemas.
 
+#### **POST /api/leads** (Sprint 2.1.5+)
+
+**Query-Parameter (Dedupe Resubmit):**
+- `reason` (string, min. 10 Zeichen) - Soft Duplicate Override (alle Rollen)
+- `overrideReason` (string, min. 10 Zeichen) - Hard Duplicate Override (MANAGER/ADMIN only)
+
+**Request Body:**
+```json
+{
+  "companyName": "Beispiel GmbH",
+  "source": "MESSE",
+  "contact": { "email": "max@example.com" },
+  "address": { "city": "München", "postalCode": "80331" },
+  "activities": [
+    {
+      "activityType": "FIRST_CONTACT_DOCUMENTED",
+      "performedAt": "2025-10-04T10:00:00Z",
+      "summary": "Messestand München 2025",
+      "countsAsProgress": false,
+      "metadata": { "channel": "MESSE" }
+    }
+  ]
+}
+```
+
+**Wichtige Hinweise (Sprint 2.1.5):**
+- ⚠️ **KEIN** `consent_given_at` Feld senden - Backend-Persistenz erst in V259 (Sprint 2.1.6)
+- ⚠️ **KEIN** hardcoded `source` - Wert muss aus Request-Body stammen
+- ✅ **Erstkontakt** als `activities[]` senden (NICHT `firstContact` Feld)
+
+**Response 201 Created:**
+```json
+{
+  "id": "uuid",
+  "companyName": "Beispiel GmbH",
+  "stage": 1,
+  "protectionEndsAt": "2026-04-04T10:00:00Z",
+  "progressDeadline": "2025-12-03T10:00:00Z"
+}
+```
+
+**Response 409 Conflict (Dedupe):**
+- **Hard Collision** (kein `severity`): Siehe [DEDUPE_POLICY.md](../artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md#rule-1-harte-kollisionen-block)
+- **Soft Collision** (`severity: "WARNING"`): Siehe [DEDUPE_POLICY.md](../artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md#rule-2-weiche-kollisionen-warn)
+
 ## 🚀 **Performance & Metrics**
 
 ### **Current Benchmarks:**

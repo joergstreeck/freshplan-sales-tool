@@ -41,6 +41,29 @@ ten** Feldern
 - ✅ **Override erlaubt:** Nur Manager/Admin + `overrideReason` (Pflicht, min. 10 Zeichen)
 - 📊 **Audit-Log:** `lead_duplicate_override` Event
 
+**HTTP Response (Hard Collision):**
+```json
+{
+  "type": "https://freshplan/errors/duplicate-lead",
+  "title": "Duplicate lead detected",
+  "status": 409,
+  "detail": "Email bereits registriert: max@example.com",
+  "extensions": {
+    "duplicates": [
+      {
+        "leadId": "uuid-123",
+        "companyName": "Beispiel GmbH",
+        "city": "München",
+        "postalCode": "80331",
+        "ownerUserId": "uuid-owner"
+      }
+    ]
+  }
+}
+```
+- **Kein `severity` Feld** bei Hard Collision (unterscheidet von Soft)
+- **`extensions.duplicates[]`**: Liste exakter Treffer mit `leadId`, `companyName`, optional `city`/`postalCode`/`ownerUserId`
+
 ---
 
 ### Rule 2: Weiche Kollisionen (WARN)
@@ -57,6 +80,29 @@ ten** Feldern
 - ⚠️ **409 Conflict** mit `severity: "WARNING"`
 - ✅ **Fortfahren erlaubt:** Jeder Nutzer + `reason` (Pflicht, min. 10 Zeichen)
 - 📊 **Audit-Log:** `lead_duplicate_warning_accepted` Event
+
+**HTTP Response (Soft Collision):**
+```json
+{
+  "type": "https://freshplan/errors/duplicate-lead",
+  "title": "Similar lead found",
+  "status": 409,
+  "detail": "Ähnlicher Lead gefunden (gleiche Domain + Stadt)",
+  "extensions": {
+    "severity": "WARNING",
+    "duplicates": [
+      {
+        "leadId": "uuid-456",
+        "companyName": "Beispiel AG",
+        "city": "München"
+      }
+    ]
+  }
+}
+```
+- **`extensions.severity: "WARNING"`** kennzeichnet Soft Collision (unterscheidet von Hard)
+- **`extensions.duplicates[]`**: Liste ähnlicher Leads
+- **Resubmit:** `POST /api/leads?reason=<min. 10 Zeichen>` (alle Rollen erlaubt)
 
 ---
 

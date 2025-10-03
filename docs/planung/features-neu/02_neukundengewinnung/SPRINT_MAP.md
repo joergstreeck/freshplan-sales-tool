@@ -175,6 +175,7 @@ updated: "2025-10-02"
 
 **Frontend:**
 - ✅ [FRONTEND_ACCESSIBILITY.md](../../../../frontend/FRONTEND_ACCESSIBILITY.md)
+- ✅ [FRONTEND_DELTA.md](./artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md) ⭐ NEU
 - ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md)
 
 **DSGVO & Compliance:**

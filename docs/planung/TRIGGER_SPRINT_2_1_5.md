@@ -17,6 +17,7 @@ entry_points:
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md"
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md"
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DSGVO_CONSENT_SPECIFICATION.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md"
   - "frontend/FRONTEND_ACCESSIBILITY.md"
 pr_refs: []
 updated: "2025-10-03"
@@ -182,6 +183,30 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
    - Beispiel: `POST /api/leads?reason=Neue%20Niederlassung`
    - Kein Audit-Log
 **Frontend:** Beide Dialoge zeigen Reason-Textarea PFLICHT vor Resubmit
+
+**RFC 7807 – Problem+JSON (Erweiterung):**
+```json
+{
+  "type": "https://freshplan/errors/duplicate-lead",
+  "title": "Duplicate lead detected",
+  "status": 409,
+  "detail": "Email bereits registriert: max@example.com",
+  "extensions": {
+    "severity": "WARNING",
+    "duplicates": [
+      {
+        "leadId": "uuid-123",
+        "companyName": "Beispiel GmbH",
+        "city": "München",
+        "postalCode": "80331",
+        "ownerUserId": "uuid-owner"
+      }
+    ]
+  }
+}
+```
+- **`extensions.severity`**: `"WARNING"` bei Soft Collision, fehlt bei Hard Collision
+- **`extensions.duplicates[]`**: Liste potenzieller Duplikate mit `leadId`, `companyName`, optional `city`/`postalCode`/`ownerUserId`
 
 ## Technische Details
 
@@ -383,14 +408,19 @@ DELETE /lead-protection/{leadId}/personal-data
 - [ ] **DSGVO Consent Source-abhängig:**
   - [ ] `source = WEB_FORMULAR` → Consent-Checkbox PFLICHT
   - [ ] `source != WEB_FORMULAR` → Info-Text "berechtigtes Interesse"
-- [ ] **Dedupe Hard Collisions:**
-  - [ ] 409 Conflict bei Email/Phone/Firma+PLZ exakt
-  - [ ] Manager-Override mit `overrideReason` (min. 10 Zeichen)
-  - [ ] DuplicateLeadDialog UI (Hard Block)
-- [ ] **Activity-Types erweitert:**
-  - [ ] FIRST_CONTACT_DOCUMENTED zu Enum hinzugefügt
-  - [ ] EMAIL_RECEIVED zu Enum hinzugefügt
-  - [ ] LEAD_ASSIGNED zu Enum hinzugefügt
+- [ ] **Dedupe Hard/Soft Collisions:**
+  - [ ] 409 Conflict bei Email/Phone/Firma+PLZ exakt (Hard)
+  - [ ] 409 Conflict mit `severity: "WARNING"` bei Domain+Stadt ODER Firma+Stadt (Soft)
+  - [ ] `Problem.extensions` Typ mit `severity` + `duplicates[]` (types.ts)
+  - [ ] Manager-Override mit `overrideReason` (Hard, min. 10 Zeichen)
+  - [ ] User-Resubmit mit `reason` (Soft, min. 10 Zeichen)
+  - [ ] DuplicateLeadDialog UI (Hard) + SimilarLeadDialog UI (Soft)
+- [ ] **Activity-Types erweitert (13 Types):**
+  - [ ] FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED zu Enum hinzugefügt (types.ts)
+  - [ ] `ACTIVITY_PROGRESS_MAP: Record<ActivityType, boolean>` implementiert (5 true, 8 false)
+  - [ ] `createLead()` Query-Params Support (`reason`, `overrideReason`)
+  - [ ] KEIN hardcoded `source: 'manual'` (api.ts) - `payload.source` verwenden
+  - [ ] Erstkontakt-Block als `activities[]` senden (NICHT `firstContact` Feld)
 - [ ] **Assignment Service (Interface-Vorbereitung):**
   - [ ] AssignmentService.assign(Lead) Interface definiert
   - [ ] Geo → Segment → Workload Logik implementiert
