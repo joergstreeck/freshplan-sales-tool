@@ -118,6 +118,18 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 - **"Pre-Claim (läuft ab ≤10 Tage)"**: `WHERE registered_at IS NULL AND created_at >= NOW() - INTERVAL '10 days'`
 - **"Pre-Claim (abgelaufen)"**: `WHERE registered_at IS NULL AND created_at < NOW() - INTERVAL '10 days'`
 
+**Performance & Index-Strategie:**
+- **Partieller Index** (empfohlen für Production):
+  ```sql
+  -- V259 (Sprint 2.1.6 - Performance-Optimierung)
+  CREATE INDEX CONCURRENTLY idx_leads_preclaim_created
+    ON leads (created_at)
+    WHERE registered_at IS NULL;
+  ```
+- **Rationale:** Pre-Claim Queries filtern IMMER `registered_at IS NULL` + `created_at` Range
+- **Query-Planner Nutzung:** Partial Index wird automatisch gewählt (bessere Selectivity)
+- **Monitoring:** P95 Query-Zeit sollte <50ms bleiben (Grafana Alert bei >100ms)
+
 **Badge im LeadHeader:**
 - **Text:** "Pre-Claim"
 - **Color:** Orange (#FFA500)
@@ -401,6 +413,14 @@ DELETE /lead-protection/{leadId}/personal-data
 ### Feature-Flags & Rollout:
 - [ ] **VITE_FEATURE_LEADGEN** bleibt aktiv (bereits vorhanden)
 - [ ] **VITE_FEATURE_WEB_INTAKE** vorbereitet (vorerst OFF, Sprint 2.1.6)
+
+### Optional (Nice-to-Have):
+- [ ] **Live-Dedupe-Hints (UX-Optimierung):**
+  - [ ] Throttle 300ms nach Eingabe in Email/Phone/Company/PostalCode
+  - [ ] GET /api/leads/check-duplicate Endpoint
+  - [ ] Inline-Feedback im LeadWizard (orange=SOFT, rot=HARD)
+  - [ ] Rate-Limit: 10 req/min pro User
+  - [ ] Cache 60s (gleiche Query → kein API-Call)
 
 ## Observability & Metriken
 

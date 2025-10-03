@@ -105,6 +105,9 @@ CREATE TABLE lead_transfers (
 ALTER TABLE leads ADD COLUMN consent_given_at TIMESTAMPTZ NULL;
 COMMENT ON COLUMN leads.consent_given_at IS
   'DSGVO Art. 6 Abs. 1 lit. a: Zeitpunkt der Einwilligung (nur bei source=WEB_FORMULAR)';
+
+-- Consent-Text finalisiert: siehe DSGVO_CONSENT_SPECIFICATION.md (Sprint 2.1.5)
+-- Frontend: Checkbox UI bereits in LeadWizard.tsx implementiert (Frontend Phase 2)
 ```
 
 ### V260: Activity-Templates (OPTIONAL - Sprint 2.1.7)

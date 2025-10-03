@@ -308,6 +308,42 @@ Erfolgreich aktualisiert
 
 ## Audit Events
 
+### Lead-Assignment Metadata (Sprint 2.1.5)
+
+**Enum-Wertebereich für `metadata.method` (verbindlich):**
+```typescript
+type AssignmentMethod =
+  | "GEO_WORKLOAD"      // Automatisch via Geo-Zone + Workload-Verteilung
+  | "MANUAL"            // Manager-Override (explizite Zuweisung)
+  | "WEB_INTAKE_AUTO";  // Self-Service Web-Intake (Sprint 2.1.6)
+```
+
+**Activity-Event `LEAD_ASSIGNED` Struktur:**
+```json
+{
+  "event": "lead.activity.recorded",
+  "leadId": "uuid",
+  "activityType": "LEAD_ASSIGNED",
+  "summary": "Lead automatisch zugewiesen (Geo-Zone München)",
+  "metadata": {
+    "method": "GEO_WORKLOAD",           // ENUM (siehe oben)
+    "previousOwner": "uuid-or-null",    // Falls Re-Assignment, sonst NULL
+    "assignmentReason": "Geo-Zone DE-BY-München, Workload 3/10",
+    "geoZone": "DE-BY-München",         // ISO-artig (DE-<Bundesland>-<Stadt>)
+    "workloadScore": 30                 // 0-100 (aktueller Workload des Empfängers)
+  },
+  "performedBy": "system-or-manager-uuid",
+  "timestamp": "2025-09-28T10:00:00Z"
+}
+```
+
+**Frontend/Backend Alignment:**
+- Backend-Enum: `AssignmentMethod.java` (GEO_WORKLOAD | MANUAL | WEB_INTAKE_AUTO)
+- Frontend-Type: `AssignmentMethod` TypeScript (identische Werte)
+- API-Validierung: RFC 7807 Problem+JSON bei ungültigem `method`-Wert
+
+### Standard Audit Events
+
 ```json
 {
   "event": "lead.protection.created",
@@ -320,7 +356,7 @@ Erfolgreich aktualisiert
 {
   "event": "lead.activity.recorded",
   "leadId": "uuid",
-  "activityType": "call",
+  "activityType": "QUALIFIED_CALL",
   "progressDeadlineNew": "2025-11-28",
   "userId": "sales-uuid"
 }
