@@ -229,6 +229,31 @@ DELETE /lead-protection/{leadId}/personal-data
 - **NICHT in 2.1.5:** `ExtensionRequestDialog` - verschoben auf 2.1.6
 - **NICHT in 2.1.5:** `StopTheClockDialog` - verschoben auf 2.1.6 (Manager-only UI)
 
+### Live-Dedupe-Hints (UX-Optimierung - OPTIONAL)
+
+**⚠️ HINWEIS:** Gute UX, aber zusätzlicher Scope - kann später nachgezogen werden.
+
+**Verhalten:**
+- Throttle: 300ms nach letzter Eingabe in Email/Phone/Company/PostalCode
+- API-Endpoint: `GET /api/leads/check-duplicate?email=...&phone=...&company=...&postalCode=...`
+- Response: `{ "isDuplicate": boolean, "duplicateLeads": [...], "severity": "HARD"|"SOFT" }`
+
+**UI-Feedback:**
+- Email-Feld: Inline-Warnung "Ähnlicher Lead existiert" (orange) bei Soft
+- Email-Feld: Inline-Error "Lead existiert bereits" (rot) bei Hard
+- Tooltip zeigt Duplikat-Details (Firma, Stadt, Owner)
+- Kein Submit-Block, nur Info (Block erst bei POST 409)
+
+**Performance:**
+- Debounce 300ms (zu schnell → API-Overload, zu langsam → schlechte UX)
+- Cache 60s (gleiche Query wiederholt → kein API-Call)
+- Max. 3 Kandidaten in Tooltip (mehr → "... und X weitere")
+
+**Backend:**
+- Nutzt gleiche DuplicateDetectionService wie POST /api/leads
+- Keine Audit-Logs (nur bei echtem Submit)
+- Rate-Limit: 10 req/min pro User
+
 ### DSGVO & Compliance (KRITISCH):
 **Consent-Management (Source-abhängig):**
 - **Stage 0 (Vormerkung)**: Keine personenbezogenen Daten → Kein Consent nötig
