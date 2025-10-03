@@ -14,6 +14,22 @@ updated: "2025-10-01"
 
 ## Vertrag → Implementation Mapping
 
+### Pre-Claim & Erstkontakt (§2(8)(a))
+
+**⚠️ WICHTIG:** Activity `FIRST_CONTACT_DOCUMENTED` startet Schutz **OHNE** V257-Trigger.
+
+**Ablauf:**
+1. User erstellt Lead Stage 0 ohne Kontakt
+2. User füllt "Erstkontakt dokumentieren" Block aus
+3. LeadService erstellt Activity `FIRST_CONTACT_DOCUMENTED` (countsAsProgress=false)
+4. LeadService setzt **explizit**:
+   - `lead.registered_at = NOW()`
+   - `lead.progress_deadline = NOW() + INTERVAL '60 days'`
+   - `lead.protected_until = calculate_protection_until(NOW())`
+5. V257 Trigger feuert NICHT (da countsAsProgress=false)
+
+**Rationale:** Erstkontakt ist Schutzbeginn laut Vertrag, aber KEIN "belegbarer Fortschritt" im Sinne der 60-Tage-Regel.
+
 ### Lead-Schutz (§3.2 Handelsvertretervertrag)
 
 **Vertragstext:**

@@ -39,9 +39,81 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 
 ## User Stories
 
-### 1. Lead-Transfer Workflow (verschoben aus 2.1.5)
+### 1. Bestandsleads-Migrations-API (Modul 08 - NEU)
 **Akzeptanzkriterien:**
-- V258: lead_transfers Tabelle
+- POST /api/admin/migration/leads/import (Admin-only, Dry-Run Mode PFLICHT)
+- Batch-Import: max. 1000 Leads/Batch
+- Historische Datumsfelder korrekt übernehmen (registeredAt, activities)
+- `countsAsProgress` explizit setzen (NICHT automatisch berechnen!)
+- Duplikaten-Check + Warning-Report (gleiche Logik wie manuelle Erfassung)
+- Audit-Log: `leads_batch_imported` (mit User, Timestamp, Lead-Count)
+- Re-Import-Fähigkeit bei Fehlern (Idempotenz via Request-Hash)
+- **Migration-Ausnahme:** Bestandsleads → sofortiger Schutz (registered_at != NULL)
+- Validierung: registered_at nicht in Zukunft, Activity-Dates chronologisch
+- Response: Erfolg/Fehler pro Lead + Gesamt-Statistik
+
+**API-Spec:**
+```json
+POST /api/admin/migration/leads/import
+Authorization: Bearer <admin-token>
+Content-Type: application/json
+
+{
+  "dryRun": true,  // PFLICHT für ersten Durchlauf
+  "leads": [
+    {
+      "companyName": "Gasthaus Müller",
+      "city": "München",
+      "postalCode": "80331",
+      "contact": {
+        "firstName": "Hans",
+        "lastName": "Müller",
+        "email": "mueller@gasthaus.de"
+      },
+      "source": "MIGRATION",
+      "ownerUserId": "uuid-partner-123",
+      "registeredAt": "2024-08-15T10:30:00Z",  // Historisches Datum
+      "activities": [
+        {
+          "type": "QUALIFIED_CALL",
+          "summary": "Erstkontakt Produktinteresse",
+          "performedAt": "2024-08-16T14:00:00Z",
+          "countsAsProgress": true  // EXPLIZIT!
+        }
+      ]
+    }
+  ]
+}
+
+Response 200 (Dry-Run):
+{
+  "dryRun": true,
+  "totalLeads": 1,
+  "validLeads": 0,
+  "invalidLeads": 1,
+  "duplicates": 0,
+  "errors": [
+    {
+      "leadIndex": 0,
+      "companyName": "Gasthaus Müller",
+      "error": "Duplicate detected: email mueller@gasthaus.de exists (Lead-ID: 12345)"
+    }
+  ]
+}
+
+Response 201 (Real Import):
+{
+  "dryRun": false,
+  "totalLeads": 1,
+  "importedLeads": 1,
+  "skippedLeads": 0,
+  "auditLogId": "uuid-audit-789"
+}
+```
+
+### 2. Lead-Transfer Workflow (verschoben aus 2.1.5)
+**Akzeptanzkriterien:**
+- V259: lead_transfers Tabelle (V258 = Activity-Type Constraint Fix)
 - Transfer-Request mit Begründung
 - Genehmigungsprozess (Manager/Admin)
 - 48h SLA für Entscheidung
@@ -94,7 +166,7 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 
 ### Lead Transfers (aus 2.1.5):
 ```sql
--- V258: lead_transfers Tabelle
+-- V259: lead_transfers Tabelle (V258 = Activity-Type Constraint Fix in 2.1.5)
 CREATE TABLE lead_transfers (
   id BIGSERIAL PRIMARY KEY,
   lead_id BIGINT REFERENCES leads(id),

@@ -91,11 +91,16 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
 
 🔧 TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling
    - 6-Monats-Schutz + 60-Tage-Aktivitätsstandard
-   - Stop-the-Clock Mechanismus
    - Progressive Profiling (Stage 0/1/2)
-   - Protection-Endpoints (Reminder, Extend, Stop-Clock)
-   - Data-Retention-Plan + Compliance
-   - Status: 🔧 IN PROGRESS
+   - **PRE-CLAIM MECHANIK:** 10 Tage Frist (registered_at = NULL)
+   - **DEDUPE POLICY:** Hard/Soft Collisions (kein Fuzzy in 2.1.5)
+   - **ACTIVITY-TYPES:** 13 Types verbindlich gemapped (5 Progress, 8 Non-Progress/System)
+   - **DSGVO CONSENT:** Source-abhängig (WEB_FORMULAR = PFLICHT, Partner = berechtigtes Interesse)
+   - Status: 🔧 IN PROGRESS (Frontend Phase 2)
+   - **NEUE ARTEFAKTE:**
+     - [Pre-Claim Logic](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md)
+     - [Dedupe Policy](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md)
+     - [Activity Types Mapping](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md)
 
 📋 TRIGGER_SPRINT_2_1_6.md - Lead Transfer & Team Management
    - Lead-Transfer zwischen Partnern

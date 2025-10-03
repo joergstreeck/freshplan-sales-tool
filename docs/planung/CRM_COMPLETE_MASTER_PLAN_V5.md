@@ -125,6 +125,21 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-03 21:30 - Sprint 2.1.5 Planungsdokumentation COMPLETE
+
+**Kontext:** Lead-Erfassung Redesign (Pre-Claim, Dedupe, Quellen-Pflichtfelder)
+
+**Erledigt:**
+- ✅ 3 neue Artefakte: PRE_CLAIM_LOGIC, DEDUPE_POLICY, ACTIVITY_TYPES_PROGRESS_MAPPING
+- ✅ TRIGGER_SPRINT_2_1_5 aktualisiert (DSGVO Consent Source-abhängig)
+- ✅ Pre-Claim Mechanik dokumentiert (10 Tage Frist, Migration-Ausnahme)
+- ✅ Dedupe Policy definiert (Hard/Soft Collisions, kein Fuzzy in 2.1.5)
+- ✅ 13 Activity-Types verbindlich gemapped (5 Progress, 5 Non-Progress, 3 System)
+
+**Tests:** N/A (reine Dokumentation)
+
+**Migration:** Keine neue Migration (V255-V257 bereits deployed)
+
 - 2025-09-23 17:45 — System Infrastructure: V3.2 Auto-Compact-System vollständig implementiert (COMPACT_CONTRACT v2 + MP5-Anker + Trigger-Updates), Migration: V225, Tests: OK
 - 2025-09-23 18:20 — System Infrastructure: V3.3 Branch-Gate Implementation abgeschlossen (Workflow-Lücke geschlossen, aktives Angebot statt passives Warten), Migration: V225, Tests: OK
 - 2025-09-23 18:45 — Emergency Handover: 3 kritische V3.3 Verbesserungen identifiziert (main-commit-warning, Branch-Gate Prominenz, Feature-Branch Schutz), Migration: V225, Tests: OK
@@ -299,6 +314,27 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+### 2025-10-03 - Pre-Claim Mechanik + Dedupe Policy + Consent-Logik
+
+**Entscheidung:**
+1. **Pre-Claim Stage 0:** Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL, 10 Tage Frist)
+   - Schutz startet erst bei Kontakt ODER dokumentiertem Erstkontakt
+   - Ausnahme: Bestandsleads bei Migration → sofortiger Schutz
+2. **DSGVO Consent Source-abhängig:**
+   - `source = WEB_FORMULAR` → Consent PFLICHT (Art. 6 Abs. 1 lit. a)
+   - `source != WEB_FORMULAR` → Berechtigtes Interesse (Art. 6 Abs. 1 lit. f)
+3. **Dedupe Policy 2.1.5:**
+   - Harte Kollisionen (Email/Phone/Firma+PLZ exakt) → BLOCK + Manager-Override
+   - Weiche Kollisionen (Domain+Stadt, Firma+Stadt) → WARN + Fortfahren
+   - KEIN Fuzzy-Matching (pg_trgm) → Sprint 2.1.6
+
+**Begründung:**
+- Vertrag §2(8)(a): "Firma, Ort und zentraler Kontakt ODER dokumentierter Erstkontakt"
+- B2B-Partner-Erfassung: berechtigtes Interesse ausreichend (ChatGPT + Claude Validierung)
+- Pragmatische Dedupe-Strategie: Harte Blocks sofort, Fuzzy später (ChatGPT Empfehlung)
+
+**Referenz:** Handelsvertretervertrag.pdf, ChatGPT Session 2025-10-03
+
 - 2025-10-02 — **DSGVO Consent-Management:** Consent-Checkbox PFLICHT in Stage 1 (nicht vorausgefüllt), lead.consent_given_at Timestamp speichern, keine Stage-1-Erfassung ohne Consent
 - 2025-10-02 — **Activity-Types Progress-Mapping:** countsAsProgress=true für QUALIFIED_CALL/MEETING/DEMO/ROI_PRESENTATION/SAMPLE_SENT; countsAsProgress=false für NOTE/FOLLOW_UP/EMAIL/CALL/SAMPLE_FEEDBACK
 - 2025-10-02 — **Stop-the-Clock RBAC:** Nur MANAGER + ADMIN dürfen pausieren/resumen, UI-Button verschoben auf Sprint 2.1.6, Audit-Log PFLICHT für alle Events

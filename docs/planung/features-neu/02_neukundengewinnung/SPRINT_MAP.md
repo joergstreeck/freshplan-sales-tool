@@ -163,11 +163,19 @@ updated: "2025-10-02"
 - DuplicateReviewModal (Merge/Unmerge UI mit Identitätsgraph)
 
 **Artefakte:** [`artefakte/SPRINT_2_1_5/`](./artefakte/SPRINT_2_1_5/)
+
+**Backend:**
 - ✅ [ADR-004-lead-protection-inline-first.md](./shared/adr/ADR-004-lead-protection-inline-first.md)
 - ✅ [DELTA_LOG_2_1_5.md](./artefakte/SPRINT_2_1_5/DELTA_LOG_2_1_5.md) (Implementierungs-Entscheidungen + PR-Strategie)
 - ✅ [CONTRACT_MAPPING.md](./artefakte/SPRINT_2_1_5/CONTRACT_MAPPING.md) (§3.2, §3.3)
 - ✅ [TEST_PLAN.md](./artefakte/SPRINT_2_1_5/TEST_PLAN.md) (Mock-First Strategie)
-- ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md) (PR-Strategie + Deliverables)
+- ✅ [PRE_CLAIM_LOGIC.md](./artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md) ⭐ NEU
+- ✅ [DEDUPE_POLICY.md](./artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md) ⭐ NEU
+- ✅ [ACTIVITY_TYPES_PROGRESS_MAPPING.md](./artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md) ⭐ NEU
+
+**Frontend:**
+- ✅ [FRONTEND_ACCESSIBILITY.md](./artefakte/SPRINT_2_1_5/FRONTEND_ACCESSIBILITY.md)
+- ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md)
 
 **Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive", PLAN B (Inline-First) statt V249-Artefakt, Backend/Frontend Split (PR #124/#125)
 

@@ -13,8 +13,11 @@ entry_points:
   - "features-neu/02_neukundengewinnung/frontend/_index.md"
   - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/SUMMARY.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md"
 pr_refs: []
-updated: "2025-09-28"
+updated: "2025-10-03"
 ---
 
 # Sprint 2.1.5 – Lead Protection & Progressive Profiling (B2B)
@@ -62,21 +65,41 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 - Stop-the-Clock Mechanismus
 - Automatische Status-Updates (protected → warning → expired)
 
-### 2. Progressive Profiling (3 Stufen)
-**Stufe 0: Vormerkung (Minimal)**
-- Firma + Stadt (Pflicht)
-- Branche (Optional)
-- Keine personenbezogenen Daten
+### 2. Progressive Profiling (3 Stufen) + Pre-Claim
+**Stufe 0: Vormerkung (Pre-Claim möglich!)**
+- **Pflicht:** Firma, Stadt, Quelle (Dropdown), Zugewiesen an (Partner)
+- **Optional:** Branche
+- **Keine** personenbezogenen Daten erforderlich
+- **PRE-CLAIM MECHANIK:**
+  - **WENN** Kontakt vorhanden **ODER** Erstkontakt dokumentiert → ✅ Schutz startet (registered_at = now)
+  - **SONST** → ❌ Pre-Claim (registered_at = NULL, kein Schutz, 10 Tage Frist)
+  - **Ausnahme:** Bestandsleads bei Migration → sofortiger Schutz
+- **Erstkontakt-Pflichtblock (wenn kein Kontakt):**
+  - UI zeigt Block "Erstkontakt dokumentieren" mit 3 Pflichtfeldern:
+    - **Kanal** (Dropdown): Telefon, Email, Messe-Stand, Persönlich
+    - **Datum/Uhrzeit** (DateTimePicker): Wann fand Erstkontakt statt
+    - **Kurznotiz** (Textarea, min. 10 Zeichen): Was wurde besprochen
+  - Erzeugt Activity: `FIRST_CONTACT_DOCUMENTED` (countsAsProgress=false, startet Schutz)
+- **Quellenspezifische Pflichtfelder:**
+  - `MESSE`: Event-Name (Pflicht) → in Activity.summary/metadata
+  - `EMPFEHLUNG`: Referrer-Name/Firma (Pflicht) → in Activity.summary/metadata
+  - `TELEFON`: Kanal + Notiz (Pflicht wenn kein Kontakt) → Erstkontakt-Block
 
 **Stufe 1: Lead-Registrierung**
-- Company Details + Optional Contact
-- Source Tracking (manual/partner/marketing)
-- Owner Assignment
+- **Pflicht:** Vorname, Nachname, Email ODER Telefon
+- **Consent-Logic:**
+  - `source = WEB_FORMULAR` → Consent-Checkbox PFLICHT
+    - **⚠️ WICHTIG:** Feld `consent_given_at` kommt erst in V259 (Sprint 2.1.6 Web-Intake)
+    - Frontend in 2.1.5: UI vorbereitet, Backend-Feld NICHT vorhanden
+    - Validierung erfolgt nur Frontend-seitig, keine Backend-Persistierung
+  - `source != WEB_FORMULAR` → Info-Text "berechtigtes Interesse (Art. 6 Abs. 1 lit. f)"
+- Source Tracking erweitert: MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR
+- Owner Assignment via Geo+Workload (Sprint 2.1.6: Verfügbarkeit)
 
 **Stufe 2: Qualifiziert**
-- VAT ID, Expected Volume
-- Key Account Flags
+- **Optional:** VAT ID, Expected Volume, Key Account Flags
 - EDL/Chain Affiliation
+- Auto-Next-Actions (z.B. "Sample senden" → Activity + Reminder)
 
 ### 3. Activity Tracking UI
 **Akzeptanzkriterien:**
@@ -84,6 +107,24 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 - Progress-Indicator (Days since last activity)
 - Warning-Badge bei < 7 Tage bis Deadline
 - Stop-the-Clock Dialog mit Grund
+
+### Pre-Claim UI-Komponenten (Sprint 2.1.5 Frontend Phase 2)
+
+**Listen-Filter:**
+- **"Alle Pre-Claim Leads"**: `WHERE registered_at IS NULL`
+- **"Pre-Claim (läuft ab ≤3 Tage)"**: `WHERE registered_at IS NULL AND created_at < NOW() - INTERVAL '7 days'`
+- **"Pre-Claim (läuft ab ≤10 Tage)"**: `WHERE registered_at IS NULL AND created_at >= NOW() - INTERVAL '10 days'`
+- **"Pre-Claim (abgelaufen)"**: `WHERE registered_at IS NULL AND created_at < NOW() - INTERVAL '10 days'`
+
+**Badge im LeadHeader:**
+- **Text:** "Pre-Claim"
+- **Color:** Orange (#FFA500)
+- **Tooltip:** "Kein Schutz aktiv – Vervollständigen bis [created_at + 10 Tage]"
+- **Icon:** ⏳ (Sanduhr)
+
+**Lead-Liste Spalte:**
+- Neue Spalte "Status" zeigt Pre-Claim Badge prominent
+- Sortierung: Pre-Claim Leads zuerst (ASC created_at)
 
 ### 4. Protection Endpoints & Compliance
 **Akzeptanzkriterien:**
@@ -97,13 +138,44 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
   - Audit: `lead_registered_at_backdated`
   - Folge: Recalc Schutz-/Aktivitätsfristen (falls Felder vorhanden)
 
+### 5. Dedupe Policy (Sprint 2.1.5: Hard Collisions Only)
+**Akzeptanzkriterien:**
+- **Harte Kollisionen (BLOCK + Manager-Override):**
+  - Email exakt (normalisiert) ODER
+  - Telefon exakt (E.164) ODER
+  - Firma + PLZ exakt (normalisiert)
+  - → **409 Conflict** (RFC 7807 Problem+JSON)
+  - → Override nur Manager/Admin + `overrideReason` (Pflicht, min. 10 Zeichen)
+  - → Audit-Log: `lead_duplicate_override`
+- **Weiche Kollisionen (WARN + Fortfahren):**
+  - Gleiche Email-Domain UND gleiche Stadt/PLZ ODER
+  - Gleiche Firma (exakt) UND gleiche Stadt
+  - → **409 Conflict** mit `severity: "WARNING"`
+  - → Fortfahren erlaubt: Jeder Nutzer + `reason` (Pflicht, min. 10 Zeichen)
+- **KEIN Fuzzy-Matching** (pg_trgm) in 2.1.5 → Sprint 2.1.6
+- UI: DuplicateLeadDialog (Hard) + SimilarLeadDialog (Soft)
+  - Button: "Existierenden Lead öffnen" + "Trotzdem anlegen"
+
+**Dedupe Resubmit-Flow (einheitlich 409):**
+1. **Hard Collision** (kein `severity` Feld):
+   - Resubmit mit `overrideReason` (Query-Param, min. 10 Zeichen)
+   - Benötigt MANAGER oder ADMIN Role
+   - Beispiel: `POST /api/leads?overrideReason=Unterschiedliche%20Standorte`
+   - Audit-Log: `lead_duplicate_override`
+2. **Soft Collision** (`severity: "WARNING"`):
+   - Resubmit mit `reason` (Query-Param, min. 10 Zeichen)
+   - Beliebige Role (kein Manager-Override)
+   - Beispiel: `POST /api/leads?reason=Neue%20Niederlassung`
+   - Kein Audit-Log
+**Frontend:** Beide Dialoge zeigen Reason-Textarea PFLICHT vor Resubmit
+
 ## Technische Details
 
 ### Backend Changes:
 ```sql
 -- V255-V257: Inline-First Architecture (ADR-004)
 -- Separate lead_protection Table NICHT implementiert (siehe ADR-004)
--- V249 als Materiallager verfügbar für Sprint 2.1.6+ falls benötigt
+-- Nächste Migration: V258 (für Sprint 2.1.6 Lead-Transfers + Migration-API)
 
 -- V255: Protection Felder in leads Table (Inline)
 ALTER TABLE leads ADD COLUMN progress_warning_sent_at TIMESTAMPTZ;
@@ -158,29 +230,54 @@ DELETE /lead-protection/{leadId}/personal-data
 - **NICHT in 2.1.5:** `StopTheClockDialog` - verschoben auf 2.1.6 (Manager-only UI)
 
 ### DSGVO & Compliance (KRITISCH):
-**Consent-Management (Pflicht ab Phase 2):**
-- **Stage 0**: Keine personenbezogenen Daten → Kein Consent nötig
-- **Stage 1**: Consent-Checkbox PFLICHT (nicht vorausgefüllt)
-  - Text: "Ich stimme zu, dass meine Kontaktdaten gespeichert werden (Widerruf jederzeit möglich)"
-  - Backend: `lead.consent_given_at TIMESTAMPTZ` speichern
-  - Validierung: Ohne Consent KEIN Submit möglich
-- **Rechtsgrundlage**: Consent (sauberste Lösung für B2B-Neu-Erfassung)
-- **Widerrufsrecht**: Link zu Datenschutzrichtlinie, einfacher Widerruf-Prozess
+**Consent-Management (Source-abhängig):**
+- **Stage 0 (Vormerkung)**: Keine personenbezogenen Daten → Kein Consent nötig
+- **Stage 1 (Lead-Registrierung)**:
+  - **Consent NUR bei `source = WEB_FORMULAR`** (Lead registriert sich selbst)
+    - Checkbox PFLICHT: "Ich stimme zu, dass meine Kontaktdaten gespeichert werden (Widerruf jederzeit möglich)"
+    - **⚠️ Backend-Feld `lead.consent_given_at` erst in Sprint 2.1.6 (V259)**
+    - Sprint 2.1.5: Frontend-Validierung only, kein Backend-Persist
+    - Validierung: Ohne Consent KEIN Submit möglich
+  - **KEIN Consent bei Partner-Erfassung** (Messe, Telefon, Empfehlung)
+    - Info-Text: "Daten werden auf Basis berechtigten Interesses gespeichert (Art. 6 Abs. 1 lit. f DSGVO)"
+    - Rechtliche Grundlage: B2B-Geschäftsanbahnung (berechtigtes Interesse)
+- **Rechtsgrundlage**:
+  - Web-Formular: Consent (Art. 6 Abs. 1 lit. a DSGVO)
+  - Partner-Erfassung: Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)
 
 ### Activity-Types Progress-Mapping:
-**countsAsProgress = true:**
+**countsAsProgress = true (5 Types - resettet progress_deadline):**
 - `QUALIFIED_CALL` - Echtes Gespräch mit Entscheider
 - `MEETING` - Physisches Treffen
 - `DEMO` - Produktdemonstration
 - `ROI_PRESENTATION` - Business-Value-Präsentation
 - `SAMPLE_SENT` - Sample-Box versendet
 
-**countsAsProgress = false:**
+**countsAsProgress = false (8 Types - KEIN Reset von progress_deadline):**
+
+*Non-Progress Activities (5):*
 - `NOTE` - Nur interne Notiz
 - `FOLLOW_UP` - Automatisches Follow-up
 - `EMAIL` - Zu low-touch
 - `CALL` - Nur wenn nicht QUALIFIED_CALL
 - `SAMPLE_FEEDBACK` - Passives Feedback-Logging
+
+*System Activities (3) - NEU in 2.1.5:*
+- `FIRST_CONTACT_DOCUMENTED` - Erstkontakt dokumentiert (startet Schutz bei Pre-Claim)
+- `EMAIL_RECEIVED` - Email-Eingang protokolliert (Quick-Capture, Sprint 2.1.6)
+- `LEAD_ASSIGNED` - Lead-Zuweisung protokolliert (Assignment-Audit)
+
+**V257 Trigger-Behavior:**
+- Trigger `update_progress_on_activity` feuert NUR bei `counts_as_progress = TRUE`
+- System-Activities (FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED) → KEIN Trigger-Fire
+
+**⚠️ KRITISCH: V258 Migration ERFORDERLICH!**
+- **DB-Constraint gefunden:** V238 hat `CHECK (activity_type IN (...))`
+- **Neue Migration V258 benötigt:**
+  - DROP CONSTRAINT chk_activity_type
+  - ADD CONSTRAINT mit allen bestehenden + 3 neuen Types
+  - QUALIFIED_CALL, DEMO, ROI_PRESENTATION, SAMPLE_FEEDBACK bereits fehlen in V238!
+  - **Fix in V258:** Alle Activity-Types aus ACTIVITY_TYPES_PROGRESS_MAPPING.md
 
 ### Stop-the-Clock Rules (Backend-only in 2.1.5):
 **RBAC-Policy:**
@@ -205,7 +302,7 @@ DELETE /lead-protection/{leadId}/personal-data
 
 **Phase 2: Frontend (PR #125)** - Branch: `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
 - ⏸️ LeadWizard.tsx (3-Stufen Progressive Profiling UI, Full-Page Component)
-- ⏸️ DSGVO Consent-Checkbox (Stage 1, lead.consent_given_at Feld)
+- ⏸️ DSGVO Consent-Checkbox (Stage 1, UI-only - Backend-Feld erst Sprint 2.1.6)
 - ⏸️ LeadProtectionBadge.tsx (Status-Indicator mit Tooltip/Responsive/ARIA)
 - ⏸️ ActivityTimeline.tsx (Progress Tracking Display mit countsAsProgress Filter)
 - ⏸️ API-Integration: Enhanced POST /api/leads mit Stage-Validierung + Consent
@@ -219,8 +316,13 @@ DELETE /lead-protection/{leadId}/personal-data
 - SalesCockpitV2 hat KEINEN eigenen CockpitHeader ✅
 - Alle aktiven Routen verwenden HeaderV2 mit optimiertem Logo ✅
 
+**PFLICHT für Sprint 2.1.5 Backend Phase 2:**
+- **V258:** Activity-Type Constraint erweitern (13 Types aus ACTIVITY_TYPES_PROGRESS_MAPPING.md)
+  - QUALIFIED_CALL, DEMO, ROI_PRESENTATION, SAMPLE_FEEDBACK (bereits im Enum, fehlen in V238!)
+  - FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED (NEU)
+
 **Verschoben auf Sprint 2.1.6:**
-- V258 lead_transfers Tabelle (Lead-Transfer zwischen Partnern)
+- **V259:** lead_transfers Tabelle (Lead-Transfer zwischen Partnern)
 - PUT /api/leads/{id}/registered-at (Backdating Endpoint für Bestandsleads)
 - POST /api/admin/migration/leads/import (Bestandsleads-Migrations-API, Modul 08)
 - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
@@ -236,24 +338,116 @@ DELETE /lead-protection/{leadId}/personal-data
 - Backend kann schneller merged werden
 - Frontend kann parallel entwickelt werden
 
-## Definition of Done (Sprint)
+## Definition of Done (Sprint 2.1.5 - Gesamtpaket)
 
-**Phase 1 (Backend - PR #124):**
+**Basierend auf ChatGPT/Claude Implementierungsplan validiert 2025-10-03:**
+
+### Backend (Phase 1 - COMPLETE):
 - [x] **V255-V257 Migrations deployed & tested**
 - [x] **Entity Updates (Lead.java, LeadActivity.java)**
 - [x] **Service Extensions (LeadProtectionService)**
 - [x] **Unit Tests grün (24 Tests, 100% passed)**
 - [x] **Dokumentation: ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN**
 
-**Phase 2 (Frontend - PR #125):**
-- [ ] **LeadWizard.tsx (3 Stufen) implementiert (Full-Page Component)**
-- [ ] **DSGVO Consent-Checkbox (Stage 1) mit lead.consent_given_at**
-- [ ] **LeadProtectionBadge.tsx implementiert (Tooltip/Responsive/ARIA)**
-- [ ] **ActivityTimeline.tsx implementiert (countsAsProgress Filter)**
-- [ ] **API-Integration mit Stage + Consent-Validierung**
-- [x] **Integration Tests grün (MSW-basiert)**
-- [x] **FRONTEND_ACCESSIBILITY.md Dokumentation**
-- [x] **LeadWizard ist Standard (Feature-Flag entfernt)**
+### Frontend (Phase 2 - Backend Phase 2 PENDING):
+- [ ] **Pre-Claim Logic implementiert:**
+  - [ ] `registered_at = NULL` → Pre-Claim (kein Schutz, 10 Tage Frist)
+  - [ ] Erstkontakt-Pflichtblock UI (Kanal, Datum, Notiz) wenn kein Kontakt
+  - [ ] Schutzstart bei Kontakt ODER dokumentiertem Erstkontakt
+  - [ ] Migration-Ausnahme: Bestandsleads → sofortiger Schutz
+- [ ] **Quellenspezifische Pflichtfelder:**
+  - [ ] MESSE: Event-Name (Pflicht)
+  - [ ] EMPFEHLUNG: Referrer-Name/Firma (Pflicht)
+  - [ ] TELEFON: Kanal + Notiz (Pflicht wenn kein Kontakt)
+- [ ] **DSGVO Consent Source-abhängig:**
+  - [ ] `source = WEB_FORMULAR` → Consent-Checkbox PFLICHT
+  - [ ] `source != WEB_FORMULAR` → Info-Text "berechtigtes Interesse"
+- [ ] **Dedupe Hard Collisions:**
+  - [ ] 409 Conflict bei Email/Phone/Firma+PLZ exakt
+  - [ ] Manager-Override mit `overrideReason` (min. 10 Zeichen)
+  - [ ] DuplicateLeadDialog UI (Hard Block)
+- [ ] **Activity-Types erweitert:**
+  - [ ] FIRST_CONTACT_DOCUMENTED zu Enum hinzugefügt
+  - [ ] EMAIL_RECEIVED zu Enum hinzugefügt
+  - [ ] LEAD_ASSIGNED zu Enum hinzugefügt
+- [ ] **Assignment Service (Interface-Vorbereitung):**
+  - [ ] AssignmentService.assign(Lead) Interface definiert
+  - [ ] Geo → Segment → Workload Logik implementiert
+  - [ ] Activity LEAD_ASSIGNED wird persistiert mit Metadata:
+    - `method`: "GEO_WORKLOAD" | "MANUAL" | "WEB_INTAKE_AUTO"
+    - `metadata.previousOwner`: UUID (falls Re-Assign, sonst NULL)
+    - `metadata.assignmentReason`: String (z.B. "Geo-Zone München, Workload 3/10")
+    - `metadata.geoZone`: String (z.B. "DE-BY-München")
+    - `metadata.workloadScore`: Integer (aktueller Workload 0-100)
+- [ ] **Tests:**
+  - [ ] Unit Tests ≥80% Coverage (Mock-first)
+  - [ ] Gezielte IT für V257 Trigger (nur Progress-Activities)
+  - [ ] Gezielte IT für Dedupe-Repo-Queries
+- [ ] **Dokumentation:**
+  - [ ] CONTRACT_MAPPING.md aktualisiert
+  - [ ] SUMMARY.md aktualisiert
+  - [ ] API-Docs POST /api/leads (RFC7807 409)
+  - [ ] FRONTEND_ACCESSIBILITY.md aktualisiert
+
+### Feature-Flags & Rollout:
+- [ ] **VITE_FEATURE_LEADGEN** bleibt aktiv (bereits vorhanden)
+- [ ] **VITE_FEATURE_WEB_INTAKE** vorbereitet (vorerst OFF, Sprint 2.1.6)
+
+## Observability & Metriken
+
+### Pre-Claim Metriken:
+```java
+// Micrometer Gauges
+@Gauge(name = "leads_preclaim_open_total", description = "Anzahl Pre-Claim Leads (registered_at IS NULL)")
+public long getPreClaimOpenCount() { ... }
+
+@Gauge(name = "leads_preclaim_expiring_3d", description = "Pre-Claim Leads ablaufend ≤3 Tage")
+public long getPreClaimExpiring3Days() { ... }
+
+// Micrometer Counters
+@Counter(name = "leads_preclaim_expired_total", description = "Abgelaufene Pre-Claim Leads")
+public void incrementPreClaimExpired() { ... }
+
+// Micrometer Histograms
+@Timer(name = "lead_first_contact_to_protection_ms", description = "Zeit von Erstellung bis Schutzbeginn")
+public void recordFirstContactToProtection(Duration duration) { ... }
+```
+
+### Dedupe Metriken:
+```java
+@Counter(name = "dedupe_block_total", description = "Harte Kollisionen geblockt")
+public void incrementDedupeBlock() { ... }
+
+@Counter(name = "dedupe_warn_total", description = "Weiche Kollisionen gewarnt")
+public void incrementDedupeWarn() { ... }
+
+@Counter(name = "duplicate_overrides_total", description = "Manager-Overrides")
+public void incrementDuplicateOverride() { ... }
+```
+
+### Assignment Metriken:
+```java
+@Timer(name = "lead_assignment_duration_ms", description = "Dauer Lead-Zuweisung")
+public void recordAssignmentDuration(Duration duration) { ... }
+
+@Counter(name = "lead_assignments_total", description = "Anzahl Zuweisungen", tags = ["method"])
+public void incrementAssignment(String method) { ... }
+```
+
+### Dashboard-Queries (Prometheus/Grafana):
+```promql
+# Pre-Claim Leads ablaufend in 3 Tagen
+leads_preclaim_expiring_3d
+
+# Dedupe Block-Rate
+rate(dedupe_block_total[5m])
+
+# Manager-Override-Rate
+rate(duplicate_overrides_total[5m]) / rate(dedupe_block_total[5m])
+
+# P95 Assignment-Dauer
+histogram_quantile(0.95, rate(lead_assignment_duration_ms_bucket[5m]))
+```
 
 ## Risiken & Mitigation
 
