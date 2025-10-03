@@ -11,12 +11,12 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.1.5 Frontend Phase 2 IN PROGRESS (02.10.2025)
-- **Progress:** 10/36 PRs - 28% done (PR #123 merged, Sprint 2.1.5 Backend COMPLETE)
+- **Current Sprint:** Sprint 2.1.5 Dokumentation COMPLETE, Frontend Code-Anpassung ausstehend (04.10.2025)
+- **Progress:** 10/36 PRs - 28% done (PR #129 offen, Doku-First Ansatz implementiert)
 - **Blockers:** Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Lead-Module) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage
-- **Latest:** Sprint 2.1.5 Backend COMPLETE (V255-V257, ADR-004 Inline-First, 24 Unit Tests) + Frontend Phase 2 IN PROGRESS
+- **Latest:** Sprint 2.1.5 Doku COMPLETE (FRONTEND_DELTA.md, V258 Migration, Problem+JSON extensions)
 - **Sprint 2.1.6/2.1.7:** PLANNED (12-18.10.2025 / 19-25.10.2025) - Migration-API, Lead-Scoring, Mobile-Optimierung
 
 **🔗 WICHTIGE REFERENZEN:**
@@ -96,14 +96,19 @@ Sprint 2.1.3: Frontend Lead Mgmt      ✅ COMPLETE → PR #122 merged - Lead Man
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 Sprint 2.1.4: Lead Dedup & Quality    ✅ COMPLETE → PR #123 merged - Normalisierung, Idempotenz, CI 24min→7min
                                       → [Operations Runbook](../operations/lead-deduplication-runbook.md)
-Sprint 2.1.5: Protection & Profiling  ✅ COMPLETE (03.10.2025) → Backend + Frontend 100%
-                                      → V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First)
-                                      → Backend: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
-                                      → Frontend: 81 Tests (LeadWizard + Badge + Timeline, 100% passed)
-                                      → DSGVO Consent-Checkbox (Stage 1, consent_given_at), Activity-Types Progress-Mapping definiert
-                                      → LeadWizard.tsx + LeadProtectionBadge.tsx + ActivityTimeline.tsx (Full-Page Components)
-                                      → LeadWizard ist Standard (keine Alternative UI)
-                                      → Features verschoben: V259 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
+Sprint 2.1.5: Protection & Profiling  🔄 DOKU COMPLETE, Code-Anpassung ausstehend (04.10.2025)
+                                      → **Backend Phase 1:** V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First), 24 Unit Tests ✅
+                                      → **Backend Phase 2:** V258 Migration (13 Activity-Types), ActivityType.java, 7 Unit Tests ✅
+                                      → **Dokumentation:** FRONTEND_DELTA.md (877 Zeilen, zentrale Frontend-Spec) ✅
+                                        - 13 Activity-Types (5 Progress, 8 Non-Progress/System) + ACTIVITY_PROGRESS_MAP
+                                        - LeadSource Typ (6 Werte), Quellenabhängige Validierung (MESSE/EMPFEHLUNG/TELEFON)
+                                        - Erstkontakt-Block UI → activities[] Transformation
+                                        - Problem.extensions (severity: "WARNING", duplicates[]) für Dedupe 409
+                                        - Dedupe Hard/Soft Collisions (overrideReason/reason Query-Params)
+                                        - Pre-Claim UX (Badge ⏳ + 4 Filter), DoD Checkliste, Code-Deltas ready
+                                      → **Frontend Code:** types.ts, api.ts, LeadWizard.tsx, Dedupe-Dialoge ausstehend
+                                      → **PR #129:** Offen (54 files, 3 Komponenten vorhanden), Doku-First Ansatz
+                                      → Features verschoben: consent_given_at Backend-Feld (V259), Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
 
 Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
                                       → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)

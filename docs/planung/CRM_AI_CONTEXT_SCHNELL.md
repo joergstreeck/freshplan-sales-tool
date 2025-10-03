@@ -127,11 +127,16 @@ MODULE-STRUKTUR (Business-Value-orientiert):
       - source != WEB_FORMULAR → Berechtigtes Interesse (Art. 6 Abs. 1 lit. f)
       - Rechtliche Grundlage: B2B-Geschäftsanbahnung (berechtigtes Interesse)
 
-  Pending (Sprint 2.1.5 - Implementation):
-    - Lead Protection: 6 Monate Basisschutz + 60-Tage-Aktivitätsstandard + 10-Tage Nachfrist (Stop-the-Clock)
-    - Progressive Profiling UI: Stufe 0 (Vormerkung), Stufe 1 (Registrierung), Stufe 2 (Qualifiziert)
-    - Protection-Endpoints: Reminder, Extend, Stop-Clock, Personal-Data Deletion
-    - Compliance: Automatische Retention-Jobs + 60-Tage-Pseudonymisierung
+  Sprint 2.1.5 Status (04.10.2025 - Doku COMPLETE, Code ausstehend):
+    - ✅ **Backend Phase 1:** V255-V257 Migrations (Progress Tracking + Stage + Functions/Trigger), 24 Unit Tests
+    - ✅ **Backend Phase 2:** V258 Migration (13 Activity-Types Constraint erweitert), ActivityType.java, 7 Unit Tests
+    - ✅ **Dokumentation:** FRONTEND_DELTA.md (zentrale Frontend-Spec, 877 Zeilen)
+      - 13 Activity-Types + ACTIVITY_PROGRESS_MAP, LeadSource Typ (6 Werte)
+      - Erstkontakt-Block UI → activities[] Transformation
+      - Problem.extensions (severity, duplicates[]) für Dedupe 409 (Hard/Soft)
+      - Dedupe Query-Params (overrideReason, reason), Pre-Claim UX (Badge ⏳ + 4 Filter)
+    - ⏸️ **Frontend Code:** types.ts (10→13 Types), api.ts (Query-Params), LeadWizard.tsx (Erstkontakt-Block), Dedupe-Dialoge
+    - ⏸️ **Features verschoben:** consent_given_at Backend-Feld (V259 Sprint 2.1.6), Backdating, Nightly Jobs, Fuzzy-Matching
 
   Key-Features: KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B
 
