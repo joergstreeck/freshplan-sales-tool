@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCustomerDetails } from '../../features/customer/hooks/useCustomerDetails';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -7,6 +7,18 @@ import { CustomerDetailPage } from '../CustomerDetailPage';
 import { AuthContext } from '../../contexts/AuthContext';
 import { ThemeProvider } from '@mui/material';
 import freshfoodzTheme from '../../theme/freshfoodz';
+
+// Mock navigate function
+const mockNavigate = vi.fn();
+
+// Mock react-router-dom
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock the customer API
 vi.mock('../../features/customer/hooks/useCustomerDetails', () => ({
@@ -71,6 +83,7 @@ const createWrapper = (user: unknown = null) => {
 describe('CustomerDetailPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNavigate.mockClear();
   });
 
   it('should render loading state initially', () => {
@@ -259,20 +272,13 @@ describe('CustomerDetailPage', () => {
       error: null,
     });
 
-    const mockNavigate = vi.fn();
-    vi.mock('react-router-dom', async () => {
-      const actual = await vi.importActual('react-router-dom');
-      return {
-        ...actual,
-        useNavigate: () => mockNavigate,
-      };
-    });
-
     render(<CustomerDetailPage />, { wrapper: createWrapper() });
 
     await waitFor(() => {
       const backButton = screen.getByText('Zurück');
       expect(backButton).toBeInTheDocument();
+      fireEvent.click(backButton);
+      expect(mockNavigate).toHaveBeenCalledWith('/customers');
     });
   });
 });

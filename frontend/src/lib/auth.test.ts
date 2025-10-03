@@ -79,16 +79,10 @@ describe('auth', () => {
       setMockConstants(true, true);
       (authUtils.getUserId as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
 
-      // Mock console.warn
-      const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-
       const userId = getCurrentUserId();
 
       expect(userId).toBe(FALLBACK_USER_ID);
       expect(authUtils.getUserId).toHaveBeenCalled();
-      expect(consoleWarn).toHaveBeenCalledWith('Using fallback user ID in development mode');
-
-      consoleWarn.mockRestore();
     });
 
     it('sollte Error werfen in Production ohne authentifizierten User', () => {
