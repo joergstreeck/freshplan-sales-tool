@@ -105,20 +105,50 @@ export type LeadFormStage2 = LeadFormStage1 & {
   industry?: string;
 };
 
-// Lead Activity Types (V256)
+// Lead Activity Types (V258 - Sprint 2.1.5)
 export type ActivityType =
-  // countsAsProgress = TRUE (5 types)
+  // Progress Activities (countsAsProgress = TRUE) - 5 Types
   | 'QUALIFIED_CALL'
   | 'MEETING'
   | 'DEMO'
   | 'ROI_PRESENTATION'
   | 'SAMPLE_SENT'
-  // countsAsProgress = FALSE (5 types)
+
+  // Non-Progress Activities (countsAsProgress = FALSE) - 5 Types
   | 'NOTE'
   | 'FOLLOW_UP'
   | 'EMAIL'
   | 'CALL'
-  | 'SAMPLE_FEEDBACK';
+  | 'SAMPLE_FEEDBACK'
+
+  // System Activities (countsAsProgress = FALSE) - 3 Types (Sprint 2.1.5)
+  | 'FIRST_CONTACT_DOCUMENTED'
+  | 'EMAIL_RECEIVED'
+  | 'LEAD_ASSIGNED';
+
+/**
+ * Progress-Mapping für UI (ActivityTimeline Filtering)
+ * @see ACTIVITY_TYPES_PROGRESS_MAPPING.md
+ * @see V258 Migration (Backend Constraint)
+ */
+export const ACTIVITY_PROGRESS_MAP: Record<ActivityType, boolean> = {
+  // Progress = true (5)
+  QUALIFIED_CALL: true,
+  MEETING: true,
+  DEMO: true,
+  ROI_PRESENTATION: true,
+  SAMPLE_SENT: true,
+
+  // Non-Progress = false (8)
+  NOTE: false,
+  FOLLOW_UP: false,
+  EMAIL: false,
+  CALL: false,
+  SAMPLE_FEEDBACK: false,
+  FIRST_CONTACT_DOCUMENTED: false,
+  EMAIL_RECEIVED: false,
+  LEAD_ASSIGNED: false,
+} as const;
 
 export type LeadActivity = {
   id: string;
@@ -155,11 +185,55 @@ export type LeadProtectionInfo = {
   warningMessage?: string;
 };
 
-// RFC7807 Problem Details
+/**
+ * Lead-Herkunftsquellen (Sprint 2.1.5)
+ * Bestimmt Pflichtfelder + DSGVO-Consent-Pflicht
+ * @see FRONTEND_DELTA.md Section 2
+ */
+export type LeadSource =
+  | 'MESSE'           // Messe/Event
+  | 'EMPFEHLUNG'      // Partner/Kunde
+  | 'TELEFON'         // Cold Call
+  | 'WEB_FORMULAR'    // Website (Sprint 2.1.6)
+  | 'PARTNER'         // Partner-API (Sprint 2.1.6)
+  | 'SONSTIGE';       // Fallback
+
+/**
+ * Erstkontakt-Kanäle (Sprint 2.1.5)
+ * @see FRONTEND_DELTA.md Section 3
+ */
+export type FirstContactChannel =
+  | 'MESSE'      // Messestand/Event
+  | 'PHONE'      // Telefonat
+  | 'EMAIL'      // E-Mail
+  | 'REFERRAL'   // Empfehlung/Vorstellung
+  | 'OTHER';     // Sonstige
+
+export interface FirstContact {
+  channel: FirstContactChannel;
+  performedAt: string;  // ISO-8601 DateTime
+  notes: string;        // min. 10 Zeichen
+}
+
+// RFC7807 Problem Details (Sprint 2.1.5 - mit extensions für Dedupe)
+export interface DuplicateLead {
+  leadId: string;
+  companyName: string;
+  city?: string;
+  postalCode?: string;
+  ownerUserId?: string;
+}
+
 export type Problem = {
   type?: string;
   title?: string;
   detail?: string;
   status?: number;
   errors?: Record<string, string[]>;
+
+  // Sprint 2.1.5: Dedupe 409 Handling
+  extensions?: {
+    severity?: 'WARNING';  // Nur bei Soft Collisions
+    duplicates?: DuplicateLead[];
+  };
 };
