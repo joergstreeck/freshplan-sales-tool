@@ -140,9 +140,10 @@
 | **V251** | Idempotency Tenant Unique Forward Fix | 2.1.4 | ✅ Deployed | FP-234: Idempotenz-Store Fix |
 | **V252** | Leads registered_at Backdating | 2.1.4 | ✅ Deployed | FP-234: Timestamp Override System |
 | **V254** | Events Add published Column | 2.1.4 | ✅ Deployed | FP-234: Event Publishing State |
-| **V255** | Leads Protection Basics & Stage | 2.1.5 | 🚧 In Progress | FP-235: Protection + Progressive Profiling |
-| **V256** | Lead Activities Augment | 2.1.5 | 🚧 In Progress | FP-235: counts_as_progress + Vertriebsdoku |
-| **V257** | Lead Progress Helpers & Triggers | 2.1.5 | 🚧 In Progress | FP-235: DB Functions + Triggers |
+| **V255** | Leads Protection Basics & Stage | 2.1.5 | ✅ Deployed | FP-235: Protection + Progressive Profiling |
+| **V256** | Lead Activities Augment | 2.1.5 | ✅ Deployed | FP-235: counts_as_progress + Vertriebsdoku |
+| **V257** | Lead Progress Helpers & Triggers | 2.1.5 | ✅ Deployed | FP-235: DB Functions + Triggers |
+| **V258** | Expand Activity Type Constraint | 2.1.5 | 🚧 In Progress | FP-235: 13 Activity-Types (BLOCKER-FIX) |
 
 ---
 
@@ -220,6 +221,8 @@ V255 (Protection Felder + stage)
 V256 (Lead Activities Augmentation)
   ↓
 V257 (DB Functions + Triggers)
+  ↓
+V258 (Activity-Type Constraint erweitern - BLOCKER-FIX)
 ```
 
 ---
@@ -308,6 +311,50 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-02 (V257, Sprint 2.1.5 Backend Phase 1)
+**Letzte Aktualisierung:** 2025-10-04 (V258, Sprint 2.1.5 Backend Phase 2 - BLOCKER-FIX)
 
-**Nächste Migration:** V258 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V259 (ermitteln via `./scripts/get-next-migration.sh`)
+
+---
+
+## 📝 V258 Details: Expand Activity-Type Constraint (BLOCKER-FIX)
+
+**Datum:** 2025-10-04
+**Sprint:** 2.1.5 (Backend Phase 2)
+**Kontext:** Activity-Types Progress-Mapping (13 Types total)
+**Blocker:** Production-Deployment würde ohne V258 fehlschlagen bei Persist neuer Activity-Types
+
+### Änderungen:
+- Erweitert V238 `chk_activity_type` Constraint von 6 auf 13 Types
+- Fügt 7 fehlende Types hinzu (4 bereits im Enum, 3 NEU)
+- **ALTER TABLE lead_activities DROP CONSTRAINT IF EXISTS chk_activity_type**
+- **ALTER TABLE lead_activities ADD CONSTRAINT chk_activity_type CHECK (...)**
+
+### Neue System-Activities (Sprint 2.1.5):
+- **FIRST_CONTACT_DOCUMENTED:** startet Schutz explizit via LeadService (countsAsProgress=false, kein V257 Trigger)
+- **EMAIL_RECEIVED:** nur Tracking (countsAsProgress=false)
+- **LEAD_ASSIGNED:** Audit-Log mit Metadata (countsAsProgress=false)
+
+### Mapping zu Backend Enum:
+```java
+// ActivityType.java - 13 Types total
+// Progress (5): QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT
+// Non-Progress (5): NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK
+// System (3): FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED
+```
+
+### Rollback (falls nötig):
+```sql
+ALTER TABLE lead_activities DROP CONSTRAINT IF EXISTS chk_activity_type;
+-- Originaler Constraint aus V238 wiederherstellen (nur 6 Types)
+```
+
+### Tests:
+- V258 Migration läuft sauber durch (Flyway Log: "Migrating schema to version 258")
+- Backend-Enum synchronisiert (ActivityType.java erweitert)
+- Integration Tests pending (./mvnw verify lief >3min)
+
+### Referenzen:
+- **ACTIVITY_TYPES_PROGRESS_MAPPING.md:** Vollständige Type-Liste
+- **CONTRACT_MAPPING.md:** FIRST_CONTACT_DOCUMENTED Semantik (startet Schutz OHNE Trigger)
+- **TRIGGER_SPRINT_2_1_5.md Zeile 298-301:** V258 Migration ERFORDERLICH!
