@@ -14,14 +14,14 @@ import React from 'react';
 // Mock the API
 vi.mock('../services/auditApi', () => ({
   auditApi: {
-    getAuditHistory: vi.fn(() =>
+    getEntityAuditTrail: vi.fn(() =>
       Promise.resolve({
-        entries: [
+        content: [
           {
             id: '1',
             entityType: 'CONTACT',
             entityId: 'contact-1',
-            action: 'UPDATE',
+            eventType: 'UPDATE',
             fieldName: 'email',
             oldValue: 'old@example.com',
             newValue: 'new@example.com',
@@ -33,13 +33,22 @@ vi.mock('../services/auditApi', () => ({
             id: '2',
             entityType: 'CONTACT',
             entityId: 'contact-1',
-            action: 'CREATE',
+            eventType: 'CREATE',
             userId: 'user-1',
             userName: 'Test User',
             timestamp: new Date(Date.now() - 86400000).toISOString(), // Yesterday
           },
         ],
-        totalCount: 2,
+        totalElements: 2,
+        totalPages: 1,
+        number: 0,
+        size: 20,
+      })
+    ),
+    getAuditHistory: vi.fn(() =>
+      Promise.resolve({
+        entries: [],
+        totalCount: 0,
       })
     ),
     getLatestChange: vi.fn(() =>
