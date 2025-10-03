@@ -132,7 +132,9 @@ describe('ActivityTimeline', () => {
       expect(screen.getByText('Interne Notiz: Budget unklar')).toBeInTheDocument();
 
       // Progress activities should NOT be visible
-      expect(screen.queryByText('Qualifiziertes Gespräch mit Entscheider geführt')).not.toBeInTheDocument();
+      expect(
+        screen.queryByText('Qualifiziertes Gespräch mit Entscheider geführt')
+      ).not.toBeInTheDocument();
       expect(screen.queryByText('Meeting vor Ort in Berlin')).not.toBeInTheDocument();
     });
 
@@ -254,10 +256,9 @@ describe('ActivityTimeline', () => {
         createdAt: new Date().toISOString(),
       };
 
-      render(
-        <ActivityTimeline activities={[recentActivity]} variant="full" />,
-        { wrapper: Wrapper }
-      );
+      render(<ActivityTimeline activities={[recentActivity]} variant="full" />, {
+        wrapper: Wrapper,
+      });
 
       expect(screen.getByText(/vor 3 tagen/i)).toBeInTheDocument();
     });
@@ -284,7 +285,9 @@ describe('ActivityTimeline', () => {
     it('should render activities in reverse chronological order (newest first)', () => {
       render(<ActivityTimeline activities={mockAllActivities} />, { wrapper: Wrapper });
 
-      const summaries = screen.getAllByText(/qualifiziertes gespräch|follow-up e-mail|meeting vor ort|interne notiz|produktdemonstration/i);
+      const summaries = screen.getAllByText(
+        /qualifiziertes gespräch|follow-up e-mail|meeting vor ort|interne notiz|produktdemonstration/i
+      );
 
       // First activity should be the most recent (2025-10-01)
       expect(summaries[0].textContent).toContain('Qualifiziertes Gespräch');
@@ -305,7 +308,9 @@ describe('ActivityTimeline', () => {
       render(<ActivityTimeline activities={[mockProgressActivities[0]]} />, { wrapper: Wrapper });
 
       // Summary
-      expect(screen.getByText('Qualifiziertes Gespräch mit Entscheider geführt')).toBeInTheDocument();
+      expect(
+        screen.getByText('Qualifiziertes Gespräch mit Entscheider geführt')
+      ).toBeInTheDocument();
 
       // Outcome and nextAction may be split across multiple elements with <strong> tags
       expect(screen.getByText(/interesse an demo/i)).toBeInTheDocument();
@@ -347,10 +352,7 @@ describe('ActivityTimeline', () => {
   // ==================== TEST 6: Color-Coding ====================
   describe('Color-Coding', () => {
     it('should use green styling for progress activities', () => {
-      render(
-        <ActivityTimeline activities={[mockProgressActivities[0]]} />,
-        { wrapper: Wrapper }
-      );
+      render(<ActivityTimeline activities={[mockProgressActivities[0]]} />, { wrapper: Wrapper });
 
       // Verify Progress chip is shown (indicates green/success styling)
       expect(screen.getByText('Progress')).toBeInTheDocument();
@@ -358,20 +360,18 @@ describe('ActivityTimeline', () => {
     });
 
     it('should use grey styling for non-progress activities', () => {
-      render(
-        <ActivityTimeline activities={[mockNonProgressActivities[0]]} />,
-        { wrapper: Wrapper }
-      );
+      render(<ActivityTimeline activities={[mockNonProgressActivities[0]]} />, {
+        wrapper: Wrapper,
+      });
 
       // No Progress chip should be shown (indicates grey styling)
       expect(screen.queryByText('Progress')).not.toBeInTheDocument();
     });
 
     it('should use filled variant for latest progress activity', () => {
-      const { container } = render(
-        <ActivityTimeline activities={mockProgressActivities} />,
-        { wrapper: Wrapper }
-      );
+      const { container } = render(<ActivityTimeline activities={mockProgressActivities} />, {
+        wrapper: Wrapper,
+      });
 
       // Latest activity should have filled TimelineDot
       const filledDots = container.querySelectorAll('.MuiTimelineDot-filled');
@@ -379,10 +379,9 @@ describe('ActivityTimeline', () => {
     });
 
     it('should use outlined variant for other activities', () => {
-      const { container } = render(
-        <ActivityTimeline activities={mockProgressActivities} />,
-        { wrapper: Wrapper }
-      );
+      const { container } = render(<ActivityTimeline activities={mockProgressActivities} />, {
+        wrapper: Wrapper,
+      });
 
       // Other activities should have outlined TimelineDot
       const outlinedDots = container.querySelectorAll('.MuiTimelineDot-outlined');

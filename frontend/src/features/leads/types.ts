@@ -3,20 +3,9 @@
 
 export type LeadStage = 0 | 1 | 2;
 
-export type LeadStatus =
-  | 'REGISTERED'
-  | 'ACTIVE'
-  | 'QUALIFIED'
-  | 'CONVERTED'
-  | 'LOST'
-  | 'DELETED';
+export type LeadStatus = 'REGISTERED' | 'ACTIVE' | 'QUALIFIED' | 'CONVERTED' | 'LOST' | 'DELETED';
 
-export type BusinessType =
-  | 'restaurant'
-  | 'hotel'
-  | 'catering'
-  | 'canteen'
-  | 'other';
+export type BusinessType = 'restaurant' | 'hotel' | 'catering' | 'canteen' | 'other';
 
 export type Territory = {
   id: string;

@@ -504,10 +504,9 @@ describe('PR4 Enterprise Test Suite', () => {
     it('Export works with filtered data', async () => {
       const user = userEvent.setup();
 
-      render(
-        <UniversalExportButton entity="customers" queryParams={{ status: 'ACTIVE' }} />,
-        { wrapper: createWrapper() }
-      );
+      render(<UniversalExportButton entity="customers" queryParams={{ status: 'ACTIVE' }} />, {
+        wrapper: createWrapper(),
+      });
 
       const exportButton = screen.getByRole('button');
       await user.click(exportButton);

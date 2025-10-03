@@ -19,7 +19,8 @@ export default function LeadProtectionBadge({
   size = 'small',
 }: LeadProtectionBadgeProps) {
   const { t } = useTranslation('leads');
-  const { status, protectionUntil, progressDeadline, daysUntilExpiry, warningMessage } = protectionInfo;
+  const { status, protectionUntil, progressDeadline, daysUntilExpiry, warningMessage } =
+    protectionInfo;
 
   // Color-Coding based on Protection Status
   const getStatusColor = (): 'success' | 'warning' | 'error' => {
@@ -55,7 +56,9 @@ export default function LeadProtectionBadge({
       case 'protected':
         return t('protection.status.protected');
       case 'warning':
-        return daysUntilExpiry != null ? t('protection.status.warningWithDays', { count: daysUntilExpiry }) : t('protection.status.warning');
+        return daysUntilExpiry != null
+          ? t('protection.status.warningWithDays', { count: daysUntilExpiry })
+          : t('protection.status.warning');
       case 'expired':
         return t('protection.status.expired');
       default:
@@ -75,7 +78,8 @@ export default function LeadProtectionBadge({
 
         {protectionUntil && (
           <Box sx={{ fontSize: '0.875rem', mb: 0.5 }}>
-            <strong>{t('protection.tooltip.protectedUntil')}</strong> {new Date(protectionUntil).toLocaleDateString('de-DE', {
+            <strong>{t('protection.tooltip.protectedUntil')}</strong>{' '}
+            {new Date(protectionUntil).toLocaleDateString('de-DE', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
@@ -85,7 +89,8 @@ export default function LeadProtectionBadge({
 
         {progressDeadline && (
           <Box sx={{ fontSize: '0.875rem', mb: 0.5 }}>
-            <strong>{t('protection.tooltip.progressDeadline')}</strong> {new Date(progressDeadline).toLocaleDateString('de-DE', {
+            <strong>{t('protection.tooltip.progressDeadline')}</strong>{' '}
+            {new Date(progressDeadline).toLocaleDateString('de-DE', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
@@ -95,7 +100,8 @@ export default function LeadProtectionBadge({
 
         {daysUntilExpiry !== undefined && (
           <Box sx={{ fontSize: '0.875rem', mb: 0.5 }}>
-            <strong>{t('protection.tooltip.remaining')}</strong> {t('protection.tooltip.daysRemaining', { count: daysUntilExpiry })}
+            <strong>{t('protection.tooltip.remaining')}</strong>{' '}
+            {t('protection.tooltip.daysRemaining', { count: daysUntilExpiry })}
           </Box>
         )}
 
@@ -115,13 +121,7 @@ export default function LeadProtectionBadge({
   };
 
   return (
-    <Tooltip
-      title={getTooltipContent()}
-      arrow
-      placement="top"
-      enterDelay={200}
-      leaveDelay={200}
-    >
+    <Tooltip title={getTooltipContent()} arrow placement="top" enterDelay={200} leaveDelay={200}>
       <Chip
         icon={getStatusIcon()}
         label={getStatusLabel()}

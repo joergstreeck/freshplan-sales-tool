@@ -78,7 +78,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     const errors: Record<string, string[]> = {};
 
     // Validate contact fields if provided
-    if (formData.contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact.email.trim())) {
+    if (
+      formData.contact.email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact.email.trim())
+    ) {
       errors['contact.email'] = [t('wizard.validation.emailInvalid')];
     }
 
@@ -125,12 +128,12 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       return;
     }
 
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    setActiveStep(prevActiveStep => prevActiveStep + 1);
   };
 
   const handleBack = () => {
     setError(null);
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
   const handleSubmit = async () => {
@@ -235,7 +238,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             <TextField
               label={`${t('wizard.stage0.companyName')} *`}
               value={formData.companyName}
-              onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+              onChange={e => setFormData({ ...formData, companyName: e.target.value })}
               fullWidth
               required
               margin="dense"
@@ -248,14 +251,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               <TextField
                 label={t('wizard.stage0.city')}
                 value={formData.city}
-                onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                onChange={e => setFormData({ ...formData, city: e.target.value })}
                 fullWidth
                 margin="dense"
               />
               <TextField
                 label={t('wizard.stage0.postalCode')}
                 value={formData.postalCode}
-                onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+                onChange={e => setFormData({ ...formData, postalCode: e.target.value })}
                 fullWidth
                 margin="dense"
                 inputProps={{ maxLength: 10 }}
@@ -268,7 +271,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 labelId="businessType-label"
                 id="businessType-select"
                 value={formData.businessType || ''}
-                onChange={(e) => setFormData({ ...formData, businessType: e.target.value as BusinessType })}
+                onChange={e =>
+                  setFormData({ ...formData, businessType: e.target.value as BusinessType })
+                }
                 label={t('wizard.stage0.businessType')}
               >
                 <MenuItem value="">
@@ -288,13 +293,18 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         // Stage 1: Registrierung (Contact Details + DSGVO Consent)
         return (
           <Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }} dangerouslySetInnerHTML={{ __html: t('wizard.stage1.description') }} />
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mb: 2 }}
+              dangerouslySetInnerHTML={{ __html: t('wizard.stage1.description') }}
+            />
 
             <Stack direction="row" spacing={2}>
               <TextField
                 label={t('wizard.stage1.firstName')}
                 value={formData.contact.firstName}
-                onChange={(e) =>
+                onChange={e =>
                   setFormData({
                     ...formData,
                     contact: { ...formData.contact, firstName: e.target.value },
@@ -306,7 +316,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               <TextField
                 label={t('wizard.stage1.lastName')}
                 value={formData.contact.lastName}
-                onChange={(e) =>
+                onChange={e =>
                   setFormData({
                     ...formData,
                     contact: { ...formData.contact, lastName: e.target.value },
@@ -321,7 +331,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               label={t('wizard.stage1.email')}
               type="email"
               value={formData.contact.email}
-              onChange={(e) =>
+              onChange={e =>
                 setFormData({
                   ...formData,
                   contact: { ...formData.contact, email: e.target.value },
@@ -337,7 +347,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               label={t('wizard.stage1.phone')}
               type="tel"
               value={formData.contact.phone}
-              onChange={(e) =>
+              onChange={e =>
                 setFormData({
                   ...formData,
                   contact: { ...formData.contact, phone: e.target.value },
@@ -353,7 +363,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 control={
                   <Checkbox
                     checked={formData.consentGiven}
-                    onChange={(e) => setFormData({ ...formData, consentGiven: e.target.checked })}
+                    onChange={e => setFormData({ ...formData, consentGiven: e.target.checked })}
                     required={
                       !!(
                         formData.contact.firstName ||
@@ -403,7 +413,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 label={t('wizard.stage2.estimatedVolume')}
                 type="number"
                 value={formData.estimatedVolume || ''}
-                onChange={(e) =>
+                onChange={e =>
                   setFormData({
                     ...formData,
                     estimatedVolume: e.target.value ? Number(e.target.value) : undefined,
@@ -421,7 +431,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   labelId="kitchenSize-label"
                   id="kitchenSize-select"
                   value={formData.kitchenSize || ''}
-                  onChange={(e) =>
+                  onChange={e =>
                     setFormData({
                       ...formData,
                       kitchenSize: e.target.value as 'small' | 'medium' | 'large' | undefined,
@@ -443,7 +453,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               label={t('wizard.stage2.employeeCount')}
               type="number"
               value={formData.employeeCount || ''}
-              onChange={(e) =>
+              onChange={e =>
                 setFormData({
                   ...formData,
                   employeeCount: e.target.value ? Number(e.target.value) : undefined,
@@ -460,7 +470,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               label={t('wizard.stage2.website')}
               type="url"
               value={formData.website}
-              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+              onChange={e => setFormData({ ...formData, website: e.target.value })}
               fullWidth
               margin="dense"
               placeholder={t('wizard.stage2.websitePlaceholder')}
@@ -469,7 +479,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             <TextField
               label={t('wizard.stage2.industry')}
               value={formData.industry}
-              onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+              onChange={e => setFormData({ ...formData, industry: e.target.value })}
               fullWidth
               margin="dense"
               multiline
@@ -503,7 +513,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         )}
 
         <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-          {steps.map((label) => (
+          {steps.map(label => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
             </Step>
@@ -528,7 +538,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             {t('wizard.actions.next')}
           </Button>
         ) : (
-          <Button variant="contained" onClick={handleSubmit} disabled={saving || !formData.companyName.trim()}>
+          <Button
+            variant="contained"
+            onClick={handleSubmit}
+            disabled={saving || !formData.companyName.trim()}
+          >
             {saving ? t('wizard.actions.saving') : t('wizard.actions.create')}
           </Button>
         )}

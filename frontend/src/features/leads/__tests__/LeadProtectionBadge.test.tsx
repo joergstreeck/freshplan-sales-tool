@@ -132,7 +132,9 @@ describe('LeadProtectionBadge', () => {
         warningMessage: 'Keine Progress-Aktivität seit 60+ Tagen. Lead-Schutz verfallen.',
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       expect(badge).toHaveClass('MuiChip-colorError', 'MuiChip-filled');
@@ -144,7 +146,10 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} variant="outlined" />, { wrapper: Wrapper });
+      const { container } = render(
+        <LeadProtectionBadge protectionInfo={protectionInfo} variant="outlined" />,
+        { wrapper: Wrapper }
+      );
 
       const badge = container.querySelector('.MuiChip-root');
       expect(badge).toHaveClass('MuiChip-outlined');
@@ -198,7 +203,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       if (badge) await user.hover(badge);
@@ -218,7 +225,9 @@ describe('LeadProtectionBadge', () => {
         warningMessage: 'Nur noch 5 Tage bis Progress-Deadline! Bitte Aktivität durchführen.',
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       if (badge) await user.hover(badge);
@@ -236,7 +245,9 @@ describe('LeadProtectionBadge', () => {
         warningMessage: 'Keine Progress-Aktivität seit 60+ Tagen. Lead-Schutz verfallen.',
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       if (badge) await user.hover(badge);
@@ -252,7 +263,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       if (badge) await user.hover(badge);
@@ -269,7 +282,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       expect(badge).toHaveAttribute('aria-label', 'Lead-Schutzstatus: Geschützt');
@@ -281,7 +296,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       expect(badge).toHaveStyle({ cursor: 'help' });
@@ -296,7 +313,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const badge = container.querySelector('.MuiChip-root');
       expect(badge).toHaveClass('MuiChip-sizeSmall');
@@ -308,7 +327,10 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} size="medium" />, { wrapper: Wrapper });
+      const { container } = render(
+        <LeadProtectionBadge protectionInfo={protectionInfo} size="medium" />,
+        { wrapper: Wrapper }
+      );
 
       const badge = container.querySelector('.MuiChip-root');
       expect(badge).toHaveClass('MuiChip-sizeMedium');
@@ -323,7 +345,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 30,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       // Verify icon container exists
       const icon = container.querySelector('.MuiChip-icon');
@@ -340,7 +364,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: 5,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const icon = container.querySelector('.MuiChip-icon');
       expect(icon).toBeInTheDocument();
@@ -352,7 +378,9 @@ describe('LeadProtectionBadge', () => {
         daysUntilExpiry: -10,
       };
 
-      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, { wrapper: Wrapper });
+      const { container } = render(<LeadProtectionBadge protectionInfo={protectionInfo} />, {
+        wrapper: Wrapper,
+      });
 
       const icon = container.querySelector('.MuiChip-icon');
       expect(icon).toBeInTheDocument();

@@ -99,10 +99,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should navigate through all 3 stages (0 → 1 → 2) and display correct labels', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Stage 0: Vormerkung
       expect(screen.getByText('Vormerkung')).toBeInTheDocument();
@@ -156,10 +155,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should allow navigating back from Stage 2 → 1 → 0 without losing data', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -199,10 +197,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should require consent when contact data is provided', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -229,10 +226,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should NOT require consent when no contact data is provided', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -259,10 +255,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -276,7 +271,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       await waitFor(() => {
@@ -297,10 +294,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0 only
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -311,7 +307,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       await waitFor(() => {
@@ -334,10 +332,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0 only
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -348,7 +345,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       await waitFor(() => {
@@ -369,10 +368,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -386,7 +384,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2 (no business data)
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       await waitFor(() => {
@@ -408,10 +408,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -445,10 +444,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should validate Stage 0 before allowing navigation (companyName required)', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Try to navigate without filling companyName
       await user.click(screen.getByRole('button', { name: /weiter/i }));
@@ -465,10 +463,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should validate email format in Stage 1', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -491,10 +488,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should successfully create lead and call onCreated callback', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill minimal form (Stage 0 only)
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -505,7 +501,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       // Should call onCreated callback
@@ -517,10 +515,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should handle 409 Duplicate Email error', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill form with duplicate email
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -531,7 +528,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('checkbox', { name: /ich stimme zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       // Should show 409 duplicate error
@@ -563,10 +562,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill minimal form
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -575,7 +573,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       // Should show generic error
@@ -590,15 +590,14 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       // Simulate slow API
       server.use(
         http.post('http://localhost:8080/api/leads', async () => {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 100));
           return HttpResponse.json({ id: 'lead-123', status: 'REGISTERED' }, { status: 201 });
         })
       );
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       // Fill minimal form
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
@@ -607,7 +606,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       const submitButton = screen.getByRole('button', { name: /lead erstellen/i });
 
       await user.click(submitButton);
@@ -627,10 +628,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     it('should close dialog when Abbrechen is clicked', async () => {
       const user = userEvent.setup();
 
-      render(
-        <LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />,
-        { wrapper: Wrapper }
-      );
+      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
+        wrapper: Wrapper,
+      });
 
       await user.click(screen.getByRole('button', { name: /abbrechen/i }));
 
@@ -650,7 +650,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /weiter/i }));
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.click(screen.getByRole('button', { name: /weiter/i }));
-      await waitFor(() => expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument());
+      await waitFor(() =>
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
+      );
       await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
 
       await waitFor(() => {

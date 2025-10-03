@@ -7,14 +7,7 @@ import {
   TimelineDot,
   TimelineOppositeContent,
 } from '@mui/lab';
-import {
-  Box,
-  Typography,
-  Chip,
-  Alert,
-  ToggleButtonGroup,
-  ToggleButton,
-} from '@mui/material';
+import { Box, Typography, Chip, Alert, ToggleButtonGroup, ToggleButton } from '@mui/material';
 import {
   CheckCircle as ProgressIcon,
   RadioButtonUnchecked as NonProgressIcon,
@@ -41,8 +34,8 @@ export default function ActivityTimeline({
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
 
   // Split activities by countsAsProgress
-  const progressActivities = activities.filter((a) => a.countsAsProgress);
-  const nonProgressActivities = activities.filter((a) => !a.countsAsProgress);
+  const progressActivities = activities.filter(a => a.countsAsProgress);
+  const nonProgressActivities = activities.filter(a => !a.countsAsProgress);
 
   // Filter logic
   const filteredActivities =
@@ -207,7 +200,12 @@ export default function ActivityTimeline({
                         <Chip label={t('timeline.labels.progress')} color="success" size="small" />
                       )}
                       {isLatestProgress && (
-                        <Chip label={t('timeline.labels.latest')} color="primary" size="small" variant="outlined" />
+                        <Chip
+                          label={t('timeline.labels.latest')}
+                          color="primary"
+                          size="small"
+                          variant="outlined"
+                        />
                       )}
                     </Box>
 
@@ -226,12 +224,18 @@ export default function ActivityTimeline({
                     {activity.nextAction && (
                       <Typography variant="caption" color="text.secondary" display="block">
                         <strong>{t('timeline.labels.nextAction')}</strong> {activity.nextAction}
-                        {activity.nextActionDate && ` (${t('timeline.labels.until')} ${new Date(activity.nextActionDate).toLocaleDateString('de-DE')})`}
+                        {activity.nextActionDate &&
+                          ` (${t('timeline.labels.until')} ${new Date(activity.nextActionDate).toLocaleDateString('de-DE')})`}
                       </Typography>
                     )}
 
                     {variant === 'compact' && (
-                      <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 0.5 }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        display="block"
+                        sx={{ mt: 0.5 }}
+                      >
                         {new Date(activity.activityDate).toLocaleDateString('de-DE', {
                           day: '2-digit',
                           month: '2-digit',
