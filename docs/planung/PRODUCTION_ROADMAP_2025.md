@@ -103,19 +103,19 @@ Sprint 2.1.5: Protection & Profiling  ✅ COMPLETE (03.10.2025) → Backend + Fr
                                       → DSGVO Consent-Checkbox (Stage 1, consent_given_at), Activity-Types Progress-Mapping definiert
                                       → LeadWizard.tsx + LeadProtectionBadge.tsx + ActivityTimeline.tsx (Full-Page Components)
                                       → LeadWizard ist Standard (keine Alternative UI)
-                                      → Features verschoben: V258, Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
+                                      → Features verschoben: V259 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
 
 Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
                                       → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)
                                       → Lead → Kunde Convert Flow (automatische Übernahme bei Status QUALIFIED → CONVERTED)
                                       → Stop-the-Clock UI (Manager-only, StopTheClockDialog)
                                       → Extended Lead-Transfer Workflow (mit Genehmigung)
-                                      → V258 lead_transfers, Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+                                      → V259 lead_transfers + consent_given_at, Nightly Jobs (Warning/Expiry/Pseudonymisierung)
                                       → Fuzzy-Matching & Scoring (Levenshtein-Distance, pg_trgm)
 
 Sprint 2.1.7: Scoring & Mobile        📅 PLANNED (19-25.10.2025)
-                                      → Lead-Scoring Algorithmus (0-100 Punkte, V259 Migration)
-                                      → Activity-Templates System (V260 Migration, CRUD-API)
+                                      → Lead-Scoring Algorithmus (0-100 Punkte, V260 Migration)
+                                      → Activity-Templates System (V261 Migration, CRUD-API)
                                       → Mobile-First UI Optimierung (Touch, Breakpoints <768px, Bundle <200KB)
                                       → Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
                                       → QR-Code-Scanner für schnelle Kontakterfassung (vCard/meCard Import)

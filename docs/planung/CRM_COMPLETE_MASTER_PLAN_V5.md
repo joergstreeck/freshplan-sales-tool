@@ -258,13 +258,13 @@
   - Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
   - Dokumentation: DELTA_LOG_2_1_5 (inkl. PR-Strategie), CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_SPRINT_2_1_6
   - Frontend Phase 2 ausstehend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
-  - Verschobene Features auf Sprint 2.1.6: V258 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
+  - Verschobene Features auf Sprint 2.1.6: V259 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
   - Migration: V255-V257, Tests: OK
 - 2025-10-02 04:13 — **Documentation:** Frontend Theme V2 zu AI Context hinzugefügt, DESIGN_SYSTEM.md entrümpelt (563→474 lines, -16%), Logo-Performance validiert (19 KB bereits optimiert), **Migration**: n/a, **Tests**: n/a
 - 2025-10-02 14:30 — **Sprint Planning 2.1.5-2.1.7:** Dokumentations-Update COMPLETE - DSGVO Consent, Activity-Types Progress-Mapping, Stop-the-Clock Rules definiert
   - TRIGGER_SPRINT_2_1_5.md: DSGVO Consent-Checkbox (Stage 1, consent_given_at), Activity-Types Progress-Mapping (QUALIFIED_CALL/MEETING/DEMO/ROI_PRESENTATION/SAMPLE_SENT = true), Stop-the-Clock RBAC (Manager+Admin only, UI in 2.1.6)
   - TRIGGER_SPRINT_2_1_6.md: Bestandsleads-Migrations-API (Modul 08, Dry-Run PFLICHT), Lead → Kunde Convert Flow, Stop-the-Clock UI, Extended Lead-Transfer Workflow, Nightly Jobs
-  - TRIGGER_SPRINT_2_1_7.md: NEU erstellt - Lead-Scoring (V259), Activity-Templates (V260), Mobile-First UI, Offline-Fähigkeit (Service Worker + IndexedDB), QR-Code-Scanner (vCard/meCard)
+  - TRIGGER_SPRINT_2_1_7.md: NEU erstellt - Lead-Scoring (V260), Activity-Templates (V261), Mobile-First UI, Offline-Fähigkeit (Service Worker + IndexedDB), QR-Code-Scanner (vCard/meCard)
   - SPRINT_MAP.md: Sprint 2.1.5 Status IN PROGRESS (Frontend Phase 2), Sprint 2.1.6/2.1.7 PLANNED dokumentiert
   - V249 Migration Inkonsistenz korrigiert (nicht deployed, nur Artefakt für 2.1.6+)
   - **Migration**: n/a, **Tests**: n/a
@@ -293,13 +293,13 @@
   - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
   - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
   - Stop-the-Clock UI (StopTheClockDialog, Manager-only, Audit-Log)
-  - V258 lead_transfers Tabelle (Lead-Transfer zwischen Partnern)
+  - V259 lead_transfers Tabelle + consent_given_at (Lead-Transfer zwischen Partnern)
   - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
   - Nightly Jobs (Warning/Expiry/Pseudonymisierung)
   - Fuzzy-Matching & DuplicateReviewModal
 - **Sprint 2.1.7 Vorbereitung (Start 19.10.2025):**
-  - Lead-Scoring Algorithmus (V259, 0-100 Punkte, konfigurierbare Gewichtungen)
-  - Activity-Templates System (V260, Standard-Seeds + User-Templates)
+  - Lead-Scoring Algorithmus (V260, 0-100 Punkte, konfigurierbare Gewichtungen)
+  - Activity-Templates System (V261, Standard-Seeds + User-Templates)
   - Mobile-First UI Optimierung (Touch, Breakpoints, Performance <3.5s 3G)
   - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
   - QR-Code-Scanner (Camera-API, vCard/meCard, Desktop-Fallback)
