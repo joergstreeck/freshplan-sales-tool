@@ -16,6 +16,8 @@ entry_points:
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md"
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md"
   - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md"
+  - "features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DSGVO_CONSENT_SPECIFICATION.md"
+  - "frontend/FRONTEND_ACCESSIBILITY.md"
 pr_refs: []
 updated: "2025-10-03"
 ---
@@ -271,26 +273,11 @@ DELETE /lead-protection/{leadId}/personal-data
   - Partner-Erfassung: Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)
 
 ### Activity-Types Progress-Mapping:
-**countsAsProgress = true (5 Types - resettet progress_deadline):**
-- `QUALIFIED_CALL` - Echtes Gespräch mit Entscheider
-- `MEETING` - Physisches Treffen
-- `DEMO` - Produktdemonstration
-- `ROI_PRESENTATION` - Business-Value-Präsentation
-- `SAMPLE_SENT` - Sample-Box versendet
+**Vollständige Mapping:** Siehe [ACTIVITY_TYPES_PROGRESS_MAPPING.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md)
 
-**countsAsProgress = false (8 Types - KEIN Reset von progress_deadline):**
-
-*Non-Progress Activities (5):*
-- `NOTE` - Nur interne Notiz
-- `FOLLOW_UP` - Automatisches Follow-up
-- `EMAIL` - Zu low-touch
-- `CALL` - Nur wenn nicht QUALIFIED_CALL
-- `SAMPLE_FEEDBACK` - Passives Feedback-Logging
-
-*System Activities (3) - NEU in 2.1.5:*
-- `FIRST_CONTACT_DOCUMENTED` - Erstkontakt dokumentiert (startet Schutz bei Pre-Claim)
-- `EMAIL_RECEIVED` - Email-Eingang protokolliert (Quick-Capture, Sprint 2.1.6)
-- `LEAD_ASSIGNED` - Lead-Zuweisung protokolliert (Assignment-Audit)
+**Kurzübersicht (13 Types):**
+- ✅ **countsAsProgress=true (5):** QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT
+- ❌ **countsAsProgress=false (8):** NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK + 3 System-Activities
 
 **V257 Trigger-Behavior:**
 - Trigger `update_progress_on_activity` feuert NUR bei `counts_as_progress = TRUE`
@@ -298,11 +285,8 @@ DELETE /lead-protection/{leadId}/personal-data
 
 **⚠️ KRITISCH: V258 Migration ERFORDERLICH!**
 - **DB-Constraint gefunden:** V238 hat `CHECK (activity_type IN (...))`
-- **Neue Migration V258 benötigt:**
-  - DROP CONSTRAINT chk_activity_type
-  - ADD CONSTRAINT mit allen bestehenden + 3 neuen Types
-  - QUALIFIED_CALL, DEMO, ROI_PRESENTATION, SAMPLE_FEEDBACK bereits fehlen in V238!
-  - **Fix in V258:** Alle Activity-Types aus ACTIVITY_TYPES_PROGRESS_MAPPING.md
+- **7 Activity-Types fehlen** in V238 Constraint!
+- **V258 Fix:** Constraint erweitern mit allen 13 Types aus ACTIVITY_TYPES_PROGRESS_MAPPING.md
 
 ### Stop-the-Clock Rules (Backend-only in 2.1.5):
 **RBAC-Policy:**

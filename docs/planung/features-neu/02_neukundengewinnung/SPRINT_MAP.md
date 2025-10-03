@@ -174,8 +174,11 @@ updated: "2025-10-02"
 - ✅ [ACTIVITY_TYPES_PROGRESS_MAPPING.md](./artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md) ⭐ NEU
 
 **Frontend:**
-- ✅ [FRONTEND_ACCESSIBILITY.md](./artefakte/SPRINT_2_1_5/FRONTEND_ACCESSIBILITY.md)
+- ✅ [FRONTEND_ACCESSIBILITY.md](../../../../frontend/FRONTEND_ACCESSIBILITY.md)
 - ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md)
+
+**DSGVO & Compliance:**
+- ✅ [DSGVO_CONSENT_SPECIFICATION.md](./artefakte/SPRINT_2_1_5/DSGVO_CONSENT_SPECIFICATION.md) ⭐ NEU
 
 **Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive", PLAN B (Inline-First) statt V249-Artefakt, Backend/Frontend Split (PR #124/#125)
 
