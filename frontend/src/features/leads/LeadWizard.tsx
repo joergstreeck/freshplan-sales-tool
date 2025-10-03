@@ -22,7 +22,7 @@ import {
   Stack,
 } from '@mui/material';
 import { useTranslation } from 'react-i18next';
-import type { LeadFormStage2, Problem, BusinessType } from './types';
+import type { LeadFormStage2, Problem, BusinessType, LeadSource, FirstContact } from './types';
 import { createLead } from './api';
 
 interface LeadWizardProps {
@@ -38,12 +38,16 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Problem | null>(null);
 
-  // Form State (Progressive Profiling)
-  const [formData, setFormData] = useState<LeadFormStage2>({
+  // Form State (Progressive Profiling - Sprint 2.1.5)
+  const [formData, setFormData] = useState<LeadFormStage2 & {
+    source?: LeadSource;
+    firstContact?: FirstContact;
+  }>({
     companyName: '',
     city: '',
     postalCode: '',
     businessType: undefined,
+    source: undefined, // Sprint 2.1.5: MESSE, EMPFEHLUNG, TELEFON, etc.
     contact: {
       firstName: '',
       lastName: '',
@@ -51,6 +55,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       phone: '',
     },
     consentGiven: false, // DSGVO Consent (Stage 1)
+    firstContact: undefined, // Sprint 2.1.5: Erstkontakt-Block
     estimatedVolume: undefined,
     kitchenSize: undefined,
     employeeCount: undefined,
@@ -73,7 +78,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     return Object.keys(errors).length > 0 ? errors : null;
   };
 
-  // Stage 1 Validation (Registrierung - Contact + DSGVO Consent)
+  // Stage 1 Validation (Registrierung - Contact + DSGVO Consent + Erstkontakt)
   const validateStage1 = (): Record<string, string[]> | null => {
     const errors: Record<string, string[]> = {};
 
@@ -85,14 +90,35 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       errors['contact.email'] = [t('wizard.validation.emailInvalid')];
     }
 
-    // DSGVO Consent PFLICHT wenn Contact-Daten vorhanden
+    // Sprint 2.1.5: Quellenabhängige Pflichtfelder
+    const requiresFirstContact = ['MESSE', 'EMPFEHLUNG', 'TELEFON'].includes(formData.source || '');
     const hasContactData =
       formData.contact.firstName ||
       formData.contact.lastName ||
       formData.contact.email ||
       formData.contact.phone;
 
-    if (hasContactData && !formData.consentGiven) {
+    // Erstkontakt-Block PFLICHT wenn kein Kontakt UND Quelle erfordert es
+    if (requiresFirstContact && !hasContactData && !formData.firstContact) {
+      errors.firstContact = [t('wizard.stage1.firstContactRequired')];
+    }
+
+    // Erstkontakt-Block Validierung (wenn vorhanden)
+    if (formData.firstContact) {
+      if (!formData.firstContact.channel) {
+        errors['firstContact.channel'] = [t('wizard.stage1.firstContactChannelRequired')];
+      }
+      if (!formData.firstContact.performedAt) {
+        errors['firstContact.performedAt'] = [t('wizard.stage1.firstContactDateRequired')];
+      }
+      if (!formData.firstContact.notes || formData.firstContact.notes.trim().length < 10) {
+        errors['firstContact.notes'] = [t('wizard.stage1.firstContactNotesMin')];
+      }
+    }
+
+    // DSGVO Consent: Source-abhängig (WEB_FORMULAR = PFLICHT, andere = optional)
+    const requiresConsent = formData.source === 'WEB_FORMULAR';
+    if (requiresConsent && hasContactData && !formData.consentGiven) {
       errors.consentGiven = [t('wizard.stage1.consentRequired')];
     }
 
@@ -169,12 +195,29 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         stage = 2;
       }
 
+      // Sprint 2.1.5: Erstkontakt → activities[] Transformation
+      const activities = formData.firstContact
+        ? [
+            {
+              activityType: 'FIRST_CONTACT_DOCUMENTED',
+              performedAt: formData.firstContact.performedAt,
+              summary: `${formData.firstContact.channel}: ${formData.firstContact.notes}`,
+              countsAsProgress: false, // System Activity
+              metadata: {
+                channel: formData.firstContact.channel,
+                notes: formData.firstContact.notes,
+              },
+            },
+          ]
+        : undefined;
+
       const payload = {
         stage,
         companyName: formData.companyName.trim(),
         city: formData.city?.trim() || undefined,
         postalCode: formData.postalCode?.trim() || undefined,
         businessType: formData.businessType,
+        source: formData.source || undefined, // Sprint 2.1.5: Lead Source
         contact: hasContactData
           ? {
               firstName: formData.contact.firstName?.trim() || undefined,
@@ -183,7 +226,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               phone: formData.contact.phone?.trim() || undefined,
             }
           : undefined,
-        consentGivenAt: formData.consentGiven ? new Date().toISOString() : undefined,
+        // ⚠️ Sprint 2.1.5: consentGivenAt NICHT senden (UI-only, Backend-Feld erst Sprint 2.1.6)
+        // consentGivenAt wird erst in Sprint 2.1.6 (V259) ins Backend-Schema aufgenommen
+        activities, // Sprint 2.1.5: Erstkontakt als FIRST_CONTACT_DOCUMENTED
         estimatedVolume: formData.estimatedVolume,
         kitchenSize: formData.kitchenSize,
         employeeCount: formData.employeeCount,
@@ -199,8 +244,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         city: '',
         postalCode: '',
         businessType: undefined,
+        source: undefined, // Sprint 2.1.5
         contact: { firstName: '', lastName: '', email: '', phone: '' },
         consentGiven: false,
+        firstContact: undefined, // Sprint 2.1.5
         estimatedVolume: undefined,
         kitchenSize: undefined,
         employeeCount: undefined,
@@ -284,6 +331,30 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 <MenuItem value="catering">{t('wizard.businessTypes.catering')}</MenuItem>
                 <MenuItem value="canteen">{t('wizard.businessTypes.canteen')}</MenuItem>
                 <MenuItem value="other">{t('wizard.businessTypes.other')}</MenuItem>
+              </Select>
+            </FormControl>
+
+            {/* Sprint 2.1.5: Lead Source */}
+            <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
+              <InputLabel id="source-label">{t('wizard.stage0.source')}</InputLabel>
+              <Select
+                labelId="source-label"
+                id="source-select"
+                value={formData.source || ''}
+                onChange={e =>
+                  setFormData({ ...formData, source: e.target.value as LeadSource })
+                }
+                label={t('wizard.stage0.source')}
+              >
+                <MenuItem value="">
+                  <em>{t('wizard.stage0.sourcePlaceholder')}</em>
+                </MenuItem>
+                <MenuItem value="MESSE">{t('wizard.sources.messe')}</MenuItem>
+                <MenuItem value="EMPFEHLUNG">{t('wizard.sources.empfehlung')}</MenuItem>
+                <MenuItem value="TELEFON">{t('wizard.sources.telefon')}</MenuItem>
+                <MenuItem value="WEB_FORMULAR">{t('wizard.sources.webFormular')}</MenuItem>
+                <MenuItem value="PARTNER">{t('wizard.sources.partner')}</MenuItem>
+                <MenuItem value="SONSTIGE">{t('wizard.sources.sonstige')}</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -397,6 +468,106 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 </Typography>
               )}
             </Box>
+
+            {/* Sprint 2.1.5: Erstkontakt-Block (conditional) */}
+            {['MESSE', 'EMPFEHLUNG', 'TELEFON'].includes(formData.source || '') && (
+              <Box sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
+                <Typography variant="subtitle2" gutterBottom>
+                  {t('wizard.stage1.firstContactTitle')}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                  {t('wizard.stage1.firstContactHint')}
+                </Typography>
+
+                <FormControl fullWidth margin="dense" error={!!fieldErrors['firstContact.channel']}>
+                  <InputLabel id="firstContact-channel-label">
+                    {t('wizard.stage1.firstContactChannel')} *
+                  </InputLabel>
+                  <Select
+                    labelId="firstContact-channel-label"
+                    id="firstContact-channel-select"
+                    value={formData.firstContact?.channel || ''}
+                    onChange={e =>
+                      setFormData({
+                        ...formData,
+                        firstContact: {
+                          channel: e.target.value as FirstContact['channel'],
+                          performedAt: formData.firstContact?.performedAt || '',
+                          notes: formData.firstContact?.notes || '',
+                        },
+                      })
+                    }
+                    label={`${t('wizard.stage1.firstContactChannel')} *`}
+                  >
+                    <MenuItem value="">
+                      <em>{t('wizard.stage1.firstContactChannelPlaceholder')}</em>
+                    </MenuItem>
+                    <MenuItem value="MESSE">{t('wizard.firstContactChannels.messe')}</MenuItem>
+                    <MenuItem value="PHONE">{t('wizard.firstContactChannels.phone')}</MenuItem>
+                    <MenuItem value="EMAIL">{t('wizard.firstContactChannels.email')}</MenuItem>
+                    <MenuItem value="REFERRAL">{t('wizard.firstContactChannels.referral')}</MenuItem>
+                    <MenuItem value="OTHER">{t('wizard.firstContactChannels.other')}</MenuItem>
+                  </Select>
+                  {!!fieldErrors['firstContact.channel'] && (
+                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                      {fieldErrors['firstContact.channel'][0]}
+                    </Typography>
+                  )}
+                </FormControl>
+
+                <TextField
+                  label={`${t('wizard.stage1.firstContactDate')} *`}
+                  type="datetime-local"
+                  value={formData.firstContact?.performedAt || ''}
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      firstContact: {
+                        channel: formData.firstContact?.channel || 'OTHER',
+                        performedAt: e.target.value,
+                        notes: formData.firstContact?.notes || '',
+                      },
+                    })
+                  }
+                  fullWidth
+                  margin="dense"
+                  error={!!fieldErrors['firstContact.performedAt']}
+                  helperText={fieldErrors['firstContact.performedAt']?.[0] || ''}
+                  InputLabelProps={{ shrink: true }}
+                />
+
+                <TextField
+                  label={`${t('wizard.stage1.firstContactNotes')} *`}
+                  value={formData.firstContact?.notes || ''}
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      firstContact: {
+                        channel: formData.firstContact?.channel || 'OTHER',
+                        performedAt: formData.firstContact?.performedAt || '',
+                        notes: e.target.value,
+                      },
+                    })
+                  }
+                  fullWidth
+                  margin="dense"
+                  multiline
+                  rows={3}
+                  error={!!fieldErrors['firstContact.notes']}
+                  helperText={
+                    fieldErrors['firstContact.notes']?.[0] ||
+                    t('wizard.stage1.firstContactNotesHelper')
+                  }
+                  inputProps={{ minLength: 10 }}
+                />
+
+                {!!fieldErrors.firstContact && (
+                  <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
+                    {fieldErrors.firstContact[0]}
+                  </Typography>
+                )}
+              </Box>
+            )}
           </Box>
         );
 

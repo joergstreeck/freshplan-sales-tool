@@ -33,7 +33,9 @@
       "city": "Stadt",
       "postalCode": "PLZ",
       "businessType": "Branche",
-      "businessTypePlaceholder": "Bitte wählen"
+      "businessTypePlaceholder": "Bitte wählen",
+      "source": "Herkunft",
+      "sourcePlaceholder": "Wie wurde der Lead generiert?"
     },
     "stage1": {
       "description": "Erfassen Sie Kontaktdaten. <strong>Einwilligung erforderlich!</strong>",
@@ -43,7 +45,18 @@
       "phone": "Telefon",
       "consentLabel": "Ich stimme zu, dass meine Kontaktdaten gespeichert werden.",
       "consentLink": "Widerruf jederzeit möglich",
-      "consentRequired": "Einwilligung erforderlich für Kontaktdaten"
+      "consentRequired": "Einwilligung erforderlich für Kontaktdaten",
+      "firstContactTitle": "Erstkontakt dokumentieren",
+      "firstContactHint": "Dokumentieren Sie den ersten Kontakt mit diesem Lead. Pflichtfeld bei Quellen: Messe, Empfehlung, Telefon (wenn keine Kontaktdaten erfasst).",
+      "firstContactChannel": "Kontaktkanal",
+      "firstContactChannelPlaceholder": "Wie wurde der Kontakt hergestellt?",
+      "firstContactDate": "Zeitpunkt des Kontakts",
+      "firstContactNotes": "Notizen",
+      "firstContactNotesHelper": "Mindestens 10 Zeichen",
+      "firstContactRequired": "Erstkontakt-Dokumentation ist bei der gewählten Quelle erforderlich",
+      "firstContactChannelRequired": "Kontaktkanal ist erforderlich",
+      "firstContactDateRequired": "Zeitpunkt des Kontakts ist erforderlich",
+      "firstContactNotesMin": "Notizen müssen mindestens 10 Zeichen enthalten"
     },
     "stage2": {
       "description": "Erweiterte Geschäftsdaten für die Qualifizierung.",
@@ -66,6 +79,21 @@
       "small": "Klein (<10 Plätze)",
       "medium": "Mittel (10-50 Plätze)",
       "large": "Groß (>50 Plätze)"
+    },
+    "sources": {
+      "messe": "Messe / Event",
+      "empfehlung": "Empfehlung / Partner",
+      "telefon": "Cold Call / Telefon",
+      "webFormular": "Web-Formular",
+      "partner": "Partner-API",
+      "sonstige": "Sonstige"
+    },
+    "firstContactChannels": {
+      "messe": "Messestand / Event",
+      "phone": "Telefonat",
+      "email": "E-Mail",
+      "referral": "Empfehlung / Vorstellung",
+      "other": "Sonstige"
     },
     "actions": {
       "cancel": "Abbrechen",
@@ -116,7 +144,10 @@
     "FOLLOW_UP": "Follow-up",
     "EMAIL": "E-Mail",
     "CALL": "Anruf",
-    "SAMPLE_FEEDBACK": "Sample-Feedback"
+    "SAMPLE_FEEDBACK": "Sample-Feedback",
+    "FIRST_CONTACT_DOCUMENTED": "Erstkontakt dokumentiert",
+    "EMAIL_RECEIVED": "E-Mail empfangen",
+    "LEAD_ASSIGNED": "Lead zugewiesen"
   },
   "timeline": {
     "title": "Aktivitäten",
