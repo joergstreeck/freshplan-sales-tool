@@ -30,8 +30,9 @@ const server = setupServer(
     const payload = (await request.json()) as {
       stage?: number;
       companyName: string;
+      source?: string; // Sprint 2.1.5
       contact?: { firstName?: string; lastName?: string; email?: string; phone?: string };
-      consentGivenAt?: string;
+      activities?: Array<{ activityType: string; performedAt: string }>; // Sprint 2.1.5
       estimatedVolume?: number;
       businessType?: string;
     };
@@ -68,8 +69,9 @@ const server = setupServer(
         id: 'lead-123',
         stage: payload.stage || 0,
         companyName: payload.companyName,
+        source: payload.source,
         contact: payload.contact,
-        consentGivenAt: payload.consentGivenAt,
+        // Sprint 2.1.5: consentGivenAt wird NICHT gesendet (UI-only)
         status: 'REGISTERED',
         createdAt: new Date().toISOString(),
       },
@@ -192,35 +194,31 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     });
   });
 
-  // ==================== TEST 2: DSGVO Consent Validation ====================
+  // ==================== TEST 2: DSGVO Consent Validation (Sprint 2.1.5 - Source-abhängig) ====================
   describe('DSGVO Consent Validation', () => {
-    it('should require consent when contact data is provided', async () => {
+    it('should NOT require consent when source is not WEB_FORMULAR (Sprint 2.1.5)', async () => {
       const user = userEvent.setup();
 
       render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
         wrapper: Wrapper,
       });
 
-      // Fill Stage 0
+      // Fill Stage 0 without setting source (defaults to undefined, NOT WEB_FORMULAR)
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Fill Stage 1 without consent
+      // Fill Stage 1 with contact data but WITHOUT consent
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
 
-      // Try to navigate to Stage 2 without consent
+      // Try to navigate to Stage 2 without consent - SHOULD SUCCEED (source != WEB_FORMULAR)
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Should show validation error (specific error message, not the hint)
+      // Should navigate to Stage 2 successfully
       await waitFor(() => {
-        expect(screen.getByText('Einwilligung erforderlich für Kontaktdaten')).toBeInTheDocument();
+        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument();
       });
-
-      // Should NOT navigate to Stage 2
-      expect(screen.queryByLabelText(/geschätztes volumen/i)).not.toBeInTheDocument();
-      expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument(); // Still on Stage 1
     });
 
     it('should NOT require consent when no contact data is provided', async () => {
@@ -244,7 +242,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       });
     });
 
-    it('should send consentGivenAt timestamp in API payload when consent is given', async () => {
+    it('should NOT send consentGivenAt in Sprint 2.1.5 (UI-only, Backend-Feld erst V259)', async () => {
       const user = userEvent.setup();
       let capturedPayload: unknown;
 
@@ -278,45 +276,11 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       await waitFor(() => {
         expect(capturedPayload).toBeDefined();
-        expect(capturedPayload.consentGivenAt).toBeDefined();
-        expect(capturedPayload.consentGivenAt).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/); // ISO 8601
-      });
-    });
-
-    it('should NOT send consentGivenAt when consent is not given', async () => {
-      const user = userEvent.setup();
-      let capturedPayload: unknown;
-
-      server.use(
-        http.post('http://localhost:8080/api/leads', async ({ request }) => {
-          capturedPayload = await request.json();
-          return HttpResponse.json({ id: 'lead-123', status: 'REGISTERED' }, { status: 201 });
-        })
-      );
-
-      render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
-        wrapper: Wrapper,
-      });
-
-      // Fill Stage 0 only
-      await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
-
-      // Skip Stage 1
-      await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
-
-      // Submit from Stage 2
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
-
-      await waitFor(() => {
-        expect(capturedPayload).toBeDefined();
+        // Sprint 2.1.5: consentGivenAt wird NICHT gesendet (UI-only)
         expect(capturedPayload.consentGivenAt).toBeUndefined();
       });
     });
+
   });
 
   // ==================== TEST 3: Stage-Transition Rules ====================
@@ -393,7 +357,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         expect(capturedPayload).toBeDefined();
         expect(capturedPayload.stage).toBe(1);
         expect(capturedPayload.contact).toBeDefined();
-        expect(capturedPayload.consentGivenAt).toBeDefined();
+        // Sprint 2.1.5: consentGivenAt wird NICHT gesendet (UI-only)
       });
     });
 
