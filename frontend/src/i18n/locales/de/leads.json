@@ -38,14 +38,14 @@
       "sourcePlaceholder": "Wie wurde der Lead generiert?"
     },
     "stage1": {
-      "description": "Erfassen Sie Kontaktdaten. <strong>Einwilligung erforderlich!</strong>",
+      "description": "Erfassen Sie Kontaktdaten und dokumentieren Sie ggf. den Erstkontakt.",
       "firstName": "Vorname",
       "lastName": "Nachname",
       "email": "E-Mail",
       "phone": "Telefon",
-      "consentLabel": "Ich stimme zu, dass meine Kontaktdaten gespeichert werden.",
-      "consentLink": "Widerruf jederzeit möglich",
-      "consentRequired": "Einwilligung erforderlich für Kontaktdaten",
+      "consentLabel": "Ich stimme der Speicherung meiner Kontaktdaten zu.",
+      "consentLink": "Datenschutzhinweise",
+      "consentRequired": "Einwilligung erforderlich (Web-Formular)",
       "firstContactTitle": "Erstkontakt dokumentieren",
       "firstContactHint": "Dokumentieren Sie den ersten Kontakt mit diesem Lead. Pflichtfeld bei Quellen: Messe, Empfehlung, Telefon (wenn keine Kontaktdaten erfasst).",
       "firstContactChannel": "Kontaktkanal",

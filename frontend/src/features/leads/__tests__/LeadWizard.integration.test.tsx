@@ -132,7 +132,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@test-restaurant.de');
 
       // DSGVO Consent Checkbox should be visible and NOT pre-filled
-      const consentCheckbox = screen.getByRole('checkbox', { name: /ich stimme zu/i });
+      const consentCheckbox = screen.getByRole('checkbox', { name: /ich stimme.*zu/i });
       expect(consentCheckbox).toBeInTheDocument();
       expect(consentCheckbox).not.toBeChecked(); // NOT pre-filled (DSGVO requirement)
 
@@ -169,7 +169,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme zu/i }));
+      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Fill Stage 2
@@ -182,7 +182,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => {
         expect(screen.getByLabelText(/vorname/i)).toHaveValue('Max');
         expect(screen.getByLabelText(/e.?mail/i)).toHaveValue('max@example.com');
-        expect(screen.getByRole('checkbox', { name: /ich stimme zu/i })).toBeChecked();
+        expect(screen.getByRole('checkbox', { name: /ich stimme.*zu/i })).toBeChecked();
       });
 
       // Navigate back to Stage 0
@@ -265,7 +265,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme zu/i }));
+      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2
@@ -344,7 +344,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme zu/i }));
+      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2 (no business data)
@@ -384,7 +384,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme zu/i }));
+      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Fill Stage 2 with business data
@@ -489,7 +489,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       await waitFor(() => expect(screen.getByLabelText(/e.?mail/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/e.?mail/i), 'duplicate@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme zu/i }));
+      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       await waitFor(() =>
