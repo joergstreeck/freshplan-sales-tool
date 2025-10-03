@@ -341,9 +341,9 @@ describe('PR4 Enterprise Test Suite', () => {
       const button = screen.getByRole('button');
       await user.click(button);
 
-      // Should show export options
+      // Should show export options (menu has multiple elements with CSV text)
       await waitFor(() => {
-        expect(screen.getByText(/CSV/i)).toBeInTheDocument();
+        expect(screen.getByText('CSV (Excel-kompatibel)')).toBeInTheDocument();
       });
     });
 
@@ -496,7 +496,8 @@ describe('PR4 Enterprise Test Suite', () => {
       expect(screen.getByText('Contact Information')).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(screen.getByText('Admin User')).toBeInTheDocument();
+        // Check for the German text pattern "Zuletzt geändert ... von Admin User"
+        expect(screen.getByText(/Zuletzt geändert.*von Admin User/i)).toBeInTheDocument();
       });
     });
 
@@ -513,7 +514,7 @@ describe('PR4 Enterprise Test Suite', () => {
 
       // Export menu should open
       await waitFor(() => {
-        expect(screen.getByText(/Excel/i)).toBeInTheDocument();
+        expect(screen.getByText('Excel (XLSX)')).toBeInTheDocument();
       });
     });
   });
