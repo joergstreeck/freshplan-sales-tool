@@ -6,12 +6,16 @@ import { render, screen } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
+import { I18nextProvider } from 'react-i18next';
+import i18n from '../../../i18n';
 import LeadProtectionBadge, { calculateProtectionInfo } from '../LeadProtectionBadge';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 import type { LeadProtectionInfo } from '../types';
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <ThemeProvider theme={freshfoodzTheme}>{children}</ThemeProvider>
+  <I18nextProvider i18n={i18n}>
+    <ThemeProvider theme={freshfoodzTheme}>{children}</ThemeProvider>
+  </I18nextProvider>
 );
 
 describe('LeadProtectionBadge', () => {

@@ -4,6 +4,7 @@ import {
   Warning as WarningIcon,
   Error as ExpiredIcon,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import type { ProtectionStatus, LeadProtectionInfo } from './types';
 
 interface LeadProtectionBadgeProps {
@@ -17,6 +18,7 @@ export default function LeadProtectionBadge({
   variant = 'filled',
   size = 'small',
 }: LeadProtectionBadgeProps) {
+  const { t } = useTranslation('leads');
   const { status, protectionUntil, progressDeadline, daysUntilExpiry, warningMessage } = protectionInfo;
 
   // Color-Coding based on Protection Status
@@ -51,13 +53,13 @@ export default function LeadProtectionBadge({
   const getStatusLabel = (): string => {
     switch (status) {
       case 'protected':
-        return 'Geschützt';
+        return t('protection.status.protected');
       case 'warning':
-        return daysUntilExpiry != null ? `Warnung (${daysUntilExpiry}T)` : 'Warnung';
+        return daysUntilExpiry != null ? t('protection.status.warningWithDays', { count: daysUntilExpiry }) : t('protection.status.warning');
       case 'expired':
-        return 'Abgelaufen';
+        return t('protection.status.expired');
       default:
-        return 'Unbekannt';
+        return t('protection.status.unknown');
     }
   };
 
@@ -66,14 +68,14 @@ export default function LeadProtectionBadge({
     return (
       <Box>
         <Box sx={{ fontWeight: 'bold', mb: 1 }}>
-          {status === 'protected' && '✅ Lead ist geschützt'}
-          {status === 'warning' && '⚠️ Lead-Schutz läuft bald ab'}
-          {status === 'expired' && '❌ Lead-Schutz abgelaufen'}
+          {status === 'protected' && `✅ ${t('protection.tooltip.protected')}`}
+          {status === 'warning' && `⚠️ ${t('protection.tooltip.warning')}`}
+          {status === 'expired' && `❌ ${t('protection.tooltip.expired')}`}
         </Box>
 
         {protectionUntil && (
           <Box sx={{ fontSize: '0.875rem', mb: 0.5 }}>
-            <strong>Schutz bis:</strong> {new Date(protectionUntil).toLocaleDateString('de-DE', {
+            <strong>{t('protection.tooltip.protectedUntil')}</strong> {new Date(protectionUntil).toLocaleDateString('de-DE', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
@@ -83,7 +85,7 @@ export default function LeadProtectionBadge({
 
         {progressDeadline && (
           <Box sx={{ fontSize: '0.875rem', mb: 0.5 }}>
-            <strong>Progress-Deadline:</strong> {new Date(progressDeadline).toLocaleDateString('de-DE', {
+            <strong>{t('protection.tooltip.progressDeadline')}</strong> {new Date(progressDeadline).toLocaleDateString('de-DE', {
               day: '2-digit',
               month: '2-digit',
               year: 'numeric',
@@ -93,7 +95,7 @@ export default function LeadProtectionBadge({
 
         {daysUntilExpiry !== undefined && (
           <Box sx={{ fontSize: '0.875rem', mb: 0.5 }}>
-            <strong>Verbleibend:</strong> {daysUntilExpiry} Tage
+            <strong>{t('protection.tooltip.remaining')}</strong> {t('protection.tooltip.daysRemaining', { count: daysUntilExpiry })}
           </Box>
         )}
 
@@ -105,7 +107,7 @@ export default function LeadProtectionBadge({
 
         {status === 'protected' && !warningMessage && (
           <Box sx={{ fontSize: '0.75rem', mt: 1, opacity: 0.8 }}>
-            Vertrag §3.2: 6 Monate ab Registrierung + 60-Tage-Aktivitätsstandard
+            {t('protection.tooltip.contract')}
           </Box>
         )}
       </Box>

@@ -65,9 +65,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     const errors: Record<string, string[]> = {};
 
     if (!formData.companyName.trim()) {
-      errors.companyName = ['Firmenname ist Pflicht'];
+      errors.companyName = [t('wizard.stage0.companyNameRequired')];
     } else if (formData.companyName.trim().length < 2) {
-      errors.companyName = ['Firmenname muss mindestens 2 Zeichen lang sein'];
+      errors.companyName = [t('wizard.validation.companyNameMin')];
     }
 
     return Object.keys(errors).length > 0 ? errors : null;
@@ -79,7 +79,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
     // Validate contact fields if provided
     if (formData.contact.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact.email.trim())) {
-      errors['contact.email'] = ['Ungültige E-Mail-Adresse'];
+      errors['contact.email'] = [t('wizard.validation.emailInvalid')];
     }
 
     // DSGVO Consent PFLICHT wenn Contact-Daten vorhanden
@@ -90,7 +90,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       formData.contact.phone;
 
     if (hasContactData && !formData.consentGiven) {
-      errors.consentGiven = ['Einwilligung erforderlich für Kontaktdaten'];
+      errors.consentGiven = [t('wizard.stage1.consentRequired')];
     }
 
     return Object.keys(errors).length > 0 ? errors : null;
@@ -101,11 +101,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     const errors: Record<string, string[]> = {};
 
     if (formData.estimatedVolume && formData.estimatedVolume < 0) {
-      errors.estimatedVolume = ['Volumen muss positiv sein'];
+      errors.estimatedVolume = [t('wizard.validation.volumePositive')];
     }
 
     if (formData.employeeCount && formData.employeeCount < 0) {
-      errors.employeeCount = ['Mitarbeiterzahl muss positiv sein'];
+      errors.employeeCount = [t('wizard.validation.employeePositive')];
     }
 
     return Object.keys(errors).length > 0 ? errors : null;
@@ -229,11 +229,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         return (
           <Box>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Erfassen Sie grundlegende Firmendaten ohne personenbezogene Informationen.
+              {t('wizard.stage0.description')}
             </Typography>
 
             <TextField
-              label="Firmenname *"
+              label={`${t('wizard.stage0.companyName')} *`}
               value={formData.companyName}
               onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
               fullWidth
@@ -246,14 +246,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
             <Stack direction="row" spacing={2} sx={{ mt: 1 }}>
               <TextField
-                label="Stadt"
+                label={t('wizard.stage0.city')}
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 fullWidth
                 margin="dense"
               />
               <TextField
-                label="PLZ"
+                label={t('wizard.stage0.postalCode')}
                 value={formData.postalCode}
                 onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                 fullWidth
@@ -263,22 +263,22 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             </Stack>
 
             <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
-              <InputLabel id="businessType-label">Branche</InputLabel>
+              <InputLabel id="businessType-label">{t('wizard.stage0.businessType')}</InputLabel>
               <Select
                 labelId="businessType-label"
                 id="businessType-select"
                 value={formData.businessType || ''}
                 onChange={(e) => setFormData({ ...formData, businessType: e.target.value as BusinessType })}
-                label="Branche"
+                label={t('wizard.stage0.businessType')}
               >
                 <MenuItem value="">
-                  <em>Bitte wählen</em>
+                  <em>{t('wizard.stage0.businessTypePlaceholder')}</em>
                 </MenuItem>
-                <MenuItem value="restaurant">Restaurant</MenuItem>
-                <MenuItem value="hotel">Hotel</MenuItem>
-                <MenuItem value="catering">Catering</MenuItem>
-                <MenuItem value="canteen">Kantine</MenuItem>
-                <MenuItem value="other">Sonstige</MenuItem>
+                <MenuItem value="restaurant">{t('wizard.businessTypes.restaurant')}</MenuItem>
+                <MenuItem value="hotel">{t('wizard.businessTypes.hotel')}</MenuItem>
+                <MenuItem value="catering">{t('wizard.businessTypes.catering')}</MenuItem>
+                <MenuItem value="canteen">{t('wizard.businessTypes.canteen')}</MenuItem>
+                <MenuItem value="other">{t('wizard.businessTypes.other')}</MenuItem>
               </Select>
             </FormControl>
           </Box>
@@ -288,13 +288,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         // Stage 1: Registrierung (Contact Details + DSGVO Consent)
         return (
           <Box>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Erfassen Sie Kontaktdaten. <strong>Einwilligung erforderlich!</strong>
-            </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }} dangerouslySetInnerHTML={{ __html: t('wizard.stage1.description') }} />
 
             <Stack direction="row" spacing={2}>
               <TextField
-                label="Vorname"
+                label={t('wizard.stage1.firstName')}
                 value={formData.contact.firstName}
                 onChange={(e) =>
                   setFormData({
@@ -306,7 +304,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 margin="dense"
               />
               <TextField
-                label="Nachname"
+                label={t('wizard.stage1.lastName')}
                 value={formData.contact.lastName}
                 onChange={(e) =>
                   setFormData({
@@ -320,7 +318,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             </Stack>
 
             <TextField
-              label="E-Mail"
+              label={t('wizard.stage1.email')}
               type="email"
               value={formData.contact.email}
               onChange={(e) =>
@@ -336,7 +334,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             />
 
             <TextField
-              label="Telefon"
+              label={t('wizard.stage1.phone')}
               type="tel"
               value={formData.contact.phone}
               onChange={(e) =>
@@ -376,9 +374,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 }
                 label={
                   <Typography variant="body2">
-                    Ich stimme zu, dass meine Kontaktdaten gespeichert werden.{' '}
+                    {t('wizard.stage1.consentLabel')}{' '}
                     <Link href="/datenschutz" target="_blank" rel="noopener">
-                      Widerruf jederzeit möglich
+                      {t('wizard.stage1.consentLink')}
                     </Link>
                   </Typography>
                 }
@@ -397,12 +395,12 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         return (
           <Box>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Erweiterte Geschäftsdaten für die Qualifizierung.
+              {t('wizard.stage2.description')}
             </Typography>
 
             <Stack direction="row" spacing={2}>
               <TextField
-                label="Geschätztes Volumen (€/Monat)"
+                label={t('wizard.stage2.estimatedVolume')}
                 type="number"
                 value={formData.estimatedVolume || ''}
                 onChange={(e) =>
@@ -418,7 +416,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 inputProps={{ min: 0 }}
               />
               <FormControl fullWidth margin="dense">
-                <InputLabel id="kitchenSize-label">Küchengröße</InputLabel>
+                <InputLabel id="kitchenSize-label">{t('wizard.stage2.kitchenSize')}</InputLabel>
                 <Select
                   labelId="kitchenSize-label"
                   id="kitchenSize-select"
@@ -429,20 +427,20 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                       kitchenSize: e.target.value as 'small' | 'medium' | 'large' | undefined,
                     })
                   }
-                  label="Küchengröße"
+                  label={t('wizard.stage2.kitchenSize')}
                 >
                   <MenuItem value="">
-                    <em>Bitte wählen</em>
+                    <em>{t('wizard.stage2.kitchenSizePlaceholder')}</em>
                   </MenuItem>
-                  <MenuItem value="small">Klein (&lt;10 Plätze)</MenuItem>
-                  <MenuItem value="medium">Mittel (10-50 Plätze)</MenuItem>
-                  <MenuItem value="large">Groß (&gt;50 Plätze)</MenuItem>
+                  <MenuItem value="small">{t('wizard.kitchenSizes.small')}</MenuItem>
+                  <MenuItem value="medium">{t('wizard.kitchenSizes.medium')}</MenuItem>
+                  <MenuItem value="large">{t('wizard.kitchenSizes.large')}</MenuItem>
                 </Select>
               </FormControl>
             </Stack>
 
             <TextField
-              label="Mitarbeiterzahl"
+              label={t('wizard.stage2.employeeCount')}
               type="number"
               value={formData.employeeCount || ''}
               onChange={(e) =>
@@ -459,17 +457,17 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             />
 
             <TextField
-              label="Website"
+              label={t('wizard.stage2.website')}
               type="url"
               value={formData.website}
               onChange={(e) => setFormData({ ...formData, website: e.target.value })}
               fullWidth
               margin="dense"
-              placeholder="https://example.com"
+              placeholder={t('wizard.stage2.websitePlaceholder')}
             />
 
             <TextField
-              label="Branche (Details)"
+              label={t('wizard.stage2.industry')}
               value={formData.industry}
               onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
               fullWidth
@@ -487,18 +485,18 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
   return (
     <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" fullScreen={false}>
-      <DialogTitle>Neuer Lead (Progressive Profiling)</DialogTitle>
+      <DialogTitle>{t('wizard.title')}</DialogTitle>
       <DialogContent>
         {error?.status === 409 && (
           <Box mb={2}>
-            <Alert severity="warning">Lead mit dieser E-Mail existiert bereits.</Alert>
+            <Alert severity="warning">{t('errors.duplicateEmail')}</Alert>
           </Box>
         )}
 
         {error && error.status !== 409 && (
           <Box mb={2}>
             <Alert severity="error">
-              {error.title ?? 'Fehler'}
+              {error.title ?? t('wizard.validation.validationError')}
               {error.detail ? ` – ${error.detail}` : ''}
             </Alert>
           </Box>
@@ -517,21 +515,21 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
       <DialogActions>
         <Button onClick={handleClose} disabled={saving}>
-          Abbrechen
+          {t('wizard.actions.cancel')}
         </Button>
         <Box sx={{ flex: '1 1 auto' }} />
         {activeStep > 0 && (
           <Button onClick={handleBack} disabled={saving}>
-            Zurück
+            {t('wizard.actions.back')}
           </Button>
         )}
         {activeStep < steps.length - 1 ? (
           <Button variant="contained" onClick={handleNext} disabled={saving}>
-            Weiter
+            {t('wizard.actions.next')}
           </Button>
         ) : (
           <Button variant="contained" onClick={handleSubmit} disabled={saving || !formData.companyName.trim()}>
-            {saving ? 'Speichert...' : 'Lead erstellen'}
+            {saving ? t('wizard.actions.saving') : t('wizard.actions.create')}
           </Button>
         )}
       </DialogActions>

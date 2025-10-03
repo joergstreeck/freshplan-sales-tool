@@ -14,7 +14,7 @@
     "empty": "Keine Leads vorhanden."
   },
   "errors": {
-    "duplicateEmail": "Es existiert bereits ein Lead mit dieser E-Mail.",
+    "duplicateEmail": "Lead mit dieser E-Mail existiert bereits.",
     "nameRequired": "Name ist erforderlich",
     "nameMinLength": "Name muss mindestens 2 Zeichen haben",
     "emailInvalid": "Bitte eine gültige E-Mail eingeben"
@@ -93,6 +93,8 @@
     "tooltip": {
       "protected": "Lead ist geschützt",
       "protectedUntil": "Schutz bis:",
+      "progressDeadline": "Progress-Deadline:",
+      "remaining": "Verbleibend:",
       "daysRemaining": "{{count}} Tage",
       "warning": "Lead-Schutz läuft bald ab!",
       "expired": "Lead-Schutz abgelaufen!",
@@ -123,6 +125,24 @@
     "filterOther": "Sonstige",
     "empty": "Keine Aktivitäten vorhanden",
     "progressActivity": "Progress-Aktivität",
-    "regularActivity": "Standard-Aktivität"
+    "regularActivity": "Standard-Aktivität",
+    "warning": {
+      "label": "Progress-Warnung:",
+      "deadline": "Deadline am",
+      "action": "Bitte substanzielle Aktivität durchführen!"
+    },
+    "summary": {
+      "lastProgress": "Letzte Progress-Aktivität:",
+      "daysAgo": "vor {{count}} Tagen",
+      "noProgress": "Keine Progress-Aktivität vorhanden",
+      "progressDeadline": "Progress-Deadline:"
+    },
+    "labels": {
+      "progress": "Progress",
+      "latest": "Neueste",
+      "outcome": "Ergebnis:",
+      "nextAction": "Nächste Aktion:",
+      "until": "bis"
+    }
   }
 }

@@ -21,6 +21,7 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { LeadActivity } from './types';
 
 interface ActivityTimelineProps {
@@ -36,6 +37,7 @@ export default function ActivityTimeline({
   progressDeadline,
   variant = 'full',
 }: ActivityTimelineProps) {
+  const { t } = useTranslation('leads');
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
 
   // Split activities by countsAsProgress
@@ -73,21 +75,9 @@ export default function ActivityTimeline({
     ? new Date(progressDeadline).getTime() - new Date().getTime() < 7 * 24 * 60 * 60 * 1000
     : false;
 
-  // Get activity type label (German)
+  // Get activity type label (i18n)
   const getActivityTypeLabel = (type: string): string => {
-    const labels: Record<string, string> = {
-      QUALIFIED_CALL: 'Qualifiziertes Gespräch',
-      MEETING: 'Meeting vor Ort',
-      DEMO: 'Produktdemonstration',
-      ROI_PRESENTATION: 'ROI-Präsentation',
-      SAMPLE_SENT: 'Sample-Box versendet',
-      NOTE: 'Notiz',
-      FOLLOW_UP: 'Follow-up',
-      EMAIL: 'E-Mail',
-      CALL: 'Anruf',
-      SAMPLE_FEEDBACK: 'Sample-Feedback',
-    };
-    return labels[type] || type;
+    return t(`activityTypes.${type}`, { defaultValue: type });
   };
 
   return (
@@ -95,7 +85,7 @@ export default function ActivityTimeline({
       {/* Filter Controls */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6" component="h3">
-          Aktivitäten
+          {t('timeline.title')}
         </Typography>
 
         <ToggleButtonGroup
@@ -106,13 +96,13 @@ export default function ActivityTimeline({
           aria-label="Aktivitäten-Filter"
         >
           <ToggleButton value="all" aria-label="Alle Aktivitäten">
-            Alle ({activities.length})
+            {t('timeline.filterAll')} ({activities.length})
           </ToggleButton>
           <ToggleButton value="progress" aria-label="Nur Progress-Aktivitäten">
-            Progress ({progressActivities.length})
+            {t('timeline.filterProgress')} ({progressActivities.length})
           </ToggleButton>
           <ToggleButton value="non-progress" aria-label="Sonstige Aktivitäten">
-            Sonstige ({nonProgressActivities.length})
+            {t('timeline.filterOther')} ({nonProgressActivities.length})
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
@@ -120,13 +110,13 @@ export default function ActivityTimeline({
       {/* Warning Badge if progressDeadline < 7 days */}
       {showWarning && progressDeadline && (
         <Alert severity="warning" icon={<WarningIcon />} sx={{ mb: 2 }}>
-          <strong>Progress-Warnung:</strong> Deadline am{' '}
+          <strong>{t('timeline.warning.label')}</strong> {t('timeline.warning.deadline')}{' '}
           {new Date(progressDeadline).toLocaleDateString('de-DE', {
             day: '2-digit',
             month: '2-digit',
             year: 'numeric',
           })}
-          . Bitte substanzielle Aktivität durchführen!
+          . {t('timeline.warning.action')}
         </Alert>
       )}
 
@@ -134,14 +124,14 @@ export default function ActivityTimeline({
       {variant === 'full' && daysSinceLastProgress !== null && (
         <Box sx={{ mb: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
           <Typography variant="body2" color="text.secondary">
-            <strong>Letzte Progress-Aktivität:</strong>{' '}
+            <strong>{t('timeline.summary.lastProgress')}</strong>{' '}
             {latestProgressActivity
-              ? `vor ${daysSinceLastProgress} Tagen (${getActivityTypeLabel(latestProgressActivity.activityType)})`
-              : 'Keine Progress-Aktivität vorhanden'}
+              ? `${t('timeline.summary.daysAgo', { count: daysSinceLastProgress })} (${getActivityTypeLabel(latestProgressActivity.activityType)})`
+              : t('timeline.summary.noProgress')}
           </Typography>
           {progressDeadline && (
             <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-              <strong>Progress-Deadline:</strong>{' '}
+              <strong>{t('timeline.summary.progressDeadline')}</strong>{' '}
               {new Date(progressDeadline).toLocaleDateString('de-DE', {
                 day: '2-digit',
                 month: '2-digit',
@@ -156,7 +146,7 @@ export default function ActivityTimeline({
       {sortedActivities.length === 0 ? (
         <Box textAlign="center" py={4}>
           <Typography variant="body2" color="text.secondary">
-            Keine Aktivitäten vorhanden
+            {t('timeline.empty')}
           </Typography>
         </Box>
       ) : (
@@ -214,10 +204,10 @@ export default function ActivityTimeline({
                         {getActivityTypeLabel(activity.activityType)}
                       </Typography>
                       {isProgressActivity && (
-                        <Chip label="Progress" color="success" size="small" />
+                        <Chip label={t('timeline.labels.progress')} color="success" size="small" />
                       )}
                       {isLatestProgress && (
-                        <Chip label="Neueste" color="primary" size="small" variant="outlined" />
+                        <Chip label={t('timeline.labels.latest')} color="primary" size="small" variant="outlined" />
                       )}
                     </Box>
 
@@ -229,14 +219,14 @@ export default function ActivityTimeline({
 
                     {activity.outcome && (
                       <Typography variant="caption" color="text.secondary" display="block">
-                        <strong>Ergebnis:</strong> {activity.outcome}
+                        <strong>{t('timeline.labels.outcome')}</strong> {activity.outcome}
                       </Typography>
                     )}
 
                     {activity.nextAction && (
                       <Typography variant="caption" color="text.secondary" display="block">
-                        <strong>Nächste Aktion:</strong> {activity.nextAction}
-                        {activity.nextActionDate && ` (bis ${new Date(activity.nextActionDate).toLocaleDateString('de-DE')})`}
+                        <strong>{t('timeline.labels.nextAction')}</strong> {activity.nextAction}
+                        {activity.nextActionDate && ` (${t('timeline.labels.until')} ${new Date(activity.nextActionDate).toLocaleDateString('de-DE')})`}
                       </Typography>
                     )}
 
