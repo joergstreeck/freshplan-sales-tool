@@ -21,6 +21,7 @@ import {
   Box,
   Stack,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import type { LeadFormStage2, Problem, BusinessType } from './types';
 import { createLead } from './api';
 
@@ -30,9 +31,9 @@ interface LeadWizardProps {
   onCreated: () => void;
 }
 
-const steps = ['Vormerkung', 'Registrierung', 'Qualifizierung'];
-
 export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps) {
+  const { t } = useTranslation('leads');
+  const steps = [t('wizard.steps.company'), t('wizard.steps.contact'), t('wizard.steps.business')];
   const [activeStep, setActiveStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Problem | null>(null);
