@@ -46,6 +46,28 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
              Kunden gesamt
           </span>
         </div>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-colorPrimary css-c9ai1l-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-icon MuiButton-startIcon MuiButton-iconSizeMedium css-1sh91j5-MuiButton-startIcon"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1umw9bq-MuiSvgIcon-root"
+              data-testid="DownloadIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M5 20h14v-2H5zM19 9h-4V3H9v6H5l7 7z"
+              />
+            </svg>
+          </span>
+          Liste exportieren
+        </button>
         <a
           class="btn-new-customer"
           href="/kundenmanagement/neu"
