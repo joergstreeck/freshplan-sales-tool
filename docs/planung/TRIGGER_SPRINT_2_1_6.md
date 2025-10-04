@@ -41,7 +41,7 @@ Implementierung von Bestandsleads-Migrations-API (Modul 08), Lead → Kunde Conv
 
 ## User Stories
 
-### 0. Lead Stage Enum Refactoring (Issue #125) - **PR #131 PRIORITY**
+### 0. Lead Stage Enum Refactoring (Issue #125) - **PR #125 PRIORITY**
 **Begründung:** Type Safety für Lead Stage - Verhindert Magic Numbers, verbessert Code-Qualität
 
 **Akzeptanzkriterien:**
