@@ -101,6 +101,7 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #129:** Offen (54 files, 3 Komponenten vorhanden), Doku-First Ansatz
    - Status: 🔄 DOKU COMPLETE, Code-Anpassung ausstehend
    - **NEUE ARTEFAKTE:**
+     - [Business Logic Lead-Erfassung (zentral)](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/BUSINESS_LOGIC_LEAD_ERFASSUNG.md) ⭐ NEU (04.10.2025)
      - [Frontend Delta (zentral)](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md) ⭐ NEU
      - [Pre-Claim Logic](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md)
      - [Dedupe Policy](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md)

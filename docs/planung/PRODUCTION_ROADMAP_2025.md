@@ -11,12 +11,16 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.1.5 Dokumentation COMPLETE, Frontend Code-Anpassung ausstehend (04.10.2025)
-- **Progress:** 10/36 PRs - 28% done (PR #129 offen, Doku-First Ansatz implementiert)
+- **Current Sprint:** Sprint 2.1.5 UX Best Practice dokumentiert, Frontend Code-Refactor ausstehend (04.10.2025)
+- **Progress:** 10/36 PRs - 28% done (PR #129 offen, Doku-First Ansatz)
 - **Blockers:** Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Lead-Module) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage
-- **Latest:** Sprint 2.1.5 Doku COMPLETE (FRONTEND_DELTA.md, V258 Migration, Problem+JSON extensions)
+- **Latest:** Sprint 2.1.5 Progressive Profiling UX-Regeln COMPLETE
+  - BUSINESS_LOGIC_LEAD_ERFASSUNG.md erstellt (zentraler Überblick)
+  - Button-Logik dokumentiert: Jede Karte separat speicherbar
+  - Erstkontakt nur Karte 0 (optional, nachträglich möglich)
+  - DSGVO: KEINE Checkbox bei Vertrieb (nur Hinweis Art. 6 Abs. 1 lit. f)
 - **Sprint 2.1.6/2.1.7:** PLANNED (12-18.10.2025 / 19-25.10.2025) - Migration-API, Lead-Scoring, Mobile-Optimierung
 
 **🔗 WICHTIGE REFERENZEN:**
