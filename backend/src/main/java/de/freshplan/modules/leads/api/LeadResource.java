@@ -73,13 +73,13 @@ public class LeadResource {
   String fallbackUserId;
 
   /**
-   * Get current user ID with dev mode fallback.
-   * In dev mode, auth is disabled and SecurityContext.getUserPrincipal() returns null.
+   * Get current user ID with dev mode fallback. In dev mode, auth is disabled and
+   * SecurityContext.getUserPrincipal() returns null.
    */
   private String getCurrentUserId() {
     return securityContext.getUserPrincipal() != null
-      ? securityContext.getUserPrincipal().getName()
-      : fallbackUserId; // Fallback for dev mode (configurable)
+        ? securityContext.getUserPrincipal().getName()
+        : fallbackUserId; // Fallback for dev mode (configurable)
   }
 
   /**
