@@ -1,3 +1,13 @@
+---
+module: "02_neukundengewinnung"
+sprint: "2.1.5"
+domain: "frontend"
+doc_type: "plan"
+status: "geplant"
+owner: "team/frontend"
+updated: "2025-10-04"
+---
+
 # Server-Side Filtering Migration Plan
 
 **Status:** Geplant

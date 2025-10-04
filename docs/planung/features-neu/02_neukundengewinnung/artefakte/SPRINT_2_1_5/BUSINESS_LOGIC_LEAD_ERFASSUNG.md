@@ -1,7 +1,8 @@
 ---
+module: "02_neukundengewinnung"
 sprint: "2.1.5"
 domain: "business-logic"
-doc_type: "overview"
+doc_type: "konzept"
 status: "approved"
 owner: "team/product"
 updated: "2025-10-04"

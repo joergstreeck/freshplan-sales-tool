@@ -1,3 +1,13 @@
+---
+module: "02_neukundengewinnung"
+sprint: "2.1.5"
+domain: "shared"
+doc_type: "adr"
+status: "accepted"
+owner: "team/architecture"
+updated: "2025-10-04"
+---
+
 # ADR-006: Lead-Management Hybrid-Architektur
 
 **Status:** ✅ Accepted
