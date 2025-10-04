@@ -15,9 +15,9 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_DB: freshplan-test
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
         ports:
           - 5432:5432
         options: >-
@@ -91,9 +91,9 @@ jobs:
       postgres:
         image: postgres:15-alpine
         env:
-          POSTGRES_DB: freshplan-test
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
         ports:
           - 5432:5432
         options: >-
