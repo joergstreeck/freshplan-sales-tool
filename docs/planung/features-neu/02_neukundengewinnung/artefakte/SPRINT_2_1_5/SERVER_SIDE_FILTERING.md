@@ -1,7 +1,8 @@
 ---
+module: "02_neukundengewinnung"
 sprint: "2.1.5"
 domain: "performance"
-doc_type: "technical-spec"
+doc_type: "technical_concept"
 status: "approved"
 owner: "team/frontend"
 updated: "2025-10-04"

@@ -2,7 +2,7 @@
 module: "02_neukundengewinnung"
 sprint: "2.1.5"
 domain: "frontend"
-doc_type: "plan"
+doc_type: "technical_concept"
 status: "geplant"
 owner: "team/frontend"
 updated: "2025-10-04"
