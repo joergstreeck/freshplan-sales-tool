@@ -118,7 +118,7 @@ Sprint 2.1.5: Progressive Profiling   ✅ COMPLETE (05.10.2025) → PR #124 Back
 
 Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
                                       → **PR #130:** TestDataBuilder Refactoring (Issue #130, BLOCKER für Worktree CI)
-                                      → **PR #125:** Lead Stage Enum (Issue #125, Type Safety - 2-3h)
+                                      → **PR #131:** Lead Stage Enum (Issue #125, Type Safety - 2-3h)
                                       → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)
                                       → Lead → Kunde Convert Flow (automatische Übernahme bei Status QUALIFIED → CONVERTED)
                                       → Stop-the-Clock UI (Manager-only, StopTheClockDialog)
