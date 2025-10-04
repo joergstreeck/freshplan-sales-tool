@@ -36,26 +36,29 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (04.10.2025 - Progressive Profiling UX Best Practice):**
-- ✅ **Sprint 2.1.5 Progressive Profiling UX-Regeln COMPLETE:**
-  - **FRONTEND_DELTA.md Section 0:** UX-Regeln (Best Practice) - Jede Karte separat speicherbar
-  - **Button-Logik:** [Vormerkung speichern], [Registrierung speichern], [Qualifizierung speichern]
-  - **Erstkontakt:** Nur auf Karte 0 (optional, empfohlen), kann nachträglich hinzugefügt werden
-  - **DSGVO:** KEINE Consent-Checkbox im Vertriebs-Wizard (nur Hinweis Art. 6 Abs. 1 lit. f)
-  - **Schutz:** Nur bei Erstkontakt-Dokumentation (NICHT bei Kontaktdaten)
-  - **Pflichtfeld Karte 1:** Mind. 1 Kontaktkanal (Email ODER Phone)
-  - **Pre-Claim:** Vormerkung ohne Erstkontakt = 10-Tage-Frist, Badge "⏳ läuft ab in X Tagen"
-  - **Anti-Patterns:** Dokumentiert (was NICHT tun)
+**📋 LATEST UPDATE (04.10.2025 - LeadWizard Refactoring Guide COMPLETE):**
+- ✅ **Sprint 2.1.5 Dokumentation 100% COMPLETE:**
+  - ✅ **BUSINESS_LOGIC_LEAD_ERFASSUNG.md:** Zentraler Überblick (300+ Zeilen, 10 Sections, Vertrag §3.3 Compliance)
+    - Progressive Profiling (3-Stufen), Pre-Claim (10T), Lead-Schutz (6M+60T), Stop-the-Clock, Dedupe (Hard/Soft)
+    - DSGVO (Berechtigtes Interesse vs. Einwilligung), Erstkontakt-Dokumentation, 7 Anti-Patterns
+    - 5 ChatGPT-Verbesserungen integriert (Mindestanforderungen, Progress-Timer-Abgrenzung, Rollenhinweise, UX-Hinweise, LeadSource-Definitionen)
+  - ✅ **FRONTEND_DELTA.md Section 0:** UX-Regeln (Best Practice) - Jede Karte separat speicherbar
+    - Button-Logik: [Vormerkung speichern], [Registrierung speichern], [Qualifizierung speichern]
+    - Erstkontakt: Nur auf Karte 0 (optional, empfohlen), kann nachträglich hinzugefügt werden
+    - DSGVO: KEINE Consent-Checkbox im Vertriebs-Wizard (nur Hinweis Art. 6 Abs. 1 lit. f)
+    - Schutz: Nur bei Erstkontakt-Dokumentation (NICHT bei Kontaktdaten)
+    - Pflichtfeld Karte 1: Mind. 1 Kontaktkanal (Email ODER Phone)
+  - ✅ **LEAD_WIZARD_REFACTORING_GUIDE.md:** Code-Implementation Anleitung (530+ Zeilen)
+    - Erstkontakt-Block verschieben (Karte 1 → Karte 0, vollständiger TSX-Code)
+    - DSGVO Consent → Hinweis-Box (Karte 1, Checkbox entfernt)
+    - Button-Logik umbauen (3 Save-Buttons + handleSave-Funktion)
+    - Validierung anpassen (Stage 0 & 1), i18n Labels, Testing-Checklist
 - ✅ **Sprint 2.1.5 Backend COMPLETE:**
   - ✅ **Backend Phase 1:** V255-V257 Migrations, Lead Protection Service, 24 Unit Tests
   - ✅ **Backend Phase 2:** V258 Migration (13 Activity-Types), ActivityType.java, 7 Unit Tests
-  - ✅ **Dokumentation:** FRONTEND_DELTA.md (877 Zeilen), TRIGGER korrigiert, Anti-Patterns dokumentiert
-- 🔄 **IN PROGRESS:** Sprint 2.1.5 Frontend Code-Anpassung
-  - ✅ **types.ts:** 13 Activity-Types, ACTIVITY_PROGRESS_MAP, LeadSource, Problem.extensions
-  - ✅ **api.ts:** Query-Params (reason, overrideReason), activities[] support, kein hardcoded source
-  - ⏸️ **LeadWizard.tsx:** Button-Logik Refactor (Speichern auf jeder Karte), Erstkontakt auf Karte 0, DSGVO-Hinweis
-  - ⏸️ **i18n:** Button-Labels, Copy-Texte anpassen
-  - ⏸️ **Tests:** Button-Interaktionen aktualisieren (16 Tests)
+- 📋 **NEXT:** LeadWizard.tsx Code-Implementation (nächste Session)
+  - Erstkontakt-Block verschieben + Button-Logik + DSGVO-Hinweis + Validierung + i18n + Tests
+  - Refactoring Guide: `/docs/planung/claude-work/daily-work/2025-10-04/LEAD_WIZARD_REFACTORING_GUIDE.md`
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
