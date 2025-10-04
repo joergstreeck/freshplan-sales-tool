@@ -92,8 +92,8 @@ export function CustomerTable({
   };
 
   // Sprint 2.1.5: Pre-Claim Status Detection (registeredAt === null/undefined)
-  const isPreClaim = (customer: CustomerResponse) => {
-    // @ts-expect-error: registeredAt ist optional in CustomerResponse (Lead-Feld)
+  // Intersection type for Lead-specific fields
+  const isPreClaim = (customer: CustomerResponse & { registeredAt?: string }) => {
     return !customer.registeredAt && customer.createdAt;
   };
 
