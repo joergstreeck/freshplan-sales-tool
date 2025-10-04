@@ -45,8 +45,10 @@ public class TerritoryService {
     return getTerritory("DE");
   }
 
-  /** Initialize default territories if not present. */
-  @RlsContext
+  /**
+   * Initialize default territories if not present. Note: No @RlsContext needed - Territories are
+   * global master data, not tenant-specific.
+   */
   @Transactional
   public void initializeDefaultTerritories() {
     if (Territory.count() == 0) {
@@ -60,10 +62,14 @@ public class TerritoryService {
       de.currencyCode = "EUR";
       de.taxRate = new java.math.BigDecimal("19.00");
       de.languageCode = "de-DE";
-      de.businessRules.put("invoicing", "monthly");
-      de.businessRules.put("payment_terms", 30);
-      de.businessRules.put("delivery_zones", java.util.List.of("north", "south", "east", "west"));
+      de.active = true;
+      de.businessRules =
+          new io.vertx.core.json.JsonObject()
+              .put("invoicing", "monthly")
+              .put("payment_terms", 30)
+              .put("delivery_zones", java.util.List.of("north", "south", "east", "west"));
       de.persist();
+      LOG.infof("Territory DE persisted: %s", de.id);
 
       // Switzerland
       Territory ch = new Territory();
@@ -73,12 +79,16 @@ public class TerritoryService {
       ch.currencyCode = "CHF";
       ch.taxRate = new java.math.BigDecimal("7.70");
       ch.languageCode = "de-CH";
-      ch.businessRules.put("invoicing", "monthly");
-      ch.businessRules.put("payment_terms", 45);
-      ch.businessRules.put("delivery_zones", java.util.List.of("zurich", "basel", "bern"));
+      ch.active = true;
+      ch.businessRules =
+          new io.vertx.core.json.JsonObject()
+              .put("invoicing", "monthly")
+              .put("payment_terms", 45)
+              .put("delivery_zones", java.util.List.of("zurich", "basel", "bern"));
       ch.persist();
+      LOG.infof("Territory CH persisted: %s", ch.id);
 
-      LOG.info("Default territories initialized");
+      LOG.infof("Default territories initialized (count: %d)", Territory.count());
     }
   }
 }
