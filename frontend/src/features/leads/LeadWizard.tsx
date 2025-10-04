@@ -79,14 +79,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
     // Erstkontakt-Validierung (nur wenn User begonnen hat, mind. 1 Feld auszufüllen)
     const hasStartedFirstContact =
-      formData.firstContact?.channel ||
-      formData.firstContact?.performedAt ||
-      formData.firstContact?.notes?.trim();
+      formData.firstContact?.performedAt || formData.firstContact?.notes?.trim();
 
     if (hasStartedFirstContact) {
-      if (!formData.firstContact?.channel) {
-        errors['firstContact.channel'] = [t('wizard.stage0.firstContactChannelRequired')];
-      }
       if (!formData.firstContact?.performedAt) {
         errors['firstContact.performedAt'] = [t('wizard.stage0.firstContactDateRequired')];
       }
@@ -193,6 +188,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       const payload = {
         stage,
         companyName: formData.companyName.trim(),
+        name: formData.companyName.trim(), // Legacy support (Backend compatibility)
         city: formData.city?.trim() || undefined,
         postalCode: formData.postalCode?.trim() || undefined,
         businessType: formData.businessType,
@@ -205,6 +201,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               phone: formData.contact.phone?.trim() || undefined,
             }
           : undefined,
+        email: formData.contact.email?.trim() || undefined, // Legacy support (Backend compatibility)
         activities,
         estimatedVolume: stage >= 2 ? formData.estimatedVolume : undefined,
         kitchenSize: stage >= 2 ? formData.kitchenSize : undefined,
@@ -346,51 +343,25 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 {t('wizard.stage0.firstContactHint')}
               </Typography>
 
-              <FormControl fullWidth margin="dense" error={!!fieldErrors['firstContact.channel']}>
-                <InputLabel id="firstContact-channel-label">
-                  {t('wizard.stage0.firstContactChannel')}
-                </InputLabel>
-                <Select
-                  labelId="firstContact-channel-label"
-                  id="firstContact-channel-select"
-                  value={formData.firstContact?.channel || ''}
-                  onChange={e =>
-                    setFormData({
-                      ...formData,
-                      firstContact: {
-                        channel: e.target.value as FirstContact['channel'],
-                        performedAt: formData.firstContact?.performedAt || '',
-                        notes: formData.firstContact?.notes || '',
-                      },
-                    })
-                  }
-                  label={t('wizard.stage0.firstContactChannel')}
-                >
-                  <MenuItem value="">
-                    <em>{t('wizard.stage0.firstContactChannelPlaceholder')}</em>
-                  </MenuItem>
-                  <MenuItem value="MESSE">{t('wizard.firstContactChannels.messe')}</MenuItem>
-                  <MenuItem value="PHONE">{t('wizard.firstContactChannels.phone')}</MenuItem>
-                  <MenuItem value="EMAIL">{t('wizard.firstContactChannels.email')}</MenuItem>
-                  <MenuItem value="REFERRAL">{t('wizard.firstContactChannels.referral')}</MenuItem>
-                  <MenuItem value="OTHER">{t('wizard.firstContactChannels.other')}</MenuItem>
-                </Select>
-                {!!fieldErrors['firstContact.channel'] && (
-                  <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                    {fieldErrors['firstContact.channel'][0]}
-                  </Typography>
-                )}
-              </FormControl>
-
               <TextField
                 label={t('wizard.stage0.firstContactDate')}
                 type="datetime-local"
                 value={formData.firstContact?.performedAt || ''}
                 onChange={e => {
+                  // Auto-derive channel from source
+                  const channelFromSource =
+                    formData.source === 'MESSE'
+                      ? 'MESSE'
+                      : formData.source === 'EMPFEHLUNG'
+                        ? 'REFERRAL'
+                        : formData.source === 'TELEFON'
+                          ? 'PHONE'
+                          : 'OTHER';
+
                   setFormData({
                     ...formData,
                     firstContact: {
-                      channel: formData.firstContact?.channel || 'OTHER',
+                      channel: channelFromSource,
                       performedAt: e.target.value,
                       notes: formData.firstContact?.notes || '',
                     },
@@ -408,16 +379,26 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               <TextField
                 label={t('wizard.stage0.firstContactNotes')}
                 value={formData.firstContact?.notes || ''}
-                onChange={e =>
+                onChange={e => {
+                  // Auto-derive channel from source
+                  const channelFromSource =
+                    formData.source === 'MESSE'
+                      ? 'MESSE'
+                      : formData.source === 'EMPFEHLUNG'
+                        ? 'REFERRAL'
+                        : formData.source === 'TELEFON'
+                          ? 'PHONE'
+                          : 'OTHER';
+
                   setFormData({
                     ...formData,
                     firstContact: {
-                      channel: formData.firstContact?.channel || 'OTHER',
+                      channel: channelFromSource,
                       performedAt: formData.firstContact?.performedAt || '',
                       notes: e.target.value,
                     },
-                  })
-                }
+                  });
+                }}
                 fullWidth
                 margin="dense"
                 multiline
