@@ -9,9 +9,6 @@ on:
 jobs:
   backend:
     name: Backend Tests
-    if: |
-      github.ref == 'refs/heads/feature/user-management' ||
-      contains(github.head_ref, 'user-management')
     runs-on: ubuntu-latest
     
     steps:
@@ -43,9 +40,6 @@ jobs:
 
   frontend:
     name: Frontend Tests
-    if: |
-      github.ref == 'refs/heads/feature/react-migration' ||
-      contains(github.head_ref, 'react-migration')
     runs-on: ubuntu-latest
     
     steps:
@@ -76,9 +70,6 @@ jobs:
 
   testing:
     name: Test Suite Expansion
-    if: |
-      github.ref == 'refs/heads/feature/expand-test-coverage' ||
-      contains(github.head_ref, 'expand-test-coverage')
     runs-on: ubuntu-latest
     
     steps:
