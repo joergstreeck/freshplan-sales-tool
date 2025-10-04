@@ -2,10 +2,12 @@
 sprint_id: "2.1.5"
 title: "Lead Protection & Progressive Profiling (B2B)"
 doc_type: "konzept"
-status: "in_progress"
+status: "partial_complete"
 owner: "team/leads-backend"
 date_start: "2025-10-05"
-date_end: "2025-10-11"
+date_end: "2025-10-04"
+completion_date: "2025-10-04"
+gaps: ["zwei_felder_loesung", "pre_claim_badge", "backend_dto"]
 modules: ["02_neukundengewinnung"]
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
@@ -52,6 +54,27 @@ updated: "2025-09-28"
 ## Sprint-Ziel
 
 Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Regel) und Progressive Profiling für B2B-Lead-Erfassung.
+
+## ⚠️ Sprint-Status: PARTIAL COMPLETE (04.10.2025)
+
+**✅ ERLEDIGT:**
+- ✅ Backend V255-V257 Migrations (Progress Tracking, Stage, Protection Functions)
+- ✅ LeadProtectionService mit 24 Unit Tests
+- ✅ LeadWizard (3 Stages: Vormerkung, Registrierung, Qualifizierung)
+- ✅ Context-Prop Architecture (CustomersPageV2 mit context='leads')
+- ✅ Migration V259 (Removed ui_leads_company_city unique constraint)
+- ✅ Dokumentation vollständig (BUSINESS_LOGIC, PRE_CLAIM_LOGIC, FRONTEND_DELTA, SUMMARY)
+- ✅ Zwei-Felder-Lösung **dokumentiert** (Notizen + Erstkontakt getrennt)
+
+**❌ GAPS (Code TODO, Doku COMPLETE):**
+1. **Zwei-Felder-Lösung** - Separates Notizen-Feld + Checkbox-gesteuerter Erstkontakt-Block (FRONTEND_DELTA.md:52-88)
+2. **Pre-Claim Badge** - "⏳ Pre-Claim (X Tage)" Badge in CustomerTable (PRE_CLAIM_LOGIC.md:420-432)
+3. **Backend DTO** - registeredAt, protectedUntil, progressDeadline Felder (PRE_CLAIM_LOGIC.md:306-334)
+
+**🔄 VERSCHOBEN AUF SPRINT 2.1.6:**
+- Code-Implementierung der 3 Gaps (~4h Aufwand)
+- Quick-Action "Erstkontakt nachtragen" (~2h Aufwand)
+- Pre-Claim Filter in IntelligentFilterBar (~1h Aufwand)
 
 ## User Stories
 

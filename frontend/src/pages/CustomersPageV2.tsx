@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, Button } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
+import LeadWizard from '../features/leads/LeadWizard';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
 import { VirtualizedCustomerTable } from '../features/customers/components/VirtualizedCustomerTable';
@@ -11,47 +12,60 @@ import { DataHygieneDashboard } from '../features/customers/components/intellige
 import { DataFreshnessManager } from '../features/customers/components/intelligence/DataFreshnessManager';
 import { IntelligentFilterBar } from '../features/customers/components/filter/IntelligentFilterBar';
 import { useAuth } from '../contexts/AuthContext';
-import { useCustomers } from '../features/customer/api/customerQueries';
+import { useCustomers, useCustomerSearchAdvanced } from '../features/customer/api/customerQueries';
+import { useLeads } from '../features/leads/hooks/useLeads';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { ActionToast } from '../components/notifications/ActionToast';
 import { taskEngine } from '../services/taskEngine';
 import { isFeatureEnabled } from '../config/featureFlags';
 import { useFocusListStore } from '../features/customer/store/focusListStore';
+import { getTableColumnsForContext } from '../features/customers/components/filter/contextConfig';
 import type { Customer } from '../types/customer.types';
-import type { FilterConfig, SortConfig } from '../features/customers/types/filter.types';
+import type { FilterConfig, SortConfig, ColumnConfig } from '../features/customers/types/filter.types';
 
 interface CustomersPageV2Props {
   openWizard?: boolean;
+  defaultFilter?: FilterConfig;
+  title?: string;
+  createButtonLabel?: string;
+  context?: 'customers' | 'leads'; // Lifecycle Context
 }
 
-export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
+export function CustomersPageV2({
+  openWizard = false,
+  defaultFilter = {},
+  title,
+  createButtonLabel,
+  context = 'customers',
+}: CustomersPageV2Props) {
   const [wizardOpen, setWizardOpen] = useState(openWizard);
   const [activeTab, setActiveTab] = useState(0);
-  const [filterConfig, setFilterConfig] = useState<FilterConfig>({});
+  const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
+  const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
 
-  // Use focus list store for persistent column and sort configuration
+  // Use focus list store for sort configuration only
   const {
-    tableColumns,
     sortBy,
     setSortBy,
-    // globalSearch,
-    // activeFilters
   } = useFocusListStore();
 
-  // Convert store columns to ColumnConfig format for compatibility
-  const columnConfig = useMemo(
-    () =>
-      tableColumns
-        .filter(col => col.visible)
-        .sort((a, b) => a.order - b.order)
-        .map(col => ({
-          id: col.field,
-          label: col.label,
-          visible: col.visible,
-        })),
-    [tableColumns]
-  );
+  // Get context-based column configuration
+  const columnConfig = useMemo(() => {
+    if (activeColumns.length > 0) {
+      return activeColumns;
+    }
+    // Fallback: get default columns for context
+    const defaultColumns = getTableColumnsForContext(context);
+    return defaultColumns
+      .filter(col => col.visible)
+      .sort((a, b) => a.order - b.order)
+      .map(col => ({
+        id: col.field,
+        label: col.label,
+        visible: col.visible,
+      }));
+  }, [activeColumns, context]);
 
   // Convert store sortBy to SortConfig format
   const sortConfig = useMemo(
@@ -80,10 +94,139 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
   // Verkäuferschutz: Nur eigene Kunden für Sales-Rolle
   const _filter = user?.role === 'sales' ? { assignedTo: user.id } : undefined;
 
-  // Use existing useCustomers hook with pagination
-  const { data, isLoading, refetch } = useCustomers(0, 1000); // Get all for now
+  // Build search request from filterConfig (WITHOUT text - text stays client-side!)
+  const searchRequest = useMemo(() => {
+    const filters: Array<{ field: string; operator: string; value: string | string[] }> = [];
 
-  const customers = useMemo(() => data?.content || [], [data]);
+    // Status filter
+    if (filterConfig.status && filterConfig.status.length > 0) {
+      filters.push({ field: 'status', operator: 'IN', value: filterConfig.status });
+    }
+
+    // Industry filter
+    if (filterConfig.industry && filterConfig.industry.length > 0) {
+      filters.push({ field: 'industry', operator: 'IN', value: filterConfig.industry });
+    }
+
+    // Risk level filter
+    if (filterConfig.riskLevel && filterConfig.riskLevel.length > 0) {
+      filterConfig.riskLevel.forEach(level => {
+        if (level === 'CRITICAL') {
+          filters.push({ field: 'riskScore', operator: 'GTE', value: '80' });
+        } else if (level === 'HIGH') {
+          filters.push({ field: 'riskScore', operator: 'GTE', value: '60' });
+          filters.push({ field: 'riskScore', operator: 'LT', value: '80' });
+        } else if (level === 'MEDIUM') {
+          filters.push({ field: 'riskScore', operator: 'GTE', value: '30' });
+          filters.push({ field: 'riskScore', operator: 'LT', value: '60' });
+        } else if (level === 'LOW') {
+          filters.push({ field: 'riskScore', operator: 'LT', value: '30' });
+        }
+      });
+    }
+
+    // Has contacts filter
+    if (filterConfig.hasContacts !== null && filterConfig.hasContacts !== undefined) {
+      filters.push({
+        field: 'contactsCount',
+        operator: filterConfig.hasContacts ? 'GT' : 'EQ',
+        value: '0',
+      });
+    }
+
+    // Last contact days filter
+    if (filterConfig.lastContactDays) {
+      const cutoffDate = new Date(Date.now() - filterConfig.lastContactDays * 24 * 60 * 60 * 1000);
+      filters.push({
+        field: 'lastContactDate',
+        operator: 'LTE',
+        value: cutoffDate.toISOString(),
+      });
+    }
+
+    // Revenue range filter
+    if (filterConfig.revenueRange) {
+      const { min, max } = filterConfig.revenueRange;
+      if (min !== null && min !== undefined) {
+        filters.push({ field: 'expectedAnnualVolume', operator: 'GTE', value: min.toString() });
+      }
+      if (max !== null && max !== undefined) {
+        filters.push({ field: 'expectedAnnualVolume', operator: 'LTE', value: max.toString() });
+      }
+    }
+
+    // Created days filter
+    if (filterConfig.createdDays) {
+      const cutoffDate = new Date(Date.now() - filterConfig.createdDays * 24 * 60 * 60 * 1000);
+      filters.push({
+        field: 'createdAt',
+        operator: 'GTE',
+        value: cutoffDate.toISOString(),
+      });
+    }
+
+    // Return search request WITHOUT globalSearch (text stays client-side)
+    return {
+      filters,
+      sort: sortConfig.field
+        ? {
+            field: sortConfig.field,
+            direction: sortConfig.direction === 'asc' ? ('ASC' as const) : ('DESC' as const),
+          }
+        : undefined,
+    };
+  }, [filterConfig.status, filterConfig.industry, filterConfig.riskLevel, filterConfig.hasContacts, filterConfig.lastContactDays, filterConfig.revenueRange, filterConfig.createdDays, sortConfig]);
+
+  // Server-side search with pagination (only for structured filters)
+  const [page, setPage] = useState(0);
+  const pageSize = 50;
+
+  // Use server-side search if any structured filter is active
+  const hasStructuredFilters =
+    (filterConfig.status && filterConfig.status.length > 0) ||
+    (filterConfig.industry && filterConfig.industry.length > 0) ||
+    (filterConfig.riskLevel && filterConfig.riskLevel.length > 0) ||
+    filterConfig.hasContacts !== null ||
+    filterConfig.lastContactDays !== null ||
+    filterConfig.revenueRange !== null ||
+    filterConfig.createdDays !== null;
+
+  // Context-based data loading
+  const leadsData = useLeads(); // For leads context
+  const serverSideData = useCustomerSearchAdvanced(
+    searchRequest,
+    page,
+    pageSize,
+    hasStructuredFilters && context === 'customers' // Only enabled for customers with structured filters
+  );
+  const clientSideData = useCustomers(0, 1000, 'companyName'); // Fallback: Load all customers for client-side filtering
+
+  // Use appropriate data source based on context
+  const { data, isLoading, refetch } =
+    context === 'leads'
+      ? leadsData
+      : (hasStructuredFilters ? serverSideData : clientSideData);
+
+  const customers = useMemo(() => {
+    if (context === 'leads') {
+      // Leads API returns array directly
+      return Array.isArray(data) ? data : [];
+    }
+    // Customers API returns paginated response
+    return data?.content || [];
+  }, [data, context]);
+
+  const hasMore = useMemo(() => {
+    if (context === 'leads') return false; // No pagination for leads yet
+    return hasStructuredFilters && data && !data.last;
+  }, [hasStructuredFilters, data, context]);
+
+  // Reset page when search request changes
+  useEffect(() => {
+    if (hasStructuredFilters) {
+      setPage(0);
+    }
+  }, [searchRequest, hasStructuredFilters]);
 
   // Apply filters and sorting to customers
   const filteredCustomers = useMemo(() => {
@@ -279,9 +422,10 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     }
 
     // Erfolgs-Feedback mit Action
+    const entityLabel = context === 'leads' ? 'Lead' : 'Kunde';
     toast.custom(
       <ActionToast
-        message={`Kunde "${customer.name || customer.companyName}" erfolgreich angelegt!`}
+        message={`${entityLabel} "${customer.name || customer.companyName}" erfolgreich angelegt!`}
         action={
           taskId
             ? {
@@ -300,8 +444,11 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
     // Liste aktualisieren
     await refetch();
 
-    // Zur Detail-Seite navigieren
-    navigate(`/customers/${customer.id}?highlight=new`);
+    // Zur Detail-Seite navigieren - nur für Customers (Leads haben keine Detail-Seite)
+    if (context === 'customers') {
+      navigate(`/customers/${customer.id}?highlight=new`);
+    }
+    // Bei Leads: Bleiben auf der Liste, neuer Lead wird highlighted
   };
 
   if (isLoading) {
@@ -318,13 +465,15 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
         {/* Header mit Button - immer sichtbar */}
         <CustomerListHeader
           totalCount={customers.length}
-          // Navigation to /customers/new is handled inside CustomerListHeader
+          title={title}
+          createButtonLabel={createButtonLabel}
+          onAddCustomer={() => setWizardOpen(true)}
         />
 
         {/* Tab Navigation */}
         <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 3 }}>
           <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
-            <Tab label="Kundenliste" />
+            <Tab label={context === 'leads' ? 'Lead-Liste' : 'Kundenliste'} />
             <Tab label="Data Intelligence" />
             <Tab label="Data Freshness" />
           </Tabs>
@@ -335,11 +484,15 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
           {activeTab === 0 &&
             (customers.length === 0 ? (
               <EmptyStateHero
-                title="Noch keine Kunden"
-                description="Legen Sie Ihren ersten Kunden an und starten Sie Ihre Erfolgsgeschichte!"
+                title={context === 'leads' ? 'Noch keine Leads' : 'Noch keine Kunden'}
+                description={
+                  context === 'leads'
+                    ? 'Erfassen Sie Ihren ersten Lead und starten Sie Ihre Neukundengewinnung!'
+                    : 'Legen Sie Ihren ersten Kunden an und starten Sie Ihre Erfolgsgeschichte!'
+                }
                 illustration="/illustrations/empty-customers.svg"
                 action={{
-                  label: '✨ Ersten Kunden anlegen',
+                  label: context === 'leads' ? '✨ Ersten Lead erfassen' : '✨ Ersten Kunden anlegen',
                   onClick: () => setWizardOpen(true),
                   variant: 'contained',
                   size: 'large',
@@ -360,9 +513,12 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
                       ascending: config.direction === 'asc',
                     });
                   }}
+                  onColumnChange={setActiveColumns}
                   totalCount={customers.length}
                   filteredCount={filteredCustomers.length}
                   loading={isLoading}
+                  initialFilters={filterConfig}
+                  context={context}
                 />
 
                 {/* Customer Table - Use virtualized version for > 20 items */}
@@ -370,17 +526,45 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
                   <VirtualizedCustomerTable
                     customers={filteredCustomers}
                     columns={columnConfig}
-                    onRowClick={customer => navigate(`/customers/${customer.id}`)}
+                    onRowClick={customer => {
+                      // Context-based navigation: Leads haben keine Detail-Seite
+                      if (context === 'customers') {
+                        navigate(`/customers/${customer.id}`);
+                      }
+                    }}
                     height={600}
                     rowHeight={72}
                   />
                 ) : (
                   <CustomerTable
                     customers={filteredCustomers}
-                    onRowClick={customer => navigate(`/customers/${customer.id}`)}
+                    onRowClick={customer => {
+                      // Context-based navigation: Leads haben keine Detail-Seite
+                      if (context === 'customers') {
+                        navigate(`/customers/${customer.id}`);
+                      }
+                    }}
                     highlightNew
                     columns={columnConfig}
                   />
+                )}
+
+                {/* Load More Button (only for server-side pagination) */}
+                {hasMore && (
+                  <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setPage(prev => prev + 1)}
+                      disabled={isLoading}
+                      size="large"
+                    >
+                      {isLoading
+                        ? 'Lädt...'
+                        : context === 'leads'
+                          ? 'Weitere Leads laden'
+                          : 'Weitere Kunden laden'}
+                    </Button>
+                  </Box>
                 )}
               </Box>
             ))}
@@ -390,12 +574,20 @@ export function CustomersPageV2({ openWizard = false }: CustomersPageV2Props) {
           {activeTab === 2 && <DataFreshnessManager />}
         </Box>
 
-        {/* Wizard Modal/Drawer */}
-        <CustomerOnboardingWizardModal
-          open={wizardOpen}
-          onClose={() => setWizardOpen(false)}
-          onComplete={handleCustomerCreated}
-        />
+        {/* Wizard Modal/Drawer - Context-based */}
+        {context === 'leads' ? (
+          <LeadWizard
+            open={wizardOpen}
+            onClose={() => setWizardOpen(false)}
+            onCreated={handleCustomerCreated}
+          />
+        ) : (
+          <CustomerOnboardingWizardModal
+            open={wizardOpen}
+            onClose={() => setWizardOpen(false)}
+            onComplete={handleCustomerCreated}
+          />
+        )}
       </Box>
     </MainLayoutV2>
   );

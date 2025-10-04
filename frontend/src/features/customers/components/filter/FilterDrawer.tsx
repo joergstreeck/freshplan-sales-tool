@@ -7,7 +7,7 @@
  * @since FC-005 PR4
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Drawer,
   Stack,
@@ -40,6 +40,7 @@ interface FilterDrawerProps {
   onFiltersChange: (filters: FilterConfig) => void;
   onApply: () => void;
   onClear: () => void;
+  context?: 'customers' | 'leads'; // Lifecycle Context for filtering
 }
 
 export function FilterDrawer({
@@ -49,8 +50,19 @@ export function FilterDrawer({
   onFiltersChange,
   onApply,
   onClear,
+  context = 'customers', // Default to customers context
 }: FilterDrawerProps) {
   const theme = useTheme();
+
+  // Local state - changes are only committed when "Anwenden" is clicked
+  const [localFilters, setLocalFilters] = useState<FilterConfig>(filters);
+
+  // Sync local state when drawer opens
+  useEffect(() => {
+    if (open) {
+      setLocalFilters(filters);
+    }
+  }, [open, filters]);
 
   return (
     <Drawer
@@ -75,28 +87,34 @@ export function FilterDrawer({
 
         <Divider />
 
-        {/* Status Filter - ohne LEAD, PROSPECT und RISIKO */}
+        {/* Status Filter - Lifecycle-Context-basiert */}
         <FormControl fullWidth>
           <FormLabel>Status</FormLabel>
           <FormGroup>
             {Object.values(CustomerStatus)
-              .filter(
-                status =>
+              .filter(status => {
+                if (context === 'leads') {
+                  // Lead Lifecycle Phase: Zeige nur Baby-Status
+                  return status === CustomerStatus.LEAD || status === CustomerStatus.PROSPECT;
+                }
+                // Customer Lifecycle Phase: Zeige nur Erwachsenen-Status (ohne LEAD, PROSPECT, RISIKO)
+                return (
                   status !== CustomerStatus.LEAD &&
                   status !== CustomerStatus.PROSPECT &&
                   status !== CustomerStatus.RISIKO
-              )
+                );
+              })
               .map(status => (
                 <FormControlLabel
                   key={status}
                   control={
                     <Checkbox
-                      checked={filters.status?.includes(status) || false}
+                      checked={localFilters.status?.includes(status) || false}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                         const newStatus = e.target.checked
-                          ? [...(filters.status || []), status]
-                          : filters.status?.filter(s => s !== status) || [];
-                        onFiltersChange({ ...filters, status: newStatus });
+                          ? [...(localFilters.status || []), status]
+                          : localFilters.status?.filter(s => s !== status) || [];
+                        setLocalFilters({ ...localFilters, status: newStatus });
                       }}
                     />
                   }
@@ -113,12 +131,12 @@ export function FilterDrawer({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={filters.riskLevel?.includes(RiskLevel.LOW) || false}
+                  checked={localFilters.riskLevel?.includes(RiskLevel.LOW) || false}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newLevels = e.target.checked
-                      ? [...(filters.riskLevel || []), RiskLevel.LOW]
-                      : filters.riskLevel?.filter(l => l !== RiskLevel.LOW) || [];
-                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                      ? [...(localFilters.riskLevel || []), RiskLevel.LOW]
+                      : localFilters.riskLevel?.filter(l => l !== RiskLevel.LOW) || [];
+                    setLocalFilters({ ...localFilters, riskLevel: newLevels });
                   }}
                 />
               }
@@ -127,12 +145,12 @@ export function FilterDrawer({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={filters.riskLevel?.includes(RiskLevel.MEDIUM) || false}
+                  checked={localFilters.riskLevel?.includes(RiskLevel.MEDIUM) || false}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newLevels = e.target.checked
-                      ? [...(filters.riskLevel || []), RiskLevel.MEDIUM]
-                      : filters.riskLevel?.filter(l => l !== RiskLevel.MEDIUM) || [];
-                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                      ? [...(localFilters.riskLevel || []), RiskLevel.MEDIUM]
+                      : localFilters.riskLevel?.filter(l => l !== RiskLevel.MEDIUM) || [];
+                    setLocalFilters({ ...localFilters, riskLevel: newLevels });
                   }}
                 />
               }
@@ -141,12 +159,12 @@ export function FilterDrawer({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={filters.riskLevel?.includes(RiskLevel.HIGH) || false}
+                  checked={localFilters.riskLevel?.includes(RiskLevel.HIGH) || false}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newLevels = e.target.checked
-                      ? [...(filters.riskLevel || []), RiskLevel.HIGH]
-                      : filters.riskLevel?.filter(l => l !== RiskLevel.HIGH) || [];
-                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                      ? [...(localFilters.riskLevel || []), RiskLevel.HIGH]
+                      : localFilters.riskLevel?.filter(l => l !== RiskLevel.HIGH) || [];
+                    setLocalFilters({ ...localFilters, riskLevel: newLevels });
                   }}
                 />
               }
@@ -155,12 +173,12 @@ export function FilterDrawer({
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={filters.riskLevel?.includes(RiskLevel.CRITICAL) || false}
+                  checked={localFilters.riskLevel?.includes(RiskLevel.CRITICAL) || false}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     const newLevels = e.target.checked
-                      ? [...(filters.riskLevel || []), RiskLevel.CRITICAL]
-                      : filters.riskLevel?.filter(l => l !== RiskLevel.CRITICAL) || [];
-                    onFiltersChange({ ...filters, riskLevel: newLevels });
+                      ? [...(localFilters.riskLevel || []), RiskLevel.CRITICAL]
+                      : localFilters.riskLevel?.filter(l => l !== RiskLevel.CRITICAL) || [];
+                    setLocalFilters({ ...localFilters, riskLevel: newLevels });
                   }}
                 />
               }
@@ -173,11 +191,11 @@ export function FilterDrawer({
         <FormControl fullWidth>
           <FormLabel>Kontakte</FormLabel>
           <RadioGroup
-            value={filters.hasContacts === null ? 'all' : filters.hasContacts ? 'yes' : 'no'}
+            value={localFilters.hasContacts === null ? 'all' : localFilters.hasContacts ? 'yes' : 'no'}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value;
-              onFiltersChange({
-                ...filters,
+              setLocalFilters({
+                ...localFilters,
                 hasContacts: value === 'all' ? null : value === 'yes',
               });
             }}
@@ -192,25 +210,25 @@ export function FilterDrawer({
         <FormControl fullWidth>
           <FormLabel>
             Erwarteter Jahresumsatz
-            {filters.revenueRange?.min || filters.revenueRange?.max ? (
+            {localFilters.revenueRange?.min || localFilters.revenueRange?.max ? (
               <Typography variant="caption" color="primary" sx={{ ml: 1 }}>
-                {filters.revenueRange?.min
-                  ? `${(filters.revenueRange.min / 1000).toFixed(0)}k`
+                {localFilters.revenueRange?.min
+                  ? `${(localFilters.revenueRange.min / 1000).toFixed(0)}k`
                   : '0'}{' '}
                 -
-                {filters.revenueRange?.max
-                  ? ` ${(filters.revenueRange.max / 1000).toFixed(0)}k`
+                {localFilters.revenueRange?.max
+                  ? ` ${(localFilters.revenueRange.max / 1000).toFixed(0)}k`
                   : ' Max'}{' '}
                 €
               </Typography>
             ) : null}
           </FormLabel>
           <Slider
-            value={[filters.revenueRange?.min || 0, filters.revenueRange?.max || 500000]}
+            value={[localFilters.revenueRange?.min || 0, localFilters.revenueRange?.max || 500000]}
             onChange={(_, value) => {
               const [min, max] = value as number[];
-              onFiltersChange({
-                ...filters,
+              setLocalFilters({
+                ...localFilters,
                 revenueRange: {
                   min: min === 0 ? null : min,
                   max: max === 500000 ? null : max,
@@ -233,13 +251,12 @@ export function FilterDrawer({
 
         {/* Last Contact Days */}
         <FormControl fullWidth>
-          <FormLabel>Letzter Kontakt vor mehr als {filters.lastContactDays || 30} Tagen</FormLabel>
+          <FormLabel>Letzter Kontakt vor mehr als {localFilters.lastContactDays || 30} Tagen</FormLabel>
           <Slider
-            value={filters.lastContactDays || 30}
+            value={localFilters.lastContactDays || 30}
             onChange={(_, value) => {
-              // Set the filter value without activating quick filters
               const newValue = value as number;
-              onFiltersChange({ ...filters, lastContactDays: newValue });
+              setLocalFilters({ ...localFilters, lastContactDays: newValue });
             }}
             min={0}
             max={365}
@@ -256,13 +273,37 @@ export function FilterDrawer({
 
         {/* Action Buttons */}
         <Stack direction="row" spacing={2} sx={{ mt: 'auto' }}>
-          <Button variant="outlined" fullWidth onClick={onClear}>
+          <Button
+            variant="outlined"
+            fullWidth
+            onClick={() => {
+              // Clear local state first
+              setLocalFilters({
+                text: '',
+                status: [],
+                industry: [],
+                location: [],
+                revenueRange: null,
+                riskLevel: [],
+                hasContacts: null,
+                lastContactDays: null,
+                tags: [],
+              });
+              // Then trigger parent's clear handler
+              onClear();
+            }}
+          >
             Zurücksetzen
           </Button>
           <Button
             variant="contained"
             fullWidth
-            onClick={onApply}
+            onClick={() => {
+              // Commit local changes to parent
+              onFiltersChange(localFilters);
+              // Then trigger apply handler
+              onApply();
+            }}
             sx={{
               bgcolor: theme.palette.primary.main,
               '&:hover': {

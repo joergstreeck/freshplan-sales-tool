@@ -63,4 +63,32 @@ export const customerApi = {
     const response = await httpClient.get<Contact[]>(`/api/customers/${customerId}/contacts`);
     return response.data;
   },
+
+  // Advanced search with filters (POST /api/customers/search)
+  searchCustomersAdvanced: async (
+    searchRequest: {
+      globalSearch?: string;
+      filters?: Array<{
+        field: string;
+        operator: string;
+        value: string | string[];
+      }>;
+      sort?: {
+        field: string;
+        direction: 'ASC' | 'DESC';
+      };
+    },
+    page = 0,
+    size = 50
+  ): Promise<CustomerListResponse> => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      size: size.toString(),
+    });
+    const response = await httpClient.post<CustomerListResponse>(
+      `/api/customers/search?${params}`,
+      searchRequest
+    );
+    return response.data;
+  },
 };

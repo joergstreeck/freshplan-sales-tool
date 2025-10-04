@@ -35,7 +35,9 @@ updated: "2025-09-28"
 
 ## Sprint-Ziel
 
-Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lead-Transfer-Workflow zwischen Partnern und Fuzzy-Matching für intelligente Duplikat-Erkennung.
+Implementierung von Bestandsleads-Migrations-API (Modul 08), Lead → Kunde Convert Flow, Stop-the-Clock UI und optionalen Features aus Sprint 2.1.5 (Pre-Claim UI-Erweiterungen, Lead Detail-Seite).
+
+**Scope-Änderung:** RLS Team Management + Lead-Transfer verschoben auf Sprint 2.1.7 (Team-Features sind komplex und benötigen eigenen Sprint).
 
 ## User Stories
 
@@ -90,6 +92,13 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 - Team-Dashboard mit Metriken
 - Territory-Zuordnung (DE/CH)
 
+### 7. Frontend UI Improvements (verschoben aus 2.1.5)
+**Akzeptanzkriterien:**
+- **Lead Status-Labels:** REGISTERED → "Vormerkung", ACTIVE → "Aktiv", QUALIFIED → "Qualifiziert", CONVERTED → "Konvertiert", LOST → "Verloren"
+- **Lead Action-Buttons:** Löschen/Bearbeiten Buttons in CustomerTable (context-aware)
+- **Lead Detail-Seite:** Route `/leads/:id` mit Lead-Details für Navigation bei Klick
+- **Context-aware CustomerTable:** Status-Rendering und Actions basierend auf `context` Prop
+
 ## Technische Details
 
 ### Lead Transfers (aus 2.1.5):
@@ -120,7 +129,63 @@ public void updateRegisteredAt(Long id, BackdatingRequest request) {
 }
 ```
 
-### Automated Jobs (aus 2.1.5):
+### 2. Lead → Kunde Convert Flow (NEU aus 2.1.5)
+**Akzeptanzkriterien:**
+- Automatische Übernahme bei Status QUALIFIED → CONVERTED
+- Alle Lead-Daten übernehmen (ZERO Doppeleingabe)
+- Lead-ID Verknüpfung in customer.original_lead_id
+- Historie vollständig erhalten (Activities, Protection-Daten)
+- Validation: nur QUALIFIED Leads können konvertiert werden
+
+**API-Spec:**
+```json
+POST /api/leads/{id}/convert
+Authorization: Bearer <token>
+
+Response 200:
+{
+  "customerId": "uuid-customer-123",
+  "leadId": "uuid-lead-456",
+  "message": "Lead successfully converted to customer"
+}
+```
+
+### 3. Stop-the-Clock UI (NEU aus 2.1.5)
+**Akzeptanzkriterien:**
+- StopTheClockDialog Component (Manager + Admin only)
+- Pause/Resume Buttons in LeadProtectionBadge
+- Grund-Auswahl: "FreshFoodz Verzögerung", "Kunde im Urlaub", "Andere"
+- Audit-Log für jeden Stop/Resume Event
+- Maximale Pausendauer konfigurierbar (Default: 30 Tage)
+
+**Frontend Components:**
+- `StopTheClockDialog.tsx` - Pause/Resume mit Grund
+- `LeadProtectionBadge.tsx` - Pause/Resume Buttons ergänzen
+
+### 4. Pre-Claim UI-Erweiterungen (OPTIONAL aus 2.1.5)
+**Akzeptanzkriterien:**
+- Quick-Action "Erstkontakt nachtragen" Button für Pre-Claim Leads
+- Pre-Claim Filter in IntelligentFilterBar
+- Lead Status-Labels Frontend (REGISTERED → "Vormerkung", ACTIVE → "Aktiv")
+- Lead Action-Buttons (Löschen/Bearbeiten) in CustomerTable
+
+**Frontend Components:**
+- `AddFirstContactDialog.tsx` - Quick-Action für Erstkontakt-Nacherfassung
+- `IntelligentFilterBar.tsx` - Pre-Claim Filter ergänzen
+
+### 5. Lead Detail-Seite (OPTIONAL aus 2.1.5)
+**Akzeptanzkriterien:**
+- Lead Detail-Route `/leads/:id`
+- Lead-Informationen anzeigen (Company, Contact, Activities, Protection)
+- Navigation von CustomerTable Lead-Klick
+- Edit-Modus für Lead-Daten
+- Activity-Timeline Integration
+
+**Frontend Components:**
+- `LeadDetailPage.tsx` - Detail-Ansicht für Leads
+- `LeadEditDialog.tsx` - Edit-Modus
+
+### Automated Jobs (Backend-only, UI in 2.1.7):
 ```java
 @Scheduled(cron = "0 0 1 * * ?")  // 1 AM daily
 void checkProgressWarnings() {
@@ -130,55 +195,38 @@ void checkProgressWarnings() {
 }
 ```
 
-### Transfer API:
-```json
-POST /leads/{id}/transfer
-{
-  "targetUserId": "UUID",
-  "reason": "string",
-  "notifyTarget": true
-}
+### 6. Lead-Transfer & RLS (Verschoben auf Sprint 2.1.7)
+**Begründung:** Team-Management und RLS sind komplex und benötigen eigenen Sprint.
 
-PUT /leads/{id}/transfer/{requestId}
-{
-  "decision": "approve|reject",
-  "comment": "string"
-}
+**Verschobene Features:**
+- Transfer API (POST /leads/{id}/transfer, Genehmigungsprozess)
+- Row-Level-Security Policies (owner_policy, team_policy, admin_policy)
+- Team Management CRUD
+- Fuzzy-Matching & Duplicate Review
+- V258 lead_transfers Tabelle
 
-GET /leads/{id}/transfer/history
-```
+**Cross-Module Dependency:**
+- **Modul 00 Sicherheit:** ADR-003 RLS Design → Sprint 2.1.7
+- **Modul 00 Betrieb:** RLS Performance Monitoring → Sprint 2.1.7
 
-### Matching Configuration:
-```yaml
-matching:
-  thresholds:
-    hard_duplicate: 0.95  # 409 Response
-    soft_duplicate: 0.75  # 202 Response
-    no_match: 0.74        # 201 Response
+## Definition of Done (Sprint 2.1.6)
 
-  weights:
-    email_exact: 1.0
-    phone_normalized: 0.9
-    company_fuzzy: 0.7
-    address_distance: 0.5
-```
+**Backend:**
+- [ ] **Bestandsleads-Migrations-API funktionsfähig** (Dry-Run + Real-Import)
+- [ ] **Lead → Kunde Convert Flow End-to-End** (POST /api/leads/{id}/convert)
+- [ ] **Automated Jobs implementiert** (Progress Warning, Expiry, Pseudonymisierung)
+- [ ] **Backend Tests ≥80% Coverage**
 
-### Frontend Components:
-- `TransferRequestDialog.vue` - Transfer initiieren
-- `TransferApprovalList.vue` - Pending Transfers
-- `DuplicateReviewModal.vue` - Matching Review
-- `TeamManagement.vue` - Team CRUD
-- `MergeHistoryTimeline.vue` - Merge-Historie
+**Frontend:**
+- [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog, RBAC Manager/Admin)
+- [ ] **Pre-Claim UI-Erweiterungen** (Quick-Action, Filter - OPTIONAL)
+- [ ] **Lead Detail-Seite** (Lead-Route `/leads/:id` - OPTIONAL)
+- [ ] **Frontend Tests ≥75% Coverage**
 
-## Definition of Done (Sprint)
-
-- [ ] **RLS Policies aktiv und getestet**
-- [ ] **Transfer-Flow End-to-End funktioniert**
-- [ ] **Fuzzy-Matching mit konfigurierbaren Schwellen**
-- [ ] **Team Management UI fertig**
-- [ ] **Performance-Tests für RLS Impact**
-- [ ] **Security-Audit für Policies**
-- [ ] **ADR-003 als approved markiert**
+**Dokumentation:**
+- [ ] **Migration-API Runbook** (Modul 08, Betrieb)
+- [ ] **Convert-Flow dokumentiert** (BUSINESS_LOGIC)
+- [ ] **Stop-the-Clock RBAC Policy** (Modul 00 Sicherheit)
 
 ## Risiken & Mitigation
 

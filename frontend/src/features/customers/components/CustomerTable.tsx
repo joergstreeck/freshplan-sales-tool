@@ -91,6 +91,22 @@ export function CustomerTable({
     return createdDate > dayAgo;
   };
 
+  // Sprint 2.1.5: Pre-Claim Status Detection (registeredAt === null/undefined)
+  const isPreClaim = (customer: CustomerResponse) => {
+    // @ts-expect-error: registeredAt ist optional in CustomerResponse (Lead-Feld)
+    return !customer.registeredAt && customer.createdAt;
+  };
+
+  // Sprint 2.1.5: Pre-Claim Badge - Tage bis Ablauf (10 Tage ab createdAt)
+  const getPreClaimDaysRemaining = (customer: CustomerResponse) => {
+    if (!customer.createdAt) return null;
+    const createdDate = new Date(customer.createdAt);
+    const now = new Date();
+    const daysSinceCreation = Math.floor((now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+    const daysRemaining = 10 - daysSinceCreation;
+    return daysRemaining > 0 ? daysRemaining : 0;
+  };
+
   const paginatedCustomers = customers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -142,6 +158,23 @@ export function CustomerTable({
                                 }}
                               />
                             )}
+                            {/* Sprint 2.1.5: Pre-Claim Badge */}
+                            {isPreClaim(customer) && (() => {
+                              const daysRemaining = getPreClaimDaysRemaining(customer);
+                              const isUrgent = daysRemaining !== null && daysRemaining < 3;
+                              return (
+                                <Chip
+                                  label={`⏳ Pre-Claim (${daysRemaining}T)`}
+                                  size="small"
+                                  sx={{
+                                    bgcolor: isUrgent ? '#FF6B6B' : '#FFA726',
+                                    color: 'white',
+                                    fontSize: '0.7rem',
+                                    height: 20,
+                                  }}
+                                />
+                              );
+                            })()}
                           </Box>
                         );
                       case 'companyName':

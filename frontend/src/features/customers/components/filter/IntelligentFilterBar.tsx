@@ -26,7 +26,6 @@ import {
   Chip,
   Menu,
   MenuItem,
-  Divider,
 } from '@mui/material';
 import {
   FilterList as FilterIcon,
@@ -35,6 +34,7 @@ import {
   Delete as DeleteIcon,
   ArrowUpward as ArrowUpIcon,
   ArrowDownward as ArrowDownIcon,
+  Clear as ClearIcon,
 } from '@mui/icons-material';
 
 import { useDebounce } from '../../hooks/useDebounce';
@@ -42,7 +42,6 @@ import { useLocalStorage } from '../../hooks/useLocalStorage';
 import { useUniversalSearch } from '../../hooks/useUniversalSearch';
 import { SearchResultsDropdown } from '../search/SearchResultsDropdown';
 import { useNavigate } from 'react-router-dom';
-import { useFocusListStore } from '../../../customer/store/focusListStore';
 
 import type {
   FilterConfig,
@@ -56,6 +55,7 @@ import { FilterDrawer } from './FilterDrawer';
 import { ColumnManagerDrawer } from './ColumnManagerDrawer';
 import { QuickFilters, type QuickFilter } from './QuickFilters';
 import { SearchBar } from './SearchBar';
+import { getSortOptionsForContext, getTableColumnsForContext } from './contextConfig';
 
 interface IntelligentFilterBarProps {
   onFilterChange: (filters: FilterConfig) => void;
@@ -65,6 +65,8 @@ interface IntelligentFilterBarProps {
   filteredCount: number;
   loading?: boolean;
   enableUniversalSearch?: boolean;
+  initialFilters?: FilterConfig; // Optional: Sync external filter state
+  context?: 'customers' | 'leads'; // Lifecycle Context for filtering
 }
 
 /**
@@ -78,6 +80,8 @@ export function IntelligentFilterBar({
   filteredCount,
   loading = false,
   enableUniversalSearch = true,
+  initialFilters,
+  context = 'customers', // Default to customers context
 }: IntelligentFilterBarProps) {
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -93,16 +97,32 @@ export function IntelligentFilterBar({
   const [columnDrawerOpen, setColumnDrawerOpen] = useState(false);
   // const [filterSetName, setFilterSetName] = useState(''); // For future save filter functionality
 
-  const [activeFilters, setActiveFilters] = useState<FilterConfig>({
-    text: '',
-    status: [],
-    industry: [],
-    location: [],
-    revenueRange: null,
-    riskLevel: [],
-    hasContacts: null,
-    lastContactDays: null,
-    tags: [],
+  const [activeFilters, setActiveFilters] = useState<FilterConfig>(() => {
+    // Merge initialFilters with defaults, ensuring null values for unset filters
+    const defaults: FilterConfig = {
+      text: '',
+      status: [],
+      industry: [],
+      location: [],
+      revenueRange: null,
+      riskLevel: [],
+      hasContacts: null,
+      lastContactDays: null,
+      tags: [],
+    };
+
+    if (!initialFilters || Object.keys(initialFilters).length === 0) {
+      return defaults;
+    }
+
+    return {
+      ...defaults,
+      ...initialFilters,
+      // Ensure null values for filters that shouldn't default to false
+      hasContacts: initialFilters.hasContacts ?? null,
+      lastContactDays: initialFilters.lastContactDays ?? null,
+      revenueRange: initialFilters.revenueRange ?? null,
+    };
   });
 
   // Sort state
@@ -139,15 +159,15 @@ export function IntelligentFilterBar({
     minQueryLength: 2,
   });
 
-  // Use focus list store for columns
-  const {
-    tableColumns,
-    toggleColumnVisibility: toggleColumnVisibilityStore,
-    setColumnOrder: setColumnOrderStore,
-    resetTableColumns: _resetTableColumns,
-  } = useFocusListStore();
+  // Context-based column configuration (local state, not persisted globally)
+  const [tableColumns, setTableColumns] = useState(() => getTableColumnsForContext(context));
 
-  // Convert store columns to ColumnConfig format
+  // Sync table columns when context changes
+  React.useEffect(() => {
+    setTableColumns(getTableColumnsForContext(context));
+  }, [context]);
+
+  // Convert table columns to ColumnConfig format
   const columns = useMemo(
     () =>
       tableColumns
@@ -164,7 +184,9 @@ export function IntelligentFilterBar({
   // Column management handlers
   const handleColumnToggle = useCallback(
     (columnId: string) => {
-      toggleColumnVisibilityStore(columnId);
+      setTableColumns(prevColumns =>
+        prevColumns.map(col => (col.id === columnId ? { ...col, visible: !col.visible } : col))
+      );
       // Call parent callback if provided
       if (onColumnChange) {
         const updatedColumns = columns.map(col =>
@@ -173,12 +195,11 @@ export function IntelligentFilterBar({
         onColumnChange(updatedColumns);
       }
     },
-    [toggleColumnVisibilityStore, onColumnChange, columns]
+    [onColumnChange, columns]
   );
 
   const handleColumnMove = useCallback(
     (columnId: string, direction: 'up' | 'down') => {
-      // Arbeite direkt mit tableColumns aus dem Store
       const sortedTableColumns = [...tableColumns].sort((a, b) => a.order - b.order);
       const currentIndex = sortedTableColumns.findIndex(col => col.field === columnId);
 
@@ -189,28 +210,29 @@ export function IntelligentFilterBar({
       // Check bounds
       if (newIndex < 0 || newIndex >= sortedTableColumns.length) return;
 
-      // Erstelle ein neues Array mit allen IDs in der neuen Reihenfolge
-      const newOrder = [...sortedTableColumns];
-      const temp = newOrder[currentIndex];
-      newOrder[currentIndex] = newOrder[newIndex];
-      newOrder[newIndex] = temp;
+      // Swap order values
+      const updatedColumns = sortedTableColumns.map((col, idx) => {
+        if (idx === currentIndex) return { ...col, order: newIndex };
+        if (idx === newIndex) return { ...col, order: currentIndex };
+        return col;
+      });
 
-      // Extrahiere die IDs in der neuen Reihenfolge
-      const newColumnIds = newOrder.map(col => col.id);
-      setColumnOrderStore(newColumnIds);
+      setTableColumns(updatedColumns);
 
       // Call parent callback if provided
       if (onColumnChange) {
-        const updatedColumns = newOrder.map(col => ({
-          id: col.field,
-          label: col.label,
-          visible: col.visible,
-          locked: col.locked,
-        }));
-        onColumnChange(updatedColumns);
+        const formattedColumns = updatedColumns
+          .sort((a, b) => a.order - b.order)
+          .map(col => ({
+            id: col.field,
+            label: col.label,
+            visible: col.visible,
+            locked: col.locked,
+          }));
+        onColumnChange(formattedColumns);
       }
     },
-    [tableColumns, setColumnOrderStore, onColumnChange]
+    [tableColumns, onColumnChange]
   );
 
   // Effect for debounced search
@@ -333,6 +355,40 @@ export function IntelligentFilterBar({
     setSearchTerm('');
     onFilterChange(clearedFilters);
   }, [onFilterChange]);
+
+  // Remove single filter value
+  const handleRemoveFilter = useCallback(
+    (filterKey: keyof FilterConfig, value: string) => {
+      const newFilters = { ...activeFilters };
+
+      if (filterKey === 'status' || filterKey === 'industry' || filterKey === 'riskLevel' || filterKey === 'tags' || filterKey === 'location') {
+        // Array filters
+        const currentArray = newFilters[filterKey] as string[] | undefined;
+        newFilters[filterKey] = currentArray?.filter(v => v !== value) || [];
+      }
+
+      setActiveFilters(newFilters);
+      onFilterChange(newFilters);
+    },
+    [activeFilters, onFilterChange]
+  );
+
+  // Remove entire filter group
+  const handleRemoveFilterGroup = useCallback(
+    (filterKey: keyof FilterConfig) => {
+      const newFilters = { ...activeFilters };
+
+      if (filterKey === 'status' || filterKey === 'industry' || filterKey === 'riskLevel' || filterKey === 'tags' || filterKey === 'location') {
+        newFilters[filterKey] = [];
+      } else if (filterKey === 'revenueRange' || filterKey === 'hasContacts' || filterKey === 'lastContactDays') {
+        newFilters[filterKey] = null;
+      }
+
+      setActiveFilters(newFilters);
+      onFilterChange(newFilters);
+    },
+    [activeFilters, onFilterChange]
+  );
 
   // Save current filter set
   // TODO: Implement save filter functionality
@@ -478,13 +534,122 @@ export function IntelligentFilterBar({
               Spalten
             </Button>
           </Tooltip>
+
+          {/* Reset Button - nur sichtbar wenn Filter aktiv */}
+          {activeFilterCount > 0 && (
+            <Tooltip title="Alle Filter zurücksetzen">
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<ClearIcon />}
+                onClick={clearAllFilters}
+              >
+                Zurücksetzen
+              </Button>
+            </Tooltip>
+          )}
         </Stack>
 
-        {/* Quick Filters */}
-        <QuickFilters
-          activeQuickFilters={activeQuickFilters}
-          onToggleQuickFilter={toggleQuickFilter}
-        />
+        {/* Quick Filters & Structured Filter Chips */}
+        <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+          <QuickFilters
+            activeQuickFilters={activeQuickFilters}
+            onToggleQuickFilter={toggleQuickFilter}
+            context={context}
+          />
+
+          {/* Status Filter Chips */}
+          {activeFilters.status && activeFilters.status.length > 0 && (
+            <>
+              {activeFilters.status.map(status => (
+                <Chip
+                  key={status}
+                  label={`Status: ${status}`}
+                  onDelete={() => handleRemoveFilter('status', status)}
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                />
+              ))}
+            </>
+          )}
+
+          {/* Industry Filter Chips */}
+          {activeFilters.industry && activeFilters.industry.length > 0 && (
+            <>
+              {activeFilters.industry.map(industry => (
+                <Chip
+                  key={industry}
+                  label={`Branche: ${industry}`}
+                  onDelete={() => handleRemoveFilter('industry', industry)}
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                />
+              ))}
+            </>
+          )}
+
+          {/* Risk Level Filter Chips */}
+          {activeFilters.riskLevel && activeFilters.riskLevel.length > 0 && (
+            <>
+              {activeFilters.riskLevel.map(level => (
+                <Chip
+                  key={level}
+                  label={`Risiko: ${level}`}
+                  onDelete={() => handleRemoveFilter('riskLevel', level)}
+                  size="small"
+                  color="primary"
+                  variant="filled"
+                />
+              ))}
+            </>
+          )}
+
+          {/* Has Contacts Filter Chip */}
+          {activeFilters.hasContacts !== null && activeFilters.hasContacts !== undefined && (
+            <Chip
+              label={activeFilters.hasContacts ? 'Mit Kontakten' : 'Ohne Kontakte'}
+              onDelete={() => handleRemoveFilterGroup('hasContacts')}
+              size="small"
+              color="primary"
+              variant="filled"
+            />
+          )}
+
+          {/* Last Contact Days Filter Chip */}
+          {activeFilters.lastContactDays && (
+            <Chip
+              label={`Kein Kontakt seit ${activeFilters.lastContactDays} Tagen`}
+              onDelete={() => handleRemoveFilterGroup('lastContactDays')}
+              size="small"
+              color="primary"
+              variant="filled"
+            />
+          )}
+
+          {/* Revenue Range Filter Chip */}
+          {activeFilters.revenueRange && (
+            <Chip
+              label={`Umsatz: ${activeFilters.revenueRange.min || 0}€ - ${activeFilters.revenueRange.max || '∞'}€`}
+              onDelete={() => handleRemoveFilterGroup('revenueRange')}
+              size="small"
+              color="primary"
+              variant="filled"
+            />
+          )}
+
+          {/* Created Days Filter Chip */}
+          {activeFilters.createdDays && (
+            <Chip
+              label={`Neu (letzte ${activeFilters.createdDays} Tage)`}
+              onDelete={() => handleRemoveFilterGroup('createdDays')}
+              size="small"
+              color="primary"
+              variant="filled"
+            />
+          )}
+        </Stack>
 
         {/* Active Filters Display */}
         {(activeFilterCount > 0 || searchTerm) && (
@@ -547,6 +712,7 @@ export function IntelligentFilterBar({
         onFiltersChange={setActiveFilters}
         onApply={applyFilters}
         onClear={clearAllFilters}
+        context={context}
       />
 
       {/* Column Manager Drawer */}
@@ -558,38 +724,19 @@ export function IntelligentFilterBar({
         onColumnMove={handleColumnMove}
       />
 
-      {/* Sort Menu */}
+      {/* Sort Menu - Context-based */}
       <Menu
         anchorEl={sortMenuAnchor}
         open={Boolean(sortMenuAnchor)}
         onClose={() => setSortMenuAnchor(null)}
       >
-        <MenuItem onClick={() => handleSort('name')}>
-          Name {currentSort.field === 'name' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
-        <MenuItem onClick={() => handleSort('status')}>
-          Status {currentSort.field === 'status' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
-        <MenuItem onClick={() => handleSort('revenue')}>
-          Umsatz {currentSort.field === 'revenue' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
-        <MenuItem onClick={() => handleSort('riskLevel')}>
-          Risiko{' '}
-          {currentSort.field === 'riskLevel' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
-        <MenuItem onClick={() => handleSort('lastContact')}>
-          Letzter Kontakt{' '}
-          {currentSort.field === 'lastContact' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={() => handleSort('created')}>
-          Erstellt{' '}
-          {currentSort.field === 'created' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
-        <MenuItem onClick={() => handleSort('modified')}>
-          Geändert{' '}
-          {currentSort.field === 'modified' && (currentSort.direction === 'asc' ? '↑' : '↓')}
-        </MenuItem>
+        {getSortOptionsForContext(context).map(option => (
+          <MenuItem key={option.field} onClick={() => handleSort(option.field)}>
+            {option.icon && `${option.icon} `}
+            {option.label}{' '}
+            {currentSort.field === option.field && (currentSort.direction === 'asc' ? '↑' : '↓')}
+          </MenuItem>
+        ))}
       </Menu>
     </Box>
   );
