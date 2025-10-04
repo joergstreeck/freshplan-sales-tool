@@ -1,8 +1,8 @@
 package de.freshplan.modules.leads.domain;
 
 /**
- * Types of activities that can be tracked for leads.
- * Sprint 2.1.5: Updated with countsAsProgress flag for progress tracking.
+ * Types of activities that can be tracked for leads. Sprint 2.1.5: Updated with countsAsProgress
+ * flag for progress tracking.
  *
  * @see V258 Migration - Database constraint for countsAsProgress
  */

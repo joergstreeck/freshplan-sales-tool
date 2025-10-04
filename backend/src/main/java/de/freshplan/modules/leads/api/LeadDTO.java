@@ -65,7 +65,8 @@ public class LeadDTO {
   public LocalDateTime progressWarningSentAt;
   public LocalDateTime progressDeadline; // Sprint 2.1.5: Pre-Claim Badge (createdAt + 10 Tage)
 
-  // Calculated Protection Fields (not persisted, calculated from protectionStartAt + protectionMonths)
+  // Calculated Protection Fields (not persisted, calculated from protectionStartAt +
+  // protectionMonths)
   public LocalDateTime protectionUntil; // Sprint 2.1.5: Pre-Claim Badge (registeredAt + 6 Monate)
 
   // Stop-the-clock feature
