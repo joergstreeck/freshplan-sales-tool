@@ -1,10 +1,17 @@
+# TEMPORARILY DISABLED: TestDataBuilder conflicts between src/main and src/test
+# See issue: https://github.com/joergstreeck/freshplan-sales-tool/issues/130
+# This entire workflow is disabled until the TestDataBuilder refactoring is complete
+
 name: Worktree CI
 
 on:
-  push:
-    branches: [ 'feature/*' ]
-  pull_request:
-    branches: [ 'feature/*' ]
+  workflow_dispatch: # Manual trigger only
+
+# Disabled automatic triggers:
+#  push:
+#    branches: [ 'feature/*' ]
+#  pull_request:
+#    branches: [ 'feature/*' ]
 
 jobs:
   backend:
