@@ -221,10 +221,11 @@ describe('PR4 Enterprise Test Suite', () => {
 
     it('renders and shows loading state', async () => {
       render(<MiniAuditTimeline {...auditProps} />, { wrapper: createWrapper() });
-      expect(screen.getByRole('progressbar')).toBeInTheDocument();
+      // MiniAuditTimeline uses Skeleton for loading, not CircularProgress
+      expect(document.querySelector('.MuiSkeleton-root')).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        expect(document.querySelector('.MuiSkeleton-root')).not.toBeInTheDocument();
       });
     });
 

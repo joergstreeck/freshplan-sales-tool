@@ -113,6 +113,6 @@ describe('App', () => {
 
     const userManagementLink = screen.getByRole('link', { name: /benutzerverwaltung öffnen/i });
     expect(userManagementLink).toBeInTheDocument();
-    expect(userManagementLink).toHaveAttribute('href', '/users');
+    expect(userManagementLink).toHaveAttribute('href', '/admin/users');
   });
 });
