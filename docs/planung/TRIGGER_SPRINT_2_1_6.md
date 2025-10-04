@@ -41,6 +41,23 @@ Implementierung von Bestandsleads-Migrations-API (Modul 08), Lead → Kunde Conv
 
 ## User Stories
 
+### 0. Lead Stage Enum Refactoring (Issue #125) - **PR #131 PRIORITY**
+**Begründung:** Type Safety für Lead Stage - Verhindert Magic Numbers, verbessert Code-Qualität
+
+**Akzeptanzkriterien:**
+- ✅ Enum LeadStage erstellt mit 3 Values (VORMERKUNG=0, REGISTRIERUNG=1, QUALIFIZIERT=2)
+- ✅ Lead.stage Typ geändert: `Short` → `LeadStage` mit `@Enumerated(EnumType.ORDINAL)`
+- ✅ LeadProtectionService.canTransitionStage() nutzt Enum-Methoden (LeadStage.canTransitionTo())
+- ✅ Alle Tests grün (24 Unit Tests + Integration Tests)
+- ✅ JSON Serialization funktioniert (0/1/2 in API, VORMERKUNG/REGISTRIERUNG/QUALIFIZIERT in UI)
+- ✅ KEINE DB-Migration erforderlich (ORDINAL nutzt 0,1,2)
+
+**Aufwand:** 2-3h (Low Complexity - reine Code-Refactoring, keine DB-Änderungen)
+
+**Referenzen:**
+- Issue: https://github.com/joergstreeck/freshplan-sales-tool/issues/125
+- Code Review: Gemini Comment (Medium Priority)
+
 ### 1. Lead-Transfer Workflow (verschoben aus 2.1.5)
 **Akzeptanzkriterien:**
 - V258: lead_transfers Tabelle

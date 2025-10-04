@@ -408,6 +408,15 @@
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
 - **Sprint 2.1.6 Implementation (Start 12.10.2025):**
+  - **PRIORITY PR #130:** TestDataBuilder Refactoring (BLOCKER für Worktree CI)
+    - Consolidation zu single TestDataFactory pattern
+    - src/main vs src/test Konflikt auflösen
+    - Worktree CI re-enablen
+  - **PRIORITY PR #131:** Lead Stage Enum (Issue #125, 2-3h)
+    - LeadStage Enum: VORMERKUNG(0), REGISTRIERUNG(1), QUALIFIZIERT(2)
+    - Lead.stage: Short → LeadStage (@Enumerated(EnumType.ORDINAL))
+    - LeadProtectionService: canTransitionTo() Enum-basiert
+    - KEINE DB-Migration nötig (ORDINAL = 0,1,2)
   - **MANDATORY Features:**
     - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
     - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
