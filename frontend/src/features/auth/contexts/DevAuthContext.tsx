@@ -83,11 +83,18 @@ const DevAuthContext = createContext<DevAuthContextType | undefined>(undefined);
 export const DevAuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Check sessionStorage for existing auth
   const storedUser = sessionStorage.getItem('dev-auth-user');
-  const initialUser = storedUser ? JSON.parse(storedUser) : null;
+  const initialUser = storedUser ? JSON.parse(storedUser) : mockUsers.admin; // Auto-login as admin in dev
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(!!initialUser);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(true); // Always authenticated in dev
   const [user, setUser] = useState<DevUser | null>(initialUser);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // Auto-store admin user on first load
+  React.useEffect(() => {
+    if (!storedUser) {
+      sessionStorage.setItem('dev-auth-user', JSON.stringify(mockUsers.admin));
+    }
+  }, [storedUser]);
 
   const login = useCallback(async (username: string) => {
     setIsLoading(true);

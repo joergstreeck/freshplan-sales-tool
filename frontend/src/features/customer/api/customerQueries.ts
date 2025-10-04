@@ -45,3 +45,30 @@ export const useCustomerSearch = (query: string, page = 0, size = 20, enabled = 
     staleTime: 1000 * 60 * 2, // 2 minutes for search results
   });
 };
+
+//Server-Side Filtering with advanced filters
+export const useCustomerSearchAdvanced = (
+  searchRequest: {
+    globalSearch?: string;
+    filters?: Array<{
+      field: string;
+      operator: string;
+      value: string | string[];
+    }>;
+    sort?: {
+      field: string;
+      direction: 'ASC' | 'DESC';
+    };
+  },
+  page = 0,
+  size = 50,
+  enabled = true
+) => {
+  return useQuery({
+    queryKey: [...customerKeys.all, 'advanced-search', searchRequest, page, size],
+    queryFn: () => customerApi.searchCustomersAdvanced(searchRequest, page, size),
+    enabled,
+    staleTime: 1000 * 30, // 30 seconds
+    gcTime: 1000 * 60 * 5, // 5 minutes
+  });
+};

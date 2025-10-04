@@ -22,6 +22,14 @@ vi.mock('../../features/customer/api/customerQueries', () => ({
     isLoading: false,
     refetch: vi.fn(),
   })),
+  useCustomerSearchAdvanced: vi.fn(() => ({
+    data: { content: [], totalElements: 0, totalPages: 0 },
+    isLoading: false,
+    isFetching: false,
+    refetch: vi.fn(),
+    fetchNextPage: vi.fn(),
+    hasNextPage: false,
+  })),
 }));
 
 vi.mock('../../contexts/AuthContext', () => ({

@@ -14,9 +14,172 @@
     "empty": "Keine Leads vorhanden."
   },
   "errors": {
-    "duplicateEmail": "Es existiert bereits ein Lead mit dieser E-Mail.",
+    "duplicateEmail": "Lead mit dieser E-Mail existiert bereits.",
     "nameRequired": "Name ist erforderlich",
     "nameMinLength": "Name muss mindestens 2 Zeichen haben",
     "emailInvalid": "Bitte eine gültige E-Mail eingeben"
+  },
+  "wizard": {
+    "title": "Neuer Lead (Progressive Profiling)",
+    "steps": {
+      "company": "Vormerkung",
+      "contact": "Registrierung",
+      "business": "Qualifizierung"
+    },
+    "stage0": {
+      "description": "Erfassen Sie grundlegende Firmendaten ohne personenbezogene Informationen.",
+      "companyName": "Firmenname",
+      "companyNameRequired": "Firmenname ist Pflicht",
+      "city": "Stadt",
+      "postalCode": "PLZ",
+      "businessType": "Branche",
+      "businessTypePlaceholder": "Bitte wählen",
+      "source": "Herkunft",
+      "sourcePlaceholder": "Wie wurde der Lead generiert?",
+      "sourceRequired": "Quelle ist erforderlich",
+      "firstContactTitle": "Erstkontakt dokumentieren",
+      "firstContactTitleRequired": "Erstkontakt dokumentieren",
+      "firstContactTitleOptional": "Notizen / Erstkontakt (optional)",
+      "firstContactHint": "Bei MESSE/TELEFON: Pflichtfeld (Schutz startet sofort). Bei anderen Quellen: Optional (Vormerkung möglich).",
+      "firstContactHintRequired": "Pflichtfeld - dokumentieren Sie den Erstkontakt (Messestand/Telefonat)",
+      "firstContactHintOptional": "Optionales Feld für Notizen (z.B. Empfehlungsgeber, Quelle, Erstgespräch)",
+      "firstContactChannel": "Kanal",
+      "firstContactChannelPlaceholder": "Kanal wählen...",
+      "firstContactChannelRequired": "Kanal ist erforderlich",
+      "firstContactDate": "Zeitpunkt",
+      "firstContactDateRequired": "Zeitpunkt ist erforderlich",
+      "firstContactNotes": "Notizen",
+      "firstContactNotesMin": "Notizen müssen mindestens 10 Zeichen lang sein",
+      "firstContactNotesHelper": "Mindestens 10 Zeichen",
+      "firstContactRequired": "Erstkontakt ist bei dieser Quelle erforderlich (MESSE/TELEFON)"
+    },
+    "stage1": {
+      "description": "Erfassen Sie Kontaktdaten und dokumentieren Sie ggf. den Erstkontakt.",
+      "firstName": "Vorname",
+      "lastName": "Nachname",
+      "email": "E-Mail",
+      "phone": "Telefon",
+      "contactRequired": "Mind. E-Mail oder Telefon erforderlich"
+    },
+    "stage2": {
+      "description": "Erweiterte Geschäftsdaten für die Qualifizierung.",
+      "estimatedVolume": "Geschätztes Volumen (€/Monat)",
+      "kitchenSize": "Küchengröße",
+      "kitchenSizePlaceholder": "Bitte wählen",
+      "employeeCount": "Mitarbeiterzahl",
+      "website": "Website",
+      "websitePlaceholder": "https://example.com",
+      "industry": "Branche (Details)"
+    },
+    "businessTypes": {
+      "restaurant": "Restaurant",
+      "hotel": "Hotel",
+      "catering": "Catering",
+      "canteen": "Kantine",
+      "other": "Sonstige"
+    },
+    "kitchenSizes": {
+      "small": "Klein (<10 Plätze)",
+      "medium": "Mittel (10-50 Plätze)",
+      "large": "Groß (>50 Plätze)"
+    },
+    "sources": {
+      "messe": "Messe / Event",
+      "empfehlung": "Empfehlung / Partner",
+      "telefon": "Cold Call / Telefon",
+      "webFormular": "Web-Formular",
+      "partner": "Partner-API",
+      "sonstige": "Sonstige"
+    },
+    "firstContactChannels": {
+      "messe": "Messestand / Event",
+      "phone": "Telefonat",
+      "email": "E-Mail",
+      "referral": "Empfehlung / Vorstellung",
+      "other": "Sonstige"
+    },
+    "actions": {
+      "cancel": "Abbrechen",
+      "back": "Zurück",
+      "next": "Weiter",
+      "create": "Lead erstellen",
+      "saving": "Speichert...",
+      "saveVormerkung": "Vormerkung speichern",
+      "saveRegistrierung": "Registrierung speichern",
+      "saveQualifizierung": "Qualifizierung speichern"
+    },
+    "validation": {
+      "companyNameMin": "Firmenname muss mindestens 2 Zeichen lang sein",
+      "emailInvalid": "Ungültige E-Mail-Adresse",
+      "volumePositive": "Volumen muss positiv sein",
+      "employeePositive": "Mitarbeiterzahl muss positiv sein",
+      "validationError": "Validierungsfehler"
+    }
+  },
+  "protection": {
+    "status": {
+      "protected": "Geschützt",
+      "warning": "Warnung",
+      "warningWithDays": "Warnung ({{count}}T)",
+      "expired": "Abgelaufen",
+      "unknown": "Unbekannt"
+    },
+    "tooltip": {
+      "protected": "Lead ist geschützt",
+      "protectedUntil": "Schutz bis:",
+      "progressDeadline": "Progress-Deadline:",
+      "remaining": "Verbleibend:",
+      "daysRemaining": "{{count}} Tage",
+      "warning": "Lead-Schutz läuft bald ab!",
+      "expired": "Lead-Schutz abgelaufen!",
+      "contract": "Vertrag §3.2: 6 Monate ab Registrierung"
+    },
+    "aria": {
+      "protected": "Lead-Schutzstatus: Geschützt",
+      "warning": "Lead-Schutzstatus: Warnung",
+      "expired": "Lead-Schutzstatus: Abgelaufen"
+    }
+  },
+  "activityTypes": {
+    "QUALIFIED_CALL": "Qualifiziertes Gespräch",
+    "MEETING": "Meeting vor Ort",
+    "DEMO": "Produktdemonstration",
+    "ROI_PRESENTATION": "ROI-Präsentation",
+    "SAMPLE_SENT": "Sample-Box versendet",
+    "NOTE": "Notiz",
+    "FOLLOW_UP": "Follow-up",
+    "EMAIL": "E-Mail",
+    "CALL": "Anruf",
+    "SAMPLE_FEEDBACK": "Sample-Feedback",
+    "FIRST_CONTACT_DOCUMENTED": "Erstkontakt dokumentiert",
+    "EMAIL_RECEIVED": "E-Mail empfangen",
+    "LEAD_ASSIGNED": "Lead zugewiesen"
+  },
+  "timeline": {
+    "title": "Aktivitäten",
+    "filterAll": "Alle",
+    "filterProgress": "Progress",
+    "filterOther": "Sonstige",
+    "empty": "Keine Aktivitäten vorhanden",
+    "progressActivity": "Progress-Aktivität",
+    "regularActivity": "Standard-Aktivität",
+    "warning": {
+      "label": "Progress-Warnung:",
+      "deadline": "Deadline am",
+      "action": "Bitte substanzielle Aktivität durchführen!"
+    },
+    "summary": {
+      "lastProgress": "Letzte Progress-Aktivität:",
+      "daysAgo": "vor {{count}} Tagen",
+      "noProgress": "Keine Progress-Aktivität vorhanden",
+      "progressDeadline": "Progress-Deadline:"
+    },
+    "labels": {
+      "progress": "Progress",
+      "latest": "Neueste",
+      "outcome": "Ergebnis:",
+      "nextAction": "Nächste Aktion:",
+      "until": "bis"
+    }
   }
 }

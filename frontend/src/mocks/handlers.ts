@@ -1,8 +1,8 @@
 import { http, HttpResponse } from 'msw';
 // import { calculatorHandlers } from './calculatorHandlers';
 
-// Mock lead data
-const mockLeads = [
+// Mock lead data (unused - real backend used)
+const _mockLeads = [
   {
     id: '1',
     name: 'Demo Restaurant Berlin',
@@ -151,55 +151,55 @@ export const handlers = [
     });
   }),
 
-  // Lead API endpoints
-  http.get('http://localhost:8080/api/leads', () => {
-    return HttpResponse.json(mockLeads);
-  }),
+  // Lead API endpoints - DEAKTIVIERT, verwende echtes Backend (Sprint 2.1.5)
+  // http.get('http://localhost:8080/api/leads', () => {
+  //   return HttpResponse.json(mockLeads);
+  // }),
 
-  http.post('http://localhost:8080/api/leads', async ({ request }) => {
-    const newLead = (await request.json()) as { name: string; email?: string };
+  // http.post('http://localhost:8080/api/leads', async ({ request }) => {
+  //   const newLead = (await request.json()) as { name: string; email?: string };
 
-    // Validate required fields
-    if (!newLead.name?.trim()) {
-      return HttpResponse.json(
-        {
-          title: 'Validation Failed',
-          status: 400,
-          detail: 'Name is required',
-          errors: {
-            name: ['Name ist erforderlich'],
-          },
-        },
-        { status: 400 }
-      );
-    }
+  //   // Validate required fields
+  //   if (!newLead.name?.trim()) {
+  //     return HttpResponse.json(
+  //       {
+  //         title: 'Validation Failed',
+  //         status: 400,
+  //         detail: 'Name is required',
+  //         errors: {
+  //           name: ['Name ist erforderlich'],
+  //         },
+  //       },
+  //       { status: 400 }
+  //     );
+  //   }
 
-    // Check for duplicate email (case-insensitive)
-    const norm = (s?: string | null) => (s ?? '').trim().toLowerCase();
-    const isDup = newLead.email && mockLeads.some(l => norm(l.email) === norm(newLead.email));
-    if (isDup) {
-      return HttpResponse.json(
-        {
-          title: 'Duplicate lead',
-          status: 409,
-          detail: 'Lead mit dieser E-Mail existiert bereits.',
-          errors: { email: ['E-Mail ist bereits vergeben'] },
-        },
-        { status: 409 }
-      );
-    }
+  //   // Check for duplicate email (case-insensitive)
+  //   const norm = (s?: string | null) => (s ?? '').trim().toLowerCase();
+  //   const isDup = newLead.email && mockLeads.some(l => norm(l.email) === norm(newLead.email));
+  //   if (isDup) {
+  //     return HttpResponse.json(
+  //       {
+  //         title: 'Duplicate lead',
+  //         status: 409,
+  //         detail: 'Lead mit dieser E-Mail existiert bereits.',
+  //         errors: { email: ['E-Mail ist bereits vergeben'] },
+  //       },
+  //       { status: 409 }
+  //     );
+  //   }
 
-    // Create new lead
-    const lead = {
-      id: String(Date.now()), // Simple ID generation
-      name: newLead.name.trim(),
-      email: newLead.email?.trim() || null,
-      createdAt: new Date().toISOString(),
-    };
+  //   // Create new lead
+  //   const lead = {
+  //     id: String(Date.now()), // Simple ID generation
+  //     name: newLead.name.trim(),
+  //     email: newLead.email?.trim() || null,
+  //     createdAt: new Date().toISOString(),
+  //   };
 
-    mockLeads.push(lead);
-    return HttpResponse.json(lead, { status: 201 });
-  }),
+  //   mockLeads.push(lead);
+  //   return HttpResponse.json(lead, { status: 201 });
+  // }),
 
   // Calculator API handlers - DEAKTIVIERT, verwende echtes Backend
   // ...calculatorHandlers,

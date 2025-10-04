@@ -83,17 +83,16 @@ export class ApiClient {
 
       return await response.json();
     } catch (_error) {
-      void _error;
       clearTimeout(timeoutId);
       this.abortControllers.delete(requestKey);
 
       // Retry logic
-      if (retry > 0 && this.shouldRetry(error)) {
+      if (retry > 0 && this.shouldRetry(_error)) {
         await this.delay(1000 * (3 - retry)); // Exponential backoff
         return this.request<T>(endpoint, { ...config, retry: retry - 1 });
       }
 
-      throw this.handleError(error);
+      throw this.handleError(_error);
     }
   }
 

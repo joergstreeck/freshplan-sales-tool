@@ -3,10 +3,8 @@ name: PR Pipeline (Fast)
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths-ignore:
-      - 'docs/**'
-      - '*.md'
-      - '.gitignore'
+    # Removed paths-ignore to ensure this always runs for all PRs
+    # Performance: This pipeline is optimized to run in <10 minutes
 
 jobs:
   quick-validation:

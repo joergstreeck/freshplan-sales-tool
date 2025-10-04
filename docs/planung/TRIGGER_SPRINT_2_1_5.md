@@ -2,10 +2,12 @@
 sprint_id: "2.1.5"
 title: "Lead Protection & Progressive Profiling (B2B)"
 doc_type: "konzept"
-status: "in_progress"
+status: "partial_complete"
 owner: "team/leads-backend"
 date_start: "2025-10-05"
-date_end: "2025-10-11"
+date_end: "2025-10-04"
+completion_date: "2025-10-04"
+gaps: ["zwei_felder_loesung", "pre_claim_badge", "backend_dto"]
 modules: ["02_neukundengewinnung"]
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
@@ -32,17 +34,47 @@ updated: "2025-09-28"
 > - CONCURRENTLY-Regeln für Production
 > - Nächste Nummer: `./scripts/get-next-migration.sh`
 >
+> **🎨 FRONTEND DESIGN SYSTEM BEACHTEN!**
+> Vor Frontend-Arbeit IMMER [`/docs/planung/grundlagen/DESIGN_SYSTEM.md`](grundlagen/DESIGN_SYSTEM.md) lesen!
+> - **FreshFoodz CI:** #94C456 (Green), #004F7B (Blue), Antonio Bold, Poppins
+> - **UI-Framework:** MUI v7 + Emotion (KEIN Tailwind!)
+> - **SmartLayout:** Intelligente Content-Breiten (Tables 100%, Forms 800px)
+> - **Accessibility:** WCAG 2.1 AA/AAA Standards
+> - **Sprache:** Deutsch (Dashboard → Übersicht, Save → Speichern)
+> - **AI-Kontext:** [`CRM_AI_CONTEXT_SCHNELL.md`](CRM_AI_CONTEXT_SCHNELL.md) für kompakten Überblick
+>
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`
 > 2. **Modul-Start (_index.md) → Status prüfen**
 > 3. **Backend:** V255-V257 Migrations für Lead Protection (siehe MIGRATIONS.md)
-> 4. **Frontend:** Progressive Profiling UI (3 Stufen)
+> 4. **Frontend:** Progressive Profiling UI (3 Stufen) - **Design System beachten!**
 > 5. **Shared:** Vertragliche Anforderungen dokumentieren
 > 6. **Compliance:** Data-Retention-Plan umsetzen
 
 ## Sprint-Ziel
 
 Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Regel) und Progressive Profiling für B2B-Lead-Erfassung.
+
+## ⚠️ Sprint-Status: PARTIAL COMPLETE (04.10.2025)
+
+**✅ ERLEDIGT:**
+- ✅ Backend V255-V257 Migrations (Progress Tracking, Stage, Protection Functions)
+- ✅ LeadProtectionService mit 24 Unit Tests
+- ✅ LeadWizard (3 Stages: Vormerkung, Registrierung, Qualifizierung)
+- ✅ Context-Prop Architecture (CustomersPageV2 mit context='leads')
+- ✅ Migration V259 (Removed ui_leads_company_city unique constraint)
+- ✅ Dokumentation vollständig (BUSINESS_LOGIC, PRE_CLAIM_LOGIC, FRONTEND_DELTA, SUMMARY)
+- ✅ Zwei-Felder-Lösung **dokumentiert** (Notizen + Erstkontakt getrennt)
+
+**❌ GAPS (Code TODO, Doku COMPLETE):**
+1. **Zwei-Felder-Lösung** - Separates Notizen-Feld + Checkbox-gesteuerter Erstkontakt-Block (FRONTEND_DELTA.md:52-88)
+2. **Pre-Claim Badge** - "⏳ Pre-Claim (X Tage)" Badge in CustomerTable (PRE_CLAIM_LOGIC.md:420-432)
+3. **Backend DTO** - registeredAt, protectedUntil, progressDeadline Felder (PRE_CLAIM_LOGIC.md:306-334)
+
+**🔄 VERSCHOBEN AUF SPRINT 2.1.6:**
+- Code-Implementierung der 3 Gaps (~4h Aufwand)
+- Quick-Action "Erstkontakt nachtragen" (~2h Aufwand)
+- Pre-Claim Filter in IntelligentFilterBar (~1h Aufwand)
 
 ## User Stories
 
@@ -92,7 +124,7 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 
 ### Backend Changes:
 ```sql
--- V249: Lead Protection Tables
+-- V249 wurde zu 10012: Lead Protection Tables
 CREATE TABLE lead_protection (
   lead_id, registered_at, protection_until,
   last_progress_at, status, stop_the_clock_reason
@@ -156,6 +188,11 @@ DELETE /lead-protection/{leadId}/personal-data
 - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
 - Tests: Integration Tests für Progressive Profiling Flow
 - **Status:** PENDING
+
+**Logo-Status (Bereits optimiert ✅):**
+- `/cockpit` Route verwendet MainLayoutV2 + HeaderV2 (Logo.tsx 19 KB) ✅
+- SalesCockpitV2 hat KEINEN eigenen CockpitHeader ✅
+- Alle aktiven Routen verwenden HeaderV2 mit optimiertem Logo ✅
 
 **Verschoben auf Sprint 2.1.6:**
 - V258 lead_transfers Tabelle

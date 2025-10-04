@@ -3,7 +3,16 @@ import type { Lead, Problem } from './types';
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
 function authHeaders() {
-  // Platzhalter: JWT aus bestehender App übernehmen, falls vorhanden
+  // Dev Mode: Use dev-auth-user from sessionStorage (bypass Keycloak)
+  const devUser = sessionStorage.getItem('dev-auth-user');
+  if (devUser) {
+    const user = JSON.parse(devUser);
+    // Create mock JWT for dev mode (Backend expects JWT in dev mode)
+    const mockToken = `dev.${user.id}.${user.username}`;
+    return { Authorization: `Bearer ${mockToken}` };
+  }
+
+  // Production: JWT aus localStorage (Keycloak)
   const token = localStorage.getItem('token');
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
@@ -14,7 +23,9 @@ export async function listLeads(): Promise<Lead[]> {
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);
-  return res.json();
+  const json = await res.json();
+  // Backend returns PaginatedResponse { data: Lead[], page, size, total }
+  return json.data || [];
 }
 
 export async function createLead(payload: { name: string; email?: string }) {

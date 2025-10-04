@@ -4,7 +4,6 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import io.quarkus.arc.Arc;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -27,12 +26,9 @@ public class ContactBuilder {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject EntityManager entityManager;
+  @Inject ContactRepository customerContactRepository;
 
-  // Repository wird nur bei persist() verwendet, daher lazy loading
-  private ContactRepository getContactRepository() {
-    return Arc.container().instance(ContactRepository.class).get();
-  }
+  @Inject EntityManager entityManager;
 
   // Default values
   private Customer customer;
@@ -285,9 +281,8 @@ public class ContactBuilder {
   @Transactional
   public CustomerContact persist() {
     CustomerContact contact = build();
-    ContactRepository contactRepo = getContactRepository();
-    if (contactRepo != null) {
-      contactRepo.persist(contact);
+    if (customerContactRepository != null) {
+      customerContactRepository.persist(contact);
     } else {
       // Fallback via EntityManager
       entityManager.persist(contact);
@@ -317,9 +312,8 @@ public class ContactBuilder {
             .build();
 
     // Contact persistieren
-    ContactRepository contactRepo = getContactRepository();
-    if (contactRepo != null) {
-      contactRepo.persistAndFlush(contact);
+    if (customerContactRepository != null) {
+      customerContactRepository.persistAndFlush(contact);
     } else {
       // Fallback via EntityManager
       entityManager.persist(contact);
@@ -348,9 +342,8 @@ public class ContactBuilder {
                     + "@test.com")
             .build();
 
-    ContactRepository contactRepo = getContactRepository();
-    if (contactRepo != null) {
-      contactRepo.persistAndFlush(contact);
+    if (customerContactRepository != null) {
+      customerContactRepository.persistAndFlush(contact);
     } else {
       // Fallback via EntityManager
       entityManager.persist(contact);

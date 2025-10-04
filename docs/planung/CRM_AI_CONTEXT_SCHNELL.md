@@ -82,6 +82,107 @@ COMPETITIVE-DIFFERENTIATORS:
 
 ---
 
+## 🎨 **FRONTEND THEME V2 – FRESHFOODZ CI**
+
+```yaml
+CORPORATE-DESIGN:
+  Primary-Colors:
+    Main-Green: #94C456 (FreshFoodz Green - Primary Brand Color)
+    Corporate-Blue: #004F7B (Vertrauenswürdig, Professional)
+
+  Typography:
+    Headlines: Antonio Bold (Impactful, Modern, Attention-grabbing)
+    Body-Text: Poppins (Readable, Professional, Web-optimiert)
+
+  UI-Pattern-Usage:
+    Buttons-Primary: #94C456 (Call-to-Action)
+    Navigation: #004F7B (Header, Sidebar)
+    Alerts-Success: #94C456 (Lead converted, Sample shipped)
+    Alerts-Info: #004F7B (Follow-up reminder, Territory info)
+
+  Accessibility:
+    Contrast-Ratio: AAA-Standard (WCAG 2.1) - alle Text-/Background-Kombinationen
+    Font-Sizes: Minimum 14px Body, 16px+ Interactive Elements
+    Mobile-First: Responsive Design für Außendienst-Nutzung
+
+STYLING-TECH-STACK:
+  UI-Framework: MUI v7 (Material-UI) - Primary Component Library
+  CSS-Engine: Emotion (CSS-in-JS) - @emotion/react + @emotion/styled
+  Utilities:
+    - tailwind-merge (KEIN Tailwind CSS! Nur className merge utility)
+    - class-variance-authority (Component Variants Pattern)
+    - clsx (Conditional Classes)
+  Icon-System:
+    - @mui/icons-material (Primary Icons)
+    - lucide-react (Secondary Icon Set)
+
+  Theme-Customization:
+    Location: /frontend/src/theme/freshfoodz-theme.ts
+    Pattern: MUI createTheme() mit FreshFoodz-Overrides
+    Colors: MUI Palette Override für primary/secondary
+    Components: MUI Component-Overrides für Buttons/Cards/Navigation
+
+COLOR-SPECIFICS (RGB für KI-Genauigkeit):
+  Primary-Green: #94C456 → rgb(148, 196, 86)
+  Corporate-Blue: #004F7B → rgb(0, 79, 123)
+  Hover-States:
+    - Primary-Hover: #7BA945 (dunklerer Grünton)
+    - Secondary-Hover: #003A5C (dunkleres Blau)
+  Status-Colors:
+    - Success: #94C456 (FreshFoodz Green)
+    - Error: #DC3545 (Standard Red)
+    - Warning: #FFC107 (Amber)
+
+CSS-DESIGN-TOKENS (Verbindlich):
+  Layout:
+    - Header-Height: 64px (weiß, shadow: 0 2px 4px rgba(0,0,0,0.08))
+    - Content-Margin-Top: 8px (Abstand Header → Content)
+    - Content-Padding: 16px
+  Shadows:
+    - Header: 0 2px 4px rgba(0,0,0,0.08)
+    - Paper: 0 1px 3px rgba(0,0,0,0.05)
+    - Card: 0 1px 2px rgba(0,0,0,0.04)
+
+SMARTLAYOUT-SYSTEM (Intelligente Content-Breiten):
+  Tables/Lists: 100% Breite (Auto-Detect: <Table>, <DataGrid>, data-wide="true")
+  Forms: 800px max (Auto-Detect: <form>, mehrere <TextField>)
+  Text/Articles: 1200px max (Auto-Detect: hauptsächlich <Typography>)
+  Dashboard: 100% Breite (Grid mit Cards)
+  Cockpit: 100% Breite, 0 Padding (Spezial-Layout)
+
+ACCESSIBILITY (WCAG 2.1 AA+):
+  Contrast-Ratios:
+    - Green/White: 4.52:1 (AA ✅)
+    - Blue/White: 8.89:1 (AAA ✅)
+    - Black/White: 21:1 (AAA ✅)
+  Focus-States: 3px solid outline, 2px offset
+  High-Contrast-Mode: Automatische dunklere Farbtöne
+
+UI-SPRACHE (DEUTSCH, kein Denglisch):
+  Dashboard → Übersicht | Save → Speichern | Cancel → Abbrechen
+  Delete → Löschen | Edit → Bearbeiten | Settings → Einstellungen
+  Stil: "Sie"-Form, höflich, keine Abkürzungen
+
+LOGO-VERWENDUNG:
+  File: /frontend/public/freshplan-logo.png (19 KB PNG, @2x Retina)
+  Component: <Logo> aus @/components/common/Logo
+  Desktop: 40px Höhe | Mobile: 32px Höhe
+  Variants: "full" (mit Text) | "icon" (nur Icon)
+  Schutzzone: min. 16px Freiraum
+  Nur auf weißem/hellem Hintergrund!
+  Fallback: Automatisches FreshPlan Icon + Text (bei fehlenden Dateien)
+
+IMPLEMENTATION-REFERENCE:
+  Design-System-Spec: /docs/planung/grundlagen/DESIGN_SYSTEM.md (verbindlich!)
+  Sprint-Docs: Sprint Summary unter "Frontend Changes"
+  Module-Docs: Frontend Modul _index.md → "Design System" Sektion
+  Theme-Config: /frontend/src/theme/freshfoodz-theme.ts
+  Components: FreshFoodz-branded Header, CTA-Buttons, Status-Badges
+  Storybook: Component-Katalog mit FreshFoodz CI (npm run storybook)
+```
+
+---
+
 ## 🏗️ **SEKTION 2: SYSTEM-ARCHITEKTUR-VISION** (35%)
 
 ### **📊 8-Module CRM-Ecosystem Übersicht**

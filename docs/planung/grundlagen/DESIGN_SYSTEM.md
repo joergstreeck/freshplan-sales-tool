@@ -2,31 +2,17 @@
 
 **Erstellt:** 2025-09-17
 **Status:** ✅ Verbindlich für alle UI-Elemente
-**Basis:** Konsolidierung aus /docs/design/ + /docs/technical/FRESHFOODZ_CI_GUIDELINES.md
-**Scope:** Corporate Identity + Design System V2 + MUI Theme Standards
+**Scope:** Corporate Identity + MUI Theme + Logo + Sprache
 
-## 📊 Executive Summary: Foundation Design Standards
+> **🎯 Quick Reference:**
+> - **Farben:** #94C456 (Green), #004F7B (Blue)
+> - **Schrift:** Antonio Bold (Headlines), Poppins (Body)
+> - **Logo:** freshplan-logo.png (19 KB, Logo.tsx Component)
+> - **Sprache:** Deutsch (Dashboard → Übersicht, Save → Speichern)
 
-### **FRESHFOODZ CORPORATE IDENTITY (Verbindlich):**
-```yaml
-Primärfarben (NICHT VERÄNDERBAR):
-  - Primärgrün: #94C456 (rgb(148, 196, 86))
-  - Dunkelblau: #004F7B (rgb(0, 79, 123))
-  - Weiß: #FFFFFF
-  - Schwarz: #000000
+---
 
-Typography (VERPFLICHTEND):
-  - Headlines: Antonio Bold (700)
-  - Body Text: Poppins Regular (400)
-  - Emphasized: Poppins Medium (500)
-
-Markenidentität:
-  - Slogan: "So einfach, schnell und lecker!"
-  - Logo: freshfoodzlogo.png (nur auf neutralen Hintergründen)
-  - Sprache: Deutsch (keine Anglizismen in UI)
-```
-
-## 🎯 **VERBINDLICHE FRESHFOODZ FARBPALETTE**
+## 🎯 **FARBPALETTE**
 
 ### **Primärfarben (PFLICHT):**
 
@@ -64,36 +50,18 @@ Markenidentität:
 }
 ```
 
-## 📝 **VERBINDLICHE FRESHFOODZ TYPOGRAFIE**
-
-### **Schriftarten (PFLICHT):**
+## 📝 **TYPOGRAFIE**
 
 | Element | Schriftart | Gewicht | Verwendung |
 |---------|------------|---------|------------|
-| **Headlines** | Antonio | Bold (700) | H1, H2, H3, Page Titles, Section Headers |
+| **Headlines** | Antonio | Bold (700) | H1-H6, Page Titles, Section Headers |
 | **Body Text** | Poppins | Regular (400) | Normaler Text, Labels, Descriptions |
-| **Emphasized Text** | Poppins | Medium (500) | Buttons, Important Text, Form Labels |
+| **Emphasized** | Poppins | Medium (500) | Buttons, Important Text, Form Labels |
 
-### **Font-Loading (Performance-optimiert):**
-```css
-/* Google Fonts - Optimiert für Performance */
-@import url('https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Poppins:wght@400;500&display=swap');
-
-/* CSS Font Definitions */
-.font-headline {
-  font-family: 'Antonio', sans-serif;
-  font-weight: 700;
-}
-
-.font-body {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 400;
-}
-
-.font-body-medium {
-  font-family: 'Poppins', sans-serif;
-  font-weight: 500;
-}
+**Font-Loading:**
+```html
+<!-- In index.html - Performance-optimiert -->
+<link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 ```
 
 ## 🏗️ **DESIGN SYSTEM V2 - INTELLIGENTES LAYOUT**
@@ -261,14 +229,17 @@ const detectContentType = (children: ReactNode): ContentType => {
 ## 🖼️ **LOGO-STANDARDS & GUIDELINES**
 
 ### **Offizielles Logo:**
-- **Datei:** `freshfoodzlogo.png`
-- **Größe:** 19 KB, PNG mit Transparenz
-- **Pfad:** `/frontend/public/freshfoodzlogo.png`
+- **Datei:** `freshplan-logo.png` (Full) / `freshplan-logo-icon.png` (Icon)
+- **Größe:** 19 KB, PNG mit Transparenz, @2x Retina-ready
+- **Pfad:** `/frontend/public/freshplan-logo.png`
 - **Mindestgröße:** 32px Höhe (Mobile)
 - **Standardgröße:** 40px Höhe (Desktop)
 
 ### **Logo-Verwendung (Verbindlich):**
 ```typescript
+// Logo.tsx Component verwenden (19 KB optimiert)
+import { Logo } from '@/components/common/Logo';
+
 // Desktop - Volles Logo
 <Logo
   variant="full"
@@ -283,6 +254,10 @@ const detectContentType = (children: ReactNode): ContentType => {
   onClick={() => navigate('/')}
 />
 ```
+
+**Automatisches Fallback:**
+- Bei fehlenden Logo-Dateien zeigt Logo.tsx automatisch FreshPlan Icon + Text
+- Fallback verwendet FreshFoodz CI-Farben (#94C456 Green, #004F7B Blue)
 
 ### **Logo-Schutzregeln:**
 ```yaml
@@ -299,72 +274,44 @@ const detectContentType = (children: ReactNode): ContentType => {
   - Nicht auf farbigem Hintergrund ohne weißen Container
 ```
 
-## 🎨 **MUI THEME INTEGRATION**
+## 🎨 **MUI THEME**
 
-### **FreshFoodz Theme Definition:**
+**Theme-Datei:** `/frontend/src/theme/freshfoodz.ts`
+
+**Kern-Konfiguration:**
 ```typescript
-// /frontend/src/theme/freshfoodz.ts
 import { createTheme } from '@mui/material/styles';
-
-declare module '@mui/material/styles' {
-  interface Palette {
-    freshfoodz: {
-      primary: string;
-      secondary: string;
-      success: string;
-      background: string;
-    };
-  }
-}
 
 export const freshfoodzTheme = createTheme({
   palette: {
-    primary: {
-      main: '#94C456', // FreshFoodz Primärgrün
-      contrastText: '#FFFFFF',
-    },
-    secondary: {
-      main: '#004F7B', // FreshFoodz Dunkelblau
-      contrastText: '#FFFFFF',
-    },
-    freshfoodz: {
-      primary: '#94C456',
-      secondary: '#004F7B',
-      success: '#94C456',
-      background: '#FAFAFA',
-    },
+    primary: { main: '#94C456' },     // FreshFoodz Green
+    secondary: { main: '#004F7B' },   // FreshFoodz Blue
   },
   typography: {
     fontFamily: 'Poppins, sans-serif',
-    h1: {
-      fontFamily: 'Antonio, sans-serif',
-      fontWeight: 700,
-    },
-    h2: {
-      fontFamily: 'Antonio, sans-serif',
-      fontWeight: 700,
-    },
-    h3: {
-      fontFamily: 'Antonio, sans-serif',
-      fontWeight: 700,
-    },
-    button: {
-      fontFamily: 'Poppins, sans-serif',
-      fontWeight: 500,
-    },
+    h1: { fontFamily: 'Antonio, sans-serif', fontWeight: 700 },
+    h2: { fontFamily: 'Antonio, sans-serif', fontWeight: 700 },
+    h3: { fontFamily: 'Antonio, sans-serif', fontWeight: 700 },
+    button: { fontFamily: 'Poppins, sans-serif', fontWeight: 500 },
   },
   components: {
     MuiButton: {
       styleOverrides: {
-        root: {
-          borderRadius: 8,
-          textTransform: 'none',
-          padding: '12px 24px',
-        },
+        root: { borderRadius: 8, textTransform: 'none' },
       },
     },
   },
 });
+```
+
+**Verwendung:**
+```typescript
+import { ThemeProvider } from '@mui/material/styles';
+import { freshfoodzTheme } from '@/theme/freshfoodz';
+
+<ThemeProvider theme={freshfoodzTheme}>
+  <App />
+</ThemeProvider>
 ```
 
 ## 🗣️ **UI-SPRACHREGELN (FreshFoodz Standard)**
@@ -482,75 +429,47 @@ const CorrectButton = styled.button`
 `;
 ```
 
-## 🚀 **IMPLEMENTIERUNGSREIHENFOLGE**
 
-### **Phase 1: Design-Tokens (SOFORT)**
-1. ✅ CSS-Variablen für Freshfoodz CI definieren
-2. ✅ Font-Loading optimieren (Antonio + Poppins)
-3. ✅ MUI Theme konfigurieren
+## ✅ **IMPLEMENTIERUNGSSTATUS**
 
-### **Phase 2: SmartLayout System (DIESE WOCHE)**
-1. SmartLayout Component implementieren
-2. Content-Type Detection verfeinern
-3. MainLayoutV3 mit intelligenter Breiten-Erkennung
-4. Migration von Settings-Seite als Test
+### **Abgeschlossen:**
+- ✅ CSS Design Tokens (Farben, Layout)
+- ✅ Font-Loading (Antonio + Poppins)
+- ✅ MUI Theme (freshfoodz.ts)
+- ✅ SmartLayout Component
+- ✅ MainLayoutV3 mit intelligenter Breiten-Erkennung
+- ✅ Logo-Komponente (Logo.tsx - 19 KB)
 
-### **Phase 3: Komponenten-Update (LAUFEND)**
-1. Button-Komponenten CI-konform machen
-2. Navigation/Headers aktualisieren
-3. Form-Elemente anpassen
-4. Logo-Komponente optimieren
+### **Laufende Verbesserungen:**
+- Button/Form-Komponenten CI-konform machen
+- Navigation/Headers aktualisieren
+- CI-Compliance Tests automatisieren
+- Performance-Monitoring für Fonts
 
-### **Phase 4: Qualitätssicherung (PERMANENT)**
-1. CI-Compliance Tests implementieren
-2. Design Review vor jedem Merge
-3. Accessibility-Tests automatisieren
-4. Performance-Monitoring für Fonts
+## 🔧 **QUICK START**
 
-## 🔧 **VERWENDUNG IM CODE**
-
-### **SmartLayout verwenden:**
 ```typescript
-import { SmartLayout } from '@/components/layout/SmartLayout';
-
-// Automatische Breiten-Erkennung
-<SmartLayout>
-  <Table>...</Table> {/* → 100% Breite */}
-</SmartLayout>
-
-<SmartLayout>
-  <form>...</form> {/* → 800px max Breite */}
-</SmartLayout>
-
-// Override bei Bedarf
-<SmartLayout forceWidth="full">
-  <Dashboard>...</Dashboard>
-</SmartLayout>
-```
-
-### **FreshFoodz Theme verwenden:**
-```typescript
-import { ThemeProvider } from '@mui/material/styles';
-import { freshfoodzTheme } from '@/theme/freshfoodz';
-
-<ThemeProvider theme={freshfoodzTheme}>
-  <App />
-</ThemeProvider>
-```
-
-### **CI-konforme Komponenten:**
-```typescript
+// 1. Theme verwenden (bereits in App eingebunden)
 import { Button, Typography } from '@mui/material';
 
-// Automatisch CI-konform durch Theme
-<Button variant="contained">Speichern</Button>
-<Typography variant="h2">Überschrift</Typography>
+<Button variant="contained">Speichern</Button>     // Automatisch #94C456
+<Typography variant="h2">Überschrift</Typography>  // Automatisch Antonio Bold
+
+// 2. Logo verwenden
+import { Logo } from '@/components/common/Logo';
+
+<Logo variant="full" height={40} />  // Desktop
+<Logo variant="icon" height={32} />  // Mobile
+
+// 3. SmartLayout verwenden
+import { SmartLayout } from '@/components/layout/SmartLayout';
+
+<SmartLayout>
+  <Table>...</Table>  // 100% Breite automatisch
+</SmartLayout>
 ```
 
 ---
 
-**📋 Design System basiert auf:** FreshFoodz CI + Design System V2 + MUI Theme + Logo Guidelines
 **📅 Verbindlich ab:** 01.10.2025
-**👨‍💻 Design Owner:** Design Team + Development Team
-
-**🎯 Diese Standards schaffen ein konsistentes, intelligentes und markenkonformes UI-System für alle FreshPlan Features!**
+**🎯 Ziel:** Konsistentes, markenkonformes UI-System für alle FreshPlan Features
