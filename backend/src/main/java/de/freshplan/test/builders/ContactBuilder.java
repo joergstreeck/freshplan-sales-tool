@@ -3,7 +3,7 @@ package de.freshplan.test.builders;
 import de.freshplan.domain.customer.entity.CommunicationMethod;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
-import de.freshplan.domain.customer.repository.CustomerContactRepository;
+import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.test.utils.TestDataUtils;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -25,7 +25,7 @@ import java.util.UUID;
 @ApplicationScoped
 public class ContactBuilder {
 
-  @Inject CustomerContactRepository customerContactRepository;
+  @Inject ContactRepository customerContactRepository;
 
   @Inject CustomerRepository customerRepository;
 
