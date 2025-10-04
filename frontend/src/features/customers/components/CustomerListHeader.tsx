@@ -7,9 +7,16 @@ import { UniversalExportButton } from '../../../components/export';
 interface CustomerListHeaderProps {
   totalCount: number;
   onAddCustomer?: () => void;
+  title?: string;
+  createButtonLabel?: string;
 }
 
-export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHeaderProps) {
+export function CustomerListHeader({
+  totalCount,
+  onAddCustomer,
+  title = 'Kunden',
+  createButtonLabel = 'Neuer Kunde',
+}: CustomerListHeaderProps) {
   const navigate = useNavigate();
 
   // Default to navigation if no onAddCustomer provided
@@ -36,7 +43,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
     >
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
         <Typography variant="h4" component="h1">
-          Kunden
+          {title}
         </Typography>
         <Chip label={`${totalCount} gesamt`} color="primary" size="small" />
       </Box>
@@ -54,7 +61,7 @@ export function CustomerListHeader({ totalCount, onAddCustomer }: CustomerListHe
             },
           }}
         >
-          Neuer Kunde
+          {createButtonLabel}
         </Button>
       </Box>
     </Box>

@@ -171,6 +171,7 @@ export const useUniversalSearch = (
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
         const response = await fetch(`${apiUrl}/api/search/universal?${params.toString()}`, {
           signal: abortControllerRef.current.signal,
+          credentials: 'include', // ✅ Include cookies for authentication
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
@@ -200,13 +201,13 @@ export const useUniversalSearch = (
         setSearchResults(transformedResults);
         setError(null);
       } catch (_err) {
-        void _err;
         // Ignore aborted requests
-        if (err instanceof Error && err.name === 'AbortError') {
+        if (_err instanceof Error && _err.name === 'AbortError') {
           return;
         }
 
-        setError(err.response?.data?.message || err.message || 'Fehler bei der Suche');
+        const error = _err as Error & { response?: { data?: { message?: string } } };
+        setError(error.response?.data?.message || error.message || 'Fehler bei der Suche');
         setSearchResults(null);
       } finally {
         setIsLoading(false);

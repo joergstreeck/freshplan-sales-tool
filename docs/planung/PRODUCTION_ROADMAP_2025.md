@@ -11,12 +11,18 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** Sprint 2.1.5 Backend Phase 1 COMPLETE → Frontend Phase 2 ausstehend
-- **Progress:** 10/36 PRs - 28% done (PR #123 merged, Sprint 2.1.5 partial)
+- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (04.10.2025)
+- **Progress:** 10/36 PRs - 28% done (PR #124/#125 ready for merge)
 - **Blockers:** Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Lead-Module) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage
-- **Latest:** Sprint 2.1.5 Backend (V255-V257, ADR-004 Inline-First, 24 Unit Tests)
+- **Latest:** Sprint 2.1.5 COMPLETE (Backend + Frontend)
+  - ✅ Dokumentation: 4 Artefakte vollständig (BUSINESS_LOGIC, PRE_CLAIM_LOGIC, FRONTEND_DELTA, SUMMARY)
+  - ✅ Backend: V255-V257 Migrations, LeadProtectionService (24 Tests), LeadDTO erweitert (registeredAt)
+  - ✅ Frontend: LeadWizard (3 Stages), Context-Prop Architecture, Zwei-Felder-Lösung, Pre-Claim Badge
+  - ✅ **Kritische Gaps geschlossen:** Zwei-Felder-Lösung, Pre-Claim Badge, Backend DTO
+  - ⏭️ **Optional auf 2.1.6:** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter
+- **Sprint 2.1.6/2.1.7:** PLANNED (12-18.10.2025 / 19-25.10.2025) - Migration-API, Lead-Scoring, Optionale Features
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -86,7 +92,7 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: ███░░░░░░░ 35% (2.5/5 Sprints + 3 Sub-Sprints)
+Progress: ███░░░░░░░ 40% (2.5/5 Sprints + 4 Sub-Sprints)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
@@ -95,10 +101,32 @@ Sprint 2.1.3: Frontend Lead Mgmt      ✅ COMPLETE → PR #122 merged - Lead Man
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 Sprint 2.1.4: Lead Dedup & Quality    ✅ COMPLETE → PR #123 merged - Normalisierung, Idempotenz, CI 24min→7min
                                       → [Operations Runbook](../operations/lead-deduplication-runbook.md)
-Sprint 2.1.5: Protection & Profiling  🔄 Backend Phase 1 COMPLETE → Frontend Phase 2 ausstehend
-                                      → V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First)
-                                      → 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
-                                      → Features verschoben: V258, Backdating, Nightly Jobs, Fuzzy-Matching → Sprint 2.1.6
+Sprint 2.1.5: Protection & Profiling  ✅ COMPLETE (04.10.2025)
+                                      → **Backend Phase 1:** V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First), 24 Unit Tests ✅
+                                      → **Backend Phase 2:** V258 Migration (13 Activity-Types), ActivityType.java, 7 Unit Tests ✅
+                                      → **Backend DTO:** LeadDTO erweitert (registeredAt, protectionUntil, progressDeadline) ✅
+                                      → **Frontend:** LeadWizard (3 Stages), Context-Prop Architecture, V259 Migration ✅
+                                      → **Frontend Zwei-Felder-Lösung:** Notizen + Erstkontakt getrennt (LeadWizard.tsx:365-505) ✅
+                                      → **Frontend Pre-Claim Badge:** CustomerTable Badge "⏳ Pre-Claim (XT)" (CustomerTable.tsx:95-177) ✅
+                                      → **Frontend Types:** registeredAt nullable für Pre-Claim Detection (types.ts:68) ✅
+                                      → **Dokumentation:** 4 Artefakte vollständig (BUSINESS_LOGIC, PRE_CLAIM_LOGIC, FRONTEND_DELTA, SUMMARY) ✅
+                                      → **PR #124/#125:** Ready for merge (Backend + Frontend COMPLETE)
+                                      → **Verschoben auf 2.1.6 (OPTIONAL):** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter, Backdating, Jobs, Fuzzy-Matching
+
+Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
+                                      → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)
+                                      → Lead → Kunde Convert Flow (automatische Übernahme bei Status QUALIFIED → CONVERTED)
+                                      → Stop-the-Clock UI (Manager-only, StopTheClockDialog)
+                                      → Extended Lead-Transfer Workflow (mit Genehmigung)
+                                      → V259 lead_transfers + consent_given_at, Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+                                      → Fuzzy-Matching & Scoring (Levenshtein-Distance, pg_trgm)
+
+Sprint 2.1.7: Scoring & Mobile        📅 PLANNED (19-25.10.2025)
+                                      → Lead-Scoring Algorithmus (0-100 Punkte, V260 Migration)
+                                      → Activity-Templates System (V261 Migration, CRUD-API)
+                                      → Mobile-First UI Optimierung (Touch, Breakpoints <768px, Bundle <200KB)
+                                      → Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
+                                      → QR-Code-Scanner für schnelle Kontakterfassung (vCard/meCard Import)
 Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit                🟡 Planning → CQRS-optimiert
@@ -276,7 +304,7 @@ Day 22: feature/02-leads-security-integration-FP-236  📋
 
 **Status:** Research abgeschlossen → PR #112 (Draft, docs-only)
 
-**Nächster Schritt:** Thin Vertical Slice mit Feature-Flag `VITE_FEATURE_LEADGEN`
+**Nächster Schritt:** Sprint 2.1.3 implementiert Thin Vertical Slice
 
 ---
 

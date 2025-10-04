@@ -23,33 +23,60 @@ export interface QuickFilter {
   filter: Partial<FilterConfig>;
 }
 
-// Quick Filter Presets - Simple and clear status filters only
-export const QUICK_FILTERS: QuickFilter[] = [
-  {
-    id: 'active',
-    label: 'Aktive Kunden',
-    icon: <ActiveIcon fontSize="small" />,
-    filter: { status: [CustomerStatus.AKTIV] },
-  },
-  {
-    id: 'inactive',
-    label: 'Inaktive Kunden',
-    icon: <InactiveIcon fontSize="small" />,
-    filter: { status: [CustomerStatus.INAKTIV] },
-  },
-];
+// Quick Filter Presets - Context-based
+const getQuickFilters = (context: 'customers' | 'leads'): QuickFilter[] => {
+  if (context === 'leads') {
+    return [
+      {
+        id: 'leads',
+        label: 'Leads',
+        icon: <ActiveIcon fontSize="small" />,
+        filter: { status: [CustomerStatus.LEAD] },
+      },
+      {
+        id: 'prospects',
+        label: 'Prospects',
+        icon: <InactiveIcon fontSize="small" />,
+        filter: { status: [CustomerStatus.PROSPECT] },
+      },
+    ];
+  }
+
+  // Default: customers context
+  return [
+    {
+      id: 'active',
+      label: 'Aktive Kunden',
+      icon: <ActiveIcon fontSize="small" />,
+      filter: { status: [CustomerStatus.AKTIV] },
+    },
+    {
+      id: 'inactive',
+      label: 'Inaktive Kunden',
+      icon: <InactiveIcon fontSize="small" />,
+      filter: { status: [CustomerStatus.INAKTIV] },
+    },
+  ];
+};
 
 interface QuickFiltersProps {
   activeQuickFilters: string[];
   onToggleQuickFilter: (filter: QuickFilter) => void;
+  context?: 'customers' | 'leads';
 }
 
-export function QuickFilters({ activeQuickFilters, onToggleQuickFilter }: QuickFiltersProps) {
+export function QuickFilters({
+  activeQuickFilters,
+  onToggleQuickFilter,
+  context = 'customers',
+}: QuickFiltersProps) {
   const theme = useTheme();
+
+  const quickFilters = getQuickFilters(context);
 
   return (
     <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-      {QUICK_FILTERS.map(qf => (
+      {quickFilters.map(qf => (
         <Chip
           key={qf.id}
           label={qf.label}

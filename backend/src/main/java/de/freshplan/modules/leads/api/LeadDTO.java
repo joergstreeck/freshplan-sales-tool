@@ -51,11 +51,22 @@ public class LeadDTO {
   public String source;
   public String sourceCampaign;
 
+  // Progressive Profiling (Sprint 2.1.5)
+  public Short stage; // 0=Vormerkung, 1=Registrierung, 2=Qualifizierung
+
   // Protection system fields
+  public LocalDateTime registeredAt; // Sprint 2.1.5: Pre-Claim Status Detection (null = Pre-Claim)
   public LocalDateTime lastActivityAt;
   public LocalDateTime reminderSentAt;
   public LocalDateTime gracePeriodStartAt;
   public LocalDateTime expiredAt;
+
+  // Progress Tracking (Sprint 2.1.5)
+  public LocalDateTime progressWarningSentAt;
+  public LocalDateTime progressDeadline; // Sprint 2.1.5: Pre-Claim Badge (createdAt + 10 Tage)
+
+  // Calculated Protection Fields (not persisted, calculated from protectionStartAt + protectionMonths)
+  public LocalDateTime protectionUntil; // Sprint 2.1.5: Pre-Claim Badge (registeredAt + 6 Monate)
 
   // Stop-the-clock feature
   public LocalDateTime clockStoppedAt;
@@ -107,10 +118,24 @@ public class LeadDTO {
     dto.source = lead.source;
     dto.sourceCampaign = lead.sourceCampaign;
 
+    // Progressive Profiling (Sprint 2.1.5)
+    dto.stage = lead.stage;
+
+    // Sprint 2.1.5: Pre-Claim Status Detection (registeredAt === null → Pre-Claim)
+    dto.registeredAt = lead.registeredAt;
     dto.lastActivityAt = lead.lastActivityAt;
     dto.reminderSentAt = lead.reminderSentAt;
     dto.gracePeriodStartAt = lead.gracePeriodStartAt;
     dto.expiredAt = lead.expiredAt;
+
+    // Progress Tracking (Sprint 2.1.5)
+    dto.progressWarningSentAt = lead.progressWarningSentAt;
+    dto.progressDeadline = lead.progressDeadline;
+
+    // Calculate protection_until from protectionStartAt + protectionMonths
+    if (lead.protectionStartAt != null && lead.protectionMonths != null) {
+      dto.protectionUntil = lead.protectionStartAt.plusMonths(lead.protectionMonths);
+    }
 
     dto.clockStoppedAt = lead.clockStoppedAt;
     dto.stopReason = lead.stopReason;

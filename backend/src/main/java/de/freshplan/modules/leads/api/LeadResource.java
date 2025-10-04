@@ -69,6 +69,16 @@ public class LeadResource {
           "lastActivityAt");
 
   /**
+   * Get current user ID with dev mode fallback.
+   * In dev mode, auth is disabled and SecurityContext.getUserPrincipal() returns null.
+   */
+  private String getCurrentUserId() {
+    return securityContext.getUserPrincipal() != null
+      ? securityContext.getUserPrincipal().getName()
+      : "dev-admin-001"; // Fallback for dev mode
+  }
+
+  /**
    * GET /api/leads - List leads with pagination and filtering. Leads are available nationwide, no
    * geographical restrictions.
    */
@@ -84,7 +94,7 @@ public class LeadResource {
       @QueryParam("sort") @DefaultValue("createdAt") String sortField,
       @QueryParam("direction") @DefaultValue("DESC") String sortDirection) {
 
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     LOG.infof(
         "User %s listing leads - status: %s, territory: %s, owner: %s",
         currentUserId, status, territoryId, ownerUserId);
@@ -166,7 +176,7 @@ public class LeadResource {
   @Transactional
   public Response getLead(
       @PathParam("id") Long id, @HeaderParam("If-None-Match") String ifNoneMatch) {
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -199,7 +209,7 @@ public class LeadResource {
   @POST
   @Transactional
   public Response createLead(@Valid LeadCreateRequest request) {
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     LOG.infof("User %s creating new lead for company: %s", currentUserId, request.companyName);
 
     // Check for email duplicate
@@ -257,8 +267,8 @@ public class LeadResource {
     // Persist lead
     lead.persist();
 
-    // Create initial activity
-    createAndPersistActivity(lead, currentUserId, ActivityType.CREATED, "Lead created");
+    // Create initial activity (use LEAD_ASSIGNED instead of CREATED - V258 constraint)
+    createAndPersistActivity(lead, currentUserId, ActivityType.LEAD_ASSIGNED, "Lead created");
 
     LOG.infof("Created lead %s for user %s", lead.id, currentUserId);
 
@@ -289,7 +299,7 @@ public class LeadResource {
           .build();
     }
 
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -440,7 +450,7 @@ public class LeadResource {
           .entity(Map.of("error", "Missing If-Match header for safe deletion"))
           .build();
     }
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -471,8 +481,8 @@ public class LeadResource {
     lead.updatedBy = currentUserId;
     lead.persist();
 
-    // Log deletion activity
-    createAndPersistActivity(lead, currentUserId, ActivityType.DELETED, "Lead deleted");
+    // Log deletion activity (use NOTE instead of DELETED - V258 constraint)
+    createAndPersistActivity(lead, currentUserId, ActivityType.NOTE, "Lead deleted");
 
     LOG.infof("Deleted lead %s by user %s", id, currentUserId);
 
@@ -489,7 +499,7 @@ public class LeadResource {
   @Path("/{id}/activities")
   @Transactional
   public Response addActivity(@PathParam("id") Long id, @Valid ActivityRequest request) {
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
@@ -532,7 +542,7 @@ public class LeadResource {
       @QueryParam("page") @DefaultValue("0") int pageIndex,
       @QueryParam("size") @DefaultValue("50") int pageSize) {
 
-    String currentUserId = securityContext.getUserPrincipal().getName();
+    String currentUserId = getCurrentUserId();
     Lead lead = Lead.findById(id);
 
     if (lead == null) {
