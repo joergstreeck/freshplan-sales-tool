@@ -116,6 +116,11 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant Berlin');
 
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       // Navigate to Stage 1
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
@@ -131,15 +136,6 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@test-restaurant.de');
 
-      // DSGVO Consent Checkbox should be visible and NOT pre-filled
-      const consentCheckbox = screen.getByRole('checkbox', { name: /ich stimme.*zu/i });
-      expect(consentCheckbox).toBeInTheDocument();
-      expect(consentCheckbox).not.toBeChecked(); // NOT pre-filled (DSGVO requirement)
-
-      // Check consent checkbox
-      await user.click(consentCheckbox);
-      expect(consentCheckbox).toBeChecked();
-
       // Navigate to Stage 2
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
@@ -150,8 +146,8 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         expect(screen.getByLabelText(/website/i)).toBeInTheDocument();
       });
 
-      // Final submit button should be visible
-      expect(screen.getByRole('button', { name: /lead erstellen/i })).toBeInTheDocument();
+      // Final submit button should be visible (Karte 2: Qualifizierung speichern)
+      expect(screen.getByRole('button', { name: /qualifizierung speichern/i })).toBeInTheDocument();
     });
 
     it('should allow navigating back from Stage 2 → 1 → 0 without losing data', async () => {
@@ -163,13 +159,18 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Fill Stage 1
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Fill Stage 2
@@ -182,7 +183,6 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => {
         expect(screen.getByLabelText(/vorname/i)).toHaveValue('Max');
         expect(screen.getByLabelText(/e.?mail/i)).toHaveValue('max@example.com');
-        expect(screen.getByRole('checkbox', { name: /ich stimme.*zu/i })).toBeChecked();
       });
 
       // Navigate back to Stage 0
@@ -194,25 +194,31 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
     });
   });
 
-  // ==================== TEST 2: DSGVO Consent Validation (Sprint 2.1.5 - Source-abhängig) ====================
-  describe('DSGVO Consent Validation', () => {
-    it('should NOT require consent when source is not WEB_FORMULAR (Sprint 2.1.5)', async () => {
+  // ==================== TEST 2: Navigation Tests (Sprint 2.1.5 - Consent-Checkbox entfernt) ====================
+  describe('Navigation Tests', () => {
+    it('should navigate from Stage 1 to Stage 2 with contact data (Sprint 2.1.5)', async () => {
       const user = userEvent.setup();
 
       render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
         wrapper: Wrapper,
       });
 
-      // Fill Stage 0 without setting source (defaults to undefined, NOT WEB_FORMULAR)
+      // Fill Stage 0 with source
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Fill Stage 1 with contact data but WITHOUT consent
+      // Fill Stage 1 with contact data
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
 
-      // Try to navigate to Stage 2 without consent - SHOULD SUCCEED (source != WEB_FORMULAR)
+      // Navigate to Stage 2 - SHOULD SUCCEED (no consent checkbox required)
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Should navigate to Stage 2 successfully
@@ -221,7 +227,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       });
     });
 
-    it('should NOT require consent when no contact data is provided', async () => {
+    it('should require at least email OR phone to proceed from Stage 1', async () => {
       const user = userEvent.setup();
 
       render(<LeadWizard open={true} onClose={mockOnClose} onCreated={mockOnCreated} />, {
@@ -230,16 +236,25 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Skip Stage 1 (no contact data, no consent)
+      // Try to skip Stage 1 without any contact data
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Should navigate to Stage 2 successfully
+      // Should show validation error (Mind. E-Mail oder Telefon erforderlich)
       await waitFor(() => {
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument();
+        expect(screen.getByRole('alert')).toBeInTheDocument();
       });
+
+      // Should NOT navigate to Stage 2
+      expect(screen.queryByLabelText(/geschätztes volumen/i)).not.toBeInTheDocument();
     });
 
     it('should NOT send consentGivenAt in Sprint 2.1.5 (UI-only, Backend-Feld erst V259)', async () => {
@@ -259,20 +274,25 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Fill Stage 1 with consent
+      // Fill Stage 1 (no consent checkbox exists)
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Submit from Stage 2
       await waitFor(() =>
         expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
       );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
 
       await waitFor(() => {
         expect(capturedPayload).toBeDefined();
@@ -285,7 +305,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
   // ==================== TEST 3: Stage-Transition Rules ====================
   describe('Stage-Transition Rules', () => {
-    it('should correctly determine stage=0 when only company data is provided', async () => {
+    it('should correctly determine stage=0 when saving from Stage 0 (Vormerkung)', async () => {
       const user = userEvent.setup();
       let capturedPayload: unknown;
 
@@ -302,17 +322,14 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0 only
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Skip Stage 1
-      await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
 
-      // Submit from Stage 2
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      // Save directly from Stage 0 (Vormerkung speichern)
+      await user.click(screen.getByRole('button', { name: /vormerkung speichern/i }));
 
       await waitFor(() => {
         expect(capturedPayload).toBeDefined();
@@ -321,7 +338,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       });
     });
 
-    it('should correctly determine stage=1 when contact data + consent is provided', async () => {
+    it('should correctly determine stage=1 when saving from Stage 1 (Registrierung)', async () => {
       const user = userEvent.setup();
       let capturedPayload: unknown;
 
@@ -338,25 +355,27 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Fill Stage 1 with consent
+      // Fill Stage 1
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Submit from Stage 2 (no business data)
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      // Save directly from Stage 1 (Registrierung speichern)
+      await user.click(screen.getByRole('button', { name: /registrierung speichern/i }));
 
       await waitFor(() => {
         expect(capturedPayload).toBeDefined();
         expect(capturedPayload.stage).toBe(1);
         expect(capturedPayload.contact).toBeDefined();
+        expect(capturedPayload.contact.email).toBe('max@example.com');
         // Sprint 2.1.5: consentGivenAt wird NICHT gesendet (UI-only)
       });
     });
@@ -378,13 +397,18 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Fill Stage 1 with consent
+      // Fill Stage 1 (no consent checkbox)
       await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/vorname/i), 'Max');
       await user.type(screen.getByLabelText(/e.?mail/i), 'max@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Fill Stage 2 with business data
@@ -396,7 +420,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       // Wait for value to be updated
       await waitFor(() => expect(employeeCountField).toHaveValue(25));
 
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
 
       await waitFor(() => {
         expect(capturedPayload).toBeDefined();
@@ -433,6 +457,12 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill Stage 0
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       // Fill invalid email
@@ -458,17 +488,14 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill minimal form (Stage 0 only)
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      // Skip Stage 1
-      await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
 
-      // Submit
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      // Save directly from Stage 0 (Vormerkung speichern)
+      await user.click(screen.getByRole('button', { name: /vormerkung speichern/i }));
 
       // Should call onCreated callback
       await waitFor(() => {
@@ -485,17 +512,22 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill form with duplicate email
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       await waitFor(() => expect(screen.getByLabelText(/e.?mail/i)).toBeInTheDocument());
       await user.type(screen.getByLabelText(/e.?mail/i), 'duplicate@example.com');
-      await user.click(screen.getByRole('checkbox', { name: /ich stimme.*zu/i }));
       await user.click(screen.getByRole('button', { name: /weiter/i }));
 
       await waitFor(() =>
         expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
       );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
 
       // Should show 409 duplicate error
       await waitFor(() => {
@@ -532,15 +564,14 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill minimal form
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
 
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+      // Save directly from Stage 0 (Vormerkung speichern)
+      await user.click(screen.getByRole('button', { name: /vormerkung speichern/i }));
 
       // Should show generic error
       await waitFor(() => {
@@ -565,15 +596,14 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill minimal form
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
 
-      await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
 
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      const submitButton = screen.getByRole('button', { name: /lead erstellen/i });
+      // Save directly from Stage 0 (Vormerkung speichern)
+      const submitButton = screen.getByRole('button', { name: /vormerkung speichern/i });
 
       await user.click(submitButton);
 
@@ -611,13 +641,14 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Fill and submit
       await user.type(screen.getByLabelText(/firmenname/i), 'Test Restaurant');
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
-      await waitFor(() => expect(screen.getByLabelText(/vorname/i)).toBeInTheDocument());
-      await user.click(screen.getByRole('button', { name: /weiter/i }));
-      await waitFor(() =>
-        expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
-      );
-      await user.click(screen.getByRole('button', { name: /lead erstellen/i }));
+
+      // Select source (PFLICHT seit Refactoring)
+      const sourceSelect = screen.getByLabelText(/herkunft/i);
+      await user.click(sourceSelect);
+      await user.click(await screen.findByRole('option', { name: /messe.*event/i }));
+
+      // Save directly from Stage 0 (Vormerkung speichern)
+      await user.click(screen.getByRole('button', { name: /vormerkung speichern/i }));
 
       await waitFor(() => {
         expect(mockOnCreated).toHaveBeenCalledTimes(1);

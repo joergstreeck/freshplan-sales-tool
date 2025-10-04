@@ -13,8 +13,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  FormControlLabel,
-  Checkbox,
   Typography,
   Link,
   Alert,
@@ -65,7 +63,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
   const fieldErrors = error?.errors || {};
 
-  // Stage 0 Validation (Vormerkung - Company Basics)
+  // Stage 0 Validation (Vormerkung - Company Basics + Source + Erstkontakt)
   const validateStage0 = (): Record<string, string[]> | null => {
     const errors: Record<string, string[]> = {};
 
@@ -75,51 +73,41 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       errors.companyName = [t('wizard.validation.companyNameMin')];
     }
 
+    if (!formData.source) {
+      errors.source = [t('wizard.stage0.sourceRequired')];
+    }
+
+    // Erstkontakt-Validierung (wenn Felder vorhanden)
+    if (formData.firstContact) {
+      if (!formData.firstContact.channel) {
+        errors['firstContact.channel'] = [t('wizard.stage0.firstContactChannelRequired')];
+      }
+      if (!formData.firstContact.performedAt) {
+        errors['firstContact.performedAt'] = [t('wizard.stage0.firstContactDateRequired')];
+      }
+      if (!formData.firstContact.notes || formData.firstContact.notes.trim().length < 10) {
+        errors['firstContact.notes'] = [t('wizard.stage0.firstContactNotesMin')];
+      }
+    }
+
     return Object.keys(errors).length > 0 ? errors : null;
   };
 
-  // Stage 1 Validation (Registrierung - Contact + DSGVO Consent + Erstkontakt)
+  // Stage 1 Validation (Registrierung - Mind. 1 Kontaktkanal)
   const validateStage1 = (): Record<string, string[]> | null => {
     const errors: Record<string, string[]> = {};
 
-    // Validate contact fields if provided
-    if (
-      formData.contact.email &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.contact.email.trim())
-    ) {
+    // Mind. 1 Kontaktkanal (Email ODER Phone)
+    const hasEmail = formData.contact.email?.trim();
+    const hasPhone = formData.contact.phone?.trim();
+
+    if (!hasEmail && !hasPhone) {
+      errors.contact = [t('wizard.stage1.contactRequired')];
+    }
+
+    // Email-Validierung (wenn vorhanden)
+    if (hasEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(hasEmail)) {
       errors['contact.email'] = [t('wizard.validation.emailInvalid')];
-    }
-
-    // Sprint 2.1.5: Quellenabhängige Pflichtfelder
-    const requiresFirstContact = ['MESSE', 'EMPFEHLUNG', 'TELEFON'].includes(formData.source || '');
-    const hasContactData =
-      formData.contact.firstName ||
-      formData.contact.lastName ||
-      formData.contact.email ||
-      formData.contact.phone;
-
-    // Erstkontakt-Block PFLICHT wenn kein Kontakt UND Quelle erfordert es
-    if (requiresFirstContact && !hasContactData && !formData.firstContact) {
-      errors.firstContact = [t('wizard.stage1.firstContactRequired')];
-    }
-
-    // Erstkontakt-Block Validierung (wenn vorhanden)
-    if (formData.firstContact) {
-      if (!formData.firstContact.channel) {
-        errors['firstContact.channel'] = [t('wizard.stage1.firstContactChannelRequired')];
-      }
-      if (!formData.firstContact.performedAt) {
-        errors['firstContact.performedAt'] = [t('wizard.stage1.firstContactDateRequired')];
-      }
-      if (!formData.firstContact.notes || formData.firstContact.notes.trim().length < 10) {
-        errors['firstContact.notes'] = [t('wizard.stage1.firstContactNotesMin')];
-      }
-    }
-
-    // DSGVO Consent: Source-abhängig (WEB_FORMULAR = PFLICHT, andere = optional)
-    const requiresConsent = formData.source === 'WEB_FORMULAR';
-    if (requiresConsent && hasContactData && !formData.consentGiven) {
-      errors.consentGiven = [t('wizard.stage1.consentRequired')];
     }
 
     return Object.keys(errors).length > 0 ? errors : null;
@@ -162,8 +150,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     setActiveStep(prevActiveStep => prevActiveStep - 1);
   };
 
-  const handleSubmit = async () => {
-    const validationErrors = validateStage2();
+  // Sprint 2.1.5: Progressive Profiling - Save per card
+  const handleSave = async (stage: 0 | 1 | 2) => {
+    // Validate current stage
+    let validationErrors: Record<string, string[]> | null = null;
+    if (stage === 0) validationErrors = validateStage0();
+    if (stage === 1) validationErrors = validateStage1();
+    if (stage === 2) validationErrors = validateStage2();
+
     if (validationErrors) {
       setError({ errors: validationErrors, status: 400, title: 'Validierungsfehler' });
       return;
@@ -173,27 +167,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     setError(null);
 
     try {
-      // Determine stage based on form data
-      let stage = 0;
-      const hasContactData =
-        formData.contact.firstName ||
-        formData.contact.lastName ||
-        formData.contact.email ||
-        formData.contact.phone;
-
-      if (hasContactData && formData.consentGiven) {
-        stage = 1;
-      }
-
-      const hasBusinessData =
-        formData.estimatedVolume !== undefined ||
-        formData.kitchenSize !== undefined ||
-        formData.employeeCount !== undefined ||
-        (formData.website && formData.website.trim() !== '');
-
-      if (hasBusinessData) {
-        stage = 2;
-      }
+      const hasContactData = formData.contact.email?.trim() || formData.contact.phone?.trim();
 
       // Sprint 2.1.5: Erstkontakt → activities[] Transformation
       const activities = formData.firstContact
@@ -202,7 +176,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               activityType: 'FIRST_CONTACT_DOCUMENTED',
               performedAt: formData.firstContact.performedAt,
               summary: `${formData.firstContact.channel}: ${formData.firstContact.notes}`,
-              countsAsProgress: false, // System Activity
+              countsAsProgress: false,
               metadata: {
                 channel: formData.firstContact.channel,
                 notes: formData.firstContact.notes,
@@ -217,7 +191,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         city: formData.city?.trim() || undefined,
         postalCode: formData.postalCode?.trim() || undefined,
         businessType: formData.businessType,
-        source: formData.source || undefined, // Sprint 2.1.5: Lead Source
+        source: formData.source,
         contact: hasContactData
           ? {
               firstName: formData.contact.firstName?.trim() || undefined,
@@ -226,28 +200,26 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               phone: formData.contact.phone?.trim() || undefined,
             }
           : undefined,
-        // ⚠️ Sprint 2.1.5: consentGivenAt NICHT senden (UI-only, Backend-Feld erst Sprint 2.1.6)
-        // consentGivenAt wird erst in Sprint 2.1.6 (V259) ins Backend-Schema aufgenommen
-        activities, // Sprint 2.1.5: Erstkontakt als FIRST_CONTACT_DOCUMENTED
-        estimatedVolume: formData.estimatedVolume,
-        kitchenSize: formData.kitchenSize,
-        employeeCount: formData.employeeCount,
-        website: formData.website?.trim() || undefined,
-        industry: formData.industry?.trim() || undefined,
+        activities,
+        estimatedVolume: stage >= 2 ? formData.estimatedVolume : undefined,
+        kitchenSize: stage >= 2 ? formData.kitchenSize : undefined,
+        employeeCount: stage >= 2 ? formData.employeeCount : undefined,
+        website: stage >= 2 ? formData.website?.trim() || undefined : undefined,
+        industry: stage >= 2 ? formData.industry?.trim() || undefined : undefined,
       };
 
       await createLead(payload);
 
-      // Reset form
+      // Reset & Close
       setFormData({
         companyName: '',
         city: '',
         postalCode: '',
         businessType: undefined,
-        source: undefined, // Sprint 2.1.5
+        source: undefined,
         contact: { firstName: '', lastName: '', email: '', phone: '' },
         consentGiven: false,
-        firstContact: undefined, // Sprint 2.1.5
+        firstContact: undefined,
         estimatedVolume: undefined,
         kitchenSize: undefined,
         employeeCount: undefined,
@@ -257,6 +229,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       setActiveStep(0);
 
       onCreated();
+      onClose();
     } catch (e) {
       setError(e as Problem);
     } finally {
@@ -336,7 +309,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
             {/* Sprint 2.1.5: Lead Source */}
             <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
-              <InputLabel id="source-label">{t('wizard.stage0.source')}</InputLabel>
+              <InputLabel id="source-label">{t('wizard.stage0.source')} *</InputLabel>
               <Select
                 labelId="source-label"
                 id="source-select"
@@ -344,7 +317,8 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 onChange={e =>
                   setFormData({ ...formData, source: e.target.value as LeadSource })
                 }
-                label={t('wizard.stage0.source')}
+                label={`${t('wizard.stage0.source')} *`}
+                required
               >
                 <MenuItem value="">
                   <em>{t('wizard.stage0.sourcePlaceholder')}</em>
@@ -357,6 +331,98 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 <MenuItem value="SONSTIGE">{t('wizard.sources.sonstige')}</MenuItem>
               </Select>
             </FormControl>
+
+            {/* Erstkontakt-Block (optional, empfohlen) */}
+            <Box sx={{ mt: 3, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                {t('wizard.stage0.firstContactTitle')}
+              </Typography>
+              <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                {t('wizard.stage0.firstContactHint')}
+              </Typography>
+
+              <FormControl fullWidth margin="dense" error={!!fieldErrors['firstContact.channel']}>
+                <InputLabel id="firstContact-channel-label">
+                  {t('wizard.stage0.firstContactChannel')}
+                </InputLabel>
+                <Select
+                  labelId="firstContact-channel-label"
+                  id="firstContact-channel-select"
+                  value={formData.firstContact?.channel || ''}
+                  onChange={e =>
+                    setFormData({
+                      ...formData,
+                      firstContact: {
+                        channel: e.target.value as FirstContact['channel'],
+                        performedAt: formData.firstContact?.performedAt || '',
+                        notes: formData.firstContact?.notes || '',
+                      },
+                    })
+                  }
+                  label={t('wizard.stage0.firstContactChannel')}
+                >
+                  <MenuItem value="">
+                    <em>{t('wizard.stage0.firstContactChannelPlaceholder')}</em>
+                  </MenuItem>
+                  <MenuItem value="MESSE">{t('wizard.firstContactChannels.messe')}</MenuItem>
+                  <MenuItem value="PHONE">{t('wizard.firstContactChannels.phone')}</MenuItem>
+                  <MenuItem value="EMAIL">{t('wizard.firstContactChannels.email')}</MenuItem>
+                  <MenuItem value="REFERRAL">{t('wizard.firstContactChannels.referral')}</MenuItem>
+                  <MenuItem value="OTHER">{t('wizard.firstContactChannels.other')}</MenuItem>
+                </Select>
+                {!!fieldErrors['firstContact.channel'] && (
+                  <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
+                    {fieldErrors['firstContact.channel'][0]}
+                  </Typography>
+                )}
+              </FormControl>
+
+              <TextField
+                label={t('wizard.stage0.firstContactDate')}
+                type="datetime-local"
+                value={formData.firstContact?.performedAt || ''}
+                onChange={e =>
+                  setFormData({
+                    ...formData,
+                    firstContact: {
+                      channel: formData.firstContact?.channel || 'OTHER',
+                      performedAt: e.target.value,
+                      notes: formData.firstContact?.notes || '',
+                    },
+                  })
+                }
+                fullWidth
+                margin="dense"
+                error={!!fieldErrors['firstContact.performedAt']}
+                helperText={fieldErrors['firstContact.performedAt']?.[0] || ''}
+                InputLabelProps={{ shrink: true }}
+              />
+
+              <TextField
+                label={t('wizard.stage0.firstContactNotes')}
+                value={formData.firstContact?.notes || ''}
+                onChange={e =>
+                  setFormData({
+                    ...formData,
+                    firstContact: {
+                      channel: formData.firstContact?.channel || 'OTHER',
+                      performedAt: formData.firstContact?.performedAt || '',
+                      notes: e.target.value,
+                    },
+                  })
+                }
+                fullWidth
+                margin="dense"
+                multiline
+                rows={3}
+                error={!!fieldErrors['firstContact.notes']}
+                helperText={
+                  fieldErrors['firstContact.notes']?.[0] ||
+                  t('wizard.stage0.firstContactNotesHelper')
+                }
+                inputProps={{ minLength: 10 }}
+              />
+            </Box>
           </Box>
         );
 
@@ -428,146 +494,31 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               margin="dense"
             />
 
-            {/* DSGVO Consent Checkbox (PFLICHT bei Contact-Daten) */}
-            <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.consentGiven}
-                    onChange={e => setFormData({ ...formData, consentGiven: e.target.checked })}
-                    required={
-                      !!(
-                        formData.contact.firstName ||
-                        formData.contact.lastName ||
-                        formData.contact.email ||
-                        formData.contact.phone
-                      )
-                    }
-                    aria-required={
-                      !!(
-                        formData.contact.firstName ||
-                        formData.contact.lastName ||
-                        formData.contact.email ||
-                        formData.contact.phone
-                      )
-                    }
-                  />
-                }
-                label={
-                  <Typography variant="body2">
-                    {t('wizard.stage1.consentLabel')}{' '}
-                    <Link href="/datenschutz" target="_blank" rel="noopener">
-                      {t('wizard.stage1.consentLink')}
-                    </Link>
-                  </Typography>
-                }
-              />
-              {!!fieldErrors.consentGiven && (
-                <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
-                  {fieldErrors.consentGiven[0]}
-                </Typography>
-              )}
+            {/* DSGVO Hinweis (statt Checkbox bei Vertrieb) */}
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+              <Typography variant="body2">
+                <strong>Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)</strong>
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                Verarbeitung zur B2B-Geschäftsanbahnung.
+                <Link
+                  onClick={() => {
+                    window.open(
+                      'https://dsgvo-gesetz.de/art-6-dsgvo/',
+                      '_blank',
+                      'noopener,noreferrer'
+                    );
+                  }}
+                  sx={{ ml: 1, cursor: 'pointer' }}
+                >
+                  Gesetzestext anzeigen ↗
+                </Link>
+              </Typography>
+              <Typography variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic' }}>
+                Hinweis: Einwilligung nur erforderlich bei Web-Formular (Kunde gibt selbst Daten
+                ein).
+              </Typography>
             </Box>
-
-            {/* Sprint 2.1.5: Erstkontakt-Block (conditional) */}
-            {['MESSE', 'EMPFEHLUNG', 'TELEFON'].includes(formData.source || '') && (
-              <Box sx={{ mt: 3, p: 2, bgcolor: 'action.hover', borderRadius: 1 }}>
-                <Typography variant="subtitle2" gutterBottom>
-                  {t('wizard.stage1.firstContactTitle')}
-                </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
-                  {t('wizard.stage1.firstContactHint')}
-                </Typography>
-
-                <FormControl fullWidth margin="dense" error={!!fieldErrors['firstContact.channel']}>
-                  <InputLabel id="firstContact-channel-label">
-                    {t('wizard.stage1.firstContactChannel')} *
-                  </InputLabel>
-                  <Select
-                    labelId="firstContact-channel-label"
-                    id="firstContact-channel-select"
-                    value={formData.firstContact?.channel || ''}
-                    onChange={e =>
-                      setFormData({
-                        ...formData,
-                        firstContact: {
-                          channel: e.target.value as FirstContact['channel'],
-                          performedAt: formData.firstContact?.performedAt || '',
-                          notes: formData.firstContact?.notes || '',
-                        },
-                      })
-                    }
-                    label={`${t('wizard.stage1.firstContactChannel')} *`}
-                  >
-                    <MenuItem value="">
-                      <em>{t('wizard.stage1.firstContactChannelPlaceholder')}</em>
-                    </MenuItem>
-                    <MenuItem value="MESSE">{t('wizard.firstContactChannels.messe')}</MenuItem>
-                    <MenuItem value="PHONE">{t('wizard.firstContactChannels.phone')}</MenuItem>
-                    <MenuItem value="EMAIL">{t('wizard.firstContactChannels.email')}</MenuItem>
-                    <MenuItem value="REFERRAL">{t('wizard.firstContactChannels.referral')}</MenuItem>
-                    <MenuItem value="OTHER">{t('wizard.firstContactChannels.other')}</MenuItem>
-                  </Select>
-                  {!!fieldErrors['firstContact.channel'] && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                      {fieldErrors['firstContact.channel'][0]}
-                    </Typography>
-                  )}
-                </FormControl>
-
-                <TextField
-                  label={`${t('wizard.stage1.firstContactDate')} *`}
-                  type="datetime-local"
-                  value={formData.firstContact?.performedAt || ''}
-                  onChange={e =>
-                    setFormData({
-                      ...formData,
-                      firstContact: {
-                        channel: formData.firstContact?.channel || 'OTHER',
-                        performedAt: e.target.value,
-                        notes: formData.firstContact?.notes || '',
-                      },
-                    })
-                  }
-                  fullWidth
-                  margin="dense"
-                  error={!!fieldErrors['firstContact.performedAt']}
-                  helperText={fieldErrors['firstContact.performedAt']?.[0] || ''}
-                  InputLabelProps={{ shrink: true }}
-                />
-
-                <TextField
-                  label={`${t('wizard.stage1.firstContactNotes')} *`}
-                  value={formData.firstContact?.notes || ''}
-                  onChange={e =>
-                    setFormData({
-                      ...formData,
-                      firstContact: {
-                        channel: formData.firstContact?.channel || 'OTHER',
-                        performedAt: formData.firstContact?.performedAt || '',
-                        notes: e.target.value,
-                      },
-                    })
-                  }
-                  fullWidth
-                  margin="dense"
-                  multiline
-                  rows={3}
-                  error={!!fieldErrors['firstContact.notes']}
-                  helperText={
-                    fieldErrors['firstContact.notes']?.[0] ||
-                    t('wizard.stage1.firstContactNotesHelper')
-                  }
-                  inputProps={{ minLength: 10 }}
-                />
-
-                {!!fieldErrors.firstContact && (
-                  <Typography variant="caption" color="error" sx={{ display: 'block', mt: 1 }}>
-                    {fieldErrors.firstContact[0]}
-                  </Typography>
-                )}
-              </Box>
-            )}
           </Box>
         );
 
@@ -699,22 +650,51 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
           {t('wizard.actions.cancel')}
         </Button>
         <Box sx={{ flex: '1 1 auto' }} />
+
         {activeStep > 0 && (
           <Button onClick={handleBack} disabled={saving}>
             {t('wizard.actions.back')}
           </Button>
         )}
-        {activeStep < steps.length - 1 ? (
-          <Button variant="contained" onClick={handleNext} disabled={saving}>
-            {t('wizard.actions.next')}
-          </Button>
-        ) : (
+
+        {/* Sprint 2.1.5: Save-Buttons je Karte */}
+        {activeStep === 0 && (
+          <>
+            <Button
+              variant="contained"
+              onClick={() => handleSave(0)}
+              disabled={saving || !formData.companyName.trim() || !formData.source}
+            >
+              {saving ? t('wizard.actions.saving') : t('wizard.actions.saveVormerkung')}
+            </Button>
+            <Button onClick={handleNext} disabled={saving}>
+              {t('wizard.actions.next')}
+            </Button>
+          </>
+        )}
+
+        {activeStep === 1 && (
+          <>
+            <Button
+              variant="contained"
+              onClick={() => handleSave(1)}
+              disabled={saving}
+            >
+              {saving ? t('wizard.actions.saving') : t('wizard.actions.saveRegistrierung')}
+            </Button>
+            <Button onClick={handleNext} disabled={saving}>
+              {t('wizard.actions.next')}
+            </Button>
+          </>
+        )}
+
+        {activeStep === 2 && (
           <Button
             variant="contained"
-            onClick={handleSubmit}
-            disabled={saving || !formData.companyName.trim()}
+            onClick={() => handleSave(2)}
+            disabled={saving}
           >
-            {saving ? t('wizard.actions.saving') : t('wizard.actions.create')}
+            {saving ? t('wizard.actions.saving') : t('wizard.actions.saveQualifizierung')}
           </Button>
         )}
       </DialogActions>

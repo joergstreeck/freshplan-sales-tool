@@ -35,7 +35,18 @@
       "businessType": "Branche",
       "businessTypePlaceholder": "Bitte wählen",
       "source": "Herkunft",
-      "sourcePlaceholder": "Wie wurde der Lead generiert?"
+      "sourcePlaceholder": "Wie wurde der Lead generiert?",
+      "sourceRequired": "Quelle ist erforderlich",
+      "firstContactTitle": "Erstkontakt dokumentieren",
+      "firstContactHint": "Hatten Sie bereits Kontakt? Dokumentieren Sie kurz den Erstkontakt. Dadurch startet der Schutz für diesen Lead.",
+      "firstContactChannel": "Kanal",
+      "firstContactChannelPlaceholder": "Kanal wählen...",
+      "firstContactChannelRequired": "Kanal ist erforderlich",
+      "firstContactDate": "Zeitpunkt",
+      "firstContactDateRequired": "Zeitpunkt ist erforderlich",
+      "firstContactNotes": "Notizen",
+      "firstContactNotesMin": "Notizen müssen mindestens 10 Zeichen lang sein",
+      "firstContactNotesHelper": "Mindestens 10 Zeichen"
     },
     "stage1": {
       "description": "Erfassen Sie Kontaktdaten und dokumentieren Sie ggf. den Erstkontakt.",
@@ -43,20 +54,7 @@
       "lastName": "Nachname",
       "email": "E-Mail",
       "phone": "Telefon",
-      "consentLabel": "Ich stimme der Speicherung meiner Kontaktdaten zu.",
-      "consentLink": "Datenschutzhinweise",
-      "consentRequired": "Einwilligung erforderlich (Web-Formular)",
-      "firstContactTitle": "Erstkontakt dokumentieren",
-      "firstContactHint": "Dokumentieren Sie den ersten Kontakt mit diesem Lead. Pflichtfeld bei Quellen: Messe, Empfehlung, Telefon (wenn keine Kontaktdaten erfasst).",
-      "firstContactChannel": "Kontaktkanal",
-      "firstContactChannelPlaceholder": "Wie wurde der Kontakt hergestellt?",
-      "firstContactDate": "Zeitpunkt des Kontakts",
-      "firstContactNotes": "Notizen",
-      "firstContactNotesHelper": "Mindestens 10 Zeichen",
-      "firstContactRequired": "Erstkontakt-Dokumentation ist bei der gewählten Quelle erforderlich",
-      "firstContactChannelRequired": "Kontaktkanal ist erforderlich",
-      "firstContactDateRequired": "Zeitpunkt des Kontakts ist erforderlich",
-      "firstContactNotesMin": "Notizen müssen mindestens 10 Zeichen enthalten"
+      "contactRequired": "Mind. E-Mail oder Telefon erforderlich"
     },
     "stage2": {
       "description": "Erweiterte Geschäftsdaten für die Qualifizierung.",
@@ -100,7 +98,10 @@
       "back": "Zurück",
       "next": "Weiter",
       "create": "Lead erstellen",
-      "saving": "Speichert..."
+      "saving": "Speichert...",
+      "saveVormerkung": "Vormerkung speichern",
+      "saveRegistrierung": "Registrierung speichern",
+      "saveQualifizierung": "Qualifizierung speichern"
     },
     "validation": {
       "companyNameMin": "Firmenname muss mindestens 2 Zeichen lang sein",
