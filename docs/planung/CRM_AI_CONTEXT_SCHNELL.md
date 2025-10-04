@@ -127,16 +127,17 @@ MODULE-STRUKTUR (Business-Value-orientiert):
       - source != WEB_FORMULAR → Berechtigtes Interesse (Art. 6 Abs. 1 lit. f)
       - Rechtliche Grundlage: B2B-Geschäftsanbahnung (berechtigtes Interesse)
 
-  Sprint 2.1.5 Status (04.10.2025 - Doku COMPLETE, Code ausstehend):
-    - ✅ **Backend Phase 1:** V255-V257 Migrations (Progress Tracking + Stage + Functions/Trigger), 24 Unit Tests
-    - ✅ **Backend Phase 2:** V258 Migration (13 Activity-Types Constraint erweitert), ActivityType.java, 7 Unit Tests
-    - ✅ **Dokumentation:** FRONTEND_DELTA.md (zentrale Frontend-Spec, 877 Zeilen)
-      - 13 Activity-Types + ACTIVITY_PROGRESS_MAP, LeadSource Typ (6 Werte)
-      - Erstkontakt-Block UI → activities[] Transformation
-      - Problem.extensions (severity, duplicates[]) für Dedupe 409 (Hard/Soft)
-      - Dedupe Query-Params (overrideReason, reason), Pre-Claim UX (Badge ⏳ + 4 Filter)
-    - ⏸️ **Frontend Code:** types.ts (10→13 Types), api.ts (Query-Params), LeadWizard.tsx (Erstkontakt-Block), Dedupe-Dialoge
-    - ⏸️ **Features verschoben:** consent_given_at Backend-Feld (V259 Sprint 2.1.6), Backdating, Nightly Jobs, Fuzzy-Matching
+  Sprint 2.1.5 Status (04.10.2025 - UX Best Practice dokumentiert):
+    - ✅ **Backend:** V255-V258 Migrations COMPLETE (31 Unit Tests, Protection + Progress + 13 Activity-Types)
+    - ✅ **UX-Regeln (Best Practice):** Progressive Profiling - Jede Karte separat speicherbar
+      - Button-Logik: [Vormerkung speichern], [Registrierung speichern], [Qualifizierung speichern]
+      - Erstkontakt: Nur auf Karte 0 (optional, nachträglich möglich), startet Schutz
+      - DSGVO: KEINE Checkbox bei Vertrieb (nur Hinweis Art. 6 Abs. 1 lit. f)
+      - Pflichtfeld Karte 1: Mind. 1 Kontaktkanal (Email ODER Phone)
+      - Pre-Claim: 10-Tage-Frist wenn kein Erstkontakt, Badge "⏳ läuft ab in X Tagen"
+    - ✅ **Dokumentation:** FRONTEND_DELTA.md Section 0 (UX-Regeln) + TRIGGER korrigiert + Anti-Patterns
+    - ⏸️ **Frontend Code:** LeadWizard.tsx Refactor (Button-Logik, Erstkontakt auf Karte 0, DSGVO-Hinweis)
+    - ⏸️ **Sprint 2.1.6:** Backdating, consent_given_at (V259), Bestandsleads-Migration, Nightly Jobs
 
   Key-Features: KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B
 

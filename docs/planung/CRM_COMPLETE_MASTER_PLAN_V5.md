@@ -36,18 +36,26 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (04.10.2025):**
-- ✅ **Sprint 2.1.5 Frontend-Spezifikation COMPLETE:** FRONTEND_DELTA.md + Problem+JSON extensions
-  - Zentrale Frontend-Spezifikation für Sprint 2.1.5 Features (13 Activity-Types, LeadSource, Dedupe 409 Handling)
-  - Problem+JSON mit extensions.severity + extensions.duplicates[] für Hard/Soft Collisions
-  - Dokumentation-First Ansatz: Soll-Zustand definiert, Code-Änderungen folgen
-  - TRIGGER_SPRINT_2_1_5.md: entry_points + RFC 7807 erweitert, DoD aktualisiert
-  - V258 Status korrigiert: Backend Phase 2 COMPLETE (nicht "für 2.1.6")
-- 🔄 **IN PROGRESS:** Sprint 2.1.5 Backend COMPLETE, Frontend Code-Anpassung ausstehend
+**📋 LATEST UPDATE (04.10.2025 - Progressive Profiling UX Best Practice):**
+- ✅ **Sprint 2.1.5 Progressive Profiling UX-Regeln COMPLETE:**
+  - **FRONTEND_DELTA.md Section 0:** UX-Regeln (Best Practice) - Jede Karte separat speicherbar
+  - **Button-Logik:** [Vormerkung speichern], [Registrierung speichern], [Qualifizierung speichern]
+  - **Erstkontakt:** Nur auf Karte 0 (optional, empfohlen), kann nachträglich hinzugefügt werden
+  - **DSGVO:** KEINE Consent-Checkbox im Vertriebs-Wizard (nur Hinweis Art. 6 Abs. 1 lit. f)
+  - **Schutz:** Nur bei Erstkontakt-Dokumentation (NICHT bei Kontaktdaten)
+  - **Pflichtfeld Karte 1:** Mind. 1 Kontaktkanal (Email ODER Phone)
+  - **Pre-Claim:** Vormerkung ohne Erstkontakt = 10-Tage-Frist, Badge "⏳ läuft ab in X Tagen"
+  - **Anti-Patterns:** Dokumentiert (was NICHT tun)
+- ✅ **Sprint 2.1.5 Backend COMPLETE:**
   - ✅ **Backend Phase 1:** V255-V257 Migrations, Lead Protection Service, 24 Unit Tests
   - ✅ **Backend Phase 2:** V258 Migration (13 Activity-Types), ActivityType.java, 7 Unit Tests
-  - ✅ **Dokumentation:** 6 Artefakte (FRONTEND_DELTA, DEDUPE_POLICY, etc.), API-Specs, DoD
-  - ⏸️ **Frontend Code:** types.ts (10→13 Types), api.ts (Query-Params), LeadWizard.tsx (Erstkontakt-Block), Dedupe-Dialoge
+  - ✅ **Dokumentation:** FRONTEND_DELTA.md (877 Zeilen), TRIGGER korrigiert, Anti-Patterns dokumentiert
+- 🔄 **IN PROGRESS:** Sprint 2.1.5 Frontend Code-Anpassung
+  - ✅ **types.ts:** 13 Activity-Types, ACTIVITY_PROGRESS_MAP, LeadSource, Problem.extensions
+  - ✅ **api.ts:** Query-Params (reason, overrideReason), activities[] support, kein hardcoded source
+  - ⏸️ **LeadWizard.tsx:** Button-Logik Refactor (Speichern auf jeder Karte), Erstkontakt auf Karte 0, DSGVO-Hinweis
+  - ⏸️ **i18n:** Button-Labels, Copy-Texte anpassen
+  - ⏸️ **Tests:** Button-Interaktionen aktualisieren (16 Tests)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
