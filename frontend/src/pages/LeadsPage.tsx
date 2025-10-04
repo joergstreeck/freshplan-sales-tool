@@ -13,10 +13,6 @@ import { CustomersPageV2 } from './CustomersPageV2';
 
 export default function LeadsPage() {
   return (
-    <CustomersPageV2
-      title="Lead-Management"
-      createButtonLabel="Lead erfassen"
-      context="leads"
-    />
+    <CustomersPageV2 title="Lead-Management" createButtonLabel="Lead erfassen" context="leads" />
   );
 }

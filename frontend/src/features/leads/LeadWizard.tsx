@@ -41,11 +41,13 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const [error, setError] = useState<Problem | null>(null);
 
   // Form State (Progressive Profiling - Sprint 2.1.5)
-  const [formData, setFormData] = useState<LeadFormStage2 & {
-    source?: LeadSource;
-    notes?: string; // Sprint 2.1.5: Feld 1 - Notizen/Quelle (immer sichtbar, optional)
-    firstContact?: FirstContact;
-  }>({
+  const [formData, setFormData] = useState<
+    LeadFormStage2 & {
+      source?: LeadSource;
+      notes?: string; // Sprint 2.1.5: Feld 1 - Notizen/Quelle (immer sichtbar, optional)
+      firstContact?: FirstContact;
+    }
+  >({
     companyName: '',
     city: '',
     postalCode: '',
@@ -397,13 +399,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   label="☑ Ich hatte bereits Erstkontakt (für sofortigen Lead-Schutz)"
                 />
                 <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 4 }}>
-                  Aktiviert 6-Monate-Schutz ab jetzt. Nur ankreuzen wenn tatsächlich Erstkontakt stattfand.
+                  Aktiviert 6-Monate-Schutz ab jetzt. Nur ankreuzen wenn tatsächlich Erstkontakt
+                  stattfand.
                 </Typography>
               </Box>
             )}
 
             {/* Sprint 2.1.5: Zwei-Felder-Lösung - Feld 2: Erstkontakt-Block (conditional) */}
-            {((['MESSE', 'TELEFON'].includes(formData.source || '')) || showFirstContactFields) && (
+            {(['MESSE', 'TELEFON'].includes(formData.source || '') || showFirstContactFields) && (
               <Box
                 sx={{
                   mt: 3,
@@ -425,7 +428,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                     </Typography>
                   )}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mb: 2, display: 'block' }}
+                >
                   {['MESSE', 'TELEFON'].includes(formData.source || '')
                     ? 'Wann und wie fand der Erstkontakt statt? (Aktiviert 6-Monate-Schutz)'
                     : 'Wann und wie fand der Erstkontakt statt? (Aktiviert 6-Monate-Schutz ab jetzt)'}
@@ -589,7 +596,16 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             />
 
             {/* DSGVO Hinweis (statt Checkbox bei Vertrieb) */}
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid', borderColor: 'grey.300' }}>
+            <Box
+              sx={{
+                mt: 2,
+                p: 2,
+                bgcolor: 'grey.50',
+                borderRadius: 1,
+                border: '1px solid',
+                borderColor: 'grey.300',
+              }}
+            >
               <Typography variant="body2">
                 <strong>Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)</strong>
               </Typography>
@@ -784,11 +800,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
         {activeStep === 1 && (
           <>
-            <Button
-              variant="contained"
-              onClick={() => handleSave(1)}
-              disabled={saving}
-            >
+            <Button variant="contained" onClick={() => handleSave(1)} disabled={saving}>
               {saving ? t('wizard.actions.saving') : t('wizard.actions.saveRegistrierung')}
             </Button>
             <Button onClick={handleNext} disabled={saving}>
@@ -798,11 +810,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         )}
 
         {activeStep === 2 && (
-          <Button
-            variant="contained"
-            onClick={() => handleSave(2)}
-            disabled={saving}
-          >
+          <Button variant="contained" onClick={() => handleSave(2)} disabled={saving}>
             {saving ? t('wizard.actions.saving') : t('wizard.actions.saveQualifizierung')}
           </Button>
         )}

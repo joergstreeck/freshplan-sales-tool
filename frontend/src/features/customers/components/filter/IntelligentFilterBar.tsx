@@ -361,7 +361,13 @@ export function IntelligentFilterBar({
     (filterKey: keyof FilterConfig, value: string) => {
       const newFilters = { ...activeFilters };
 
-      if (filterKey === 'status' || filterKey === 'industry' || filterKey === 'riskLevel' || filterKey === 'tags' || filterKey === 'location') {
+      if (
+        filterKey === 'status' ||
+        filterKey === 'industry' ||
+        filterKey === 'riskLevel' ||
+        filterKey === 'tags' ||
+        filterKey === 'location'
+      ) {
         // Array filters
         const currentArray = newFilters[filterKey] as string[] | undefined;
         newFilters[filterKey] = currentArray?.filter(v => v !== value) || [];
@@ -378,9 +384,19 @@ export function IntelligentFilterBar({
     (filterKey: keyof FilterConfig) => {
       const newFilters = { ...activeFilters };
 
-      if (filterKey === 'status' || filterKey === 'industry' || filterKey === 'riskLevel' || filterKey === 'tags' || filterKey === 'location') {
+      if (
+        filterKey === 'status' ||
+        filterKey === 'industry' ||
+        filterKey === 'riskLevel' ||
+        filterKey === 'tags' ||
+        filterKey === 'location'
+      ) {
         newFilters[filterKey] = [];
-      } else if (filterKey === 'revenueRange' || filterKey === 'hasContacts' || filterKey === 'lastContactDays') {
+      } else if (
+        filterKey === 'revenueRange' ||
+        filterKey === 'hasContacts' ||
+        filterKey === 'lastContactDays'
+      ) {
         newFilters[filterKey] = null;
       }
 

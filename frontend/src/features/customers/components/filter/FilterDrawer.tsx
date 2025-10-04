@@ -191,7 +191,9 @@ export function FilterDrawer({
         <FormControl fullWidth>
           <FormLabel>Kontakte</FormLabel>
           <RadioGroup
-            value={localFilters.hasContacts === null ? 'all' : localFilters.hasContacts ? 'yes' : 'no'}
+            value={
+              localFilters.hasContacts === null ? 'all' : localFilters.hasContacts ? 'yes' : 'no'
+            }
             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
               const value = e.target.value;
               setLocalFilters({
@@ -251,7 +253,9 @@ export function FilterDrawer({
 
         {/* Last Contact Days */}
         <FormControl fullWidth>
-          <FormLabel>Letzter Kontakt vor mehr als {localFilters.lastContactDays || 30} Tagen</FormLabel>
+          <FormLabel>
+            Letzter Kontakt vor mehr als {localFilters.lastContactDays || 30} Tagen
+          </FormLabel>
           <Slider
             value={localFilters.lastContactDays || 30}
             onChange={(_, value) => {

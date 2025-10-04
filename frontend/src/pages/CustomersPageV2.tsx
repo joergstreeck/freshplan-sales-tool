@@ -22,7 +22,11 @@ import { isFeatureEnabled } from '../config/featureFlags';
 import { useFocusListStore } from '../features/customer/store/focusListStore';
 import { getTableColumnsForContext } from '../features/customers/components/filter/contextConfig';
 import type { Customer } from '../types/customer.types';
-import type { FilterConfig, SortConfig, ColumnConfig } from '../features/customers/types/filter.types';
+import type {
+  FilterConfig,
+  SortConfig,
+  ColumnConfig,
+} from '../features/customers/types/filter.types';
 
 interface CustomersPageV2Props {
   openWizard?: boolean;
@@ -45,10 +49,7 @@ export function CustomersPageV2({
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
 
   // Use focus list store for sort configuration only
-  const {
-    sortBy,
-    setSortBy,
-  } = useFocusListStore();
+  const { sortBy, setSortBy } = useFocusListStore();
 
   // Get context-based column configuration
   const columnConfig = useMemo(() => {
@@ -175,7 +176,16 @@ export function CustomersPageV2({
           }
         : undefined,
     };
-  }, [filterConfig.status, filterConfig.industry, filterConfig.riskLevel, filterConfig.hasContacts, filterConfig.lastContactDays, filterConfig.revenueRange, filterConfig.createdDays, sortConfig]);
+  }, [
+    filterConfig.status,
+    filterConfig.industry,
+    filterConfig.riskLevel,
+    filterConfig.hasContacts,
+    filterConfig.lastContactDays,
+    filterConfig.revenueRange,
+    filterConfig.createdDays,
+    sortConfig,
+  ]);
 
   // Server-side search with pagination (only for structured filters)
   const [page, setPage] = useState(0);
@@ -203,9 +213,7 @@ export function CustomersPageV2({
 
   // Use appropriate data source based on context
   const { data, isLoading, refetch } =
-    context === 'leads'
-      ? leadsData
-      : (hasStructuredFilters ? serverSideData : clientSideData);
+    context === 'leads' ? leadsData : hasStructuredFilters ? serverSideData : clientSideData;
 
   const customers = useMemo(() => {
     if (context === 'leads') {
@@ -492,7 +500,8 @@ export function CustomersPageV2({
                 }
                 illustration="/illustrations/empty-customers.svg"
                 action={{
-                  label: context === 'leads' ? '✨ Ersten Lead erfassen' : '✨ Ersten Kunden anlegen',
+                  label:
+                    context === 'leads' ? '✨ Ersten Lead erfassen' : '✨ Ersten Kunden anlegen',
                   onClick: () => setWizardOpen(true),
                   variant: 'contained',
                   size: 'large',

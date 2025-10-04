@@ -54,7 +54,13 @@ export const LEADS_TABLE_COLUMNS: TableColumn[] = [
  */
 export const CUSTOMERS_TABLE_COLUMNS: TableColumn[] = [
   { id: 'companyName', label: 'Kunde', field: 'companyName', visible: true, order: 0 },
-  { id: 'customerNumber', label: 'Kundennummer', field: 'customerNumber', visible: false, order: 1 },
+  {
+    id: 'customerNumber',
+    label: 'Kundennummer',
+    field: 'customerNumber',
+    visible: false,
+    order: 1,
+  },
   { id: 'status', label: 'Status', field: 'status', visible: true, order: 2 },
   {
     id: 'riskScore',

@@ -195,28 +195,28 @@ export type LeadProtectionInfo = {
  * @see FRONTEND_DELTA.md Section 2
  */
 export type LeadSource =
-  | 'MESSE'           // Messe/Event
-  | 'EMPFEHLUNG'      // Partner/Kunde
-  | 'TELEFON'         // Cold Call
-  | 'WEB_FORMULAR'    // Website (Sprint 2.1.6)
-  | 'PARTNER'         // Partner-API (Sprint 2.1.6)
-  | 'SONSTIGE';       // Fallback
+  | 'MESSE' // Messe/Event
+  | 'EMPFEHLUNG' // Partner/Kunde
+  | 'TELEFON' // Cold Call
+  | 'WEB_FORMULAR' // Website (Sprint 2.1.6)
+  | 'PARTNER' // Partner-API (Sprint 2.1.6)
+  | 'SONSTIGE'; // Fallback
 
 /**
  * Erstkontakt-Kanäle (Sprint 2.1.5)
  * @see FRONTEND_DELTA.md Section 3
  */
 export type FirstContactChannel =
-  | 'MESSE'      // Messestand/Event
-  | 'PHONE'      // Telefonat
-  | 'EMAIL'      // E-Mail
-  | 'REFERRAL'   // Empfehlung/Vorstellung
-  | 'OTHER';     // Sonstige
+  | 'MESSE' // Messestand/Event
+  | 'PHONE' // Telefonat
+  | 'EMAIL' // E-Mail
+  | 'REFERRAL' // Empfehlung/Vorstellung
+  | 'OTHER'; // Sonstige
 
 export interface FirstContact {
   channel: FirstContactChannel;
-  performedAt: string;  // ISO-8601 DateTime
-  notes: string;        // min. 10 Zeichen
+  performedAt: string; // ISO-8601 DateTime
+  notes: string; // min. 10 Zeichen
 }
 
 // RFC7807 Problem Details (Sprint 2.1.5 - mit extensions für Dedupe)
@@ -237,7 +237,7 @@ export type Problem = {
 
   // Sprint 2.1.5: Dedupe 409 Handling
   extensions?: {
-    severity?: 'WARNING';  // Nur bei Soft Collisions
+    severity?: 'WARNING'; // Nur bei Soft Collisions
     duplicates?: DuplicateLead[];
   };
 };

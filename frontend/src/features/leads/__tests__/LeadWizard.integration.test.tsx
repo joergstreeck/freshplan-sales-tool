@@ -324,7 +324,6 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         expect(capturedPayload.consentGivenAt).toBeUndefined();
       });
     });
-
   });
 
   // ==================== TEST 3: Stage-Transition Rules ====================
