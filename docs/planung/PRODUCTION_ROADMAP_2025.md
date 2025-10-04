@@ -10,19 +10,24 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS
-- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (04.10.2025)
-- **Progress:** 10/36 PRs - 28% done (PR #124/#125 ready for merge)
-- **Blockers:** Keine
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (45% complete)
+- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (05.10.2025) - **PR #129 MERGED** 🎉
+- **Progress:** 11/36 PRs - 31% done (Sprint 2.1.5 Backend+Frontend COMPLETE)
+- **Blockers:** Issue #130 (TestDataBuilder Konflikt - Worktree CI temporär deaktiviert)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
-- **Performance:** ✅ P95 <7ms (Lead-Module) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage
-- **Latest:** Sprint 2.1.5 COMPLETE (Backend + Frontend)
-  - ✅ Dokumentation: 4 Artefakte vollständig (BUSINESS_LOGIC, PRE_CLAIM_LOGIC, FRONTEND_DELTA, SUMMARY)
-  - ✅ Backend: V255-V257 Migrations, LeadProtectionService (24 Tests), LeadDTO erweitert (registeredAt)
-  - ✅ Frontend: LeadWizard (3 Stages), Context-Prop Architecture, Zwei-Felder-Lösung, Pre-Claim Badge
-  - ✅ **Kritische Gaps geschlossen:** Zwei-Felder-Lösung, Pre-Claim Badge, Backend DTO
-  - ⏭️ **Optional auf 2.1.6:** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter
-- **Sprint 2.1.6/2.1.7:** PLANNED (12-18.10.2025 / 19-25.10.2025) - Migration-API, Lead-Scoring, Optionale Features
+- **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
+- **Latest:** 🎉 **Sprint 2.1.5 COMPLETE** - PR #129 MERGED (Monster-PR: 56 Dateien, +8.525 LOC)
+  - ✅ **Frontend Implementation (1.468 LOC neu):**
+    - LeadWizard.tsx (812 LOC): Zwei-Felder-Lösung (Notizen vs. Erstkontakt)
+    - Pre-Claim Badge mit 10-Tage-Countdown in CustomerTable
+    - Server-Side Filtering mit Context-Prop Architecture
+    - LeadWizard Integration Tests (802 LOC, MSW-basiert)
+  - ✅ **Backend Extensions:**
+    - Migration V259: Remove leads_company_name_city_key (Pre-Claim Support)
+    - LeadDTO: +registeredAt, +protectionUntil, +progressDeadline
+  - ✅ **Dokumentation:** 5 neue Artefakte (3.814 LOC) + ADR-006
+  - ✅ **DSGVO:** Consent-Checkbox Stage 1, NICHT vorausgefüllt
+- **Next Sprint:** Sprint 2.1.6 (12-18.10.2025) - Migration-API, Convert Flow, Stop-the-Clock UI, Nightly Jobs
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -92,26 +97,24 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: ███░░░░░░░ 40% (2.5/5 Sprints + 4 Sub-Sprints)
+Progress: ████░░░░░░ 45% (2.5/5 Sprints + 5 Sub-Sprints COMPLETE)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
 Sprint 2.1.2: Frontend Research       ✅ COMPLETE → PR #112 merged - Research & Patterns für UI
 Sprint 2.1.3: Frontend Lead Mgmt      ✅ COMPLETE → PR #122 merged - Lead Management MVP
+Sprint 2.1.4: Lead Deduplication      ✅ COMPLETE → PR #123 merged - Normalisierung + Idempotency (V247-V254)
+Sprint 2.1.5: Progressive Profiling   ✅ COMPLETE (05.10.2025) → PR #124 Backend + PR #129 Frontend MERGED
+                                      → **Monster-PR #129:** 56 Dateien, +8.525 LOC, -975 LOC
+                                      → **Backend:** V255-V259 Migrations, LeadProtectionService (24 Tests, 0.845s), LeadDTO erweitert
+                                      → **Frontend:** LeadWizard (812 LOC) + Pre-Claim Badge + Server-Side Filtering (contextConfig.ts)
+                                      → **Tests:** LeadWizard Integration (802 LOC, MSW-basiert), TerritoryService (+78 LOC)
+                                      → **Dokumentation:** 5 Artefakte (3.814 LOC) + ADR-006 Hybrid-Architektur
+                                      → **DSGVO:** Consent-Checkbox Stage 1 (Art. 6 Abs. 1 lit. a), NICHT vorausgefüllt ✅
+                                      → **Performance:** Bundle 178 KB, LeadWizard <50ms, Pre-Claim Badge <10ms, Filtering <200ms
+                                      → **CI Issue:** Worktree CI temporär deaktiviert (Issue #130: TestDataBuilder Konflikt)
+                                      → **Verschoben auf 2.1.6:** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
-Sprint 2.1.4: Lead Dedup & Quality    ✅ COMPLETE → PR #123 merged - Normalisierung, Idempotenz, CI 24min→7min
-                                      → [Operations Runbook](../operations/lead-deduplication-runbook.md)
-Sprint 2.1.5: Protection & Profiling  ✅ COMPLETE (04.10.2025)
-                                      → **Backend Phase 1:** V255-V257 (Progress Tracking + Stage), ADR-004 (Inline-First), 24 Unit Tests ✅
-                                      → **Backend Phase 2:** V258 Migration (13 Activity-Types), ActivityType.java, 7 Unit Tests ✅
-                                      → **Backend DTO:** LeadDTO erweitert (registeredAt, protectionUntil, progressDeadline) ✅
-                                      → **Frontend:** LeadWizard (3 Stages), Context-Prop Architecture, V259 Migration ✅
-                                      → **Frontend Zwei-Felder-Lösung:** Notizen + Erstkontakt getrennt (LeadWizard.tsx:365-505) ✅
-                                      → **Frontend Pre-Claim Badge:** CustomerTable Badge "⏳ Pre-Claim (XT)" (CustomerTable.tsx:95-177) ✅
-                                      → **Frontend Types:** registeredAt nullable für Pre-Claim Detection (types.ts:68) ✅
-                                      → **Dokumentation:** 4 Artefakte vollständig (BUSINESS_LOGIC, PRE_CLAIM_LOGIC, FRONTEND_DELTA, SUMMARY) ✅
-                                      → **PR #124/#125:** Ready for merge (Backend + Frontend COMPLETE)
-                                      → **Verschoben auf 2.1.6 (OPTIONAL):** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter, Backdating, Jobs, Fuzzy-Matching
 
 Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
                                       → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)

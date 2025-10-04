@@ -17,7 +17,9 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ 85% IMPLEMENTED – PR #103, #105, #110, #111, #122 merged
+- **Module 02 Neukundengewinnung:** ✅ 90% IMPLEMENTED – Sprint 2.1.5 COMPLETE (PR #124, #129)
+  - Sprint 2.1.1-2.1.4: Territory, Lead Capture, Follow-up, Deduplication ✅ (PR #103, #105, #110, #111, #122, #123)
+  - Sprint 2.1.5: Progressive Profiling + Lead Protection ✅ (PR #124 Backend, PR #129 Frontend)
   - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
   - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
   - [Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) ✅
@@ -36,27 +38,26 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (04.10.2025 - Lead-Management Hybrid-Architektur ADR-006):**
-- ✅ **Sprint 2.1.5 Lead-Management UI - ADR-006 Hybrid-Ansatz DOKUMENTIERT:**
-  - ✅ **ADR-006:** Lead-Management Hybrid-Architektur beschlossen
-    - **Phase 1 (Sprint 2.1.5):** Leads als Customer-Status → CustomersPageV2-Wiederverwendung
-    - **Phase 2 (Sprint 2.1.6):** Lead-spezifische Erweiterungen (Scoring, Workflows, Timeline, Protection)
-  - ✅ **FRONTEND_DELTA.md Section 8:** Lead-Management UI mit ADR-006 Referenz
-    - Phase 1: LeadsPage.tsx Wrapper mit `defaultFilter={{ status: ['LEAD'] }}`
-    - Obsolet: LeadListEnhanced.tsx, LeadStageBadge.tsx (werden gelöscht)
-    - Phase 2: LeadScoreIndicator, LeadStatusWorkflow, LeadActivityTimeline (geplant)
-  - ✅ **BUSINESS_LOGIC_LEAD_ERFASSUNG.md Section 11:** Hybrid-Architektur dokumentiert
-    - Phase 1: CustomersPageV2-Features (Filter, Sort, Columns, Search, Virtualization)
-    - Phase 2: Lead-Scoring (0-100), Status-Workflows (LEAD→PROSPECT→AKTIV), Activity-Timeline
-  - ✅ **SUMMARY.md Sprint 2.1.5:** ADR-006 Entscheidung integriert
-  - ✅ **SUMMARY.md Sprint 2.1.6:** Phase 2 Features dokumentiert (Scoring, Workflows, Timeline, Protection)
-- ✅ **Sprint 2.1.5 Progressive Profiling COMPLETE:**
-  - ✅ **LeadWizard.tsx:** 3-Stufen-Form, Option A Erstkontakt-Regelung, DSGVO-Hinweis
-  - ✅ **Backend:** V255-V258 Migrations, Lead Protection Service, Activity-Types
-- 📋 **NEXT:** Phase 1 Implementation (Sprint 2.1.5)
-  - LeadsPage.tsx erstellen (CustomersPageV2 Wrapper)
-  - LeadListEnhanced.tsx & LeadStageBadge.tsx löschen
-  - Backend: LeadDTO bereits erweitert (stage, protectionUntil, progressDeadline)
+**📋 LATEST UPDATE (05.10.2025 - 🎉 Sprint 2.1.5 COMPLETE):**
+- ✅ **PR #129 MERGED - Sprint 2.1.5 Progressive Profiling & Lead Protection COMPLETE:**
+  - **Monster-PR:** 56 Dateien, +8.525 LOC, -975 LOC
+  - **Frontend Implementation:**
+    - ✅ **LeadWizard.tsx** (812 LOC): Zwei-Felder-Lösung (Notizen vs. Erstkontakt-Dokumentation)
+    - ✅ **Pre-Claim Badge** mit 10-Tage-Countdown in CustomerTable
+    - ✅ **Server-Side Filtering** mit Context-Prop Architecture (CustomersPageV2 + IntelligentFilterBar)
+    - ✅ **LeadWizard Integration Tests** (802 LOC, MSW-basiert)
+  - **Backend Extensions:**
+    - ✅ **Migration V259:** Remove leads_company_name_city_key (Pre-Claim Support)
+    - ✅ **LeadDTO Extensions:** registeredAt, protectionUntil, progressDeadline
+  - **Dokumentation:** 5 neue Artefakte (3.814 LOC) + ADR-006
+  - **Performance:** Bundle 178 KB ✅, LeadWizard <50ms ✅, Filtering <200ms ✅
+  - **DSGVO:** Consent-Checkbox Stage 1, NICHT vorausgefüllt ✅
+  - **CI Issue:** Worktree CI temporär deaktiviert (Issue #130: TestDataBuilder Konflikt)
+- ✅ **Sprint 2.1.5 Backend Phase 1 COMPLETE (PR #124):**
+  - ✅ **Migrations:** V255-V257 (lead_protection, lead_activities, activity_types, lead.stage)
+  - ✅ **LeadProtectionService:** 6M/60T/10T Regeln + Stop-the-Clock + Pre-Claim
+  - ✅ **24 Unit Tests:** Pure Mockito, 0.845s, 100% Business Logic Coverage
+- 📋 **NEXT:** Sprint 2.1.6 Implementation (Bestandsleads-Migration, Convert Flow, Stop-the-Clock UI, Nightly Jobs)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -279,6 +280,47 @@
     - Fix: JUnit parallel config entfernt, ValidatorFactory → @BeforeAll static
   - Test-Migration: @QuarkusTest ↓27% (8 DTO-Tests → Plain JUnit mit Mockito)
   - Migrations: V247 (normalisierung), V10012 (CI-only indizes), V251-V254 (fixes)
+- 2025-10-01 21:30 — **Sprint 2.1.5 Backend Phase 1:** COMPLETE (PR #124 MERGED)
+  - Migrations: V255 (lead_protection + lead_activities), V256 (activity_types), V257 (lead.stage)
+  - LeadProtectionService: 6M/60T/10T Regeln + Stop-the-Clock + Pre-Claim Detection
+  - Activity-Types: 13 Types mit countsAsProgress Flag (5 Progress, 8 Non-Progress)
+  - 24 Unit Tests (Pure Mockito, 0.845s, 100% Business Logic Coverage)
+  - Code Reviews: Gemini + Claude vollständig adressiert
+- 2025-10-05 01:00 — **🎉 Sprint 2.1.5 COMPLETE:** PR #129 MERGED - Progressive Profiling & Lead Protection Frontend
+  - **MONSTER-PR: 56 Dateien, +8.525 LOC, -975 LOC**
+  - **Frontend Implementation (1.468 LOC neu):**
+    - ✅ LeadWizard.tsx (812 LOC): 3-Stufen Progressive Profiling + Zwei-Felder-Lösung
+      - Feld 1: Notizen/Quelle (optional, KEIN Schutz-Einfluss)
+      - Feld 2: Erstkontakt-Dokumentation (conditional, AKTIVIERT Schutz)
+      - Quellenabhängige Logik (MESSE/TELEFON → Erstkontakt PFLICHT)
+    - ✅ Pre-Claim Badge: CustomerTable.tsx (+33 LOC) mit 10-Tage-Countdown
+    - ✅ Server-Side Filtering: CustomersPageV2 (+274 LOC) + IntelligentFilterBar (+289 LOC)
+    - ✅ Context-Prop Architecture: contextConfig.ts (120 LOC) - zentrale Filter-Config
+    - ✅ LeadWizard Integration Tests (802 LOC) - MSW-basiert
+    - ✅ i18n: leads.json (+165 LOC) - Zwei-Felder-Lösung Keys
+  - **Backend Extensions:**
+    - ✅ Migration V259: Remove leads_company_name_city_key (Pre-Claim Support)
+    - ✅ LeadDTO: +registeredAt, +protectionUntil, +progressDeadline
+    - ✅ TerritoryService: Enhanced Tests (+78 LOC)
+  - **Dokumentation (5 neue Artefakte, 3.814 LOC):**
+    - ✅ BUSINESS_LOGIC_LEAD_ERFASSUNG.md (473 LOC)
+    - ✅ FRONTEND_DELTA.md (1.439 LOC) - Zentrale Frontend-Spec
+    - ✅ PRE_CLAIM_LOGIC.md (532 LOC)
+    - ✅ SERVER_SIDE_FILTERING.md (430 LOC)
+    - ✅ SERVER_SIDE_FILTERING_MIGRATION_PLAN.md (664 LOC)
+    - ✅ ADR-006: Lead-Management Hybrid-Architektur (276 LOC)
+  - **Performance:**
+    - Bundle Size: 178 KB (< 200 KB Target ✅)
+    - LeadWizard Initial Render: <50ms
+    - Pre-Claim Badge: <10ms
+    - Server-Side Filtering: <200ms
+  - **DSGVO Compliance:**
+    - Consent-Checkbox Stage 1 (Art. 6 Abs. 1 lit. a DSGVO)
+    - lead.consent_given_at Speicherung
+    - NICHT vorausgefüllt (Opt-In)
+  - **Tests:** Backend 24/24 ✅, Frontend MSW-basiert ✅
+  - **CI Issue:** Worktree CI temporär deaktiviert (Issue #130: TestDataBuilder src/main vs src/test Konflikt)
+  - **Migrations:** V259
   - Tests: 1196 Tests in 7m29s, 0 Failures, Performance dokumentiert in TEST_DEBUGGING_GUIDE.md
 - 2025-09-28 16:30 — **Sprint 2.1.5 Documentation:** Vertragliche Anforderungen dokumentiert
   - CONTRACT_MAPPING.md mit vollständiger § 2(8) Abdeckung erweitert
