@@ -77,15 +77,20 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
       errors.source = [t('wizard.stage0.sourceRequired')];
     }
 
-    // Erstkontakt-Validierung (wenn Felder vorhanden)
-    if (formData.firstContact) {
-      if (!formData.firstContact.channel) {
+    // Erstkontakt-Validierung (nur wenn User begonnen hat, mind. 1 Feld auszufüllen)
+    const hasStartedFirstContact =
+      formData.firstContact?.channel ||
+      formData.firstContact?.performedAt ||
+      formData.firstContact?.notes?.trim();
+
+    if (hasStartedFirstContact) {
+      if (!formData.firstContact?.channel) {
         errors['firstContact.channel'] = [t('wizard.stage0.firstContactChannelRequired')];
       }
-      if (!formData.firstContact.performedAt) {
+      if (!formData.firstContact?.performedAt) {
         errors['firstContact.performedAt'] = [t('wizard.stage0.firstContactDateRequired')];
       }
-      if (!formData.firstContact.notes || formData.firstContact.notes.trim().length < 10) {
+      if (!formData.firstContact?.notes || formData.firstContact.notes.trim().length < 10) {
         errors['firstContact.notes'] = [t('wizard.stage0.firstContactNotesMin')];
       }
     }
@@ -333,7 +338,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             </FormControl>
 
             {/* Erstkontakt-Block (optional, empfohlen) */}
-            <Box sx={{ mt: 3, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+            <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid', borderColor: 'grey.300' }}>
               <Typography variant="subtitle2" gutterBottom>
                 {t('wizard.stage0.firstContactTitle')}
               </Typography>
@@ -381,7 +386,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 label={t('wizard.stage0.firstContactDate')}
                 type="datetime-local"
                 value={formData.firstContact?.performedAt || ''}
-                onChange={e =>
+                onChange={e => {
                   setFormData({
                     ...formData,
                     firstContact: {
@@ -389,8 +394,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                       performedAt: e.target.value,
                       notes: formData.firstContact?.notes || '',
                     },
-                  })
-                }
+                  });
+                  // Close native picker by removing focus
+                  e.target.blur();
+                }}
                 fullWidth
                 margin="dense"
                 error={!!fieldErrors['firstContact.performedAt']}
@@ -476,8 +483,13 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               }
               fullWidth
               margin="dense"
-              error={!!fieldErrors['contact.email']}
-              helperText={fieldErrors['contact.email']?.[0] || ''}
+              error={!!fieldErrors['contact.email'] || !!fieldErrors['contact']}
+              helperText={
+                fieldErrors['contact.email']?.[0] ||
+                (fieldErrors['contact'] && !formData.contact.phone?.trim()
+                  ? fieldErrors['contact'][0]
+                  : '')
+              }
             />
 
             <TextField
@@ -492,10 +504,17 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               }
               fullWidth
               margin="dense"
+              error={!!fieldErrors['contact'] || !!fieldErrors['contact.phone']}
+              helperText={
+                fieldErrors['contact.phone']?.[0] ||
+                (fieldErrors['contact'] && !formData.contact.email?.trim()
+                  ? fieldErrors['contact'][0]
+                  : '')
+              }
             />
 
             {/* DSGVO Hinweis (statt Checkbox bei Vertrieb) */}
-            <Box sx={{ mt: 2, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+            <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1, border: '1px solid', borderColor: 'grey.300' }}>
               <Typography variant="body2">
                 <strong>Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)</strong>
               </Typography>
