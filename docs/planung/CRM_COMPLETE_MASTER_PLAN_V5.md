@@ -36,22 +36,29 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (01.10.2025):**
-- ✅ **PR #123 MERGED:** Sprint 2.1.4 Lead Deduplication & Data Quality COMPLETE
-  - Normalisierung: email (lowercase), phone (E.164), company (ohne Suffixe/Rechtsformen)
-  - Partielle UNIQUE Indizes (WHERE status != 'DELETED') für email/phone/company
-  - IdempotencyService: 24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT
-  - LeadNormalizationService mit 31 Tests (0.845s)
-  - CI Performance Breakthrough: 24min → 7min (70% schneller!)
-  - Test-Migration: @QuarkusTest ↓27% (8 DTO-Tests → Plain JUnit mit Mockito)
-  - Migrations: V247, V10012, V251-V254, R__normalize_functions.sql
-- 🔄 **IN PROGRESS:** Sprint 2.1.5 Backend Phase 1 COMPLETE, Frontend Phase 2 ausstehend
-  - ✅ Migrations V255-V257: Progress Tracking + Stage + Functions/Trigger
-  - ✅ Entities: Lead.java (+3), LeadActivity.java (+6)
-  - ✅ Service: LeadProtectionService mit Stage-Validierung + Progress-Deadlines
-  - ✅ Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
-  - ✅ Dokumentation: ADR-004 (Inline-First), DELTA_LOG_2_1_5, TRIGGER_SPRINT_2_1_6
-  - ⏸️ Frontend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
+**📋 LATEST UPDATE (04.10.2025 - LeadWizard Refactoring Guide COMPLETE):**
+- ✅ **Sprint 2.1.5 Dokumentation 100% COMPLETE:**
+  - ✅ **BUSINESS_LOGIC_LEAD_ERFASSUNG.md:** Zentraler Überblick (300+ Zeilen, 10 Sections, Vertrag §3.3 Compliance)
+    - Progressive Profiling (3-Stufen), Pre-Claim (10T), Lead-Schutz (6M+60T), Stop-the-Clock, Dedupe (Hard/Soft)
+    - DSGVO (Berechtigtes Interesse vs. Einwilligung), Erstkontakt-Dokumentation, 7 Anti-Patterns
+    - 5 ChatGPT-Verbesserungen integriert (Mindestanforderungen, Progress-Timer-Abgrenzung, Rollenhinweise, UX-Hinweise, LeadSource-Definitionen)
+  - ✅ **FRONTEND_DELTA.md Section 0:** UX-Regeln (Best Practice) - Jede Karte separat speicherbar
+    - Button-Logik: [Vormerkung speichern], [Registrierung speichern], [Qualifizierung speichern]
+    - Erstkontakt: Nur auf Karte 0 (optional, empfohlen), kann nachträglich hinzugefügt werden
+    - DSGVO: KEINE Consent-Checkbox im Vertriebs-Wizard (nur Hinweis Art. 6 Abs. 1 lit. f)
+    - Schutz: Nur bei Erstkontakt-Dokumentation (NICHT bei Kontaktdaten)
+    - Pflichtfeld Karte 1: Mind. 1 Kontaktkanal (Email ODER Phone)
+  - ✅ **LEAD_WIZARD_REFACTORING_GUIDE.md:** Code-Implementation Anleitung (530+ Zeilen)
+    - Erstkontakt-Block verschieben (Karte 1 → Karte 0, vollständiger TSX-Code)
+    - DSGVO Consent → Hinweis-Box (Karte 1, Checkbox entfernt)
+    - Button-Logik umbauen (3 Save-Buttons + handleSave-Funktion)
+    - Validierung anpassen (Stage 0 & 1), i18n Labels, Testing-Checklist
+- ✅ **Sprint 2.1.5 Backend COMPLETE:**
+  - ✅ **Backend Phase 1:** V255-V257 Migrations, Lead Protection Service, 24 Unit Tests
+  - ✅ **Backend Phase 2:** V258 Migration (13 Activity-Types), ActivityType.java, 7 Unit Tests
+- 📋 **NEXT:** LeadWizard.tsx Code-Implementation (nächste Session)
+  - Erstkontakt-Block verschieben + Button-Logik + DSGVO-Hinweis + Validierung + i18n + Tests
+  - Refactoring Guide: `/docs/planung/claude-work/daily-work/2025-10-04/LEAD_WIZARD_REFACTORING_GUIDE.md`
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -125,6 +132,30 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-04 16:00 - Sprint 2.1.5 Dokumentation COMPLETE (Doku-First Ansatz)
+
+**Kontext:** Frontend-Spezifikation komplett + Backend V258 Migration deployed
+
+**Erledigt:**
+- ✅ **FRONTEND_DELTA.md** erstellt (877 Zeilen): Zentrale Frontend-Spec für Sprint 2.1.5
+  - 13 Activity-Types (5 Progress, 8 Non-Progress/System) + ACTIVITY_PROGRESS_MAP
+  - LeadSource Typ (6 Werte), Quellenabhängige Validierung (MESSE/EMPFEHLUNG/TELEFON)
+  - Erstkontakt-Block UI → activities[] Transformation (NICHT firstContact Feld)
+  - DSGVO Consent UI-only (kein Backend-Feld bis V259)
+  - Problem.extensions Typ (severity: "WARNING", duplicates[])
+  - Dedupe 409 Handling (Hard: overrideReason, Soft: reason Query-Params)
+  - Pre-Claim UX (Badge ⏳ + 4 Filter), DoD Checkliste, Code-Deltas ready-to-implement
+- ✅ **V258 Migration** deployed & getestet: Activity-Type Constraint 6→13 Types (BLOCKER-FIX)
+- ✅ **TRIGGER_SPRINT_2_1_5.md** aktualisiert: entry_points + RFC 7807 + DoD Backend Phase 2 COMPLETE
+- ✅ **DEDUPE_POLICY.md** erweitert: Problem+JSON Beispiele (Hard/Soft mit extensions)
+- ✅ **backend/_index.md** erweitert: POST /api/leads Query-Params dokumentiert
+- ✅ **SPRINT_MAP.md** erweitert: Link zu FRONTEND_DELTA.md
+- ✅ **Inkonsistenzen behoben:** V258 Status, updated Datum, DoD Frontend IN PROGRESS
+
+**Tests:** V258: 7 Unit Tests (100% passed), Migration: Bootstrap OK
+
+**Migration:** V258 (Activity-Type Constraint erweitern)
+
 - 2025-09-23 17:45 — System Infrastructure: V3.2 Auto-Compact-System vollständig implementiert (COMPACT_CONTRACT v2 + MP5-Anker + Trigger-Updates), Migration: V225, Tests: OK
 - 2025-09-23 18:20 — System Infrastructure: V3.3 Branch-Gate Implementation abgeschlossen (Workflow-Lücke geschlossen, aktives Angebot statt passives Warten), Migration: V225, Tests: OK
 - 2025-09-23 18:45 — Emergency Handover: 3 kritische V3.3 Verbesserungen identifiziert (main-commit-warning, Branch-Gate Prominenz, Feature-Branch Schutz), Migration: V225, Tests: OK
@@ -243,25 +274,59 @@
   - Tests: 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
   - Dokumentation: DELTA_LOG_2_1_5 (inkl. PR-Strategie), CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_SPRINT_2_1_6
   - Frontend Phase 2 ausstehend: LeadWizard.vue, LeadProtectionBadge.vue, ActivityTimeline.vue
-  - Verschobene Features auf Sprint 2.1.6: V258 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
+  - Verschobene Features auf Sprint 2.1.6: V259 lead_transfers, Backdating, Nightly Jobs, Fuzzy-Matching
   - Migration: V255-V257, Tests: OK
+- 2025-10-02 04:13 — **Documentation:** Frontend Theme V2 zu AI Context hinzugefügt, DESIGN_SYSTEM.md entrümpelt (563→474 lines, -16%), Logo-Performance validiert (19 KB bereits optimiert), **Migration**: n/a, **Tests**: n/a
+- 2025-10-02 14:30 — **Sprint Planning 2.1.5-2.1.7:** Dokumentations-Update COMPLETE - DSGVO Consent, Activity-Types Progress-Mapping, Stop-the-Clock Rules definiert
+  - TRIGGER_SPRINT_2_1_5.md: DSGVO Consent-Checkbox (Stage 1, consent_given_at), Activity-Types Progress-Mapping (QUALIFIED_CALL/MEETING/DEMO/ROI_PRESENTATION/SAMPLE_SENT = true), Stop-the-Clock RBAC (Manager+Admin only, UI in 2.1.6)
+  - TRIGGER_SPRINT_2_1_6.md: Bestandsleads-Migrations-API (Modul 08, Dry-Run PFLICHT), Lead → Kunde Convert Flow, Stop-the-Clock UI, Extended Lead-Transfer Workflow, Nightly Jobs
+  - TRIGGER_SPRINT_2_1_7.md: NEU erstellt - Lead-Scoring (V260), Activity-Templates (V261), Mobile-First UI, Offline-Fähigkeit (Service Worker + IndexedDB), QR-Code-Scanner (vCard/meCard)
+  - SPRINT_MAP.md: Sprint 2.1.5 Status IN PROGRESS (Frontend Phase 2), Sprint 2.1.6/2.1.7 PLANNED dokumentiert
+  - V249 Migration Inkonsistenz korrigiert (nicht deployed, nur Artefakt für 2.1.6+)
+  - **Migration**: n/a, **Tests**: n/a
+- 2025-10-03 00:08 — **Sprint 2.1.5 Frontend Phase 2 COMPLETE (PR #125 READY):** Progressive Profiling UI mit 100% Test Coverage
+  - LeadWizard.tsx: 3-Stufen Progressive Profiling (MUI v7, Grid→Stack Migration, DSGVO Consent-Checkbox Stage 1)
+  - LeadProtectionBadge.tsx: 6-Month Protection Visualization (Color-Coding, Tooltip, ARIA Compliance)
+  - ActivityTimeline.tsx: 60-Day Progress Tracking (5 Progress-Types, 5 Non-Progress-Types, Filtering)
+  - Test Coverage: 75/75 (100%) - 17 LeadWizard Integration Tests, 23 Badge Tests, 35 Timeline Tests
+  - MUI v7 Compliance: Grid → Stack, Select labelId/id für ARIA, CSS Class Validation Suite
+  - Design System V2: FreshFoodz Theme (#94C456, #004F7B, Antonio Bold, Poppins), legacy DESIGN_SYSTEM.md entfernt
+  - Bug Fixes: Stage-Determination (falsy→undefined), MUI CSS Classes (filledSuccess statt colorSuccess), Icon Rendering (querySelectorAll)
+  - LeadWizard ist Standard (Feature-Flag entfernt, keine Alternative UI)
+  - Handover: SPRINT_2.1.5_FRONTEND_PHASE_2_COMPLETE.md erstellt
+  - **Migration**: n/a, **Tests**: 81/81 ✅ (100% Coverage)
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.5 Backend Phase 1 (PR #124):** Push + PR erstellen für feature/mod02-sprint-2.1.5-lead-protection
-- **Sprint 2.1.5 Frontend Phase 2 (PR #125):** Branch feature/mod02-sprint-2.1.5-frontend-progressive-profiling
-  - LeadWizard.vue (3-Stufen Progressive Profiling UI)
-  - LeadProtectionBadge.vue (Status-Indicator)
-  - ActivityTimeline.vue (Progress Tracking Display)
-  - API-Integration: Enhanced POST /api/leads mit Stage-Validierung
-- **Sprint 2.1.6 Vorbereitung:** V258 lead_transfers Tabelle, Backdating-Endpoint, Nightly Jobs, Fuzzy-Matching
-- **Backfill-Job für historische Leads:** Normalisierung für bestehende Daten
-- **Monitoring:** Idempotency Key-Konflikte (409-Rate), Index-Bloat, Normalisierungs-Performance, Progress-Deadlines
-- **Production Index Build:** CONCURRENTLY-Indizes für email/phone/company (siehe Runbook)
-- Sprint 2.1.6: RLS-Policies gemäß ADR-003 umsetzen
-- Sprint 2.1.6: Lead-Transfer-Flow mit Genehmigung implementieren
-- Sprint 2.1.6: Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
+- **Sprint 2.1.5 Frontend Code-Anpassung (04-05.10.2025):**
+  - Branch: feature/mod02-sprint-2.1.5-implementation
+  - FRONTEND_DELTA.md als Spezifikation verwenden (Soll-Zustand definiert)
+  - types.ts: 13 Activity-Types + ACTIVITY_PROGRESS_MAP + LeadSource + Problem.extensions
+  - api.ts: Query-Params Support (reason, overrideReason), kein hardcoded source
+  - LeadWizard.tsx: Erstkontakt-Block UI, Quellenabhängige Validierung, activities[] Transformation
+  - Dedupe-Dialoge: DuplicateLeadDialog.tsx (Hard), SimilarLeadDialog.tsx (Soft)
+  - Pre-Claim: Badge + 4 Filter (Client-Side Fallback)
+  - Tests: ≥80% Coverage, 409 Handling, Erstkontakt-Block Rendering
+- **Sprint 2.1.5 Finalisierung (PR #129 UPDATE):**
+  - PR bereits offen (54 files, 3 Komponenten vorhanden)
+  - Code an FRONTEND_DELTA.md anpassen (types, api, LeadWizard, Dialoge)
+  - Backend Integration Test: POST /api/leads mit activities[] + Query-Params
+  - Sprint-Dokumentation Update: SPRINT_MAP.md (2.1.5 → COMPLETE), PRODUCTION_ROADMAP_2025.md
+- **Sprint 2.1.6 Vorbereitung (Start 12.10.2025):**
+  - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
+  - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
+  - Stop-the-Clock UI (StopTheClockDialog, Manager-only, Audit-Log)
+  - V259 lead_transfers Tabelle + consent_given_at (Lead-Transfer zwischen Partnern)
+  - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
+  - Nightly Jobs (Warning/Expiry/Pseudonymisierung)
+  - Fuzzy-Matching & DuplicateReviewModal
+- **Sprint 2.1.7 Vorbereitung (Start 19.10.2025):**
+  - Lead-Scoring Algorithmus (V260, 0-100 Punkte, konfigurierbare Gewichtungen)
+  - Activity-Templates System (V261, Standard-Seeds + User-Templates)
+  - Mobile-First UI Optimierung (Touch, Breakpoints, Performance <3.5s 3G)
+  - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
+  - QR-Code-Scanner (Camera-API, vCard/meCard, Desktop-Fallback)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
@@ -273,6 +338,32 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+### 2025-10-03 - Pre-Claim Mechanik + Dedupe Policy + Consent-Logik
+
+**Entscheidung:**
+1. **Pre-Claim Stage 0:** Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL, 10 Tage Frist)
+   - Schutz startet erst bei Kontakt ODER dokumentiertem Erstkontakt
+   - Ausnahme: Bestandsleads bei Migration → sofortiger Schutz
+2. **DSGVO Consent Source-abhängig:**
+   - `source = WEB_FORMULAR` → Consent PFLICHT (Art. 6 Abs. 1 lit. a)
+   - `source != WEB_FORMULAR` → Berechtigtes Interesse (Art. 6 Abs. 1 lit. f)
+3. **Dedupe Policy 2.1.5:**
+   - Harte Kollisionen (Email/Phone/Firma+PLZ exakt) → BLOCK + Manager-Override
+   - Weiche Kollisionen (Domain+Stadt, Firma+Stadt) → WARN + Fortfahren
+   - KEIN Fuzzy-Matching (pg_trgm) → Sprint 2.1.6
+
+**Begründung:**
+- Vertrag §2(8)(a): "Firma, Ort und zentraler Kontakt ODER dokumentierter Erstkontakt"
+- B2B-Partner-Erfassung: berechtigtes Interesse ausreichend (ChatGPT + Claude Validierung)
+- Pragmatische Dedupe-Strategie: Harte Blocks sofort, Fuzzy später (ChatGPT Empfehlung)
+
+**Referenz:** Handelsvertretervertrag.pdf, ChatGPT Session 2025-10-03
+
+- 2025-10-02 — **DSGVO Consent-Management:** Consent-Checkbox PFLICHT in Stage 1 (nicht vorausgefüllt), lead.consent_given_at Timestamp speichern, keine Stage-1-Erfassung ohne Consent
+- 2025-10-02 — **Activity-Types Progress-Mapping:** countsAsProgress=true für QUALIFIED_CALL/MEETING/DEMO/ROI_PRESENTATION/SAMPLE_SENT; countsAsProgress=false für NOTE/FOLLOW_UP/EMAIL/CALL/SAMPLE_FEEDBACK
+- 2025-10-02 — **Stop-the-Clock RBAC:** Nur MANAGER + ADMIN dürfen pausieren/resumen, UI-Button verschoben auf Sprint 2.1.6, Audit-Log PFLICHT für alle Events
+- 2025-10-02 — **Bestandsleads-Migration:** Dedizierte Backend-API (Modul 08), Dry-Run Mode PFLICHT, historische Datumsfelder explizit übergeben (NICHT automatisch berechnen), keine Frontend-Override-Felder
+- 2025-10-02 — **Sprint-Scope 2.1.5-2.1.7:** Feature-Aufteilung definiert (2.1.5: Progressive Profiling + DSGVO, 2.1.6: Migration + Convert + Transfer, 2.1.7: Scoring + Mobile + Offline)
 - 2025-10-01 — **Test-Performance Optimization:** JUnit Platform Parallel Override entfernt (Maven Surefire steuert Parallelität), ValidatorFactory → @BeforeAll Pattern für DTO-Tests
 - 2025-10-01 — **CI-only Migrations:** V10xxx-Serie für Test-/Dev-Umgebungen (CONCURRENTLY nicht nötig), Prod verwendet CONCURRENTLY-Indizes
 - 2025-10-01 — **Test-Tag-Pyramide:** @Tag("unit")/@Tag("integration") verbindlich, CI excludes integration/slow in PR-Pipeline

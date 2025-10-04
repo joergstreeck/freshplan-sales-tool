@@ -14,6 +14,22 @@ updated: "2025-10-01"
 
 ## Vertrag → Implementation Mapping
 
+### Pre-Claim & Erstkontakt (§2(8)(a))
+
+**⚠️ WICHTIG:** Activity `FIRST_CONTACT_DOCUMENTED` startet Schutz **OHNE** V257-Trigger.
+
+**Ablauf:**
+1. User erstellt Lead Stage 0 ohne Kontakt
+2. User füllt "Erstkontakt dokumentieren" Block aus
+3. LeadService erstellt Activity `FIRST_CONTACT_DOCUMENTED` (countsAsProgress=false)
+4. LeadService setzt **explizit**:
+   - `lead.registered_at = NOW()`
+   - `lead.progress_deadline = NOW() + INTERVAL '60 days'`
+   - `lead.protected_until = calculate_protection_until(NOW())`
+5. V257 Trigger feuert NICHT (da countsAsProgress=false)
+
+**Rationale:** Erstkontakt ist Schutzbeginn laut Vertrag, aber KEIN "belegbarer Fortschritt" im Sinne der 60-Tage-Regel.
+
 ### Lead-Schutz (§3.2 Handelsvertretervertrag)
 
 **Vertragstext:**
@@ -292,6 +308,42 @@ Erfolgreich aktualisiert
 
 ## Audit Events
 
+### Lead-Assignment Metadata (Sprint 2.1.5)
+
+**Enum-Wertebereich für `metadata.method` (verbindlich):**
+```typescript
+type AssignmentMethod =
+  | "GEO_WORKLOAD"      // Automatisch via Geo-Zone + Workload-Verteilung
+  | "MANUAL"            // Manager-Override (explizite Zuweisung)
+  | "WEB_INTAKE_AUTO";  // Self-Service Web-Intake (Sprint 2.1.6)
+```
+
+**Activity-Event `LEAD_ASSIGNED` Struktur:**
+```json
+{
+  "event": "lead.activity.recorded",
+  "leadId": "uuid",
+  "activityType": "LEAD_ASSIGNED",
+  "summary": "Lead automatisch zugewiesen (Geo-Zone München)",
+  "metadata": {
+    "method": "GEO_WORKLOAD",           // ENUM (siehe oben)
+    "previousOwner": "uuid-or-null",    // Falls Re-Assignment, sonst NULL
+    "assignmentReason": "Geo-Zone DE-BY-München, Workload 3/10",
+    "geoZone": "DE-BY-München",         // ISO-artig (DE-<Bundesland>-<Stadt>)
+    "workloadScore": 30                 // 0-100 (aktueller Workload des Empfängers)
+  },
+  "performedBy": "system-or-manager-uuid",
+  "timestamp": "2025-09-28T10:00:00Z"
+}
+```
+
+**Frontend/Backend Alignment:**
+- Backend-Enum: `AssignmentMethod.java` (GEO_WORKLOAD | MANUAL | WEB_INTAKE_AUTO)
+- Frontend-Type: `AssignmentMethod` TypeScript (identische Werte)
+- API-Validierung: RFC 7807 Problem+JSON bei ungültigem `method`-Wert
+
+### Standard Audit Events
+
 ```json
 {
   "event": "lead.protection.created",
@@ -304,7 +356,7 @@ Erfolgreich aktualisiert
 {
   "event": "lead.activity.recorded",
   "leadId": "uuid",
-  "activityType": "call",
+  "activityType": "QUALIFIED_CALL",
   "progressDeadlineNew": "2025-11-28",
   "userId": "sales-uuid"
 }

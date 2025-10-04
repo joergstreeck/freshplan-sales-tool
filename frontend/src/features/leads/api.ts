@@ -1,4 +1,4 @@
-import type { Lead, Problem } from './types';
+import type { Lead, Problem, LeadStage, BusinessType } from './types';
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
@@ -17,15 +17,66 @@ export async function listLeads(): Promise<Lead[]> {
   return res.json();
 }
 
-export async function createLead(payload: { name: string; email?: string }) {
-  const res = await fetch(`${BASE}/api/leads`, {
+// Sprint 2.1.5 - Progressive Profiling API
+export async function createLead(
+  payload: {
+    // Stage 0: Company Basics
+    stage?: LeadStage;
+    companyName: string;
+    city?: string;
+    postalCode?: string;
+    businessType?: BusinessType;
+    source?: string; // Sprint 2.1.5: MESSE, EMPFEHLUNG, TELEFON, etc.
+    // Stage 1: Contact + DSGVO Consent
+    contact?: {
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      phone?: string;
+    };
+    consentGivenAt?: string; // ISO 8601 timestamp
+    // Stage 2: Business Details
+    estimatedVolume?: number;
+    kitchenSize?: 'small' | 'medium' | 'large';
+    employeeCount?: number;
+    website?: string;
+    industry?: string;
+    // Sprint 2.1.5: Erstkontakt → activities[]
+    activities?: Array<{
+      activityType: string;
+      performedAt: string;
+      summary: string;
+      countsAsProgress: boolean;
+      metadata?: Record<string, unknown>;
+    }>;
+    // Legacy support
+    name?: string;
+    email?: string;
+  },
+  options?: {
+    params?: {
+      reason?: string; // Soft Duplicate Override (min. 10 Zeichen)
+      overrideReason?: string; // Hard Duplicate Override (Manager/Admin, min. 10 Zeichen)
+    };
+  }
+) {
+  const queryParams = new URLSearchParams();
+  if (options?.params?.reason) queryParams.set('reason', options.params.reason);
+  if (options?.params?.overrideReason)
+    queryParams.set('overrideReason', options.params.overrideReason);
+
+  const url = queryParams.toString()
+    ? `${BASE}/api/leads?${queryParams}`
+    : `${BASE}/api/leads`;
+
+  const res = await fetch(url, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
       ...authHeaders(),
     },
-    body: JSON.stringify({ ...payload, source: 'manual' }),
+    body: JSON.stringify(payload), // ⚠️ KEIN hardcoded source: 'manual'
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);

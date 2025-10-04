@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { listLeads } from './api';
 import type { Lead, Problem } from './types';
 import { CircularProgress, Alert, Button, Box, Typography } from '@mui/material';
-import LeadCreateDialog from './LeadCreateDialog';
+import LeadWizard from './LeadWizard';
 
 export default function LeadList() {
   const { t } = useTranslation('leads');
@@ -95,7 +95,8 @@ export default function LeadList() {
         </Box>
       )}
 
-      <LeadCreateDialog open={open} onClose={() => setOpen(false)} onCreated={handleLeadCreated} />
+      {/* Sprint 2.1.5: LeadWizard (Progressive Profiling) */}
+      <LeadWizard open={open} onClose={() => setOpen(false)} onCreated={handleLeadCreated} />
     </Box>
   );
 }

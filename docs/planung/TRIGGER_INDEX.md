@@ -89,13 +89,24 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - 39 Tests (31 Normalization + 8 Idempotency) ✅
    - Status: ✅ COMPLETE (Backend fertig)
 
-🔧 TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling
-   - 6-Monats-Schutz + 60-Tage-Aktivitätsstandard
-   - Stop-the-Clock Mechanismus
-   - Progressive Profiling (Stage 0/1/2)
-   - Protection-Endpoints (Reminder, Extend, Stop-Clock)
-   - Data-Retention-Plan + Compliance
-   - Status: 🔧 IN PROGRESS
+✅ TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling [DOKU COMPLETE 04.10.2025]
+   - **Backend Phase 1:** V255-V257 Migrations ✅ (Progress Tracking + Stage + Functions/Trigger, 24 Unit Tests)
+   - **Backend Phase 2:** V258 Migration ✅ (Activity-Type Constraint 6→13 Types, 7 Unit Tests)
+   - **Dokumentation COMPLETE:** FRONTEND_DELTA.md (877 Zeilen zentrale Frontend-Spec) ✅
+     - 13 Activity-Types + ACTIVITY_PROGRESS_MAP, LeadSource Typ (6 Werte)
+     - Erstkontakt-Block UI → activities[] Transformation
+     - Problem.extensions (severity, duplicates[]) für Dedupe 409 (Hard/Soft)
+     - Dedupe Query-Params (overrideReason, reason), Pre-Claim UX (Badge ⏳ + 4 Filter)
+   - **Frontend Code:** ⏸️ types.ts, api.ts, LeadWizard.tsx, Dedupe-Dialoge ausstehend
+   - **PR #129:** Offen (54 files, 3 Komponenten vorhanden), Doku-First Ansatz
+   - Status: 🔄 DOKU COMPLETE, Code-Anpassung ausstehend
+   - **NEUE ARTEFAKTE:**
+     - [Business Logic Lead-Erfassung (zentral)](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/BUSINESS_LOGIC_LEAD_ERFASSUNG.md) ⭐ NEU (04.10.2025)
+     - [Frontend Delta (zentral)](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md) ⭐ NEU
+     - [Pre-Claim Logic](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md)
+     - [Dedupe Policy](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md)
+     - [Activity Types Mapping](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md)
+     - [DSGVO Consent Spec](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/DSGVO_CONSENT_SPECIFICATION.md)
 
 📋 TRIGGER_SPRINT_2_1_6.md - Lead Transfer & Team Management
    - Lead-Transfer zwischen Partnern

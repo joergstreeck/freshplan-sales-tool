@@ -11,9 +11,26 @@ jobs:
     name: Backend Tests
     if: |
       github.ref == 'refs/heads/feature/user-management' ||
-      contains(github.head_ref, 'user-management')
+      contains(github.head_ref, 'user-management') ||
+      contains(github.ref, 'mod02-sprint-2.1.5') ||
+      contains(github.head_ref, 'mod02-sprint-2.1.5')
     runs-on: ubuntu-latest
-    
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,13 +56,21 @@ jobs:
           
       - name: Run backend tests
         working-directory: backend
-        run: mvn -Pgreen clean verify
+        run: |
+          mvn -Pgreen clean verify \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
 
   frontend:
     name: Frontend Tests
     if: |
       github.ref == 'refs/heads/feature/react-migration' ||
-      contains(github.head_ref, 'react-migration')
+      contains(github.head_ref, 'react-migration') ||
+      contains(github.ref, 'mod02-sprint-2.1.5') ||
+      contains(github.head_ref, 'mod02-sprint-2.1.5')
     runs-on: ubuntu-latest
     
     steps:

@@ -102,11 +102,43 @@ MODULE-STRUKTUR (Business-Value-orientiert):
     - Lead-Normalisierung: email lowercase · phone E.164 · company ohne Rechtsform-Suffixe
     - Idempotenz: 24h TTL · SHA-256 Hashing · atomic Upsert (ON CONFLICT)
     - Production Patterns: Security (23 Tests), Performance (P95 <7ms), Event (AFTER_COMMIT)
-  Pending (Sprint 2.1.5):
-    - Lead Protection: 6 Monate Basisschutz + 60-Tage-Aktivitätsstandard + 10-Tage Nachfrist (Stop-the-Clock)
-    - Progressive Profiling: Stufe 0 (Vormerkung), Stufe 1 (Registrierung), Stufe 2 (Qualifiziert)
-    - Protection-Endpoints: Reminder, Extend, Stop-Clock, Personal-Data Deletion
-    - Compliance: Automatische Retention-Jobs + 60-Tage-Pseudonymisierung
+
+  Business Logic (Sprint 2.1.5 Planungsstand):
+    PRE-CLAIM MECHANIK (Stage 0):
+      - Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL)
+      - 10 Tage Frist zur Vervollständigung (kein Schutz in Stage 0)
+      - Schutz startet erst bei: Kontakt ODER dokumentiertem Erstkontakt
+      - Ausnahme: Bestandsleads bei Migration → sofortiger Schutz
+
+    DEDUPE POLICY (2.1.5 - Hard Collisions only):
+      - HARD BLOCK: Email/Phone/Firma+PLZ exakt → Manager-Override erforderlich
+      - SOFT WARN: Domain+Stadt ODER Firma+Stadt → Warnung + Fortfahren erlaubt
+      - Normalisierung: Email lowercase, Phone E.164, Company ohne Suffixe/Rechtsformen
+      - Kein Fuzzy-Matching (pg_trgm) → Sprint 2.1.6
+
+    ACTIVITY TYPES PROGRESS-MAPPING (13 Types):
+      - Progress (countsAsProgress=true, 5): QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT
+      - Non-Progress (countsAsProgress=false, 5): NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK
+      - System (countsAsProgress=false, 3): FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED
+      - V257 Trigger: update_progress_on_activity() fired NUR bei countsAsProgress=TRUE
+
+    DSGVO CONSENT (Source-abhängig):
+      - source = WEB_FORMULAR → Consent PFLICHT (Art. 6 Abs. 1 lit. a)
+      - source != WEB_FORMULAR → Berechtigtes Interesse (Art. 6 Abs. 1 lit. f)
+      - Rechtliche Grundlage: B2B-Geschäftsanbahnung (berechtigtes Interesse)
+
+  Sprint 2.1.5 Status (04.10.2025 - UX Best Practice dokumentiert):
+    - ✅ **Backend:** V255-V258 Migrations COMPLETE (31 Unit Tests, Protection + Progress + 13 Activity-Types)
+    - ✅ **UX-Regeln (Best Practice):** Progressive Profiling - Jede Karte separat speicherbar
+      - Button-Logik: [Vormerkung speichern], [Registrierung speichern], [Qualifizierung speichern]
+      - Erstkontakt: Nur auf Karte 0 (optional, nachträglich möglich), startet Schutz
+      - DSGVO: KEINE Checkbox bei Vertrieb (nur Hinweis Art. 6 Abs. 1 lit. f)
+      - Pflichtfeld Karte 1: Mind. 1 Kontaktkanal (Email ODER Phone)
+      - Pre-Claim: 10-Tage-Frist wenn kein Erstkontakt, Badge "⏳ läuft ab in X Tagen"
+    - ✅ **Dokumentation:** FRONTEND_DELTA.md Section 0 (UX-Regeln) + TRIGGER korrigiert + Anti-Patterns
+    - ⏸️ **Frontend Code:** LeadWizard.tsx Refactor (Button-Logik, Erstkontakt auf Karte 0, DSGVO-Hinweis)
+    - ⏸️ **Sprint 2.1.6:** Backdating, consent_given_at (V259), Bestandsleads-Migration, Nightly Jobs
+
   Key-Features: KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B
 
 👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations):
