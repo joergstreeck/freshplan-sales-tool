@@ -69,34 +69,45 @@ Implementierung der vertraglichen Lead-Schutz-Mechanismen (6 Monate, 60-Tage-Reg
 - Automatische Status-Updates (protected → warning → expired)
 
 ### 2. Progressive Profiling (3 Stufen) + Pre-Claim
-**Stufe 0: Vormerkung (Pre-Claim möglich!)**
-- **Pflicht:** Firma, Stadt, Quelle (Dropdown), Zugewiesen an (Partner)
-- **Optional:** Branche
-- **Keine** personenbezogenen Daten erforderlich
-- **PRE-CLAIM MECHANIK:**
-  - **WENN** Kontakt vorhanden **ODER** Erstkontakt dokumentiert → ✅ Schutz startet (registered_at = now)
-  - **SONST** → ❌ Pre-Claim (registered_at = NULL, kein Schutz, 10 Tage Frist)
-  - **Ausnahme:** Bestandsleads bei Migration → sofortiger Schutz
-- **Erstkontakt-Pflichtblock (wenn kein Kontakt):**
-  - UI zeigt Block "Erstkontakt dokumentieren" mit 3 Pflichtfeldern:
-    - **Kanal** (Dropdown): Telefon, Email, Messe-Stand, Persönlich
-    - **Datum/Uhrzeit** (DateTimePicker): Wann fand Erstkontakt statt
-    - **Kurznotiz** (Textarea, min. 10 Zeichen): Was wurde besprochen
-  - Erzeugt Activity: `FIRST_CONTACT_DOCUMENTED` (countsAsProgress=false, startet Schutz)
-- **Quellenspezifische Pflichtfelder:**
-  - `MESSE`: Event-Name (Pflicht) → in Activity.summary/metadata
-  - `EMPFEHLUNG`: Referrer-Name/Firma (Pflicht) → in Activity.summary/metadata
-  - `TELEFON`: Kanal + Notiz (Pflicht wenn kein Kontakt) → Erstkontakt-Block
 
-**Stufe 1: Lead-Registrierung**
-- **Pflicht:** Vorname, Nachname, Email ODER Telefon
-- **Consent-Logic:**
-  - `source = WEB_FORMULAR` → Consent-Checkbox PFLICHT
-    - **⚠️ WICHTIG:** Feld `consent_given_at` kommt erst in V259 (Sprint 2.1.6 Web-Intake)
-    - Frontend in 2.1.5: UI vorbereitet, Backend-Feld NICHT vorhanden
-    - Validierung erfolgt nur Frontend-seitig, keine Backend-Persistierung
-  - `source != WEB_FORMULAR` → Info-Text "berechtigtes Interesse (Art. 6 Abs. 1 lit. f)"
-- Source Tracking erweitert: MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR
+**WICHTIG:** Jede Karte ist **separat speicherbar** (Best Practice):
+- Karte 0: `[Vormerkung speichern]` + `[Weiter →]`
+- Karte 1: `[← Zurück]` + `[Registrierung speichern]` + `[Weiter →]`
+- Karte 2: `[← Zurück]` + `[Qualifizierung speichern]`
+
+User kann **jederzeit** speichern und Dialog schließen (keine Pflicht, alle Karten durchzugehen).
+
+---
+
+**Stufe 0: Vormerkung (sofort speicherbar)**
+- **Pflicht:** Firmenname (min. 2 Zeichen), Quelle (LeadSource)
+- **Optional:** Stadt, PLZ, Branche
+- **Erstkontakt (empfohlen, optional):**
+  - UI zeigt Block "Erstkontakt dokumentieren (empfohlen)" mit 3 Feldern:
+    - **Kanal** (Dropdown): MESSE, PHONE, EMAIL, REFERRAL, OTHER
+    - **Zeitpunkt** (datetime-local): Wann fand Erstkontakt statt
+    - **Notizen** (Textarea, min. 10 Zeichen): Was wurde besprochen
+  - Erzeugt Activity: `FIRST_CONTACT_DOCUMENTED` (countsAsProgress=false, startet Schutz)
+- **PRE-CLAIM MECHANIK:**
+  - **WENN** Erstkontakt dokumentiert → ✅ Schutz startet (registered_at = now, protection_until = +6 Monate)
+  - **WENN** KEIN Erstkontakt → ❌ Pre-Claim (registered_at = NULL, kein Schutz, 10-Tage-Frist)
+  - **Erstkontakt kann jederzeit nachgetragen werden** (Lead öffnen → Activity hinzufügen)
+  - **Backdating:** Erst Sprint 2.1.6 (außer Altdaten-Migration)
+- **Button:** `[Vormerkung speichern]` - POST /api/leads mit stage=0, schließt Dialog
+
+---
+
+**Stufe 1: Lead-Registrierung (separat speicherbar)**
+- **Pflicht:** **Mind. ein Kontaktkanal** (E-Mail ODER Telefon)
+- **Optional:** Vorname, Nachname
+- **DSGVO-Logik:**
+  - **KEINE Consent-Checkbox** im Vertriebs-Wizard (Kunde sitzt nicht daneben)
+  - Stattdessen **Hinweis:** "Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO) – Verarbeitung zur B2B-Geschäftsanbahnung. [Gesetzestext anzeigen ↗]"
+  - **Ausnahme WEB_FORMULAR:** Wenn Kunde selbst Daten eingibt → Consent-Checkbox PFLICHT
+    - **⚠️ WICHTIG:** Feld `consent_given_at` kommt erst in V259 (Sprint 2.1.6)
+    - Frontend 2.1.5: UI-only, keine Backend-Persistierung
+- **Schutz:** Startet **NICHT** bei Kontaktdaten (nur bei Erstkontakt-Dokumentation)
+- **Button:** `[Registrierung speichern]` - POST /api/leads mit stage=1, schließt Dialog
 - Owner Assignment via Geo+Workload (Sprint 2.1.6: Verfügbarkeit)
 
 **Stufe 2: Qualifiziert**

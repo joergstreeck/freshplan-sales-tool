@@ -22,6 +22,134 @@ updated: "2025-10-04"
 
 ---
 
+## 0. Progressive Profiling UX-Regeln (Best Practice)
+
+### Grundprinzip
+
+**Jede Karte ist eigenständig speicherbar.**
+- **Karte 0 (Vormerkung):** Minimaler Aufwand → Lead existiert (stage=0, Pre-Claim aktiv wenn kein Erstkontakt)
+- **Karte 1 (Registrierung):** Kontaktdaten → Lead erreichbar (stage=1)
+- **Karte 2 (Qualifizierung):** Business-Details → Lead qualifiziert (stage=2)
+
+**Speichern jederzeit möglich:**
+- Keine Pflicht, alle Karten durchzugehen
+- User kann nach jeder Karte speichern und Dialog schließen
+- Später: Lead öffnen und weitere Daten ergänzen
+
+### Karte 0: Vormerkung
+
+**Zweck:** Lead mit minimalen Infos anlegen (Messe/Telefon/Liste)
+
+**Pflichtfelder:**
+- Firmenname (min. 2 Zeichen)
+- Quelle (LeadSource: MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE)
+
+**Optionale Felder:**
+- Stadt, PLZ, Branche
+- **Erstkontakt (empfohlen):** Kanal, Zeitpunkt, Notiz (≥10 Zeichen)
+
+**Erstkontakt-Logik:**
+- Wird Erstkontakt dokumentiert → **Schutz startet** (registered_at gesetzt, V257 Trigger feuert)
+- Wird NICHT dokumentiert → **Pre-Claim** (10-Tage-Frist, Badge "⏳ Vormerkung läuft ab in X Tagen")
+- Erstkontakt **kann jederzeit nachgetragen werden** (Lead öffnen → Activity hinzufügen)
+
+**Buttons:**
+- `[Abbrechen]` - Schließt Dialog ohne Speichern
+- `[Vormerkung speichern]` - POST /api/leads mit stage=0, schließt Dialog
+- `[Weiter →]` - Geht zu Karte 1 (ohne Speichern)
+
+**Copy:**
+```
+Beschreibung: "Legen Sie den Lead mit wenigen Angaben an. Sie können Details später ergänzen."
+
+Erstkontakt-Box (optional, conditional):
+Titel: "Erstkontakt dokumentieren (empfohlen)"
+Hint: "Hatten Sie bereits Kontakt? Dokumentieren Sie kurz den Erstkontakt. Dadurch startet der Schutz für diesen Lead."
+```
+
+### Karte 1: Registrierung
+
+**Zweck:** Kontaktdaten erfassen
+
+**Pflichtfelder:**
+- **Mind. ein Kontaktkanal:** E-Mail ODER Telefon
+
+**Optionale Felder:**
+- Vorname, Nachname
+
+**DSGVO-Hinweis (statt Checkbox bei Vertrieb):**
+```tsx
+<Box sx={{ mt: 2, p: 2, bgcolor: 'info.light', borderRadius: 1 }}>
+  <Typography variant="body2">
+    <strong>Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)</strong>
+  </Typography>
+  <Typography variant="caption" color="text.secondary">
+    Verarbeitung zur B2B-Geschäftsanbahnung.
+    <Link onClick={openDsgvoPopup}>Gesetzestext anzeigen ↗</Link>
+  </Typography>
+  <Typography variant="caption" display="block" sx={{ mt: 1, fontStyle: 'italic' }}>
+    Hinweis: Einwilligung nur erforderlich bei Web-Formular (Kunde gibt selbst Daten ein).
+  </Typography>
+</Box>
+```
+
+**Buttons:**
+- `[← Zurück]` - Zurück zu Karte 0
+- `[Registrierung speichern]` - POST /api/leads mit stage=1, schließt Dialog
+- `[Weiter →]` - Geht zu Karte 2 (ohne Speichern)
+
+**Copy:**
+```
+Beschreibung: "Erfassen Sie Kontaktdaten, um den Lead erreichbar zu machen."
+```
+
+**⚠️ WICHTIG:**
+- **KEINE Consent-Checkbox** im Vertriebs-Wizard (Kunde sitzt nicht daneben)
+- Schutz startet **NICHT automatisch** bei Kontaktdaten (nur bei Erstkontakt-Dokumentation)
+
+### Karte 2: Qualifizierung
+
+**Zweck:** Geschäftliche Details nachtragen
+
+**Alle Felder optional:**
+- Geschätztes Volumen, Küchengröße, Mitarbeiterzahl, Website, Branche (Details)
+
+**Buttons:**
+- `[← Zurück]` - Zurück zu Karte 1
+- `[Qualifizierung speichern]` - POST /api/leads mit stage=2, schließt Dialog
+
+**Copy:**
+```
+Beschreibung: "Ergänzen Sie Geschäftsdaten, sobald sie vorliegen. Sie können jederzeit speichern und später fortfahren."
+```
+
+### Pre-Claim & Schutz-Logik
+
+**Pre-Claim (Vormerkung ohne Schutz):**
+- `registered_at IS NULL` (kein Erstkontakt dokumentiert)
+- 10-Tage-Frist ab `created_at`
+- **Badge:** "⏳ Vormerkung läuft ab in X Tagen"
+- **Filter:** "Pre-Claim Leads" (eigener Filter in LeadList)
+
+**Schutz aktiv:**
+- Erstkontakt dokumentiert (FIRST_CONTACT_DOCUMENTED Activity)
+- `registered_at NOT NULL` + `protection_until` gesetzt (6 Monate)
+- **Badge:** "🛡️ Geschützt bis TT.MM.JJJJ"
+
+**Erstkontakt nachträglich:**
+- Lead öffnen → Activity hinzufügen → Type: FIRST_CONTACT_DOCUMENTED
+- **Zeitpunkt:** Aktuell (Backdating erst Sprint 2.1.6, außer Altdaten-Migration)
+- Pre-Claim endet → Schutz startet ab erfasstem Zeitpunkt
+
+### ❌ Nicht tun (Anti-Patterns)
+
+1. **Keine Consent-Checkbox im Vertriebs-Wizard** (nur bei WEB_FORMULAR, wenn Kunde selbst Daten eingibt)
+2. **Erstkontakt nicht mehrfach abfragen** (nur auf Karte 0)
+3. **Speichern nicht ans Ende koppeln** (jede Karte separat speicherbar)
+4. **Schutz nicht bei Kontaktdaten starten** (nur bei Erstkontakt-Dokumentation)
+
+---
+
 ## 1. Activity-Types (13 Types)
 
 ### TypeScript Definition
