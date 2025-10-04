@@ -1,6 +1,7 @@
 package de.freshplan.modules.leads.api;
 
 import de.freshplan.modules.leads.domain.Lead;
+import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,8 +52,8 @@ public class LeadDTO {
   public String source;
   public String sourceCampaign;
 
-  // Progressive Profiling (Sprint 2.1.5)
-  public Short stage; // 0=Vormerkung, 1=Registrierung, 2=Qualifizierung
+  // Progressive Profiling (Sprint 2.1.5, Sprint 2.1.6 - Issue #125 Enum)
+  public LeadStage stage; // VORMERKUNG, REGISTRIERUNG, QUALIFIZIERT (serialized as 0, 1, 2)
 
   // Protection system fields
   public LocalDateTime registeredAt; // Sprint 2.1.5: Pre-Claim Status Detection (null = Pre-Claim)

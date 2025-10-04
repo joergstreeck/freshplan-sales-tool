@@ -177,9 +177,10 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "progress_deadline")
   public LocalDateTime progressDeadline;
 
-  // Progressive Profiling Stage (Sprint 2.1.5 - V255)
+  // Progressive Profiling Stage (Sprint 2.1.5 - V255, Sprint 2.1.6 - Issue #125 Enum)
+  @Enumerated(EnumType.ORDINAL)
   @Column(name = "stage", nullable = false)
-  public Short stage = 0; // 0=Vormerkung, 1=Registrierung, 2=Qualifiziert
+  public LeadStage stage = LeadStage.VORMERKUNG; // 0=Vormerkung, 1=Registrierung, 2=Qualifiziert
 
   // Metadata
   @Size(max = 100)
