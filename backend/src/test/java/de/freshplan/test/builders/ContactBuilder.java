@@ -27,7 +27,7 @@ public class ContactBuilder {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject ContactRepository contactRepository;
+  @Inject ContactRepository customerContactRepository;
 
   @Inject EntityManager entityManager;
 
@@ -282,8 +282,8 @@ public class ContactBuilder {
   @Transactional
   public CustomerContact persist() {
     CustomerContact contact = build();
-    if (contactRepository != null) {
-      contactRepository.persist(contact);
+    if (customerContactRepository != null) {
+      customerContactRepository.persist(contact);
     } else {
       // Fallback via EntityManager
       entityManager.persist(contact);
@@ -313,8 +313,8 @@ public class ContactBuilder {
             .build();
 
     // Contact persistieren
-    if (contactRepository != null) {
-      contactRepository.persistAndFlush(contact);
+    if (customerContactRepository != null) {
+      customerContactRepository.persistAndFlush(contact);
     } else {
       // Fallback via EntityManager
       entityManager.persist(contact);
@@ -343,8 +343,8 @@ public class ContactBuilder {
                     + "@test.com")
             .build();
 
-    if (contactRepository != null) {
-      contactRepository.persistAndFlush(contact);
+    if (customerContactRepository != null) {
+      customerContactRepository.persistAndFlush(contact);
     } else {
       // Fallback via EntityManager
       entityManager.persist(contact);
