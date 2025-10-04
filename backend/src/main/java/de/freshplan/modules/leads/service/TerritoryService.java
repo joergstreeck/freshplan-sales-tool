@@ -1,6 +1,5 @@
 package de.freshplan.modules.leads.service;
 
-import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.Territory;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
