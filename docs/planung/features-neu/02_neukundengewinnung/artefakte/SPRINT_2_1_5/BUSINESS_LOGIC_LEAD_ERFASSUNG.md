@@ -32,7 +32,15 @@ updated: "2025-10-04"
 
 **Pflichtfelder:**
 - Firmenname (min. 2 Zeichen)
-- Quelle (LeadSource: MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE)
+- **Quelle (LeadSource):** MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE
+  - **Definition:** Herkunft des Leads (Pflicht in Karte 0)
+  - **Zulässige Werte:**
+    - MESSE: Lead von Messe/Event
+    - EMPFEHLUNG: Lead durch Referral
+    - TELEFON: Lead durch Telefonakquise
+    - WEB_FORMULAR: Lead durch Web-Selbstregistrierung
+    - PARTNER: Lead durch Partnervertrieb
+    - SONSTIGE: Andere Quellen
 
 **Optionale Felder:**
 - Stadt, PLZ, Branche
@@ -66,6 +74,8 @@ updated: "2025-10-04"
 - **Web-Formular (Sprint 2.1.6):** Consent-Checkbox PFLICHT (Kunde gibt selbst Daten ein)
 
 **Schutz:** Startet **NICHT** automatisch bei Kontaktdaten (nur bei Erstkontakt-Dokumentation)
+
+**UX-Hinweis:** Wenn Kontaktdaten erfasst wurden, aber **kein Erstkontakt** vorliegt, bleibt der Lead im **Pre-Claim**. Die UI weist auf das **Nachtragen des Erstkontakts** hin, um den Schutz zu starten.
 
 **Button:** `[Registrierung speichern]` → POST /api/leads mit stage=1, schließt Dialog
 
@@ -142,6 +152,7 @@ updated: "2025-10-04"
 - **Trigger:** companyName + city + postalCode identisch (normalisiert)
 - **Response:** Problem+JSON **OHNE** `extensions.severity`
 - **Override:** Nur Manager/Admin mit `overrideReason` (min. 10 Zeichen)
+- **Berechtigung:** Ein Hard-Override darf ausschließlich von Nutzer*innen mit **Sales-Manager-Rolle (ROLE_SALES_MANAGER)** oder **Admin-Rolle** vorgenommen werden
 - **UI:** DuplicateLeadDialog (Manager-only)
 
 ### Soft Collision (Similar Match)
@@ -211,12 +222,16 @@ if (source === 'WEB_FORMULAR') {
 
 **Activity-Type:** FIRST_CONTACT_DOCUMENTED
 - `countsAsProgress: false` (System Activity)
-- Startet Schutz, aber **KEIN** 60-Tage-Progress-Reset
+- **Schutz** startet beim Erstkontakt
+- **Progress-Timer (60 Tage)** wird **nur** durch Activities mit `countsAsProgress=true` zurückgesetzt (Erstkontakt selbst **kein** Progress-Reset)
 
 **Felder:**
-- **Kanal:** MESSE, PHONE, EMAIL, REFERRAL, OTHER
-- **Zeitpunkt:** datetime-local (ISO 8601)
-- **Notizen:** min. 10 Zeichen
+- **Kanal:** MESSE, PHONE, EMAIL, REFERRAL, OTHER (Dropdown, Pflicht)
+- **Zeitpunkt:** datetime-local (ISO 8601, darf nicht in der Zukunft liegen)
+- **Notizen:** min. 10 Zeichen (Textarea, Pflicht)
+
+**Mindestanforderungen:**
+Der Erstkontakt gilt als dokumentiert, wenn **Kanal** gesetzt ist, **Zeitpunkt** nicht in der Zukunft liegt und die **Notiz mindestens 10 Zeichen** umfasst.
 
 **Transformation (Frontend → Backend):**
 ```typescript
