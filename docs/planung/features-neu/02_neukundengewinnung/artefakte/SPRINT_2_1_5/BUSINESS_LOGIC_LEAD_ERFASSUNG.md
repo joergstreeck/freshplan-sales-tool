@@ -126,8 +126,14 @@ updated: "2025-10-04"
 - **NICHT** bei Vormerkung ohne Erstkontakt
 
 **Schutz-Dauer:**
-- **6 Monate** ab registered_at (Basis-Schutz)
-- **60-Tage-Progress-Regel:** Timer resettet bei Progress-Aktivität
+- **6 Monate** ab registered_at (Basis-Schutz, Vertrag §3.2)
+- **60-Tage-Progress-Regel:** Timer resettet bei Progress-Aktivität (Vertrag §3.3)
+
+**Erinnerung & Nachfrist (Sprint 2.1.6, Vertrag §3.3.2):**
+- **Tag 60:** Keine Progress-Aktivität → Automatische Erinnerung an Partner
+- **10 Tage Nachfrist:** Tag 60-70 für Abhilfe
+- **Tag 70:** Schutz erlischt ohne neue Progress-Aktivität
+- **Feld:** `progress_warning_sent_at` (bereits in V255 vorhanden)
 
 **Progress-Aktivitäten (countsAsProgress = TRUE):**
 - QUALIFIED_CALL
@@ -255,7 +261,33 @@ activities: [{
 
 ---
 
-## 7. Anti-Patterns (was NICHT tun)
+## 7. Stop-the-Clock (Sprint 2.1.6, Vertrag §3.3.2)
+
+**Zweck:** Schutzfristen pausieren bei FreshFoodz-Verzögerungen oder Kundensperrfristen
+
+**Bedingungen:**
+- **Zwingend:** FreshFoodz-Zuarbeit (Preisfreigaben, Muster, Unterlagen)
+- **Optional:** Kundenseitige Sperrfristen (z.B. Urlaub, Budgetfreeze)
+
+**Berechtigung:** Manager/Admin only (ROLE_SALES_MANAGER oder Admin)
+
+**Felder (bereits in V255 vorhanden):**
+- `clock_stopped_at` - Zeitpunkt der Pausierung
+- `stop_reason` - Begründung (Pflicht, min. 10 Zeichen)
+- `stop_approved_by` - Genehmiger (Manager/Admin)
+
+**Effekt:**
+- Schutzfristen ruhen während Stop-the-Clock
+- `protection_until` verlängert sich entsprechend
+- Audit-Log: `lead_stop_clock_started` / `lead_stop_clock_resumed`
+
+**UI:** StopTheClockDialog (Sprint 2.1.6, Manager-only)
+
+📖 **Details:** [CONTRACT_MAPPING.md](./CONTRACT_MAPPING.md#stop-the-clock-§332)
+
+---
+
+## 8. Anti-Patterns (was NICHT tun)
 
 1. ❌ **Consent-Checkbox im Vertriebs-Wizard** (nur bei WEB_FORMULAR)
 2. ❌ **Erstkontakt mehrfach abfragen** (nur auf Karte 0)
@@ -269,7 +301,7 @@ activities: [{
 
 ---
 
-## 8. Verwandte Artefakte (Sprint 2.1.5)
+## 9. Verwandte Artefakte (Sprint 2.1.5)
 
 - 📋 **[FRONTEND_DELTA.md](./FRONTEND_DELTA.md)** - Zentrale Frontend-Spezifikation (877 Zeilen)
 - 🔒 **[PRE_CLAIM_LOGIC.md](./PRE_CLAIM_LOGIC.md)** - Pre-Claim Mechanik (10-Tage-Frist)
@@ -280,15 +312,17 @@ activities: [{
 
 ---
 
-## 9. Sprint 2.1.6 Erweiterungen (geplant)
+## 10. Sprint 2.1.6 Erweiterungen (geplant, Vertrag §3.3)
 
-- ✅ **Backdating:** Activity-Zeitpunkte in Vergangenheit setzen
+- ✅ **Backdating:** Activity-Zeitpunkte in Vergangenheit setzen (PUT /api/leads/{id}/registered-at)
 - ✅ **consent_given_at:** Backend-Feld für Web-Formular (V259)
-- ✅ **Bestandsleads-Migration:** Altdaten-Import mit historischen Timestamps
-- ✅ **Nightly Jobs:** Automatische Warn-/Expiry-Emails
+- ✅ **Bestandsleads-Migration:** Altdaten-Import mit historischen Timestamps (POST /api/admin/migration/leads/import)
+- ✅ **Nightly Jobs:** Automatische Warn-/Expiry-Emails (Tag 53/60/70)
+- ✅ **Schutz-Verlängerung:** Antrag mit Begründung + Manager-Genehmigung (Vertrag §3.3.2e)
+- ✅ **Stop-the-Clock UI:** StopTheClockDialog (Manager-only, Vertrag §3.3.2d)
 - ✅ **Fuzzy-Matching:** Erweiterte Dedupe mit Levenshtein + pg_trgm
 
-📖 **Details:** [SPRINT_2_1_6/SUMMARY.md](../SPRINT_2_1_6/SUMMARY.md)
+📖 **Details:** [SPRINT_2_1_6/SUMMARY.md](../SPRINT_2_1_6/SUMMARY.md) | [CONTRACT_MAPPING.md](./CONTRACT_MAPPING.md)
 
 ---
 
