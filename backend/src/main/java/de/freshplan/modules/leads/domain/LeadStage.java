@@ -32,7 +32,7 @@ public enum LeadStage {
    * <p><b>Transition to REGISTRIERUNG:</b> Add contact person OR document first contact (meeting,
    * call, etc.)
    */
-  VORMERKUNG(0, "Vormerkung"),
+  VORMERKUNG("Vormerkung"),
 
   /**
    * Stage 1: Registrierung (Registered).
@@ -45,7 +45,7 @@ public enum LeadStage {
    * <p><b>Transition to QUALIFIZIERT:</b> Add business data (industry, employee count, estimated
    * volume)
    */
-  REGISTRIERUNG(1, "Registrierung"),
+  REGISTRIERUNG("Registrierung"),
 
   /**
    * Stage 2: Qualifiziert (Qualified).
@@ -57,26 +57,25 @@ public enum LeadStage {
    *
    * <p><b>Transition to Customer:</b> Manual conversion via "Convert to Customer" action
    */
-  QUALIFIZIERT(2, "Qualifiziert");
+  QUALIFIZIERT("Qualifiziert");
 
-  private final int value;
   private final String displayName;
 
-  LeadStage(int value, String displayName) {
-    this.value = value;
+  LeadStage(String displayName) {
     this.displayName = displayName;
   }
 
   /**
-   * Returns the numeric value for database persistence.
+   * Returns the numeric value for database persistence (matches ordinal).
    *
-   * <p><b>Note:</b> This method is primarily for documentation. JPA
-   * {@code @Enumerated(EnumType.ORDINAL)} uses {@code ordinal()} method instead.
+   * <p><b>Note:</b> JPA {@code @Enumerated(EnumType.ORDINAL)} uses {@code ordinal()} for database
+   * persistence. This method provides the same value for API compatibility and explicit
+   * documentation.
    *
    * @return 0 for VORMERKUNG, 1 for REGISTRIERUNG, 2 for QUALIFIZIERT
    */
   public int getValue() {
-    return value;
+    return this.ordinal();
   }
 
   /**
@@ -105,20 +104,9 @@ public enum LeadStage {
    * @return {@code true} if transition is allowed, {@code false} otherwise
    */
   public boolean canTransitionTo(LeadStage targetStage) {
-    // Same-stage transitions are allowed (idempotent)
-    if (targetStage.ordinal() == this.ordinal()) {
-      return true;
-    }
-
-    // Backward transitions are NOT allowed (no downgrade)
-    if (targetStage.ordinal() < this.ordinal()) {
-      return false;
-    }
-
-    // Forward transitions: Only allow sequential progression (no skipping)
-    // VORMERKUNG (0) can only go to REGISTRIERUNG (1)
-    // REGISTRIERUNG (1) can only go to QUALIFIZIERT (2)
-    return (targetStage.ordinal() - this.ordinal()) == 1;
+    // Allow same-stage transitions (idempotent) or sequential forward transitions only
+    // Examples: VORMERKUNG→VORMERKUNG ✓, VORMERKUNG→REGISTRIERUNG ✓, VORMERKUNG→QUALIFIZIERT ✗
+    return targetStage.ordinal() == this.ordinal() || targetStage.ordinal() == this.ordinal() + 1;
   }
 
   /**
@@ -129,11 +117,9 @@ public enum LeadStage {
    * @throws IllegalArgumentException if value is not 0, 1, or 2
    */
   public static LeadStage fromValue(int value) {
-    for (LeadStage stage : values()) {
-      if (stage.value == value) {
-        return stage;
-      }
+    if (value < 0 || value >= values().length) {
+      throw new IllegalArgumentException("Invalid LeadStage value: " + value);
     }
-    throw new IllegalArgumentException("Invalid LeadStage value: " + value);
+    return values()[value];
   }
 }
