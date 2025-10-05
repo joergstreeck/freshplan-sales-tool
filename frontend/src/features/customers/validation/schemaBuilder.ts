@@ -329,11 +329,10 @@ export async function validateField(
     await schema.parseAsync(value);
     return { isValid: true };
   } catch (_error) {
-    void _error;
-    if (error instanceof z.ZodError) {
+    if (_error instanceof z.ZodError) {
       return {
         isValid: false,
-        error: error.errors[0]?.message || 'Validierungsfehler',
+        error: _error.errors[0]?.message || 'Validierungsfehler',
       };
     }
     return {

@@ -1,5 +1,5 @@
-import { describe, test, expect } from 'vitest';
-import { renderHook } from '@testing-library/react';
+import { describe, test, expect, beforeEach } from 'vitest';
+import { renderHook, act } from '@testing-library/react';
 import { I18nextProvider } from 'react-i18next';
 import i18n from '../index';
 import { useLanguage } from '../hooks';

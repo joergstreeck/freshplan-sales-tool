@@ -23,14 +23,14 @@ import { KanbanColumn } from './KanbanColumn';
 
 // Stage constants - should be fetched from backend config in production
 const ACTIVE_STAGES = [
-  OpportunityStage.NEW,
-  OpportunityStage.QUALIFIED,
-  OpportunityStage.MEETING,
+  OpportunityStage.NEW_LEAD,
+  OpportunityStage.QUALIFICATION,
+  OpportunityStage.NEEDS_ANALYSIS,
   OpportunityStage.PROPOSAL,
   OpportunityStage.NEGOTIATION,
 ];
 
-const CLOSED_STAGES = [OpportunityStage.WON, OpportunityStage.LOST];
+const CLOSED_STAGES = [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST];
 
 const componentLogger = logger.child('KanbanBoardDndKit');
 
