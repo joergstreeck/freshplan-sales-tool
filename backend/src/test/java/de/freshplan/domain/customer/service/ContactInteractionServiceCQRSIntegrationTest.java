@@ -14,6 +14,7 @@ import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
 import de.freshplan.domain.customer.service.mapper.ContactInteractionMapper;
+import de.freshplan.test.builders.ContactInteractionTestDataFactory;
 import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.panache.common.Page;
@@ -69,15 +70,16 @@ class ContactInteractionServiceCQRSIntegrationTest {
             .build();
     testContact.setId(contactId);
 
-    // Setup test interaction manually (no factory available)
-    testInteraction = new ContactInteraction();
-    testInteraction.setId(UUID.randomUUID());
-    testInteraction.setContact(testContact);
-    testInteraction.setType(InteractionType.EMAIL);
-    testInteraction.setTimestamp(LocalDateTime.now());
-    testInteraction.setSummary("Test interaction");
-    testInteraction.setFullContent("This is a test interaction content");
-    testInteraction.setSentimentScore(0.5);
+    // Setup test interaction using factory
+    testInteraction =
+        ContactInteractionTestDataFactory.builder()
+            .withContact(testContact)
+            .withType(InteractionType.EMAIL)
+            .withTimestamp(LocalDateTime.now())
+            .withSummary("Test interaction")
+            .withFullContent("This is a test interaction content")
+            .withSentimentScore(0.5)
+            .build();
 
     // Setup test DTO
     testDTO =

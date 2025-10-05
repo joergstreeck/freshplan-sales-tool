@@ -148,9 +148,7 @@ describe('SecureStorage', () => {
       localStorageMock.setItem('long', longString);
 
       expect(getSecureString('long', 'default', 1000)).toBe('default');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('exceeds max length')
-      );
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('exceeds max length'));
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('long');
     });
 

@@ -217,15 +217,26 @@ describe('SmartContactCard', () => {
   });
 
   describe('Hover Effects', () => {
-    it('should show quick actions on hover when enabled', () => {
+    it('should show quick actions on hover when enabled', async () => {
       renderWithTheme(<SmartContactCard {...defaultProps} showQuickActions={true} />);
 
       const card = screen.getByText('Herr Dr. Max Mustermann').closest('.MuiCard-root');
       expect(card).toBeInTheDocument();
 
-      // Simulate hover - component should handle it without errors
+      // Simulate hover and verify quick actions appear
       if (card) {
         fireEvent.mouseEnter(card);
+
+        // Wait for quick actions to be visible (may be styled or animated)
+        await waitFor(
+          () => {
+            // Check if any quick action buttons are visible
+            const buttons = card.querySelectorAll('button');
+            expect(buttons.length).toBeGreaterThan(1);
+          },
+          { timeout: 1000 }
+        );
+
         fireEvent.mouseLeave(card);
       }
     });

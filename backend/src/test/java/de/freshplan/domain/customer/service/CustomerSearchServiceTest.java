@@ -203,9 +203,9 @@ class CustomerSearchServiceTest {
     assertThat(result.getTotalElements()).isEqualTo(initialCount + 3);
     // Verify our test customers are present
     assertThat(result.getContent())
-        .anyMatch(c -> c.companyName().equals("Recent Company"))
-        .anyMatch(c -> c.companyName().equals("Older Company"))
-        .anyMatch(c -> c.companyName().equals("Oldest Company"));
+        .anyMatch(c -> c.companyName().equals("[TEST-DATE] Recent Company"))
+        .anyMatch(c -> c.companyName().equals("[TEST-DATE] Older Company"))
+        .anyMatch(c -> c.companyName().equals("[TEST-DATE] Oldest Company"));
   }
 
   @Test
@@ -600,18 +600,18 @@ class CustomerSearchServiceTest {
   }
 
   private void createCustomersWithDifferentDates() {
-    Customer recent = CustomerTestDataFactory.builder().withCompanyName("Recent Company").build();
-    recent.setCompanyName("Recent Company");
+    Customer recent = CustomerTestDataFactory.builder().withCompanyName("[TEST-DATE] Recent Company").build();
+    recent.setCompanyName("[TEST-DATE] Recent Company");
     recent.setCreatedAt(LocalDate.now().minusDays(5).atStartOfDay());
     customerRepository.persist(recent);
 
-    Customer older = CustomerTestDataFactory.builder().withCompanyName("Older Company").build();
-    older.setCompanyName("Older Company");
+    Customer older = CustomerTestDataFactory.builder().withCompanyName("[TEST-DATE] Older Company").build();
+    older.setCompanyName("[TEST-DATE] Older Company");
     older.setCreatedAt(LocalDate.now().minusDays(30).atStartOfDay());
     customerRepository.persist(older);
 
-    Customer oldest = CustomerTestDataFactory.builder().withCompanyName("Oldest Company").build();
-    oldest.setCompanyName("Oldest Company");
+    Customer oldest = CustomerTestDataFactory.builder().withCompanyName("[TEST-DATE] Oldest Company").build();
+    oldest.setCompanyName("[TEST-DATE] Oldest Company");
     oldest.setCreatedAt(LocalDate.now().minusDays(90).atStartOfDay());
     customerRepository.persist(oldest);
   }
