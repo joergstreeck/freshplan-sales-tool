@@ -49,12 +49,13 @@ Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 
 ### Test Coverage & CI
 [![Frontend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml)
+[![Backend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml)
 [![codecov](https://codecov.io/gh/joergstreeck/freshplan-sales-tool/branch/main/graph/badge.svg)](https://codecov.io/gh/joergstreeck/freshplan-sales-tool)
 
-**Frontend:** 958 Tests | Coverage: ~26-28% (wachsend)
-**Backend:** ~1500 Tests | Coverage: >80%
+**Frontend:** 958 Tests | Coverage: ~26-28% (wachsend) | [Testing Guide](./frontend/TESTING.md)
+**Backend:** ~1500 Tests | Coverage: >80% (JaCoCo) | @Tag("core") Tests in CI
 
-📖 **Setup:** [Codecov Integration einrichten](./docs/CODECOV_SETUP.md)
+📖 **CI/CD Setup:** [Codecov Integration](./docs/CODECOV_SETUP.md) | [Testing Guide](./docs/planung/grundlagen/TESTING_GUIDE.md)
 
 ## Mock-Governance (Business-Logic mock-frei)
 - Business-Pfade: `frontend/src/{app,features,lib,hooks,store}` dürfen keine Mocks importieren.
