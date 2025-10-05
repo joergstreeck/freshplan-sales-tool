@@ -32,11 +32,15 @@ public class CustomerTestDataFactory {
   }
 
   /**
-   * Generiert eindeutige Kundennummer: KD-TEST-{RUN_ID}-{SEQ} Format erlaubt Spurensuche bei
-   * CI-Problemen.
+   * Generiert eindeutige Kundennummer: TST-{HASH}-{SEQ} Max 20 Zeichen für VARCHAR(20) Constraint.
+   * Format: TST-<8-char-hash>-<5-digit-seq> = max 18 chars
    */
   private static String nextNumber() {
-    return "KD-TEST-" + runId() + "-" + String.format("%05d", SEQ.incrementAndGet());
+    String runId = runId();
+    // Hash RUN_ID to 8 chars (consistent per run, collision-resistant)
+    int hash = Math.abs(runId.hashCode());
+    String hashStr = String.format("%08X", hash).substring(0, 8);
+    return "TST-" + hashStr + "-" + String.format("%05d", SEQ.incrementAndGet());
   }
 
   /** Realistische Firmennamen statt "Test Company". Präfix [TEST] für eindeutige Markierung. */

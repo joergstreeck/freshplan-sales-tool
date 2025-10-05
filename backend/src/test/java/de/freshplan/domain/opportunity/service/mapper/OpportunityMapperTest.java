@@ -147,8 +147,11 @@ class OpportunityMapperTest {
       // Customer is now set as it's required by factory
       assertThat(response.getCustomerId()).isNotNull();
       assertThat(response.getCustomerName()).contains("[TEST] Mock Customer");
+      // OpportunityTestDataFactory auto-creates mock user
+      // In tests without persistence, user has no ID, so assignedToId is null
+      // But assignedToName is extracted from user.username which IS set
       assertThat(response.getAssignedToId()).isNull();
-      assertThat(response.getAssignedToName()).isNull();
+      assertThat(response.getAssignedToName()).isNotNull();
       // Factory sets default value of 10000 if not provided
       assertThat(response.getExpectedValue()).isEqualTo(new BigDecimal("10000"));
       // Factory might set default close date
