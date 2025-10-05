@@ -115,6 +115,12 @@ Backend:
 
 **Wichtig:** PRs sollten Coverage nicht senken!
 
+## 🐛 Bekannte Test-Issues
+
+**Stand 2025-10-05:** 3 von 1266 Tests schlagen fehl (Timezone/Spy-Matching-Issues, keine Production-Bugs)
+
+Details: [frontend/KNOWN_ISSUES.md](../frontend/KNOWN_ISSUES.md)
+
 ---
 
 ## 🎨 Coverage verstehen

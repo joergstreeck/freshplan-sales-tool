@@ -67,8 +67,9 @@ describe('Formatters', () => {
     });
 
     it('should format ISO date strings as DD.MM.YYYY', () => {
-      expect(formatDate('2025-01-01T00:00:00Z')).toBe('01.01.2025');
-      expect(formatDate('2024-12-31T23:59:59Z')).toBe('31.12.2024');
+      expect(formatDate('2025-01-01T12:00:00Z')).toBe('01.01.2025');
+      // Use midday to avoid timezone issues that could shift to next/prev day
+      expect(formatDate('2024-12-31T12:00:00Z')).toBe('31.12.2024');
     });
 
     it('should return "-" for undefined', () => {

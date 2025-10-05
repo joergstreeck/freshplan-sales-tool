@@ -51,8 +51,10 @@ Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 [![Frontend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml)
 [![Backend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml)
 
-**Frontend:** 958 Tests | Coverage: ~26-28% (wachsend)
+**Frontend:** 963 Tests passing (3 known issues) | Coverage: ~26-28%
 **Backend:** ~1500 Tests | Coverage: >80% (JaCoCo)
+
+📋 **Known Issues:** [frontend/KNOWN_ISSUES.md](./frontend/KNOWN_ISSUES.md)
 
 **🔥 Lokale Coverage-Tools (empfohlen):**
 ```bash

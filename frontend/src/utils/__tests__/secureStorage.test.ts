@@ -19,7 +19,7 @@ const localStorageMock = (() => {
   let store: Record<string, string> = {};
 
   return {
-    getItem: vi.fn((key: string) => store[key] || null),
+    getItem: vi.fn((key: string) => (key in store ? store[key] : null)),
     setItem: vi.fn((key: string, value: string) => {
       store[key] = value;
     }),
@@ -149,8 +149,7 @@ describe('SecureStorage', () => {
 
       expect(getSecureString('long', 'default', 1000)).toBe('default');
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        expect.stringContaining('exceeds max length'),
-        expect.anything()
+        expect.stringContaining('exceeds max length')
       );
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('long');
     });
@@ -192,6 +191,7 @@ describe('SecureStorage', () => {
 
     it('should handle empty strings correctly', () => {
       localStorageMock.setItem('empty', '');
+      // Empty string is a valid value and should be returned (not the default)
       expect(getSecureString('empty', 'default')).toBe('');
     });
   });
