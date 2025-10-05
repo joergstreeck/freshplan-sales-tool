@@ -10,9 +10,9 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (45% complete)
-- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (05.10.2025) - **PR #129 MERGED** 🎉
-- **Progress:** 11/36 PRs - 31% done (Sprint 2.1.5 Backend+Frontend COMPLETE)
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (48% complete)
+- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (05.10.2025) - **PR #129, #131 MERGED** 🎉
+- **Progress:** 12/36 PRs - 33% done (Sprint 2.1.5 COMPLETE + Lead Stage Enum)
 - **Blockers:** Issue #130 (TestDataBuilder Konflikt - Worktree CI temporär deaktiviert)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
@@ -119,6 +119,7 @@ Sprint 2.1.5: Progressive Profiling   ✅ COMPLETE (05.10.2025) → PR #124 Back
 Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
                                       → **PR #130:** TestDataBuilder Refactoring (Issue #130, BLOCKER für Worktree CI)
                                       → **PR #131:** Lead Stage Enum (Issue #125, Type Safety - 2-3h)
+                                      → **Frontend Accessibility:** MUI Dialog aria-hidden Fix (WCAG 2.1 Level A - 1-2h)
                                       → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)
                                       → Lead → Kunde Convert Flow (automatische Übernahme bei Status QUALIFIED → CONVERTED)
                                       → Stop-the-Clock UI (Manager-only, StopTheClockDialog)

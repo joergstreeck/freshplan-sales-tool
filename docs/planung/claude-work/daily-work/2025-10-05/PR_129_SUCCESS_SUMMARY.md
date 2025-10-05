@@ -48,9 +48,10 @@
   - `source = EMPFEHLUNG/WEB/PARTNER/SONSTIGE` → Checkbox "☑ Ich hatte bereits Erstkontakt"
 
 - ✅ **DSGVO Compliance:**
-  - Consent-Checkbox in Stage 1 (Art. 6 Abs. 1 lit. a DSGVO)
-  - NICHT vorausgefüllt (Opt-In, kein Opt-Out)
-  - `lead.consent_given_at` Timestamp-Speicherung
+  - **Vertriebs-Wizard:** KEINE Consent-Checkbox (Berechtigtes Interesse Art. 6 Abs. 1 lit. f)
+  - **Hinweis-Banner** mit Link zu Gesetzestext
+  - **Rechtsgrundlage:** B2B-Geschäftsanbahnung (lit. f)
+  - **Web-Formular (Sprint 2.1.6):** Consent-Checkbox mit `consent_given_at` Timestamp
 
 #### 2. Pre-Claim Badge (33 LOC)
 **Datei:** `frontend/src/features/customers/components/CustomerTable.tsx`

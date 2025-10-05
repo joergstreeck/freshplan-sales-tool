@@ -18,6 +18,20 @@ updated: "2025-10-04"
 
 ---
 
+## 0. Kern-Prinzipien (Quick-Start)
+
+**Lead-Stage vs. Lead-Schutz vs. Pre-Claim:**
+
+| Konzept | Bedeutung | Trigger |
+|---------|-----------|---------|
+| **Lead-Stage** (0→1→2) | Inhaltsreife: Vormerkung → Registrierung → Qualifizierung | Daten-Vollständigkeit |
+| **Lead-Schutz** (6M) | Exklusives Bearbeitungsrecht (6 Monate ab `registeredAt`) | **NUR** Erstkontakt-Dokumentation |
+| **Pre-Claim** (10T) | Vormerkung ohne Schutz, 10-Tage-Frist | Kein Erstkontakt dokumentiert |
+
+**⚠️ Wichtig:** Stage 1 (Registrierung) bedeutet **NICHT** automatisch Schutz! Ein Lead kann Stage 1 haben (Kontaktdaten erfasst), aber im **Pre-Claim** bleiben (kein Erstkontakt dokumentiert). Schutz startet **ausschließlich** durch **Erstkontakt-Dokumentation** (Activity-Type: FIRST_CONTACT_DOCUMENTED).
+
+---
+
 ## 1. Progressive Profiling (3-Stufen-Modell)
 
 ### Grundprinzip: Jede Karte separat speicherbar
@@ -79,10 +93,12 @@ updated: "2025-10-04"
 - Vorname, Nachname
 
 **DSGVO-Logik:**
-- **Vertriebs-Wizard:** KEINE Consent-Checkbox (Kunde sitzt nicht daneben)
-  - Stattdessen: Hinweis "Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)"
+- **Vertriebs-Wizard (Sprint 2.1.5 ✅):** KEINE Consent-Checkbox (Kunde sitzt nicht daneben)
+  - Stattdessen: **Hinweis "Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO)"**
   - Link zu Gesetzestext (Popup/Neues Fenster)
-- **Web-Formular (Sprint 2.1.6):** Consent-Checkbox PFLICHT (Kunde gibt selbst Daten ein)
+  - **Rechtsgrundlage:** B2B-Geschäftsanbahnung (lit. f)
+- **Web-Formular (Sprint 2.1.6 geplant):** Consent-Checkbox PFLICHT (Kunde gibt selbst Daten ein)
+  - **Rechtsgrundlage:** Einwilligung (Art. 6 Abs. 1 lit. a)
 
 **Schutz:** Startet **NICHT** automatisch bei Kontaktdaten (nur bei Erstkontakt-Dokumentation)
 
@@ -215,7 +231,7 @@ updated: "2025-10-04"
 ### Web-Formular (Sprint 2.1.6)
 - **Consent-Checkbox PFLICHT** (Kunde gibt selbst Daten ein)
 - **Rechtsgrundlage:** Art. 6 Abs. 1 lit. a DSGVO (Einwilligung)
-- **Backend-Feld:** `consent_given_at` (V259 Migration)
+- **Backend-Feld:** `consent_given_at` (Migration-Nummer: siehe `get-next-migration.sh`)
 - **Widerruf:** Jederzeit möglich
 
 **Quellenabhängige Logik:**
@@ -325,8 +341,10 @@ activities: [{
 
 ## 10. Sprint 2.1.6 Erweiterungen (geplant, Vertrag §3.3)
 
+**🚨 Migration-Nummern:** Verwende IMMER `get-next-migration.sh` statt feste V-Nummern!
+
 - ✅ **Backdating:** Activity-Zeitpunkte in Vergangenheit setzen (PUT /api/leads/{id}/registered-at)
-- ✅ **consent_given_at:** Backend-Feld für Web-Formular (V259)
+- ✅ **consent_given_at:** Backend-Feld für Web-Formular (Migration: siehe Script)
 - ✅ **Bestandsleads-Migration:** Altdaten-Import mit historischen Timestamps (POST /api/admin/migration/leads/import)
 - ✅ **Nightly Jobs:** Automatische Warn-/Expiry-Emails (Tag 53/60/70)
 - ✅ **Schutz-Verlängerung:** Antrag mit Begründung + Manager-Genehmigung (Vertrag §3.3.2e)

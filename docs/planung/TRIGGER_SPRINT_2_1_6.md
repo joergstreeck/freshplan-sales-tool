@@ -116,11 +116,47 @@ Implementierung von Bestandsleads-Migrations-API (Modul 08), Lead → Kunde Conv
 - **Lead Detail-Seite:** Route `/leads/:id` mit Lead-Details für Navigation bei Klick
 - **Context-aware CustomerTable:** Status-Rendering und Actions basierend auf `context` Prop
 
+### 8. MUI Dialog Accessibility Fix (aria-hidden Focus Management)
+**Begründung:** MUI Dialog blockiert aria-hidden auf Elementen mit Fokus - WCAG 2.1 Level A Verletzung
+
+**Problem:**
+```
+Blocked aria-hidden on an element because its descendant retained focus.
+The element is displayed on screen with 'display:block' or equivalent styles.
+```
+
+**Akzeptanzkriterien:**
+- MUI Dialog Focus-Management korrekt implementiert (disableEnforceFocus=false beibehalten)
+- aria-hidden Warning in Browser Console eliminiert
+- WCAG 2.1 Level A Compliance für Dialog-Focus-Management
+- Keine Regression bei Keyboard-Navigation (Tab, Escape, Enter)
+- FocusTrap funktioniert weiterhin korrekt
+
+**Betroffene Komponenten:**
+- LeadWizard.tsx (MUI Dialog mit Multi-Step-Form)
+- Alle anderen Dialogs mit Focus-Management (CustomerEditDialog, StopTheClockDialog, etc.)
+
+**Technische Lösung:**
+- MUI `disableEnforceFocus` Option prüfen (nur bei Bedarf aktivieren)
+- `disableRestoreFocus` für spezifische Dialogs konfigurieren
+- `aria-hidden` korrekt auf Dialog-Overlay und Parent-Elementen setzen
+- Focus-Management mit `useRef` + `useEffect` für Custom-Steuerung
+
+**Referenzen:**
+- [MUI Dialog API](https://mui.com/material-ui/api/dialog/)
+- [WCAG 2.1 Focus Management](https://www.w3.org/WAI/WCAG21/Understanding/focus-visible.html)
+- [React Focus Management Best Practices](https://react-spectrum.adobe.com/react-aria/FocusScope.html)
+
+**Aufwand:** 1-2h (Low Complexity - MUI Props-Konfiguration + Testing)
+
 ## Technische Details
 
 ### Lead Transfers (aus 2.1.5):
+
+**🚨 Migration-Nummer:** Verwende `get-next-migration.sh` statt feste V-Nummern!
+
 ```sql
--- V258: lead_transfers Tabelle
+-- Migration: siehe get-next-migration.sh
 CREATE TABLE lead_transfers (
   id BIGSERIAL PRIMARY KEY,
   lead_id BIGINT REFERENCES leads(id),
@@ -220,7 +256,7 @@ void checkProgressWarnings() {
 - Row-Level-Security Policies (owner_policy, team_policy, admin_policy)
 - Team Management CRUD
 - Fuzzy-Matching & Duplicate Review
-- V258 lead_transfers Tabelle
+- lead_transfers Tabelle (Migration: siehe `get-next-migration.sh`)
 
 **Cross-Module Dependency:**
 - **Modul 00 Sicherheit:** ADR-003 RLS Design → Sprint 2.1.7

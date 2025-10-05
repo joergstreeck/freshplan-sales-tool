@@ -131,6 +131,27 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-05 14:09 - Sprint 2.1.6 Vorbereitung: PR #131 merged + Doku-Updates
+
+**Kontext:** ChatGPT Code-Review zu PR #129 validiert, Lead Stage Enum Refactoring merged
+
+**Erledigt:**
+- ✅ **PR #131 MERGED:** Lead Stage Enum Refactoring (Issue #125)
+  - Lead.stage: `Short` → `LeadStage` Enum (VORMERKUNG=0, REGISTRIERUNG=1, QUALIFIZIERT=2)
+  - Type-safe Transitions via `canTransitionTo()` Methode
+  - Backward Compatibility: `@Enumerated(EnumType.ORDINAL)` nutzt 0,1,2
+  - 30 Tests grün (Enum + Legacy int-basiert), Code Review Feedback umgesetzt (-29 LOC)
+- ✅ **Dokumentations-Updates:** ChatGPT Review-Feedback validiert (3 "Blocker" waren Fehlinterpretationen)
+  - BUSINESS_LOGIC_LEAD_ERFASSUNG.md: Migration-Nummern entfernt → `get-next-migration.sh`, DSGVO präzisiert, Kern-Prinzipien-Abschnitt
+  - TRIGGER_SPRINT_2_1_6.md: MUI Dialog Accessibility Fix als User Story #8, Migration-Check-Hinweis
+  - PRODUCTION_ROADMAP_2025.md: Frontend Accessibility Fix ergänzt
+  - PR_129_SUCCESS_SUMMARY.md: DSGVO Wording korrigiert (Hinweis lit. f statt Checkbox)
+- ✅ **Migration-Policy aktualisiert:** KEINE festen V-Nummern mehr in Planung (nur Script-Verweis)
+
+**Tests:** ✅ 30/30 in LeadProtectionServiceTest
+
+**Migration:** n/a (keine DB-Arbeit)
+
 ### 2025-10-04 20:00 - ADR-006 Lead-Management Hybrid-Architektur COMPLETE
 
 **Kontext:** User wählte Hybrid-Ansatz nach CustomersPageV2-Analyse
@@ -408,10 +429,9 @@
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
 - **Sprint 2.1.6 Implementation (Start 12.10.2025):**
-  - **PRIORITY PR #130:** TestDataBuilder Refactoring (BLOCKER für Worktree CI)
-    - Consolidation zu single TestDataFactory pattern
-    - src/main vs src/test Konflikt auflösen
-    - Worktree CI re-enablen
+  - **PRIORITY #1:** Issue #130 (TestDataBuilder Refactoring - BLOCKER für Worktree CI)
+  - **PRIORITY #2:** Frontend Accessibility (MUI Dialog aria-hidden Fix - WCAG 2.1 Level A, 1-2h)
+  - Feature-Branch anlegen: `feature/mod02-sprint-2.1.6-*` (NICHT direkt auf main committen)
   - **PRIORITY PR #131:** Lead Stage Enum (Issue #125, 2-3h)
     - LeadStage Enum: VORMERKUNG(0), REGISTRIERUNG(1), QUALIFIZIERT(2)
     - Lead.stage: Short → LeadStage (@Enumerated(EnumType.ORDINAL))
