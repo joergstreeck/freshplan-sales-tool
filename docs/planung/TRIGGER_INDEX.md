@@ -9,6 +9,27 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
 
 ---
 
+## 🔧 GIT WORKFLOW (KRITISCH!)
+
+**⚠️ ALLE TRIGGER-DOKUMENTE enthalten ab 2025-10-05 GIT PUSH POLICY:**
+
+### 🚫 VERBOTEN (ohne explizite User-Freigabe):
+- **`git push`** - NIEMALS ohne User-Erlaubnis pushen!
+- **PR-Erstellung** - Nur auf explizite Anforderung
+- **PR-Merge** - Nur wenn User explizit zustimmt
+- **Branch-Deletion** - Remote-Branches nur mit User-OK löschen
+
+### ✅ Standard-Workflow:
+1. **Feature-Branch anlegen & Arbeiten**
+2. **Commits erstellen** (nach User-Anfrage)
+3. **User fragen:** "Branch ist bereit. Soll ich pushen und PR erstellen?"
+4. **Erst nach Freigabe:** `git push` + PR-Erstellung
+
+**Referenz:** `/CLAUDE.md` → Sektion "🚫 GIT PUSH POLICY (KRITISCH!)"
+**Dokumentiert in:** Alle TRIGGER_SPRINT_*.md Dokumente (2.1.6 - 3.3)
+
+---
+
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
 
 ### **PHASE 1: FOUNDATION (6 Sprints) - ✅ COMPLETE**

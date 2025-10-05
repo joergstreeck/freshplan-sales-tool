@@ -44,6 +44,32 @@ updated: "2025-10-05"
 > 5. **Backend:** Fuzzy-Matching & Scoring (verschoben aus 2.1.5)
 > 6. **Frontend:** Transfer-UI & Review-Flow
 
+## 🔧 GIT WORKFLOW (KRITISCH!)
+
+**PFLICHT-REGELN für alle Sprint-Arbeiten:**
+
+### ✅ ERLAUBT (ohne User-Freigabe):
+- `git commit` - Commits erstellen wenn User darum bittet
+- `git add` - Dateien stagen
+- `git status` / `git diff` - Status prüfen
+- Feature-Branches anlegen (`git checkout -b feature/...`)
+
+### 🚫 VERBOTEN (ohne explizite User-Freigabe):
+- **`git push`** - NIEMALS ohne User-Erlaubnis pushen!
+- **PR-Erstellung** - Nur auf explizite Anforderung
+- **PR-Merge** - Nur wenn User explizit zustimmt
+- **Branch-Deletion** - Remote-Branches nur mit User-OK löschen
+
+### 📋 Standard-Workflow:
+1. **Feature-Branch anlegen:** `git checkout -b feature/mod02-sprint-2.1.6-description`
+2. **Arbeiten & Committen:** Code schreiben, Tests validieren, `git commit`
+3. **User fragen:** "Branch ist bereit. Soll ich pushen und PR erstellen?"
+4. **Erst nach Freigabe:** `git push` + PR-Erstellung
+
+**Referenz:** `/CLAUDE.md` → Sektion "🚫 GIT PUSH POLICY (KRITISCH!)"
+
+---
+
 ## Sprint-Ziel
 
 **PRIORITY #0:** Issue #130 Fix (TestDataBuilder CDI-Konflikt - BLOCKER) - **MUSS ZUERST!**
