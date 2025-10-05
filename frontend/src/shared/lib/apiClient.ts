@@ -64,9 +64,16 @@ class ApiClient {
         statusText: response.statusText,
       };
     } catch (_error) {
-      void _error;
-      if (error instanceof Error && 'code' in error) {
-        throw error; // Re-throw our custom ApiError
+      const error = _error;
+      // Re-throw our custom ApiError (has 'code', 'message', and 'details' properties)
+      if (
+        error &&
+        typeof error === 'object' &&
+        'code' in error &&
+        'message' in error &&
+        'details' in error
+      ) {
+        throw error;
       }
 
       // Handle network errors

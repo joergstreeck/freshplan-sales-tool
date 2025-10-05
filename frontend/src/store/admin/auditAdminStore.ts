@@ -230,7 +230,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
 
         // Fetch Activity Heatmap
-        fetchActivityHeatmap: async (__dateRange, granularity) => {
+        fetchActivityHeatmap: async (dateRange, granularity) => {
           try {
             // TODO: Implement real API call
             // const heatmapData = await auditApi.getActivityHeatmap(dateRange, granularity);
@@ -402,7 +402,7 @@ export const useAuditAdminStore = create<AuditAdminState>()(
         },
 
         // Security Actions
-        acknowledgeAlert: async _alertId => {
+        acknowledgeAlert: async alertId => {
           // API call to acknowledge
           set(state => ({
             suspiciousActivities: state.suspiciousActivities.map(a =>
