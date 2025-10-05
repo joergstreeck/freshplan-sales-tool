@@ -1,18 +1,12 @@
 name: Frontend Tests & Coverage
 
+# DEACTIVATED: Coverage is now tracked locally with:
+# - npm run test:ui (interactive)
+# - npm run test:coverage (HTML report)
+# See docs/COVERAGE_GUIDE.md for details
+
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - 'feature/**'
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend-tests-coverage.yml'
-  pull_request:
-    paths:
-      - 'frontend/**'
-      - '.github/workflows/frontend-tests-coverage.yml'
+  workflow_dispatch:  # Manual trigger only
 
 jobs:
   test:

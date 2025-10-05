@@ -1,18 +1,11 @@
 name: Backend Tests & Coverage
 
+# DEACTIVATED: Coverage is now tracked locally with:
+# - ./mvnw verify && open target/site/jacoco/index.html
+# See docs/COVERAGE_GUIDE.md for details
+
 on:
-  push:
-    branches:
-      - main
-      - develop
-      - 'feature/**'
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend-tests-coverage.yml'
-  pull_request:
-    paths:
-      - 'backend/**'
-      - '.github/workflows/backend-tests-coverage.yml'
+  workflow_dispatch:  # Manual trigger only
 
 jobs:
   test:
