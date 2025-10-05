@@ -13,7 +13,6 @@ import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
-import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

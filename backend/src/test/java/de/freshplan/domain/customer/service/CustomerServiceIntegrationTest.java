@@ -6,7 +6,6 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.*;
-import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;

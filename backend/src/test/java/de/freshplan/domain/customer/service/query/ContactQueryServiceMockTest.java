@@ -10,7 +10,6 @@ import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
 import de.freshplan.test.builders.ContactTestDataFactory;
-import de.freshplan.test.builders.CustomerTestDataFactory;
 import de.freshplan.testsupport.TestFixtures;
 import de.freshplan.testsupport.TestFixtures.CustomerBuilder;
 import jakarta.ws.rs.NotFoundException;

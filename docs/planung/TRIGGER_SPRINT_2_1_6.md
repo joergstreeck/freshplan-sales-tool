@@ -34,7 +34,7 @@ updated: "2025-10-05"
 
 > **⚠️ TEST-STRATEGIE BEACHTEN!**
 > Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
-> Siehe: [`backend/TEST_MIGRATION_PLAN.md`](features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md)
+> Siehe: [`features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md`](features-neu/02_neukundengewinnung/backend/TEST_MIGRATION_PLAN.md)
 >
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **SPRINT_MAP des Moduls öffnen** → `features-neu/02_neukundengewinnung/SPRINT_MAP.md`

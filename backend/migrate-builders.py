@@ -10,9 +10,9 @@ from pathlib import Path
 
 # Migration mappings
 IMPORT_REPLACEMENTS = {
-    'import de.freshplan.test.builders.CustomerBuilder;': 'import de.freshplan.test.factories.CustomerTestDataFactory;',
-    'import de.freshplan.test.builders.ContactBuilder;': 'import de.freshplan.test.factories.ContactTestDataFactory;',
-    'import de.freshplan.test.builders.OpportunityBuilder;': 'import de.freshplan.test.factories.OpportunityTestDataFactory;',
+    'import de.freshplan.test.builders.CustomerBuilder;': 'import de.freshplan.test.builders.CustomerTestDataFactory;',
+    'import de.freshplan.test.builders.ContactBuilder;': 'import de.freshplan.test.builders.ContactTestDataFactory;',
+    'import de.freshplan.test.builders.OpportunityBuilder;': 'import de.freshplan.test.builders.OpportunityTestDataFactory;',
     'import de.freshplan.test.builders.ContactInteractionBuilder;': '// ContactInteractionBuilder removed - create manually',
 }
 
