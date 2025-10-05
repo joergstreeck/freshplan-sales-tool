@@ -406,7 +406,7 @@ describe('PR4 Enterprise Test Suite', () => {
     });
 
     it('handles customer selection', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       const mockOnRowClick = vi.fn();
       render(<VirtualizedCustomerTable {...tableProps} onRowClick={mockOnRowClick} />, {
         wrapper: createWrapper(),

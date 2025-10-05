@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { FilterDrawer } from './FilterDrawer';
-import { FilterConfig, RiskLevel } from '../../types/filter.types';
+import { FilterConfig } from '../../types/filter.types';
 
 describe('FilterDrawer', () => {
   const defaultFilters: FilterConfig = {
