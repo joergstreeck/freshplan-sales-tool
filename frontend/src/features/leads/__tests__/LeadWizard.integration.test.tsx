@@ -1,7 +1,7 @@
 // Sprint 2.1.5 Frontend Phase 2 - LeadWizard Integration Tests (MSW-based)
 // Test Coverage: Progressive Flow, DSGVO Consent Validation, Stage-Transition Rules
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import userEvent from '@testing-library/user-event';
