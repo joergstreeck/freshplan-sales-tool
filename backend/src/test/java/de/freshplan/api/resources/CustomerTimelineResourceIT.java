@@ -8,7 +8,7 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.common.http.TestHTTPEndpoint;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -37,8 +37,6 @@ class CustomerTimelineResourceIT {
 
   @Inject CustomerTimelineRepository timelineRepository;
 
-  @Inject CustomerBuilder customerBuilder;
-
   @BeforeEach
   @Transactional
   void setUp() {
@@ -49,17 +47,14 @@ class CustomerTimelineResourceIT {
 
   @Transactional
   UUID createTestCustomerInTransaction() {
-    Customer customer =
-        customerBuilder
-            .withCompanyName("[TEST] Integration Test Company")
-            .withStatus(CustomerStatus.AKTIV)
-            .withType(CustomerType.UNTERNEHMEN)
-            .withIndustry(Industry.SONSTIGE)
-            .build();
-    customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
-    customer.setCompanyName("[TEST] Integration Test Company"); // Keep [TEST] prefix
-    customer.setIsTestData(true); // Mark as test data
-    customerRepository.persist(customer);
+    Customer customer = CustomerTestDataFactory.builder()
+        .withCompanyName("[TEST] Integration Test Company")
+        .withCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber())
+        .withStatus(CustomerStatus.AKTIV)
+        .withType(CustomerType.UNTERNEHMEN)
+        .withIndustry(Industry.SONSTIGE)
+        .withIsTestData(true)
+        .buildAndPersist(customerRepository);
     return customer.getId();
   }
 

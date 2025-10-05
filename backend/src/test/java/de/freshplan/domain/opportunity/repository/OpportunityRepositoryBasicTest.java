@@ -8,8 +8,8 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
-import de.freshplan.test.builders.CustomerBuilder;
-import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.builders.UserTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -43,8 +43,6 @@ public class OpportunityRepositoryBasicTest {
   @Inject OpportunityRepository opportunityRepository;
   @Inject CustomerRepository customerRepository;
   @Inject UserRepository userRepository;
-  @Inject CustomerBuilder customerBuilder;
-  @Inject OpportunityBuilder opportunityBuilder;
 
   @Test
   @TestTransaction

@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.test.builders.ContactTestDataFactory;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -27,7 +27,6 @@ class ContactRepositoryIT {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
 
   private Customer createTestCustomer() {
     Customer customer =

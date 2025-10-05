@@ -12,8 +12,8 @@ import de.freshplan.domain.opportunity.service.exception.InvalidStageTransitionE
 import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundException;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
-import de.freshplan.test.builders.CustomerBuilder;
-import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.support.TestTx;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -67,9 +67,7 @@ public class OpportunityServiceStageTransitionTest {
 
   @Inject UserTransaction userTransaction;
 
-  @Inject CustomerBuilder customerBuilder;
 
-  @Inject OpportunityBuilder opportunityBuilder;
 
   private Customer testCustomer;
   private User testUser;

@@ -6,8 +6,8 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.user.entity.User;
-import de.freshplan.test.builders.CustomerBuilder;
-import de.freshplan.test.builders.OpportunityBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
+import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.builders.UserTestDataFactory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,8 +34,6 @@ import org.junit.jupiter.api.Test;
 class OpportunityMapperTest {
 
   private OpportunityMapper opportunityMapper;
-  private CustomerBuilder customerBuilder;
-  private OpportunityBuilder opportunityBuilder;
 
   private Opportunity testOpportunity;
   private Customer testCustomer;
@@ -43,15 +41,14 @@ class OpportunityMapperTest {
 
   @BeforeEach
   void setUp() {
-    // Initialize mappers and builders
+    // Initialize mapper
     opportunityMapper = new OpportunityMapper();
-    customerBuilder = new CustomerBuilder();
-    opportunityBuilder = new OpportunityBuilder();
 
-    // Create test customer using CustomerBuilder
-    testCustomer = customerBuilder.withCompanyName("Test Company Ltd.").build();
+    // Create test customer using CustomerTestDataFactory
+    testCustomer = CustomerTestDataFactory.builder()
+        .withCompanyName("Test Company Ltd.")
+        .build();
     testCustomer.setId(UUID.randomUUID());
-    testCustomer.setCompanyName("Test Company Ltd."); // Override [TEST-xxx] prefix from builder
     testCustomer.setIsTestData(true); // Mark as test data
 
     // Create test user using UserTestDataFactory
@@ -71,18 +68,17 @@ class OpportunityMapperTest {
       throw new RuntimeException(e);
     }
 
-    // Create test opportunity using OpportunityBuilder
-    testOpportunity =
-        opportunityBuilder
-            .forCustomer(testCustomer)
-            .withName("Test Opportunity")
-            .withDescription("Test Description for mapping")
-            .inStage(OpportunityStage.PROPOSAL)
-            .assignedTo(testUser)
-            .withExpectedValue(BigDecimal.valueOf(25000))
-            .withExpectedCloseDate(LocalDate.of(2025, 12, 31))
-            .withProbability(75)
-            .build();
+    // Create test opportunity using OpportunityTestDataFactory
+    testOpportunity = OpportunityTestDataFactory.builder()
+        .forCustomer(testCustomer)
+        .withName("Test Opportunity")
+        .withDescription("Test Description for mapping")
+        .inStage(OpportunityStage.PROPOSAL)
+        .assignedTo(testUser)
+        .withExpectedValue(BigDecimal.valueOf(25000))
+        .withExpectedCloseDate(LocalDate.of(2025, 12, 31))
+        .withProbability(75)
+        .build();
     testOpportunity.setId(UUID.randomUUID());
     // Note: createdAt is set by @CreationTimestamp, stageChangedAt/updatedAt might not have setters
     // We'll test the mapper with what's available and focus on the mapping logic
@@ -122,17 +118,17 @@ class OpportunityMapperTest {
     @DisplayName("Should handle minimal opportunity with only required fields")
     void toResponse_minimalEntity_shouldMapRequiredFields() {
       // Arrange
-      // Need to provide a customer for the builder
-      Customer mockCustomer = customerBuilder.withCompanyName("[TEST] Mock Customer").build();
+      // Need to provide a customer for the factory
+      Customer mockCustomer = CustomerTestDataFactory.builder()
+          .withCompanyName("[TEST] Mock Customer")
+          .build();
       mockCustomer.setId(UUID.randomUUID());
 
-      var minimalOpportunity =
-          opportunityBuilder
-              .reset()
-              .forCustomer(mockCustomer)
-              .withName("Minimal Opportunity")
-              .inStage(OpportunityStage.NEW_LEAD)
-              .build();
+      var minimalOpportunity = OpportunityTestDataFactory.builder()
+          .forCustomer(mockCustomer)
+          .withName("Minimal Opportunity")
+          .inStage(OpportunityStage.NEW_LEAD)
+          .build();
       minimalOpportunity.setId(UUID.randomUUID());
       // createdAt will be set automatically by @CreationTimestamp when persisted
 
@@ -147,16 +143,16 @@ class OpportunityMapperTest {
       // createdAt might be null in test until persisted
       // assertThat(response.getCreatedAt()).isEqualTo(minimalOpportunity.getCreatedAt());
 
-      // Description is automatically set by builder
+      // Description is automatically set by factory
       assertThat(response.getDescription()).isNotNull();
-      // Customer is now set as it's required by builder
+      // Customer is now set as it's required by factory
       assertThat(response.getCustomerId()).isNotNull();
       assertThat(response.getCustomerName()).contains("[TEST] Mock Customer");
       assertThat(response.getAssignedToId()).isNull();
       assertThat(response.getAssignedToName()).isNull();
-      // Builder sets default value of 10000 if not provided
+      // Factory sets default value of 10000 if not provided
       assertThat(response.getExpectedValue()).isEqualTo(new BigDecimal("10000"));
-      // Builder might set default close date
+      // Factory might set default close date
       assertThat(response.getExpectedCloseDate()).isNotNull();
       // Note: These might be set automatically
       // assertThat(response.getStageChangedAt()).isNull();
@@ -242,16 +238,15 @@ class OpportunityMapperTest {
     void toResponse_allStages_shouldMapCorrectly() {
       for (OpportunityStage stage : OpportunityStage.values()) {
         // Arrange - Create fresh opportunity for each stage to avoid changeStage restrictions
-        var opportunity =
-            opportunityBuilder
-                .withName("Test Opportunity")
-                .forCustomer(testCustomer)
-                .assignedTo(testUser)
-                .inStage(stage)
-                .build();
+        var opportunity = OpportunityTestDataFactory.builder()
+            .withName("Test Opportunity")
+            .forCustomer(testCustomer)
+            .assignedTo(testUser)
+            .inStage(stage)
+            .build();
         opportunity.setId(UUID.randomUUID());
 
-        // OpportunityBuilder already sets the stage and probability correctly
+        // OpportunityTestDataFactory already sets the stage and probability correctly
 
         // Act
         var response = opportunityMapper.toResponse(opportunity);

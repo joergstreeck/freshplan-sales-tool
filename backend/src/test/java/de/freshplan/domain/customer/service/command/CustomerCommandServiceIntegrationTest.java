@@ -13,7 +13,7 @@ import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -40,14 +40,12 @@ class CustomerCommandServiceIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
 
   @Test
   @TestTransaction
   void createCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - a minimal valid request
-    CreateCustomerRequest request =
-        customerBuilder
+    CreateCustomerRequest request = CustomerTestDataFactory.builder()
             .reset()
             .withCompanyName("[TEST] Integration Test Company " + System.currentTimeMillis())
             .withType(CustomerType.NEUKUNDE)
@@ -59,8 +57,7 @@ class CustomerCommandServiceIntegrationTest {
     CustomerResponse originalResult = originalService.createCustomer(request, createdBy);
 
     // Create another request with different name to avoid duplicate
-    CreateCustomerRequest request2 =
-        customerBuilder
+    CreateCustomerRequest request2 = CustomerTestDataFactory.builder()
             .reset()
             .withCompanyName("[TEST] Integration Test Company 2 " + System.currentTimeMillis())
             .withType(CustomerType.NEUKUNDE)
@@ -108,8 +105,7 @@ class CustomerCommandServiceIntegrationTest {
   @TestTransaction
   void createCustomer_withNullCreatedBy_shouldFailSameWay() {
     // Given
-    CreateCustomerRequest request =
-        customerBuilder
+    CreateCustomerRequest request = CustomerTestDataFactory.builder()
             .reset()
             .withCompanyName("[TEST] Test Company")
             .withType(CustomerType.NEUKUNDE)
@@ -135,14 +131,12 @@ class CustomerCommandServiceIntegrationTest {
   @TestTransaction
   void updateCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create customers first
-    CreateCustomerRequest createRequest1 =
-        customerBuilder
+    CreateCustomerRequest createRequest1 = CustomerTestDataFactory.builder()
             .reset()
             .withCompanyName("[TEST] Update Test Company 1 " + System.currentTimeMillis())
             .withType(CustomerType.NEUKUNDE)
             .buildCreateRequest();
-    CreateCustomerRequest createRequest2 =
-        customerBuilder
+    CreateCustomerRequest createRequest2 = CustomerTestDataFactory.builder()
             .reset()
             .withCompanyName("[TEST] Update Test Company 2 " + System.currentTimeMillis())
             .withType(CustomerType.NEUKUNDE)

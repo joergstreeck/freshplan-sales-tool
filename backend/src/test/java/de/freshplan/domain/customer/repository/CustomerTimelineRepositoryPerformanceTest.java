@@ -3,7 +3,7 @@ package de.freshplan.domain.customer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.*;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import de.freshplan.test.utils.BaseIntegrationTest;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.TestTransaction;
@@ -35,7 +35,6 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
 
   private UUID testCustomerId;
   private Statistics hibernateStats;

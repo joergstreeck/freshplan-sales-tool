@@ -3,7 +3,7 @@ package de.freshplan.domain.customer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.*;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -29,7 +29,6 @@ class CustomerRepositoryTest {
 
   @Inject EntityManager em;
 
-  @Inject CustomerBuilder customerBuilder;
 
   // Counter for unique customer numbers
   private static final AtomicInteger customerCounter = new AtomicInteger(1);

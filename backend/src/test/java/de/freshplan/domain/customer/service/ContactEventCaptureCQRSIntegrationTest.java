@@ -13,7 +13,7 @@ import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.test.builders.ContactTestDataFactory;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -64,7 +64,6 @@ class ContactEventCaptureCQRSIntegrationTest {
 
   @Inject ContactInteractionRepository interactionRepository;
 
-  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -113,17 +112,14 @@ class ContactEventCaptureCQRSIntegrationTest {
         .run(
             () -> {
               // Create customer
-              Customer customer =
-                  customerBuilder
-                      .withCompanyName("[TEST-" + testRunId + "] Event Company")
-                      .withType(CustomerType.UNTERNEHMEN)
-                      .withStatus(CustomerStatus.AKTIV)
-                      .withIndustry(Industry.HOTEL)
-                      .withExpectedAnnualVolume(new BigDecimal("250000"))
-                      .build();
+              Customer customer = CustomerTestDataFactory.builder()
+                  .withCompanyName("[TEST-" + testRunId + "] Event Company")
+                  .withStatus(CustomerStatus.AKTIV)
+                  .withIndustry(Industry.HOTEL)
+                  .withExpectedAnnualVolume(new BigDecimal("250000"))
+                  .build();
+              customer.setCustomerType(CustomerType.UNTERNEHMEN);
               customer.setCustomerNumber("EVT-" + testRunId);
-              customer.setCompanyName(
-                  "[TEST-" + testRunId + "] Event Company"); // Keep [TEST-x] prefix
               customer.setIsTestData(true);
               customerRepository.persist(customer);
               testCustomerId = customer.getId();

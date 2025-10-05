@@ -8,7 +8,7 @@ import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -50,7 +50,6 @@ class CustomerCQRSIntegrationTest {
 
   @Inject CustomerResource customerResource; // Test via Resource to verify full stack
 
-  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -63,14 +62,12 @@ class CustomerCQRSIntegrationTest {
     // Create valid request with unique company name to avoid test conflicts
     String uniqueSuffix =
         "_" + System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
-    validCreateRequest =
-        customerBuilder
-            .reset()
-            .withCompanyName("[TEST] CQRS Test Company" + uniqueSuffix)
-            .withType(CustomerType.NEUKUNDE)
-            .withIndustry(Industry.SONSTIGE)
-            .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
-            .buildCreateRequest();
+    validCreateRequest = CreateCustomerRequest.builder()
+        .companyName("[TEST] CQRS Test Company" + uniqueSuffix)
+        .customerType(CustomerType.NEUKUNDE)
+        .industry(Industry.SONSTIGE)
+        .expectedAnnualVolume(BigDecimal.valueOf(100000))
+        .build();
   }
 
   @Test
@@ -131,14 +128,12 @@ class CustomerCQRSIntegrationTest {
   void createCustomer_withDuplicateName_shouldThrowException() {
     // Create unique request to avoid conflicts with other tests
     String uniqueSuffix = "_duplicate_test_" + System.currentTimeMillis();
-    CreateCustomerRequest uniqueRequest =
-        customerBuilder
-            .reset()
-            .withCompanyName("[TEST] Duplicate Test Company" + uniqueSuffix)
-            .withType(CustomerType.NEUKUNDE)
-            .withIndustry(Industry.SONSTIGE)
-            .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
-            .buildCreateRequest();
+    CreateCustomerRequest uniqueRequest = CreateCustomerRequest.builder()
+        .companyName("[TEST] Duplicate Test Company" + uniqueSuffix)
+        .customerType(CustomerType.NEUKUNDE)
+        .industry(Industry.SONSTIGE)
+        .expectedAnnualVolume(BigDecimal.valueOf(100000))
+        .build();
 
     // Create first customer
     customerResource.createCustomer(uniqueRequest);

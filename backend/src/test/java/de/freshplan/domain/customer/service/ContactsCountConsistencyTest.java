@@ -9,7 +9,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.query.CustomerQueryService;
 import de.freshplan.test.builders.ContactTestDataFactory;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -33,21 +33,18 @@ public class ContactsCountConsistencyTest {
 
   @Inject CustomerQueryService queryService; // CQRS
 
-  @Inject CustomerBuilder customerBuilder;
 
   @Test
   @TestTransaction
   void testContactsCountConsistencyForNewCustomer() {
     // 1. Neuen Kunden erstellen
-    Customer customer =
-        customerBuilder
-            .withCompanyName("Test ContactCount Company")
-            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-            .build();
+    Customer customer = CustomerTestDataFactory.builder()
+        .withCompanyName("Test ContactCount Company")
+        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+        .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCT-" + (System.currentTimeMillis() % 10000000));
-    customer.setCompanyName("Test ContactCount Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(customer);
 
     // 2. Kontakte hinzufügen
@@ -116,15 +113,13 @@ public class ContactsCountConsistencyTest {
   @TestTransaction
   void testContactsCountWithAllInactiveContacts() {
     // Customer mit nur inaktiven Kontakten
-    Customer customer =
-        customerBuilder
-            .withCompanyName("Test All Inactive Company")
-            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-            .build();
+    Customer customer = CustomerTestDataFactory.builder()
+        .withCompanyName("Test All Inactive Company")
+        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+        .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCI-" + (System.currentTimeMillis() % 10000000));
-    customer.setCompanyName("Test All Inactive Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(customer);
 
     // Nur inaktive Kontakte hinzufügen
@@ -166,15 +161,13 @@ public class ContactsCountConsistencyTest {
   @TestTransaction
   void testContactsCountWithAllDeletedContacts() {
     // Customer mit nur gelöschten Kontakten
-    Customer customer =
-        customerBuilder
-            .withCompanyName("Test All Deleted Company")
-            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-            .build();
+    Customer customer = CustomerTestDataFactory.builder()
+        .withCompanyName("Test All Deleted Company")
+        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+        .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCD-" + (System.currentTimeMillis() % 10000000));
-    customer.setCompanyName("Test All Deleted Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(customer);
 
     // Nur gelöschte Kontakte hinzufügen

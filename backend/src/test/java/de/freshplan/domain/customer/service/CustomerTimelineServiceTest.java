@@ -11,7 +11,7 @@ import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.customer.service.dto.timeline.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerTimelineMapper;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
@@ -48,7 +48,6 @@ class CustomerTimelineServiceTest {
 
   @InjectMock CustomerTimelineMapper timelineMapper;
 
-  @Inject CustomerBuilder customerBuilder;
 
   private UUID customerId;
   private Customer customer;

@@ -12,8 +12,8 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
-import de.freshplan.test.builders.ContactBuilder;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -38,42 +38,26 @@ class ContactInteractionServiceIT {
 
   @Inject ContactInteractionRepository interactionRepository;
 
-  @Inject CustomerBuilder customerBuilder;
-
-  @Inject ContactBuilder contactBuilder;
+  @Inject jakarta.persistence.EntityManager entityManager;
 
   private UUID testCustomerId;
   private UUID testContactId;
   private CustomerContact testContact;
 
   private void setupTestData() {
-    // Create test customer using CustomerBuilder
-    Customer testCustomer = customerBuilder.withCompanyName("Test Company GmbH").build();
-
-    // Override specific fields to maintain test requirements
-    testCustomer.setCompanyName(
-        "Test Company GmbH"); // Override to use exact name without [TEST-xxx] prefix
-    testCustomer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
-    testCustomer.setCreatedBy("test-user");
-    testCustomer.setUpdatedBy("test-user");
-    // Set Sprint 2 fields to avoid NOT NULL constraint violations
-    testCustomer.setLocationsGermany(0);
-    testCustomer.setLocationsAustria(0);
-    testCustomer.setLocationsSwitzerland(0);
-    testCustomer.setLocationsRestEU(0);
-    testCustomer.setTotalLocationsEU(0);
-    // Customer has no email field anymore
-    customerRepository.persist(testCustomer);
+    // Create test customer using CustomerTestDataFactory
+    Customer testCustomer = CustomerTestDataFactory.builder()
+        .withCompanyName("Test Company GmbH")
+        .buildAndPersist(customerRepository);
     testCustomerId = testCustomer.getId();
 
-    // Create test contact using ContactBuilder
-    testContact =
-        contactBuilder
-            .forCustomer(testCustomer)
-            .withFirstName("Max")
-            .withLastName("Mustermann")
-            .withEmail("max@company.com")
-            .persist();
+    // Create test contact using ContactTestDataFactory
+    testContact = ContactTestDataFactory.builder()
+        .forCustomer(testCustomer)
+        .withFirstName("Max")
+        .withLastName("Mustermann")
+        .withEmail("max@company.com")
+        .buildAndPersist(customerRepository, entityManager);
     testContactId = testContact.getId();
   }
 
@@ -594,13 +578,12 @@ class ContactInteractionServiceIT {
 
   protected CustomerContact createAdditionalContact(String firstName, String lastName) {
     Customer customer = customerRepository.findById(testCustomerId);
-    CustomerContact contact =
-        contactBuilder
-            .forCustomer(customer)
-            .withFirstName(firstName)
-            .withLastName(lastName)
-            .withEmail(firstName.toLowerCase() + "@company.com")
-            .persist();
+    CustomerContact contact = ContactTestDataFactory.builder()
+        .forCustomer(customer)
+        .withFirstName(firstName)
+        .withLastName(lastName)
+        .withEmail(firstName.toLowerCase() + "@company.com")
+        .buildAndPersist(customerRepository, entityManager);
     return contact;
   }
 }

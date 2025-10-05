@@ -131,6 +131,30 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-05 18:00 - Sprint 2.1.6/2.1.7 Dokumentations-Konsolidierung COMPLETE
+
+**Kontext:** Deep Analysis Sprint 2.1.6 → 3 kritische Inkonsistenzen gefunden & gefixt
+
+**Erledigt:**
+- ✅ **Sprint 2.1.6 Scope massiv reduziert:**
+  - PRIORITY #0: Issue #130 (TestDataBuilder CDI-Konflikt - BLOCKER, 1-2h Quick Fix)
+  - Lead-Transfer, RLS, Team Management, Fuzzy-Matching → **VERSCHOBEN auf Sprint 2.1.7**
+  - Fokus: Admin-Features (Migration-API, Convert-Flow, Jobs, Stop-the-Clock UI, Accessibility)
+- ✅ **Sprint 2.1.7 NEU erstellt** (Track 1: Business + Track 2: Test Infrastructure Overhaul)
+  - Track 1: Lead-Transfer (V260), RLS (V261), Teams (V262), Fuzzy-Matching
+  - Track 2: CRM Szenario-Builder, Faker-Integration, TestDataFactories, Test-Pattern Library
+- ✅ **3 Kritische Fixes implementiert:**
+  - 🔴 Migration-Nummern-Chaos → Alle Docs nutzen jetzt `get-next-migration.sh`
+  - 🔴 Scope-Widerspruch Lead-Transfer → Komplett aus 2.1.6 entfernt
+  - 🟡 ADR-006 vs TRIGGER Inkonsistenz → User Story 7 neu geschrieben (Phase 2 OPTIONAL)
+- ✅ **5 neue Analyse-Dokumente erstellt:**
+  - TRIGGER_SPRINT_2_1_7.md, ISSUE_130_ANALYSIS.md, DOCUMENTATION_UPDATE_SUMMARY.md
+  - CRITICAL_FIXES_SUMMARY.md, 2025-10-05_HANDOVER_FINAL.md
+
+**Tests:** OK (keine Code-Änderungen - nur Dokumentation)
+
+**Migration:** V260 nächste verfügbar (per Script validiert)
+
 ### 2025-10-05 14:09 - Sprint 2.1.6 Vorbereitung: PR #131 merged + Doku-Updates
 
 **Kontext:** ChatGPT Code-Review zu PR #129 validiert, Lead Stage Enum Refactoring merged
@@ -428,38 +452,40 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation (Start 12.10.2025):**
-  - **PRIORITY #1:** Issue #130 (TestDataBuilder Refactoring - BLOCKER für Worktree CI)
-  - **PRIORITY #2:** Frontend Accessibility (MUI Dialog aria-hidden Fix - WCAG 2.1 Level A, 1-2h)
-  - Feature-Branch anlegen: `feature/mod02-sprint-2.1.6-*` (NICHT direkt auf main committen)
-  - **PRIORITY PR #131:** Lead Stage Enum (Issue #125, 2-3h)
-    - LeadStage Enum: VORMERKUNG(0), REGISTRIERUNG(1), QUALIFIZIERT(2)
-    - Lead.stage: Short → LeadStage (@Enumerated(EnumType.ORDINAL))
-    - LeadProtectionService: canTransitionTo() Enum-basiert
-    - KEINE DB-Migration nötig (ORDINAL = 0,1,2)
-  - **MANDATORY Features:**
+- **Sprint 2.1.6 Implementation (Start JETZT - reduzierter Scope!):**
+  - **🔴 PRIORITY #0 (BLOCKER - 1-2h):** Issue #130 Fix (TestDataBuilder CDI-Konflikt)
+    - Legacy Builder aus src/main/java/de/freshplan/test/builders/ löschen
+    - ContactInteractionServiceIT auf neue Builder migrieren (12 Tests)
+    - Worktree CI "Test Suite Expansion" reaktivieren
+    - Migration Guide: `/docs/planung/claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md`
+  - **Feature-Branch:** `feature/issue-130-testdatabuilder-refactoring` (ERST Issue #130!)
+  - **Kern-Deliverables (nach Issue #130):**
     - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
-    - Lead → Kunde Convert Flow (automatische Übernahme bei QUALIFIED → CONVERTED)
-    - Stop-the-Clock UI (StopTheClockDialog, Manager-only, Audit-Log)
+    - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
+    - Stop-the-Clock UI (StopTheClockDialog, Manager-only)
     - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
-    - Nightly Jobs (Warning/Expiry/Pseudonymisierung)
-    - Lead-Transfer Workflow mit Genehmigung (V259 lead_transfers Tabelle)
-  - **OPTIONAL Features (NICE-TO-HAVE aus 2.1.5):**
-    - Quick-Action "Erstkontakt nachtragen" (AddFirstContactDialog)
-    - Pre-Claim Filter in IntelligentFilterBar
-    - Lead Status-Labels Frontend (REGISTERED → "Vormerkung", ACTIVE → "Aktiv")
-    - Lead Action-Buttons (Löschen/Bearbeiten) in CustomerTable
-    - Lead Detail-Seite für Navigation bei Lead-Klick
-  - **DEFERRED to Sprint 2.1.7:**
-    - Row-Level-Security Policies (ADR-003 RLS Design, Modul 00 Sicherheit)
-    - Team Management CRUD (Team-Member Assignment, Quotenregelung)
-    - Fuzzy-Matching & DuplicateReviewModal (vollständiger Scoring-Algorithmus)
-- **Sprint 2.1.7 Vorbereitung (Start 19.10.2025):**
-  - Row-Level-Security Implementation (ADR-003, owner_policy, team_policy, admin_policy)
-  - Team Management CRUD + Territory-Zuordnung (DE/CH)
-  - Fuzzy-Matching & Review (Email, Phone, Company, Address Scoring)
-  - Lead-Scoring Algorithmus (V260, 0-100 Punkte, konfigurierbare Gewichtungen)
-  - Activity-Templates System (V261, Standard-Seeds + User-Templates)
+    - Nightly Jobs (Progress Warning, Expiry, Pseudonymisierung)
+    - MUI Dialog Accessibility Fix (WCAG 2.1 Level A, aria-hidden Warning)
+  - **OPTIONAL (ADR-006 Phase 2 - falls Zeit!):**
+    - Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
+    - Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)
+    - Lead-Activity-Timeline (Interaktions-Historie)
+  - **❌ VERSCHOBEN auf Sprint 2.1.7:**
+    - Lead-Transfer Workflow (V260 lead_transfers Tabelle)
+    - Fuzzy-Matching & Review (Scoring-Algorithmus)
+    - Row-Level-Security (V261 RLS Policies)
+    - Team Management (V262 teams + team_members)
+- **Sprint 2.1.7 Vorbereitung (Start 19.10.2025 - 2 Tracks!):**
+  - **Track 1 (Business Features):**
+    - Lead-Transfer Workflow mit Genehmigung (V260, 8-12h)
+    - Fuzzy-Matching & Review (Email, Phone, Company Scoring, 12-16h)
+    - Row-Level-Security Implementation (V261, ADR-003, 10-14h)
+    - Team Management CRUD + Territory-Zuordnung (V262, 8-10h)
+  - **Track 2 (Test Infrastructure Overhaul - STRATEGISCH!):**
+    - CRM Szenario-Builder (komplexe Workflows, 12-16h)
+    - Faker-Integration (realistische Testdaten, 4-6h)
+    - Lead-spezifische TestDataFactories (6-8h)
+    - Test-Pattern Library & Documentation (4-6h)
 - **Sprint 2.2+ Planung:**
   - Mobile-First UI Optimierung (Touch, Breakpoints, Performance <3.5s 3G)
   - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)

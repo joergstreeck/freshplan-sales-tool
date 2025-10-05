@@ -8,7 +8,7 @@ import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.export.service.dto.ExportRequest;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -47,7 +47,6 @@ class HtmlExportCQRSIntegrationTest {
 
   @Inject HtmlExportService htmlExportService;
   @Inject CustomerRepository customerRepository;
-  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;

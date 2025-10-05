@@ -10,7 +10,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -47,7 +47,6 @@ class SearchCQRSIntegrationTest {
 
   @Inject SearchService searchService;
   @Inject CustomerRepository customerRepository;
-  @Inject CustomerBuilder customerBuilder;
 
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
@@ -171,7 +170,7 @@ class SearchCQRSIntegrationTest {
     // Given - Create 100 test customers
     for (int i = 0; i < 100; i++) {
       Customer c =
-          customerBuilder
+          CustomerTestDataFactory.builder()
               .withCompanyName("[TEST] Performance Test " + i)
               .withType(CustomerType.UNTERNEHMEN)
               .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD)
@@ -270,7 +269,7 @@ class SearchCQRSIntegrationTest {
   private Customer createTestCustomer(
       String number, String name, CustomerType type, CustomerStatus status, Industry industry) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withType(type)
             .withStatus(status)

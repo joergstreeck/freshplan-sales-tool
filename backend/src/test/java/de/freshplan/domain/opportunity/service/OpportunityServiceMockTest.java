@@ -16,7 +16,7 @@ import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundExce
 import de.freshplan.domain.opportunity.service.mapper.OpportunityMapper;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import de.freshplan.test.builders.OpportunityTestDataFactory;
 import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.InjectMock;
@@ -53,7 +53,6 @@ public class OpportunityServiceMockTest {
 
   @InjectMock CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
 
   @InjectMock UserRepository userRepository;
 

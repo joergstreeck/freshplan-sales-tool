@@ -7,7 +7,7 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -30,7 +30,6 @@ class CustomerSearchServiceTest {
 
   @Inject CustomerSearchService searchService;
   @Inject CustomerRepository customerRepository;
-  @Inject CustomerBuilder customerBuilder;
 
   // ==================== BASIC SEARCH TESTS ====================
   @TestTransaction
@@ -495,8 +494,7 @@ class CustomerSearchServiceTest {
 
   // ==================== SHARED HELPER METHODS ====================
   private void createAndPersistSampleCustomers() {
-    Customer customer1 =
-        customerBuilder
+    Customer customer1 = CustomerTestDataFactory.builder()
             .withCompanyName("Berlin Restaurant GmbH")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
@@ -506,8 +504,7 @@ class CustomerSearchServiceTest {
     customer1.setCreatedAt(LocalDate.now().minusDays(30).atStartOfDay());
     customerRepository.persist(customer1);
 
-    Customer customer2 =
-        customerBuilder
+    Customer customer2 = CustomerTestDataFactory.builder()
             .withCompanyName("Munich Catering Services")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
@@ -520,8 +517,7 @@ class CustomerSearchServiceTest {
 
   private void createAndPersistMultipleCustomers(int count) {
     for (int i = 0; i < count; i++) {
-      Customer customer =
-          customerBuilder
+      Customer customer = CustomerTestDataFactory.builder()
               .withCompanyName("Test Customer " + (i + 1))
               .withStatus(CustomerStatus.AKTIV)
               .withExpectedAnnualVolume(BigDecimal.valueOf(10000 + (i * 5000)))
@@ -533,21 +529,21 @@ class CustomerSearchServiceTest {
   }
 
   private void createCustomersWithDifferentStatuses() {
-    Customer active =
-        customerBuilder.withCompanyName("Active Company").withStatus(CustomerStatus.AKTIV).build();
+    Customer active = CustomerTestDataFactory.builder()
+        .withCompanyName("Active Company")
+        .withStatus(CustomerStatus.AKTIV)
+        .build();
     active.setCompanyName("Active Company");
     customerRepository.persist(active);
 
-    Customer inactive =
-        customerBuilder
+    Customer inactive = CustomerTestDataFactory.builder()
             .withCompanyName("Inactive Company")
             .withStatus(CustomerStatus.INAKTIV)
             .build();
     inactive.setCompanyName("Inactive Company");
     customerRepository.persist(inactive);
 
-    Customer potential =
-        customerBuilder
+    Customer potential = CustomerTestDataFactory.builder()
             .withCompanyName("Potential Company")
             .withStatus(CustomerStatus.PROSPECT)
             .build();
@@ -556,49 +552,51 @@ class CustomerSearchServiceTest {
   }
 
   private void createCustomersWithDifferentDates() {
-    Customer recent = customerBuilder.withCompanyName("Recent Company").build();
+    Customer recent = CustomerTestDataFactory.builder()
+        .withCompanyName("Recent Company")
+        .build();
     recent.setCompanyName("Recent Company");
     recent.setCreatedAt(LocalDate.now().minusDays(5).atStartOfDay());
     customerRepository.persist(recent);
 
-    Customer older = customerBuilder.withCompanyName("Older Company").build();
+    Customer older = CustomerTestDataFactory.builder()
+        .withCompanyName("Older Company")
+        .build();
     older.setCompanyName("Older Company");
     older.setCreatedAt(LocalDate.now().minusDays(30).atStartOfDay());
     customerRepository.persist(older);
 
-    Customer oldest = customerBuilder.withCompanyName("Oldest Company").build();
+    Customer oldest = CustomerTestDataFactory.builder()
+        .withCompanyName("Oldest Company")
+        .build();
     oldest.setCompanyName("Oldest Company");
     oldest.setCreatedAt(LocalDate.now().minusDays(90).atStartOfDay());
     customerRepository.persist(oldest);
   }
 
   private void createCustomersWithDifferentVolumes() {
-    Customer small =
-        customerBuilder
+    Customer small = CustomerTestDataFactory.builder()
             .withCompanyName("Small Company")
             .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
             .build();
     small.setCompanyName("Small Company");
     customerRepository.persist(small);
 
-    Customer medium =
-        customerBuilder
+    Customer medium = CustomerTestDataFactory.builder()
             .withCompanyName("Medium Company")
             .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
             .build();
     medium.setCompanyName("Medium Company");
     customerRepository.persist(medium);
 
-    Customer large =
-        customerBuilder
+    Customer large = CustomerTestDataFactory.builder()
             .withCompanyName("Large Company")
             .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
             .build();
     large.setCompanyName("Large Company");
     customerRepository.persist(large);
 
-    Customer enterprise =
-        customerBuilder
+    Customer enterprise = CustomerTestDataFactory.builder()
             .withCompanyName("Enterprise Company")
             .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
             .build();
@@ -607,30 +605,37 @@ class CustomerSearchServiceTest {
   }
 
   private void createCustomersWithDifferentIndustries() {
-    Customer hotel1 =
-        customerBuilder.withCompanyName("Hotel One").withIndustry(Industry.HOTEL).build();
+    Customer hotel1 = CustomerTestDataFactory.builder()
+        .withCompanyName("Hotel One")
+        .withIndustry(Industry.HOTEL)
+        .build();
     hotel1.setCompanyName("Hotel One");
     customerRepository.persist(hotel1);
 
-    Customer hotel2 =
-        customerBuilder.withCompanyName("Hotel Two").withIndustry(Industry.HOTEL).build();
+    Customer hotel2 = CustomerTestDataFactory.builder()
+        .withCompanyName("Hotel Two")
+        .withIndustry(Industry.HOTEL)
+        .build();
     hotel2.setCompanyName("Hotel Two");
     customerRepository.persist(hotel2);
 
-    Customer restaurant =
-        customerBuilder.withCompanyName("Restaurant").withIndustry(Industry.RESTAURANT).build();
+    Customer restaurant = CustomerTestDataFactory.builder()
+        .withCompanyName("Restaurant")
+        .withIndustry(Industry.RESTAURANT)
+        .build();
     restaurant.setCompanyName("Restaurant");
     customerRepository.persist(restaurant);
 
-    Customer catering =
-        customerBuilder.withCompanyName("Catering Service").withIndustry(Industry.CATERING).build();
+    Customer catering = CustomerTestDataFactory.builder()
+        .withCompanyName("Catering Service")
+        .withIndustry(Industry.CATERING)
+        .build();
     catering.setCompanyName("Catering Service");
     customerRepository.persist(catering);
   }
 
   private void createDiverseCustomers() {
-    Customer active1 =
-        customerBuilder
+    Customer active1 = CustomerTestDataFactory.builder()
             .withCompanyName("Active High Volume")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
@@ -638,8 +643,7 @@ class CustomerSearchServiceTest {
     active1.setCompanyName("Active High Volume");
     customerRepository.persist(active1);
 
-    Customer active2 =
-        customerBuilder
+    Customer active2 = CustomerTestDataFactory.builder()
             .withCompanyName("Active Low Volume")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
@@ -647,8 +651,7 @@ class CustomerSearchServiceTest {
     active2.setCompanyName("Active Low Volume");
     customerRepository.persist(active2);
 
-    Customer inactive =
-        customerBuilder
+    Customer inactive = CustomerTestDataFactory.builder()
             .withCompanyName("Inactive High Volume")
             .withStatus(CustomerStatus.INAKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
@@ -658,23 +661,28 @@ class CustomerSearchServiceTest {
   }
 
   private void createCustomersForSorting() {
-    Customer beta = customerBuilder.withCompanyName("Beta Company").build();
+    Customer beta = CustomerTestDataFactory.builder()
+        .withCompanyName("Beta Company")
+        .build();
     beta.setCompanyName("Beta Company");
     customerRepository.persist(beta);
 
-    Customer gamma = customerBuilder.withCompanyName("Gamma Company").build();
+    Customer gamma = CustomerTestDataFactory.builder()
+        .withCompanyName("Gamma Company")
+        .build();
     gamma.setCompanyName("Gamma Company");
     customerRepository.persist(gamma);
 
-    Customer alpha = customerBuilder.withCompanyName("Alpha Company").build();
+    Customer alpha = CustomerTestDataFactory.builder()
+        .withCompanyName("Alpha Company")
+        .build();
     alpha.setCompanyName("Alpha Company");
     customerRepository.persist(alpha);
   }
 
   private void createCustomersWithSameVolume() {
     for (int i = 1; i <= 3; i++) {
-      Customer customer =
-          customerBuilder
+      Customer customer = CustomerTestDataFactory.builder()
               .withCompanyName("Company " + i)
               .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
               .build();
@@ -684,33 +692,37 @@ class CustomerSearchServiceTest {
   }
 
   private void createCustomersForMultiSort() {
-    Customer activeBeta =
-        customerBuilder.withCompanyName("Active Beta").withStatus(CustomerStatus.AKTIV).build();
+    Customer activeBeta = CustomerTestDataFactory.builder()
+        .withCompanyName("Active Beta")
+        .withStatus(CustomerStatus.AKTIV)
+        .build();
     activeBeta.setCompanyName("Active Beta");
     customerRepository.persist(activeBeta);
 
-    Customer activeAlpha =
-        customerBuilder.withCompanyName("Active Alpha").withStatus(CustomerStatus.AKTIV).build();
+    Customer activeAlpha = CustomerTestDataFactory.builder()
+        .withCompanyName("Active Alpha")
+        .withStatus(CustomerStatus.AKTIV)
+        .build();
     activeAlpha.setCompanyName("Active Alpha");
     customerRepository.persist(activeAlpha);
 
-    Customer potential =
-        customerBuilder
+    Customer potential = CustomerTestDataFactory.builder()
             .withCompanyName("Potential Company")
             .withStatus(CustomerStatus.PROSPECT)
             .build();
     potential.setCompanyName("Potential Company");
     customerRepository.persist(potential);
 
-    Customer activeGamma =
-        customerBuilder.withCompanyName("Active Gamma").withStatus(CustomerStatus.AKTIV).build();
+    Customer activeGamma = CustomerTestDataFactory.builder()
+        .withCompanyName("Active Gamma")
+        .withStatus(CustomerStatus.AKTIV)
+        .build();
     activeGamma.setCompanyName("Active Gamma");
     customerRepository.persist(activeGamma);
   }
 
   private void createDiverseCustomersForSortAndFilter() {
-    Customer active1 =
-        customerBuilder
+    Customer active1 = CustomerTestDataFactory.builder()
             .withCompanyName("Active High")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(80000))
@@ -718,8 +730,7 @@ class CustomerSearchServiceTest {
     active1.setCompanyName("Active High");
     customerRepository.persist(active1);
 
-    Customer inactive =
-        customerBuilder
+    Customer inactive = CustomerTestDataFactory.builder()
             .withCompanyName("Inactive Higher")
             .withStatus(CustomerStatus.INAKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(90000))
@@ -727,8 +738,7 @@ class CustomerSearchServiceTest {
     inactive.setCompanyName("Inactive Higher");
     customerRepository.persist(inactive);
 
-    Customer active2 =
-        customerBuilder
+    Customer active2 = CustomerTestDataFactory.builder()
             .withCompanyName("Active Medium")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
@@ -736,8 +746,7 @@ class CustomerSearchServiceTest {
     active2.setCompanyName("Active Medium");
     customerRepository.persist(active2);
 
-    Customer active3 =
-        customerBuilder
+    Customer active3 = CustomerTestDataFactory.builder()
             .withCompanyName("Active Low")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(30000))
