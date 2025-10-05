@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import de.freshplan.modules.leads.domain.Lead;
+import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -33,11 +34,106 @@ class LeadProtectionServiceTest {
 
   @InjectMocks private LeadProtectionService protectionService;
 
-  // ========== Sprint 2.1.5: Progressive Profiling Stage Validation ==========
+  // ========== Sprint 2.1.6: Type-Safe Enum Stage Validation (Issue #125) ==========
 
   @Nested
-  @DisplayName("Progressive Profiling Stage Transitions")
-  class StageTransitionTests {
+  @DisplayName("Type-Safe Enum Stage Transitions (Sprint 2.1.6)")
+  class EnumStageTransitionTests {
+
+    @Test
+    @DisplayName("Should allow forward transitions (VORMERKUNG → REGISTRIERUNG → QUALIFIZIERT)")
+    void shouldAllowForwardTransitions() {
+      // VORMERKUNG → REGISTRIERUNG
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.VORMERKUNG, LeadStage.REGISTRIERUNG))
+          .isTrue();
+
+      // REGISTRIERUNG → QUALIFIZIERT
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.REGISTRIERUNG, LeadStage.QUALIFIZIERT))
+          .isTrue();
+    }
+
+    @Test
+    @DisplayName("Should allow same-stage transitions (idempotent)")
+    void shouldAllowSameStageTransitions() {
+      assertThat(protectionService.canTransitionStage(LeadStage.VORMERKUNG, LeadStage.VORMERKUNG))
+          .isTrue();
+      assertThat(
+              protectionService.canTransitionStage(
+                  LeadStage.REGISTRIERUNG, LeadStage.REGISTRIERUNG))
+          .isTrue();
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.QUALIFIZIERT, LeadStage.QUALIFIZIERT))
+          .isTrue();
+    }
+
+    @Test
+    @DisplayName("Should reject backward transitions (downgrade not allowed)")
+    void shouldRejectBackwardTransitions() {
+      // REGISTRIERUNG → VORMERKUNG (downgrade)
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.REGISTRIERUNG, LeadStage.VORMERKUNG))
+          .isFalse();
+
+      // QUALIFIZIERT → REGISTRIERUNG (downgrade)
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.QUALIFIZIERT, LeadStage.REGISTRIERUNG))
+          .isFalse();
+
+      // QUALIFIZIERT → VORMERKUNG (downgrade)
+      assertThat(protectionService.canTransitionStage(LeadStage.QUALIFIZIERT, LeadStage.VORMERKUNG))
+          .isFalse();
+    }
+
+    @Test
+    @DisplayName("Should reject stage skipping (must go through all stages)")
+    void shouldRejectStageSkipping() {
+      // VORMERKUNG → QUALIFIZIERT (skip REGISTRIERUNG)
+      assertThat(protectionService.canTransitionStage(LeadStage.VORMERKUNG, LeadStage.QUALIFIZIERT))
+          .isFalse();
+    }
+
+    @Test
+    @DisplayName("Should reject null stage values")
+    void shouldRejectNullStageValues() {
+      assertThat(protectionService.canTransitionStage(null, LeadStage.REGISTRIERUNG)).isFalse();
+      assertThat(protectionService.canTransitionStage(LeadStage.VORMERKUNG, null)).isFalse();
+      assertThat(protectionService.canTransitionStage(null, null)).isFalse();
+    }
+
+    @Test
+    @DisplayName("Should enforce sequential progression (VORMERKUNG→REGISTRIERUNG→QUALIFIZIERT)")
+    void shouldEnforceSequentialProgression() {
+      // VORMERKUNG can go to REGISTRIERUNG, not QUALIFIZIERT
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.VORMERKUNG, LeadStage.REGISTRIERUNG))
+          .isTrue();
+      assertThat(protectionService.canTransitionStage(LeadStage.VORMERKUNG, LeadStage.QUALIFIZIERT))
+          .isFalse();
+
+      // REGISTRIERUNG can go to QUALIFIZIERT, not back to VORMERKUNG
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.REGISTRIERUNG, LeadStage.QUALIFIZIERT))
+          .isTrue();
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.REGISTRIERUNG, LeadStage.VORMERKUNG))
+          .isFalse();
+
+      // QUALIFIZIERT cannot downgrade
+      assertThat(
+              protectionService.canTransitionStage(LeadStage.QUALIFIZIERT, LeadStage.REGISTRIERUNG))
+          .isFalse();
+      assertThat(protectionService.canTransitionStage(LeadStage.QUALIFIZIERT, LeadStage.VORMERKUNG))
+          .isFalse();
+    }
+  }
+
+  // ========== Sprint 2.1.5: Backward Compatibility Tests (Deprecated) ==========
+
+  @Nested
+  @DisplayName("Legacy int-based Stage Transitions (Deprecated, Sprint 2.1.5)")
+  class LegacyStageTransitionTests {
 
     @ParameterizedTest
     @CsvSource({
@@ -47,7 +143,7 @@ class LeadProtectionServiceTest {
       "1, 1, true", // Same stage (no-op, valid)
       "2, 2, true" // Same stage (no-op, valid)
     })
-    @DisplayName("Should allow valid stage transitions")
+    @DisplayName("Should allow valid stage transitions (deprecated int API)")
     void shouldAllowValidStageTransitions(int currentStage, int newStage, boolean expected) {
       boolean result = protectionService.canTransitionStage(currentStage, newStage);
       assertThat(result).isEqualTo(expected);
@@ -60,7 +156,7 @@ class LeadProtectionServiceTest {
       "2, 0", // Downgrade (not allowed)
       "2, 1" // Downgrade (not allowed)
     })
-    @DisplayName("Should reject invalid stage transitions")
+    @DisplayName("Should reject invalid stage transitions (deprecated int API)")
     void shouldRejectInvalidStageTransitions(int currentStage, int newStage) {
       boolean result = protectionService.canTransitionStage(currentStage, newStage);
       assertThat(result).isFalse();
@@ -73,14 +169,14 @@ class LeadProtectionServiceTest {
       "3, 1", // Current stage out of range
       "0, 3" // New stage out of range
     })
-    @DisplayName("Should reject out-of-range stages")
+    @DisplayName("Should reject out-of-range stages (deprecated int API)")
     void shouldRejectOutOfRangeStages(int currentStage, int newStage) {
       boolean result = protectionService.canTransitionStage(currentStage, newStage);
       assertThat(result).isFalse();
     }
 
     @Test
-    @DisplayName("Should enforce sequential progression (0→1→2)")
+    @DisplayName("Should enforce sequential progression (0→1→2) (deprecated int API)")
     void shouldEnforceSequentialProgression() {
       // Stage 0 can only go to 1, not 2
       assertThat(protectionService.canTransitionStage(0, 1)).isTrue();

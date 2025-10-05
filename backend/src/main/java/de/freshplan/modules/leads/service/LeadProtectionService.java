@@ -1,6 +1,7 @@
 package de.freshplan.modules.leads.service;
 
 import de.freshplan.modules.leads.domain.Lead;
+import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -281,6 +282,39 @@ public class LeadProtectionService {
    * @param newStage target stage (0, 1, 2)
    * @return true if transition is valid
    */
+  /**
+   * Validates stage transitions using LeadStage enum (type-safe).
+   *
+   * @param currentStage Current lead stage
+   * @param newStage Target lead stage
+   * @return true if transition is allowed, false otherwise
+   * @since 2.1.6 (Issue #125)
+   */
+  public boolean canTransitionStage(LeadStage currentStage, LeadStage newStage) {
+    if (currentStage == null || newStage == null) {
+      LOG.error("Stage values cannot be null");
+      return false;
+    }
+
+    // Delegate to enum's canTransitionTo method
+    boolean allowed = currentStage.canTransitionTo(newStage);
+
+    if (!allowed) {
+      LOG.warnf("Cannot transition stage from %s to %s", currentStage, newStage);
+    }
+
+    return allowed;
+  }
+
+  /**
+   * Validates stage transitions using int values (backward compatibility).
+   *
+   * @param currentStage Current lead stage (0, 1, or 2)
+   * @param newStage Target lead stage (0, 1, or 2)
+   * @return true if transition is allowed, false otherwise
+   * @deprecated Use {@link #canTransitionStage(LeadStage, LeadStage)} instead
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   public boolean canTransitionStage(int currentStage, int newStage) {
     // Stage range validation
     if (currentStage < STAGE_MIN
@@ -293,25 +327,16 @@ public class LeadProtectionService {
       return false;
     }
 
-    // Same stage is always allowed (no-op)
-    if (currentStage == newStage) {
-      return true;
-    }
-
-    // Only forward progression allowed
-    if (newStage < currentStage) {
-      LOG.warnf("Cannot downgrade stage from %d to %d", currentStage, newStage);
+    // Convert to enum and delegate
+    try {
+      LeadStage current = LeadStage.fromValue(currentStage);
+      LeadStage target = LeadStage.fromValue(newStage);
+      return canTransitionStage(current, target);
+    } catch (IllegalArgumentException e) {
+      LOG.errorf(
+          e, "Failed to convert stage values to enum: current=%d, new=%d", currentStage, newStage);
       return false;
     }
-
-    // No stage skipping (must go 0→1→2 sequentially)
-    if (newStage - currentStage > 1) {
-      LOG.warnf(
-          "Cannot skip stages: %d → %d (use %d first)", currentStage, newStage, currentStage + 1);
-      return false;
-    }
-
-    return true;
   }
 
   /**
