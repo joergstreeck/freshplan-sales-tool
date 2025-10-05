@@ -207,16 +207,18 @@ updated: "2025-10-02"
 
 ---
 
-### **Sprint 2.1.6 – Lead Transfer & Bestandsleads-Migration (PLANNED)**
+### **Sprint 2.1.6 – Lead Completion & Admin Features (IN PROGRESS)**
 **Zentral:** [TRIGGER_SPRINT_2_1_6.md](../../TRIGGER_SPRINT_2_1_6.md)
-**Status:** 📅 PLANNED (2025-10-12 - 2025-10-18)
-**Scope:** Lead-Transfer, Bestandsleads-Migration (Modul 08), Lead → Kunde Convert, Stop-the-Clock UI
+**Status:** 🔧 IN PROGRESS (2025-10-12 - 2025-10-18)
+**Scope:** Bestandsleads-Migration, Convert-Flow, Stop-the-Clock UI, Automated Jobs
 
-> **⚠️ TEST-STRATEGIE BEACHTEN!**
-> Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
-> Siehe: [backend/TEST_MIGRATION_PLAN.md](./backend/TEST_MIGRATION_PLAN.md)
+**⚠️ PRIORITY #0 - BLOCKER FIRST:**
+- **Issue #130:** TestDataBuilder Refactoring (12 Tests broken, CI disabled)
+- **Root Cause:** CDI-Konflikt zwischen Legacy Builder (src/main) und neuen Builder (src/test)
+- **Fix:** Legacy Builder löschen, Tests auf neue Builder migrieren (1-2h)
+- **Impact:** Worktree CI reaktivieren, 12 ContactInteractionServiceIT Tests grün
 
-**Geplante Features (aus 2.1.5 verschoben + NEU):**
+**Kern-Deliverables (UPDATED 05.10.2025):**
 - **Bestandsleads-Migrations-API** (Modul 08):
   - POST /api/admin/migration/leads/import (Admin-only, Dry-Run Mode PFLICHT)
   - Batch-Import mit Validierung (max. 1000 Leads/Batch)
@@ -235,11 +237,6 @@ updated: "2025-10-02"
   - Pause/Resume Buttons in LeadProtectionBadge
   - Grund-Auswahl mit Audit-Log
   - Maximale Pausendauer konfigurierbar
-- **Lead-Transfer zwischen Partnern:**
-  - V258 lead_transfers Tabelle
-  - Transfer-Request mit Begründung
-  - Genehmigungsprozess (Manager/Admin)
-  - 48h SLA für Entscheidung
 - **Backdating Endpoint:**
   - PUT /api/leads/{id}/registered-at (Admin/Manager)
   - Validierung: nicht in Zukunft; Reason Pflicht
@@ -248,65 +245,91 @@ updated: "2025-10-02"
   - Nightly Job: Progress Warning Check (Tag 53)
   - Nightly Job: Protection Expiry (Tag 70)
   - Nightly Job: Pseudonymisierung (60 Tage ohne Progress)
-- **Fuzzy-Matching & Review:**
-  - Vollständiger Scoring-Algorithmus (Email, Phone, Company, Address)
-  - Schwellwerte konfigurierbar (hard/soft duplicates)
-  - DuplicateReviewModal (Merge/Reject/Create-New)
-  - Merge-Historie mit Undo-Möglichkeit
-- **Team Management (OPTIONAL):**
-  - Team CRUD Operations
-  - Team-Member Assignment
-  - Quotenregelung für Teams
-  - Team-Dashboard mit Metriken
-- **Row-Level-Security (OPTIONAL):**
-  - Owner kann eigene Leads sehen (lead_owner_policy)
-  - Team-Mitglieder sehen Team-Leads (lead_team_policy)
-  - Admin hat Vollzugriff (lead_admin_policy)
 
-**Note:** Enthält Features aus Sprint 2.1.5 (verschoben) + Matching & Review
+**Optional (ADR-006 Phase 2):**
+- Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
+- Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)
+- Lead-Activity-Timeline (Interaktions-Historie)
+- MUI Dialog Accessibility Fix (aria-hidden Warning)
+
+**❌ VERSCHOBEN AUF SPRINT 2.1.7 (Scope-Overflow):**
+- ~~Lead-Transfer zwischen Partnern~~ (User Story 1 - zu komplex!)
+- ~~Fuzzy-Matching & Review~~ (User Story 4 - verdient eigenen Sprint)
+- ~~Row-Level-Security (RLS)~~ (User Story 5 - komplex, gehört zu Transfer)
+- ~~Team Management~~ (User Story 6 - komplex, gehört zu RLS)
+
+**Scope-Änderung:** Fokus auf Admin-Features (Migration, Convert, Jobs) statt Team-Features (Transfer, RLS)
 
 ---
 
-### **Sprint 2.1.7 – Lead Scoring & Mobile Optimization (PLANNED)**
+### **Sprint 2.1.7 – Team Management & Test Infrastructure Overhaul (PLANNED)**
 **Zentral:** [TRIGGER_SPRINT_2_1_7.md](../../TRIGGER_SPRINT_2_1_7.md)
 **Status:** 📅 PLANNED (2025-10-19 - 2025-10-25)
-**Scope:** Lead-Scoring, Activity-Templates, Mobile-First UI, Offline-Fähigkeit, QR-Code-Scanner
+**Scope:** Lead-Transfer + RLS + Team Management (verschoben aus 2.1.6) + Test Infrastructure (NEU!)
+**Aufwand:** ~48-68h (~1-1.5 Wochen)
 
-**Geplante Features:**
-- **Lead-Scoring Algorithmus:**
-  - Lead-Score Berechnung (0-100 Punkte)
-  - Faktoren: Stage, Estimated Volume, Business Type, Activity Frequency, Response Time
-  - Backend: lead.score INT Feld (V259 Migration)
-  - Scheduled Job: Score-Recalc täglich
-  - UI: Score-Spalte mit Color-Coding, Filter, Score-Breakdown
-- **Activity-Templates System:**
-  - Backend: activity_templates Tabelle (V260 Migration)
-  - Standard-Templates (Seeds): "Erstkontakt Küchenchef", "Sample-Box Versand", etc.
-  - Frontend: ActivityTimeline → "Template verwenden" Dropdown
-  - User-spezifische Templates erstellen/editieren/löschen
-- **Mobile-First UI Optimierung:**
-  - LeadWizard: Touch-optimiert (Button-Größen ≥ 44px)
-  - LeadList: Card-View auf Mobile, Infinite Scroll, Swipe-Aktionen
-  - Performance: Bundle <200KB, First Contentful Paint <1.5s (3G)
-- **Offline-Fähigkeit (Progressive Web App):**
-  - Service Worker für Offline-Support
-  - IndexedDB für lokale Lead-Speicherung
-  - Sync-Strategy: Online/Offline/Reconnect
-  - UI-Indikator: "Offline-Modus aktiv" Badge
-  - Conflict-Resolution: Server-Wins
-- **QR-Code-Scanner Integration:**
-  - QR-Code-Scanner Component (Camera-API)
-  - Unterstützte Formate: vCard, meCard, Plain Text
-  - Automatisches Parsing in LeadWizard Felder
-  - Desktop-Fallback: File-Upload
+**🎯 ZWEI PARALLELE TRACKS:**
+
+**Track 1 - Business Features (verschoben aus 2.1.6):**
+1. **Lead-Transfer Workflow**
+   - V260: lead_transfers Tabelle
+   - POST /api/leads/{id}/transfer - Transfer-Request initiieren
+   - PUT /api/leads/transfers/{id} - Genehmigen/Ablehnen (Manager/Admin)
+   - 48h SLA für Entscheidung, Auto-Escalation an Admin
+   - Frontend: TransferRequestDialog.tsx + TransferApprovalList.tsx
+
+2. **Fuzzy-Matching & Duplicate Review**
+   - Scoring-Algorithmus (Email 40%, Phone 30%, Company 20%, Address 10%)
+   - Schwellwerte: Hard Duplicate ≥90%, Soft Duplicate 70-89%
+   - 202 Response bei Soft Duplicate mit Kandidaten-Liste
+   - Frontend: DuplicateReviewModal.tsx + MergePreviewDialog.tsx
+   - Merge-Logik mit Undo-Möglichkeit (24h)
+
+3. **Row-Level-Security (RLS) Implementation**
+   - V261: RLS Policies (owner_policy, team_policy, admin_policy, transfer_recipient_policy)
+   - Session-Context: SET LOCAL app.user_id, app.user_role, app.user_team_id
+   - Performance: P95 <50ms RLS-Overhead (Index-Optimierung)
+
+4. **Team Management**
+   - V262: teams + team_members Tabellen
+   - Team CRUD API (POST/GET/PUT/DELETE /api/teams)
+   - Team-Member Assignment + Role-Management
+   - Quotenregelung (max. Leads pro Team)
+   - Frontend: TeamManagementPage.tsx + TeamDashboard.tsx
+
+**Track 2 - Test Infrastructure (NEU - STRATEGISCH!):**
+5. **CRM Szenario-Builder**
+   - ScenarioBuilder für komplexe CRM-Workflows
+   - Lead-Journey: PreClaimLead, RegisteredLead, QualifiedLead, ProtectedLead
+   - Customer-Journey: NewCustomer, ActiveCustomer, RiskCustomer
+   - Opportunity-Pipeline: QualifiedOpportunity → ProposalOpportunity → WonOpportunity
+
+6. **Faker-Integration für realistische Testdaten**
+   - Java Faker Dependency (net.datafaker)
+   - RealisticDataGenerator (germanCompanyName, germanAddress, germanPhoneNumber)
+   - Edge-Case-Daten (Umlaute, Sonderzeichen, lange Namen)
+
+7. **Lead-spezifische TestDataFactories**
+   - LeadTestDataFactory (asPreClaimLead, asRegisteredLead, asQualifiedLead)
+   - LeadActivityTestDataFactory (asProgressActivity, asNonProgressActivity)
+
+8. **Test-Pattern Library & Documentation**
+   - TESTING_PATTERNS.md (5+ Patterns: Lead-Journey, RBAC+RLS, Activity-Progress)
+   - TEST_DATA_CHEATSHEET.md (Quick Reference)
+   - Migration Guide für alte Tests
+
+**Begründung Track 2:**
+- ✅ Quality Investment: Hochwertige Tests = weniger Bugs = schnellere Entwicklung
+- ✅ Sprint 2.2 Readiness: Kundenmanagement braucht komplexe Customer-Test-Szenarien
+- ✅ Onboarding: Neue Entwickler verstehen CRM-Workflows durch Testdaten
+- ✅ Regression Prevention: Alle Edge-Cases als Test-Szenarien dokumentiert
 
 **Deliverables:**
-- LeadScoringService mit konfigurierbaren Gewichtungen
-- QRCodeScanner.tsx Component
-- ActivityTemplateSelector.tsx Component
-- LeadScoreBreakdown.tsx Component
-- OfflineIndicator.tsx Component
-- Lighthouse Score: Performance >90, PWA >90
+- Lead-Transfer API + Frontend (Track 1)
+- Fuzzy-Matching Service + Review-UI (Track 1)
+- RLS Policies + Team Management (Track 1)
+- CRMScenarioBuilder + Faker + TestDataFactories (Track 2)
+- TESTING_PATTERNS.md + TEST_DATA_CHEATSHEET.md (Track 2)
 
 ---
 
@@ -320,6 +343,39 @@ updated: "2025-10-02"
 ### **ADRs (Architecture Decisions):**
 - **ADR-0002:** PostgreSQL LISTEN/NOTIFY (Event-Architektur)
 - **ADR-0004:** Territory RLS vs Lead-Ownership (Security-Modell)
+
+### **Sprint 2.1.8 – DSGVO Compliance & Lead-Import (PLANNED) - 🔴 GESETZLICH PFLICHT**
+**Zentral:** [TRIGGER_SPRINT_2_1_8.md](../../TRIGGER_SPRINT_2_1_8.md)
+**Status:** 📅 PLANNED (2025-10-26 - 2025-11-01)
+**Scope:** Gesetzliche DSGVO-Features + B2B-Standard Lead-Import
+**Aufwand:** ~40-56h (~1 Woche)
+
+**🎯 KERN-DELIVERABLES:**
+1. **Lead-Import via CSV/Excel** (Self-Service Bulk-Import, 8-12h)
+2. **DSGVO-Auskunfts-Recht (Art. 15)** (PDF-Export, 6-8h) - 🔴 GESETZLICH PFLICHT
+3. **DSGVO-Lösch-Recht (Art. 17)** (Sofort-Löschung, 6-8h) - 🔴 GESETZLICH PFLICHT
+4. **DSGVO-Einwilligungs-Widerruf (Art. 7 Abs. 3)** (Consent-Revoke, 4-6h)
+5. **Advanced Search** (Full-Text-Search, 8-12h)
+6. **BANT-Qualifizierungs-Wizard** (Budget/Authority/Need/Timeline, 8-10h)
+
+**Migrations:** 5 DB-Änderungen (Nummern: siehe `get-next-migration.sh` - DSGVO, Import, Search, BANT)
+
+---
+
+### **Sprint 2.1.9 – Lead-Kollaboration & Tracking (PLANNED)**
+**Zentral:** [TRIGGER_SPRINT_2_1_9.md](../../TRIGGER_SPRINT_2_1_9.md)
+**Status:** 📅 PLANNED (2025-11-02 - 2025-11-04)
+**Scope:** Team-Workflows & Nachvollziehbarkeit
+**Aufwand:** ~12-17h (~2-3 Tage)
+
+**🎯 KERN-DELIVERABLES:**
+1. **Lead-Notizen & Kommentare** (Team-Kollaboration, 6-8h)
+2. **Lead-Status-Änderungs-Historie** (Audit-Trail, 4-6h)
+3. **Lead-Temperatur (Hot/Warm/Cold)** (Visuelle Priorisierung, 2-3h)
+
+**Migrations:** 3 DB-Änderungen (Nummern: siehe `get-next-migration.sh` - Notizen, Historie, Temperatur)
+
+---
 
 ## 📋 **Implementation Timeline**
 
@@ -336,6 +392,27 @@ Phase 3 (Frontend Implementation): Sprint 2.1.3
   Status: ✅ COMPLETE
   Result: Lead Management MVP mit Business-Logik
   PR: #122 (merged)
+
+Phase 4 (Progressive Profiling): Sprint 2.1.4 + 2.1.5
+  Status: ✅ COMPLETE
+  Result: Lead Protection + Progressive Profiling + Pre-Claim
+  PRs: #123, #124, #129, #131 (alle merged)
+
+Phase 5 (Admin-Features): Sprint 2.1.6 (IN PROGRESS)
+  Status: 🔧 IN PROGRESS
+  Result: Migration-API, Convert-Flow, Stop-the-Clock UI, Automated Jobs
+
+Phase 6 (Team Management): Sprint 2.1.7 (PLANNED)
+  Status: 📅 PLANNED
+  Result: Lead-Transfer, RLS, Team Management, Test Infrastructure
+
+Phase 7 (DSGVO & Import): Sprint 2.1.8 (PLANNED)
+  Status: 📅 PLANNED
+  Result: DSGVO-Compliance + Lead-Import + BANT
+
+Phase 8 (Kollaboration): Sprint 2.1.9 (PLANNED)
+  Status: 📅 PLANNED
+  Result: Lead-Notizen, Status-Historie, Temperatur
 ```
 
 ## 🎯 **Für neue Claude-Instanzen**
