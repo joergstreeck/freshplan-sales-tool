@@ -1,9 +1,93 @@
 # 🧪 Testing Guide - FreshPlan Quality Assurance
 
-**Erstellt:** 2025-09-17
+**Erstellt:** 2025-09-17 | **Aktualisiert:** 2025-10-05
 **Status:** ✅ Verlässliche Analyse via Test-Runner (KORRIGIERT!)
 **Basis:** Echte Test-Runner Ergebnisse (npm test:ci + Maven Surefire)
 **Erkenntnis:** Viel mehr Tests als erwartet, aber viele deaktiviert
+
+## 🎯 Coverage Infrastructure (NEU - 2025-10-05)
+
+### **Lokale Development Tools**
+
+**Neue NPM Scripts (Frontend):**
+```bash
+# 🔥 Interaktive UI mit Live-Coverage (Empfohlen!)
+npm run test:ui
+
+# 📊 Quick Coverage-Check + HTML-Report
+npm run test:coverage
+open coverage/index.html
+
+# 👀 Watch-Mode mit Live-Coverage
+npm run test:watch
+```
+
+**Vitest UI Features:**
+- ✅ Live-Updates beim Code-Ändern
+- ✅ Coverage-Heatmaps direkt im Code (grün/gelb/rot)
+- ✅ Filter Tests nach Name/File/Status
+- ✅ Stack Traces übersichtlich
+- ✅ Re-run einzelner Tests mit 1 Klick
+
+**Dokumentation:**
+- 📖 `frontend/TESTING.md` - Kompletter Frontend Testing Guide
+- 📖 `docs/CODECOV_SETUP.md` - CI/CD Coverage Setup (5min)
+
+### **CI/CD Integration**
+
+**GitHub Actions:** `.github/workflows/frontend-tests-coverage.yml`
+
+**Läuft automatisch bei:**
+- Push zu `main`, `develop`, `feature/*` (Frontend-Änderungen)
+- Pull Requests (Frontend-Änderungen)
+
+**Features:**
+- ✅ Generiert Coverage-Report
+- ✅ Upload zu Codecov (optional, siehe Setup-Guide)
+- ✅ Archiviert Coverage-Reports als Artifacts (30 Tage)
+- ✅ PR-Kommentare mit Coverage-Diff (nach Codecov-Setup)
+
+**Codecov Setup (Optional):**
+1. Account erstellen: https://codecov.io
+2. Repo aktivieren + Token kopieren
+3. GitHub Secret `CODECOV_TOKEN` hinzufügen
+4. Badge zu README hinzufügen
+
+➡️ Details: `docs/CODECOV_SETUP.md`
+
+### **Coverage-Ziele**
+
+```yaml
+Frontend:
+├── Utilities (pure functions): 100%
+├── Business Logic: ≥85%
+├── Components: ≥70%
+└── Integration Tests: Critical flows
+
+Backend:
+├── Core Business Logic: ≥80%
+├── Domain Services: ≥85%
+├── API Endpoints: ≥75%
+└── Integration Tests: Happy + Error paths
+```
+
+**Regel:** PRs dürfen Coverage nicht senken!
+
+### **Aktuelle Test-Statistik (2025-10-05)**
+
+```yaml
+Frontend:
+├── 📁 Test-Dateien: 104 total
+├── 🧪 Tests: 958 passing, 8 failed, 82 skipped
+├── 📊 Coverage: ~26-28% (wachsend)
+└── 🐛 Bugs gefunden: 4 Production-Bugs durch neue Tests!
+
+Backend:
+├── 📁 Test-Dateien: ~267 Java-Dateien
+├── 🧪 Tests: ~1500 Tests geschätzt
+├── 📊 Coverage: >80% (JaCoCo)
+└── 🏷️ Tags: core (40), migrate (97), quarantine (32)
+```
 
 ## 📋 Critical Test Status Analysis
 
