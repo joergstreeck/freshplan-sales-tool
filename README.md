@@ -50,12 +50,25 @@ Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 ### Test Coverage & CI
 [![Frontend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml)
 [![Backend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml)
-[![codecov](https://codecov.io/gh/joergstreeck/freshplan-sales-tool/branch/main/graph/badge.svg)](https://codecov.io/gh/joergstreeck/freshplan-sales-tool)
 
-**Frontend:** 958 Tests | Coverage: ~26-28% (wachsend) | [Testing Guide](./frontend/TESTING.md)
-**Backend:** ~1500 Tests | Coverage: >80% (JaCoCo) | @Tag("core") Tests in CI
+**Frontend:** 958 Tests | Coverage: ~26-28% (wachsend)
+**Backend:** ~1500 Tests | Coverage: >80% (JaCoCo)
 
-📖 **CI/CD Setup:** [Codecov Integration](./docs/CODECOV_SETUP.md) | [Testing Guide](./docs/planung/grundlagen/TESTING_GUIDE.md)
+**🔥 Lokale Coverage-Tools (empfohlen):**
+```bash
+# Frontend: Interaktive UI mit Live-Coverage
+cd frontend && npm run test:ui
+
+# Frontend: HTML-Report generieren
+npm run test:coverage && open coverage/index.html
+
+# Backend: JaCoCo HTML-Report
+cd backend && ./mvnw verify && open target/site/jacoco/index.html
+```
+
+**📦 CI Artifacts:** Coverage-Reports werden als [GitHub Actions Artifacts](https://github.com/joergstreeck/freshplan-sales-tool/actions) gespeichert (30 Tage)
+
+📖 **Guides:** [Frontend Testing](./frontend/TESTING.md) | [Testing Guide](./docs/planung/grundlagen/TESTING_GUIDE.md)
 
 ## Mock-Governance (Business-Logic mock-frei)
 - Business-Pfade: `frontend/src/{app,features,lib,hooks,store}` dürfen keine Mocks importieren.

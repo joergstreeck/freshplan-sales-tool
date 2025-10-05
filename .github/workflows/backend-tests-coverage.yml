@@ -69,18 +69,7 @@ jobs:
         if: always()
         run: ./mvnw jacoco:report
 
-      - name: Upload coverage to Codecov
-        if: always()
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./backend/target/site/jacoco/jacoco.xml
-          flags: backend
-          name: backend-coverage
-          fail_ci_if_error: false
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Archive coverage report
+      - name: Archive coverage report (HTML)
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -95,11 +84,3 @@ jobs:
           name: backend-test-results
           path: backend/target/surefire-reports/
           retention-days: 7
-
-      - name: Comment PR with coverage
-        if: github.event_name == 'pull_request'
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./backend/target/site/jacoco/jacoco.xml
-          flags: backend
-          token: ${{ secrets.CODECOV_TOKEN }}

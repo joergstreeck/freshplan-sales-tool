@@ -41,29 +41,18 @@ jobs:
         run: npm run test:coverage
         continue-on-error: true
 
-      - name: Upload coverage reports to Codecov
-        if: always()
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./frontend/coverage/coverage-final.json
-          flags: frontend
-          name: frontend-coverage
-          fail_ci_if_error: false
-          verbose: true
-          token: ${{ secrets.CODECOV_TOKEN }}
-
       - name: Archive coverage report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: frontend-coverage-report
           path: frontend/coverage/
           retention-days: 30
 
-      - name: Comment PR with coverage
-        if: github.event_name == 'pull_request'
-        uses: codecov/codecov-action@v4
+      - name: Upload coverage summary
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          files: ./frontend/coverage/coverage-final.json
-          flags: frontend
-          token: ${{ secrets.CODECOV_TOKEN }}
+          name: frontend-coverage-summary
+          path: frontend/coverage/coverage-summary.json
+          retention-days: 7
