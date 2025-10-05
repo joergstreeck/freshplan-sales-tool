@@ -675,22 +675,19 @@ class CustomerRepositoryTest {
   // ========== HELPER METHODS ==========
 
   private Customer createTestCustomer(String companyName) {
-    // Use CustomerBuilder for creating test customers
+    // Use CustomerTestDataFactory for creating test customers
     // Note: We use build() here, not persist(), because the tests
     // handle persistence themselves with repository.persist()
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(companyName)
             .withStatus(CustomerStatus.LEAD)
-            .withPartnerStatus(PartnerStatus.KEIN_PARTNER)
-            .withPaymentTerms(PaymentTerms.NETTO_30)
-            .withFinancingType(FinancingType.PRIVATE)
             .build(); // build() not persist() - tests handle persistence
 
     // Override the auto-generated values for test compatibility
     customer.setCustomerNumber(
         "KD-TEST-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
-    // Override company name to remove the [TEST-xxx] prefix that builder adds
+    // Override company name to ensure exact match (builder may add prefixes)
     customer.setCompanyName(companyName);
 
     return customer;
@@ -698,14 +695,11 @@ class CustomerRepositoryTest {
 
   // For special cases where customer number matters
   private Customer createTestCustomerWithNumber(String companyName, String customerNumber) {
-    // Use CustomerBuilder and then override the customer number
+    // Use CustomerTestDataFactory and then override the customer number
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(companyName)
             .withStatus(CustomerStatus.LEAD)
-            .withPartnerStatus(PartnerStatus.KEIN_PARTNER)
-            .withPaymentTerms(PaymentTerms.NETTO_30)
-            .withFinancingType(FinancingType.PRIVATE)
             .build(); // build() not persist() - tests handle persistence
 
     // Override with specific customer number and name

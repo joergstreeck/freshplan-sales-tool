@@ -69,9 +69,9 @@ class TimelineCQRSIntegrationTest {
   }
 
   private void createTestCustomer() {
-    // Create a test customer for timeline events using CustomerBuilder
+    // Create a test customer for timeline events using CustomerTestDataFactory
     testCustomer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName("[TEST] Timeline Test Company " + uniqueSuffix)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)

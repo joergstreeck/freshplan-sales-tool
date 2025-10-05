@@ -539,8 +539,8 @@ public class OpportunityServiceStageTransitionTest {
       return existingCustomer;
     }
 
-    // Create minimal test customer with all required fields using CustomerBuilder
-    var customer = customerBuilder.withCompanyName(companyName).build();
+    // Create minimal test customer with all required fields using CustomerTestDataFactory
+    var customer = CustomerTestDataFactory.builder().withCompanyName(companyName).build();
 
     // Override specific fields to maintain test requirements
     customer.setCompanyName(companyName); // Override to use exact name without [TEST-xxx] prefix
@@ -575,7 +575,7 @@ public class OpportunityServiceStageTransitionTest {
               System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
 
           // Always create a fresh customer to ensure it exists in the current transaction
-          var customer = customerBuilder.withCompanyName("Test Company " + uniqueSuffix).build();
+          var customer = CustomerTestDataFactory.builder().withCompanyName("Test Company " + uniqueSuffix).build();
           // Use TestIds for guaranteed unique customer number
           customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
           customer.setIsTestData(true);

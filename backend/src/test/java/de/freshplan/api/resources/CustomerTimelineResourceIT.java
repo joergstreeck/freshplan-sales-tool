@@ -51,9 +51,8 @@ class CustomerTimelineResourceIT {
         .withCompanyName("[TEST] Integration Test Company")
         .withCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber())
         .withStatus(CustomerStatus.AKTIV)
-        .withType(CustomerType.UNTERNEHMEN)
         .withIndustry(Industry.SONSTIGE)
-        .withIsTestData(true)
+        .asTestData(true)
         .buildAndPersist(customerRepository);
     return customer.getId();
   }

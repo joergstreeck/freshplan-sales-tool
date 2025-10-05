@@ -11,6 +11,8 @@ import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
 import de.freshplan.test.builders.ContactTestDataFactory;
 import de.freshplan.test.builders.CustomerTestDataFactory;
+import de.freshplan.testsupport.TestFixtures;
+import de.freshplan.testsupport.TestFixtures.CustomerBuilder;
 import jakarta.ws.rs.NotFoundException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -46,7 +48,7 @@ class ContactQueryServiceMockTest {
 
   @InjectMocks private ContactQueryService queryService;
 
-  private final CustomerBuilder customerBuilder = new CustomerBuilder();
+  private final CustomerBuilder customerBuilder = TestFixtures.customer();
   private final String testRunId = UUID.randomUUID().toString().substring(0, 8);
 
   private Customer mockCustomer;
@@ -58,7 +60,7 @@ class ContactQueryServiceMockTest {
   @BeforeEach
   void setUp() {
     // Setup mock customer
-    mockCustomer = customerBuilder.withCompanyName("[TEST] Test Company GmbH " + testRunId).build();
+    mockCustomer = customerBuilder.withName("[TEST] Test Company GmbH " + testRunId).build();
     mockCustomer.setId(UUID.randomUUID());
 
     // Setup contacts

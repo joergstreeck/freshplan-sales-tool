@@ -433,9 +433,8 @@ class HtmlExportCQRSIntegrationTest {
   private Customer createTestCustomer(
       String number, String name, CustomerType type, CustomerStatus status, Industry industry) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
-            .withType(type)
             .withStatus(status)
             .withIndustry(industry)
             .withExpectedAnnualVolume(new BigDecimal("100000"))

@@ -45,11 +45,10 @@ class CustomerCommandServiceIntegrationTest {
   @TestTransaction
   void createCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - a minimal valid request
-    CreateCustomerRequest request = CustomerTestDataFactory.builder()
-            .reset()
-            .withCompanyName("[TEST] Integration Test Company " + System.currentTimeMillis())
-            .withType(CustomerType.NEUKUNDE)
-            .buildCreateRequest();
+    CreateCustomerRequest request = CreateCustomerRequest.builder()
+            .companyName("[TEST] Integration Test Company " + System.currentTimeMillis())
+            .customerType(CustomerType.NEUKUNDE)
+            .build();
 
     String createdBy = "integration-test";
 
@@ -57,11 +56,10 @@ class CustomerCommandServiceIntegrationTest {
     CustomerResponse originalResult = originalService.createCustomer(request, createdBy);
 
     // Create another request with different name to avoid duplicate
-    CreateCustomerRequest request2 = CustomerTestDataFactory.builder()
-            .reset()
-            .withCompanyName("[TEST] Integration Test Company 2 " + System.currentTimeMillis())
-            .withType(CustomerType.NEUKUNDE)
-            .buildCreateRequest();
+    CreateCustomerRequest request2 = CreateCustomerRequest.builder()
+            .companyName("[TEST] Integration Test Company 2 " + System.currentTimeMillis())
+            .customerType(CustomerType.NEUKUNDE)
+            .build();
     CustomerResponse commandResult = commandService.createCustomer(request2, createdBy);
 
     // Then - both should produce similar results (except IDs and names)
@@ -105,11 +103,10 @@ class CustomerCommandServiceIntegrationTest {
   @TestTransaction
   void createCustomer_withNullCreatedBy_shouldFailSameWay() {
     // Given
-    CreateCustomerRequest request = CustomerTestDataFactory.builder()
-            .reset()
-            .withCompanyName("[TEST] Test Company")
-            .withType(CustomerType.NEUKUNDE)
-            .buildCreateRequest();
+    CreateCustomerRequest request = CreateCustomerRequest.builder()
+            .companyName("[TEST] Test Company")
+            .customerType(CustomerType.NEUKUNDE)
+            .build();
 
     // Both services should throw the same exception for null createdBy
     try {
@@ -131,16 +128,14 @@ class CustomerCommandServiceIntegrationTest {
   @TestTransaction
   void updateCustomer_shouldProduceSameResultAsOriginalService() {
     // Given - create customers first
-    CreateCustomerRequest createRequest1 = CustomerTestDataFactory.builder()
-            .reset()
-            .withCompanyName("[TEST] Update Test Company 1 " + System.currentTimeMillis())
-            .withType(CustomerType.NEUKUNDE)
-            .buildCreateRequest();
-    CreateCustomerRequest createRequest2 = CustomerTestDataFactory.builder()
-            .reset()
-            .withCompanyName("[TEST] Update Test Company 2 " + System.currentTimeMillis())
-            .withType(CustomerType.NEUKUNDE)
-            .buildCreateRequest();
+    CreateCustomerRequest createRequest1 = CreateCustomerRequest.builder()
+            .companyName("[TEST] Update Test Company 1 " + System.currentTimeMillis())
+            .customerType(CustomerType.NEUKUNDE)
+            .build();
+    CreateCustomerRequest createRequest2 = CreateCustomerRequest.builder()
+            .companyName("[TEST] Update Test Company 2 " + System.currentTimeMillis())
+            .customerType(CustomerType.NEUKUNDE)
+            .build();
 
     String createdBy = "test-user";
     String updatedBy = "update-user";

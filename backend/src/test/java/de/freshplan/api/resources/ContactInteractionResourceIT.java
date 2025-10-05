@@ -87,10 +87,7 @@ class ContactInteractionResourceIT {
         .withCompanyName("[" + testMarker + "] Test Company GmbH")
         .withCustomerNumber(testMarker)
         .withStatus(CustomerStatus.LEAD)
-        .withPartnerStatus(PartnerStatus.KEIN_PARTNER)
-        .withPaymentTerms(PaymentTerms.NETTO_30)
-        .withPrimaryFinancing(FinancingType.PRIVATE)
-        .withIsTestData(true)
+        .asTestData(true)
         .buildAndPersist(customerRepository);
 
     testCustomerId = testCustomer.getId();
@@ -101,8 +98,8 @@ class ContactInteractionResourceIT {
         .withFirstName("Max")
         .withLastName("Mustermann")
         .withEmail("max@company.com")
-        .isPrimary(false)
-        .isDecisionMaker(false)
+        .withIsPrimary(false)
+        // isDecisionMaker defaults to false, no need to set it
         .buildAndPersist(customerRepository, entityManager);
 
     testContactId = testContact.getId();

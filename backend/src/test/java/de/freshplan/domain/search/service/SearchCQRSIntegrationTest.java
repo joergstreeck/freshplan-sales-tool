@@ -172,7 +172,6 @@ class SearchCQRSIntegrationTest {
       Customer c =
           CustomerTestDataFactory.builder()
               .withCompanyName("[TEST] Performance Test " + i)
-              .withType(CustomerType.UNTERNEHMEN)
               .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD)
               .withIndustry(Industry.values()[i % Industry.values().length])
               .withExpectedAnnualVolume(new BigDecimal(100000 + i * 1000))
@@ -271,7 +270,6 @@ class SearchCQRSIntegrationTest {
     Customer customer =
         CustomerTestDataFactory.builder()
             .withCompanyName(name)
-            .withType(type)
             .withStatus(status)
             .withIndustry(industry)
             .build();

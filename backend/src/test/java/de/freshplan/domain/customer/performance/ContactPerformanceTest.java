@@ -48,8 +48,8 @@ public class ContactPerformanceTest {
   @BeforeEach
   @TestTransaction
   void setUp() {
-    // Create test customer using CustomerBuilder
-    testCustomer = customerBuilder.withCompanyName("Performance Test Company").build();
+    // Create test customer using CustomerTestDataFactory
+    testCustomer = CustomerTestDataFactory.builder().withCompanyName("Performance Test Company").build();
     // Override auto-generated values for performance test
     testCustomer.setCustomerNumber("PERF-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix

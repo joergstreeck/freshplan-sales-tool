@@ -77,7 +77,7 @@ public class OpportunityServiceMockTest {
     opportunityId = UUID.randomUUID();
 
     // Create test customer
-    testCustomer = customerBuilder.withCompanyName("[TEST] Test Company GmbH").build();
+    testCustomer = CustomerTestDataFactory.builder().withCompanyName("[TEST] Test Company GmbH").build();
     testCustomer.setId(customerId);
     testCustomer.setCompanyName("[TEST] Test Company GmbH"); // Keep [TEST] prefix
     testCustomer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());

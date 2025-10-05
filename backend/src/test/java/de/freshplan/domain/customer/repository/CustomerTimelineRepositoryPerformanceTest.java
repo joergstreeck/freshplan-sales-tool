@@ -44,12 +44,11 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
     timelineRepository.deleteAll();
     customerRepository.delete("customerNumber LIKE ?1", "PERF-TEST-%");
 
-    // Create test customer using CustomerBuilder
+    // Create test customer using CustomerTestDataFactory
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName("Performance Test Company")
             .withStatus(CustomerStatus.AKTIV)
-            .withType(CustomerType.UNTERNEHMEN)
             .withIndustry(Industry.SONSTIGE)
             .build();
     // Override auto-generated values

@@ -58,7 +58,7 @@ class CustomerTimelineServiceTest {
   void setUp() {
     customerId = UUID.randomUUID();
 
-    customer = customerBuilder.withCompanyName("Test Company").build();
+    customer = CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     customer.setId(customerId);
     customer.setCustomerNumber("CUST001");
     customer.setCompanyName("Test Company"); // Override to remove [TEST-xxx] prefix
