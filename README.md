@@ -47,6 +47,15 @@ Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 - **Auth**: Keycloak (OIDC)
 - **Cloud**: AWS (ECS, RDS, CloudFront)
 
+### Test Coverage & CI
+[![Frontend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml)
+[![codecov](https://codecov.io/gh/joergstreeck/freshplan-sales-tool/branch/main/graph/badge.svg)](https://codecov.io/gh/joergstreeck/freshplan-sales-tool)
+
+**Frontend:** 958 Tests | Coverage: ~26-28% (wachsend)
+**Backend:** ~1500 Tests | Coverage: >80%
+
+📖 **Setup:** [Codecov Integration einrichten](./docs/CODECOV_SETUP.md)
+
 ## Mock-Governance (Business-Logic mock-frei)
 - Business-Pfade: `frontend/src/{app,features,lib,hooks,store}` dürfen keine Mocks importieren.
 - Ausnahmen: Tests/Stories/Fixtures.
