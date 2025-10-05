@@ -131,6 +131,28 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-05 19:00 - Issue #130 TestDataBuilder Migration COMPLETE (Sprint 2.1.6 Phase 1)
+
+**Kontext:** Issue #130 BLOCKER - TestDataBuilder CDI-Konflikte behoben
+
+**Erledigt:**
+- ✅ **Issue #130 COMPLETE:** 45 Dateien migriert, 409 Fehler → 0 Fehler (100%)
+  - Phase 1: Bulk-Migration (Imports + @Inject Cleanup)
+  - Phase 2: Top-3 High-Impact Files (116 Fehler eliminiert)
+  - Phase 3: Top-10 Completion + Batch (112 Fehler eliminiert)
+  - Phase 4: Final DTO Builder Fixes (109 Fehler eliminiert)
+- ✅ **12/12 Tests ContactInteractionServiceIT PASSED**
+- ✅ **Worktree CI reaktiviert:** `.github/workflows/worktree-ci.yml` (push/PR Trigger wieder aktiv)
+- ✅ **Migration Guide:** `MIGRATION_GUIDE_TESTDATAFACTORY.md` (45 Patterns dokumentiert)
+- ✅ **Commit erstellt:** `fix(tests): Resolve Issue #130 - TestDataBuilder CDI conflicts`
+- ⚠️ **GIT PUSH POLICY dokumentiert:** NIEMALS `git push` ohne explizite User-Erlaubnis (CLAUDE.md + MP5)
+
+**Tests:** ✅ 12/12 ContactInteractionServiceIT PASSED
+
+**Migration:** n/a (Test Infrastructure - keine DB-Änderungen)
+
+**NEXT:** Commit ist lokal, wartet auf User-Freigabe für Push + PR
+
 ### 2025-10-05 18:00 - Sprint 2.1.6/2.1.7 Dokumentations-Konsolidierung COMPLETE
 
 **Kontext:** Deep Analysis Sprint 2.1.6 → 3 kritische Inkonsistenzen gefunden & gefixt

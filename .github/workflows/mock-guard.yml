@@ -6,6 +6,7 @@ on:
       - 'frontend/src/**/*.ts'
       - 'frontend/src/**/*.tsx'
       - 'backend/src/main/java/**/*.java'
+      - '.github/workflows/mock-guard.yml'  # Test workflow changes
 
 jobs:
   mock-guard:
