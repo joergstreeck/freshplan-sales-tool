@@ -69,10 +69,11 @@ class CustomerServiceIntegrationTest {
     entityManager.flush();
 
     // Create valid request DTOs for integration tests
-    validCreateRequest = CreateCustomerRequest.builder()
-        .companyName("[TEST] Test Hotel GmbH")
-        .customerType(CustomerType.UNTERNEHMEN)
-        .build();
+    validCreateRequest =
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Test Hotel GmbH")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
 
     validUpdateRequest =
         new UpdateCustomerRequest(
@@ -116,17 +117,19 @@ class CustomerServiceIntegrationTest {
   @DisplayName("Should throw exception for duplicate customer")
   void createCustomer_withDuplicateCompanyName_shouldThrowException() {
     // Given - Create first customer with specific name
-    CreateCustomerRequest firstRequest = CreateCustomerRequest.builder()
-        .companyName("[TEST] Unique Hotel Name")
-        .customerType(CustomerType.UNTERNEHMEN)
-        .build();
+    CreateCustomerRequest firstRequest =
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Unique Hotel Name")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
     customerService.createCustomer(firstRequest, "testuser");
 
     // When & Then - Try to create exact same company name (case-insensitive duplicate detection)
-    CreateCustomerRequest duplicateRequest = CreateCustomerRequest.builder()
-        .companyName("[TEST] Unique Hotel Name")
-        .customerType(CustomerType.UNTERNEHMEN)
-        .build();
+    CreateCustomerRequest duplicateRequest =
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Unique Hotel Name")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
 
     assertThatThrownBy(() -> customerService.createCustomer(duplicateRequest, "testuser"))
         .isInstanceOf(CustomerAlreadyExistsException.class)
@@ -138,10 +141,11 @@ class CustomerServiceIntegrationTest {
   @DisplayName("Should create customer with minimal data")
   void createCustomer_withMinimalData_shouldCreateCustomer() {
     // Given
-    CreateCustomerRequest minimalRequest = CreateCustomerRequest.builder()
-        .companyName("[TEST] Minimal Company")
-        .customerType(CustomerType.UNTERNEHMEN)
-        .build();
+    CreateCustomerRequest minimalRequest =
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Minimal Company")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
 
     // When
     CustomerResponse result = customerService.createCustomer(minimalRequest, "testuser");

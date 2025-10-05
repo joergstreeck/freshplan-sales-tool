@@ -206,7 +206,8 @@ public class OpportunityRepositoryBasicTest {
   // ========== Helper Methods ==========
 
   private Customer createTestCustomer(String companyName) {
-    Customer customer = CustomerTestDataFactory.builder().withCompanyName("[TEST] " + companyName).build();
+    Customer customer =
+        CustomerTestDataFactory.builder().withCompanyName("[TEST] " + companyName).build();
 
     // Ensure unique customer number
     customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());

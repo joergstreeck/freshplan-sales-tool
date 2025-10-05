@@ -33,16 +33,16 @@ public class ContactsCountConsistencyTest {
 
   @Inject CustomerQueryService queryService; // CQRS
 
-
   @Test
   @TestTransaction
   void testContactsCountConsistencyForNewCustomer() {
     // 1. Neuen Kunden erstellen
-    Customer customer = CustomerTestDataFactory.builder()
-        .withCompanyName("Test ContactCount Company")
-        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-        .build();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Test ContactCount Company")
+            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCT-" + (System.currentTimeMillis() % 10000000));
     customerRepository.persist(customer);
@@ -113,11 +113,12 @@ public class ContactsCountConsistencyTest {
   @TestTransaction
   void testContactsCountWithAllInactiveContacts() {
     // Customer mit nur inaktiven Kontakten
-    Customer customer = CustomerTestDataFactory.builder()
-        .withCompanyName("Test All Inactive Company")
-        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-        .build();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Test All Inactive Company")
+            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCI-" + (System.currentTimeMillis() % 10000000));
     customerRepository.persist(customer);
@@ -161,11 +162,12 @@ public class ContactsCountConsistencyTest {
   @TestTransaction
   void testContactsCountWithAllDeletedContacts() {
     // Customer mit nur gelöschten Kontakten
-    Customer customer = CustomerTestDataFactory.builder()
-        .withCompanyName("Test All Deleted Company")
-        .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
-        .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
-        .build();
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Test All Deleted Company")
+            .withStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV)
+            .withIndustry(de.freshplan.domain.customer.entity.Industry.BILDUNG)
+            .build();
     // Override auto-generated values
     customer.setCustomerNumber("TCD-" + (System.currentTimeMillis() % 10000000));
     customerRepository.persist(customer);

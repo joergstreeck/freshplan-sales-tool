@@ -35,7 +35,6 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-
   private UUID testCustomerId;
   private Statistics hibernateStats;
 

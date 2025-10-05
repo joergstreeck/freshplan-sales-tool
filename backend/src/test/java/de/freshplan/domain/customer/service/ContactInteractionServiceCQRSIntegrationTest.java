@@ -56,9 +56,7 @@ class ContactInteractionServiceCQRSIntegrationTest {
     contactId = UUID.randomUUID();
 
     // Create test customer using factory
-    var testCustomer = CustomerTestDataFactory.builder()
-        .withCompanyName("Test Company")
-        .build();
+    var testCustomer = CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     testCustomer.setId(UUID.randomUUID());
 
     // Setup test contact using ContactTestDataFactory

@@ -449,7 +449,8 @@ class CustomerSearchAdvancedTest {
 
   // ==================== HELPER METHODS ====================
   private void createCustomersForSalesPriority() {
-    Customer highPriority = CustomerTestDataFactory.builder()
+    Customer highPriority =
+        CustomerTestDataFactory.builder()
             .withCompanyName("High Priority Customer")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(100000))
@@ -457,7 +458,8 @@ class CustomerSearchAdvancedTest {
     highPriority.setCompanyName("High Priority Customer");
     customerRepository.persist(highPriority);
 
-    Customer mediumPriority = CustomerTestDataFactory.builder()
+    Customer mediumPriority =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Medium Priority Customer")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(50000))
@@ -465,7 +467,8 @@ class CustomerSearchAdvancedTest {
     mediumPriority.setCompanyName("Medium Priority Customer");
     customerRepository.persist(mediumPriority);
 
-    Customer lowPriority = CustomerTestDataFactory.builder()
+    Customer lowPriority =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Low Priority Customer")
             .withStatus(CustomerStatus.PROSPECT)
             .withExpectedAnnualVolume(BigDecimal.valueOf(10000))
@@ -475,44 +478,50 @@ class CustomerSearchAdvancedTest {
   }
 
   private void createCustomersForRiskMitigation() {
-    Customer highRisk = CustomerTestDataFactory.builder()
-        .withCompanyName("High Risk Customer")
-        .withRiskScore(85)
-        .build();
+    Customer highRisk =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("High Risk Customer")
+            .withRiskScore(85)
+            .build();
     highRisk.setCompanyName("High Risk Customer");
     customerRepository.persist(highRisk);
 
-    Customer mediumRisk = CustomerTestDataFactory.builder()
-        .withCompanyName("Medium Risk Customer")
-        .withRiskScore(50)
-        .build();
+    Customer mediumRisk =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Medium Risk Customer")
+            .withRiskScore(50)
+            .build();
     mediumRisk.setCompanyName("Medium Risk Customer");
     customerRepository.persist(mediumRisk);
 
-    Customer lowRisk = CustomerTestDataFactory.builder()
-        .withCompanyName("Low Risk Customer")
-        .withRiskScore(15)
-        .build();
+    Customer lowRisk =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Low Risk Customer")
+            .withRiskScore(15)
+            .build();
     lowRisk.setCompanyName("Low Risk Customer");
     customerRepository.persist(lowRisk);
   }
 
   private void createCustomersForEngagementFocus() {
-    Customer needsEngagement = CustomerTestDataFactory.builder()
+    Customer needsEngagement =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Needs Engagement")
             .withLastContactDate(LocalDateTime.now().minusDays(90))
             .build();
     needsEngagement.setCompanyName("Needs Engagement");
     customerRepository.persist(needsEngagement);
 
-    Customer recentContact = CustomerTestDataFactory.builder()
+    Customer recentContact =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Recent Contact")
             .withLastContactDate(LocalDateTime.now().minusDays(5))
             .build();
     recentContact.setCompanyName("Recent Contact");
     customerRepository.persist(recentContact);
 
-    Customer moderateContact = CustomerTestDataFactory.builder()
+    Customer moderateContact =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Moderate Contact")
             .withLastContactDate(LocalDateTime.now().minusDays(30))
             .build();
@@ -521,21 +530,24 @@ class CustomerSearchAdvancedTest {
   }
 
   private void createCustomersForRevenuePotential() {
-    Customer highRevenue = CustomerTestDataFactory.builder()
+    Customer highRevenue =
+        CustomerTestDataFactory.builder()
             .withCompanyName("High Revenue Potential")
             .withExpectedAnnualVolume(BigDecimal.valueOf(150000))
             .build();
     highRevenue.setCompanyName("High Revenue Potential");
     customerRepository.persist(highRevenue);
 
-    Customer mediumRevenue = CustomerTestDataFactory.builder()
+    Customer mediumRevenue =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Medium Revenue Potential")
             .withExpectedAnnualVolume(BigDecimal.valueOf(75000))
             .build();
     mediumRevenue.setCompanyName("Medium Revenue Potential");
     customerRepository.persist(mediumRevenue);
 
-    Customer lowRevenue = CustomerTestDataFactory.builder()
+    Customer lowRevenue =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Low Revenue Potential")
             .withExpectedAnnualVolume(BigDecimal.valueOf(25000))
             .build();
@@ -544,21 +556,24 @@ class CustomerSearchAdvancedTest {
   }
 
   private void createCustomersForContactFrequency() {
-    Customer oldContact = CustomerTestDataFactory.builder()
+    Customer oldContact =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Long Time No Contact")
             .withLastContactDate(LocalDateTime.now().minusDays(120))
             .build();
     oldContact.setCompanyName("Long Time No Contact");
     customerRepository.persist(oldContact);
 
-    Customer recentContact = CustomerTestDataFactory.builder()
+    Customer recentContact =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Recently Contacted")
             .withLastContactDate(LocalDateTime.now().minusDays(2))
             .build();
     recentContact.setCompanyName("Recently Contacted");
     customerRepository.persist(recentContact);
 
-    Customer moderateContact = CustomerTestDataFactory.builder()
+    Customer moderateContact =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Moderate Contact Gap")
             .withLastContactDate(LocalDateTime.now().minusDays(45))
             .build();
@@ -567,7 +582,8 @@ class CustomerSearchAdvancedTest {
   }
 
   private void createDiverseCustomers() {
-    Customer priority1 = CustomerTestDataFactory.builder()
+    Customer priority1 =
+        CustomerTestDataFactory.builder()
             .withCompanyName("High Priority Active")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(120000))
@@ -575,7 +591,8 @@ class CustomerSearchAdvancedTest {
     priority1.setCompanyName("High Priority Active");
     customerRepository.persist(priority1);
 
-    Customer priority2 = CustomerTestDataFactory.builder()
+    Customer priority2 =
+        CustomerTestDataFactory.builder()
             .withCompanyName("Medium Priority Active")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(60000))
@@ -583,7 +600,8 @@ class CustomerSearchAdvancedTest {
     priority2.setCompanyName("Medium Priority Active");
     customerRepository.persist(priority2);
 
-    Customer inactive = CustomerTestDataFactory.builder()
+    Customer inactive =
+        CustomerTestDataFactory.builder()
             .withCompanyName("High Volume Inactive")
             .withStatus(CustomerStatus.INAKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(200000))
@@ -591,7 +609,8 @@ class CustomerSearchAdvancedTest {
     inactive.setCompanyName("High Volume Inactive");
     customerRepository.persist(inactive);
 
-    Customer noPriority = CustomerTestDataFactory.builder()
+    Customer noPriority =
+        CustomerTestDataFactory.builder()
             .withCompanyName("No Match Customer")
             .withStatus(CustomerStatus.AKTIV)
             .withExpectedAnnualVolume(BigDecimal.valueOf(30000))
@@ -602,7 +621,8 @@ class CustomerSearchAdvancedTest {
 
   private void createMultipleCustomers(int count) {
     for (int i = 1; i <= count; i++) {
-      Customer customer = CustomerTestDataFactory.builder()
+      Customer customer =
+          CustomerTestDataFactory.builder()
               .withCompanyName("Customer " + String.format("%03d", i))
               .withStatus(CustomerStatus.AKTIV)
               .withExpectedAnnualVolume(BigDecimal.valueOf(10000 + (i * 1000)))
@@ -616,10 +636,11 @@ class CustomerSearchAdvancedTest {
   private void createCustomersWithMixedStatuses(int total) {
     for (int i = 1; i <= total; i++) {
       CustomerStatus status = (i % 2 == 0) ? CustomerStatus.AKTIV : CustomerStatus.INAKTIV;
-      Customer customer = CustomerTestDataFactory.builder()
-          .withCompanyName("Customer " + i)
-          .withStatus(status)
-          .build();
+      Customer customer =
+          CustomerTestDataFactory.builder()
+              .withCompanyName("Customer " + i)
+              .withStatus(status)
+              .build();
       customer.setCompanyName("Customer " + i);
       customerRepository.persist(customer);
     }

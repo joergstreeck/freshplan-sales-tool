@@ -64,7 +64,6 @@ class ContactEventCaptureCQRSIntegrationTest {
 
   @Inject ContactInteractionRepository interactionRepository;
 
-
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
 
@@ -112,12 +111,13 @@ class ContactEventCaptureCQRSIntegrationTest {
         .run(
             () -> {
               // Create customer
-              Customer customer = CustomerTestDataFactory.builder()
-                  .withCompanyName("[TEST-" + testRunId + "] Event Company")
-                  .withStatus(CustomerStatus.AKTIV)
-                  .withIndustry(Industry.HOTEL)
-                  .withExpectedAnnualVolume(new BigDecimal("250000"))
-                  .build();
+              Customer customer =
+                  CustomerTestDataFactory.builder()
+                      .withCompanyName("[TEST-" + testRunId + "] Event Company")
+                      .withStatus(CustomerStatus.AKTIV)
+                      .withIndustry(Industry.HOTEL)
+                      .withExpectedAnnualVolume(new BigDecimal("250000"))
+                      .build();
               customer.setCustomerType(CustomerType.UNTERNEHMEN);
               customer.setCustomerNumber("EVT-" + testRunId);
               customer.setIsTestData(true);

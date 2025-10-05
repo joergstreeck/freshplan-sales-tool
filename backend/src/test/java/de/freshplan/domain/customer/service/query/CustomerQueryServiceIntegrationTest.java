@@ -40,7 +40,6 @@ class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-
   private UUID testCustomerId;
   private String testCustomerNumber;
 

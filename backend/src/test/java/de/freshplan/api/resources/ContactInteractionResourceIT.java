@@ -8,17 +8,14 @@ import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.CustomerStatus;
-import de.freshplan.domain.customer.entity.FinancingType;
-import de.freshplan.domain.customer.entity.PartnerStatus;
-import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineEventRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
-import de.freshplan.test.builders.CustomerTestDataFactory;
 import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
@@ -83,24 +80,26 @@ class ContactInteractionResourceIT {
             + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
 
     // Create test customer using TestDataFactory pattern
-    Customer testCustomer = CustomerTestDataFactory.builder()
-        .withCompanyName("[" + testMarker + "] Test Company GmbH")
-        .withCustomerNumber(testMarker)
-        .withStatus(CustomerStatus.LEAD)
-        .asTestData(true)
-        .buildAndPersist(customerRepository);
+    Customer testCustomer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("[" + testMarker + "] Test Company GmbH")
+            .withCustomerNumber(testMarker)
+            .withStatus(CustomerStatus.LEAD)
+            .asTestData(true)
+            .buildAndPersist(customerRepository);
 
     testCustomerId = testCustomer.getId();
 
     // Create test contact using TestDataFactory pattern
-    CustomerContact testContact = ContactTestDataFactory.builder()
-        .forCustomer(testCustomer)
-        .withFirstName("Max")
-        .withLastName("Mustermann")
-        .withEmail("max@company.com")
-        .withIsPrimary(false)
-        // isDecisionMaker defaults to false, no need to set it
-        .buildAndPersist(customerRepository, entityManager);
+    CustomerContact testContact =
+        ContactTestDataFactory.builder()
+            .forCustomer(testCustomer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max@company.com")
+            .withIsPrimary(false)
+            // isDecisionMaker defaults to false, no need to set it
+            .buildAndPersist(customerRepository, entityManager);
 
     testContactId = testContact.getId();
   }

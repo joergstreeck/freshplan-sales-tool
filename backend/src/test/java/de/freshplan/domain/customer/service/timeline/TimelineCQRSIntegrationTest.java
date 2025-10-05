@@ -54,7 +54,6 @@ class TimelineCQRSIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
 

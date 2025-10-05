@@ -47,13 +47,14 @@ class CustomerTimelineResourceIT {
 
   @Transactional
   UUID createTestCustomerInTransaction() {
-    Customer customer = CustomerTestDataFactory.builder()
-        .withCompanyName("[TEST] Integration Test Company")
-        .withCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber())
-        .withStatus(CustomerStatus.AKTIV)
-        .withIndustry(Industry.SONSTIGE)
-        .asTestData(true)
-        .buildAndPersist(customerRepository);
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("[TEST] Integration Test Company")
+            .withCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber())
+            .withStatus(CustomerStatus.AKTIV)
+            .withIndustry(Industry.SONSTIGE)
+            .asTestData(true)
+            .buildAndPersist(customerRepository);
     return customer.getId();
   }
 

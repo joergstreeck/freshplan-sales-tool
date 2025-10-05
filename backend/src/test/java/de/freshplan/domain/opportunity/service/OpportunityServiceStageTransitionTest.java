@@ -13,7 +13,6 @@ import de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundExce
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import de.freshplan.test.builders.CustomerTestDataFactory;
-import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.support.TestTx;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
@@ -66,8 +65,6 @@ public class OpportunityServiceStageTransitionTest {
   @Inject EntityManager entityManager;
 
   @Inject UserTransaction userTransaction;
-
-
 
   private Customer testCustomer;
   private User testUser;
@@ -575,7 +572,10 @@ public class OpportunityServiceStageTransitionTest {
               System.currentTimeMillis() + "_" + UUID.randomUUID().toString().substring(0, 8);
 
           // Always create a fresh customer to ensure it exists in the current transaction
-          var customer = CustomerTestDataFactory.builder().withCompanyName("Test Company " + uniqueSuffix).build();
+          var customer =
+              CustomerTestDataFactory.builder()
+                  .withCompanyName("Test Company " + uniqueSuffix)
+                  .build();
           // Use TestIds for guaranteed unique customer number
           customer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
           customer.setIsTestData(true);

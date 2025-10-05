@@ -27,7 +27,6 @@ class ContactRepositoryIT {
 
   @Inject CustomerRepository customerRepository;
 
-
   private Customer createTestCustomer() {
     Customer customer =
         CustomerTestDataFactory.builder()

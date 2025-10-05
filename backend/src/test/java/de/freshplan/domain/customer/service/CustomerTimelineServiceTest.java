@@ -48,7 +48,6 @@ class CustomerTimelineServiceTest {
 
   @InjectMock CustomerTimelineMapper timelineMapper;
 
-
   private UUID customerId;
   private Customer customer;
   private CustomerTimelineEvent timelineEvent;

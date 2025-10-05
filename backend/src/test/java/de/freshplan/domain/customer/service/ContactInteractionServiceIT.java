@@ -46,18 +46,20 @@ class ContactInteractionServiceIT {
 
   private void setupTestData() {
     // Create test customer using CustomerTestDataFactory
-    Customer testCustomer = CustomerTestDataFactory.builder()
-        .withCompanyName("Test Company GmbH")
-        .buildAndPersist(customerRepository);
+    Customer testCustomer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Test Company GmbH")
+            .buildAndPersist(customerRepository);
     testCustomerId = testCustomer.getId();
 
     // Create test contact using ContactTestDataFactory
-    testContact = ContactTestDataFactory.builder()
-        .forCustomer(testCustomer)
-        .withFirstName("Max")
-        .withLastName("Mustermann")
-        .withEmail("max@company.com")
-        .buildAndPersist(customerRepository, entityManager);
+    testContact =
+        ContactTestDataFactory.builder()
+            .forCustomer(testCustomer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max@company.com")
+            .buildAndPersist(customerRepository, entityManager);
     testContactId = testContact.getId();
   }
 
@@ -578,12 +580,13 @@ class ContactInteractionServiceIT {
 
   protected CustomerContact createAdditionalContact(String firstName, String lastName) {
     Customer customer = customerRepository.findById(testCustomerId);
-    CustomerContact contact = ContactTestDataFactory.builder()
-        .forCustomer(customer)
-        .withFirstName(firstName)
-        .withLastName(lastName)
-        .withEmail(firstName.toLowerCase() + "@company.com")
-        .buildAndPersist(customerRepository, entityManager);
+    CustomerContact contact =
+        ContactTestDataFactory.builder()
+            .forCustomer(customer)
+            .withFirstName(firstName)
+            .withLastName(lastName)
+            .withEmail(firstName.toLowerCase() + "@company.com")
+            .buildAndPersist(customerRepository, entityManager);
     return contact;
   }
 }

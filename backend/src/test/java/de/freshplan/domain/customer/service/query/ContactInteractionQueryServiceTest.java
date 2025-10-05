@@ -59,9 +59,8 @@ class ContactInteractionQueryServiceTest {
     defaultPage = Page.of(0, 10);
 
     // Create test customer using factory
-    Customer testCustomer = CustomerTestDataFactory.builder()
-        .withCompanyName("Test Company")
-        .build();
+    Customer testCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Test Company").build();
     testCustomer.setId(UUID.randomUUID());
     testCustomer.setIsTestData(true);
 

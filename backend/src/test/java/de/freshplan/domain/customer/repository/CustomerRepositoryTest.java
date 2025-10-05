@@ -29,7 +29,6 @@ class CustomerRepositoryTest {
 
   @Inject EntityManager em;
 
-
   // Counter for unique customer numbers
   private static final AtomicInteger customerCounter = new AtomicInteger(1);
 

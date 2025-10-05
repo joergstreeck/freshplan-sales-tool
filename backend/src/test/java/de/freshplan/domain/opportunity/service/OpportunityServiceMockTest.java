@@ -53,7 +53,6 @@ public class OpportunityServiceMockTest {
 
   @InjectMock CustomerRepository customerRepository;
 
-
   @InjectMock UserRepository userRepository;
 
   @InjectMock SecurityIdentity securityIdentity;
@@ -77,7 +76,8 @@ public class OpportunityServiceMockTest {
     opportunityId = UUID.randomUUID();
 
     // Create test customer
-    testCustomer = CustomerTestDataFactory.builder().withCompanyName("[TEST] Test Company GmbH").build();
+    testCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("[TEST] Test Company GmbH").build();
     testCustomer.setId(customerId);
     testCustomer.setCompanyName("[TEST] Test Company GmbH"); // Keep [TEST] prefix
     testCustomer.setCustomerNumber(de.freshplan.TestIds.uniqueCustomerNumber());
