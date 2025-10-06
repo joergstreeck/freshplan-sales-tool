@@ -205,11 +205,25 @@ class LeadMaintenanceSchedulerIT {
   // ========== Helper Methods ==========
 
   private Lead createTestLead(String companyName) {
+    // Create or get default territory
+    de.freshplan.modules.leads.domain.Territory territory =
+        de.freshplan.modules.leads.domain.Territory.findById(1L);
+    if (territory == null) {
+      territory = new de.freshplan.modules.leads.domain.Territory();
+      territory.name = "IT-TEST-TERRITORY";
+      territory.countryCode = "DE";
+      territory.currencyCode = "EUR";
+      territory.taxRate = java.math.BigDecimal.valueOf(19.0);
+      territory.persist();
+    }
+
     Lead lead = new Lead();
     lead.companyName = companyName;
     lead.city = "Berlin";
     lead.status = LeadStatus.ACTIVE;
     lead.stage = LeadStage.VORMERKUNG;
+    lead.ownerUserId = "IT-TEST-USER";
+    lead.territory = territory;
     lead.createdBy = "IT-TEST";
     lead.updatedBy = "IT-TEST";
     lead.createdAt = LocalDateTime.now();
