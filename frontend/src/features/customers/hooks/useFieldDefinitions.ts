@@ -99,15 +99,28 @@ export const useFieldDefinitions = (): UseFieldDefinitionsResult => {
 
   /**
    * Get industry-specific fields for a given industry
+   *
+   * @param industry BusinessType value (uppercase) or legacy industry value (lowercase)
+   * @since 2.1.6 - Updated to handle both uppercase BusinessType and lowercase legacy values
    */
   const getIndustryFields = (industry: string): FieldDefinition[] => {
     if (!industry) return [];
 
-    const industryFields = catalog.customer.industrySpecific?.[industry] || [];
+    // Normalize to uppercase for BusinessType comparison (Sprint 2.1.6 Phase 2)
+    const normalizedIndustry = industry.toUpperCase();
 
-    // Also get industry-specific fields from extensions
-    const hotelFields = industry === 'hotel' ? extensions.hotelServices || [] : [];
-    const hospitalFields = industry === 'krankenhaus' ? extensions.hospitalServices || [] : [];
+    // Try uppercase first (new BusinessType), fallback to lowercase (legacy)
+    const industryFields =
+      catalog.customer.industrySpecific?.[normalizedIndustry] ??
+      catalog.customer.industrySpecific?.[normalizedIndustry.toLowerCase()] ??
+      [];
+
+    // Also get industry-specific fields from extensions (case-insensitive matching)
+    const hotelFields = normalizedIndustry === 'HOTEL' ? extensions.hotelServices || [] : [];
+    const hospitalFields =
+      normalizedIndustry === 'KRANKENHAUS' || normalizedIndustry === 'GESUNDHEIT'
+        ? extensions.hospitalServices || []
+        : [];
 
     return [...industryFields, ...hotelFields, ...hospitalFields];
   };

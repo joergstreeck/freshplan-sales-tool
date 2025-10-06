@@ -23,6 +23,10 @@ export enum RiskLevel {
 export interface FilterConfig {
   text?: string;
   status?: CustomerStatus[];
+  /**
+   * @deprecated Use businessType instead. Will be removed in future version.
+   * @since 2.1.6 - Replaced by businessType field
+   */
   industry?: string[];
   location?: string[];
   revenueRange?: { min: number | null; max: number | null } | null;

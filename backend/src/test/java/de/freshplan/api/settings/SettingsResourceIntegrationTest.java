@@ -112,19 +112,28 @@ class SettingsResourceIntegrationTest {
   @TestSecurity(user = "admin", roles = "admin")
   @DisplayName("Should return 304 Not Modified for matching ETag")
   void testConditionalGetWithEtag() {
-    // Given - Create a setting via REST API and get ETag
+    // Given - Create a setting via REST API
     JsonObject value = new JsonObject().put("test", "value");
     JsonObject request =
         new JsonObject().put("scope", "GLOBAL").put("key", TEST_KEY).put("value", value);
 
+    given()
+        .contentType(ContentType.JSON)
+        .body(request.encode())
+        .when()
+        .post()
+        .then()
+        .statusCode(201);
+
+    // Get the FINAL ETag after flush by fetching the setting
     String etag =
         given()
-            .contentType(ContentType.JSON)
-            .body(request.encode())
+            .queryParam("scope", "GLOBAL")
+            .queryParam("key", TEST_KEY)
             .when()
-            .post()
+            .get()
             .then()
-            .statusCode(201)
+            .statusCode(200)
             .extract()
             .header("ETag");
 
@@ -152,7 +161,19 @@ class SettingsResourceIntegrationTest {
             SettingsScope.GLOBAL, null, TEST_KEY, initialValue, null, "test-user");
 
     String settingId = setting.id.toString();
-    String originalEtag = setting.etag;
+
+    // Re-fetch to get the FINAL ETag after flush via REST API
+    String originalEtag =
+        given()
+            .queryParam("scope", "GLOBAL")
+            .queryParam("key", TEST_KEY)
+            .when()
+            .get()
+            .then()
+            .statusCode(200)
+            .extract()
+            .header("ETag");
+
     JsonObject updatedValue = new JsonObject().put("version", 2);
     JsonObject updateRequest = new JsonObject().put("value", updatedValue);
 

@@ -4,12 +4,21 @@
  * Branchenspezifische Vorlagen für die schnelle Einrichtung von Standorten.
  * Ermöglicht es, typische Standorte einer Branche mit einem Klick hinzuzufügen.
  *
+ * @deprecated This module uses legacy lowercase industry keys. Will be migrated to BusinessType in future version.
+ * @since 2.1.6 - Marked for migration to uppercase BusinessType values
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/components/steps/DetailedLocationsStep.tsx
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-location-management.md
  */
 
 import { DetailedLocationCategory } from '../types/location.types';
 import { IndustryType } from '../types/customer.types';
+
+/**
+ * @deprecated IndustryType uses legacy lowercase keys. Use BusinessType (uppercase) instead.
+ * This type alias is kept for backward compatibility until full migration.
+ */
+type LegacyIndustryKey = IndustryType;
 
 /**
  * Template for a location that can be quickly added
@@ -28,13 +37,16 @@ export interface LocationTemplate {
 /**
  * Industry-specific templates for quick setup
  *
+ * @deprecated Uses legacy lowercase industry keys. Will be migrated to uppercase BusinessType in future version.
+ * @since 2.1.6 - Marked for migration (HOTEL, KANTINE, GESUNDHEIT instead of hotel, kantine, krankenhaus)
+ *
  * @remarks
  * - Templates sind nach Branche gruppiert
  * - Decken typische Standorte jeder Branche ab
  * - Können vom Benutzer nach dem Import angepasst werden
  * - Neue Branchen können einfach hinzugefügt werden
  */
-export const industryTemplates: Partial<Record<IndustryType, LocationTemplate[]>> = {
+export const industryTemplates: Partial<Record<LegacyIndustryKey, LocationTemplate[]>> = {
   hotel: [
     {
       name: 'Restaurant Haupthaus',
@@ -187,16 +199,26 @@ export const industryTemplates: Partial<Record<IndustryType, LocationTemplate[]>
 
 /**
  * Get templates for a specific industry
+ *
+ * @param industry BusinessType value (uppercase) or legacy industry value (lowercase)
+ * @since 2.1.6 - Updated to handle both uppercase BusinessType and lowercase legacy values
  */
-export const getIndustryTemplates = (industry: IndustryType): LocationTemplate[] => {
-  return industryTemplates[industry] || [];
+export const getIndustryTemplates = (industry: string): LocationTemplate[] => {
+  // Normalize to lowercase for legacy template lookup
+  const legacyKey = industry.toLowerCase() as LegacyIndustryKey;
+  return industryTemplates[legacyKey] || [];
 };
 
 /**
  * Check if industry has templates available
+ *
+ * @param industry BusinessType value (uppercase) or legacy industry value (lowercase)
+ * @since 2.1.6 - Updated to handle both uppercase BusinessType and lowercase legacy values
  */
-export const hasIndustryTemplates = (industry: IndustryType): boolean => {
-  return Boolean(industryTemplates[industry]?.length);
+export const hasIndustryTemplates = (industry: string): boolean => {
+  // Normalize to lowercase for legacy template lookup
+  const legacyKey = industry.toLowerCase() as LegacyIndustryKey;
+  return Boolean(industryTemplates[legacyKey]?.length);
 };
 
 /**

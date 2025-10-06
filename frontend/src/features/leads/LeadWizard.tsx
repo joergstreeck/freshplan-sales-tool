@@ -21,11 +21,15 @@ import {
   Box,
   Stack,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import type { LeadFormStage2, Problem, BusinessType, LeadSource, FirstContact } from './types';
 import { createLead } from './api';
+import { useBusinessTypes } from './hooks/useBusinessTypes';
+import { useLeadSources } from './hooks/useLeadSources';
+import { useKitchenSizes } from './hooks/useKitchenSizes';
 
 interface LeadWizardProps {
   open: boolean;
@@ -39,6 +43,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const [activeStep, setActiveStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Problem | null>(null);
+
+  // Sprint 2.1.6: Fetch enum values from backend (Single Source of Truth - NO hardcoding)
+  const { data: businessTypes, isLoading: isLoadingBusinessTypes } = useBusinessTypes();
+  const { data: leadSources, isLoading: isLoadingLeadSources } = useLeadSources();
+  const { data: kitchenSizes, isLoading: isLoadingKitchenSizes } = useKitchenSizes();
 
   // Form State (Progressive Profiling - Sprint 2.1.5)
   const [formData, setFormData] = useState<
@@ -324,19 +333,26 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   setFormData({ ...formData, businessType: e.target.value as BusinessType })
                 }
                 label={t('wizard.stage0.businessType')}
+                disabled={isLoadingBusinessTypes}
               >
                 <MenuItem value="">
                   <em>{t('wizard.stage0.businessTypePlaceholder')}</em>
                 </MenuItem>
-                <MenuItem value="restaurant">{t('wizard.businessTypes.restaurant')}</MenuItem>
-                <MenuItem value="hotel">{t('wizard.businessTypes.hotel')}</MenuItem>
-                <MenuItem value="catering">{t('wizard.businessTypes.catering')}</MenuItem>
-                <MenuItem value="canteen">{t('wizard.businessTypes.canteen')}</MenuItem>
-                <MenuItem value="other">{t('wizard.businessTypes.other')}</MenuItem>
+                {isLoadingBusinessTypes ? (
+                  <MenuItem value="" disabled>
+                    <CircularProgress size={20} />
+                  </MenuItem>
+                ) : (
+                  businessTypes?.map(type => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.label}
+                    </MenuItem>
+                  ))
+                )}
               </Select>
             </FormControl>
 
-            {/* Sprint 2.1.5: Lead Source */}
+            {/* Sprint 2.1.5: Lead Source - Dynamically loaded from backend */}
             <FormControl fullWidth margin="dense" sx={{ mt: 2 }}>
               <InputLabel id="source-label">{t('wizard.stage0.source')} *</InputLabel>
               <Select
@@ -353,16 +369,22 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 }}
                 label={`${t('wizard.stage0.source')} *`}
                 required
+                disabled={isLoadingLeadSources}
               >
                 <MenuItem value="">
                   <em>{t('wizard.stage0.sourcePlaceholder')}</em>
                 </MenuItem>
-                <MenuItem value="MESSE">{t('wizard.sources.messe')}</MenuItem>
-                <MenuItem value="EMPFEHLUNG">{t('wizard.sources.empfehlung')}</MenuItem>
-                <MenuItem value="TELEFON">{t('wizard.sources.telefon')}</MenuItem>
-                <MenuItem value="WEB_FORMULAR">{t('wizard.sources.webFormular')}</MenuItem>
-                <MenuItem value="PARTNER">{t('wizard.sources.partner')}</MenuItem>
-                <MenuItem value="SONSTIGE">{t('wizard.sources.sonstige')}</MenuItem>
+                {isLoadingLeadSources ? (
+                  <MenuItem value="" disabled>
+                    <CircularProgress size={20} />
+                  </MenuItem>
+                ) : (
+                  leadSources?.map(source => (
+                    <MenuItem key={source.value} value={source.value}>
+                      {source.label}
+                    </MenuItem>
+                  ))
+                )}
               </Select>
             </FormControl>
 
@@ -670,13 +692,22 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                     })
                   }
                   label={t('wizard.stage2.kitchenSize')}
+                  disabled={isLoadingKitchenSizes}
                 >
                   <MenuItem value="">
                     <em>{t('wizard.stage2.kitchenSizePlaceholder')}</em>
                   </MenuItem>
-                  <MenuItem value="small">{t('wizard.kitchenSizes.small')}</MenuItem>
-                  <MenuItem value="medium">{t('wizard.kitchenSizes.medium')}</MenuItem>
-                  <MenuItem value="large">{t('wizard.kitchenSizes.large')}</MenuItem>
+                  {isLoadingKitchenSizes ? (
+                    <MenuItem value="" disabled>
+                      <CircularProgress size={20} />
+                    </MenuItem>
+                  ) : (
+                    kitchenSizes?.map(size => (
+                      <MenuItem key={size.value} value={size.value}>
+                        {size.label}
+                      </MenuItem>
+                    ))
+                  )}
                 </Select>
               </FormControl>
             </Stack>

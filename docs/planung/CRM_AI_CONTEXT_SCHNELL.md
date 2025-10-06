@@ -1,11 +1,11 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-01
+**📅 Letzte Aktualisierung:** 2025-10-06
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
-> **🏗️ Architecture Flags (Stand: 2025-10-01)**
+> **🏗️ Architecture Flags (Stand: 2025-10-06)**
 > - **CQRS Light aktiv** (`features.cqrs.enabled=true`), **eine Datenbank**, getrennte Command/Query-Services
 > - **Events:** **PostgreSQL LISTEN/NOTIFY mit Envelope v2** (siehe Event-Backbone unten)
 > - **Security:** Territory = **RLS-Datenraum** (DE/CH/AT), **Lead-Protection = userbasiertes Ownership**
@@ -14,6 +14,7 @@
 > - **Idempotency Service operational** (24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT)
 > - **CI optimiert:** 24min → 7min (70% schneller) - JUnit parallel (Surefire gesteuert), ValidatorFactory @BeforeAll
 > - **Migrations-Hygiene:** Prod-Migrations <V8000, **V10xxx** = Test/Dev-only (z.B. V10012 Indizes ohne CONCURRENTLY)
+> - **Bestandsleads-Migration operational** (Sprint 2.1.6 Phase 2): Batch-Import mit Idempotency, Backdating mit kumulativer Stop-the-Clock-Pause, Lead→Customer Conversion mit Archivierung (KEINE Hard-Deletes)
 > - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
 
 ---
@@ -196,13 +197,15 @@ MODULE-STRUKTUR (Business-Value-orientiert):
 
 🔍 MODUL 02 - NEUKUNDENGEWINNUNG (Lead-Management):
   Purpose: Lead-Capture + Multi-Contact-Workflows + Sample-Management
-  Status: ✅ 85% IMPLEMENTED - Lead-Management MVP + Frontend + Deduplication
-  PRs: #103, #105, #110, #111 (Integration), #122 (Frontend), #123 (Dedup/Quality)
+  Status: ✅ 90% IMPLEMENTED - Lead-Management MVP + Frontend + Deduplication + BusinessType Harmonization
+  PRs: #103, #105, #110, #111 (Integration), #122 (Frontend), #123 (Dedup/Quality), #131 (LeadStage Enum)
   Delivered:
     - Frontend MVP: Lead List + Create Dialog · Feature-Flag VITE_FEATURE_LEADGEN
     - Lead-Normalisierung: email lowercase · phone E.164 · company ohne Rechtsform-Suffixe
     - Idempotenz: 24h TTL · SHA-256 Hashing · atomic Upsert (ON CONFLICT)
     - Production Patterns: Security (23 Tests), Performance (P95 <7ms), Event (AFTER_COMMIT)
+    - BusinessType Harmonization (Sprint 2.1.6 Phase 2): Lead + Customer unified · V263/V264 Migrations · Single Source of Truth Pattern (useBusinessTypes/useLeadSources/useKitchenSizes hooks)
+    - Bestandsleads-Migration (Sprint 2.1.6 Phase 2): Batch-Import · Backdating · Lead→Customer Conversion
   Pending (Sprint 2.1.5):
     - Lead Protection: 6 Monate Basisschutz + 60-Tage-Aktivitätsstandard + 10-Tage Nachfrist (Stop-the-Clock)
     - Progressive Profiling: Stufe 0 (Vormerkung), Stufe 1 (Registrierung), Stufe 2 (Qualifiziert)
@@ -389,6 +392,54 @@ Implementation-Details:
   Channels: dashboard_updates, cross_module_events, settings_invalidated
   Performance SLO: listen_notify_lag_ms < 10000
 ```
+
+---
+
+## 🎯 **Sprint 2.1.6 Phase 2 - Results (Bestandsleads-Migration & Admin Features & BusinessType Harmonization)**
+
+**Status:** ✅ COMPLETE (Commits 01819eb, ce9206a - Branch: feature/mod02-sprint-2.1.6-admin-apis)
+
+**Kernfeatures implementiert:**
+- **LeadImportService (297 LOC):** Batch-Import bis 1000 Leads · Dry-Run Mode · SHA-256 Idempotency · Duplikaten-Check mit isCanonical=false
+- **LeadBackdatingService (107 LOC):** Historisches registeredAt setzen · Deadline-Neuberechnung (6M Protection + 60T Progress) · Stop-the-Clock Integration
+- **LeadConvertService (204 LOC):** Lead → Customer + Location + Address + Contact (vollständige Field Harmonization) · Java Locale Country Mapping (200+ Länder)
+- **REST APIs:** POST /api/admin/migration/leads/import (Admin-only) · PUT /api/leads/{id}/registered-at (Admin/Manager) · POST /api/leads/{id}/convert (All roles)
+- **DTOs:** 6 neue Request/Response-Paire für Import/Backdating/Convert
+- **DB Migrations:** V261 (Customer.originalLeadId), V263 (Lead.businessType), V264 (Customer.businessType + Data Migration)
+- **BusinessType Harmonization (Best Practice 100%):**
+  - Shared BusinessType Enum: 9 unified values (RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
+  - Single Source of Truth: GET /api/enums/business-types → useBusinessTypes() hook
+  - Frontend Harmonization: LeadWizard + CustomerDataStep use identical pattern
+  - Field Catalog Migration: industry → businessType with fieldType: "enum"
+  - EnumField Component: Generic dynamic enum rendering
+  - Backward Compatibility: Auto-sync setters between industry ↔ businessType
+  - Industry → BusinessType Mapping: All 9 values migrated (V264)
+  - All Hardcoding Eliminated: businessType, leadSource, kitchenSize (3 hooks)
+
+**Migrations deployed:**
+- **V261:** Add customer.original_lead_id (BIGINT NULL, Soft Reference, Partial Index)
+- **V263:** Add leads.business_type + CHECK constraint (9 values)
+- **V264:** Add customers.business_type + Data Migration (Industry → BusinessType) + CHECK constraint
+
+**Tests & Qualität:**
+- 33 Tests (100% passing): Import (14), Backdating (13), Convert (6)
+- Backend compiles successfully
+- Frontend TypeScript compiles without errors
+- Vite dev server runs without errors
+- All enum endpoints accessible (business-types, lead-sources, kitchen-sizes)
+
+**Business Value:**
+- **500 Leads in 5 Minuten** importieren (statt 3 Tage manuell)
+- **Historische Daten korrekt** (registeredAt = März 2024)
+- **Schutzfristen automatisch** neu berechnet
+- **Lead → Kunde Conversion** mit ALLEN Daten (Adresse, Kontakt, Historie)
+- **Single Source of Truth:** Add new business types in ONE place (BusinessType.java) → automatic propagation to all forms
+
+**Referenzen:**
+- [TRIGGER_SPRINT_2_1_6.md](TRIGGER_SPRINT_2_1_6.md)
+- [HARMONIZATION_COMPLETE.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/HARMONIZATION_COMPLETE.md)
+- [Sprint-Map Modul 02](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
+- Pending: Phase 3 (Nightly Jobs), Phase 4 (Frontend UI + Excel Upload), Phase 5 (Accessibility)
 
 ---
 

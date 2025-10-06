@@ -1,27 +1,38 @@
 ---
 sprint_id: "2.1.7"
-title: "Lead Team Management & Test Infrastructure Overhaul"
+title: "Lead Team Management & Test Infrastructure & Code Quality"
 doc_type: "konzept"
 status: "planned"
 owner: "team/leads-backend"
 date_start: "2025-10-19"
 date_end: "2025-10-25"
 modules: ["02_neukundengewinnung", "00_infrastruktur"]
+tracks:
+  - track: "Track 1"
+    name: "Business Features (verschoben aus 2.1.6)"
+    scope: "Lead-Transfer, Fuzzy-Matching, RLS, Team Management"
+  - track: "Track 2"
+    name: "Test Infrastructure (STRATEGISCH)"
+    scope: "CRM Szenario-Builder, Faker-Integration, TestDataFactories"
+  - track: "Track 3"
+    name: "Code Quality (aus PR #133 Review)"
+    scope: "Issue #135 (Name Parsing), EnumResource Refactoring"
+    issues: ["#135"]
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
   - "features-neu/02_neukundengewinnung/shared/adr/ADR-003-rls-leads-row-level-security.md"
   - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
   - "grundlagen/TESTING_GUIDE.md"
-pr_refs: []
-updated: "2025-10-05"
+pr_refs: ["#133"]
+updated: "2025-10-06"
 ---
 
 # Sprint 2.1.7 – Lead Team Management & Test Infrastructure Overhaul
 
 **📍 Navigation:** Home → Planung → Sprint 2.1.7
 
-> **🎯 SPRINT-FOKUS: ZWEI PARALLELE TRACKS**
+> **🎯 SPRINT-FOKUS: DREI PARALLELE TRACKS**
 >
 > **Track 1 - Business Features (verschoben aus 2.1.6):**
 > - Lead-Transfer Workflow (Team-basiert)
@@ -34,8 +45,15 @@ updated: "2025-10-05"
 > - Lead-spezifische TestDataFactories
 > - Customer-Journey Test-Fixtures
 >
+> **Track 3 - Code Quality (NEU - aus PR #133 Review):**
+> - **Issue #135:** Name Parsing Robustness (LeadConvertService)
+> - EnumResource Refactoring (LeadSource + KitchenSize als Enums)
+> - DTO Kapselung (private fields + getters)
+>
 > **⚠️ WICHTIG:** Track 2 ist NICHT "nur Tech-Debt" - es ist **Investment in Qualität & Velocity**!
 > Ohne professionelle Testdaten können wir Sprint 2.2 (Kundenmanagement) nicht effizient umsetzen.
+>
+> **⚠️ WICHTIG:** Track 3 adressiert Gemini/Copilot Code Review Feedback (PR #133 - Medium Priority).
 
 ## 🔧 GIT WORKFLOW (KRITISCH!)
 
@@ -843,8 +861,134 @@ public class LeadDeduplicationService {
 - [Issue #130](https://github.com/joergstreeck/freshplan-sales-tool/issues/130) - TestDataBuilder Refactoring (Basis-Problem)
 - TestDataBuilder.java: `scenario()` Methode (Vorbild)
 
+**Track 3 - Code Quality:**
+- [PR #133](https://github.com/joergstreeck/freshplan-sales-tool/pull/133) - BusinessType Harmonization & Admin-APIs
+- Copilot Code Review (11 Comments) - PR #133 Feedback
+- Gemini Code Review (6 Comments, CRITICAL: Idempotenz) - PR #133 Feedback
+- **Issue #135:** Name Parsing Robustness (LeadConvertService.java Zeile 129-140)
+- EnumResource.java: LeadSource + KitchenSize als Enums (konsistent mit BusinessType)
+
 ---
 
-**Erstellt:** 2025-10-05
+## 📋 TRACK 3: CODE QUALITY (NEU - aus PR #133 Review)
+
+**Quelle:** Copilot/Gemini Code Review Feedback (PR #133)
+**Priorität:** Medium (verbessert Datenqualität + Architektur-Konsistenz)
+**Aufwand:** 5h (0.6 Tage)
+
+### Issue #135: Name Parsing Robustness
+
+**Problem:**
+```java
+// LeadConvertService.java (Zeile 134)
+// ❌ Aktuell: Zu simpel - versagt bei komplexen Namen
+String[] nameParts = lead.contactPerson.trim().split("\\s+", 2);
+contact.setFirstName(nameParts[0]); // "Dr." → First Name (falsch!)
+contact.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+```
+
+**Fehlschlägt bei:**
+- "Dr. Max von Mustermann" → firstName="Dr.", lastName="Max von Mustermann"
+- "Maria Anna Schmidt" → firstName="Maria", lastName="Anna Schmidt"
+- "Prof. Dr. Meyer-Schmidt" → firstName="Prof.", lastName="Dr. Meyer-Schmidt"
+
+**Lösung Option A: Name Parsing Library (EMPFOHLEN)**
+```java
+import org.apache.commons.lang3.text.HumanNameParser; // oder ähnlich
+
+private void parseContactName(String fullName, CustomerContact contact) {
+  HumanName parsed = HumanNameParser.parse(fullName);
+  contact.setFirstName(parsed.getGivenName());
+  contact.setLastName(parsed.getFamilyName());
+  contact.setTitle(parsed.getTitle()); // Dr., Prof., etc.
+}
+```
+
+**Lösung Option B: Frontend-Lösung (ALTERNATIVE)**
+Falls Library zu komplex → Getrennte Felder in LeadWizard.tsx:
+```typescript
+<TextField label="Titel" name="contact.title" />
+<TextField label="Vorname *" name="contact.firstName" required />
+<TextField label="Nachname *" name="contact.lastName" required />
+```
+→ 0 Backend-Aufwand, bessere Datenqualität, bessere UX
+
+**Aufwand:**
+- Option A (Library): 3h (Recherche + Implementation + Tests)
+- Option B (Frontend): 1h (UI-Änderung in LeadWizard.tsx)
+
+---
+
+### EnumResource Refactoring: LeadSource + KitchenSize als Enums
+
+**Problem:**
+```java
+// EnumResource.java - Inkonsistent!
+// ✅ BusinessType: Dynamic Enum (GOOD)
+public List<EnumValue> getBusinessTypes() {
+  return Arrays.stream(BusinessType.values())
+    .map(type -> new EnumValue(type.name(), type.getDisplayName()))
+    .toList();
+}
+
+// ❌ LeadSource: Hardcoded List (BAD)
+public List<EnumValue> getLeadSources() {
+  return List.of(
+    new EnumValue("MESSE", "Messe"),
+    new EnumValue("EMPFEHLUNG", "Empfehlung"),
+    // ... hardcoded!
+  );
+}
+```
+
+**Lösung:**
+```java
+// 1. LeadSource.java (NEW Enum)
+public enum LeadSource {
+  MESSE("Messe"),
+  EMPFEHLUNG("Empfehlung"),
+  TELEFON("Telefon"),
+  WEB_FORMULAR("Web-Formular"),
+  PARTNER("Partner"),
+  SONSTIGE("Sonstige");
+
+  private final String displayName;
+  LeadSource(String displayName) { this.displayName = displayName; }
+  public String getDisplayName() { return displayName; }
+}
+
+// 2. EnumResource.java (REFACTORED)
+public List<EnumValue> getLeadSources() {
+  return Arrays.stream(LeadSource.values())
+    .map(source -> new EnumValue(source.name(), source.getDisplayName()))
+    .toList();
+}
+```
+
+**Benefits:**
+- ✅ Konsistent mit BusinessType Pattern
+- ✅ Type-Safe (keine Strings in Code)
+- ✅ Erweiterbar ohne Code-Änderungen
+
+**Aufwand:** 2h (LeadSource + KitchenSize Enums + Tests)
+
+---
+
+### Track 3 Summary
+
+| Task | Aufwand | Quelle | Priorität |
+|------|---------|--------|-----------|
+| **Issue #135:** Name Parsing | 3h (Library) oder 1h (Frontend) | Gemini Review (HIGH) | Medium |
+| **EnumResource Refactoring** | 2h | Gemini Review (MEDIUM) | Medium |
+| **Total** | 5h (Option A) oder 3h (Option B) | PR #133 Feedback | - |
+
+**Entscheidung:**
+- ✅ Issue #135: **Option B (Frontend-Lösung)** bevorzugt (1h, bessere UX)
+- ✅ EnumResource: Implementieren (2h, Architektur-Konsistenz)
+- **Total Track 3: 3h (0.4 Tage)**
+
+---
+
+**Erstellt:** 2025-10-06 (Track 3 hinzugefügt)
 **Review:** Product Owner ⏳, Tech Lead ⏳
 **Status:** 📅 PLANNED (Start: 19.10.2025)

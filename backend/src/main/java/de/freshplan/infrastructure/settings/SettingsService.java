@@ -83,11 +83,13 @@ public class SettingsService {
       setting.value = value;
       setting.metadata = metadata != null ? metadata : new JsonObject();
       setting.createdBy = userId;
-      // Note: created_at, version, and etag are set by DB triggers
+      setting.version = 1;
       setting.persist();
 
-      // Flush to trigger DB operations and refresh to get generated values
+      // Flush to trigger DB INSERT (ETag generation happens in trigger)
       em.flush();
+
+      // Refresh entity to get DB-generated values (etag, created_at)
       em.refresh(setting);
 
       LOG.infof(
@@ -100,10 +102,12 @@ public class SettingsService {
         setting.metadata = metadata;
       }
       setting.updatedBy = userId;
-      // Note: updated_at, version, and etag are set by DB triggers
+      // Version and ETag are managed by DB trigger (update_settings_etag), not manually
 
-      // Flush to trigger DB operations and refresh to get updated values
+      // Flush to trigger DB updates (version increment and ETag generation happen in trigger)
       em.flush();
+
+      // Refresh entity to get DB-generated values (version, etag, updated_at)
       em.refresh(setting);
 
       LOG.infof(
@@ -142,11 +146,15 @@ public class SettingsService {
     setting.value = value != null ? value : new JsonObject();
     setting.metadata = metadata != null ? metadata : new JsonObject();
     setting.createdBy = userId;
-    // Note: created_at, version, and etag are set by DB triggers
+    setting.version = 1;
 
     try {
       setting.persist();
+
+      // Flush to trigger DB INSERT (ETag generation happens in trigger)
       em.flush();
+
+      // Refresh entity to get DB-generated values (etag, created_at)
       em.refresh(setting);
 
       LOG.infof(
@@ -204,10 +212,12 @@ public class SettingsService {
       setting.metadata = metadata;
     }
     setting.updatedBy = userId;
-    // Note: updated_at, version, and etag are set by DB triggers
+    // Version and ETag are managed by DB trigger (update_settings_etag), not manually
 
-    // Flush to trigger DB operations and refresh to get updated values
+    // Flush to trigger DB updates (version increment and ETag generation happen in trigger)
     em.flush();
+
+    // Refresh entity to get DB-generated values (version, etag, updated_at)
     em.refresh(setting);
 
     LOG.infof(
@@ -282,4 +292,35 @@ public class SettingsService {
 
   /** Cache statistics for monitoring. */
   public record CacheStats(double hitRate, double availability, long avgResponseTimeMs) {}
+
+  /**
+   * Generate ETag for a setting. Replicates the DB trigger logic in Java for test compatibility.
+   */
+  private String generateEtag(Setting setting) {
+    // MD5 hash of scope, scopeId, key, value, version
+    String input =
+        (setting.scope != null ? setting.scope.toString() : "")
+            + ":"
+            + (setting.scopeId != null ? setting.scopeId : "")
+            + ":"
+            + (setting.key != null ? setting.key : "")
+            + ":"
+            + (setting.value != null ? setting.value.toString() : "")
+            + ":"
+            + (setting.version != null ? setting.version.toString() : "1");
+
+    try {
+      java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+      byte[] digest = md.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      StringBuilder sb = new StringBuilder();
+      for (byte b : digest) {
+        sb.append(String.format("%02x", b));
+      }
+      return sb.toString();
+    } catch (java.security.NoSuchAlgorithmException e) {
+      // MD5 is a standard algorithm - this should never happen
+      // If it does, it's a critical JVM configuration issue
+      throw new RuntimeException("Failed to generate ETag: MD5 algorithm not available", e);
+    }
+  }
 }

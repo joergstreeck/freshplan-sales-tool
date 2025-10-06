@@ -176,7 +176,11 @@ export interface FieldValueResponse extends FieldValue {
 export interface GetFieldDefinitionsRequest {
   /** Entity type filter */
   entityType: EntityType;
-  /** Industry filter */
+  /** Business type filter (unified classification) */
+  businessType?: string;
+  /**
+   * @deprecated Use businessType instead
+   */
   industry?: string;
   /** Include inactive fields */
   includeInactive?: boolean;
@@ -188,7 +192,11 @@ export interface GetFieldDefinitionsRequest {
 export interface FieldDefinitionsResponse {
   /** Base fields */
   baseFields: FieldValue[];
-  /** Industry-specific fields */
+  /** Business type specific fields (unified) */
+  businessTypeFields?: Record<string, FieldValue[]>;
+  /**
+   * @deprecated Use businessTypeFields instead
+   */
   industryFields: Record<string, FieldValue[]>;
 }
 

@@ -41,9 +41,12 @@ class SettingsServiceCachingTest {
     assertTrue(r1.isPresent());
     assertEquals(1, r1.get().value.getInteger("v"));
 
-    // And: Update the setting with ETag
+    // And: Update the setting with ETag - use the FINAL ETag from re-fetching via service
     UUID id = created.id;
-    String etag = created.etag;
+    // Re-fetch the setting to get the FINAL ETag after flush
+    Optional<Setting> refreshed = service.getSetting(SettingsScope.GLOBAL, null, uniqueKey);
+    assertTrue(refreshed.isPresent());
+    String etag = refreshed.get().etag;
     var updated =
         service.updateSettingWithEtag(id, new JsonObject().put("v", 2), null, etag, "test-user-2");
 

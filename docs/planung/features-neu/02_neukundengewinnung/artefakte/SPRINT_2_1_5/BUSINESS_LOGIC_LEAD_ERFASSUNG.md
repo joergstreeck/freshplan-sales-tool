@@ -47,8 +47,9 @@ updated: "2025-10-04"
 
 **Pflichtfelder:**
 - Firmenname (min. 2 Zeichen)
-- **Quelle (LeadSource):** MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE
+- **Quelle (LeadSource):** Dynamisch vom Backend via GET /api/enums/lead-sources (Sprint 2.1.6: 6 Werte)
   - **Definition:** Herkunft des Leads (Pflicht in Karte 0)
+  - **Single Source of Truth:** Backend BusinessType Enum → REST API → Frontend Hook
   - **Zulässige Werte:**
     - MESSE: Lead von Messe/Event
     - EMPFEHLUNG: Lead durch Referral
@@ -58,7 +59,10 @@ updated: "2025-10-04"
     - SONSTIGE: Andere Quellen
 
 **Optionale Felder:**
-- Stadt, PLZ, Branche
+- Stadt, PLZ
+- **Branche (BusinessType):** Dynamisch vom Backend via GET /api/enums/business-types (Sprint 2.1.6: 9 Werte)
+  - **Single Source of Truth Pattern:** Siehe HARMONIZATION_COMPLETE.md
+  - **Zulässige Werte:** RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES
 - **Notizen/Quelle:** Freies Textfeld für Kontext (z.B. "Empfehlung von Herrn Schulz", "Partner-Liste Nr. 47") - **KEIN Einfluss auf Schutz**
 - **Erstkontakt-Dokumentation:** Kanal, Datum, Gesprächsnotiz (≥10 Zeichen) - **Aktiviert Schutz**
 
@@ -115,7 +119,9 @@ updated: "2025-10-04"
 **Zweck:** Geschäftliche Details nachtragen
 
 **Alle Felder optional:**
-- Geschätztes Volumen, Küchengröße, Mitarbeiterzahl, Website, Branche (Details)
+- Geschätztes Volumen
+- **Küchengröße (KitchenSize):** Dynamisch vom Backend via GET /api/enums/kitchen-sizes (Sprint 2.1.6: 3 Werte - small, medium, large)
+- Mitarbeiterzahl, Website
 
 **Button:** `[Qualifizierung speichern]` → POST /api/leads mit stage=2, schließt Dialog
 
@@ -487,6 +493,154 @@ LeadsPage.tsx
 
 ---
 
+## 11. Bestandsleads-Migration & Admin-Features (Sprint 2.1.6 Phase 2)
+
+### 11.1 Batch-Import (LeadImportService)
+
+**Zweck:** Massenmigration von Altdaten aus Excel/CSV ins CRM
+
+**API:** `POST /api/admin/migration/leads/import`
+**RBAC:** Admin-only
+
+**Features:**
+- **Batch-Verarbeitung:** Bis zu 1000 Leads pro Request
+- **Dry-Run Mode:** Test-Import ohne DB-Änderung (`dryRun: true`)
+- **Idempotency:** SHA-256 Request-Hash verhindert doppelte Imports
+- **Duplikaten-Handling:**
+  - Check: `companyName` + `city` (exact match)
+  - Warnung zurückgeben, aber **trotzdem importieren**
+  - Import mit `isCanonical=false` (vermeidet Unique Constraint Violation)
+- **Validation:**
+  - `registeredAt` nicht in Zukunft
+  - Alle Activities müssen `countsAsProgress` explizit setzen
+
+**Daten-Mapping:**
+```java
+Lead lead = new Lead();
+lead.registeredAt = importData.registeredAt; // Historisches Datum!
+lead.registeredAtSource = "import"; // lowercase - DB Constraint
+lead.registeredAtOverrideReason = importData.importReason;
+lead.protectionStartAt = importData.registeredAt;
+lead.lastActivityAt = importData.registeredAt;
+```
+
+### 11.2 Backdating (LeadBackdatingService)
+
+**Zweck:** Registrierungsdatum nachträglich korrigieren + Fristen neu berechnen
+
+**API:** `PUT /api/leads/{id}/registered-at`
+**RBAC:** Admin + Manager
+
+**Business-Logik:**
+```java
+// 1. Update registeredAt
+lead.registeredAt = request.registeredAt;
+lead.registeredAtSource = "backdated"; // lowercase
+lead.registeredAtSetBy = currentUserId;
+lead.registeredAtOverrideReason = request.reason; // Audit PFLICHT
+
+// 2. Recalculate Deadlines
+lead.protectionStartAt = request.registeredAt;
+LocalDateTime protectionUntil = request.registeredAt.plusMonths(6);
+LocalDateTime baseProgressDeadline = request.registeredAt.plusDays(60);
+
+// 3. Stop-the-Clock Integration
+if (lead.clockStoppedAt != null) {
+  long pauseDays = Duration.between(lead.clockStoppedAt, LocalDateTime.now()).toDays();
+  lead.progressDeadline = baseProgressDeadline.plusDays(pauseDays);
+}
+```
+
+**Anwendungsfall:** Bestandsleads von März 2024 heute importiert → Backdating setzt `registeredAt = 2024-03-15` → Protection läuft bis September 2024 (historisch korrekt)
+
+### 11.3 Lead → Customer Conversion (LeadConvertService)
+
+**Zweck:** Interessent automatisch in Kunde umwandeln (mit vollständiger Datenübernahme)
+
+**API:** `POST /api/leads/{id}/convert`
+**RBAC:** All roles (Admin, Manager, User)
+
+**Daten-Harmonisierung (vollständig):**
+
+```java
+// 1. Customer (Hauptentität)
+Customer customer = new Customer();
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.AKTIV);
+customer.setOriginalLeadId(leadId); // V261 Tracking
+customer.persist();
+
+// 2. CustomerLocation (Haupt-Standort)
+CustomerLocation location = new CustomerLocation();
+location.setLocationName(lead.companyName + " - Hauptsitz");
+location.setCategory(LocationCategory.HEADQUARTERS);
+location.setIsMainLocation(true);
+location.persist();
+
+// 3. CustomerAddress (Rechnungsadresse)
+CustomerAddress address = new CustomerAddress();
+address.setAddressType(AddressType.BILLING);
+address.setStreet(lead.street);
+address.setCity(lead.city);
+address.setCountry(mapCountryCode(lead.countryCode)); // DE → DEU via Java Locale
+address.persist();
+
+// 4. CustomerContact (Hauptansprechpartner)
+CustomerContact contact = new CustomerContact();
+String[] nameParts = lead.contactPerson.split("\\s+", 2);
+contact.setFirstName(nameParts[0]);
+contact.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+contact.setEmail(lead.email);
+contact.setPhone(lead.phone);
+contact.setIsPrimary(true);
+contact.persist();
+```
+
+**Country Code Mapping (Smart Engineering):**
+```java
+// Java Locale automatisches ISO-3166-1 alpha-2 → alpha-3 Mapping
+Locale locale = new Locale("", "DE");
+String iso3 = locale.getISO3Country(); // → "DEU"
+// Funktioniert für 200+ Länder, 0 Wartung!
+```
+
+**Keep/Delete Option:**
+- `keepLeadRecord=true`: Lead.status → CONVERTED (Audit-Trail)
+- `keepLeadRecord=false`: Lead hard-deleted (Clean-up)
+
+**Migration V261:**
+```sql
+ALTER TABLE customers ADD COLUMN original_lead_id BIGINT NULL;
+-- SOFT REFERENCE (kein FK!) - erlaubt Lead-Löschung ohne Cascade
+```
+
+---
+
 **📅 Erstellt:** 2025-10-04
-**🔄 Letzte Aktualisierung:** 2025-10-04
+**🔄 Letzte Aktualisierung:** 2025-10-06 (Sprint 2.1.6 Phase 2 Review Fixes ergänzt)
 **✅ Status:** Approved (Production-Ready)
+
+---
+
+## 🔧 Sprint 2.1.6 Phase 2 Review Fixes (2025-10-06)
+
+Nach externem Code-Review wurden 6 Verbesserungen implementiert:
+
+### Fix #1: Duplikate-Handling (Migration-Ausnahme)
+- **MIGRATION-POLICY:** Import erlaubt Duplikate mit `isCanonical=false` (Warnung)
+- **Normale Lead-Erstellung:** Folgt weiterhin RFC 7807 DEDUPE_POLICY (Hard/Soft Collisions)
+- **Admin muss mergen:** Nach Import manuelle Review nötig
+
+### Fix #2 & #4: Stop-the-Clock kumulative Pausenzeit (KRITISCH)
+- **Neues Feld:** `progress_pause_total_seconds` (V262 Migration)
+- **Formel:** `progressDeadline = registeredAt + 60d + (pause_total / 86400)d`
+- **Idempotency:** `import_jobs` Tabelle mit `idempotency_key` Header-Tracking
+
+### Fix #5: RBAC-Rollennamen
+- **Standardisiert:** `ROLE_ADMIN`, `ROLE_SALES_MANAGER` (statt `admin`, `MANAGER`)
+
+### Fix #7: Lead-Archivierung statt Löschung
+- **Lead → Customer:** Lead wird IMMER als `CONVERTED` archiviert
+- **Hard-Delete:** Nur für DSGVO (Pseudonymisierung Job in Phase 3)
+
+---

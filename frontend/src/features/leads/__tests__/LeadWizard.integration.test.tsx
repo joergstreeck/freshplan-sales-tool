@@ -7,20 +7,31 @@ import { ThemeProvider, CssBaseline } from '@mui/material';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { I18nextProvider } from 'react-i18next';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import i18n from '../../../i18n';
 import LeadWizard from '../LeadWizard';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 
-// Test wrapper with theme and i18n
+// Create QueryClient for tests
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: false },
+    mutations: { retry: false },
+  },
+});
+
+// Test wrapper with QueryClient, theme and i18n
 const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <I18nextProvider i18n={i18n}>
-    <ThemeProvider theme={freshfoodzTheme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
-  </I18nextProvider>
+  <QueryClientProvider client={queryClient}>
+    <I18nextProvider i18n={i18n}>
+      <ThemeProvider theme={freshfoodzTheme}>
+        <CssBaseline />
+        {children}
+      </ThemeProvider>
+    </I18nextProvider>
+  </QueryClientProvider>
 );
 
 // Helper function to fill Erstkontakt fields (PFLICHT for MESSE/EMPFEHLUNG/TELEFON)
@@ -37,6 +48,30 @@ async function fillErstkontaktFields(user: ReturnType<typeof userEvent.setup>) {
 
 // MSW Server Setup
 const server = setupServer(
+  // Mock backend enum endpoints (Sprint 2.1.6 - Single Source of Truth)
+  http.get('http://localhost:8080/api/enums/business-types', () => {
+    return HttpResponse.json([
+      { value: 'RESTAURANT', label: 'Restaurant / Gaststätte' },
+      { value: 'HOTEL', label: 'Hotel / Beherbergung' },
+      { value: 'CATERING', label: 'Catering / Event' },
+      { value: 'BAKERY', label: 'Bäckerei / Konditorei' },
+    ]);
+  }),
+  http.get('http://localhost:8080/api/enums/lead-sources', () => {
+    return HttpResponse.json([
+      { value: 'MESSE', label: 'Messe / Event' },
+      { value: 'EMPFEHLUNG', label: 'Empfehlung / Partner' },
+      { value: 'TELEFON', label: 'Telefon / Kaltakquise' },
+      { value: 'WEB_FORMULAR', label: 'Web-Formular' },
+    ]);
+  }),
+  http.get('http://localhost:8080/api/enums/kitchen-sizes', () => {
+    return HttpResponse.json([
+      { value: 'small', label: 'Klein (< 20 Essen/Tag)' },
+      { value: 'medium', label: 'Mittel (20-100 Essen/Tag)' },
+      { value: 'large', label: 'Groß (> 100 Essen/Tag)' },
+    ]);
+  }),
   // Default successful lead creation handler
   http.post('http://localhost:8080/api/leads', async ({ request }) => {
     const payload = (await request.json()) as {
@@ -97,7 +132,10 @@ beforeAll(() => {
   // Force German language for tests
   i18n.changeLanguage('de');
 });
-afterEach(() => server.resetHandlers());
+afterEach(() => {
+  server.resetHandlers();
+  queryClient.clear(); // Clear query cache between tests
+});
 afterAll(() => server.close());
 
 describe('LeadWizard - Progressive Profiling Integration Tests', () => {

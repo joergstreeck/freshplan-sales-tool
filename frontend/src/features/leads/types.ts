@@ -5,7 +5,18 @@ export type LeadStage = 0 | 1 | 2;
 
 export type LeadStatus = 'REGISTERED' | 'ACTIVE' | 'QUALIFIED' | 'CONVERTED' | 'LOST' | 'DELETED';
 
-export type BusinessType = 'restaurant' | 'hotel' | 'catering' | 'canteen' | 'other';
+// Sprint 2.1.6: Harmonized with Customer.industry (9 values instead of 5)
+// Values fetched from GET /api/enums/business-types (no hardcoding)
+export type BusinessType =
+  | 'RESTAURANT'
+  | 'HOTEL'
+  | 'CATERING'
+  | 'KANTINE'
+  | 'GROSSHANDEL'
+  | 'LEH'
+  | 'BILDUNG'
+  | 'GESUNDHEIT'
+  | 'SONSTIGES';
 
 export type Territory = {
   id: string;

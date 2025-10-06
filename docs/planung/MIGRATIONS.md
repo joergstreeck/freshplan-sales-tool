@@ -178,6 +178,13 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V255** | Leads Protection Basics & Stage | 2.1.5 | ✅ Deployed | @joergstreeck | #124 | ✅ Yes | 🟢 Low | None | FP-235 Protection |
 | **V256** | Lead Activities Augment | 2.1.5 | ✅ Deployed | @joergstreeck | #124 | ✅ Yes | 🟢 Low | None | FP-235 Activities |
 | **V257** | Lead Progress Helpers & Triggers | 2.1.5 | ✅ Deployed | @joergstreeck | #124 | ✅ Yes | 🟢 Low | None | FP-235 Triggers |
+| **V258** | *(SKIPPED - Number reserved but not used)* | - | ⏭️ Skipped | - | - | - | - | - | Migration number gap |
+| **V259** | Remove leads company_city unique constraint | 2.1.5 | ✅ Deployed | @joergstreeck | #129 | ✅ Yes | 🟢 Low | None | Soft Collision Policy |
+| **V260** | Add Sprint 2.1.5 Activity Types | 2.1.5 | ✅ Deployed | @joergstreeck | #130 | ✅ Yes | 🟢 Low | None | Progressive Profiling Types |
+| **V261** | Add customer original_lead_id | 2.1.6 | ✅ Deployed | @joergstreeck | #133 | ✅ Yes | 🟢 Low | None | Lead → Customer Tracking |
+| **V262** | Stop-the-Clock Cumulative Pause & Idempotency Infrastructure | 2.1.6 | ✅ Deployed | @joergstreeck | #133 | ✅ Yes | 🟢 Low | None | Phase 2 Review Fix #4 + #2 |
+| **V263** | BusinessType Harmonization & CHECK Constraint (Lead) | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Lead: industry→businessType + CHECK |
+| **V264** | Customer.businessType + Data Migration | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Customer: Industry→BusinessType + Sync |
 
 ---
 
@@ -255,6 +262,22 @@ V255 (Protection Felder + stage)
 V256 (Lead Activities Augmentation)
   ↓
 V257 (DB Functions + Triggers)
+```
+
+### Sprint 2.1.6 (Admin APIs & BusinessType Harmonization)
+```
+V261 (Customer.originalLeadId)
+  - Lead → Customer conversion tracking
+  - Soft reference (no FK constraint)
+  ↓
+V262 (Stop-the-Clock Cumulative Pause + Idempotency Infrastructure)
+  - progress_pause_total_seconds (BIGINT)
+  - import_jobs table (Idempotency-Key Tracking)
+  ↓
+V263 (BusinessType Harmonization)
+  - Migrate lowercase → uppercase (restaurant → RESTAURANT, etc.)
+  - CHECK constraint: 9 unified values
+  - EnumResource.java: GET /api/enums/business-types
 ```
 
 ---
@@ -343,6 +366,6 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-02 (V257, Sprint 2.1.5 Backend Phase 1)
+**Letzte Aktualisierung:** 2025-10-06 (V264, Sprint 2.1.6 Phase 2 - BusinessType Harmonization)
 
-**Nächste Migration:** V258 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** (ermitteln via `./scripts/get-next-migration.sh`)

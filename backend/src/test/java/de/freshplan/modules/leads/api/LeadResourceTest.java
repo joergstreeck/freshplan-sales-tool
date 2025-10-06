@@ -82,7 +82,7 @@ class LeadResourceTest {
     leadRequest.put("postalCode", "10115");
     leadRequest.put("city", "Berlin");
     leadRequest.put("countryCode", "DE");
-    leadRequest.put("businessType", "Restaurant");
+    leadRequest.put("businessType", "RESTAURANT");
     leadRequest.put("kitchenSize", "medium");
     leadRequest.put("employeeCount", 15);
     leadRequest.put("estimatedVolume", 50000);

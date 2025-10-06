@@ -63,7 +63,15 @@ export interface CustomerListItem {
   status: CustomerStatus;
   /** Resolved from field: companyName */
   companyName: string;
-  /** Resolved from field: industry */
+  /**
+   * Business type classification (unified with Lead entity).
+   * @since 2.1.6 - Replaces industry field
+   */
+  businessType?: string;
+  /**
+   * @deprecated Use businessType instead. Kept for backward compatibility.
+   * @since 1.0
+   */
   industry?: string;
   /** Resolved from field: city */
   city?: string;
@@ -85,7 +93,11 @@ export interface CustomerSearchCriteria {
   searchTerm?: string;
   /** Filter by status */
   status?: CustomerStatus[];
-  /** Filter by industry */
+  /** Filter by business type (unified classification) */
+  businessType?: string[];
+  /**
+   * @deprecated Use businessType instead
+   */
   industry?: string[];
   /** Filter by chain customer */
   isChainCustomer?: boolean;

@@ -126,7 +126,7 @@ updated: "2025-10-02"
 - **Entities:** Lead.java (+3), LeadActivity.java (+6)
 - **Service:** LeadProtectionService (canTransitionStage, calculateProgressDeadline, needsProgressWarning)
 - **Tests:** 24 Unit Tests (0.845s, Pure Mockito, 100% passed)
-- **Dokumentation:** ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_2_1_6
+- **Dokumentation:** ADR-004, DELTA_LOG, CONTRACT_MAPPING, TEST_PLAN, SUMMARY, TRIGGER_2_1_6, BUSINESS_LOGIC_LEAD_ERFASSUNG.md
 
 **✅ Frontend Phase 2 (PR #125 - COMPLETE):**
 **Branch:** `feature/mod02-sprint-2.1.5-frontend-progressive-profiling`
@@ -191,17 +191,18 @@ updated: "2025-10-02"
 - ✅ [DELTA_LOG_2_1_5.md](./artefakte/SPRINT_2_1_5/DELTA_LOG_2_1_5.md) (Implementierungs-Entscheidungen + PR-Strategie)
 - ✅ [CONTRACT_MAPPING.md](./artefakte/SPRINT_2_1_5/CONTRACT_MAPPING.md) (§3.2, §3.3)
 - ✅ [TEST_PLAN.md](./artefakte/SPRINT_2_1_5/TEST_PLAN.md) (Mock-First Strategie)
-- ✅ [PRE_CLAIM_LOGIC.md](./artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md) ⭐ NEU
-- ✅ [DEDUPE_POLICY.md](./artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md) ⭐ NEU
-- ✅ [ACTIVITY_TYPES_PROGRESS_MAPPING.md](./artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md) ⭐ NEU
+- ✅ [PRE_CLAIM_LOGIC.md](./artefakte/SPRINT_2_1_5/PRE_CLAIM_LOGIC.md)
+- ✅ [DEDUPE_POLICY.md](./artefakte/SPRINT_2_1_5/DEDUPE_POLICY.md)
+- ✅ [ACTIVITY_TYPES_PROGRESS_MAPPING.md](./artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md)
+- ✅ [BUSINESS_LOGIC_LEAD_ERFASSUNG.md](./artefakte/SPRINT_2_1_5/BUSINESS_LOGIC_LEAD_ERFASSUNG.md) (Zentrale Business-Logik Referenz)
 
 **Frontend:**
 - ✅ [FRONTEND_ACCESSIBILITY.md](../../../../frontend/FRONTEND_ACCESSIBILITY.md)
-- ✅ [FRONTEND_DELTA.md](./artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md) ⭐ NEU
+- ✅ [FRONTEND_DELTA.md](./artefakte/SPRINT_2_1_5/FRONTEND_DELTA.md)
 - ✅ [SUMMARY.md](./artefakte/SPRINT_2_1_5/SUMMARY.md)
 
 **DSGVO & Compliance:**
-- ✅ [DSGVO_CONSENT_SPECIFICATION.md](./artefakte/SPRINT_2_1_5/DSGVO_CONSENT_SPECIFICATION.md) ⭐ NEU
+- ✅ [DSGVO_CONSENT_SPECIFICATION.md](./artefakte/SPRINT_2_1_5/DSGVO_CONSENT_SPECIFICATION.md)
 
 **Delta:** Scope geändert von "Matching & Review" zu "Protection & Progressive", PLAN B (Inline-First) statt V249-Artefakt, Backend/Frontend Split (PR #124/#125)
 
@@ -209,8 +210,8 @@ updated: "2025-10-02"
 
 ### **Sprint 2.1.6 – Lead Completion & Admin Features (IN PROGRESS)**
 **Zentral:** [TRIGGER_SPRINT_2_1_6.md](../../TRIGGER_SPRINT_2_1_6.md)
-**Status:** 🔧 IN PROGRESS (2025-10-12 - 2025-10-18)
-**Scope:** Bestandsleads-Migration, Convert-Flow, Stop-the-Clock UI, Automated Jobs
+**Status:** 🔧 Phase 2 COMPLETE (2025-10-06) - BusinessType Harmonization ✅
+**Scope:** Bestandsleads-Migration, Convert-Flow, BusinessType Harmonization, Stop-the-Clock UI, Automated Jobs
 
 **⚠️ PRIORITY #0 - BLOCKER FIRST:**
 - **Issue #130:** TestDataBuilder Refactoring (12 Tests broken, CI disabled)
@@ -218,8 +219,17 @@ updated: "2025-10-02"
 - **Fix:** Legacy Builder löschen, Tests auf neue Builder migrieren (1-2h)
 - **Impact:** Worktree CI reaktivieren, 12 ContactInteractionServiceIT Tests grün
 
-**Kern-Deliverables (UPDATED 05.10.2025):**
-- **Bestandsleads-Migrations-API** (Modul 08):
+**Kern-Deliverables (UPDATED 06.10.2025):**
+- ✅ **BusinessType Harmonization (Phase 2 COMPLETE):**
+  - Shared BusinessType Enum (9 unified values)
+  - V263: Lead.businessType + CHECK constraint
+  - V264: Customer.businessType + Data Migration (Industry → BusinessType)
+  - Single Source of Truth: GET /api/enums/business-types
+  - Frontend: useBusinessTypes/useLeadSources/useKitchenSizes hooks
+  - EnumField Component + DynamicFieldRenderer extension
+  - Backward Compatibility: Auto-sync setters (industry ↔ businessType)
+  - **Artefakt:** [HARMONIZATION_COMPLETE.md](./artefakte/SPRINT_2_1_6/HARMONIZATION_COMPLETE.md) ⭐ NEU
+- ✅ **Bestandsleads-Migrations-API** (Modul 08):
   - POST /api/admin/migration/leads/import (Admin-only, Dry-Run Mode PFLICHT)
   - Batch-Import mit Validierung (max. 1000 Leads/Batch)
   - Historische Datumsfelder korrekt übernehmen (registeredAt, activities)
@@ -227,21 +237,21 @@ updated: "2025-10-02"
   - Duplikaten-Check + Warning-Report
   - Audit-Log für alle Import-Vorgänge
   - Re-Import-Fähigkeit bei Fehlern
-- **Lead → Kunde Convert Flow:**
+- ✅ **Lead → Kunde Convert Flow:**
   - Automatische Übernahme bei Status QUALIFIED → CONVERTED
   - Alle Lead-Daten übernehmen (ZERO Doppeleingabe)
   - Lead-ID Verknüpfung in customer.original_lead_id
   - Historie vollständig erhalten
-- **Stop-the-Clock UI:**
+- ⏸️ **Stop-the-Clock UI:**
   - StopTheClockDialog Component (Manager + Admin only)
   - Pause/Resume Buttons in LeadProtectionBadge
   - Grund-Auswahl mit Audit-Log
   - Maximale Pausendauer konfigurierbar
-- **Backdating Endpoint:**
+- ✅ **Backdating Endpoint:**
   - PUT /api/leads/{id}/registered-at (Admin/Manager)
   - Validierung: nicht in Zukunft; Reason Pflicht
   - Recalc Protection-/Activity-Fristen
-- **Automated Jobs:**
+- ⏸️ **Automated Jobs:**
   - Nightly Job: Progress Warning Check (Tag 53)
   - Nightly Job: Protection Expiry (Tag 70)
   - Nightly Job: Pseudonymisierung (60 Tage ohne Progress)
