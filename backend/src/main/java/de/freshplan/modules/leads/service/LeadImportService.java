@@ -58,10 +58,26 @@ public class LeadImportService {
     response.statistics.importedBy = currentUserId;
 
     // Check for duplicate import (idempotency)
-    if (isDuplicateImport(response.requestHash)) {
+    de.freshplan.modules.leads.domain.ImportJob existingJob =
+        de.freshplan.modules.leads.domain.ImportJob.findByFingerprint(response.requestHash);
+    if (existingJob != null
+        && existingJob.status
+            == de.freshplan.modules.leads.domain.ImportJob.ImportStatus.COMPLETED) {
+      // Replay cached response from original import
       response.warnings.add(
-          "DUPLICATE_IMPORT: This exact import was already processed. Request Hash: "
-              + response.requestHash);
+          "DUPLICATE_IMPORT: This exact import was already processed. Returning cached result from original import (Job ID: "
+              + existingJob.id
+              + ")");
+      response.statistics.totalLeads = existingJob.totalLeads;
+      response.statistics.successCount = existingJob.successCount;
+      response.statistics.failureCount = existingJob.failureCount;
+      response.statistics.duplicateWarnings = existingJob.duplicateWarnings;
+      response.statistics.importedAt = existingJob.createdAt;
+      response.statistics.importedBy = existingJob.createdBy;
+
+      Log.infof(
+          "Idempotent replay: ImportJob %d - %d successes, %d failures",
+          existingJob.id, existingJob.successCount, existingJob.failureCount);
       return response;
     }
 
@@ -288,23 +304,8 @@ public class LeadImportService {
     }
   }
 
-  private boolean isDuplicateImport(String requestHash) {
-    // Sprint 2.1.6 Phase 3 - Issue #134: Idempotency Check
-    // Check if this exact import was already processed (by request fingerprint)
-    de.freshplan.modules.leads.domain.ImportJob existingJob =
-        de.freshplan.modules.leads.domain.ImportJob.findByFingerprint(requestHash);
-
-    if (existingJob != null
-        && existingJob.status
-            == de.freshplan.modules.leads.domain.ImportJob.ImportStatus.COMPLETED) {
-      Log.infof(
-          "Duplicate import detected: request_fingerprint=%s, original_job_id=%d",
-          requestHash, existingJob.id);
-      return true;
-    }
-
-    return false;
-  }
+  // isDuplicateImport() method removed - idempotency check now inline in importLeads()
+  // See line 61-82 for complete idempotent replay logic
 
   private void recordImportAudit(LeadImportResponse response, String currentUserId) {
     // Sprint 2.1.6 Phase 3 - Issue #134: Persist Import Job for Idempotency
