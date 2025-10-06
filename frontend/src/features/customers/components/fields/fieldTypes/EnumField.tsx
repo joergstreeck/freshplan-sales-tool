@@ -6,13 +6,7 @@
  */
 
 import React from 'react';
-import {
-  FormControl,
-  Select,
-  MenuItem,
-  FormHelperText,
-  CircularProgress,
-} from '@mui/material';
+import { FormControl, Select, MenuItem, FormHelperText, CircularProgress } from '@mui/material';
 import type { FieldDefinition } from '../../../types/field.types';
 import { useBusinessTypes } from '../../../../leads/hooks/useBusinessTypes';
 import { useLeadSources } from '../../../../leads/hooks/useLeadSources';
@@ -83,12 +77,7 @@ export const EnumField: React.FC<EnumFieldProps> = ({
   }
 
   return (
-    <FormControl
-      fullWidth
-      error={error}
-      disabled={disabled || readOnly}
-      required={required}
-    >
+    <FormControl fullWidth error={error} disabled={disabled || readOnly} required={required}>
       <Select
         value={value || ''}
         onChange={e => onChange(e.target.value)}
