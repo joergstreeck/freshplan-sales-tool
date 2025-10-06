@@ -33,13 +33,14 @@ class LeadBackdatingServiceTest {
     // Clean test data
     Lead.deleteAll();
 
-    // Ensure territory exists
+    // Ensure territory exists and is persisted
     Territory territory = Territory.findByCode("DE");
     if (territory == null) {
       territory = Territory.getDefault();
-      if (territory.id == null) {
-        territory.persist();
-      }
+      // Territory.getDefault() returns a transient instance if DB is empty
+      // We MUST persist it before using it with Lead
+      territory.persist();
+      Territory.getEntityManager().flush();
     }
 
     // Create test lead

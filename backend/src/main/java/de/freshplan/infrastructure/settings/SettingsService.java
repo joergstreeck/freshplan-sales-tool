@@ -84,11 +84,14 @@ public class SettingsService {
       setting.metadata = metadata != null ? metadata : new JsonObject();
       setting.createdBy = userId;
       setting.version = 1;
-      // Generate ETag manually (DB triggers may not work in all test scenarios)
-      setting.etag = generateEtag(setting);
       setting.persist();
 
-      // Flush to ensure persistence
+      // Flush to ensure persistence and trigger DB updates
+      em.flush();
+
+      // Generate ETag AFTER flush to ensure consistent state
+      setting.etag = generateEtag(setting);
+      // Persist the ETag
       em.flush();
 
       LOG.infof(
@@ -102,9 +105,12 @@ public class SettingsService {
       }
       setting.updatedBy = userId;
       setting.version = (setting.version == null ? 1 : setting.version + 1);
-      // Generate new ETag manually
-      setting.etag = generateEtag(setting);
 
+      // Flush first to ensure DB state is updated
+      em.flush();
+
+      // Generate new ETag AFTER flush
+      setting.etag = generateEtag(setting);
       em.flush();
 
       LOG.infof(
@@ -144,11 +150,13 @@ public class SettingsService {
     setting.metadata = metadata != null ? metadata : new JsonObject();
     setting.createdBy = userId;
     setting.version = 1;
-    // Generate ETag manually (DB triggers may not work in all test scenarios)
-    setting.etag = generateEtag(setting);
 
     try {
       setting.persist();
+      em.flush();
+
+      // Generate ETag AFTER flush to ensure consistent state
+      setting.etag = generateEtag(setting);
       em.flush();
 
       LOG.infof(
@@ -207,9 +215,12 @@ public class SettingsService {
     }
     setting.updatedBy = userId;
     setting.version = (setting.version == null ? 1 : setting.version + 1);
-    // Generate new ETag manually
-    setting.etag = generateEtag(setting);
 
+    // Flush first to ensure DB state is updated
+    em.flush();
+
+    // Generate new ETag AFTER flush
+    setting.etag = generateEtag(setting);
     em.flush();
 
     LOG.infof(
@@ -310,8 +321,9 @@ public class SettingsService {
       }
       return sb.toString();
     } catch (java.security.NoSuchAlgorithmException e) {
-      // Fallback to simple hash
-      return String.valueOf(input.hashCode());
+      // MD5 is a standard algorithm - this should never happen
+      // If it does, it's a critical JVM configuration issue
+      throw new RuntimeException("Failed to generate ETag: MD5 algorithm not available", e);
     }
   }
 }
