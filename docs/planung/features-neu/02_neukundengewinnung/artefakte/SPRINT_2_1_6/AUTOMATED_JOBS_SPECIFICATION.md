@@ -337,17 +337,23 @@ public void checkProgressWarnings() { }
 
 **Business-Ziel:** Partner 7 Tage vor Ablauf warnen
 
-**Trigger:** Täglich 1:00 Uhr nachts
+**Trigger:** Täglich 02:00 UTC (Code Review: Zeitzone explizit dokumentiert)
 
 **Query:**
 ```sql
 SELECT * FROM leads
 WHERE progress_deadline < NOW() + INTERVAL '7 days'
   AND progress_warning_sent_at IS NULL
+  AND clock_stopped_at IS NULL -- Code Review: Während Pause keine Warnungen
   AND stage != 2 -- QUALIFIZIERT (konvertiert)
 ORDER BY progress_deadline ASC
 LIMIT 100; -- Batch-Processing
 ```
+
+**⚠️ Stop-the-Clock Edge-Case (Code Review ChatGPT):**
+- Während `clock_stopped_at IS NOT NULL` werden **keine** Warnungen/Expiries ausgelöst
+- Deadlines werden automatisch angepasst (cumulative pause time)
+- Query-Filter `clock_stopped_at IS NULL` verhindert Events während Pause
 
 **Actions:**
 1. Update: `progress_warning_sent_at = NOW()`
@@ -385,7 +391,7 @@ Link: ${baseUrl}/leads/${lead.id}
 
 **Business-Ziel:** Lead-Schutz nach Ablauf automatisch beenden
 
-**Trigger:** Täglich 2:00 Uhr nachts
+**Trigger:** Täglich 02:00 UTC
 
 **Query:**
 ```sql
@@ -433,7 +439,7 @@ Dashboard: ${baseUrl}/admin/expired-leads
 
 **Business-Ziel:** Personenbezogene Daten nach 60 Tagen pseudonymisieren
 
-**Trigger:** Täglich 3:00 Uhr nachts
+**Trigger:** Täglich 03:00 UTC
 
 **Query:**
 ```sql
@@ -447,13 +453,21 @@ LIMIT 100;
 
 **Actions:**
 1. Pseudonymize:
-   - `email` → SHA256-Hash
+   - `email` → SHA256-Hash (⚠️ **Code Review Enhancement:** HMAC-SHA256 mit Secret empfohlen - siehe ADR-007)
    - `phone` → NULL
    - `contactPerson` → "ANONYMIZED"
    - `notes` → NULL
 2. Update: `pseudonymized_at = NOW()`
 3. Publish: `LeadsPseudonymizedEvent`
 4. Log: `LeadMaintenanceJob: Pseudonymized ${count} leads`
+
+**🔒 Security Note (Code Review ChatGPT):**
+- Aktuelle Implementation: SHA-256(email) - pseudonymisiert, aber dictionary-anfällig
+- **Enhancement (Sprint 2.1.7+):** HMAC-SHA256(email, secretPepper) mit Key-Versionierung
+  - Verhindert Wörterbuchangriffe
+  - Duplikaterkennung bleibt erhalten
+  - Secret in Vault/ENV (nicht in DB/Code)
+  - Siehe geplante ADR-007 für Details
 
 **Implementation:**
 ```java
@@ -494,7 +508,7 @@ private String sha256Hash(String input) {
 
 **Business-Ziel:** Audit-Trail für Import-Jobs aufbewahren
 
-**Trigger:** Täglich 4:00 Uhr nachts
+**Trigger:** Täglich 04:00 UTC
 
 **Query:**
 ```sql

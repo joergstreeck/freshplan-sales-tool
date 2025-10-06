@@ -39,10 +39,10 @@ CREATE TABLE outbox_emails (
   correlation_id VARCHAR(255) -- For tracing (e.g., leadId, importJobId)
 );
 
--- Indexes
-CREATE INDEX idx_outbox_emails_status ON outbox_emails(status) WHERE status = 'PENDING';
-CREATE INDEX idx_outbox_emails_created_at ON outbox_emails(created_at);
-CREATE INDEX idx_outbox_emails_correlation ON outbox_emails(correlation_id);
+-- Indexes (Code Review ChatGPT: IF NOT EXISTS für Idempotenz)
+CREATE INDEX IF NOT EXISTS idx_outbox_emails_status ON outbox_emails(status) WHERE status = 'PENDING';
+CREATE INDEX IF NOT EXISTS idx_outbox_emails_created_at ON outbox_emails(created_at);
+CREATE INDEX IF NOT EXISTS idx_outbox_emails_correlation ON outbox_emails(correlation_id);
 
 -- Comments
 COMMENT ON TABLE outbox_emails IS

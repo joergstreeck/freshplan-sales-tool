@@ -13,7 +13,8 @@ COMMENT ON COLUMN leads.pseudonymized_at IS
 
 -- Create index for DSGVO Pseudonymization Job (Job 3)
 -- Query pattern: status=EXPIRED AND updatedAt < NOW() - 60 days AND pseudonymizedAt IS NULL
-CREATE INDEX idx_leads_pseudonymization_check
+-- Code Review (ChatGPT): IF NOT EXISTS für Idempotenz
+CREATE INDEX IF NOT EXISTS idx_leads_pseudonymization_check
 ON leads (status, updated_at, pseudonymized_at)
 WHERE status = 'EXPIRED' AND pseudonymized_at IS NULL;
 
