@@ -33,6 +33,7 @@ CREATE TABLE outbox_emails (
   -- Timestamps
   created_at TIMESTAMP NOT NULL DEFAULT NOW(),
   sent_at TIMESTAMP,
+  failed_at TIMESTAMP,
 
   -- Metadata
   created_by VARCHAR(50) NOT NULL,
