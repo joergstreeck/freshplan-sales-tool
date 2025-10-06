@@ -141,19 +141,32 @@ interface LeadStage2 extends LeadStage1 {
 
 ### Detaillierte Prozessflows
 
-#### §2(8)(c) - Erinnerung + 10-Tage-Nachfrist (⏸️ Sprint 2.1.6)
+#### §2(8)(c) - Erinnerung + 10-Tage-Nachfrist ✅ Sprint 2.1.6 Phase 3
+
+**Vertragstext (Handelsvertretervertrag Seite 3):**
+> "Liegt 60 Tage kein belegbarer Fortschritt vor, kann Freshfoodz in Textform um ein kurzes Update bitten und eine Nachfrist von 10 Kalendertagen setzen. Erfolgt keine Abhilfe, erlischt der Lead‑Schutz und der Lead wird freigegeben."
 
 **Prozessfluss:**
 1. **Tag 53**: Nightly Job prüft `leads.progress_deadline < NOW() + INTERVAL '7 days'`
-2. **Tag 60**: Automatische Erinnerung + `progress_warning_sent_at` gesetzt
-3. **Tag 60-70**: 10 Kalendertage Nachfrist
-4. **Tag 70**: Ohne neue Aktivität → Lead-Schutz erlischt
-5. **Notification**: Email, Dashboard-Alert, Audit-Event
+2. **Tag 53**: Automatische Erinnerung (Email) + `progress_warning_sent_at` gesetzt
+3. **Tag 53-63**: 10 Kalendertage Nachfrist (Partner kann reagieren)
+4. **Tag 63**: Ohne neue Aktivität → Lead-Schutz erlischt (`protection_expired = TRUE`)
+5. **Notification**: Email an Partner (Tag 53), Email an Manager (Tag 63), Dashboard-Alert, Audit-Event
 
 **Sprint 2.1.5 Scope:**
 - ✅ `leads.progress_warning_sent_at` Feld (V255)
 - ✅ `leads.progress_deadline` Berechnung (V257 Trigger)
-- ⏸️ Nightly Job für Warning/Expiry (2.1.6)
+
+**Sprint 2.1.6 Phase 3 Scope (Implementation):**
+- ✅ **Job 1:** Progress Warning Check (1:00 Uhr nachts)
+- ✅ **Job 2:** Protection Expiry Check (2:00 Uhr nachts)
+- ✅ **Email-Integration:** OutboxEmail-Pattern (Modul 05)
+- ✅ **Events:** `LeadProgressWarningIssuedEvent`, `LeadProtectionExpiredEvent`
+
+**Business-Regel (Code-Referenz):**
+- Service-Klasse: `LeadMaintenanceService.java`
+- Business-Regel: "60-Day Activity Rule - Warning 7 days before expiry"
+- KEINE Paragraphen-Referenz im Code (Verträge sind individuell)
 
 #### §2(8)(e) - Verlängerung auf Antrag (⏸️ Sprint 2.1.6)
 
@@ -167,16 +180,44 @@ interface LeadStage2 extends LeadStage1 {
 - ✅ Bestehende Felder nutzbar (`protection_months` in Lead.java)
 - ⏸️ Workflow-Endpoints (2.1.6)
 
-#### §2(8)(i) - Löschung/Pseudonymisierung (⏸️ Sprint 2.1.6)
+#### §2(8)(i) - Löschung/Pseudonymisierung ✅ Sprint 2.1.6 Phase 3
+
+**Vertragstext (Handelsvertretervertrag Seite 3):**
+> "Nicht weiterverfolgte Vormerkungen werden nach Ablauf der 60‑Tage‑Frist gelöscht oder pseudonymisiert. Mit Erlöschen des Lead‑Schutzes (f) werden personenbezogene Daten, die ausschließlich dem Lead‑Schutz dienten, gelöscht oder pseudonymisiert, soweit keine gesetzlichen Aufbewahrungspflichten oder berechtigten Interessen entgegenstehen."
 
 **Retention-Regeln:**
-- Vormerkung ohne Bearbeitung (60 Tage): Pseudonymisierung
-- Nach Schutz-Ablauf: Löschung gemäß DSGVO
-- Ausnahmen: Gesetzliche Aufbewahrungsfristen
+- **60 Tage nach protection_expired:** Pseudonymisierung personenbezogener Daten
+- **Berechtigtes Interesse (Art. 6 Abs. 1 lit. f DSGVO):** Firmendaten für Analytics behalten
+- **Gesetzliche Aufbewahrungsfristen:** Handelsbriefe 6 Jahre (HGB), Rechnungen 10 Jahre (AO)
+
+**DSGVO-Konform (B2B-Leads):**
+**Pseudonymisieren (PII):**
+- `email` → SHA256-Hash (Duplikat-Check bleibt funktional)
+- `phone` → NULL
+- `contactPerson` → "ANONYMIZED"
+- `notes` → NULL
+
+**Behalten (DSGVO-Ausnahme für juristische Personen):**
+- `companyName` (Analytics, Territory-Statistiken)
+- `city` (Branchenanalyse)
+- `businessType` (ROI-Tracking)
+- `assignedTo` (Vertriebspartner-Performance)
+- `sourceCampaign` (Campaign-Erfolg)
 
 **Sprint 2.1.5 Scope:**
 - ✅ Stage-basierte Datenfelder (V255)
-- ⏸️ Nightly Job für Pseudonymisierung (2.1.6)
+- ✅ Felder für Pseudonymisierung vorhanden
+
+**Sprint 2.1.6 Phase 3 Scope (Implementation):**
+- ✅ **Job 3:** DSGVO Pseudonymization (3:00 Uhr nachts)
+- ✅ **SHA-256 Hash-Funktion:** Email-Hashing für Duplikat-Check
+- ✅ **Event:** `LeadsPseudonymizedEvent` (Compliance-Dashboard)
+- ✅ **Neues Feld:** `pseudonymized_at` (Timestamp)
+
+**Business-Regel (Code-Referenz):**
+- Service-Klasse: `LeadMaintenanceService.java`
+- Business-Regel: "B2B Personal Data Pseudonymization (DSGVO Art. 4)"
+- KEINE Paragraphen-Referenz im Code (Verträge sind individuell)
 
 ## API Contract
 

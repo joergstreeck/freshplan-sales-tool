@@ -191,6 +191,10 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "stage", nullable = false)
   public LeadStage stage = LeadStage.VORMERKUNG; // 0=Vormerkung, 1=Registrierung, 2=Qualifiziert
 
+  // DSGVO Pseudonymization (Sprint 2.1.6 Phase 3 - V265)
+  @Column(name = "pseudonymized_at")
+  public LocalDateTime pseudonymizedAt;
+
   // Metadata
   @Size(max = 100)
   public String source; // web/email/phone/event/partner

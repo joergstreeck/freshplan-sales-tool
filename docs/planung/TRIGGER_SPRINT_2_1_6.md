@@ -467,40 +467,157 @@ The element is displayed on screen with 'display:block' or equivalent styles.
 ## 📋 PHASE 3 SCOPE (Nightly Jobs + Issue #134)
 
 **Branch:** `feature/mod02-sprint-2.1.6-nightly-jobs`
-**Geschätzter Aufwand:** 1.8 Tage (1.5 Tage Original + 0.3 Tage Issue #134)
+**Geschätzter Aufwand:** 2.0 Tage (1.5 Tage Jobs + 0.3 Tage Issue #134 + 0.2 Tage Doku)
+**Entscheidungsdatum:** 2025-10-06 (Session mit Claude)
+
+### 🎯 Architektur-Entscheidungen (ADR-Style)
+
+#### **Decision 1: Email-Integration über Outbox-Pattern**
+**Context:** Jobs müssen Email-Benachrichtigungen versenden
+**Decision:** Verwende `OutboxEmail` aus Modul 05 (Kommunikation)
+**Rationale:**
+- ✅ Modul 05 hat bereits Email-Outbox-Pattern geplant
+- ✅ Jobs schreiben nur DB-Einträge (schnell, transaktionssicher)
+- ✅ `EmailOutboxProcessor` sendet asynchron (Retry-Mechanismus)
+**Consequences:** Jobs bleiben schlank, keine SMTP-Abhängigkeiten
+
+#### **Decision 2: Import Jobs Archivierung statt Löschung**
+**Context:** 7-Tage-TTL für `import_jobs` Tabelle
+**Decision:** Status='ARCHIVED' statt DELETE
+**Rationale:**
+- ✅ Audit-Trail bleibt erhalten (Admin-Nachvollziehbarkeit)
+- ✅ Compliance-Anforderungen (Import-Historie)
+- ✅ Später: Hard-Delete nach 90 Tagen Archiv
+**Consequences:** Zusätzlicher Status-Wert, separater Cleanup-Job später
+
+#### **Decision 3: B2B-Pseudonymisierung (DSGVO Art. 4)**
+**Context:** Was pseudonymisieren bei B2B-Leads?
+**Decision:** Nur personenbezogene Daten (PII), Firmendaten behalten
+**Pseudonymisierung:**
+- ⚠️ `email` → SHA256-Hash (Duplikat-Check bleibt funktional)
+- ⚠️ `phone` → NULL
+- ⚠️ `contactPerson` → "ANONYMIZED"
+- ⚠️ `notes` → NULL (kann PII enthalten)
+**Behalten:**
+- ✅ `companyName` (Analytics)
+- ✅ `city` (Territory-Statistik)
+- ✅ `businessType` (Branchenanalyse)
+- ✅ `assignedTo` (Vertriebspartner-Stats)
+- ✅ `sourceCampaign` (Campaign-ROI)
+**Rationale:** DSGVO schützt natürliche Personen, nicht Firmen
+**Consequences:** Analytics bleiben nutzbar, Duplikat-Check funktioniert
+
+#### **Decision 4: Event-Publishing für Dashboard-Updates**
+**Context:** Dashboard soll Echtzeit-Updates bei Job-Completion
+**Decision:** CDI Events nach jedem Job
+**Events:**
+- `LeadProgressWarningIssuedEvent` (Dashboard-Counter)
+- `LeadProtectionExpiredEvent` (Manager-Alert)
+- `LeadsPseudonymizedEvent` (Compliance-Dashboard)
+- `ImportJobsArchivedEvent` (Admin-Dashboard)
+**Rationale:** Referenz `FollowUpAutomationService.java` (bereits implementiert)
+**Consequences:** Dashboard reagiert ohne Polling, bessere UX
+
+#### **Decision 5: Hybrid-Test-Strategie (Option C)**
+**Context:** CI-Performance vs. Code-Coverage
+**Decision:** 80% Mock-Tests (Service-Layer) + 20% @QuarkusTest (Integration)
+**Rationale:**
+- ✅ Service-Tests: Schnell (<1s), Business-Logik isoliert
+- ✅ Integration-Tests: Realistisch (echte DB), Scheduler-Validierung
+- ✅ CI bleibt performant, Coverage ≥85%
+**Consequences:** Separate Service-Klasse (ohne @Scheduled) + Scheduler-Wrapper
+
+#### **Decision 6: Keine Vertragsreferenzen im Code**
+**Context:** Verträge können sich pro Partner unterscheiden
+**Decision:** Generische Business-Begriffe, keine §-Referenzen
+**Beispiel:**
+- ❌ `// §2(8)c Erinnerung mit Nachfrist`
+- ✅ `// 60-Day Activity Rule - Warning 7 days before expiry`
+**Rationale:** Verträge sind nicht einheitlich, Paragraphen verschieben sich
+**Consequences:** Contract-Mapping nur in separaten Docs (CONTRACT_MAPPING.md)
+
+---
 
 ### Kern-Deliverables:
 
-#### 1. Progress Warning Job (Nightly)
-**Zweck:** Leads ohne Aktivität nach X Tagen warnen
+#### 1. Progress Warning Job (Nightly 1:00 Uhr)
+**Business-Regel:** 60-Day Activity Rule - Warning 7 days before protection expires
+**Vertragsbasis:** Aktivitätsstandard (60 Tage belegbarer Fortschritt)
 ```java
-@Scheduled(cron = "0 1 * * *") // 1 Uhr nachts
+/**
+ * Progress Warning Check (60-Day Activity Rule)
+ *
+ * Sends reminder 7 days before protection expires if no meaningful activity.
+ * Contract Mapping: See docs/CONTRACT_MAPPING.md
+ */
+@Scheduled(cron = "0 0 1 * * ?") // 1 AM daily
+@Transactional
 public void checkProgressWarnings() {
-  // Find leads with no activity in last 7 days
-  // Send notification to assigned user
-  // Update lead.progressWarningAt timestamp
+  // Find: progress_deadline < NOW() + 7 days AND progress_warning_sent_at IS NULL
+  // Update: progress_warning_sent_at = NOW()
+  // Create: OutboxEmail entry for assigned partner
+  // Publish: LeadProgressWarningIssuedEvent
 }
 ```
 
-#### 2. Lead Expiry Job (Nightly)
-**Zweck:** Leads nach Ablauf automatisch auf EXPIRED setzen
+#### 2. Protection Expiry Job (Nightly 2:00 Uhr)
+**Business-Regel:** Automatic protection expiry after 60-day deadline
+**Vertragsbasis:** Erlöschen des Lead-Schutzes nach Ablauf
 ```java
-@Scheduled(cron = "0 2 * * *") // 2 Uhr nachts
-public void expireOldLeads() {
-  // Find leads where registeredAt + maxLeadAgeDays < NOW
-  // Set stage = EXPIRED
-  // Idempotency important: Don't expire twice!
+/**
+ * Protection Expiry Check (60-Day Deadline)
+ *
+ * Automatically expires lead protection after deadline with 10-day grace period.
+ * Contract Mapping: See docs/CONTRACT_MAPPING.md
+ */
+@Scheduled(cron = "0 0 2 * * ?") // 2 AM daily
+@Transactional
+public void checkProtectionExpiry() {
+  // Find: progress_deadline < NOW() AND stage != CONVERTED
+  // Update: protection_expired = true
+  // Create: OutboxEmail entry for manager notification
+  // Publish: LeadProtectionExpiredEvent
 }
 ```
 
-#### 3. Pseudonymisierung Job (DSGVO)
-**Zweck:** Abgelaufene Leads nach X Tagen anonymisieren
+#### 3. DSGVO Pseudonymisierung Job (Nightly 3:00 Uhr)
+**Business-Regel:** B2B personal data pseudonymization (DSGVO Art. 4)
+**Vertragsbasis:** Löschung/Pseudonymisierung nicht verfolgter Leads
 ```java
-@Scheduled(cron = "0 3 * * *") // 3 Uhr nachts
+/**
+ * DSGVO Pseudonymization (B2B Personal Data)
+ *
+ * Pseudonymizes personal contact data after 60 days of expired protection.
+ * Keeps company data for analytics (DSGVO exemption for legal entities).
+ * Contract Mapping: See docs/CONTRACT_MAPPING.md
+ */
+@Scheduled(cron = "0 0 3 * * ?") // 3 AM daily
+@Transactional
 public void pseudonymizeExpiredLeads() {
-  // Find expired leads > 30 days old
-  // Replace PII: email → hash, phone → null, contactPerson → "ANONYMIZED"
-  // Keep: companyName, city, businessType (for analytics)
+  // Find: protection_until < NOW() - 60 days AND stage != CONVERTED
+  // Pseudonymize PII: email→hash, phone→null, contactPerson→"ANONYMIZED", notes→null
+  // Keep: companyName, city, businessType, assignedTo, sourceCampaign
+  // Update: pseudonymized_at = NOW()
+  // Publish: LeadsPseudonymizedEvent
+}
+```
+
+#### 4. Import Jobs Cleanup (Nightly 4:00 Uhr)
+**Business-Regel:** Archive completed import jobs after 7-day TTL
+```java
+/**
+ * Import Jobs Archival (7-Day TTL)
+ *
+ * Archives completed import jobs for audit trail retention.
+ * Hard-delete scheduled for Sprint 2.1.7 (90-day archive retention).
+ */
+@Scheduled(cron = "0 0 4 * * ?") // 4 AM daily
+@Transactional
+public void archiveCompletedImportJobs() {
+  // Find: ttl_expires_at < NOW() AND status = 'COMPLETED'
+  // Update: status = 'ARCHIVED', archived_at = NOW()
+  // NO DELETE (audit trail retention)
+  // Publish: ImportJobsArchivedEvent
 }
 ```
 
