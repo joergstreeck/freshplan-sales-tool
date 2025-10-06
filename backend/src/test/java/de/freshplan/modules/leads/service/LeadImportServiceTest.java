@@ -35,6 +35,7 @@ class LeadImportServiceTest {
   void setup() {
     // Clean test data
     Lead.deleteAll();
+    de.freshplan.modules.leads.domain.ImportJob.deleteAll(); // Prevent idempotent replays
 
     // Ensure territory exists
     if (Territory.count() == 0) {

@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
  *
  * <p><strong>TTL:</strong> 7 days after completion → Cleanup by Nightly Job
  *
- * <p><strong>Migration:</strong> V269 (created in Sprint 2.1.6 Phase 3)
+ * <p><strong>Migration:</strong> V262 (created in Sprint 2.1.6 Phase 2)
  *
  * @see de.freshplan.modules.leads.service.LeadImportService
  * @see de.freshplan.modules.leads.service.LeadMaintenanceService#archiveCompletedImportJobs()
