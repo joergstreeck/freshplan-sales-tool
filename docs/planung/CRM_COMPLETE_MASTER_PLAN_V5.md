@@ -134,6 +134,95 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-06 22:05 - Sprint 2.1.6 Phase 3 - Integration Tests ALLE GRÜN ✅
+
+**Kontext:** Finale Test-Fixes für LeadMaintenanceScheduler (6/6 Tests GREEN)
+
+**Erledigt:**
+- ✅ **V267 Migration:** Lead.ownerUserId nullable gemacht (Protection-Expiry-Job setzt NULL)
+- ✅ **Lead.java:** @NotNull entfernt + canBeAccessedBy() null-safe gemacht
+- ✅ **LeadMaintenanceSchedulerIT.java:** Territory-Fixture + updatedAt manuell setzen (Hibernate umgehen)
+- ✅ **6/6 Integration-Tests GREEN:** Progress Warning, Protection Expiry, Pseudonymization, Archival
+
+**Migration:** V267, **Tests:** ALL GREEN, **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs
+
+**Commit:** 54e6caca3 - fix(tests): Sprint 2.1.6 Phase 3 - Integration Tests vollständig grün
+
+---
+
+### 2025-10-06 21:30 - Sprint 2.1.6 Phase 3 - Automated Jobs Specification COMPLETE ✅
+
+**Kontext:** Umfassende Planung & Architektur-Entscheidungen für 4 Nightly Jobs dokumentiert
+
+**Erledigt:**
+- ✅ **AUTOMATED_JOBS_SPECIFICATION.md** erstellt (418 Zeilen)
+  - Job 1: Progress Warning (60-Day Activity Rule)
+  - Job 2: Protection Expiry (60-Day Deadline)
+  - Job 3: DSGVO Pseudonymisierung (B2B Personal Data)
+  - Job 4: Import Jobs Archival (7-Day TTL)
+- ✅ **6 ADRs dokumentiert** (Architecture Decision Records):
+  - ADR-001: Email-Integration über Outbox-Pattern (Modul 05)
+  - ADR-002: Import Jobs Archivierung statt Löschung
+  - ADR-003: B2B-Pseudonymisierung (DSGVO Art. 4)
+  - ADR-004: Event-Publishing für Dashboard-Updates (CDI)
+  - ADR-005: Hybrid-Test-Strategie (Option C: 80% Mock + 20% Integration)
+  - ADR-006: Keine Vertragsreferenzen im Code
+- ✅ **TRIGGER_SPRINT_2_1_6.md** aktualisiert (Phase 3 ADR-Style Sektion)
+- ✅ **CONTRACT_MAPPING.md** aktualisiert mit korrekten Vertragsreferenzen
+  - §2(8)c: Erinnerung + 10-Tage-Nachfrist (Vertragstext zitiert)
+  - §2(8)i: Löschung/Pseudonymisierung (DSGVO-konform B2B)
+- ✅ **Branch bereit:** `feature/mod02-sprint-2.1.6-nightly-jobs` (aktiv)
+
+**Key Decisions:**
+- **Email:** OutboxEmail-Pattern aus Modul 05 (transaktionssicher, Retry-Mechanismus)
+- **Import Cleanup:** Archivieren (status='ARCHIVED'), NICHT löschen (Audit-Trail)
+- **Pseudonymisierung:** PII hashen/NULLen, Firmendaten behalten (Analytics)
+- **Events:** 4 CDI Events für Dashboard-Echtzeit-Updates
+- **Tests:** Service-Layer (Mock, schnell) + Scheduler-Layer (Integration, komplett)
+- **Code-Style:** Generische Business-Begriffe, keine §-Paragraphen im Code
+
+**Aufwand:** 2.0 Tage geschätzt (1.5 Tage Implementation + 0.3 Tage Issue #134 + 0.2 Tage Doku)
+
+**Migration:** V265 (nächste verfügbare)
+
+**NEXT:** Implementation Start - LeadMaintenanceService.java + LeadMaintenanceScheduler.java
+
+### 2025-10-06 19:48 - Sprint 2.1.6 Phase 2 COMPLETE ✅ - PR #133 MERGED
+
+**Kontext:** PR #133 erfolgreich gemerged nach Gemini Code Review + Test-Fixes
+
+**Erledigt:**
+- ✅ **PR #133 MERGED:** BusinessType Harmonization + Admin-APIs auf main
+  - **Commit:** 86725ec2d (Sprint 2.1.6 Phase 2: BusinessType Harmonization & Admin-APIs)
+  - **Status:** PRODUCTION READY
+- ✅ **Test-Fixes nach Gemini Code Review:**
+  - Settings Version Bug: Double-Increment (Java + DB Trigger) → em.refresh() Pattern
+  - LeadResourceTest: BusinessType Constraint (Restaurant → RESTAURANT)
+  - Timestamp Precision: PostgreSQL microseconds vs Java nanoseconds → Entity reload
+  - ETag Timing: Fetch via GET statt POST response
+  - **CI Status:** Alle Tests grün (4 Fehler behoben)
+- ✅ **BusinessType Harmonization COMPLETE:**
+  - Unified `BusinessType` Enum (9 Werte)
+  - Migrations V263 (leads.business_type) + V264 (customers.business_type + Data Migration)
+  - Frontend: EnumField Pattern + useBusinessTypes() Hook
+  - Single Source of Truth: GET /api/enums/business-types
+  - Backward Compatibility: Auto-sync industry ↔ businessType
+- ✅ **Admin-APIs COMPLETE:**
+  - Batch-Import (LeadImportService: 303 LOC, 95% Coverage)
+  - Backdating (LeadBackdatingService: 105 LOC, 92% Coverage)
+  - Convert (LeadConvertService: 206 LOC, 88% Coverage)
+  - Migrations V261 (originalLeadId), V262 (Stop-the-Clock)
+- ✅ **Dokumentation COMPLETE:**
+  - HARMONIZATION_COMPLETE.md (312 Zeilen)
+  - ADR-007: EnumField Pattern (378 Zeilen)
+  - FIELD_HARMONIZATION_PROPOSAL.md (334 Zeilen)
+
+**Tests:** ✅ Alle Backend-Tests grün (./mvnw verify), Frontend kompiliert ohne Fehler
+
+**Migration:** V264 (customers.business_type + Data Migration - letzte in diesem Sprint)
+
+**NEXT:** Sprint 2.1.6 Phase 3 - Progressive Profiling (Issue #134)
+
 ### 2025-10-06 02:50 - Sprint 2.1.6 Phase 2 STARTED - Core Backend APIs (Bestandsleads-Migration)
 
 **Kontext:** Phase 2 - Core Backend APIs Branch `feature/mod02-sprint-2.1.6-admin-apis` erstellt
@@ -516,29 +605,23 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation - Phase 2:**
-  - **✅ COMPLETE:** Issue #130 Fix (PR #132 merged)
-  - **✅ COMPLETE:** Bestandsleads-Migrations-API (Branch: feature/mod02-sprint-2.1.6-admin-apis)
-    - LeadImportService + LeadImportResource implementiert
-    - 14 Tests (8 Service + 6 REST) ✅ PASSED
-    - Admin-only API mit Dry-Run, Validation, Idempotenz
-  - **✅ COMPLETE:** BusinessType Harmonization (V263 + V264)
-    - Lead + Customer harmonisiert mit businessType
-    - Frontend: Single Source of Truth via useBusinessTypes() Hook
-    - Field Catalog: businessType mit fieldType: enum
-    - EnumField Komponente + DynamicFieldRenderer erweitert
-  - **🔄 NEXT - Phase 2 Core Backend APIs:**
-    - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
-    - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
-  - **📋 PENDING - Separate Branches:**
-    - Phase 3: Nightly Jobs (feature/mod02-sprint-2.1.6-nightly-jobs)
-    - Phase 4: Stop-the-Clock UI + Frontend (feature/mod02-sprint-2.1.6-lead-ui-phase2)
-    - Phase 5 (OPTIONAL): MUI Dialog Accessibility Fix (feature/mod02-sprint-2.1.6-accessibility)
-  - **OPTIONAL (ADR-006 Phase 2 - falls Zeit!):**
-    - Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
-    - Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)
-    - Lead-Activity-Timeline (Interaktions-Historie)
+- **Sprint 2.1.6 Implementation - Phase 3:**
+  - **✅ COMPLETE:** Phase 1 - Issue #130 Fix (PR #132 merged)
+  - **✅ COMPLETE:** Phase 2 - BusinessType Harmonization + Admin-APIs (PR #133 merged)
+    - BusinessType Harmonization: Unified Enum, V263/V264, Frontend EnumField Pattern
+    - Admin-APIs: Import (95% Coverage), Backdating (92%), Convert (88%)
+    - Test-Fixes: Settings Version Bug, Timestamp Precision, ETag Timing
+  - **✅ COMPLETE - Phase 3: Automated Nightly Jobs (Issue #134):**
+    - 4 Nightly Jobs implementiert: Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Archival
+    - 6 ADRs dokumentiert (ADR-001 bis ADR-006)
+    - V267 Migration: Lead.ownerUserId nullable gemacht
+    - 6/6 Integration-Tests GREEN + 41/41 Unit-Tests GREEN
+    - Branch: feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 54e6caca3)
+  - **📋 PENDING - Future Phases:**
+    - Phase 4 (OPTIONAL): Stop-the-Clock UI + Excel Upload
+    - Phase 5 (OPTIONAL): MUI Dialog Accessibility Fix
   - **❌ VERSCHOBEN auf Sprint 2.1.7:**
+    - Issue #135: Lead Lifecycle Hooks (Backend)
     - Lead-Transfer Workflow (V260 lead_transfers Tabelle)
     - Fuzzy-Matching & Review (Scoring-Algorithmus)
     - Row-Level-Security (V261 RLS Policies)
@@ -909,10 +992,14 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.5 Phase 1 Implementation:** LeadsPage.tsx erstellen (CustomersPageV2 Wrapper mit Lead-Filter)
-- **Sprint 2.1.5 Cleanup:** LeadListEnhanced.tsx & LeadStageBadge.tsx löschen
-- **Sprint 2.1.6 Phase 2:** Lead-Scoring-System, Lead-Status-Workflows, Lead-Activity-Timeline, Lead-Protection aktivieren
-- **Sprint 2.1.6 Backend:** Lead-Transfer-Workflow, Bestandsleads-Migration, Backdating Endpoint, Automated Jobs
+- **Sprint 2.1.6 Phase 3 - PRODUCTION START:** LeadMaintenanceService.java implementieren (4 Nightly Jobs)
+- **Job 1:** Progress Warning (60-Day Activity Rule - 1:00 Uhr)
+- **Job 2:** Protection Expiry (60-Day Deadline - 2:00 Uhr)
+- **Job 3:** DSGVO Pseudonymisierung (B2B Personal Data - 3:00 Uhr)
+- **Job 4:** Import Jobs Archival (7-Day TTL - 4:00 Uhr)
+- **Tests:** Hybrid-Strategie (80% Mock Service-Tests + 20% @QuarkusTest Integration)
+- **Events:** 4 CDI Events für Dashboard-Updates (LeadProgressWarningIssuedEvent, LeadProtectionExpiredEvent, LeadsPseudonymizedEvent, ImportJobsArchivedEvent)
+- **Email:** OutboxEmail-Integration (Modul 05 Pattern - Fallback: Logging bis Modul 05 ready)
 <!-- MP5:NEXT_STEPS:END -->
 
 ## 🎯 Critical Success Metrics
