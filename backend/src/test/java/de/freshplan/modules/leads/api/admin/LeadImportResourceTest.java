@@ -43,7 +43,7 @@ class LeadImportResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "admin")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldImportLeadWithDryRun() {
     LeadImportRequest request = createValidRequest(true);
 
@@ -62,7 +62,7 @@ class LeadImportResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "admin")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldImportLeadSuccessfully() {
     LeadImportRequest request = createValidRequest(false);
 
@@ -80,7 +80,7 @@ class LeadImportResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "manager-user", roles = "manager")
+  @TestSecurity(user = "manager-user", roles = "ROLE_MANAGER")
   void shouldRejectNonAdminUser() {
     LeadImportRequest request = createValidRequest(false);
 
@@ -94,7 +94,7 @@ class LeadImportResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "admin")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldRejectBatchOver1000() {
     LeadImportRequest request = new LeadImportRequest();
     request.dryRun = true;
@@ -120,7 +120,7 @@ class LeadImportResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "admin")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldReturnValidationErrors() {
     LeadImportRequest request = createValidRequest(false);
     // Future date (invalid)
@@ -132,14 +132,14 @@ class LeadImportResourceTest {
         .when()
         .post("/api/admin/migration/leads/import")
         .then()
-        .statusCode(201) // Still 201, but with validation errors
+        .statusCode(206) // 206 Partial Content when validation errors exist
         .body("statistics.validationErrors", is(1))
         .body("results[0].status", is("VALIDATION_ERROR"))
         .body("results[0].validationErrors", hasSize(greaterThan(0)));
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "admin")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldCalculateRequestHash() {
     LeadImportRequest request = createValidRequest(true);
 

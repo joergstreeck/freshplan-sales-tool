@@ -37,6 +37,10 @@ interface EnumFieldProps {
  * - "business-types" → GET /api/enums/business-types
  * - "lead-sources" → GET /api/enums/lead-sources
  * - "kitchen-sizes" → GET /api/enums/kitchen-sizes
+ *
+ * NOTE: React Hooks Rules require ALL hooks to be called unconditionally.
+ * We call all 3 hooks, but only use the data for the active enumSource.
+ * React Query handles caching, so duplicate requests across components are minimal.
  */
 export const EnumField: React.FC<EnumFieldProps> = ({
   field,
@@ -49,27 +53,33 @@ export const EnumField: React.FC<EnumFieldProps> = ({
   readOnly,
   required,
 }) => {
-  // Determine which hook to use based on enumSource
-  const enumSource = (field as any).enumSource || 'business-types';
+  // Determine which enumSource is active
+  const enumSource = (field as { enumSource?: string }).enumSource || 'business-types';
 
-  // Only call the relevant hook for the current enumSource (avoid unnecessary requests)
+  // Call ALL hooks unconditionally (React Hooks Rules requirement)
+  const businessTypes = useBusinessTypes();
+  const leadSources = useLeadSources();
+  const kitchenSizes = useKitchenSizes();
+
+  // Select the appropriate data based on enumSource
   let options: Array<{ value: string; label: string }> = [];
   let isLoading = false;
 
-  if (enumSource === 'business-types') {
-    const { data, isLoading: loading } = useBusinessTypes();
-    options = data || [];
-    isLoading = loading;
-  } else if (enumSource === 'lead-sources') {
-    const { data, isLoading: loading } = useLeadSources();
-    options = data || [];
-    isLoading = loading;
-  } else if (enumSource === 'kitchen-sizes') {
-    const { data, isLoading: loading } = useKitchenSizes();
-    options = data || [];
-    isLoading = loading;
-  } else {
-    console.warn(`Unknown enumSource: ${enumSource}`);
+  switch (enumSource) {
+    case 'business-types':
+      options = businessTypes.data || [];
+      isLoading = businessTypes.isLoading;
+      break;
+    case 'lead-sources':
+      options = leadSources.data || [];
+      isLoading = leadSources.isLoading;
+      break;
+    case 'kitchen-sizes':
+      options = kitchenSizes.data || [];
+      isLoading = kitchenSizes.isLoading;
+      break;
+    default:
+      console.warn(`Unknown enumSource: ${enumSource}`);
   }
 
   return (
