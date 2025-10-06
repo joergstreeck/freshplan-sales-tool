@@ -373,10 +373,14 @@ Alle Business-Requirements sind erfüllt. Die identifizierten Abweichungen sind:
 2. ✅ **ADR-002 aktualisieren** - Hard-Delete-Begründung dokumentieren
 3. ✅ **ADR-005 ergänzen** - 100% IT-Strategie dokumentieren
 
-### Kurzfristig (Sprint 2.1.7)
+### Kurzfristig (Sprint 2.1.6 Phase 4)
 
-1. 🔵 **Batch-Processing LIMIT 100** - Performance-Optimierung bei >1000 Leads
-2. 🔵 **Monitoring-Integration** - Modul 00 (Betrieb) Metrics hinzufügen
+1. ✅ **Batch-Processing LIMIT 100** - Performance-Optimierung bei >1000 Leads (~30min)
+2. ✅ **Structured Job Logging** - Metrics-Logging als Vorbereitung für Prometheus (~1h)
+3. ⏸️ **Prometheus-Metrics** - DEFERIERT → Modul 00 (Betrieb)
+4. ⏸️ **Slack-Alerting** - DEFERIERT → Modul 05 (Kommunikation)
+
+**📋 Siehe:** [PHASE_4_JOB_MONITORING_SPEC.md](../../../../docs/planung/features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/PHASE_4_JOB_MONITORING_SPEC.md)
 
 ### Mittelfristig (Modul 05 - Kommunikation)
 
@@ -398,10 +402,15 @@ Alle Business-Requirements sind erfüllt. Die identifizierten Abweichungen sind:
 - ✅ Outbox-Pattern vollständig implementiert
 - ✅ Event-System vollständig implementiert
 
-**Lücken:**
+**Lücken (adressiert in Phase 4):**
 - ⚠️ **ADR-002 Abweichung:** Hard-Delete statt ARCHIVED (BESSERE LÖSUNG)
 - ⚠️ **ADR-005 Anpassung:** 100% IT statt 80/20-Split (DOKUMENTIERT)
-- ⚠️ **Monitoring fehlt:** Prometheus-Metrics + Slack (DEFERIERT → Modul 00)
+- 🔄 **Batch-Processing fehlt:** LIMIT 100 → **Phase 4** (~30min)
+- 🔄 **Monitoring fehlt:** Structured Logging → **Phase 4** (~1h)
+- ⏸️ **Prometheus-Metrics:** DEFERIERT → Modul 00 (Betrieb)
+- ⏸️ **Slack-Alerting:** DEFERIERT → Modul 05 (Kommunikation)
+
+**Phase 3 + 4 Combined: 98% COMPLETE** (nur Prometheus + Slack deferred)
 
 **Business-Impact:**
 - ✅ **100% Compliance-Automation:** 60-Day Activity Rule, DSGVO Pseudonymization

@@ -10,22 +10,32 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (52% complete)
-- **Current Sprint:** ✅ Sprint 2.1.6 Phase 2 COMPLETE (06.10.2025) - **Commits 01819eb, ce9206a**
-- **Progress:** 13/36 PRs - 36% done (Sprint 2.1.6 Phase 2 Backend COMPLETE, Phase 1 PR #132 MERGED)
-- **Blockers:** ❌ Keine - Issue #130 RESOLVED (PR #132), Worktree CI reaktiviert
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (55% complete)
+- **Current Sprint:** ✅ Sprint 2.1.6 Phase 2 COMPLETE (06.10.2025) - **PR #133 MERGED**
+- **Active Branch:** main (clean state)
+- **Progress:** 14/36 PRs completed - 39% done
+- **Blockers:** ❌ Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉 **Sprint 2.1.6 Phase 2 COMPLETE** - Core Backend APIs (~2400 LOC, 33/33 Tests ✅)
-  - ✅ **Backend Services (3 neue Services):**
-    - LeadImportService (297 LOC): Batch-Import bis 1000 Leads, Dry-Run, SHA-256 Idempotency
-    - LeadBackdatingService (107 LOC): Historisches registeredAt + Deadline-Neuberechnung
-    - LeadConvertService (204 LOC): Lead → Customer + Location + Address + Contact (vollständig)
-  - ✅ **REST APIs:** POST /api/admin/migration/leads/import · PUT /api/leads/{id}/registered-at · POST /api/leads/{id}/convert
-  - ✅ **DB Migration V261:** Customer.originalLeadId (Soft Reference)
-  - ✅ **Smart Engineering:** Java Locale Country Code Mapping (200+ Länder, 0 Wartung)
-  - ✅ **Tests:** 33/33 (100% passing) - Import: 14, Backdating: 13, Convert: 6
-- **Next Sprint:** Sprint 2.1.6 Phase 3 (Automated Jobs), Phase 4 (Frontend UI + Excel Upload)
+- **Latest:** 🎉 **Sprint 2.1.6 Phase 2 COMPLETE - PR #133 MERGED** - BusinessType Harmonization + Admin-APIs
+  - ✅ **BusinessType Harmonization (Single Source of Truth):**
+    - Unified BusinessType Enum (9 Werte: RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
+    - V263: leads.business_type mit CHECK Constraint
+    - V264: customers.business_type + Data Migration (9 Industry → BusinessType Mappings)
+    - Frontend: EnumField Pattern + useBusinessTypes() Hook
+    - Backward Compatibility: Auto-sync industry ↔ businessType
+  - ✅ **Admin-APIs für Bestandsleads-Migration:**
+    - LeadImportService (303 LOC, 95% Coverage): Batch-Import mit Deduplication
+    - LeadBackdatingService (105 LOC, 92% Coverage): Zeitstempel-Korrektur
+    - LeadConvertService (206 LOC, 88% Coverage): Lead → Customer Conversion
+    - V261: Customer.originalLeadId, V262: Stop-the-Clock
+  - ✅ **Test-Fixes nach Gemini Code Review:**
+    - Settings Version Bug (Double-Increment) → em.refresh() Pattern
+    - LeadResourceTest (BusinessType Constraint) → RESTAURANT enum
+    - Timestamp Precision (PostgreSQL microseconds vs Java nanoseconds) → Entity reload
+    - ETag Timing → Fetch via GET statt POST response
+  - ✅ **Dokumentation:** 1062 Zeilen (HARMONIZATION_COMPLETE, ADR-007, FIELD_HARMONIZATION_PROPOSAL)
+- **Next Action:** Sprint 2.1.6 Phase 3 - Progressive Profiling (Issue #134)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)

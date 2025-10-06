@@ -670,12 +670,15 @@
     - **Testing Strategy:** Unit-Tests entfernt (Panache nicht mockbar), Integration-Tests E2E
     - **6/6 Integration-Tests GREEN** (LeadMaintenanceSchedulerIT)
     - **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 93d0441f1)
-  - **📋 NEXT PHASE - Sprint 2.1.6 Finalisierung:**
-    - **PRIORITY 1:** Git Commit + PR #134 erstellen (Outbox-Pattern + Nightly Jobs)
-    - **Gap Analysis COMPLETE:** Phase 3 zu 95% PRODUKTIONSREIF (nur Monitoring fehlt → Modul 00)
-    - **Technical Debt Review COMPLETE:** 0 kritische Issues, Sprint 2.1.6 NICHT BLOCKIERT
-    - Phase 4 (OPTIONAL): Stop-the-Clock UI + Excel Upload
-    - Phase 5 (OPTIONAL): MUI Dialog Accessibility Fix
+  - **✅ Phase 3 COMPLETE - PR #134 ERSTELLT:** Outbox-Pattern + Nightly Jobs
+  - **📋 NEXT PHASE - Sprint 2.1.6 Phase 4 (Job Monitoring & Performance - ~1.5h):**
+    - **Feature 1:** Batch-Processing LIMIT 100 (~30min) - Verhindert Memory-Probleme
+    - **Feature 2:** Structured Job Logging (~1h) - Metrics-Logging für Prometheus-Vorbereitung
+    - **Deferiert:** Prometheus-Metrics → Modul 00 (Betrieb)
+    - **Deferiert:** Slack-Alerting → Modul 05 (Kommunikation)
+    - **Spec:** [PHASE_4_JOB_MONITORING_SPEC.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/PHASE_4_JOB_MONITORING_SPEC.md)
+    - **Ziel:** 98% COMPLETE (Phase 3 + 4 Combined)
+  - **Phase 5 (OPTIONAL):** MUI Dialog Accessibility Fix + Excel Upload + Stop-the-Clock UI
   - **❌ VERSCHOBEN auf Sprint 2.1.7:**
     - Issue #135: Lead Lifecycle Hooks (Backend)
     - Lead-Transfer Workflow (V260 lead_transfers Tabelle)

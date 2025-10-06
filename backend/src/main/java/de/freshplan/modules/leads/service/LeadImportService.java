@@ -58,6 +58,9 @@ public class LeadImportService {
     response.statistics.importedBy = currentUserId;
 
     // Check for duplicate import (idempotency)
+    // Code Review (Gemini): requestHash dient als serverseitiger Fingerprint.
+    // Zukünftig kann idempotencyKey aus HTTP-Header als Client-Override hinzugefügt werden.
+    // Siehe ImportJob.idempotencyKey Javadoc für geplante Client-Key-Integration.
     de.freshplan.modules.leads.domain.ImportJob existingJob =
         de.freshplan.modules.leads.domain.ImportJob.findByFingerprint(response.requestHash);
     if (existingJob != null
@@ -333,12 +336,14 @@ public class LeadImportService {
     }
 
     // Store result summary as JSON (for now: basic stats)
+    // Use JSON-B for robust JSON creation (Code Review: Gemini)
     importJob.resultSummary =
-        String.format(
-            "{\"successCount\":%d,\"failureCount\":%d,\"duplicateWarnings\":%d}",
-            response.statistics.successCount,
-            response.statistics.failureCount,
-            response.statistics.duplicateWarnings);
+        jakarta.json.Json.createObjectBuilder()
+            .add("successCount", response.statistics.successCount)
+            .add("failureCount", response.statistics.failureCount)
+            .add("duplicateWarnings", response.statistics.duplicateWarnings)
+            .build()
+            .toString();
 
     // Persist
     importJob.persist();

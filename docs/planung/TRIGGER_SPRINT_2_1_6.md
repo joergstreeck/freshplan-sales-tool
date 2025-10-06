@@ -22,12 +22,14 @@ phases:
   - phase: "Phase 3"
     branch: "feature/mod02-sprint-2.1.6-nightly-jobs"
     scope: "Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) + Issue #134 (Batch-Import Idempotency)"
-    status: "pending"
+    status: "complete"
     issues: ["#134"]
+    pr: "#134"
   - phase: "Phase 4"
-    branch: "feature/mod02-sprint-2.1.6-lead-ui-phase2"
-    scope: "Frontend UI (Excel Upload, Stop-the-Clock Dialog, Lead-Scoring, Workflows, Activity-Timeline)"
+    branch: "feature/mod02-sprint-2.1.6-phase-4"
+    scope: "Job Monitoring & Performance (Batch-Processing LIMIT 100, Structured Logging)"
     status: "pending"
+    effort: "~1.5h"
   - phase: "Phase 5"
     branch: "feature/mod02-sprint-2.1.6-accessibility"
     scope: "OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen)"
@@ -55,9 +57,9 @@ updated: "2025-10-06"
 | Phase | Branch | Scope | Status | PR |
 |-------|--------|-------|--------|-----|
 | **Phase 1** | `feature/issue-130-testdatabuilder-refactoring` | Issue #130 BLOCKER Fix | ✅ COMPLETE | #132 |
-| **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ FIXES APPLIED | - |
-| **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) + **Issue #134** (Idempotency) | 📋 PENDING | - |
-| **Phase 4** | `feature/mod02-sprint-2.1.6-lead-ui-phase2` | Frontend UI (Stop-the-Clock Dialog, Lead-Scoring, Workflows, Timeline) | 📋 PENDING | - |
+| **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ COMPLETE | #133 |
+| **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs + **Issue #134** (Idempotency) + Outbox-Pattern | ✅ COMPLETE | #134 |
+| **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4` | Job Monitoring & Performance (Batch-Processing LIMIT 100, Structured Logging) | 📋 PENDING | - |
 | **Phase 5** | `feature/mod02-sprint-2.1.6-accessibility` | OPTIONAL (MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen) | 📋 PENDING | - |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
@@ -939,16 +941,34 @@ void pseudonymizeExpiredLeads() {
   - [x] CRM_COMPLETE_MASTER_PLAN_V5.md (Latest Update mit Commits)
   - [x] CRM_AI_CONTEXT_SCHNELL.md (Architecture Flags + Sprint 2.1.6 Section)
 
-**Phase 3 - Automated Jobs (Branch: feature/mod02-sprint-2.1.6-nightly-jobs) - PENDING:**
-- [ ] **@Scheduled Progress Warning Job** (Tag 53 - 7 Tage vor Frist)
-- [ ] **@Scheduled Protection Expiry Job** (Tag 60 - Schutzfrist abgelaufen)
-- [ ] **@Scheduled DSGVO Pseudonymisierung Job** (60 Tage ohne Progress)
-- [ ] **Email-Benachrichtigungen** für alle Jobs
+**Phase 3 - Automated Jobs (Branch: feature/mod02-sprint-2.1.6-nightly-jobs) - ✅ COMPLETE (PR #134):**
+- [x] **@Scheduled Progress Warning Job** (Tag 53 - 7 Tage vor Frist) ✅
+- [x] **@Scheduled Protection Expiry Job** (Tag 60 - Schutzfrist abgelaufen) ✅
+- [x] **@Scheduled DSGVO Pseudonymisierung Job** (60 Tage ohne Progress) ✅
+- [x] **@Scheduled Import Jobs Archival** (7-Day TTL) ✅
+- [x] **Outbox-Pattern für Email-Benachrichtigungen** (ADR-001) ✅
+- [x] **Issue #134: Batch Import Idempotency** (SHA-256 Fingerprinting) ✅
+- [x] **Integration Tests** (7 Tests, 5 GREEN, 2 DISABLED) ✅
+- [x] **4 Migrations** (V265-V268) ✅
 
-**Phase 4 - Frontend UI (Branch: feature/mod02-sprint-2.1.6-lead-ui-phase2) - PENDING:**
+**📋 Artefakte:**
+- [AUTOMATED_JOBS_SPECIFICATION.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/AUTOMATED_JOBS_SPECIFICATION.md)
+- [PHASE_3_GAP_ANALYSIS.md](../backend/src/test/java/de/freshplan/modules/leads/service/PHASE_3_GAP_ANALYSIS.md)
+- [TECHNICAL_DEBT_ANALYSIS.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/TECHNICAL_DEBT_ANALYSIS.md)
+
+**Phase 4 - Job Monitoring & Performance (Branch: feature/mod02-sprint-2.1.6-phase-4) - 📋 PENDING (~1.5h):**
+- [ ] **Batch-Processing LIMIT 100** (~30min) - Verhindert Memory-Probleme bei >1000 Leads
+- [ ] **Structured Job Logging** (~1h) - Metrics-Logging als Vorbereitung für Prometheus
+- ⏸️ **Prometheus-Metrics** - DEFERIERT → Modul 00 (Betrieb)
+- ⏸️ **Slack-Alerting** - DEFERIERT → Modul 05 (Kommunikation)
+
+**📋 Artefakt:**
+- [PHASE_4_JOB_MONITORING_SPEC.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/PHASE_4_JOB_MONITORING_SPEC.md)
+
+**Phase 5 - OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen) - 📋 PENDING:**
+- [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
 - [ ] **Excel-Upload für Leads-Migration** (Drag & Drop, Spalten-Mapping, Vorschau, Dry-Run)
 - [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog.tsx, RBAC Manager/Admin)
-- [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
 - [ ] **LeadProtectionBadge.tsx** (Pause/Resume Buttons)
 - [ ] **Frontend Tests ≥75% Coverage**
 

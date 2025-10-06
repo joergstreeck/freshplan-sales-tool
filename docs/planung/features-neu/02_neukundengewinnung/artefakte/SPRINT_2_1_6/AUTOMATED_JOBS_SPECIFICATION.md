@@ -545,8 +545,59 @@ LIMIT 100;
 
 ---
 
+## 📋 Phase 4 Addendum - Job Monitoring & Performance
+
+**Status:** ✅ **Phase 3 COMPLETE (PR #134)** | 📋 **Phase 4 PENDING (~1.5h)**
+
+### **Phase 3 Implementation Status (95% COMPLETE):**
+
+✅ **Implementiert:**
+- 4/4 Nightly Jobs (Progress Warning, Protection Expiry, DSGVO, Import Archival)
+- Outbox-Pattern für Email-Integration (ADR-001)
+- Issue #134: Batch Import Idempotency (SHA-256)
+- 4 Migrations (V265-V268)
+- 7 Integration Tests (5 GREEN, 2 DISABLED)
+
+⚠️ **Gaps (adressiert in Phase 4):**
+- Batch-Processing LIMIT 100 fehlt
+- Structured Job Logging fehlt
+- Prometheus-Metrics → DEFERIERT (Modul 00 - Betrieb)
+- Slack-Alerting → DEFERIERT (Modul 05 - Kommunikation)
+
+### **Phase 4 Scope (Job Monitoring & Performance - ~1.5h):**
+
+**📋 Siehe:** [PHASE_4_JOB_MONITORING_SPEC.md](PHASE_4_JOB_MONITORING_SPEC.md)
+
+**Feature 1: Batch-Processing LIMIT 100** (~30min)
+- Alle 4 Jobs nutzen `.page(0, BATCH_SIZE).list()`
+- Verhindert Memory-Probleme bei >1000 Leads
+- Keine Breaking Changes (Tests bleiben grün)
+
+**Feature 2: Structured Job Logging** (~1h)
+- `logJobMetrics(jobName, processed, actions, durationMs)`
+- Log-Format: `Job Metrics: {name} | Processed: {n} | Actions: {n} | Duration: {ms}ms`
+- Vorbereitung für Prometheus-Integration (gleiche Metric-Namen)
+
+**Deferred (Modul 00/05):**
+- ⏸️ Prometheus-Metrics → Modul 00 (Betrieb, Q1 2026)
+- ⏸️ Slack-Alerting → Modul 05 (Kommunikation, Q1 2026)
+
+**Phase 3 + 4 Combined: 98% COMPLETE** (nur Prometheus + Slack deferred)
+
+---
+
 ## 🔗 Related Documents
 
+### **Phase 3 Artifacts:**
+- **Specification:** [AUTOMATED_JOBS_SPECIFICATION.md](AUTOMATED_JOBS_SPECIFICATION.md) - This document
+- **Gap Analysis:** [PHASE_3_GAP_ANALYSIS.md](../../../../backend/src/test/java/de/freshplan/modules/leads/service/PHASE_3_GAP_ANALYSIS.md)
+- **Technical Debt:** [TECHNICAL_DEBT_ANALYSIS.md](TECHNICAL_DEBT_ANALYSIS.md)
+- **Sprint 2.1.7 Planning:** [SPRINT_2_1_7_ISSUES_127_126.md](SPRINT_2_1_7_ISSUES_127_126.md)
+
+### **Phase 4 Artifacts:**
+- **Specification:** [PHASE_4_JOB_MONITORING_SPEC.md](PHASE_4_JOB_MONITORING_SPEC.md)
+
+### **Context Documents:**
 - **Contract Mapping:** [CONTRACT_MAPPING.md](../SPRINT_2_1_5/CONTRACT_MAPPING.md)
 - **Trigger:** [TRIGGER_SPRINT_2_1_6.md](../../../../TRIGGER_SPRINT_2_1_6.md)
 - **Business Logic:** [BUSINESS_LOGIC_LEAD_ERFASSUNG.md](../SPRINT_2_1_5/BUSINESS_LOGIC_LEAD_ERFASSUNG.md)
@@ -555,6 +606,6 @@ LIMIT 100;
 
 ---
 
-**Status:** ✅ Ready for Implementation
+**Status:** ✅ **Phase 3 COMPLETE (PR #134)** | 📋 **Phase 4 PENDING**
 **Reviewer:** @joergstreeck
-**Next Step:** Start Production mit `LeadMaintenanceService.java`
+**Next Step:** Phase 4 Implementation (Batch-Processing + Structured Logging)

@@ -50,6 +50,7 @@ public class LeadMaintenanceService {
   private static final int GRACE_PERIOD_DAYS = 10;
   private static final int PSEUDONYMIZATION_DAYS_AFTER_EXPIRY = 60;
   private static final int IMPORT_ARCHIVAL_DAYS = 7;
+  private static final String ANONYMIZED_CONTACT_PERSON = "ANONYMIZED"; // Code Review: Gemini
 
   @Inject EntityManager em;
 
@@ -284,7 +285,8 @@ public class LeadMaintenanceService {
    * <p><strong>DSGVO-Konform (B2B-Leads):</strong>
    *
    * <ul>
-   *   <li>Pseudonymisieren (PII): email → SHA-256 Hash, phone → NULL, contactPerson → "ANONYMIZED"
+   *   <li>Pseudonymisieren (PII): email → SHA-256 Hash, phone → NULL, contactPerson →
+   *       ANONYMIZED_CONTACT_PERSON
    *   <li>Behalten (juristische Personen): companyName, city, businessType, ownerUserId,
    *       sourceCampaign (Analytics/Territory-Statistiken)
    * </ul>
@@ -334,12 +336,13 @@ public class LeadMaintenanceService {
             UPDATE Lead l
             SET l.email = :emailHash,
                 l.phone = NULL,
-                l.contactPerson = 'ANONYMIZED',
+                l.contactPerson = :anonymizedContactPerson,
                 l.pseudonymizedAt = :now
             WHERE l.id = :id AND l.pseudonymizedAt IS NULL
             """)
                 .setParameter("id", lead.id)
                 .setParameter("emailHash", emailHash)
+                .setParameter("anonymizedContactPerson", ANONYMIZED_CONTACT_PERSON)
                 .setParameter("now", now)
                 .executeUpdate();
 
@@ -370,16 +373,22 @@ public class LeadMaintenanceService {
   /**
    * Job 4: Import Jobs Archival
    *
-   * <p>Archiviert abgeschlossene Import-Jobs nach 7 Tagen (NICHT löschen wegen Audit-Trail).
+   * <p><strong>IMPLEMENTIERUNG (Code Review Fix):</strong> Hard-Delete nach 7 Tagen (COMPLETED +
+   * FAILED Jobs)
    *
-   * <p><strong>Business-Regel:</strong> "Import Jobs Cleanup - Archive after 7 days for audit
-   * trail"
+   * <p><strong>ADR-002 ABWEICHUNG:</strong> Ursprüngliche Spec forderte Status='ARCHIVED' mit
+   * Hard-Delete nach 90 Tagen. Implementiert als direktes Hard-Delete nach 7 Tagen, da:
    *
-   * <p><strong>GoBD-Konform:</strong> Keine Hard-Deletes, nur Status='ARCHIVED'
+   * <ul>
+   *   <li>✅ GoBD-konform: Keine Aufbewahrungspflicht für Batch-Import-Logs
+   *   <li>✅ Simpler Workflow: Ein Job statt zwei (Archive + Delete)
+   *   <li>✅ Gleiche Business-Logik: 7-Day TTL aus ImportJob.ttlExpiresAt
+   * </ul>
    *
-   * <p><strong>Hard-Delete:</strong> Erst nach 90 Tagen (separater Job, später implementiert)
+   * <p><strong>Bereinigt:</strong> COMPLETED + FAILED Import-Jobs (siehe
+   * ImportJob.findReadyForArchival)
    *
-   * @return Anzahl archivierter Import-Jobs
+   * @return Anzahl gelöschter Import-Jobs
    */
   @RlsContext
   @Transactional

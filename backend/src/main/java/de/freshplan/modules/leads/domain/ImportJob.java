@@ -128,9 +128,11 @@ public class ImportJob extends PanacheEntityBase {
    * @return List of import jobs
    */
   public static java.util.List<ImportJob> findReadyForArchival(LocalDateTime threshold) {
+    // Code Review (Gemini): Berücksichtige auch FAILED Jobs für Cleanup
     return list(
-        "status = ?1 AND ttlExpiresAt < ?2 ORDER BY ttlExpiresAt ASC",
+        "status IN (?1, ?2) AND ttlExpiresAt < ?3 ORDER BY ttlExpiresAt ASC",
         ImportStatus.COMPLETED,
+        ImportStatus.FAILED,
         threshold);
   }
 
@@ -141,9 +143,10 @@ public class ImportJob extends PanacheEntityBase {
     this.ttlExpiresAt = this.completedAt.plusDays(7);
   }
 
-  /** Mark job as failed. */
+  /** Mark job as failed and set TTL (Code Review: Gemini - Konsistenz mit markCompleted). */
   public void markFailed() {
     this.status = ImportStatus.FAILED;
     this.completedAt = LocalDateTime.now();
+    this.ttlExpiresAt = this.completedAt.plusDays(7); // Auch FAILED Jobs nach 7 Tagen bereinigen
   }
 }

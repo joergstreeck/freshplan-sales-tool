@@ -644,3 +644,26 @@ Nach externem Code-Review wurden 6 Verbesserungen implementiert:
 - **Hard-Delete:** Nur für DSGVO (Pseudonymisierung Job in Phase 3)
 
 ---
+
+## 📚 Related Documents
+
+### Sprint 2.1.6 Artefakte:
+- **[AUTOMATED_JOBS_SPECIFICATION.md](../SPRINT_2_1_6/AUTOMATED_JOBS_SPECIFICATION.md)** ⭐ NEU (Phase 3)
+  - 4 Nightly Jobs: Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Cleanup
+  - 6 Architecture Decision Records (ADRs)
+  - Email-Integration (Outbox-Pattern Modul 05)
+  - Hybrid-Test-Strategie (80% Mock + 20% Integration)
+- **[HARMONIZATION_COMPLETE.md](../SPRINT_2_1_6/HARMONIZATION_COMPLETE.md)** (Phase 2)
+  - BusinessType Harmonization (Lead + Customer)
+  - Single Source of Truth Pattern (useBusinessTypes Hook)
+- **[CONTRACT_MAPPING.md](./CONTRACT_MAPPING.md)**
+  - Vertragliche Basis für alle Jobs
+  - §2(8)c: 60-Day Activity Rule + Progress Warning
+  - §2(8)i: DSGVO Pseudonymisierung (B2B-konform)
+
+### Technical Patterns:
+- **[SECURITY_TEST_PATTERN.md](../SECURITY_TEST_PATTERN.md)** - 23 Tests, @TestSecurity
+- **[PERFORMANCE_TEST_PATTERN.md](../PERFORMANCE_TEST_PATTERN.md)** - P95 <200ms Validation
+- **[EVENT_SYSTEM_PATTERN.md](../EVENT_SYSTEM_PATTERN.md)** - LISTEN/NOTIFY mit AFTER_COMMIT
+
+---
