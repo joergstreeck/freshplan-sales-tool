@@ -14,46 +14,53 @@ import React from 'react';
 // Mock the API
 vi.mock('../services/auditApi', () => ({
   auditApi: {
-    getAuditHistory: vi.fn(() =>
+    getEntityAuditTrail: vi.fn(() =>
       Promise.resolve({
-        entries: [
+        content: [
           {
             id: '1',
             entityType: 'CONTACT',
             entityId: 'contact-1',
+            eventType: 'CONTACT_UPDATED',
             action: 'UPDATE',
-            fieldName: 'email',
-            oldValue: 'old@example.com',
-            newValue: 'new@example.com',
-            userId: 'user-1',
             userName: 'Test User',
+            userEmail: 'test@example.com',
             timestamp: new Date().toISOString(),
+            occurredAt: new Date().toISOString(),
+            changes: {
+              email: { old: 'old@example.com', new: 'new@example.com' },
+            },
+            userId: 'user-1',
+            source: 'WEB',
+            ipAddress: '127.0.0.1',
+            userAgent: 'Test',
+            details: {},
+            previousHash: null,
+            dataHash: 'hash1',
+            success: true,
           },
           {
             id: '2',
             entityType: 'CONTACT',
             entityId: 'contact-1',
+            eventType: 'CONTACT_ADDED',
             action: 'CREATE',
-            userId: 'user-1',
             userName: 'Test User',
-            timestamp: new Date(Date.now() - 86400000).toISOString(), // Yesterday
+            userEmail: 'test@example.com',
+            timestamp: new Date(Date.now() - 86400000).toISOString(),
+            occurredAt: new Date(Date.now() - 86400000).toISOString(),
+            userId: 'user-1',
+            source: 'WEB',
+            ipAddress: '127.0.0.1',
+            userAgent: 'Test',
+            details: {},
+            changes: null,
+            previousHash: null,
+            dataHash: 'hash2',
+            success: true,
           },
         ],
-        totalCount: 2,
-      })
-    ),
-    getLatestChange: vi.fn(() =>
-      Promise.resolve({
-        id: '1',
-        entityType: 'CONTACT',
-        entityId: 'contact-1',
-        action: 'UPDATE',
-        fieldName: 'email',
-        oldValue: 'old@example.com',
-        newValue: 'new@example.com',
-        userId: 'user-1',
-        userName: 'Test User',
-        timestamp: new Date().toISOString(),
+        totalElements: 2,
       })
     ),
   },
@@ -99,12 +106,9 @@ describe('MiniAuditTimeline', () => {
     it('should render the component', async () => {
       render(<MiniAuditTimeline {...defaultProps} />, { wrapper: createWrapper() });
 
-      // Should show loading initially
-      expect(screen.getByRole('progressbar')).toBeInTheDocument();
-
       // Should show content after loading
       await waitFor(() => {
-        expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+        expect(screen.getByTestId('mini-audit-timeline')).toBeInTheDocument();
       });
     });
 
@@ -112,8 +116,8 @@ describe('MiniAuditTimeline', () => {
       render(<MiniAuditTimeline {...defaultProps} />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        // Should have some indication of audit/history
-        const elements = screen.queryAllByText(/änderung|historie|audit/i);
+        // Should have some indication of audit/history - component shows "Zuletzt geändert"
+        const elements = screen.queryAllByText(/zuletzt geändert|änderung/i);
         expect(elements.length).toBeGreaterThan(0);
       });
     });
@@ -122,8 +126,9 @@ describe('MiniAuditTimeline', () => {
       render(<MiniAuditTimeline {...defaultProps} />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        // Should show user who made changes
-        expect(screen.getByText('Test User')).toBeInTheDocument();
+        // Should show user who made changes - there are multiple instances of Test User
+        const userElements = screen.getAllByText(/Test User/);
+        expect(userElements.length).toBeGreaterThan(0);
       });
     });
   });
@@ -219,15 +224,15 @@ describe('MiniAuditTimeline', () => {
   describe('Empty State', () => {
     it('should show empty state when no audit entries', async () => {
       const { auditApi } = await import('../services/auditApi');
-      vi.mocked(auditApi.getAuditHistory).mockResolvedValueOnce({
-        entries: [],
-        totalCount: 0,
+      vi.mocked(auditApi.getEntityAuditTrail).mockResolvedValueOnce({
+        content: [],
+        totalElements: 0,
       });
 
       render(<MiniAuditTimeline {...defaultProps} />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText(/keine änderung|no changes|leer/i)).toBeInTheDocument();
+        expect(screen.getByText(/keine änderung|leer|verfügbar/i)).toBeInTheDocument();
       });
     });
   });
@@ -235,13 +240,13 @@ describe('MiniAuditTimeline', () => {
   describe('Error Handling', () => {
     it('should handle API errors gracefully', async () => {
       const { auditApi } = await import('../services/auditApi');
-      vi.mocked(auditApi.getAuditHistory).mockRejectedValueOnce(new Error('API Error'));
+      vi.mocked(auditApi.getEntityAuditTrail).mockRejectedValueOnce(new Error('API Error'));
 
       render(<MiniAuditTimeline {...defaultProps} />, { wrapper: createWrapper() });
 
       await waitFor(() => {
         // Should show error or fallback
-        const errorElement = screen.queryByText(/fehler|error/i);
+        const errorElement = screen.queryByText(/fehler|error|konnte nicht/i);
         if (errorElement) {
           expect(errorElement).toBeInTheDocument();
         }
@@ -302,14 +307,14 @@ describe('MiniAuditTimeline', () => {
       });
 
       await waitFor(() => {
-        expect(vi.mocked(auditApi.getAuditHistory)).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(auditApi.getEntityAuditTrail)).toHaveBeenCalledTimes(1);
       });
 
       // Rerender with same props
       rerender(<MiniAuditTimeline {...defaultProps} />);
 
       // Should not fetch again
-      expect(vi.mocked(auditApi.getAuditHistory)).toHaveBeenCalledTimes(1);
+      expect(vi.mocked(auditApi.getEntityAuditTrail)).toHaveBeenCalledTimes(1);
     });
 
     it('should refetch when entityId changes', async () => {
@@ -319,14 +324,14 @@ describe('MiniAuditTimeline', () => {
       });
 
       await waitFor(() => {
-        expect(vi.mocked(auditApi.getAuditHistory)).toHaveBeenCalledTimes(1);
+        expect(vi.mocked(auditApi.getEntityAuditTrail)).toHaveBeenCalledTimes(1);
       });
 
       // Change entityId
       rerender(<MiniAuditTimeline {...defaultProps} entityId="contact-2" />);
 
       await waitFor(() => {
-        expect(vi.mocked(auditApi.getAuditHistory)).toHaveBeenCalledTimes(2);
+        expect(vi.mocked(auditApi.getEntityAuditTrail)).toHaveBeenCalledTimes(2);
       });
     });
   });

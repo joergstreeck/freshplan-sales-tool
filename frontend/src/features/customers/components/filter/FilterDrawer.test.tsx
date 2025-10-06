@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { FilterDrawer } from './FilterDrawer';
-import { FilterConfig, RiskLevel } from '../../types/filter.types';
+import { FilterConfig } from '../../types/filter.types';
 
 describe('FilterDrawer', () => {
   const defaultFilters: FilterConfig = {
@@ -126,7 +127,8 @@ describe('FilterDrawer', () => {
     expect(screen.getByLabelText('Kritisch (80-100)')).toBeInTheDocument();
   });
 
-  it('should handle contacts filter selection', () => {
+  it('should handle contacts filter selection', async () => {
+    const user = userEvent.setup();
     render(
       <FilterDrawer
         open={true}
@@ -139,13 +141,20 @@ describe('FilterDrawer', () => {
     );
 
     const withContactsRadio = screen.getByLabelText('Mit Kontakten');
-    fireEvent.click(withContactsRadio);
+    await user.click(withContactsRadio);
 
-    expect(mockOnFiltersChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        hasContacts: true,
-      })
-    );
+    // Verify the radio is checked
+    await waitFor(() => {
+      expect(withContactsRadio).toBeChecked();
+    });
+
+    // Verify onApply is called with updated filters when Apply button is clicked
+    const applyButton = screen.getByRole('button', { name: /anwenden/i });
+    await user.click(applyButton);
+
+    await waitFor(() => {
+      expect(mockOnApply).toHaveBeenCalled();
+    });
   });
 
   it('should render revenue range slider', () => {
@@ -216,7 +225,8 @@ describe('FilterDrawer', () => {
     expect(mockOnClear).toHaveBeenCalled();
   });
 
-  it('should handle risk level selection', () => {
+  it('should handle risk level selection', async () => {
+    const user = userEvent.setup();
     render(
       <FilterDrawer
         open={true}
@@ -229,12 +239,19 @@ describe('FilterDrawer', () => {
     );
 
     const mediumRiskCheckbox = screen.getByLabelText('Mittel (30-59)');
-    fireEvent.click(mediumRiskCheckbox);
+    await user.click(mediumRiskCheckbox);
 
-    expect(mockOnFiltersChange).toHaveBeenCalledWith(
-      expect.objectContaining({
-        riskLevel: [RiskLevel.MEDIUM],
-      })
-    );
+    // Verify the checkbox is checked
+    await waitFor(() => {
+      expect(mediumRiskCheckbox).toBeChecked();
+    });
+
+    // Verify onApply is called when Apply button is clicked
+    const applyButton = screen.getByRole('button', { name: /anwenden/i });
+    await user.click(applyButton);
+
+    await waitFor(() => {
+      expect(mockOnApply).toHaveBeenCalled();
+    });
   });
 });

@@ -6,7 +6,7 @@ import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.test.builders.ContactTestDataFactory;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -42,15 +42,14 @@ public class ContactPerformanceTest {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
-
   private Customer testCustomer;
 
   @BeforeEach
   @TestTransaction
   void setUp() {
-    // Create test customer using CustomerBuilder
-    testCustomer = customerBuilder.withCompanyName("Performance Test Company").build();
+    // Create test customer using CustomerTestDataFactory
+    testCustomer =
+        CustomerTestDataFactory.builder().withCompanyName("Performance Test Company").build();
     // Override auto-generated values for performance test
     testCustomer.setCustomerNumber("PERF-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix

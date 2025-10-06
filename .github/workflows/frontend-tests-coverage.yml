@@ -1,0 +1,52 @@
+name: Frontend Tests & Coverage
+
+# DEACTIVATED: Coverage is now tracked locally with:
+# - npm run test:ui (interactive)
+# - npm run test:coverage (HTML report)
+# See docs/COVERAGE_GUIDE.md for details
+
+on:
+  workflow_dispatch:  # Manual trigger only
+
+jobs:
+  test:
+    name: Run Tests with Coverage
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+        continue-on-error: true
+
+      - name: Archive coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage/
+          retention-days: 30
+
+      - name: Upload coverage summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-summary
+          path: frontend/coverage/coverage-summary.json
+          retention-days: 7

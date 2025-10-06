@@ -3,7 +3,7 @@ package de.freshplan.domain.customer.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import de.freshplan.domain.customer.entity.*;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import de.freshplan.test.utils.BaseIntegrationTest;
 import io.quarkus.panache.common.Page;
 import io.quarkus.test.TestTransaction;
@@ -35,8 +35,6 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
-
   private UUID testCustomerId;
   private Statistics hibernateStats;
 
@@ -45,12 +43,11 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
     timelineRepository.deleteAll();
     customerRepository.delete("customerNumber LIKE ?1", "PERF-TEST-%");
 
-    // Create test customer using CustomerBuilder
+    // Create test customer using CustomerTestDataFactory
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName("Performance Test Company")
             .withStatus(CustomerStatus.AKTIV)
-            .withType(CustomerType.UNTERNEHMEN)
             .withIndustry(Industry.SONSTIGE)
             .build();
     // Override auto-generated values

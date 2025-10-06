@@ -11,7 +11,7 @@ import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.CustomerTimelineService;
 import de.freshplan.domain.customer.service.dto.timeline.*;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -54,8 +54,6 @@ class TimelineCQRSIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
-
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
 
@@ -70,9 +68,9 @@ class TimelineCQRSIntegrationTest {
   }
 
   private void createTestCustomer() {
-    // Create a test customer for timeline events using CustomerBuilder
+    // Create a test customer for timeline events using CustomerTestDataFactory
     testCustomer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName("[TEST] Timeline Test Company " + uniqueSuffix)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)

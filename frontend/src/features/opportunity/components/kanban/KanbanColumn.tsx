@@ -36,6 +36,12 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
       id: stage,
     });
 
+    // Guard against undefined config
+    if (!config) {
+      console.warn(`No configuration found for stage: ${stage}`);
+      return null;
+    }
+
     return (
       <Paper
         ref={setNodeRef}

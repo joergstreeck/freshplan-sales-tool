@@ -1,7 +1,7 @@
 // Sprint 2.1.5 Frontend Phase 2 - LeadWizard Integration Tests (MSW-based)
 // Test Coverage: Progressive Flow, DSGVO Consent Validation, Stage-Transition Rules
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import userEvent from '@testing-library/user-event';
@@ -28,8 +28,11 @@ async function fillErstkontaktFields(user: ReturnType<typeof userEvent.setup>) {
   const dateField = screen.getByLabelText(/zeitpunkt/i);
   await user.type(dateField, '2025-10-04T14:30');
 
-  const notesField = screen.getByLabelText(/notizen/i);
-  await user.type(notesField, 'Messestand Berlin - Interesse an Frischekalkulator');
+  // Use getAllByLabelText and select the second "Notizen" field (the Erstkontakt one)
+  // First one is "Notizen / Quelle (optional)", second one is the Erstkontakt "Notizen"
+  const notesFields = screen.getAllByLabelText(/notizen/i);
+  const erstkontaktNotesField = notesFields[1]; // Second field is the Erstkontakt notes
+  await user.type(erstkontaktNotesField, 'Messestand Berlin - Interesse an Frischekalkulator');
 }
 
 // MSW Server Setup

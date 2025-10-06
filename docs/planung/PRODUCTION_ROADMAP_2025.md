@@ -10,9 +10,9 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (45% complete)
-- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (05.10.2025) - **PR #129 MERGED** 🎉
-- **Progress:** 11/36 PRs - 31% done (Sprint 2.1.5 Backend+Frontend COMPLETE)
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (48% complete)
+- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (05.10.2025) - **PR #129, #131 MERGED** 🎉
+- **Progress:** 12/36 PRs - 33% done (Sprint 2.1.5 COMPLETE + Lead Stage Enum)
 - **Blockers:** Issue #130 (TestDataBuilder Konflikt - Worktree CI temporär deaktiviert)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
@@ -116,22 +116,36 @@ Sprint 2.1.5: Progressive Profiling   ✅ COMPLETE (05.10.2025) → PR #124 Back
                                       → **Verschoben auf 2.1.6:** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
-Sprint 2.1.6: Transfer & Migration    📅 PLANNED (12-18.10.2025)
-                                      → **PR #130:** TestDataBuilder Refactoring (Issue #130, BLOCKER für Worktree CI)
-                                      → **PR #131:** Lead Stage Enum (Issue #125, Type Safety - 2-3h)
-                                      → Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import)
-                                      → Lead → Kunde Convert Flow (automatische Übernahme bei Status QUALIFIED → CONVERTED)
-                                      → Stop-the-Clock UI (Manager-only, StopTheClockDialog)
-                                      → Extended Lead-Transfer Workflow (mit Genehmigung)
-                                      → V259 lead_transfers + consent_given_at, Nightly Jobs (Warning/Expiry/Pseudonymisierung)
-                                      → Fuzzy-Matching & Scoring (Levenshtein-Distance, pg_trgm)
+Sprint 2.1.6: Lead Completion         🔧 IN PROGRESS (12-18.10.2025) - UPDATED 05.10.2025
+                                      → **PRIORITY #0 (BLOCKER):** Issue #130 - TestDataBuilder CDI-Konflikt (12 Tests broken, Worktree CI disabled)
+                                      → **QUICK FIX:** Legacy Builder löschen (src/main/java/de/freshplan/test/builders/), Tests migrieren (1-2h)
+                                      → **Kern-Deliverables:**
+                                        - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run + Real Import)
+                                        - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
+                                        - Stop-the-Clock UI (Manager-only, StopTheClockDialog)
+                                        - Backdating Endpoint (PUT /api/leads/{id}/registered-at)
+                                        - Automated Jobs (Nightly: Progress Warning, Expiry, Pseudonymisierung)
+                                      → **Optional (ADR-006 Phase 2):**
+                                        - Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
+                                        - Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)
+                                        - Lead-Activity-Timeline (Interaktions-Historie)
+                                        - MUI Dialog Accessibility Fix (WCAG 2.1 Level A - aria-hidden Warning)
+                                      → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching (Scope-Overflow)
+                                      → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
-Sprint 2.1.7: Scoring & Mobile        📅 PLANNED (19-25.10.2025)
-                                      → Lead-Scoring Algorithmus (0-100 Punkte, V260 Migration)
-                                      → Activity-Templates System (V261 Migration, CRUD-API)
-                                      → Mobile-First UI Optimierung (Touch, Breakpoints <768px, Bundle <200KB)
-                                      → Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
-                                      → QR-Code-Scanner für schnelle Kontakterfassung (vCard/meCard Import)
+Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2025
+                                      → **Track 1 - Business (verschoben aus 2.1.6):**
+                                        - Lead-Transfer Workflow (V260: lead_transfers, POST /api/leads/{id}/transfer, 48h SLA)
+                                        - Fuzzy-Matching & Review (Scoring-Algorithmus: Email 40%, Phone 30%, Company 20%, Address 10%)
+                                        - Row-Level-Security (V261: RLS Policies - owner, team, admin, transfer_recipient)
+                                        - Team Management (V262: teams + team_members, CRUD-API, Quotenregelung)
+                                      → **Track 2 - Test Infrastructure (NEU - STRATEGISCH!):**
+                                        - CRM Szenario-Builder (Lead-Journey, Customer-Journey, Opportunity-Pipeline)
+                                        - Faker-Integration (RealisticDataGenerator für deutsche Testdaten)
+                                        - Lead-spezifische TestDataFactories (LeadTestDataFactory, LeadActivityTestDataFactory)
+                                        - Test-Pattern Library (TESTING_PATTERNS.md, TEST_DATA_CHEATSHEET.md)
+                                      → **Begründung Track 2:** Quality Investment für Sprint 2.2+ Velocity, Test-Szenarien für Onboarding
+                                      → [TRIGGER_SPRINT_2_1_7.md](TRIGGER_SPRINT_2_1_7.md)
 Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit                🟡 Planning → CQRS-optimiert

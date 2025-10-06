@@ -26,6 +26,7 @@ export const isRequired = (value: string): boolean => {
 
 // Number validation
 export const isValidNumber = (value: string): boolean => {
+  if (value.trim() === '') return false; // Empty strings should be invalid
   return !isNaN(Number(value)) && Number(value) >= 0;
 };
 

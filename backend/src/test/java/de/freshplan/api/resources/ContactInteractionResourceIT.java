@@ -8,19 +8,18 @@ import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.CustomerStatus;
-import de.freshplan.domain.customer.entity.FinancingType;
-import de.freshplan.domain.customer.entity.PartnerStatus;
-import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.customer.repository.ContactInteractionRepository;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineEventRepository;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.ContactTestDataFactory;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -41,7 +40,7 @@ class ContactInteractionResourceIT {
 
   @Inject ContactInteractionRepository interactionRepository;
 
-  @Inject CustomerBuilder customerBuilder;
+  @Inject EntityManager entityManager;
 
   @Inject OpportunityRepository opportunityRepository;
 
@@ -79,36 +78,29 @@ class ContactInteractionResourceIT {
         "T"
             + System.currentTimeMillis() % 1000000
             + UUID.randomUUID().toString().substring(0, 4).toUpperCase();
-    // Create test customer using CustomerBuilder
+
+    // Create test customer using TestDataFactory pattern
     Customer testCustomer =
-        customerBuilder
-            .withCompanyName("[TEST] Test Company GmbH")
+        CustomerTestDataFactory.builder()
+            .withCompanyName("[" + testMarker + "] Test Company GmbH")
+            .withCustomerNumber(testMarker)
             .withStatus(CustomerStatus.LEAD)
-            .withPartnerStatus(PartnerStatus.KEIN_PARTNER)
-            .withPaymentTerms(PaymentTerms.NETTO_30)
-            .build();
+            .asTestData(true)
+            .buildAndPersist(customerRepository);
 
-    // Use unique test marker to avoid conflicts
-    testCustomer.setCompanyName("[" + testMarker + "] Test Company GmbH");
-    testCustomer.setCustomerNumber(testMarker);
-    testCustomer.setIsTestData(true); // Mark as test data
-    testCustomer.setPrimaryFinancing(FinancingType.PRIVATE); // Sprint 2 field
-
-    customerRepository.persist(testCustomer);
     testCustomerId = testCustomer.getId();
 
-    // Create test contact directly without ContactBuilder to avoid generated bean issue
-    CustomerContact testContact = new CustomerContact();
-    testContact.setCustomer(testCustomer);
-    testContact.setFirstName("Max");
-    testContact.setLastName("Mustermann");
-    testContact.setEmail("max@company.com");
-    testContact.setIsActive(true);
-    testContact.setIsDeleted(false);
-    testContact.setCreatedAt(LocalDateTime.now());
-    testContact.setCreatedBy("test-builder");
+    // Create test contact using TestDataFactory pattern
+    CustomerContact testContact =
+        ContactTestDataFactory.builder()
+            .forCustomer(testCustomer)
+            .withFirstName("Max")
+            .withLastName("Mustermann")
+            .withEmail("max@company.com")
+            .withIsPrimary(false)
+            // isDecisionMaker defaults to false, no need to set it
+            .buildAndPersist(customerRepository, entityManager);
 
-    contactRepository.persist(testContact);
     testContactId = testContact.getId();
   }
 

@@ -1,17 +1,14 @@
-# TEMPORARILY DISABLED: TestDataBuilder conflicts between src/main and src/test
-# See issue: https://github.com/joergstreeck/freshplan-sales-tool/issues/130
-# This entire workflow is disabled until the TestDataBuilder refactoring is complete
+# ✅ FIXED: Issue #130 - TestDataBuilder CDI conflicts resolved (Sprint 2.1.6)
+# All legacy builders removed from src/main, tests migrated to TestDataFactory pattern
 
 name: Worktree CI
 
 on:
-  workflow_dispatch: # Manual trigger only
-
-# Disabled automatic triggers:
-#  push:
-#    branches: [ 'feature/*' ]
-#  pull_request:
-#    branches: [ 'feature/*' ]
+  push:
+    branches: [ 'feature/*' ]
+  pull_request:
+    branches: [ 'feature/*' ]
+  workflow_dispatch: # Manual trigger also available
 
 jobs:
   backend:
@@ -90,57 +87,55 @@ jobs:
         working-directory: frontend
         run: npm run build
 
-  # TEMPORARILY DISABLED: TestDataBuilder conflicts between src/main and src/test
-  # See issue: https://github.com/joergstreeck/freshplan-sales-tool/issues/130
-  # testing:
-  #   name: Test Suite Expansion
-  #   runs-on: ubuntu-latest
-  #
-  #   services:
-  #     postgres:
-  #       image: postgres:15-alpine
-  #       env:
-  #         POSTGRES_DB: freshplan
-  #         POSTGRES_USER: freshplan
-  #         POSTGRES_PASSWORD: freshplan
-  #       ports:
-  #         - 5432:5432
-  #       options: >-
-  #         --health-cmd pg_isready
-  #         --health-interval 10s
-  #         --health-timeout 5s
-  #         --health-retries 5
-  #
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #       with:
-  #         fetch-depth: 0
-  #
-  #     - name: Set up JDK 17
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         java-version: '17'
-  #         distribution: 'temurin'
-  #
-  #     - name: Set up Maven
-  #       uses: stCarolas/setup-maven@v5
-  #       with:
-  #         maven-version: '3.9.6'
-  #
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v4
-  #       with:
-  #         node-version: '20'
-  #
-  #     - name: Run expanded test suite
-  #       run: |
-  #         echo "🧪 Running expanded test coverage..."
-  #         cd backend
-  #         mvn -Pgreen clean verify
-  #
-  #     - name: Coverage Report
-  #       if: always()
-  #       run: |
-  #         cd backend
-  #         mvn jacoco:report
-  #         echo "📊 Coverage report generated"
+  testing:
+    name: Test Suite Expansion
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: '3.9.6'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run expanded test suite
+        run: |
+          echo "🧪 Running expanded test coverage..."
+          cd backend
+          mvn -Pgreen clean verify
+
+      - name: Coverage Report
+        if: always()
+        run: |
+          cd backend
+          mvn jacoco:report
+          echo "📊 Coverage report generated"

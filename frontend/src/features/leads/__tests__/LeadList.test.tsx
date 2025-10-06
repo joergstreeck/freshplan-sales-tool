@@ -59,8 +59,9 @@ describe('LeadList', () => {
     render(<LeadList />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /create lead/i })).toBeInTheDocument();
+      expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
+      const buttons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
+      expect(buttons.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -88,13 +89,17 @@ describe('LeadList', () => {
     render(<LeadList />, { wrapper: Wrapper });
 
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /create lead/i })).toBeInTheDocument();
+      const buttons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
+      expect(buttons.length).toBeGreaterThanOrEqual(1);
     });
 
-    await user.click(screen.getByRole('button', { name: /create lead/i }));
+    const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
+    await user.click(createButtons[0]);
 
-    expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByLabelText(/name/i)).toBeInTheDocument();
+    });
   });
 
   it('refreshes list after lead creation', async () => {
@@ -109,18 +114,26 @@ describe('LeadList', () => {
 
     // Wait for empty state
     await waitFor(() => {
-      expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+      expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
     });
 
     // Open create dialog
-    await user.click(screen.getByRole('button', { name: /create lead/i }));
+    const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
+    await user.click(createButtons[0]);
 
     // Fill form
     await user.type(screen.getByLabelText(/name/i), 'New Lead');
     await user.type(screen.getByLabelText(/e.?mail/i), 'new@example.com');
 
-    // Submit
-    await user.click(screen.getByRole('button', { name: /create lead/i }));
+    // Submit - get the dialog button specifically
+    await waitFor(() => {
+      expect(screen.getByRole('dialog')).toBeInTheDocument();
+    });
+    const dialogButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
+    const saveButton = dialogButtons.find(btn => btn.closest('[role="dialog"]'));
+    if (saveButton) {
+      await user.click(saveButton);
+    }
 
     // Verify API calls
     expect(mockApi.createLead).toHaveBeenCalledWith({

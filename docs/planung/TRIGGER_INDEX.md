@@ -9,6 +9,27 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
 
 ---
 
+## 🔧 GIT WORKFLOW (KRITISCH!)
+
+**⚠️ ALLE TRIGGER-DOKUMENTE enthalten ab 2025-10-05 GIT PUSH POLICY:**
+
+### 🚫 VERBOTEN (ohne explizite User-Freigabe):
+- **`git push`** - NIEMALS ohne User-Erlaubnis pushen!
+- **PR-Erstellung** - Nur auf explizite Anforderung
+- **PR-Merge** - Nur wenn User explizit zustimmt
+- **Branch-Deletion** - Remote-Branches nur mit User-OK löschen
+
+### ✅ Standard-Workflow:
+1. **Feature-Branch anlegen & Arbeiten**
+2. **Commits erstellen** (nach User-Anfrage)
+3. **User fragen:** "Branch ist bereit. Soll ich pushen und PR erstellen?"
+4. **Erst nach Freigabe:** `git push` + PR-Erstellung
+
+**Referenz:** `/CLAUDE.md` → Sektion "🚫 GIT PUSH POLICY (KRITISCH!)"
+**Dokumentiert in:** Alle TRIGGER_SPRINT_*.md Dokumente (2.1.6 - 3.3)
+
+---
+
 ## 🗺️ ALLE TRIGGER-TEXTS ÜBERSICHT
 
 ### **PHASE 1: FOUNDATION (6 Sprints) - ✅ COMPLETE**
@@ -89,21 +110,55 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - 39 Tests (31 Normalization + 8 Idempotency) ✅
    - Status: ✅ COMPLETE (Backend fertig)
 
-🔧 TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling
+✅ TRIGGER_SPRINT_2_1_5.md - Lead Protection & Progressive Profiling
    - 6-Monats-Schutz + 60-Tage-Aktivitätsstandard
-   - Stop-the-Clock Mechanismus
+   - Stop-the-Clock Mechanismus (Backend)
    - Progressive Profiling (Stage 0/1/2)
-   - Protection-Endpoints (Reminder, Extend, Stop-Clock)
-   - Data-Retention-Plan + Compliance
-   - Status: 🔧 IN PROGRESS
+   - Protection-Endpoints (Backend V255-V257)
+   - Frontend: LeadWizard + Context-Prop Architecture (CustomersPageV2)
+   - ADR-004: Inline-First Architecture, ADR-006: Hybrid Lead-UI
+   - Status: ✅ COMPLETE (Backend PR #124, Frontend PR #129, Enum PR #131)
 
-📋 TRIGGER_SPRINT_2_1_6.md - Lead Transfer & Team Management
-   - Lead-Transfer zwischen Partnern
-   - Team-basierte Sichtbarkeit (RLS Phase 1)
-   - Fuzzy-Matching & Review-Flow (verschoben aus 2.1.5)
-   - Merge/Unmerge mit Identitätsgraph
-   - ADR-003 Row-Level-Security Design
-   - Status: 📋 PLANNED
+🔧 TRIGGER_SPRINT_2_1_6.md - Lead Completion & Admin Features (UPDATED 05.10.2025)
+   - **PRIORITY #0:** Issue #130 Fix (TestDataBuilder CDI-Konflikt - BLOCKER)
+   - Bestandsleads-Migrations-API (Modul 08 - Dry-Run + Real Import)
+   - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
+   - Stop-the-Clock UI (Frontend: StopTheClockDialog)
+   - Backdating Endpoint (PUT /api/leads/{id}/registered-at)
+   - Automated Jobs (Nightly: Progress Warning, Expiry, Pseudonymisierung)
+   - **OPTIONAL:** Lead-Scoring, Workflows, Activity-Timeline (ADR-006 Phase 2)
+   - **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
+   - **🟢 Backend-Status:** KEINE neuen Migrations nötig - Felder existieren bereits!
+   - **WICHTIGE DOKUMENTE:**
+     - [ISSUE_130_ANALYSIS.md](claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md)
+     - [BACKEND_STATUS_SPRINT_2_1_6.md](claude-work/daily-work/2025-10-05/BACKEND_STATUS_SPRINT_2_1_6.md)
+     - [CRITICAL_FIXES_SUMMARY.md](claude-work/daily-work/2025-10-05/CRITICAL_FIXES_SUMMARY.md)
+     - [2025-10-05_HANDOVER_FINAL.md](claude-work/daily-work/2025-10-05/2025-10-05_HANDOVER_FINAL.md)
+   - Status: 🔧 IN PROGRESS (Start: 12.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_7.md - Team Management & Test Infrastructure (NEU 05.10.2025)
+   - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
+   - **Track 2 - Test Infra:** CRM Szenario-Builder, Faker-Integration, Test-Patterns
+   - Strategisches Investment: Test-Qualität für Sprint 2.2+ Velocity
+   - Status: 📋 PLANNED (Start: 19.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_8.md - DSGVO Compliance & Lead-Import (NEU 05.10.2025)
+   - **🔴 GESETZLICH PFLICHT:** DSGVO-Auskunfts-Recht (Art. 15), DSGVO-Lösch-Recht (Art. 17)
+   - **🔴 B2B-STANDARD:** Lead-Import via CSV/Excel (Self-Service Bulk-Import)
+   - DSGVO-Einwilligungs-Widerruf (Art. 7 Abs. 3)
+   - Advanced Search (Full-Text-Search über alle Lead-Felder)
+   - BANT-Qualifizierungs-Wizard (Budget, Authority, Need, Timeline)
+   - **Migrations:** 5 DB-Änderungen (Nummern: siehe `get-next-migration.sh` - DSGVO, Import, Search, BANT)
+   - **Aufwand:** 40-56h (~1 Woche)
+   - Status: 📋 PLANNED (Start: 26.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_9.md - Lead-Kollaboration & Tracking (NEU 05.10.2025)
+   - Lead-Notizen & Kommentare (Team-Kollaboration)
+   - Lead-Status-Änderungs-Historie (Audit-Trail für Status-Änderungen)
+   - Lead-Temperatur (Hot/Warm/Cold - Visuelle Priorisierung)
+   - **Migrations:** 3 DB-Änderungen (Nummern: siehe `get-next-migration.sh` - Notizen, Historie, Temperatur)
+   - **Aufwand:** 12-17h (~2-3 Tage)
+   - Status: 📋 PLANNED (Start: 02.11.2025)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

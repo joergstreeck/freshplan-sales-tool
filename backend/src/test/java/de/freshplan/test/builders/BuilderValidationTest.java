@@ -22,7 +22,7 @@ class BuilderValidationTest {
 
     // Then - Validierung 3a
     assertThat(customer.getIsTestData()).isTrue();
-    assertThat(customer.getCustomerNumber()).startsWith("KD-TEST-");
+    assertThat(customer.getCustomerNumber()).startsWith("TST-"); // Updated format (was KD-TEST-)
     assertThat(customer.getCompanyName()).isEqualTo("My Test Company");
     assertThat(customer.getStatus()).isNotNull();
 

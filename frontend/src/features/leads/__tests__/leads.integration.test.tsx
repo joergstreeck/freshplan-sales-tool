@@ -85,11 +85,11 @@ describe('Lead Management Integration Tests', () => {
 
       // Wait for list to load
       await waitFor(() => {
-        expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+        expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
       });
 
       // Open dialog by clicking either button (header or empty state)
-      const createButtons = screen.getAllByRole('button', { name: /create lead/i });
+      const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
       await user.click(createButtons[0]);
 
       // Dialog should be open
@@ -98,7 +98,7 @@ describe('Lead Management Integration Tests', () => {
       });
 
       const nameInput = screen.getByLabelText(/name/i);
-      const saveButton = screen.getByRole('button', { name: /create lead/i });
+      const saveButton = screen.getByRole('button', { name: /create lead|lead anlegen/i });
 
       // Type only 1 character
       await user.clear(nameInput);
@@ -107,7 +107,7 @@ describe('Lead Management Integration Tests', () => {
 
       // Should show validation error
       await waitFor(() => {
-        expect(screen.getByText(/mindestens 2 zeichen|at least 2 characters/i)).toBeInTheDocument();
+        expect(screen.getByText(/at least 2 characters|mindestens 2 zeichen/i)).toBeInTheDocument();
       });
     });
 
@@ -118,11 +118,15 @@ describe('Lead Management Integration Tests', () => {
       render(<LeadList />, { wrapper: TestWrapper });
 
       await waitFor(() => {
-        expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+        expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
       });
 
-      const createButtons = screen.getAllByRole('button', { name: /create lead/i });
+      const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
       await user.click(createButtons[0]);
+
+      await waitFor(() => {
+        expect(screen.getByRole('dialog')).toBeInTheDocument();
+      });
 
       const nameInput = screen.getByLabelText(/name/i);
       const emailInput = screen.getByLabelText(/e.?mail/i);
@@ -130,8 +134,15 @@ describe('Lead Management Integration Tests', () => {
       await user.type(nameInput, 'Valid Name');
       await user.type(emailInput, 'invalid-email');
 
+      await waitFor(() => {
+        const dialogSaveButton = screen
+          .getAllByRole('button', { name: /create lead|lead anlegen/i })
+          .find(btn => btn.closest('[role="dialog"]'));
+        expect(dialogSaveButton).toBeInTheDocument();
+      });
+
       const dialogSaveButton = screen
-        .getAllByRole('button', { name: /create lead/i })
+        .getAllByRole('button', { name: /create lead|lead anlegen/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -139,7 +150,9 @@ describe('Lead Management Integration Tests', () => {
       }
 
       await waitFor(() => {
-        expect(screen.getByText(/invalid.*email|ungültig/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/please enter a valid|invalid|ungültig|bitte eine gültige/i)
+        ).toBeInTheDocument();
       });
     });
 
@@ -158,10 +171,10 @@ describe('Lead Management Integration Tests', () => {
       render(<LeadList />, { wrapper: TestWrapper });
 
       await waitFor(() => {
-        expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+        expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
       });
 
-      const createButtons = screen.getAllByRole('button', { name: /create lead/i });
+      const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
       await user.click(createButtons[0]);
 
       const nameInput = screen.getByLabelText(/name/i);
@@ -171,7 +184,7 @@ describe('Lead Management Integration Tests', () => {
       await user.type(emailInput, 'duplicate@example.com');
 
       const dialogSaveButton = screen
-        .getAllByRole('button', { name: /create lead/i })
+        .getAllByRole('button', { name: /create lead|lead anlegen/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -202,10 +215,10 @@ describe('Lead Management Integration Tests', () => {
       render(<LeadList />, { wrapper: TestWrapper });
 
       await waitFor(() => {
-        expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+        expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
       });
 
-      const createButtons = screen.getAllByRole('button', { name: /create lead/i });
+      const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
       await user.click(createButtons[0]);
 
       const nameInput = screen.getByLabelText(/name/i);
@@ -215,7 +228,7 @@ describe('Lead Management Integration Tests', () => {
       await user.type(emailInput, 'new@example.com');
 
       const dialogSaveButton = screen
-        .getAllByRole('button', { name: /create lead/i })
+        .getAllByRole('button', { name: /create lead|lead anlegen/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -250,17 +263,17 @@ describe('Lead Management Integration Tests', () => {
       render(<LeadList />, { wrapper: TestWrapper });
 
       await waitFor(() => {
-        expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+        expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
       });
 
-      const createButtons = screen.getAllByRole('button', { name: /create lead/i });
+      const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
       await user.click(createButtons[0]);
 
       const nameInput = screen.getByLabelText(/name/i);
       await user.type(nameInput, 'Manual Entry Lead');
 
       const dialogSaveButton = screen
-        .getAllByRole('button', { name: /create lead/i })
+        .getAllByRole('button', { name: /create lead|lead anlegen/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -293,17 +306,17 @@ describe('Lead Management Integration Tests', () => {
       render(<LeadList />, { wrapper: TestWrapper });
 
       await waitFor(() => {
-        expect(screen.getByText(/keine leads vorhanden/i)).toBeInTheDocument();
+        expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
       });
 
-      const createButtons = screen.getAllByRole('button', { name: /create lead/i });
+      const createButtons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
       await user.click(createButtons[0]);
 
       const nameInput = screen.getByLabelText(/name/i);
       await user.type(nameInput, 'X');
 
       const dialogSaveButton = screen
-        .getAllByRole('button', { name: /create lead/i })
+        .getAllByRole('button', { name: /create lead|lead anlegen/i })
         .find(btn => btn.closest('[role="dialog"]'));
 
       if (dialogSaveButton) {
@@ -312,7 +325,9 @@ describe('Lead Management Integration Tests', () => {
 
       await waitFor(() => {
         const nameField = screen.getByLabelText(/name/i).parentElement?.parentElement;
-        expect(nameField?.querySelector('.MuiFormHelperText-root')).toHaveTextContent(/too short/i);
+        expect(nameField?.querySelector('.MuiFormHelperText-root')).toHaveTextContent(
+          /at least 2 characters|mindestens 2 zeichen|too short/i
+        );
       });
     });
   });

@@ -14,10 +14,21 @@ const localStorageMock = {
 };
 Object.defineProperty(window, 'localStorage', { value: localStorageMock });
 
+// Mock sessionStorage
+const sessionStorageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+};
+Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
+
 describe('Leads API', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.stubEnv('VITE_API_BASE_URL', 'http://localhost:8080');
+    localStorageMock.getItem.mockReturnValue(null);
+    sessionStorageMock.getItem.mockReturnValue(null);
+    vi.stubEnv('VITE_API_URL', 'http://localhost:8080');
   });
 
   describe('listLeads', () => {
@@ -29,7 +40,7 @@ describe('Leads API', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(mockLeads),
+        json: () => Promise.resolve({ data: mockLeads }),
       } as Response);
 
       const result = await listLeads();
@@ -46,7 +57,7 @@ describe('Leads API', () => {
 
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve([]),
+        json: () => Promise.resolve({ data: [] }),
       } as Response);
 
       await listLeads();
@@ -94,7 +105,7 @@ describe('Leads API', () => {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, source: 'manual' }),
         credentials: 'include',
       });
       expect(result).toEqual(mockResponse);
@@ -117,7 +128,7 @@ describe('Leads API', () => {
           'Content-Type': 'application/json',
           Accept: 'application/json',
         },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ ...payload, source: 'manual' }),
         credentials: 'include',
       });
     });

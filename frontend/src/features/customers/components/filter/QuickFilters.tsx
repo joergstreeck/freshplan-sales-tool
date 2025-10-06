@@ -23,40 +23,45 @@ export interface QuickFilter {
   filter: Partial<FilterConfig>;
 }
 
+// Quick Filter Presets - exported for testing
+export const QUICK_FILTERS: QuickFilter[] = [
+  {
+    id: 'active',
+    label: 'Aktive Kunden',
+    icon: <ActiveIcon fontSize="small" />,
+    filter: { status: [CustomerStatus.AKTIV] },
+  },
+  {
+    id: 'inactive',
+    label: 'Inaktive Kunden',
+    icon: <InactiveIcon fontSize="small" />,
+    filter: { status: [CustomerStatus.INAKTIV] },
+  },
+];
+
+export const LEAD_FILTERS: QuickFilter[] = [
+  {
+    id: 'leads',
+    label: 'Leads',
+    icon: <ActiveIcon fontSize="small" />,
+    filter: { status: [CustomerStatus.LEAD] },
+  },
+  {
+    id: 'prospects',
+    label: 'Prospects',
+    icon: <InactiveIcon fontSize="small" />,
+    filter: { status: [CustomerStatus.PROSPECT] },
+  },
+];
+
 // Quick Filter Presets - Context-based
 const getQuickFilters = (context: 'customers' | 'leads'): QuickFilter[] => {
   if (context === 'leads') {
-    return [
-      {
-        id: 'leads',
-        label: 'Leads',
-        icon: <ActiveIcon fontSize="small" />,
-        filter: { status: [CustomerStatus.LEAD] },
-      },
-      {
-        id: 'prospects',
-        label: 'Prospects',
-        icon: <InactiveIcon fontSize="small" />,
-        filter: { status: [CustomerStatus.PROSPECT] },
-      },
-    ];
+    return LEAD_FILTERS;
   }
 
   // Default: customers context
-  return [
-    {
-      id: 'active',
-      label: 'Aktive Kunden',
-      icon: <ActiveIcon fontSize="small" />,
-      filter: { status: [CustomerStatus.AKTIV] },
-    },
-    {
-      id: 'inactive',
-      label: 'Inaktive Kunden',
-      icon: <InactiveIcon fontSize="small" />,
-      filter: { status: [CustomerStatus.INAKTIV] },
-    },
-  ];
+  return QUICK_FILTERS;
 };
 
 interface QuickFiltersProps {

@@ -12,7 +12,7 @@ import de.freshplan.domain.customer.service.dto.CustomerDashboardResponse;
 import de.freshplan.domain.customer.service.dto.CustomerListResponse;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
-import de.freshplan.test.builders.CustomerBuilder;
+import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
@@ -40,15 +40,13 @@ class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerBuilder customerBuilder;
-
   private UUID testCustomerId;
   private String testCustomerNumber;
 
   private void setupTestData() {
     // Create a test customer directly in DB for read tests using CustomerBuilder
     Customer testCustomer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName("Test Company GmbH")
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)
@@ -370,7 +368,7 @@ class CustomerQueryServiceIntegrationTest {
   void createAdditionalTestCustomers(int count) {
     for (int i = 1; i <= count; i++) {
       Customer customer =
-          customerBuilder
+          CustomerTestDataFactory.builder()
               .withCompanyName("Test Company " + i)
               .withStatus(CustomerStatus.AKTIV)
               .withIndustry(Industry.HOTEL)
@@ -394,7 +392,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithStatus(CustomerStatus status, String name) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withStatus(status)
             .withIndustry(Industry.HOTEL)
@@ -417,7 +415,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithIndustry(Industry industry, String name) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(industry)
@@ -440,7 +438,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithRiskScore(int riskScore, String name) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)
@@ -463,7 +461,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithLastContact(LocalDateTime lastContact, String name) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)
@@ -488,7 +486,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithName(String name) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)
@@ -511,7 +509,7 @@ class CustomerQueryServiceIntegrationTest {
   @TestTransaction
   void createCustomerWithLifecycleStage(CustomerLifecycleStage stage, String name) {
     Customer customer =
-        customerBuilder
+        CustomerTestDataFactory.builder()
             .withCompanyName(name)
             .withStatus(CustomerStatus.AKTIV)
             .withIndustry(Industry.HOTEL)

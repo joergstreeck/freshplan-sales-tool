@@ -47,6 +47,31 @@ Details: [Production Roadmap 2025](./docs/planung/PRODUCTION_ROADMAP_2025.md)
 - **Auth**: Keycloak (OIDC)
 - **Cloud**: AWS (ECS, RDS, CloudFront)
 
+### Test Coverage & CI
+[![Frontend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/frontend-tests-coverage.yml)
+[![Backend Tests](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml/badge.svg)](https://github.com/joergstreeck/freshplan-sales-tool/actions/workflows/backend-tests-coverage.yml)
+
+**Frontend:** 963 Tests passing (3 known issues) | Coverage: ~26-28%
+**Backend:** ~1500 Tests | Coverage: >80% (JaCoCo)
+
+📋 **Known Issues:** [frontend/KNOWN_ISSUES.md](./frontend/KNOWN_ISSUES.md)
+
+**🔥 Lokale Coverage-Tools (empfohlen):**
+```bash
+# Frontend: Interaktive UI mit Live-Coverage
+cd frontend && npm run test:ui
+
+# Frontend: HTML-Report generieren
+npm run test:coverage && open coverage/index.html
+
+# Backend: JaCoCo HTML-Report
+cd backend && ./mvnw verify && open target/site/jacoco/index.html
+```
+
+**📦 CI Artifacts:** Coverage-Reports werden als [GitHub Actions Artifacts](https://github.com/joergstreeck/freshplan-sales-tool/actions) gespeichert (30 Tage)
+
+📖 **Guides:** [Frontend Testing](./frontend/TESTING.md) | [Testing Guide](./docs/planung/grundlagen/TESTING_GUIDE.md)
+
 ## Mock-Governance (Business-Logic mock-frei)
 - Business-Pfade: `frontend/src/{app,features,lib,hooks,store}` dürfen keine Mocks importieren.
 - Ausnahmen: Tests/Stories/Fixtures.

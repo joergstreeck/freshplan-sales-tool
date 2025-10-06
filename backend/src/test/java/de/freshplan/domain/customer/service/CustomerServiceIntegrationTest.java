@@ -6,7 +6,6 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.*;
-import de.freshplan.test.builders.CustomerBuilder;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -39,7 +38,6 @@ class CustomerServiceIntegrationTest {
   @Inject CustomerService customerService;
   @Inject CustomerRepository customerRepository;
   @Inject EntityManager entityManager;
-  @Inject CustomerBuilder customerBuilder;
 
   private CreateCustomerRequest validCreateRequest;
   private UpdateCustomerRequest validUpdateRequest;
@@ -72,11 +70,10 @@ class CustomerServiceIntegrationTest {
 
     // Create valid request DTOs for integration tests
     validCreateRequest =
-        customerBuilder
-            .reset()
-            .withCompanyName("[TEST] Test Hotel GmbH")
-            .withType(CustomerType.UNTERNEHMEN)
-            .buildCreateRequest();
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Test Hotel GmbH")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
 
     validUpdateRequest =
         new UpdateCustomerRequest(
@@ -121,20 +118,18 @@ class CustomerServiceIntegrationTest {
   void createCustomer_withDuplicateCompanyName_shouldThrowException() {
     // Given - Create first customer with specific name
     CreateCustomerRequest firstRequest =
-        customerBuilder
-            .reset()
-            .withCompanyName("[TEST] Unique Hotel Name")
-            .withType(CustomerType.UNTERNEHMEN)
-            .buildCreateRequest();
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Unique Hotel Name")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
     customerService.createCustomer(firstRequest, "testuser");
 
     // When & Then - Try to create exact same company name (case-insensitive duplicate detection)
     CreateCustomerRequest duplicateRequest =
-        customerBuilder
-            .reset()
-            .withCompanyName("[TEST] Unique Hotel Name")
-            .withType(CustomerType.UNTERNEHMEN)
-            .buildCreateRequest();
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Unique Hotel Name")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
 
     assertThatThrownBy(() -> customerService.createCustomer(duplicateRequest, "testuser"))
         .isInstanceOf(CustomerAlreadyExistsException.class)
@@ -147,11 +142,10 @@ class CustomerServiceIntegrationTest {
   void createCustomer_withMinimalData_shouldCreateCustomer() {
     // Given
     CreateCustomerRequest minimalRequest =
-        customerBuilder
-            .reset()
-            .withCompanyName("[TEST] Minimal Company")
-            .withType(CustomerType.UNTERNEHMEN)
-            .buildCreateRequest();
+        CreateCustomerRequest.builder()
+            .companyName("[TEST] Minimal Company")
+            .customerType(CustomerType.UNTERNEHMEN)
+            .build();
 
     // When
     CustomerResponse result = customerService.createCustomer(minimalRequest, "testuser");

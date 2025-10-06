@@ -93,6 +93,12 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 - **Required Reviews bleiben** bestehen
 - **Token-Scope minimal** (read:repo, write:packages falls nötig)
 
+### 🚫 GIT PUSH POLICY (KRITISCH!)
+- **NIEMALS `git push` ohne explizite User-Erlaubnis!**
+- **NUR `git commit` automatisch erlaubt** (wenn User darum bittet)
+- **User entscheidet:** Wann und ob gepusht wird
+- **PR-Erstellung:** Nur auf explizite Anforderung
+
 ## 💻 MINIMAL-KOMMANDOS
 ```bash
 # Frontend

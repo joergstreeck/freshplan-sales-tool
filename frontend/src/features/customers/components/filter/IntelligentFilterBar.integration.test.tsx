@@ -280,8 +280,8 @@ describe('IntelligentFilterBar Integration Tests', () => {
         await user.click(filterButton);
         // Should show filter options
         await waitFor(() => {
-          const filterPanel = screen.queryByText(/Filter/i);
-          expect(filterPanel).toBeInTheDocument();
+          const filterPanels = screen.queryAllByText(/Filter/i);
+          expect(filterPanels.length).toBeGreaterThan(0);
         });
       }
     });
