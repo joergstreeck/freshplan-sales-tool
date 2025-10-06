@@ -10,32 +10,26 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (55% complete)
-- **Current Sprint:** ✅ Sprint 2.1.6 Phase 2 COMPLETE (06.10.2025) - **PR #133 MERGED**
-- **Active Branch:** main (clean state)
-- **Progress:** 14/36 PRs completed - 39% done
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (60% complete)
+- **Current Sprint:** ✅ Sprint 2.1.6 Phase 3 COMPLETE (07.10.2025) - **PR #134 MERGED**
+- **Active Branch:** feature/mod02-sprint-2.1.6-lead-ui-phase2
+- **Progress:** 15/36 PRs completed - 42% done
 - **Blockers:** ❌ Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉 **Sprint 2.1.6 Phase 2 COMPLETE - PR #133 MERGED** - BusinessType Harmonization + Admin-APIs
-  - ✅ **BusinessType Harmonization (Single Source of Truth):**
-    - Unified BusinessType Enum (9 Werte: RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
-    - V263: leads.business_type mit CHECK Constraint
-    - V264: customers.business_type + Data Migration (9 Industry → BusinessType Mappings)
-    - Frontend: EnumField Pattern + useBusinessTypes() Hook
-    - Backward Compatibility: Auto-sync industry ↔ businessType
-  - ✅ **Admin-APIs für Bestandsleads-Migration:**
-    - LeadImportService (303 LOC, 95% Coverage): Batch-Import mit Deduplication
-    - LeadBackdatingService (105 LOC, 92% Coverage): Zeitstempel-Korrektur
-    - LeadConvertService (206 LOC, 88% Coverage): Lead → Customer Conversion
-    - V261: Customer.originalLeadId, V262: Stop-the-Clock
-  - ✅ **Test-Fixes nach Gemini Code Review:**
-    - Settings Version Bug (Double-Increment) → em.refresh() Pattern
-    - LeadResourceTest (BusinessType Constraint) → RESTAURANT enum
-    - Timestamp Precision (PostgreSQL microseconds vs Java nanoseconds) → Entity reload
-    - ETag Timing → Fetch via GET statt POST response
-  - ✅ **Dokumentation:** 1062 Zeilen (HARMONIZATION_COMPLETE, ADR-007, FIELD_HARMONIZATION_PROPOSAL)
-- **Next Action:** Sprint 2.1.6 Phase 3 - Progressive Profiling (Issue #134)
+- **Latest:** 🎉 **Sprint 2.1.6 Phase 3 COMPLETE - PR #134 MERGED** - Automated Nightly Jobs + Outbox-Pattern
+  - ✅ **Automated Jobs (2 Services, ~588 LOC, 19 Tests GREEN):**
+    - LeadMaintenanceService (461 LOC): Progress Warning, Protection Expiry, Pseudonymization, Import Archival
+    - LeadMaintenanceScheduler (127 LOC): @Scheduled Cron Jobs
+  - ✅ **Outbox-Pattern (Transactional Email Queue):**
+    - OutboxEmail Entity (147 LOC): PENDING/SENT/FAILED, JSONB template_data
+    - V268 Migration: outbox_emails table mit Indexes
+  - ✅ **Idempotency (Issue #134):**
+    - ImportJob Entity (159 LOC): requestFingerprint (SHA-256), TTL 7 Tage
+    - Cached Response Replay bei duplicate imports
+  - ✅ **Migrations:** V265 (pseudonymizedAt), V266 (Customer.originalLeadId FK), V267 (ownerUserId nullable), V268 (outbox_emails)
+  - ✅ **CI-Fixes:** Panache Query Bug (camelCase), Test Isolation, V268 Schema-Fix, 6 Front-Matter Lint
+- **Next Action:** Sprint 2.1.6 Phase 4 - Job Monitoring & Performance
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
