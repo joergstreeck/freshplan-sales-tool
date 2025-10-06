@@ -10,24 +10,22 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (48% complete)
-- **Current Sprint:** ✅ Sprint 2.1.5 COMPLETE (05.10.2025) - **PR #129, #131 MERGED** 🎉
-- **Progress:** 12/36 PRs - 33% done (Sprint 2.1.5 COMPLETE + Lead Stage Enum)
-- **Blockers:** Issue #130 (TestDataBuilder Konflikt - Worktree CI temporär deaktiviert)
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (52% complete)
+- **Current Sprint:** ✅ Sprint 2.1.6 Phase 2 COMPLETE (06.10.2025) - **Commits 01819eb, ce9206a**
+- **Progress:** 13/36 PRs - 36% done (Sprint 2.1.6 Phase 2 Backend COMPLETE, Phase 1 PR #132 MERGED)
+- **Blockers:** ❌ Keine - Issue #130 RESOLVED (PR #132), Worktree CI reaktiviert
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉 **Sprint 2.1.5 COMPLETE** - PR #129 MERGED (Monster-PR: 56 Dateien, +8.525 LOC)
-  - ✅ **Frontend Implementation (1.468 LOC neu):**
-    - LeadWizard.tsx (812 LOC): Zwei-Felder-Lösung (Notizen vs. Erstkontakt)
-    - Pre-Claim Badge mit 10-Tage-Countdown in CustomerTable
-    - Server-Side Filtering mit Context-Prop Architecture
-    - LeadWizard Integration Tests (802 LOC, MSW-basiert)
-  - ✅ **Backend Extensions:**
-    - Migration V259: Remove leads_company_name_city_key (Pre-Claim Support)
-    - LeadDTO: +registeredAt, +protectionUntil, +progressDeadline
-  - ✅ **Dokumentation:** 5 neue Artefakte (3.814 LOC) + ADR-006
-  - ✅ **DSGVO:** Consent-Checkbox Stage 1, NICHT vorausgefüllt
-- **Next Sprint:** Sprint 2.1.6 (12-18.10.2025) - Migration-API, Convert Flow, Stop-the-Clock UI, Nightly Jobs
+- **Latest:** 🎉 **Sprint 2.1.6 Phase 2 COMPLETE** - Core Backend APIs (~2400 LOC, 33/33 Tests ✅)
+  - ✅ **Backend Services (3 neue Services):**
+    - LeadImportService (297 LOC): Batch-Import bis 1000 Leads, Dry-Run, SHA-256 Idempotency
+    - LeadBackdatingService (107 LOC): Historisches registeredAt + Deadline-Neuberechnung
+    - LeadConvertService (204 LOC): Lead → Customer + Location + Address + Contact (vollständig)
+  - ✅ **REST APIs:** POST /api/admin/migration/leads/import · PUT /api/leads/{id}/registered-at · POST /api/leads/{id}/convert
+  - ✅ **DB Migration V261:** Customer.originalLeadId (Soft Reference)
+  - ✅ **Smart Engineering:** Java Locale Country Code Mapping (200+ Länder, 0 Wartung)
+  - ✅ **Tests:** 33/33 (100% passing) - Import: 14, Backdating: 13, Convert: 6
+- **Next Sprint:** Sprint 2.1.6 Phase 3 (Automated Jobs), Phase 4 (Frontend UI + Excel Upload)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)

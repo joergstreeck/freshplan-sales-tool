@@ -580,20 +580,29 @@ void pseudonymizeExpiredLeads() {
   - [x] Worktree CI "Test Suite Expansion" Job reaktiviert
   - [x] Migration Guide dokumentiert
 
-**Phase 2 - Core Backend APIs (Branch: feature/mod02-sprint-2.1.6-admin-apis):**
-- [x] **Bestandsleads-Migrations-API funktionsfähig** ✅ COMPLETE
-  - [x] LeadImportService + LeadImportResource implementiert
+**Phase 2 - Core Backend APIs (Branch: feature/mod02-sprint-2.1.6-admin-apis) ✅ COMPLETE:**
+- [x] **Bestandsleads-Migrations-API funktionsfähig** ✅ COMPLETE (Commits: 01819eb, ce9206a)
+  - [x] LeadImportService (297 LOC) + LeadImportResource implementiert
+  - [x] POST /api/admin/migration/leads/import (Admin-only, Batch bis 1000)
   - [x] 14 Tests (8 Service + 6 REST) ✅ PASSED
-  - [x] Dry-Run Mode, Validation, Duplicate-Check, Idempotenz
-- [x] **Lead → Kunde Convert Flow End-to-End** ✅ COMPLETE
-  - [x] LeadConvertService + POST /api/leads/{id}/convert implementiert
-  - [x] Migration V261: customer.original_lead_id (Soft Reference)
-  - [x] 6 Service Tests ✅ PASSED
+  - [x] Dry-Run Mode, Validation, Duplicate-Check (isCanonical=false), SHA-256 Idempotenz
+- [x] **Lead → Kunde Convert Flow End-to-End** ✅ COMPLETE + Field Harmonization
+  - [x] LeadConvertService (204 LOC) mit vollständiger Daten-Harmonisierung
+  - [x] POST /api/leads/{id}/convert (All roles)
+  - [x] Customer + Location + Address + Contact Mapping
+  - [x] Java Locale Country Code Mapping (DE → DEU, 200+ Länder, 0 Wartung)
+  - [x] Migration V261: customer.original_lead_id (Soft Reference, Partial Index)
+  - [x] 6 Service Tests ✅ PASSED (inkl. Location/Address/Contact Validation)
 - [x] **Backdating Endpoint** ✅ COMPLETE
-  - [x] LeadBackdatingService + PUT /api/leads/{id}/registered-at implementiert
+  - [x] LeadBackdatingService (107 LOC) + PUT /api/leads/{id}/registered-at
+  - [x] Admin/Manager RBAC
   - [x] Protection/Progress Deadline Recalculation + Stop-the-Clock Integration
   - [x] 13 Tests (7 Service + 6 REST) ✅ PASSED
-- [x] **Backend Tests ≥80% Coverage** ✅ 33 Tests passing
+- [x] **Backend Tests ≥80% Coverage** ✅ 33/33 Tests passing (100% success rate)
+- [x] **Dokumentation aktualisiert:**
+  - [x] BUSINESS_LOGIC_LEAD_ERFASSUNG.md Section 11 (Bestandsleads-Migration)
+  - [x] CRM_COMPLETE_MASTER_PLAN_V5.md (Latest Update mit Commits)
+  - [x] CRM_AI_CONTEXT_SCHNELL.md (Architecture Flags + Sprint 2.1.6 Section)
 
 **Phase 3 - Automated Jobs (Branch: feature/mod02-sprint-2.1.6-nightly-jobs) - PENDING:**
 - [ ] **@Scheduled Progress Warning Job** (Tag 53 - 7 Tage vor Frist)
@@ -614,9 +623,9 @@ void pseudonymizeExpiredLeads() {
 - [ ] **Lead-Activity-Timeline** (Interaktions-Historie)
 
 **Dokumentation:**
-- [ ] **Migration-API Runbook** (Modul 08, Betrieb)
-- [ ] **Convert-Flow dokumentiert** (BUSINESS_LOGIC)
-- [ ] **Stop-the-Clock RBAC Policy** (Modul 00 Sicherheit)
+- [x] **Convert-Flow dokumentiert** ✅ (BUSINESS_LOGIC_LEAD_ERFASSUNG.md Section 11)
+- [ ] **Migration-API Runbook** (Modul 08, Betrieb) - Phase 4
+- [ ] **Stop-the-Clock RBAC Policy** (Modul 00 Sicherheit) - Phase 4
 
 ## Risiken & Mitigation
 

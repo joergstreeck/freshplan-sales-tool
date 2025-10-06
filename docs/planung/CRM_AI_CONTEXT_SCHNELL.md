@@ -1,11 +1,11 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-01
+**📅 Letzte Aktualisierung:** 2025-10-06
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
-> **🏗️ Architecture Flags (Stand: 2025-10-01)**
+> **🏗️ Architecture Flags (Stand: 2025-10-06)**
 > - **CQRS Light aktiv** (`features.cqrs.enabled=true`), **eine Datenbank**, getrennte Command/Query-Services
 > - **Events:** **PostgreSQL LISTEN/NOTIFY mit Envelope v2** (siehe Event-Backbone unten)
 > - **Security:** Territory = **RLS-Datenraum** (DE/CH/AT), **Lead-Protection = userbasiertes Ownership**
@@ -14,6 +14,7 @@
 > - **Idempotency Service operational** (24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT)
 > - **CI optimiert:** 24min → 7min (70% schneller) - JUnit parallel (Surefire gesteuert), ValidatorFactory @BeforeAll
 > - **Migrations-Hygiene:** Prod-Migrations <V8000, **V10xxx** = Test/Dev-only (z.B. V10012 Indizes ohne CONCURRENTLY)
+> - **Bestandsleads-Migration operational** (Sprint 2.1.6): Batch-Import, Backdating, Lead → Customer Conversion
 > - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
 
 ---
@@ -389,6 +390,40 @@ Implementation-Details:
   Channels: dashboard_updates, cross_module_events, settings_invalidated
   Performance SLO: listen_notify_lag_ms < 10000
 ```
+
+---
+
+## 🎯 **Sprint 2.1.6 Phase 2 - Results (Bestandsleads-Migration & Admin Features)**
+
+**Status:** ✅ COMPLETE (Commits 01819eb, ce9206a - Branch: feature/mod02-sprint-2.1.6-admin-apis)
+
+**Kernfeatures implementiert:**
+- **LeadImportService (297 LOC):** Batch-Import bis 1000 Leads · Dry-Run Mode · SHA-256 Idempotency · Duplikaten-Check mit isCanonical=false
+- **LeadBackdatingService (107 LOC):** Historisches registeredAt setzen · Deadline-Neuberechnung (6M Protection + 60T Progress) · Stop-the-Clock Integration
+- **LeadConvertService (204 LOC):** Lead → Customer + Location + Address + Contact (vollständige Field Harmonization) · Java Locale Country Mapping (200+ Länder)
+- **REST APIs:** POST /api/admin/migration/leads/import (Admin-only) · PUT /api/leads/{id}/registered-at (Admin/Manager) · POST /api/leads/{id}/convert (All roles)
+- **DTOs:** 6 neue Request/Response-Paare für Import/Backdating/Convert
+- **DB Migration V261:** Customer.originalLeadId (Soft Reference für Lead → Customer Tracking)
+
+**Migrations deployed:**
+- **V261:** Add customer.original_lead_id (BIGINT NULL, Soft Reference, Partial Index)
+
+**Tests & Qualität:**
+- 33 Tests (100% passing): Import (14), Backdating (13), Convert (6)
+- Service Tests: Business Logic, Validation, Error Handling
+- Resource Tests: REST API, RBAC, HTTP Status Codes
+- Integration Tests: @QuarkusTest mit DB, Transactions, Security
+
+**Business Value:**
+- **500 Leads in 5 Minuten** importieren (statt 3 Tage manuell)
+- **Historische Daten korrekt** (registeredAt = März 2024)
+- **Schutzfristen automatisch** neu berechnet
+- **Lead → Kunde Conversion** mit ALLEN Daten (Adresse, Kontakt, Historie)
+
+**Referenzen:**
+- [TRIGGER_SPRINT_2_1_6.md](TRIGGER_SPRINT_2_1_6.md)
+- [Sprint-Map Modul 02](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
+- Pending: Phase 3 (Nightly Jobs), Phase 4 (Frontend UI + Excel Upload), Phase 5 (Accessibility)
 
 ---
 

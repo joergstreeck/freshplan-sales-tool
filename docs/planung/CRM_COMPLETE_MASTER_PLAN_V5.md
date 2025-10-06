@@ -17,9 +17,12 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ 90% IMPLEMENTED – Sprint 2.1.5 COMPLETE (PR #124, #129)
+- **Module 02 Neukundengewinnung:** ✅ 95% IMPLEMENTED – Sprint 2.1.6 Phase 2 COMPLETE
   - Sprint 2.1.1-2.1.4: Territory, Lead Capture, Follow-up, Deduplication ✅ (PR #103, #105, #110, #111, #122, #123)
   - Sprint 2.1.5: Progressive Profiling + Lead Protection ✅ (PR #124 Backend, PR #129 Frontend)
+  - Sprint 2.1.6 Phase 1: Issue #130 Fix ✅ (PR #132)
+  - Sprint 2.1.6 Phase 2: Admin APIs (Import, Backdating, Convert) ✅ (Commits 01819eb, ce9206a)
+  - 📋 PENDING: Phase 3 (Nightly Jobs), Phase 4 (Frontend UI + Excel Upload), Phase 5 (Accessibility)
   - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
   - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
   - [Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) ✅
@@ -38,26 +41,26 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (05.10.2025 - 🎉 Sprint 2.1.5 COMPLETE):**
-- ✅ **PR #129 MERGED - Sprint 2.1.5 Progressive Profiling & Lead Protection COMPLETE:**
-  - **Monster-PR:** 56 Dateien, +8.525 LOC, -975 LOC
-  - **Frontend Implementation:**
-    - ✅ **LeadWizard.tsx** (812 LOC): Zwei-Felder-Lösung (Notizen vs. Erstkontakt-Dokumentation)
-    - ✅ **Pre-Claim Badge** mit 10-Tage-Countdown in CustomerTable
-    - ✅ **Server-Side Filtering** mit Context-Prop Architecture (CustomersPageV2 + IntelligentFilterBar)
-    - ✅ **LeadWizard Integration Tests** (802 LOC, MSW-basiert)
-  - **Backend Extensions:**
-    - ✅ **Migration V259:** Remove leads_company_name_city_key (Pre-Claim Support)
-    - ✅ **LeadDTO Extensions:** registeredAt, protectionUntil, progressDeadline
-  - **Dokumentation:** 5 neue Artefakte (3.814 LOC) + ADR-006
-  - **Performance:** Bundle 178 KB ✅, LeadWizard <50ms ✅, Filtering <200ms ✅
-  - **DSGVO:** Consent-Checkbox Stage 1, NICHT vorausgefüllt ✅
-  - **CI Issue:** Worktree CI temporär deaktiviert (Issue #130: TestDataBuilder Konflikt)
-- ✅ **Sprint 2.1.5 Backend Phase 1 COMPLETE (PR #124):**
-  - ✅ **Migrations:** V255-V257 (lead_protection, lead_activities, activity_types, lead.stage)
-  - ✅ **LeadProtectionService:** 6M/60T/10T Regeln + Stop-the-Clock + Pre-Claim
-  - ✅ **24 Unit Tests:** Pure Mockito, 0.845s, 100% Business Logic Coverage
-- 📋 **NEXT:** Sprint 2.1.6 Implementation (Bestandsleads-Migration, Convert Flow, Stop-the-Clock UI, Nightly Jobs)
+**📋 LATEST UPDATE (06.10.2025 - 🎉 Sprint 2.1.6 Phase 2 COMPLETE):**
+- ✅ **Sprint 2.1.6 Phase 2 COMPLETE - Core Backend APIs (Branch: feature/mod02-sprint-2.1.6-admin-apis):**
+  - **Commits:** 01819eb51 (Core) + ce9206ab6 (Field Harmonization)
+  - **33 Tests:** 100% passing (Import: 14, Backdating: 13, Convert: 6)
+  - **Backend Services (3 neue Services, ~2400 LOC):**
+    - ✅ **LeadImportService** (297 LOC): Batch-Import mit Dry-Run, Idempotency (SHA-256), Duplikaten-Check
+    - ✅ **LeadBackdatingService** (107 LOC): Historisches registeredAt + Deadline-Neuberechnung + Stop-the-Clock
+    - ✅ **LeadConvertService** (204 LOC): Lead → Customer + Location + Address + Contact (vollständig harmonisiert)
+  - **REST APIs:**
+    - ✅ POST /api/admin/migration/leads/import (Admin-only, Batch bis 1000 Leads)
+    - ✅ PUT /api/leads/{id}/registered-at (Admin/Manager, Backdating mit Audit)
+    - ✅ POST /api/leads/{id}/convert (All roles, Customer-Generierung)
+  - **DB Migration V261:** Customer.originalLeadId (Soft Reference für Lead → Customer Tracking)
+  - **DTOs:** 6 neue (Request/Response für Import/Backdating/Convert)
+  - **Smart Engineering:** Java Locale für Country Code Mapping (DE → DEU, 200+ Länder, 0 Wartung)
+- ✅ **PR #132 MERGED - Issue #130 BLOCKER Fix (TestDataBuilder CDI-Konflikte):**
+  - ✅ Worktree CI reaktiviert
+- ✅ **PR #129 MERGED - Sprint 2.1.5 Progressive Profiling & Lead Protection COMPLETE**
+- ✅ **Sprint 2.1.5 Backend Phase 1 COMPLETE (PR #124)**
+- 📋 **NEXT:** Sprint 2.1.6 Phase 3 (Automated Jobs), Phase 4 (Frontend UI + Excel Upload)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
