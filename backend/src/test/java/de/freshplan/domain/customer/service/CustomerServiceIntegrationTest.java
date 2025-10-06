@@ -48,35 +48,22 @@ class CustomerServiceIntegrationTest {
     // Clean database before each test using native queries for consistency
     // Delete in correct order to respect foreign key constraints
     // CRITICAL: Delete child tables before parent tables!
+    // NOTE: We delete ALL customers to ensure test isolation (not just is_test_data = true)
 
     // 1. Delete opportunity_activities first (child of opportunities)
-    entityManager
-        .createNativeQuery(
-            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true))")
-        .executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
 
     // 2. Delete opportunities (child of customers)
-    entityManager
-        .createNativeQuery(
-            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
-        .executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM opportunities").executeUpdate();
 
     // 3. Delete other customer-related tables
-    entityManager
-        .createNativeQuery(
-            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
-        .executeUpdate();
-    entityManager
-        .createNativeQuery(
-            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
-        .executeUpdate();
-    entityManager
-        .createNativeQuery(
-            "DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
-        .executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_addresses").executeUpdate();
+    entityManager.createNativeQuery("DELETE FROM customer_locations").executeUpdate();
 
-    // 4. Finally delete customers
-    customerRepository.deleteAllTestData();
+    // 4. Finally delete ALL customers (not just test data)
+    entityManager.createNativeQuery("DELETE FROM customers").executeUpdate();
     entityManager.flush();
 
     // Create valid request DTOs for integration tests
