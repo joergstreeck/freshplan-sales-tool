@@ -75,12 +75,19 @@ class LeadBackdatingServiceTest {
     // Then
     assertNotNull(response);
     assertEquals(testLead.id, response.leadId);
-    assertEquals(oldRegisteredAt, response.oldRegisteredAt);
-    assertEquals(newDate, response.newRegisteredAt);
+    // PostgreSQL truncates nanoseconds to microseconds - truncate for comparison
+    assertEquals(
+        oldRegisteredAt.withNano(oldRegisteredAt.getNano() / 1000 * 1000),
+        response.oldRegisteredAt.withNano(response.oldRegisteredAt.getNano() / 1000 * 1000));
+    assertEquals(
+        newDate.withNano(newDate.getNano() / 1000 * 1000),
+        response.newRegisteredAt.withNano(response.newRegisteredAt.getNano() / 1000 * 1000));
 
     // Verify lead was updated
     Lead updatedLead = Lead.findById(testLead.id);
-    assertEquals(newDate, updatedLead.registeredAt);
+    assertEquals(
+        newDate.withNano(newDate.getNano() / 1000 * 1000),
+        updatedLead.registeredAt.withNano(updatedLead.registeredAt.getNano() / 1000 * 1000));
     assertEquals(
         "Bestandsdaten-Migration - Import Altbestand", updatedLead.registeredAtOverrideReason);
     assertEquals(TEST_USER, updatedLead.registeredAtSetBy);
