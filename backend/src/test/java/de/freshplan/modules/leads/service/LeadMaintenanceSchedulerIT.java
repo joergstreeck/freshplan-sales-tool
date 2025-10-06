@@ -36,11 +36,27 @@ class LeadMaintenanceSchedulerIT {
 
   @Inject LeadMaintenanceService service;
 
+  private de.freshplan.modules.leads.domain.Territory testTerritory;
+
   @BeforeEach
   @Transactional
-  void cleanupTestData() {
+  void setupTestData() {
     // Cleanup von Test-Leads (falls vorhanden)
     em.createQuery("DELETE FROM Lead l WHERE l.companyName LIKE 'IT-TEST-%'").executeUpdate();
+
+    // Ensure test territory exists (Territory.id is String, manually assigned)
+    testTerritory = de.freshplan.modules.leads.domain.Territory.findById("IT-TEST");
+    if (testTerritory == null) {
+      testTerritory = new de.freshplan.modules.leads.domain.Territory();
+      testTerritory.id = "IT-TEST"; // Manual ID assignment (String)
+      testTerritory.name = "IT-TEST-TERRITORY-DE";
+      testTerritory.countryCode = "DE";
+      testTerritory.currencyCode = "EUR";
+      testTerritory.languageCode = "de-DE"; // Required @NotNull field
+      testTerritory.taxRate = java.math.BigDecimal.valueOf(19.0);
+      testTerritory.persist();
+      em.flush();
+    }
   }
 
   // ========== Job 1: Progress Warning Check ==========
@@ -135,12 +151,19 @@ class LeadMaintenanceSchedulerIT {
     lead.phone = "+49123456789";
     lead.contactPerson = "Max Mustermann";
     lead.status = LeadStatus.EXPIRED;
-    lead.updatedAt = LocalDateTime.now().minusDays(61);
     lead.pseudonymizedAt = null;
     lead.persist();
 
     Long leadId = lead.id;
     String originalCompanyName = lead.companyName; // Firmendaten bleiben erhalten!
+
+    // Manually set updatedAt to 61 days ago (Hibernate @PrePersist would overwrite it)
+    em.createQuery("UPDATE Lead l SET l.updatedAt = :updatedAt WHERE l.id = :id")
+        .setParameter("id", leadId)
+        .setParameter("updatedAt", LocalDateTime.now().minusDays(61))
+        .executeUpdate();
+    em.flush();
+    em.clear();
 
     // Act
     scheduler.schedulePseudonymization();
@@ -171,11 +194,18 @@ class LeadMaintenanceSchedulerIT {
     Lead lead = createTestLead("IT-TEST-SKIP-PSEUDONYMIZE");
     lead.email = "test-skip@hotel.de";
     lead.status = LeadStatus.EXPIRED;
-    lead.updatedAt = LocalDateTime.now().minusDays(50);
     lead.pseudonymizedAt = null;
     lead.persist();
 
     Long leadId = lead.id;
+
+    // Manually set updatedAt to 50 days ago (Hibernate @PrePersist would overwrite it)
+    em.createQuery("UPDATE Lead l SET l.updatedAt = :updatedAt WHERE l.id = :id")
+        .setParameter("id", leadId)
+        .setParameter("updatedAt", LocalDateTime.now().minusDays(50))
+        .executeUpdate();
+    em.flush();
+    em.clear();
 
     // Act
     scheduler.schedulePseudonymization();
@@ -205,25 +235,13 @@ class LeadMaintenanceSchedulerIT {
   // ========== Helper Methods ==========
 
   private Lead createTestLead(String companyName) {
-    // Create or get default territory
-    de.freshplan.modules.leads.domain.Territory territory =
-        de.freshplan.modules.leads.domain.Territory.findById(1L);
-    if (territory == null) {
-      territory = new de.freshplan.modules.leads.domain.Territory();
-      territory.name = "IT-TEST-TERRITORY";
-      territory.countryCode = "DE";
-      territory.currencyCode = "EUR";
-      territory.taxRate = java.math.BigDecimal.valueOf(19.0);
-      territory.persist();
-    }
-
     Lead lead = new Lead();
     lead.companyName = companyName;
     lead.city = "Berlin";
     lead.status = LeadStatus.ACTIVE;
     lead.stage = LeadStage.VORMERKUNG;
     lead.ownerUserId = "IT-TEST-USER";
-    lead.territory = territory;
+    lead.territory = testTerritory; // Use BeforeEach fixture
     lead.createdBy = "IT-TEST";
     lead.updatedBy = "IT-TEST";
     lead.createdAt = LocalDateTime.now();

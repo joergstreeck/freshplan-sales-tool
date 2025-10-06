@@ -107,8 +107,8 @@ public class Lead extends PanacheEntityBase {
   @Column(nullable = false, length = 30)
   public LeadStatus status = LeadStatus.REGISTERED;
 
-  @NotNull @Size(max = 50)
-  @Column(name = "owner_user_id", nullable = false)
+  @Size(max = 50)
+  @Column(name = "owner_user_id") // Nullable since Sprint 2.1.6 Phase 3 (Protection Expiry)
   public String ownerUserId;
 
   @ElementCollection
@@ -267,7 +267,7 @@ public class Lead extends PanacheEntityBase {
   }
 
   public boolean canBeAccessedBy(String userId) {
-    return ownerUserId.equals(userId) || collaboratorUserIds.contains(userId);
+    return (ownerUserId != null && ownerUserId.equals(userId)) || collaboratorUserIds.contains(userId);
   }
 
   public void addCollaborator(String userId) {
