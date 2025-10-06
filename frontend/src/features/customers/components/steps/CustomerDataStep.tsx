@@ -25,14 +25,14 @@ export const CustomerDataStep: React.FC = () => {
 
   const { customerFields, getIndustryFields } = useFieldDefinitions();
 
-  // Get current industry selection
-  const selectedIndustry = customerData.industry || '';
+  // Get current businessType selection (Sprint 2.1.6: harmonized field)
+  const selectedBusinessType = customerData.businessType || customerData.industry || '';
 
-  // Combine base fields with industry-specific fields
+  // Combine base fields with businessType-specific fields
   const allFields = React.useMemo(() => {
-    const industryFields = getIndustryFields(selectedIndustry);
-    return [...customerFields, ...industryFields];
-  }, [customerFields, selectedIndustry, getIndustryFields]);
+    const businessTypeFields = getIndustryFields(selectedBusinessType);
+    return [...customerFields, ...businessTypeFields];
+  }, [customerFields, selectedBusinessType, getIndustryFields]);
 
   /**
    * Handle field value change
@@ -41,15 +41,22 @@ export const CustomerDataStep: React.FC = () => {
     (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
 
-      // If industry changed, clear industry-specific field values
-      if (fieldKey === 'industry' && value !== selectedIndustry) {
-        const oldIndustryFields = getIndustryFields(selectedIndustry);
+      // If businessType changed, clear businessType-specific field values
+      if (fieldKey === 'businessType' && value !== selectedBusinessType) {
+        const oldBusinessTypeFields = getIndustryFields(selectedBusinessType);
+        oldBusinessTypeFields.forEach(field => {
+          setCustomerField(field.key, undefined);
+        });
+      }
+      // Backward compatibility: also handle industry field
+      if (fieldKey === 'industry' && value !== selectedBusinessType) {
+        const oldIndustryFields = getIndustryFields(selectedBusinessType);
         oldIndustryFields.forEach(field => {
           setCustomerField(field.key, undefined);
         });
       }
     },
-    [setCustomerField, selectedIndustry, getIndustryFields]
+    [setCustomerField, selectedBusinessType, getIndustryFields]
   );
 
   /**
@@ -90,12 +97,12 @@ export const CustomerDataStep: React.FC = () => {
         onBlur={handleFieldBlur}
       />
 
-      {/* Industry-specific info */}
-      {selectedIndustry && (
+      {/* BusinessType-specific info */}
+      {selectedBusinessType && (
         <Box sx={{ mt: 3, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
           <Typography variant="body2" color="text.secondary">
-            <strong>Branche {getIndustryLabel(selectedIndustry)}:</strong> Es wurden
-            branchenspezifische Felder hinzugefügt.
+            <strong>Geschäftstyp {getIndustryLabel(selectedBusinessType)}:</strong> Es wurden
+            geschäftstypspezifische Felder hinzugefügt.
           </Typography>
         </Box>
       )}

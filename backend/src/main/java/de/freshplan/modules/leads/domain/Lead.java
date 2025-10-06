@@ -80,12 +80,17 @@ public class Lead extends PanacheEntityBase {
   public Territory territory;
 
   // Industry specific
+  /**
+   * @deprecated Use {@link #businessType} instead. This field will be removed in next migration
+   *     (V264). The businessType field is the Single Source of Truth for business classification.
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   @Size(max = 50)
   public String industry;
 
   @Size(max = 100)
   @Column(name = "business_type")
-  public String businessType; // Restaurant/Hotel/Kantinen/Catering
+  public String businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6: CHECK constraint)
 
   @Size(max = 20)
   @Column(name = "kitchen_size")

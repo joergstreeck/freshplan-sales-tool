@@ -1,6 +1,7 @@
 package de.freshplan.domain.customer.entity;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
+import de.freshplan.domain.shared.BusinessType;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -50,6 +51,27 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "customer_type", nullable = false, length = 20)
   private CustomerType customerType = CustomerType.UNTERNEHMEN;
 
+  /**
+   * Business type classification (unified with Lead entity).
+   *
+   * <p>Sprint 2.1.6 Phase 2: Single Source of Truth for business classification. This field
+   * replaces the legacy {@link #industry} field.
+   *
+   * @since 2.1.6
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "business_type", length = 30)
+  private BusinessType businessType;
+
+  /**
+   * Legacy industry classification.
+   *
+   * @deprecated Use {@link #businessType} instead. This field is kept for backward compatibility
+   *     and will be removed in a future migration (V265+). The businessType field is the Single
+   *     Source of Truth for business classification.
+   * @since 1.0
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   @Enumerated(EnumType.STRING)
   @Column(name = "industry", length = 30)
   private Industry industry;
@@ -327,12 +349,36 @@ public class Customer extends PanacheEntityBase {
     this.customerType = customerType;
   }
 
+  public BusinessType getBusinessType() {
+    return businessType;
+  }
+
+  public void setBusinessType(BusinessType businessType) {
+    this.businessType = businessType;
+    // Auto-sync to legacy industry field for backward compatibility
+    if (businessType != null) {
+      this.industry = businessType.toLegacyIndustry();
+    }
+  }
+
+  /**
+   * @deprecated Use {@link #getBusinessType()} instead.
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   public Industry getIndustry() {
     return industry;
   }
 
+  /**
+   * @deprecated Use {@link #setBusinessType(BusinessType)} instead.
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   public void setIndustry(Industry industry) {
     this.industry = industry;
+    // Auto-sync to new businessType field
+    if (industry != null) {
+      this.businessType = BusinessType.fromLegacyIndustry(industry);
+    }
   }
 
   public Classification getClassification() {

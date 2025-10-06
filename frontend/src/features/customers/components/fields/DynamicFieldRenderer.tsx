@@ -20,6 +20,7 @@ import { SelectField } from './fieldTypes/SelectField';
 import { MultiSelectField } from './fieldTypes/MultiSelectField';
 import { EmailField } from './fieldTypes/EmailField';
 import { TextAreaField } from './fieldTypes/TextAreaField';
+import { EnumField } from './fieldTypes/EnumField';
 import { getVisibleFields } from '../../utils/conditionEvaluator';
 import { getFieldSize } from '../../utils/fieldSizeCalculator';
 import { useCustomerFieldTheme } from '../../theme';
@@ -134,6 +135,10 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
 
       case 'textarea':
         fieldComponent = <TextAreaField {...commonProps} />;
+        break;
+
+      case 'enum':
+        fieldComponent = <EnumField {...commonProps} />;
         break;
 
       default:

@@ -75,46 +75,13 @@
         ]
       },
       {
-        "key": "industry",
-        "label": "Branche",
+        "key": "businessType",
+        "label": "Geschäftstyp",
         "entityType": "customer",
-        "fieldType": "select",
+        "fieldType": "enum",
+        "enumSource": "business-types",
         "required": true,
-        "options": [
-          {
-            "value": "hotel",
-            "label": "Hotel"
-          },
-          {
-            "value": "krankenhaus",
-            "label": "Krankenhaus"
-          },
-          {
-            "value": "seniorenresidenz",
-            "label": "Seniorenresidenz"
-          },
-          {
-            "value": "restaurant",
-            "label": "Restaurant"
-          },
-          {
-            "value": "betriebsrestaurant",
-            "label": "Betriebsrestaurant"
-          },
-          {
-            "value": "kantine",
-            "label": "Kantine"
-          },
-          {
-            "value": "catering",
-            "label": "Catering"
-          },
-          {
-            "value": "sonstige",
-            "label": "Sonstige"
-          }
-        ],
-        "helpText": "Wählen Sie die Hauptbranche des Unternehmens"
+        "helpText": "Wählen Sie den Geschäftstyp des Unternehmens (einheitliche Klassifizierung)"
       },
       {
         "key": "chainCustomer",
@@ -372,9 +339,9 @@
             }
           ],
           "condition": {
-            "field": "industry",
+            "field": "businessType",
             "operator": "equals",
-            "value": "hotel"
+            "value": "HOTEL"
           }
         },
         {
@@ -387,9 +354,9 @@
           "max": 9999,
           "placeholder": "z.B. 120",
           "condition": {
-            "field": "industry",
+            "field": "businessType",
             "operator": "equals",
-            "value": "hotel"
+            "value": "HOTEL"
           }
         },
         {
@@ -410,11 +377,11 @@
             }
           ],
           "condition": {
-            "field": "industry",
+            "field": "businessType",
             "operator": "in",
             "value": [
-              "hotel",
-              "betriebsrestaurant"
+              "HOTEL",
+              "KANTINE"
             ]
           }
         },

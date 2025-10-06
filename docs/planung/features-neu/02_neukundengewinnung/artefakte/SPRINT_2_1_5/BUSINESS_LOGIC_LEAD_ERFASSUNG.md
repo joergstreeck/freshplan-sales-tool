@@ -47,8 +47,9 @@ updated: "2025-10-04"
 
 **Pflichtfelder:**
 - Firmenname (min. 2 Zeichen)
-- **Quelle (LeadSource):** MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE
+- **Quelle (LeadSource):** Dynamisch vom Backend via GET /api/enums/lead-sources (Sprint 2.1.6: 6 Werte)
   - **Definition:** Herkunft des Leads (Pflicht in Karte 0)
+  - **Single Source of Truth:** Backend BusinessType Enum → REST API → Frontend Hook
   - **Zulässige Werte:**
     - MESSE: Lead von Messe/Event
     - EMPFEHLUNG: Lead durch Referral
@@ -58,7 +59,10 @@ updated: "2025-10-04"
     - SONSTIGE: Andere Quellen
 
 **Optionale Felder:**
-- Stadt, PLZ, Branche
+- Stadt, PLZ
+- **Branche (BusinessType):** Dynamisch vom Backend via GET /api/enums/business-types (Sprint 2.1.6: 9 Werte)
+  - **Single Source of Truth Pattern:** Siehe HARMONIZATION_COMPLETE.md
+  - **Zulässige Werte:** RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES
 - **Notizen/Quelle:** Freies Textfeld für Kontext (z.B. "Empfehlung von Herrn Schulz", "Partner-Liste Nr. 47") - **KEIN Einfluss auf Schutz**
 - **Erstkontakt-Dokumentation:** Kanal, Datum, Gesprächsnotiz (≥10 Zeichen) - **Aktiviert Schutz**
 
@@ -115,7 +119,9 @@ updated: "2025-10-04"
 **Zweck:** Geschäftliche Details nachtragen
 
 **Alle Felder optional:**
-- Geschätztes Volumen, Küchengröße, Mitarbeiterzahl, Website, Branche (Details)
+- Geschätztes Volumen
+- **Küchengröße (KitchenSize):** Dynamisch vom Backend via GET /api/enums/kitchen-sizes (Sprint 2.1.6: 3 Werte - small, medium, large)
+- Mitarbeiterzahl, Website
 
 **Button:** `[Qualifizierung speichern]` → POST /api/leads mit stage=2, schließt Dialog
 

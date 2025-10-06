@@ -499,20 +499,37 @@
 - Optionale Features → 2.1.6: Quick-Action, Pre-Claim Filter, Lead Detail Page
 - Sprint 2.1.6 Scope: Migration API, Convert Flow, Stop-the-Clock, Team Management (RLS → 2.1.7)
 
-**Migration**: V255-V259 ✅, **Tests**: TypeScript OK, ESLint clean (3 warnings only)
+**Migration**: V255-V264 ✅, **Tests**: TypeScript OK, ESLint clean (3 warnings only)
+
+**2025-10-06 23:30** — Sprint 2.1.6 Phase 2: BusinessType Harmonization COMPLETE ✅
+- ✅ **V263**: Lead.businessType + CHECK Constraint + Lead.industry @Deprecated
+- ✅ **V264**: Customer.businessType + Industry→BusinessType Data Migration + Auto-Sync
+- ✅ **Frontend Harmonization COMPLETE**:
+  - Lead: useBusinessTypes() Hook → /api/enums/business-types
+  - Customer: Field Catalog businessType (fieldType: enum) → EnumField → useBusinessTypes()
+  - DynamicFieldRenderer: Case für enum fields hinzugefügt
+  - CustomerDataStep: businessType statt industry
+- ✅ **Single Source of Truth**: BusinessType Enum → GET /api/enums/business-types → Lead + Customer Forms (identisches Pattern)
+- ✅ **Best Practice 100%**: Keine hardcoded Enum-Values mehr, Lead + Customer verwenden denselben Hook
+- **Docs**: HARMONIZATION_COMPLETE.md, MIGRATIONS.md aktualisiert
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation - Phase 2 IN PROGRESS:**
+- **Sprint 2.1.6 Implementation - Phase 2:**
   - **✅ COMPLETE:** Issue #130 Fix (PR #132 merged)
-  - **✅ COMPLETE:** Bestandsleads-Migrations-API (Phase 2, Branch: feature/mod02-sprint-2.1.6-admin-apis)
+  - **✅ COMPLETE:** Bestandsleads-Migrations-API (Branch: feature/mod02-sprint-2.1.6-admin-apis)
     - LeadImportService + LeadImportResource implementiert
     - 14 Tests (8 Service + 6 REST) ✅ PASSED
     - Admin-only API mit Dry-Run, Validation, Idempotenz
-  - **🔄 IN PROGRESS - Phase 2 Core Backend APIs:**
-    - Backdating-Endpoint (PUT /api/leads/{id}/registered-at) - NEXT
-    - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert) - PENDING
+  - **✅ COMPLETE:** BusinessType Harmonization (V263 + V264)
+    - Lead + Customer harmonisiert mit businessType
+    - Frontend: Single Source of Truth via useBusinessTypes() Hook
+    - Field Catalog: businessType mit fieldType: enum
+    - EnumField Komponente + DynamicFieldRenderer erweitert
+  - **🔄 NEXT - Phase 2 Core Backend APIs:**
+    - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
+    - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
   - **📋 PENDING - Separate Branches:**
     - Phase 3: Nightly Jobs (feature/mod02-sprint-2.1.6-nightly-jobs)
     - Phase 4: Stop-the-Clock UI + Frontend (feature/mod02-sprint-2.1.6-lead-ui-phase2)

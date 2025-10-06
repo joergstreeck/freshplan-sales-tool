@@ -276,10 +276,15 @@ Customer customer = CustomerTestDataFactory.builder()
 
 **Zusammenfassung:**
 - ✅ **Migration V262** erstellt (Stop-the-Clock + Idempotency)
-- ✅ **Migration V263** erstellt (BusinessType Harmonisierung)
+- ✅ **Migration V263** erstellt (Lead BusinessType Harmonisierung)
+- ✅ **Migration V264** erstellt (Customer BusinessType + Data Migration)
 - ✅ **7 Fixes** implementiert (Code + Kommentare + Frontend SoT)
 - ✅ **Tests** alle grün (21/21 in LeadImportServiceTest, LeadBackdatingServiceTest, LeadConvertServiceTest)
-- ✅ **Dokumentation** aktualisiert (TRIGGER, BUSINESS_LOGIC, MP5)
+- ✅ **Dokumentation** aktualisiert (TRIGGER, BUSINESS_LOGIC, MP5, HARMONIZATION_COMPLETE)
+
+**Artefakte (Phase 2):**
+- ✅ [HARMONIZATION_COMPLETE.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/HARMONIZATION_COMPLETE.md) ⭐ NEU (BusinessType Harmonization - 264 Zeilen Complete Documentation)
+- ✅ [BUSINESS_LOGIC_LEAD_ERFASSUNG.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/BUSINESS_LOGIC_LEAD_ERFASSUNG.md) (Updated: BusinessType, LeadSource, KitchenSize mit SoT Pattern)
 
 ### Fix #9: BusinessType Harmonisierung (V263 + Frontend Single Source of Truth)
 **Problem:** Lead.businessType hatte 5 hardcodierte Werte im Frontend (restaurant, hotel, catering, canteen, other), Customer.industry hatte 9 Werte als Enum. Keine einheitliche Systematik, Frontend hardcodete Werte statt Backend-API zu nutzen.

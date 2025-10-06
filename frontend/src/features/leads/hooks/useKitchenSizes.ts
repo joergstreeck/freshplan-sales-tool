@@ -1,8 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 
 /**
- * Business Type Enum Value from Backend
- * Sprint 2.1.6: Single Source of Truth for dropdown values
+ * Kitchen Size Enum Value from Backend
  */
 export interface EnumValue {
   value: string;
@@ -26,13 +25,13 @@ function authHeaders() {
 }
 
 /**
- * Fetch business types from backend API
+ * Fetch kitchen sizes from backend API
  *
- * GET /api/enums/business-types
- * Returns: [{ value: "RESTAURANT", label: "Restaurant" }, ...]
+ * GET /api/enums/kitchen-sizes
+ * Returns: [{ value: "small", label: "Klein" }, ...]
  */
-async function fetchBusinessTypes(): Promise<EnumValue[]> {
-  const response = await fetch(`${BASE}/api/enums/business-types`, {
+async function fetchKitchenSizes(): Promise<EnumValue[]> {
+  const response = await fetch(`${BASE}/api/enums/kitchen-sizes`, {
     headers: {
       'Content-Type': 'application/json',
       ...authHeaders(),
@@ -40,26 +39,24 @@ async function fetchBusinessTypes(): Promise<EnumValue[]> {
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch business types: ${response.statusText}`);
+    throw new Error(`Failed to fetch kitchen sizes: ${response.statusText}`);
   }
 
   return response.json();
 }
 
 /**
- * Hook to fetch business types for dropdowns
+ * Hook to fetch kitchen sizes for dropdowns
  *
- * Sprint 2.1.6: Harmonized BusinessType values across Lead and Customer
- * - 9 unified values: RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES
- * - NO hardcoding in frontend
- * - Values served from backend BusinessType enum
+ * Single Source of Truth: NO hardcoding in frontend
+ * Values served from backend EnumResource
  *
- * @returns Query result with business types data
+ * @returns Query result with kitchen sizes data
  */
-export function useBusinessTypes() {
+export function useKitchenSizes() {
   return useQuery({
-    queryKey: ['enums', 'businessTypes'],
-    queryFn: fetchBusinessTypes,
+    queryKey: ['enums', 'kitchenSizes'],
+    queryFn: fetchKitchenSizes,
     staleTime: 5 * 60 * 1000, // 5 minutes (enum values rarely change)
     gcTime: 10 * 60 * 1000, // 10 minutes (was cacheTime in v4)
   });

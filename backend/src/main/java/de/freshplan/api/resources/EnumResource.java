@@ -53,6 +53,20 @@ public class EnumResource {
         new EnumValue("SONSTIGE", "Sonstige"));
   }
 
+  /**
+   * Get all kitchen sizes for dropdowns.
+   *
+   * @return List of kitchen sizes (SMALL, MEDIUM, LARGE)
+   */
+  @GET
+  @Path("/kitchen-sizes")
+  public List<EnumValue> getKitchenSizes() {
+    return List.of(
+        new EnumValue("small", "Klein"),
+        new EnumValue("medium", "Mittel"),
+        new EnumValue("large", "Groß"));
+  }
+
   /** Enum value DTO for frontend consumption. */
   public static class EnumValue {
     public String value;

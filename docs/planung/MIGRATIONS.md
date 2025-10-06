@@ -183,7 +183,8 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V260** | Add Sprint 2.1.5 Activity Types | 2.1.5 | ✅ Deployed | @joergstreeck | #130 | ✅ Yes | 🟢 Low | None | Progressive Profiling Types |
 | **V261** | Add customer original_lead_id | 2.1.6 | ✅ Deployed | @joergstreeck | #133 | ✅ Yes | 🟢 Low | None | Lead → Customer Tracking |
 | **V262** | Stop-the-Clock Cumulative Pause & Idempotency Infrastructure | 2.1.6 | ✅ Deployed | @joergstreeck | #133 | ✅ Yes | 🟢 Low | None | Phase 2 Review Fix #4 + #2 |
-| **V263** | BusinessType Harmonization & CHECK Constraint | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Single Source of Truth |
+| **V263** | BusinessType Harmonization & CHECK Constraint (Lead) | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Lead: industry→businessType + CHECK |
+| **V264** | Customer.businessType + Data Migration | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Customer: Industry→BusinessType + Sync |
 
 ---
 
