@@ -105,9 +105,11 @@ class LeadConvertServiceTest {
     // Then
     assertNotNull(response.customerId);
 
-    // Verify Lead was deleted
-    Lead deletedLead = Lead.findById(testLead.id);
-    assertNull(deletedLead);
+    // Verify Lead was ARCHIVED (not deleted) - Fix #7 Sprint 2.1.6 Phase 2
+    // Lead should always be retained for audit trail (status=CONVERTED)
+    Lead archivedLead = Lead.findById(testLead.id);
+    assertNotNull(archivedLead, "Lead should be archived, not deleted");
+    assertEquals(LeadStatus.CONVERTED, archivedLead.status);
   }
 
   @Test

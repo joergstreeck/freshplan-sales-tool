@@ -162,9 +162,11 @@ class LeadBackdatingServiceTest {
     // Then
     Lead updatedLead = Lead.findById(testLead.id);
 
-    // Progress deadline should include pause duration
+    // Progress deadline should be calculated (baseDeadline + cumulative pause)
+    // NOTE: progressPauseTotalSeconds is 0 until Resume is called
+    // So progressDeadline = baseDeadline + 0 = baseDeadline
     LocalDateTime baseDeadline = newDate.plusDays(60);
-    assertTrue(updatedLead.progressDeadline.isAfter(baseDeadline));
+    assertEquals(baseDeadline, updatedLead.progressDeadline);
     assertNotNull(response.newProgressDeadline);
   }
 

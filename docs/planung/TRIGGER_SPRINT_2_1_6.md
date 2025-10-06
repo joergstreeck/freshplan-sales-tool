@@ -16,7 +16,9 @@ phases:
   - phase: "Phase 2"
     branch: "feature/mod02-sprint-2.1.6-admin-apis"
     scope: "Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow)"
-    status: "in_progress"
+    status: "review_fixes"
+    commits: ["01819eb51", "ce9206ab6", "cbf5bd95e", "f93356a0e"]
+    fixes_applied: ["V262 Migration", "Duplikate-Policy", "Stop-the-Clock Fix", "RBAC Standardisierung", "Lead-Archivierung"]
   - phase: "Phase 3"
     branch: "feature/mod02-sprint-2.1.6-nightly-jobs"
     scope: "Automated Jobs (Progress Warning, Expiry, Pseudonymisierung)"
@@ -52,7 +54,7 @@ updated: "2025-10-06"
 | Phase | Branch | Scope | Status | PR |
 |-------|--------|-------|--------|-----|
 | **Phase 1** | `feature/issue-130-testdatabuilder-refactoring` | Issue #130 BLOCKER Fix | ✅ COMPLETE | #132 |
-| **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | 🔄 IN PROGRESS | - |
+| **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ FIXES APPLIED | - |
 | **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) | 📋 PENDING | - |
 | **Phase 4** | `feature/mod02-sprint-2.1.6-lead-ui-phase2` | Frontend UI (Stop-the-Clock Dialog, Lead-Scoring, Workflows, Timeline) | 📋 PENDING | - |
 | **Phase 5** | `feature/mod02-sprint-2.1.6-accessibility` | OPTIONAL (MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen) | 📋 PENDING | - |
@@ -211,6 +213,74 @@ Customer customer = CustomerTestDataFactory.builder()
 - **Testing Guide:** `/docs/planung/grundlagen/TESTING_GUIDE.md` (Zeile 106-152 - Builder Pattern)
 
 **⚠️ WICHTIG:** Dieser Fix MUSS vor allen anderen User Stories abgeschlossen werden, da sonst CI instabil bleibt!
+
+---
+
+## 📋 PHASE 2 REVIEW FIXES (2025-10-06)
+
+**Kontext:** Nach Abschluss der Core Backend APIs (3 Services, 33 Tests) wurde ein externes Code-Review durchgeführt. Folgende 6 Verbesserungen wurden identifiziert und implementiert:
+
+### Fix #1: Duplikate-Handling (Migration-Ausnahme dokumentiert)
+**Problem:** Import importierte Duplikate mit `isCanonical=false` und umging DEDUPE_POLICY.
+**Lösung:** Ausnahme als **MIGRATION-SPEZIFISCHE POLICY** dokumentiert:
+- Duplikate werden mit **WARNING** importiert (nicht blockiert)
+- `isCanonical=false` verhindert Unique Constraint Violation
+- Admin muss nach Import manuell mergen
+- Normale Lead-Erstellung folgt weiterhin RFC 7807 DEDUPE_POLICY
+
+**Code:** LeadImportService.java:110-120 (Kommentar ergänzt)
+
+### Fix #2: Idempotenz robuster (Migration V262 - Tabelle bereit)
+**Problem:** SHA-256 Hash fragil bei Feld-Reihenfolge-Änderungen.
+**Lösung:** `import_jobs` Tabelle für Idempotency-Key Tracking:
+- `idempotency_key` (Client-provided, Header: `Idempotency-Key`)
+- `request_fingerprint` (SHA-256 Fallback)
+- `result_summary` (JSONB mit Import-Statistiken)
+- TTL: 7 Tage (Cleanup in Phase 3)
+
+**Migration:** V262__add_stop_the_clock_cumulative_pause_and_idempotency.sql
+**Service-Implementierung:** Phase 3 (Nightly Jobs)
+
+### Fix #4: Stop-the-Clock kumulative Pausenzeit (KRITISCHER FIX)
+**Problem:** `Duration.between(clockStoppedAt, now)` zählte nur letzte Pause, nicht kumulative.
+**Lösung:**
+- Neues Feld: `progress_pause_total_seconds` (BIGINT, Default 0)
+- Formel: `progressDeadline = registeredAt + 60d + (pause_total_seconds / 86400)d`
+- Bei Resume: `pause_total_seconds += Duration.between(clockStoppedAt, now).toSeconds()`
+
+**Migration:** V262 (Zeilen 10-23)
+**Code:** Lead.java:156-158, LeadBackdatingService.java:72-81
+
+### Fix #5: RBAC-Rollennamen standardisiert
+**Problem:** Inkonsistente Rollennamen (`"admin"` vs. `"ROLE_ADMIN"`).
+**Lösung:** Alle Endpoints auf `ROLE_*` Pattern umgestellt:
+- `@RolesAllowed({"ROLE_ADMIN"})` (statt `{"admin"}`)
+- `@RolesAllowed({"ROLE_ADMIN", "ROLE_SALES_MANAGER"})` (statt `{"ADMIN", "MANAGER"}`)
+
+**Dateien:**
+- LeadImportResource.java:25 (Import API)
+- LeadResource.java:606 (Backdating)
+- LeadResource.java:647 (Convert)
+
+### Fix #6: Backdating Reason Mindestlänge (BEREITS IMPLEMENTIERT ✅)
+**Status:** `@Size(min = 10)` bereits in BackdatingRequest.java:16 vorhanden.
+
+### Fix #7: Lead-Löschung durch Archivierung (Audit-Trail)
+**Problem:** `keepLeadRecord=false` löschte Lead hart → Audit-Trail verloren.
+**Lösung:**
+- Lead wird IMMER archiviert (`status=CONVERTED`), niemals gelöscht
+- `keepLeadRecord` Parameter wird ignoriert (Log-Warnung)
+- Hard-Delete nur für DSGVO-Compliance (Pseudonymisierung Job in Phase 3)
+
+**Code:** LeadConvertService.java:152-164
+
+**Zusammenfassung:**
+- ✅ **Migration V262** erstellt (Stop-the-Clock + Idempotency)
+- ✅ **6 Fixes** implementiert (Code + Kommentare)
+- ⏳ **Tests** laufen (LeadImportServiceTest, LeadBackdatingServiceTest, LeadConvertServiceTest)
+- 📝 **Dokumentation** wird aktualisiert (TRIGGER, BUSINESS_LOGIC, MP5)
+
+---
 
 ### 1. ~~Lead-Transfer Workflow~~ ❌ **VERSCHOBEN AUF SPRINT 2.1.7**
 **Begründung:** Zu komplex für Sprint 2.1.6 - benötigt eigenen Sprint mit Team Management & RLS

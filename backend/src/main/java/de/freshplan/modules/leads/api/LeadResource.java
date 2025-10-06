@@ -603,7 +603,7 @@ public class LeadResource {
    */
   @PUT
   @Path("/{id}/registered-at")
-  @RolesAllowed({"ADMIN", "MANAGER"})
+  @RolesAllowed({"ROLE_ADMIN", "ROLE_SALES_MANAGER"})
   @Transactional
   public Response updateRegisteredAt(
       @PathParam("id") Long id,
@@ -644,7 +644,7 @@ public class LeadResource {
    */
   @POST
   @Path("/{id}/convert")
-  @RolesAllowed({"ADMIN", "MANAGER"})
+  @RolesAllowed({"ROLE_ADMIN", "ROLE_SALES_MANAGER"})
   @Transactional
   public Response convertToCustomer(
       @PathParam("id") Long id,

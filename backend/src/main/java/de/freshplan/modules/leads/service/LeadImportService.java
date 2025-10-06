@@ -107,10 +107,13 @@ public class LeadImportService {
     // 2. Duplicate check (same logic as manual entry)
     List<String> duplicates = checkDuplicates(leadData);
     if (!duplicates.isEmpty()) {
-      // Only warning, not blocking
+      // MIGRATION POLICY: Duplicates are WARNINGS, not errors
+      // Admin can review duplicates after import and merge manually
+      // This allows importing legacy data where duplicates exist
       LeadImportResult result =
           LeadImportResult.duplicateWarning(index, leadData.companyName, duplicates);
-      // Still import if not dry-run (as non-canonical to avoid unique constraint violation)
+      // NOTE: We still import with isCanonical=false to avoid unique constraint violation
+      // This is a MIGRATION-SPECIFIC exception to the normal DEDUPE_POLICY
       if (!dryRun) {
         result.leadId = persistLead(leadData, currentUserId, false); // isCanonical=false
       }

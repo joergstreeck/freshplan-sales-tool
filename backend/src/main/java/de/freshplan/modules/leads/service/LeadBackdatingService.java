@@ -69,16 +69,15 @@ public class LeadBackdatingService {
     // Progress Deadline: registeredAt + 60 days (with Stop-the-Clock adjustments)
     LocalDateTime baseProgressDeadline = request.registeredAt.plusDays(lead.protectionDays60);
 
-    // If clock is stopped, add pause duration
-    if (lead.clockStoppedAt != null) {
-      long pauseDurationDays =
-          java.time.Duration.between(lead.clockStoppedAt, LocalDateTime.now()).toDays();
-      lead.progressDeadline = baseProgressDeadline.plusDays(pauseDurationDays);
+    // Add CUMULATIVE pause duration (NOT just current pause!)
+    // Fix Sprint 2.1.6 Phase 2: Use progressPauseTotalSeconds for correct calculation
+    long pauseDurationDays = lead.progressPauseTotalSeconds / 86400; // seconds to days
+    lead.progressDeadline = baseProgressDeadline.plusDays(pauseDurationDays);
+
+    if (pauseDurationDays > 0) {
       Log.infof(
-          "Clock stopped - adding %d days to progress deadline (new: %s)",
+          "Stop-the-Clock: Adding cumulative pause of %d days to progress deadline (new: %s)",
           pauseDurationDays, lead.progressDeadline);
-    } else {
-      lead.progressDeadline = baseProgressDeadline;
     }
 
     // 6. Update lastActivityAt if empty (for Pre-Claim detection)

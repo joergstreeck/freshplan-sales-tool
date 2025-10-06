@@ -153,6 +153,10 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "stop_approved_by")
   public String stopApprovedBy;
 
+  // Cumulative pause duration (Sprint 2.1.6 - V262)
+  @Column(name = "progress_pause_total_seconds", nullable = false)
+  public Long progressPauseTotalSeconds = 0L;
+
   // Protection system (user-based, not territory-based)
   @Column(name = "protection_start_at", nullable = false)
   public LocalDateTime protectionStartAt = LocalDateTime.now();

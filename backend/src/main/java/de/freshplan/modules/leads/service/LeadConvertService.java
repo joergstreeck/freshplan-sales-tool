@@ -149,16 +149,18 @@ public class LeadConvertService {
       contact.persist();
     }
 
-    // 10. Update or soft-delete Lead
+    // 10. Archive Lead (ALWAYS keep for audit trail)
+    // Fix Sprint 2.1.6 Phase 2: Never hard-delete, always archive with status=CONVERTED
+    // Hard deletion only for DSGVO compliance (separate Pseudonymization Job in Phase 3)
+    lead.status = LeadStatus.CONVERTED;
+    lead.updatedAt = LocalDateTime.now();
+    lead.updatedBy = currentUserId;
+    lead.persist();
+
     if (request.keepLeadRecord) {
-      lead.status = LeadStatus.CONVERTED;
-      lead.updatedAt = LocalDateTime.now();
-      lead.updatedBy = currentUserId;
-      lead.persist();
-      Log.infof("Lead %d marked as CONVERTED (record retained)", leadId);
+      Log.infof("Lead %d marked as CONVERTED (record retained for audit)", leadId);
     } else {
-      lead.delete();
-      Log.infof("Lead %d hard-deleted after conversion", leadId);
+      Log.infof("Lead %d marked as CONVERTED (keepLeadRecord=false ignored - audit trail preserved)", leadId);
     }
 
     // 11. Audit log

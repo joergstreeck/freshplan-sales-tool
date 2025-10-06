@@ -22,7 +22,7 @@ import jakarta.ws.rs.core.Response;
 @Path("/api/admin/migration/leads")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@RolesAllowed({"admin"})
+@RolesAllowed({"ROLE_ADMIN"})
 public class LeadImportResource {
 
   @Inject LeadImportService leadImportService;

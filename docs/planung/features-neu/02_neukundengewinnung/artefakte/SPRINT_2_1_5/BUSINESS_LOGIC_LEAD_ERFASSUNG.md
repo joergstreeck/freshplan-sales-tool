@@ -611,5 +611,30 @@ ALTER TABLE customers ADD COLUMN original_lead_id BIGINT NULL;
 ---
 
 **📅 Erstellt:** 2025-10-04
-**🔄 Letzte Aktualisierung:** 2025-10-06 (Sprint 2.1.6 Phase 2 ergänzt)
+**🔄 Letzte Aktualisierung:** 2025-10-06 (Sprint 2.1.6 Phase 2 Review Fixes ergänzt)
 **✅ Status:** Approved (Production-Ready)
+
+---
+
+## 🔧 Sprint 2.1.6 Phase 2 Review Fixes (2025-10-06)
+
+Nach externem Code-Review wurden 6 Verbesserungen implementiert:
+
+### Fix #1: Duplikate-Handling (Migration-Ausnahme)
+- **MIGRATION-POLICY:** Import erlaubt Duplikate mit `isCanonical=false` (Warnung)
+- **Normale Lead-Erstellung:** Folgt weiterhin RFC 7807 DEDUPE_POLICY (Hard/Soft Collisions)
+- **Admin muss mergen:** Nach Import manuelle Review nötig
+
+### Fix #2 & #4: Stop-the-Clock kumulative Pausenzeit (KRITISCH)
+- **Neues Feld:** `progress_pause_total_seconds` (V262 Migration)
+- **Formel:** `progressDeadline = registeredAt + 60d + (pause_total / 86400)d`
+- **Idempotency:** `import_jobs` Tabelle mit `idempotency_key` Header-Tracking
+
+### Fix #5: RBAC-Rollennamen
+- **Standardisiert:** `ROLE_ADMIN`, `ROLE_SALES_MANAGER` (statt `admin`, `MANAGER`)
+
+### Fix #7: Lead-Archivierung statt Löschung
+- **Lead → Customer:** Lead wird IMMER als `CONVERTED` archiviert
+- **Hard-Delete:** Nur für DSGVO (Pseudonymisierung Job in Phase 3)
+
+---
