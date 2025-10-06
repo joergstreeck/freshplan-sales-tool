@@ -52,40 +52,24 @@ export const EnumField: React.FC<EnumFieldProps> = ({
   // Determine which hook to use based on enumSource
   const enumSource = (field as any).enumSource || 'business-types';
 
-  const {
-    data: businessTypes,
-    isLoading: isLoadingBusinessTypes,
-  } = useBusinessTypes();
-
-  const {
-    data: leadSources,
-    isLoading: isLoadingLeadSources,
-  } = useLeadSources();
-
-  const {
-    data: kitchenSizes,
-    isLoading: isLoadingKitchenSizes,
-  } = useKitchenSizes();
-
-  // Select the appropriate data and loading state
+  // Only call the relevant hook for the current enumSource (avoid unnecessary requests)
   let options: Array<{ value: string; label: string }> = [];
   let isLoading = false;
 
-  switch (enumSource) {
-    case 'business-types':
-      options = businessTypes || [];
-      isLoading = isLoadingBusinessTypes;
-      break;
-    case 'lead-sources':
-      options = leadSources || [];
-      isLoading = isLoadingLeadSources;
-      break;
-    case 'kitchen-sizes':
-      options = kitchenSizes || [];
-      isLoading = isLoadingKitchenSizes;
-      break;
-    default:
-      console.warn(`Unknown enumSource: ${enumSource}`);
+  if (enumSource === 'business-types') {
+    const { data, isLoading: loading } = useBusinessTypes();
+    options = data || [];
+    isLoading = loading;
+  } else if (enumSource === 'lead-sources') {
+    const { data, isLoading: loading } = useLeadSources();
+    options = data || [];
+    isLoading = loading;
+  } else if (enumSource === 'kitchen-sizes') {
+    const { data, isLoading: loading } = useKitchenSizes();
+    options = data || [];
+    isLoading = loading;
+  } else {
+    console.warn(`Unknown enumSource: ${enumSource}`);
   }
 
   return (

@@ -1,29 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-
-/**
- * Business Type Enum Value from Backend
- * Sprint 2.1.6: Single Source of Truth for dropdown values
- */
-export interface EnumValue {
-  value: string;
-  label: string;
-}
-
-const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
-
-function authHeaders() {
-  // Dev Mode: Use dev-auth-user from sessionStorage (bypass Keycloak)
-  const devUser = sessionStorage.getItem('dev-auth-user');
-  if (devUser) {
-    const user = JSON.parse(devUser);
-    const mockToken = `dev.${user.id}.${user.username}`;
-    return { Authorization: `Bearer ${mockToken}` };
-  }
-
-  // Production: JWT from localStorage (Keycloak)
-  const token = localStorage.getItem('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+import { BASE_URL, getAuthHeaders, type EnumValue } from './shared';
 
 /**
  * Fetch business types from backend API
@@ -32,10 +8,10 @@ function authHeaders() {
  * Returns: [{ value: "RESTAURANT", label: "Restaurant" }, ...]
  */
 async function fetchBusinessTypes(): Promise<EnumValue[]> {
-  const response = await fetch(`${BASE}/api/enums/business-types`, {
+  const response = await fetch(`${BASE_URL}/api/enums/business-types`, {
     headers: {
       'Content-Type': 'application/json',
-      ...authHeaders(),
+      ...getAuthHeaders(),
     },
   });
 

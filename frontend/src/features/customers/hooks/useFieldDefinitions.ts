@@ -109,7 +109,11 @@ export const useFieldDefinitions = (): UseFieldDefinitionsResult => {
     // Normalize to uppercase for BusinessType comparison (Sprint 2.1.6 Phase 2)
     const normalizedIndustry = industry.toUpperCase();
 
-    const industryFields = catalog.customer.industrySpecific?.[industry] || [];
+    // Try uppercase first (new BusinessType), fallback to lowercase (legacy)
+    const industryFields =
+      catalog.customer.industrySpecific?.[normalizedIndustry] ??
+      catalog.customer.industrySpecific?.[normalizedIndustry.toLowerCase()] ??
+      [];
 
     // Also get industry-specific fields from extensions (case-insensitive matching)
     const hotelFields = normalizedIndustry === 'HOTEL' ? extensions.hotelServices || [] : [];

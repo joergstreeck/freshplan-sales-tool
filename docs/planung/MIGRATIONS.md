@@ -366,6 +366,6 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-06 (V263, Sprint 2.1.6 Phase 2 - BusinessType Harmonization)
+**Letzte Aktualisierung:** 2025-10-06 (V264, Sprint 2.1.6 Phase 2 - BusinessType Harmonization)
 
-**Nächste Migration:** V264 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** (ermitteln via `./scripts/get-next-migration.sh`)

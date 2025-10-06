@@ -70,7 +70,8 @@ public class LeadImportResource {
         return Response.ok(response).build();
       }
 
-      if (response.statistics.failureCount > 0) {
+      // Partial success: Some leads failed OR had validation errors
+      if (response.statistics.failureCount > 0 || response.statistics.validationErrors > 0) {
         return Response.status(Response.Status.PARTIAL_CONTENT).entity(response).build();
       }
 

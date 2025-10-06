@@ -126,6 +126,10 @@ public class LeadConvertService {
       contact.setCustomer(customer);
 
       // Parse contact person name (simple split: "Max Mustermann" → firstName/lastName)
+      // TODO (Future Sprint - Issue #135): Improve name parsing robustness
+      // Current logic fails for complex names (e.g., "Dr. Max von Mustermann", "Maria Anna Schmidt")
+      // Consider using a name parsing library or more sophisticated logic for better data quality
+      // For now, this simple split is acceptable for MVP (most German names: "FirstName LastName")
       if (lead.contactPerson != null && !lead.contactPerson.isBlank()) {
         String[] nameParts = lead.contactPerson.trim().split("\\s+", 2);
         contact.setFirstName(nameParts[0]);

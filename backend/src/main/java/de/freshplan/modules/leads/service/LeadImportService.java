@@ -289,13 +289,18 @@ public class LeadImportService {
   }
 
   private boolean isDuplicateImport(String requestHash) {
-    // TODO: Check against import_audit table (Sprint 2.1.7)
+    // TODO (Sprint 2.1.7 - Issue #134): Implement idempotency using import_jobs table
+    // Migration V262 created the table, but service logic is not yet implemented.
+    // Required: Check import_jobs WHERE request_fingerprint = requestHash
+    // Return true if found AND status = 'COMPLETED', reuse existing results
     // For now, always allow (no persistence)
     return false;
   }
 
   private void recordImportAudit(LeadImportResponse response, String currentUserId) {
-    // TODO: Persist to import_audit table (Sprint 2.1.7)
+    // TODO (Sprint 2.1.7 - Issue #134): Persist to import_jobs table
+    // Required: INSERT import_jobs (request_fingerprint, status, result_summary, created_by)
+    // Update status on completion, store error details on failure
     Log.infof(
         "AUDIT: leads_batch_imported - user=%s, count=%d, hash=%s",
         currentUserId, response.statistics.successCount, response.requestHash);
