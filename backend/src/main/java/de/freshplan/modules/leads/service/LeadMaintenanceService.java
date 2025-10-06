@@ -129,19 +129,30 @@ public class LeadMaintenanceService {
           continue;
         }
 
-        // TODO (Modul 05): Erstelle OutboxEmail-Eintrag
-        // OutboxEmail email = new OutboxEmail();
-        // email.recipientEmail = lead.assignedTo + "@freshfoodz.de";
-        // email.templateName = "lead_progress_warning";
-        // email.templateData = Map.of("leadId", lead.id.toString(), ...);
-        // email.persist();
+        // Sprint 2.1.6 Phase 3: Outbox-Pattern für Email-Benachrichtigungen
+        de.freshplan.modules.leads.domain.OutboxEmail email =
+            new de.freshplan.modules.leads.domain.OutboxEmail();
+        email.recipientEmail = lead.ownerUserId + "@freshfoodz.de"; // TODO: Lookup real email
+        email.subject = "Lead Protection Warning - Action Required";
+        email.body =
+            String.format(
+                "Your lead '%s' (ID: %d) will expire soon.\n\n"
+                    + "Deadline: %s\n"
+                    + "Grace Period Ends: %s\n\n"
+                    + "Please update the lead to maintain protection.",
+                lead.companyName,
+                lead.id,
+                lead.progressDeadline,
+                lead.progressDeadline.plusDays(GRACE_PERIOD_DAYS));
+        email.templateName = "lead_progress_warning";
+        email.createdBy = SYSTEM_USER_ID;
+        email.createdAt = now;
+        email.correlationId = "lead:" + lead.id;
+        email.persist();
 
-        // Fallback: LOG statt Email (bis Modul 05 fertig)
         LOG.infof(
-            "Progress Warning: Lead %s - Deadline %s (Nachfrist endet: %s)",
-            lead.id,
-            lead.progressDeadline,
-            lead.progressDeadline.plusDays(GRACE_PERIOD_DAYS));
+            "Progress Warning: Lead %s - Deadline %s (Email queued: %d)",
+            lead.id, lead.progressDeadline, email.id);
 
         // Event für Dashboard-Echtzeit-Updates
         progressWarningEvent.fire(
@@ -230,17 +241,28 @@ public class LeadMaintenanceService {
           continue;
         }
 
-        // TODO (Modul 05): Erstelle OutboxEmail-Eintrag für Manager-Benachrichtigung
-        // OutboxEmail email = new OutboxEmail();
-        // email.recipientEmail = "manager@freshfoodz.de";
-        // email.templateName = "lead_protection_expired";
-        // email.templateData = Map.of("leadId", lead.id.toString(), ...);
-        // email.persist();
+        // Sprint 2.1.6 Phase 3: Outbox-Pattern für Manager-Benachrichtigung
+        de.freshplan.modules.leads.domain.OutboxEmail managerEmail =
+            new de.freshplan.modules.leads.domain.OutboxEmail();
+        managerEmail.recipientEmail = "manager@freshfoodz.de"; // TODO: Lookup territory manager
+        managerEmail.subject = "Lead Protection Expired - Lead Released";
+        managerEmail.body =
+            String.format(
+                "Lead protection has expired for:\n\n"
+                    + "Company: %s (ID: %d)\n"
+                    + "Previous Owner: %s\n"
+                    + "Grace Period Ended: %s\n\n"
+                    + "Lead is now available for reassignment.",
+                lead.companyName, lead.id, lead.ownerUserId, graceDeadline);
+        managerEmail.templateName = "lead_protection_expired";
+        managerEmail.createdBy = SYSTEM_USER_ID;
+        managerEmail.createdAt = now;
+        managerEmail.correlationId = "lead:" + lead.id;
+        managerEmail.persist();
 
-        // Fallback: LOG statt Email
         LOG.infof(
-            "Protection Expired: Lead %s - Partner %s - Nachfrist abgelaufen seit %s",
-            lead.id, lead.ownerUserId, graceDeadline);
+            "Protection Expired: Lead %s - Partner %s - Email queued: %d",
+            lead.id, lead.ownerUserId, managerEmail.id);
 
         // Event für Dashboard-Echtzeit-Updates
         protectionExpiredEvent.fire(
