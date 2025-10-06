@@ -86,11 +86,11 @@ public class SettingsService {
       setting.version = 1;
       setting.persist();
 
-      // Generate ETag before flush (DB trigger will handle version)
-      setting.etag = generateEtag(setting);
-
-      // Single flush to trigger DB updates (version increment happens once)
+      // Flush to trigger DB INSERT (ETag generation happens in trigger)
       em.flush();
+
+      // Refresh entity to get DB-generated values (etag, created_at)
+      em.refresh(setting);
 
       LOG.infof(
           "Created new setting with ID: %s, ETag: %s, Version: %d",
@@ -102,13 +102,13 @@ public class SettingsService {
         setting.metadata = metadata;
       }
       setting.updatedBy = userId;
-      setting.version = (setting.version == null ? 1 : setting.version + 1);
+      // Version and ETag are managed by DB trigger (update_settings_etag), not manually
 
-      // Generate new ETag before flush (DB trigger will handle version)
-      setting.etag = generateEtag(setting);
-
-      // Single flush to trigger DB updates (version increment happens once)
+      // Flush to trigger DB updates (version increment and ETag generation happen in trigger)
       em.flush();
+
+      // Refresh entity to get DB-generated values (version, etag, updated_at)
+      em.refresh(setting);
 
       LOG.infof(
           "Updated setting with ID: %s, ETag: %s, Version: %d",
@@ -151,11 +151,11 @@ public class SettingsService {
     try {
       setting.persist();
 
-      // Generate ETag before flush (DB trigger will handle version)
-      setting.etag = generateEtag(setting);
-
-      // Single flush to trigger DB updates (version increment happens once)
+      // Flush to trigger DB INSERT (ETag generation happens in trigger)
       em.flush();
+
+      // Refresh entity to get DB-generated values (etag, created_at)
+      em.refresh(setting);
 
       LOG.infof(
           "Created new setting with ID: %s, ETag: %s, Version: %d",
@@ -212,13 +212,13 @@ public class SettingsService {
       setting.metadata = metadata;
     }
     setting.updatedBy = userId;
-    setting.version = (setting.version == null ? 1 : setting.version + 1);
+    // Version and ETag are managed by DB trigger (update_settings_etag), not manually
 
-    // Generate new ETag before flush (DB trigger will handle version)
-    setting.etag = generateEtag(setting);
-
-    // Single flush to trigger DB updates (version increment happens once)
+    // Flush to trigger DB updates (version increment and ETag generation happen in trigger)
     em.flush();
+
+    // Refresh entity to get DB-generated values (version, etag, updated_at)
+    em.refresh(setting);
 
     LOG.infof(
         "Successfully updated setting %s to version %d, new ETag: %s",
