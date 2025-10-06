@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
  *
  * <p><strong>TTL:</strong> 7 days after completion → Cleanup by Nightly Job
  *
- * <p><strong>Migration:</strong> V262 (created in Sprint 2.1.6 Phase 2)
+ * <p><strong>Migration:</strong> V269 (created in Sprint 2.1.6 Phase 3)
  *
  * @see de.freshplan.modules.leads.service.LeadImportService
  * @see de.freshplan.modules.leads.service.LeadMaintenanceService#archiveCompletedImportJobs()
@@ -108,7 +108,7 @@ public class ImportJob extends PanacheEntityBase {
    * @return ImportJob or null
    */
   public static ImportJob findByIdempotencyKey(String idempotencyKey) {
-    return find("idempotency_key", idempotencyKey).firstResult();
+    return find("idempotencyKey", idempotencyKey).firstResult();
   }
 
   /**
@@ -118,7 +118,7 @@ public class ImportJob extends PanacheEntityBase {
    * @return ImportJob or null
    */
   public static ImportJob findByFingerprint(String fingerprint) {
-    return find("request_fingerprint", fingerprint).firstResult();
+    return find("requestFingerprint", fingerprint).firstResult();
   }
 
   /**

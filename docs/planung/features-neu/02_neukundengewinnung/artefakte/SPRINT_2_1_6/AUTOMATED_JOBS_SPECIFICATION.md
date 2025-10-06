@@ -1,7 +1,7 @@
 ---
 module: "02_neukundengewinnung"
 domain: "shared"
-doc_type: "specification"
+doc_type: "technical_concept"
 status: "ready_for_implementation"
 sprint: "2.1.6"
 phase: "3"

@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "analyse"
+status: "completed"
+owner: "team/leads-backend"
+updated: "2025-10-06"
+---
+
 # 🔍 Deep Analysis: Issue #127 & #126 gegen Planung & Codebasis
 
 **Analysiert am:** 2025-10-06 23:00

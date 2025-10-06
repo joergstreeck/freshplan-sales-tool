@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "sprint_map"
+status: "planned"
+owner: "team/leads-backend"
+updated: "2025-10-06"
+---
+
 # 📋 Sprint 2.1.7: Issue #127 & #126 Integration
 
 **Erstellt am:** 2025-10-06 23:05

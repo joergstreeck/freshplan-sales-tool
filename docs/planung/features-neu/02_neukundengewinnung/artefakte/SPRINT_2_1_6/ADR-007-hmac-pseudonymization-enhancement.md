@@ -1,5 +1,9 @@
 ---
+module: "02_neukundengewinnung"
+doc_type: "adr"
 status: "proposed"
+owner: "team/leads-backend"
+updated: "2025-10-07"
 date: "2025-10-07"
 decision-makers: ["team/leads-backend", "team/security"]
 consulted: ["ChatGPT Code Review"]

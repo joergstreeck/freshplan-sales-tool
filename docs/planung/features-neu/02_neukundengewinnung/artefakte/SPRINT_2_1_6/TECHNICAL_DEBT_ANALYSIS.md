@@ -1,3 +1,11 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "analyse"
+status: "completed"
+owner: "team/leads-backend"
+updated: "2025-10-06"
+---
+
 # 🔍 Technical Debt Analysis - Sprint 2.1.6 Abschluss
 
 **Analysiert am:** 2025-10-06 22:50
