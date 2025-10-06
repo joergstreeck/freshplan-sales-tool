@@ -138,15 +138,22 @@ public class ImportJob extends PanacheEntityBase {
 
   /** Mark job as completed and set TTL. */
   public void markCompleted() {
-    this.status = ImportStatus.COMPLETED;
-    this.completedAt = LocalDateTime.now();
-    this.ttlExpiresAt = this.completedAt.plusDays(7);
+    markFinished(ImportStatus.COMPLETED);
   }
 
   /** Mark job as failed and set TTL (Code Review: Gemini - Konsistenz mit markCompleted). */
   public void markFailed() {
-    this.status = ImportStatus.FAILED;
+    markFinished(ImportStatus.FAILED);
+  }
+
+  /**
+   * Internal helper: Mark job as finished (COMPLETED or FAILED) and set TTL.
+   *
+   * <p>Code Review (Gemini): Refactored to avoid code duplication.
+   */
+  private void markFinished(ImportStatus status) {
+    this.status = status;
     this.completedAt = LocalDateTime.now();
-    this.ttlExpiresAt = this.completedAt.plusDays(7); // Auch FAILED Jobs nach 7 Tagen bereinigen
+    this.ttlExpiresAt = this.completedAt.plusDays(7);
   }
 }

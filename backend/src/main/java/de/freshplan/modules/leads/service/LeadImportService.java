@@ -320,7 +320,7 @@ public class LeadImportService {
     importJob.requestFingerprint = response.requestHash;
     importJob.createdBy = currentUserId;
     importJob.createdAt = LocalDateTime.now();
-    importJob.ttlExpiresAt = LocalDateTime.now().plusDays(7);
+    // Note: ttlExpiresAt is set by markCompleted()/markFailed() methods
 
     // Import statistics
     importJob.totalLeads = response.statistics.totalLeads;

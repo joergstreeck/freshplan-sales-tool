@@ -91,6 +91,10 @@ public class OutboxEmail extends PanacheEntityBase {
   @Column(name = "sent_at")
   public LocalDateTime sentAt;
 
+  /** Email failed timestamp (set when status → FAILED). */
+  @Column(name = "failed_at")
+  public LocalDateTime failedAt;
+
   /** User/System who created this email. */
   @NotNull @Size(max = 50)
   @Column(name = "created_by", nullable = false)
@@ -137,6 +141,7 @@ public class OutboxEmail extends PanacheEntityBase {
   public void markFailed(String errorMessage) {
     this.status = EmailStatus.FAILED;
     this.lastError = errorMessage;
+    this.failedAt = LocalDateTime.now();
     this.attempts++;
   }
 }

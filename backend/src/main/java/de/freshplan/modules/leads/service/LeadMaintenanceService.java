@@ -135,15 +135,19 @@ public class LeadMaintenanceService {
         email.recipientEmail = lead.ownerUserId + "@freshfoodz.de"; // TODO: Lookup real email
         email.subject = "Lead Protection Warning - Action Required";
         email.body =
-            String.format(
-                "Your lead '%s' (ID: %d) will expire soon.\n\n"
-                    + "Deadline: %s\n"
-                    + "Grace Period Ends: %s\n\n"
-                    + "Please update the lead to maintain protection.",
-                lead.companyName,
-                lead.id,
-                lead.progressDeadline,
-                lead.progressDeadline.plusDays(GRACE_PERIOD_DAYS));
+            """
+            Your lead '%s' (ID: %d) will expire soon.
+
+            Deadline: %s
+            Grace Period Ends: %s
+
+            Please update the lead to maintain protection.
+            """
+                .formatted(
+                    lead.companyName,
+                    lead.id,
+                    lead.progressDeadline,
+                    lead.progressDeadline.plusDays(GRACE_PERIOD_DAYS));
         email.templateName = "lead_progress_warning";
         email.createdBy = SYSTEM_USER_ID;
         email.createdAt = now;
@@ -246,13 +250,16 @@ public class LeadMaintenanceService {
         managerEmail.recipientEmail = "manager@freshfoodz.de"; // TODO: Lookup territory manager
         managerEmail.subject = "Lead Protection Expired - Lead Released";
         managerEmail.body =
-            String.format(
-                "Lead protection has expired for:\n\n"
-                    + "Company: %s (ID: %d)\n"
-                    + "Previous Owner: %s\n"
-                    + "Grace Period Ended: %s\n\n"
-                    + "Lead is now available for reassignment.",
-                lead.companyName, lead.id, lead.ownerUserId, graceDeadline);
+            """
+            Lead protection has expired for:
+
+            Company: %s (ID: %d)
+            Previous Owner: %s
+            Grace Period Ended: %s
+
+            Lead is now available for reassignment.
+            """
+                .formatted(lead.companyName, lead.id, lead.ownerUserId, graceDeadline);
         managerEmail.templateName = "lead_protection_expired";
         managerEmail.createdBy = SYSTEM_USER_ID;
         managerEmail.createdAt = now;
