@@ -1,3 +1,14 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "konzept"
+status: "active"
+owner: "joergstreeck"
+updated: "2025-10-06"
+title: "Lead/Customer Field Harmonization - Best Practice Proposal"
+sprint: "2.1.6 Phase 2 Follow-up"
+priority: "high"
+---
+
 # Lead/Customer Field Harmonization - Best Practice Proposal
 
 **Sprint:** 2.1.6 Phase 2 Follow-up

@@ -3,8 +3,8 @@ package de.freshplan.domain.shared;
 /**
  * Business Type Classification for Leads and Customers.
  *
- * <p>Sprint 2.1.6 Phase 2 Review: Unified business type across Lead and Customer domains.
- * Replaces hardcoded frontend values and Customer Industry enum.
+ * <p>Sprint 2.1.6 Phase 2 Review: Unified business type across Lead and Customer domains. Replaces
+ * hardcoded frontend values and Customer Industry enum.
  *
  * <p>Single Source of Truth for business classification in B2B Food CRM.
  */

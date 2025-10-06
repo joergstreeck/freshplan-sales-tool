@@ -1,3 +1,13 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "technical_concept"
+status: "complete"
+owner: "joergstreeck"
+updated: "2025-10-06"
+title: "BusinessType Harmonization - Complete Documentation"
+sprint: "2.1.6 Phase 2"
+---
+
 # BusinessType Harmonization - Complete Documentation
 
 **Sprint:** 2.1.6 Phase 2

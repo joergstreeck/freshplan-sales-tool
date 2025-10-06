@@ -127,7 +127,8 @@ public class LeadConvertService {
 
       // Parse contact person name (simple split: "Max Mustermann" → firstName/lastName)
       // TODO (Future Sprint - Issue #135): Improve name parsing robustness
-      // Current logic fails for complex names (e.g., "Dr. Max von Mustermann", "Maria Anna Schmidt")
+      // Current logic fails for complex names (e.g., "Dr. Max von Mustermann", "Maria Anna
+      // Schmidt")
       // Consider using a name parsing library or more sophisticated logic for better data quality
       // For now, this simple split is acceptable for MVP (most German names: "FirstName LastName")
       if (lead.contactPerson != null && !lead.contactPerson.isBlank()) {
@@ -164,7 +165,9 @@ public class LeadConvertService {
     if (request.keepLeadRecord) {
       Log.infof("Lead %d marked as CONVERTED (record retained for audit)", leadId);
     } else {
-      Log.infof("Lead %d marked as CONVERTED (keepLeadRecord=false ignored - audit trail preserved)", leadId);
+      Log.infof(
+          "Lead %d marked as CONVERTED (keepLeadRecord=false ignored - audit trail preserved)",
+          leadId);
     }
 
     // 11. Audit log
