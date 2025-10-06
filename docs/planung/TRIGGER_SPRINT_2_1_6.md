@@ -23,7 +23,7 @@ phases:
     status: "pending"
   - phase: "Phase 4"
     branch: "feature/mod02-sprint-2.1.6-lead-ui-phase2"
-    scope: "Frontend UI (Stop-the-Clock Dialog, Lead-Scoring, Workflows, Activity-Timeline)"
+    scope: "Frontend UI (Excel Upload, Stop-the-Clock Dialog, Lead-Scoring, Workflows, Activity-Timeline)"
     status: "pending"
   - phase: "Phase 5"
     branch: "feature/mod02-sprint-2.1.6-accessibility"
@@ -602,6 +602,7 @@ void pseudonymizeExpiredLeads() {
 - [ ] **Email-Benachrichtigungen** für alle Jobs
 
 **Phase 4 - Frontend UI (Branch: feature/mod02-sprint-2.1.6-lead-ui-phase2) - PENDING:**
+- [ ] **Excel-Upload für Leads-Migration** (Drag & Drop, Spalten-Mapping, Vorschau, Dry-Run)
 - [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog.tsx, RBAC Manager/Admin)
 - [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
 - [ ] **LeadProtectionBadge.tsx** (Pause/Resume Buttons)
