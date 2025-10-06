@@ -14,7 +14,7 @@
 > - **Idempotency Service operational** (24h TTL, SHA-256 Request-Hash, atomic INSERT … ON CONFLICT)
 > - **CI optimiert:** 24min → 7min (70% schneller) - JUnit parallel (Surefire gesteuert), ValidatorFactory @BeforeAll
 > - **Migrations-Hygiene:** Prod-Migrations <V8000, **V10xxx** = Test/Dev-only (z.B. V10012 Indizes ohne CONCURRENTLY)
-> - **Bestandsleads-Migration operational** (Sprint 2.1.6): Batch-Import, Backdating, Lead → Customer Conversion
+> - **Bestandsleads-Migration operational** (Sprint 2.1.6 Phase 2): Batch-Import mit Idempotency, Backdating mit kumulativer Stop-the-Clock-Pause, Lead→Customer Conversion mit Archivierung (KEINE Hard-Deletes)
 > - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
 
 ---
