@@ -289,20 +289,61 @@ public class LeadImportService {
   }
 
   private boolean isDuplicateImport(String requestHash) {
-    // TODO (Sprint 2.1.7 - Issue #134): Implement idempotency using import_jobs table
-    // Migration V262 created the table, but service logic is not yet implemented.
-    // Required: Check import_jobs WHERE request_fingerprint = requestHash
-    // Return true if found AND status = 'COMPLETED', reuse existing results
-    // For now, always allow (no persistence)
+    // Sprint 2.1.6 Phase 3 - Issue #134: Idempotency Check
+    // Check if this exact import was already processed (by request fingerprint)
+    de.freshplan.modules.leads.domain.ImportJob existingJob =
+        de.freshplan.modules.leads.domain.ImportJob.findByFingerprint(requestHash);
+
+    if (existingJob != null
+        && existingJob.status
+            == de.freshplan.modules.leads.domain.ImportJob.ImportStatus.COMPLETED) {
+      Log.infof(
+          "Duplicate import detected: request_fingerprint=%s, original_job_id=%d",
+          requestHash, existingJob.id);
+      return true;
+    }
+
     return false;
   }
 
   private void recordImportAudit(LeadImportResponse response, String currentUserId) {
-    // TODO (Sprint 2.1.7 - Issue #134): Persist to import_jobs table
-    // Required: INSERT import_jobs (request_fingerprint, status, result_summary, created_by)
-    // Update status on completion, store error details on failure
+    // Sprint 2.1.6 Phase 3 - Issue #134: Persist Import Job for Idempotency
+    de.freshplan.modules.leads.domain.ImportJob importJob =
+        new de.freshplan.modules.leads.domain.ImportJob();
+
+    // Generate idempotency key (fallback: use request hash as key)
+    importJob.idempotencyKey = response.requestHash;
+    importJob.requestFingerprint = response.requestHash;
+    importJob.createdBy = currentUserId;
+    importJob.createdAt = LocalDateTime.now();
+    importJob.ttlExpiresAt = LocalDateTime.now().plusDays(7);
+
+    // Import statistics
+    importJob.totalLeads = response.statistics.totalLeads;
+    importJob.successCount = response.statistics.successCount;
+    importJob.failureCount = response.statistics.failureCount;
+    importJob.duplicateWarnings = response.statistics.duplicateWarnings;
+
+    // Status: COMPLETED if no failures, FAILED otherwise
+    if (response.statistics.failureCount == 0) {
+      importJob.markCompleted();
+    } else {
+      importJob.markFailed();
+    }
+
+    // Store result summary as JSON (for now: basic stats)
+    importJob.resultSummary =
+        String.format(
+            "{\"successCount\":%d,\"failureCount\":%d,\"duplicateWarnings\":%d}",
+            response.statistics.successCount,
+            response.statistics.failureCount,
+            response.statistics.duplicateWarnings);
+
+    // Persist
+    importJob.persist();
+
     Log.infof(
-        "AUDIT: leads_batch_imported - user=%s, count=%d, hash=%s",
-        currentUserId, response.statistics.successCount, response.requestHash);
+        "AUDIT: leads_batch_imported - user=%s, count=%d, hash=%s, import_job_id=%d",
+        currentUserId, response.statistics.successCount, response.requestHash, importJob.id);
   }
 }

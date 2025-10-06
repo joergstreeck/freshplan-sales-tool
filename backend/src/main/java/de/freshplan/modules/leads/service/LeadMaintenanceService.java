@@ -367,24 +367,29 @@ public class LeadMaintenanceService {
   @Transactional
   public int archiveCompletedImportJobs() {
     LocalDateTime now = LocalDateTime.now(clock);
-    LocalDateTime archivalThreshold = now.minusDays(IMPORT_ARCHIVAL_DAYS);
 
-    LOG.infof("Starting Import Jobs Archival (Threshold: %s)", archivalThreshold);
+    LOG.infof("Starting Import Jobs Archival (Threshold: %s)", now);
 
-    // TODO: Import-Job-Entity existiert noch nicht (Sprint 2.1.6 Phase 4)
-    // Placeholder-Implementation für jetzt
-    // List<ImportJob> jobsToArchive = ImportJob.find(
-    //   "status = 'COMPLETED' AND completedAt < ?1 AND archived = false",
-    //   archivalThreshold
-    // ).list();
+    // Sprint 2.1.6 Phase 3 - Issue #134: Delete expired import jobs (TTL)
+    // Find jobs where ttl_expires_at < now() (TTL expired)
+    // TTL is set to completedAt + 7 days by ImportJob.markCompleted()
+    List<de.freshplan.modules.leads.domain.ImportJob> jobsToArchive =
+        de.freshplan.modules.leads.domain.ImportJob.findReadyForArchival(now);
 
     int archived = 0;
-    // for (ImportJob job : jobsToArchive) {
-    //   job.status = ImportJobStatus.ARCHIVED;
-    //   job.archivedAt = now;
-    //   job.persist();
-    //   archived++;
-    // }
+    for (de.freshplan.modules.leads.domain.ImportJob job : jobsToArchive) {
+      try {
+        // Hard delete (GoBD-compliant: Idempotency-Daten haben keine Aufbewahrungspflicht)
+        job.delete();
+        archived++;
+
+        LOG.debugf(
+            "Archived import job: id=%d, created=%s, ttl_expires_at=%s",
+            job.id, job.createdAt, job.ttlExpiresAt);
+      } catch (Exception e) {
+        LOG.errorf(e, "Failed to archive import job %d", job.id);
+      }
+    }
 
     // Event für Dashboard
     if (archived > 0) {
