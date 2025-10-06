@@ -97,7 +97,8 @@ public class LeadMaintenanceScheduler {
     LOG.info("Starting scheduled DSGVO Pseudonymization");
     try {
       int pseudonymized = maintenanceService.pseudonymizeExpiredLeads();
-      LOG.infof("Scheduled DSGVO Pseudonymization completed: %d leads pseudonymized", pseudonymized);
+      LOG.infof(
+          "Scheduled DSGVO Pseudonymization completed: %d leads pseudonymized", pseudonymized);
     } catch (Exception e) {
       LOG.error("Error during scheduled DSGVO Pseudonymization", e);
     }

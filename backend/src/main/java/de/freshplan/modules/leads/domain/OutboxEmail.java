@@ -43,20 +43,17 @@ public class OutboxEmail extends PanacheEntityBase {
   public Long id;
 
   /** Recipient email address. */
-  @NotNull
-  @Size(max = 255)
+  @NotNull @Size(max = 255)
   @Column(name = "recipient_email", nullable = false)
   public String recipientEmail;
 
   /** Email subject line. */
-  @NotNull
-  @Size(max = 500)
+  @NotNull @Size(max = 500)
   @Column(nullable = false, length = 500)
   public String subject;
 
   /** Email body (plain text or HTML). */
-  @NotNull
-  @Column(nullable = false, columnDefinition = "TEXT")
+  @NotNull @Column(nullable = false, columnDefinition = "TEXT")
   public String body;
 
   /**
@@ -74,8 +71,7 @@ public class OutboxEmail extends PanacheEntityBase {
   public String templateData;
 
   /** Email status (PENDING, SENT, FAILED). */
-  @NotNull
-  @Enumerated(EnumType.STRING)
+  @NotNull @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 50)
   public EmailStatus status = EmailStatus.PENDING;
 
@@ -88,8 +84,7 @@ public class OutboxEmail extends PanacheEntityBase {
   public String lastError;
 
   /** Email creation timestamp. */
-  @NotNull
-  @Column(name = "created_at", nullable = false)
+  @NotNull @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt;
 
   /** Email sent timestamp (set when status → SENT). */
@@ -97,8 +92,7 @@ public class OutboxEmail extends PanacheEntityBase {
   public LocalDateTime sentAt;
 
   /** User/System who created this email. */
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "created_by", nullable = false)
   public String createdBy;
 

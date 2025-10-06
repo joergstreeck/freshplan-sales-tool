@@ -134,6 +134,38 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-06 23:48 - Sprint 2.1.6 Phase 3 - Gap Analysis & Sprint 2.1.7 Planning ✅
+
+**Kontext:** Vollständige Gap-Analyse Phase 3 + Technical Debt Review + Sprint 2.1.7 Integration
+
+**Erledigt:**
+- ✅ **[PHASE_3_GAP_ANALYSIS.md](../backend/src/test/java/de/freshplan/modules/leads/service/PHASE_3_GAP_ANALYSIS.md)** (385 Zeilen) - Vergleich Planung vs. Implementation
+  - ✅ 95% COMPLETE - Phase 3 ist PRODUKTIONSREIF
+  - ⚠️ ADR-002 Abweichung: Hard-Delete statt ARCHIVED (BESSERE LÖSUNG, GoBD-konform)
+  - ⚠️ Monitoring fehlt (Prometheus, Slack) - auf Modul 00 verschoben
+  - ✅ Alle 4 Jobs implementiert, 5/7 Integration-Tests GREEN
+- ✅ **[TECHNICAL_DEBT_ANALYSIS.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/TECHNICAL_DEBT_ANALYSIS.md)** (451 Zeilen) - Vollständige Debt-Übersicht
+  - 🔴 KRITISCH: 0 issues (✅ Sprint 2.1.6 NICHT BLOCKIERT)
+  - 🟡 MITTEL: 2 issues (#127 Clock Injection, #126 ActivityOutcome Enum)
+  - 🔵 NIEDRIG: 4 issues
+  - 9 Code-TODOs dokumentiert, 6 @Deprecated Items (Q1 2026 Cleanup)
+- ✅ **[ISSUE_127_126_DEEP_ANALYSIS.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/ISSUE_127_126_DEEP_ANALYSIS.md)** (410 Zeilen) - Code-Analyse beider Issues
+  - Issue #127: TEILWEISE implementiert (2/5 Services haben Clock)
+  - Issue #126: Field existiert, aber 0 reads/0 writes (Dead Code, Sprint 2.1.7 braucht es)
+- ✅ **[SPRINT_2_1_7_ISSUES_127_126.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/SPRINT_2_1_7_ISSUES_127_126.md)** (447 Zeilen) - Implementation Plans
+  - User Story 5: Clock Injection Standard (4-6h)
+  - User Story 6: ActivityOutcome Enum (2h)
+  - ClockProvider CDI Bean, Migration V269, ADR-007
+- ✅ **GitHub Issues aktualisiert:**
+  - Issue #127: Kommentar mit Sprint 2.1.7 Plan
+  - Issue #126: Kommentar mit Sprint 2.1.7 Plan
+- ✅ **TRIGGER_SPRINT_2_1_7.md** erweitert:
+  - User Stories 5 & 6 zu Track 2 hinzugefügt
+  - Track 2 Effort: ~32-44h (6 Deliverables)
+
+**Tests:** Sprint 2.1.6 Phase 3 weiterhin stabil (5/7 GREEN)
+**Status:** Sprint 2.1.6 Phase 3 ABSCHLUSSREIF - keine Blocker
+
 ### 2025-10-06 22:40 - Sprint 2.1.6 Phase 3 - Outbox-Pattern COMPLETE ✅
 
 **Kontext:** Minimal Outbox Pattern Implementation für Email-Benachrichtigungen (ADR-001)
@@ -639,7 +671,9 @@
     - **6/6 Integration-Tests GREEN** (LeadMaintenanceSchedulerIT)
     - **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 93d0441f1)
   - **📋 NEXT PHASE - Sprint 2.1.6 Finalisierung:**
-    - Git Commit + PR #134 erstellen (Outbox-Pattern)
+    - **PRIORITY 1:** Git Commit + PR #134 erstellen (Outbox-Pattern + Nightly Jobs)
+    - **Gap Analysis COMPLETE:** Phase 3 zu 95% PRODUKTIONSREIF (nur Monitoring fehlt → Modul 00)
+    - **Technical Debt Review COMPLETE:** 0 kritische Issues, Sprint 2.1.6 NICHT BLOCKIERT
     - Phase 4 (OPTIONAL): Stop-the-Clock UI + Excel Upload
     - Phase 5 (OPTIONAL): MUI Dialog Accessibility Fix
   - **❌ VERSCHOBEN auf Sprint 2.1.7:**
@@ -655,10 +689,13 @@
     - Row-Level-Security Implementation (V261, ADR-003, 10-14h)
     - Team Management CRUD + Territory-Zuordnung (V262, 8-10h)
   - **Track 2 (Test Infrastructure Overhaul - STRATEGISCH!):**
-    - CRM Szenario-Builder (komplexe Workflows, 12-16h)
-    - Faker-Integration (realistische Testdaten, 4-6h)
-    - Lead-spezifische TestDataFactories (6-8h)
-    - Test-Pattern Library & Documentation (4-6h)
+    - **User Story 5:** Clock Injection Standard (Issue #127, ClockProvider CDI + 3 Services refactored + ADR-007, 4-6h)
+    - **User Story 6:** ActivityOutcome Enum (Issue #126, Enum + Migration V269 + CHECK Constraint, 2h)
+    - **User Story 7:** CRM Szenario-Builder (komplexe Workflows, 12-16h)
+    - **User Story 8:** Lead-Journey Test-Fixtures (6-8h)
+    - **User Story 9:** Faker-Integration (realistische Testdaten, 4-6h)
+    - **User Story 10:** Test-Pattern Library & Documentation (4-6h)
+    - **Track 2 Gesamt-Effort:** ~32-44h (4-5.5 Tage)
 - **Sprint 2.2+ Planung:**
   - Mobile-First UI Optimierung (Touch, Breakpoints, Performance <3.5s 3G)
   - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)

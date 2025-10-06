@@ -97,10 +97,14 @@ Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lea
 Aufbau einer professionellen Testdaten-Architektur für komplexes CRM-System, die alle Szenarien abdeckt und Sprint 2.2+ Velocity erhöht.
 
 **Kern-Deliverables:**
-1. **CRM Szenario-Builder** - Komplexe Workflows (Lead → Prospect → Customer → Opportunity → Won)
-2. **Lead-Journey Test-Fixtures** - Alle Lead-Stages + Protection-Stati + Activities
-3. **Faker-Integration** - Realistische Testdaten (Namen, Adressen, Branchen)
-4. **Test-Pattern Library** - Best Practices für alle CRM-Module
+1. **Clock Injection Standard (Issue #127)** - Konsistente Clock über alle Services (4-6h)
+2. **ActivityOutcome Enum (Issue #126)** - Type-Safe Validation für outcome Field (2h)
+3. **CRM Szenario-Builder** - Komplexe Workflows (Lead → Prospect → Customer → Opportunity → Won) (12-16h)
+4. **Lead-Journey Test-Fixtures** - Alle Lead-Stages + Protection-Stati + Activities (6-8h)
+5. **Faker-Integration** - Realistische Testdaten (Namen, Adressen, Branchen) (4-6h)
+6. **Test-Pattern Library** - Best Practices für alle CRM-Module (4-6h)
+
+**Gesamt-Effort Track 2:** ~32-44h (4-5.5 Tage)
 
 **Begründung Track 2:**
 - ✅ **Quality Investment:** Hochwertige Tests = weniger Bugs = schnellere Entwicklung
@@ -394,7 +398,111 @@ public class LeadDeduplicationService {
 
 ## User Stories - Track 2: Test Infrastructure Overhaul
 
-### 5. CRM Szenario-Builder (NEU - STRATEGISCH!)
+### 5. Clock Injection Standard (Issue #127 - REFACTORING)
+**Begründung:** Konsistente Clock-Injection über alle Services für deterministische Tests
+
+**Problem-Analyse:**
+- ⚠️ **Inkonsistenz:** 2/5 Services haben Clock (LeadMaintenanceService ✅, FollowUpAutomationService ✅)
+- ❌ **Fehlende Clock:** 3/5 Services (LeadProtectionService, LeadService, LeadConvertService)
+- ✅ **Tests funktionieren** aktuell (großes Zeitfenster), aber nicht 100% deterministisch
+- 🎯 **Ziel:** 100% Konsistenz + vollständig deterministische Tests
+
+**Akzeptanzkriterien:**
+- [ ] **ClockProvider erstellen:**
+  ```java
+  @ApplicationScoped
+  public class ClockProvider {
+      @Produces
+      @ApplicationScoped
+      public Clock provideClock() {
+          return Clock.systemDefaultZone();
+      }
+  }
+  ```
+- [ ] **LeadProtectionService refactoren:**
+  - 3 Methoden mit `LocalDateTime.now()` → `LocalDateTime.now(clock)`
+  - Clock via `@Inject` statt private field
+  - Tests auf `Clock.fixed()` umstellen
+- [ ] **LeadService refactoren:**
+  - 11 Stellen mit `LocalDateTime.now()` → `LocalDateTime.now(clock)`
+  - Clock via `@Inject` statt private field
+  - Tests auf `Clock.fixed()` umstellen
+- [ ] **LeadConvertService refactoren:**
+  - 8 Stellen mit `LocalDateTime.now()` → `LocalDateTime.now(clock)`
+  - Clock via `@Inject` statt private field
+  - Tests auf `Clock.fixed()` umstellen
+- [ ] **ADR erstellen:** ADR-007 "Clock Injection Standard"
+- [ ] **Alle Tests grün** (Unit + Integration)
+- [ ] **100% Konsistenz** zwischen allen Services
+
+**Effort:** ~4-6h (3 Services + ClockProvider + Tests + ADR)
+
+**Referenzen:**
+- ✅ **Beispiel-Implementation:** LeadMaintenanceService.java (Sprint 2.1.6 Phase 3)
+- 📋 **Analyse:** [ISSUE_127_126_DEEP_ANALYSIS.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/ISSUE_127_126_DEEP_ANALYSIS.md)
+- 🔗 **Issue:** [#127](https://github.com/joergstreeck/freshplan-sales-tool/issues/127)
+
+---
+
+### 6. ActivityOutcome Enum + Validation (Issue #126 - DATA INTEGRITY)
+**Begründung:** Type-Safe Enum statt String für `outcome` Field (Vorbereitung Follow-Up-Dashboard)
+
+**Problem-Analyse:**
+- ❌ **String ohne Validierung:** `outcome VARCHAR(50)` erlaubt beliebige Werte
+- ✅ **Comment definiert Werte:** 7 erlaubte Outcomes (V256)
+- ⚠️ **Keine Type-Safety:** Typos möglich (z.B. "positve_interest")
+- ✅ **Field aktuell ungenutzt** (0 read, 0 write) → kein Production-Impact
+- 🎯 **Sprint 2.1.7 braucht Enum** (Follow-Up-Dashboard nutzt outcome)
+
+**Akzeptanzkriterien:**
+- [ ] **Enum erstellen:**
+  ```java
+  public enum ActivityOutcome {
+      POSITIVE_INTEREST,
+      NEEDS_MORE_INFO,
+      NOT_INTERESTED,
+      CALLBACK_SCHEDULED,
+      DEMO_SCHEDULED,
+      CLOSED_WON,
+      CLOSED_LOST
+  }
+  ```
+- [ ] **LeadActivity.outcome anpassen:**
+  ```java
+  @Enumerated(EnumType.STRING)
+  @Column(name = "outcome", length = 50)
+  public ActivityOutcome outcome;
+  ```
+- [ ] **Migration V269+ erstellen:**
+  ```sql
+  ALTER TABLE lead_activities
+    ADD CONSTRAINT lead_activities_outcome_chk
+    CHECK (outcome IN (
+      'POSITIVE_INTEREST',
+      'NEEDS_MORE_INFO',
+      'NOT_INTERESTED',
+      'CALLBACK_SCHEDULED',
+      'DEMO_SCHEDULED',
+      'CLOSED_WON',
+      'CLOSED_LOST'
+    ) OR outcome IS NULL);
+  ```
+- [ ] **Tests schreiben:**
+  - Ungültige Outcomes werden rejected (DB-Level)
+  - Ungültige Outcomes werden rejected (Entity-Level)
+  - JSON Serialization korrekt
+- [ ] **Alle Tests grün**
+
+**Effort:** ~2h (Enum + Migration + Tests)
+
+**Referenzen:**
+- 📋 **V256 Migration:** Definiert erlaubte Werte im Comment
+- 📋 **Analyse:** [ISSUE_127_126_DEEP_ANALYSIS.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/ISSUE_127_126_DEEP_ANALYSIS.md)
+- 🔗 **Issue:** [#126](https://github.com/joergstreeck/freshplan-sales-tool/issues/126)
+
+---
+
+### 7. CRM Szenario-Builder (NEU - STRATEGISCH!)
 **Begründung:** Komplexe CRM-Workflows brauchen professionelle Test-Szenarien
 
 **Problem-Analyse (aus TESTING_GUIDE.md):**

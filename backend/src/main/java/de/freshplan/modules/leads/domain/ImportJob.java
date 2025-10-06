@@ -38,19 +38,16 @@ public class ImportJob extends PanacheEntityBase {
   public Long id;
 
   /** Client-provided unique key for idempotency (Header: Idempotency-Key). */
-  @NotNull
-  @Size(max = 255)
+  @NotNull @Size(max = 255)
   @Column(name = "idempotency_key", unique = true, nullable = false)
   public String idempotencyKey;
 
   /** SHA-256 hash of request data (fallback check if no idempotency key provided). */
-  @NotNull
-  @Column(name = "request_fingerprint", nullable = false, columnDefinition = "TEXT")
+  @NotNull @Column(name = "request_fingerprint", nullable = false, columnDefinition = "TEXT")
   public String requestFingerprint;
 
   /** Import job status. */
-  @NotNull
-  @Enumerated(EnumType.STRING)
+  @NotNull @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 50)
   public ImportStatus status;
 
@@ -80,14 +77,12 @@ public class ImportJob extends PanacheEntityBase {
   public String resultSummary;
 
   /** User who initiated the import. */
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "created_by", nullable = false)
   public String createdBy;
 
   /** Import job creation timestamp. */
-  @NotNull
-  @Column(name = "created_at", nullable = false)
+  @NotNull @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt;
 
   /** Import job completion timestamp (set when status = COMPLETED or FAILED). */
@@ -95,8 +90,7 @@ public class ImportJob extends PanacheEntityBase {
   public LocalDateTime completedAt;
 
   /** TTL expiry timestamp (7 days after completion). */
-  @NotNull
-  @Column(name = "ttl_expires_at", nullable = false)
+  @NotNull @Column(name = "ttl_expires_at", nullable = false)
   public LocalDateTime ttlExpiresAt;
 
   /** Import job status enum. */

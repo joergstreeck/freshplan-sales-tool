@@ -22,8 +22,8 @@ import org.junit.jupiter.api.Test;
  *
  * <p>Strategy: @QuarkusTest, reale DB, langsamer (~5s), aber komplett integriert.
  *
- * <p><strong>Wichtig:</strong> Diese Tests validieren das Zusammenspiel von Scheduler →
- * Service → DB → Events. Nicht die Business-Logik Details (das macht LeadMaintenanceServiceTest).
+ * <p><strong>Wichtig:</strong> Diese Tests validieren das Zusammenspiel von Scheduler → Service →
+ * DB → Events. Nicht die Business-Logik Details (das macht LeadMaintenanceServiceTest).
  */
 @QuarkusTest
 @DisplayName("LeadMaintenanceScheduler Integration Tests - Sprint 2.1.6 Phase 3")
@@ -300,5 +300,4 @@ class LeadMaintenanceSchedulerIT {
     lead.updatedAt = LocalDateTime.now();
     return lead;
   }
-
 }

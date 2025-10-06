@@ -267,7 +267,8 @@ public class Lead extends PanacheEntityBase {
   }
 
   public boolean canBeAccessedBy(String userId) {
-    return (ownerUserId != null && ownerUserId.equals(userId)) || collaboratorUserIds.contains(userId);
+    return (ownerUserId != null && ownerUserId.equals(userId))
+        || collaboratorUserIds.contains(userId);
   }
 
   public void addCollaborator(String userId) {

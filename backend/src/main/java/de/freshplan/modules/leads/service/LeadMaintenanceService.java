@@ -17,7 +17,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.jboss.logging.Logger;
 
@@ -213,8 +212,7 @@ public class LeadMaintenanceService {
         // Prüfe ob 10-Tage-Nachfrist abgelaufen
         LocalDateTime graceDeadline = lead.progressWarningSentAt.plusDays(GRACE_PERIOD_DAYS);
         if (now.isBefore(graceDeadline)) {
-          LOG.debugf(
-              "Lead %s still in grace period until %s, skipping", lead.id, graceDeadline);
+          LOG.debugf("Lead %s still in grace period until %s, skipping", lead.id, graceDeadline);
           continue;
         }
 
@@ -286,8 +284,7 @@ public class LeadMaintenanceService {
    * <p><strong>DSGVO-Konform (B2B-Leads):</strong>
    *
    * <ul>
-   *   <li>Pseudonymisieren (PII): email → SHA-256 Hash, phone → NULL, contactPerson →
-   *       "ANONYMIZED"
+   *   <li>Pseudonymisieren (PII): email → SHA-256 Hash, phone → NULL, contactPerson → "ANONYMIZED"
    *   <li>Behalten (juristische Personen): companyName, city, businessType, ownerUserId,
    *       sourceCampaign (Analytics/Territory-Statistiken)
    * </ul>
@@ -302,8 +299,7 @@ public class LeadMaintenanceService {
   @Transactional
   public int pseudonymizeExpiredLeads() {
     LocalDateTime now = LocalDateTime.now(clock);
-    LocalDateTime pseudonymizationThreshold =
-        now.minusDays(PSEUDONYMIZATION_DAYS_AFTER_EXPIRY);
+    LocalDateTime pseudonymizationThreshold = now.minusDays(PSEUDONYMIZATION_DAYS_AFTER_EXPIRY);
 
     LOG.infof("Starting DSGVO Pseudonymization (Threshold: %s)", pseudonymizationThreshold);
 
