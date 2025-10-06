@@ -438,8 +438,14 @@ Implementation-Details:
 **Referenzen:**
 - [TRIGGER_SPRINT_2_1_6.md](TRIGGER_SPRINT_2_1_6.md)
 - [HARMONIZATION_COMPLETE.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/HARMONIZATION_COMPLETE.md)
+- [AUTOMATED_JOBS_SPECIFICATION.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/AUTOMATED_JOBS_SPECIFICATION.md) ⭐ NEU (2025-10-06)
 - [Sprint-Map Modul 02](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
-- Pending: Phase 3 (Nightly Jobs), Phase 4 (Frontend UI + Excel Upload), Phase 5 (Accessibility)
+
+**Sprint 2.1.6 Phase 3 - Automated Jobs (Ready for Implementation):**
+- ✅ **Specification COMPLETE:** AUTOMATED_JOBS_SPECIFICATION.md (418 Zeilen, 6 ADRs)
+- ✅ **Branch ready:** feature/mod02-sprint-2.1.6-nightly-jobs
+- 🔧 **Implementation pending:** 4 Nightly Jobs (Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Cleanup)
+- 📋 **Next Steps:** Phase 4 (Frontend UI + Excel Upload), Phase 5 (Accessibility)
 
 ---
 

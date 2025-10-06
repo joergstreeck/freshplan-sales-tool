@@ -58,10 +58,29 @@ public class LeadImportService {
     response.statistics.importedBy = currentUserId;
 
     // Check for duplicate import (idempotency)
-    if (isDuplicateImport(response.requestHash)) {
+    // Code Review (Gemini): requestHash dient als serverseitiger Fingerprint.
+    // Zukünftig kann idempotencyKey aus HTTP-Header als Client-Override hinzugefügt werden.
+    // Siehe ImportJob.idempotencyKey Javadoc für geplante Client-Key-Integration.
+    de.freshplan.modules.leads.domain.ImportJob existingJob =
+        de.freshplan.modules.leads.domain.ImportJob.findByFingerprint(response.requestHash);
+    if (existingJob != null
+        && existingJob.status
+            == de.freshplan.modules.leads.domain.ImportJob.ImportStatus.COMPLETED) {
+      // Replay cached response from original import
       response.warnings.add(
-          "DUPLICATE_IMPORT: This exact import was already processed. Request Hash: "
-              + response.requestHash);
+          "DUPLICATE_IMPORT: This exact import was already processed. Returning cached result from original import (Job ID: "
+              + existingJob.id
+              + ")");
+      response.statistics.totalLeads = existingJob.totalLeads;
+      response.statistics.successCount = existingJob.successCount;
+      response.statistics.failureCount = existingJob.failureCount;
+      response.statistics.duplicateWarnings = existingJob.duplicateWarnings;
+      response.statistics.importedAt = existingJob.createdAt;
+      response.statistics.importedBy = existingJob.createdBy;
+
+      Log.infof(
+          "Idempotent replay: ImportJob %d - %d successes, %d failures",
+          existingJob.id, existingJob.successCount, existingJob.failureCount);
       return response;
     }
 
@@ -288,21 +307,49 @@ public class LeadImportService {
     }
   }
 
-  private boolean isDuplicateImport(String requestHash) {
-    // TODO (Sprint 2.1.7 - Issue #134): Implement idempotency using import_jobs table
-    // Migration V262 created the table, but service logic is not yet implemented.
-    // Required: Check import_jobs WHERE request_fingerprint = requestHash
-    // Return true if found AND status = 'COMPLETED', reuse existing results
-    // For now, always allow (no persistence)
-    return false;
-  }
+  // isDuplicateImport() method removed - idempotency check now inline in importLeads()
+  // See line 61-82 for complete idempotent replay logic
 
   private void recordImportAudit(LeadImportResponse response, String currentUserId) {
-    // TODO (Sprint 2.1.7 - Issue #134): Persist to import_jobs table
-    // Required: INSERT import_jobs (request_fingerprint, status, result_summary, created_by)
-    // Update status on completion, store error details on failure
+    // Sprint 2.1.6 Phase 3 - Issue #134: Persist Import Job for Idempotency
+    de.freshplan.modules.leads.domain.ImportJob importJob =
+        new de.freshplan.modules.leads.domain.ImportJob();
+
+    // Generate idempotency key (fallback: use request hash as key)
+    importJob.idempotencyKey = response.requestHash;
+    importJob.requestFingerprint = response.requestHash;
+    importJob.createdBy = currentUserId;
+    importJob.createdAt = LocalDateTime.now();
+    // Note: ttlExpiresAt is set by markCompleted()/markFailed() methods
+
+    // Import statistics
+    importJob.totalLeads = response.statistics.totalLeads;
+    importJob.successCount = response.statistics.successCount;
+    importJob.failureCount = response.statistics.failureCount;
+    importJob.duplicateWarnings = response.statistics.duplicateWarnings;
+
+    // Status: COMPLETED if no failures, FAILED otherwise
+    if (response.statistics.failureCount == 0) {
+      importJob.markCompleted();
+    } else {
+      importJob.markFailed();
+    }
+
+    // Store result summary as JSON (for now: basic stats)
+    // Use JSON-B for robust JSON creation (Code Review: Gemini)
+    importJob.resultSummary =
+        jakarta.json.Json.createObjectBuilder()
+            .add("successCount", response.statistics.successCount)
+            .add("failureCount", response.statistics.failureCount)
+            .add("duplicateWarnings", response.statistics.duplicateWarnings)
+            .build()
+            .toString();
+
+    // Persist
+    importJob.persist();
+
     Log.infof(
-        "AUDIT: leads_batch_imported - user=%s, count=%d, hash=%s",
-        currentUserId, response.statistics.successCount, response.requestHash);
+        "AUDIT: leads_batch_imported - user=%s, count=%d, hash=%s, import_job_id=%d",
+        currentUserId, response.statistics.successCount, response.requestHash, importJob.id);
   }
 }
