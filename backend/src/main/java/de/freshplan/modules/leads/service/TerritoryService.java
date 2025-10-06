@@ -50,11 +50,14 @@ public class TerritoryService {
    */
   @Transactional
   public void initializeDefaultTerritories() {
-    if (Territory.count() == 0) {
-      LOG.info("Initializing default territories");
+    long existingCount = Territory.count();
+    LOG.infof("Territory count before initialization: %d", existingCount);
 
-      // Germany
-      Territory de = new Territory();
+    // Check and create Germany if missing
+    Territory de = Territory.findByCode("DE");
+    if (de == null) {
+      LOG.info("Initializing Germany (DE) territory");
+      de = new Territory();
       de.id = "DE";
       de.name = "Deutschland";
       de.countryCode = "DE";
@@ -68,10 +71,16 @@ public class TerritoryService {
               .put("payment_terms", 30)
               .put("delivery_zones", java.util.List.of("north", "south", "east", "west"));
       de.persist();
-      LOG.infof("Territory DE persisted: %s", de.id);
+      LOG.infof("Territory DE persisted with ID: %s", de.id);
+    } else {
+      LOG.infof("Territory DE already exists with ID: %s", de.id);
+    }
 
-      // Switzerland
-      Territory ch = new Territory();
+    // Check and create Switzerland if missing
+    Territory ch = Territory.findByCode("CH");
+    if (ch == null) {
+      LOG.info("Initializing Switzerland (CH) territory");
+      ch = new Territory();
       ch.id = "CH";
       ch.name = "Schweiz";
       ch.countryCode = "CH";
@@ -85,9 +94,12 @@ public class TerritoryService {
               .put("payment_terms", 45)
               .put("delivery_zones", java.util.List.of("zurich", "basel", "bern"));
       ch.persist();
-      LOG.infof("Territory CH persisted: %s", ch.id);
-
-      LOG.infof("Default territories initialized (count: %d)", Territory.count());
+      LOG.infof("Territory CH persisted with ID: %s", ch.id);
+    } else {
+      LOG.infof("Territory CH already exists with ID: %s", ch.id);
     }
+
+    long finalCount = Territory.count();
+    LOG.infof("Territory initialization complete. Final count: %d", finalCount);
   }
 }

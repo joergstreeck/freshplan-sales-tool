@@ -39,7 +39,26 @@ class SalesCockpitQueryServiceTest {
 
   @Inject CustomerRepository customerRepository;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   private static final UUID TEST_USER_ID = UUID.fromString("00000000-0000-0000-0000-000000000000");
+
+  /**
+   * Clean up test data before each test to ensure test isolation. Sprint 2.1.6: Fix test data
+   * contamination between tests.
+   */
+  @org.junit.jupiter.api.BeforeEach
+  @jakarta.transaction.Transactional
+  void cleanupBeforeEach() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+    customerRepository.deleteAllTestData();
+  }
 
   /**
    * Creates and persists a test customer within the test transaction. Must be called at the

@@ -47,7 +47,21 @@ class CustomerServiceIntegrationTest {
   void setUp() {
     // Clean database before each test using native queries for consistency
     // Delete in correct order to respect foreign key constraints
-    // Clean up all test data
+    // CRITICAL: Delete child tables before parent tables!
+
+    // 1. Delete opportunity_activities first (child of opportunities)
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true))")
+        .executeUpdate();
+
+    // 2. Delete opportunities (child of customers)
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+
+    // 3. Delete other customer-related tables
     entityManager
         .createNativeQuery(
             "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
@@ -60,11 +74,8 @@ class CustomerServiceIntegrationTest {
         .createNativeQuery(
             "DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
         .executeUpdate();
-    entityManager
-        .createNativeQuery(
-            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
-        .executeUpdate();
-    // Delete all test data
+
+    // 4. Finally delete customers
     customerRepository.deleteAllTestData();
     entityManager.flush();
 

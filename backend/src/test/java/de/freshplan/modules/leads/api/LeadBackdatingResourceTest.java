@@ -51,7 +51,7 @@ class LeadBackdatingResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "ADMIN")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldBackdateRegisteredAtSuccessfully() {
     LocalDateTime newDate = LocalDateTime.now().minusMonths(5);
 
@@ -74,7 +74,7 @@ class LeadBackdatingResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "manager-user", roles = "MANAGER")
+  @TestSecurity(user = "manager-user", roles = "ROLE_SALES_MANAGER")
   void shouldAllowManagerToBackdate() {
     LocalDateTime newDate = LocalDateTime.now().minusMonths(3);
 
@@ -93,7 +93,7 @@ class LeadBackdatingResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "regular-user", roles = "USER")
+  @TestSecurity(user = "regular-user", roles = "ROLE_USER")
   void shouldRejectNonAdminUser() {
     BackdatingRequest request = new BackdatingRequest();
     request.registeredAt = LocalDateTime.now().minusMonths(1);
@@ -109,7 +109,7 @@ class LeadBackdatingResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "ADMIN")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldRejectFutureDate() {
     BackdatingRequest request = new BackdatingRequest();
     request.registeredAt = LocalDateTime.now().plusDays(1);
@@ -126,7 +126,7 @@ class LeadBackdatingResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "ADMIN")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldReturn404ForNonExistentLead() {
     BackdatingRequest request = new BackdatingRequest();
     request.registeredAt = LocalDateTime.now().minusMonths(1);
@@ -143,7 +143,7 @@ class LeadBackdatingResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "admin-user", roles = "ADMIN")
+  @TestSecurity(user = "admin-user", roles = "ROLE_ADMIN")
   void shouldValidateReasonMinLength() {
     BackdatingRequest request = new BackdatingRequest();
     request.registeredAt = LocalDateTime.now().minusMonths(1);

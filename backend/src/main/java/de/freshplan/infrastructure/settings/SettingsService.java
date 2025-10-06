@@ -83,12 +83,13 @@ public class SettingsService {
       setting.value = value;
       setting.metadata = metadata != null ? metadata : new JsonObject();
       setting.createdBy = userId;
-      // Note: created_at, version, and etag are set by DB triggers
+      setting.version = 1;
+      // Generate ETag manually (DB triggers may not work in all test scenarios)
+      setting.etag = generateEtag(setting);
       setting.persist();
 
-      // Flush to trigger DB operations and refresh to get generated values
+      // Flush to ensure persistence
       em.flush();
-      em.refresh(setting);
 
       LOG.infof(
           "Created new setting with ID: %s, ETag: %s, Version: %d",
@@ -100,11 +101,11 @@ public class SettingsService {
         setting.metadata = metadata;
       }
       setting.updatedBy = userId;
-      // Note: updated_at, version, and etag are set by DB triggers
+      setting.version = (setting.version == null ? 1 : setting.version + 1);
+      // Generate new ETag manually
+      setting.etag = generateEtag(setting);
 
-      // Flush to trigger DB operations and refresh to get updated values
       em.flush();
-      em.refresh(setting);
 
       LOG.infof(
           "Updated setting with ID: %s, ETag: %s, Version: %d",
@@ -142,12 +143,13 @@ public class SettingsService {
     setting.value = value != null ? value : new JsonObject();
     setting.metadata = metadata != null ? metadata : new JsonObject();
     setting.createdBy = userId;
-    // Note: created_at, version, and etag are set by DB triggers
+    setting.version = 1;
+    // Generate ETag manually (DB triggers may not work in all test scenarios)
+    setting.etag = generateEtag(setting);
 
     try {
       setting.persist();
       em.flush();
-      em.refresh(setting);
 
       LOG.infof(
           "Created new setting with ID: %s, ETag: %s, Version: %d",
@@ -204,11 +206,11 @@ public class SettingsService {
       setting.metadata = metadata;
     }
     setting.updatedBy = userId;
-    // Note: updated_at, version, and etag are set by DB triggers
+    setting.version = (setting.version == null ? 1 : setting.version + 1);
+    // Generate new ETag manually
+    setting.etag = generateEtag(setting);
 
-    // Flush to trigger DB operations and refresh to get updated values
     em.flush();
-    em.refresh(setting);
 
     LOG.infof(
         "Successfully updated setting %s to version %d, new ETag: %s",
@@ -282,4 +284,34 @@ public class SettingsService {
 
   /** Cache statistics for monitoring. */
   public record CacheStats(double hitRate, double availability, long avgResponseTimeMs) {}
+
+  /**
+   * Generate ETag for a setting. Replicates the DB trigger logic in Java for test compatibility.
+   */
+  private String generateEtag(Setting setting) {
+    // MD5 hash of scope, scopeId, key, value, version
+    String input =
+        (setting.scope != null ? setting.scope.toString() : "")
+            + ":"
+            + (setting.scopeId != null ? setting.scopeId : "")
+            + ":"
+            + (setting.key != null ? setting.key : "")
+            + ":"
+            + (setting.value != null ? setting.value.toString() : "")
+            + ":"
+            + (setting.version != null ? setting.version.toString() : "1");
+
+    try {
+      java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+      byte[] digest = md.digest(input.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      StringBuilder sb = new StringBuilder();
+      for (byte b : digest) {
+        sb.append(String.format("%02x", b));
+      }
+      return sb.toString();
+    } catch (java.security.NoSuchAlgorithmException e) {
+      // Fallback to simple hash
+      return String.valueOf(input.hashCode());
+    }
+  }
 }

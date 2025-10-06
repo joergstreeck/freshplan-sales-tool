@@ -33,6 +33,30 @@ class CustomerRepositoryTest {
   private static final AtomicInteger customerCounter = new AtomicInteger(1);
 
   /**
+   * Clean up test data before each test to ensure test isolation. Sprint 2.1.6: Fix test data
+   * contamination between tests.
+   */
+  @org.junit.jupiter.api.BeforeEach
+  @jakarta.transaction.Transactional
+  void cleanupBeforeEach() {
+    // Delete in correct order to respect foreign key constraints
+    // 1. Delete opportunity_activities first (child of opportunities)
+    em.createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true))")
+        .executeUpdate();
+
+    // 2. Delete opportunities (child of customers)
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+
+    // 3. Finally delete customers
+    repository.deleteAllTestData();
+    em.flush();
+    em.clear();
+  }
+
+  /**
    * Creates standard test data set for tests that need multiple customers. Returns a TestDataSet
    * with active, deleted, parent and child customers.
    */
