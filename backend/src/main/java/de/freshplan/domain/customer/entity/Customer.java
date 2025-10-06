@@ -178,6 +178,16 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "last_modified_by", length = 100, nullable = true)
   private String lastModifiedBy;
 
+  // Lead Conversion Tracking (Sprint 2.1.6)
+  /**
+   * ID of the Lead that was converted to this Customer. NULL if Customer was created directly (not
+   * from Lead conversion).
+   *
+   * <p>Sprint 2.1.6 - User Story 2: Lead → Kunde Convert Flow
+   */
+  @Column(name = "original_lead_id")
+  private Long originalLeadId;
+
   // Relationships
   @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<CustomerContact> contacts = new ArrayList<>();
@@ -715,5 +725,14 @@ public class Customer extends PanacheEntityBase {
         .filter(event -> event.getCategory() == category)
         .sorted((e1, e2) -> e2.getEventDate().compareTo(e1.getEventDate()))
         .toList();
+  }
+
+  // Sprint 2.1.6: Lead Conversion Tracking Getter/Setter
+  public Long getOriginalLeadId() {
+    return originalLeadId;
+  }
+
+  public void setOriginalLeadId(Long originalLeadId) {
+    this.originalLeadId = originalLeadId;
   }
 }

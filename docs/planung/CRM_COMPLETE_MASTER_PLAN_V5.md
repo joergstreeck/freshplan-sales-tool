@@ -131,6 +131,33 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-06 02:50 - Sprint 2.1.6 Phase 2 STARTED - Core Backend APIs (Bestandsleads-Migration)
+
+**Kontext:** Phase 2 - Core Backend APIs Branch `feature/mod02-sprint-2.1.6-admin-apis` erstellt
+
+**Erledigt:**
+- ✅ **Branch erstellt:** `feature/mod02-sprint-2.1.6-admin-apis` (basierend auf origin/main)
+- ✅ **Bestandsleads-Migrations-API implementiert:**
+  - `LeadImportService.java` (282 LOC): Batch-Import mit Dry-Run, Validation, Duplicate-Check
+  - `LeadImportResource.java` (85 LOC): POST /api/admin/migration/leads/import (Admin-only)
+  - `LeadImportRequest.java` + `LeadImportResponse.java`: DTOs für Import-Flow
+  - Territory-Resolution mit Fallback-Strategie
+  - Request-Hash für Idempotenz (SHA-256)
+- ✅ **Tests implementiert:**
+  - `LeadImportServiceTest.java` (8 Tests): @QuarkusTest Integration Tests ✅ 8/8 PASSED
+  - `LeadImportResourceTest.java` (6 Tests): REST API Tests mit @TestSecurity ✅ 6/6 PASSED
+  - Coverage: Import-Flow Validation, Dry-Run, Batch-Limits, Duplicate-Warnings
+- ✅ **Code-Review durchgeführt:**
+  - Architektur validiert gegen existierende Lead-Services ✅
+  - Admin-API korrekt unter `modules/leads/api/admin/` strukturiert ✅
+  - Test-Strategie: @QuarkusTest für Integration-Szenarien angemessen ✅
+
+**Tests:** ✅ 14/14 PASSED (LeadImportServiceTest 8/8, LeadImportResourceTest 6/6)
+
+**Migration:** n/a (nutzt existierende Lead-Entity Felder)
+
+**NEXT:** Backdating Endpoint + Lead → Kunde Convert Flow implementieren
+
 ### 2025-10-05 19:00 - Issue #130 TestDataBuilder Migration COMPLETE (Sprint 2.1.6 Phase 1)
 
 **Kontext:** Issue #130 BLOCKER - TestDataBuilder CDI-Konflikte behoben
@@ -474,20 +501,19 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation (Start JETZT - reduzierter Scope!):**
-  - **🔴 PRIORITY #0 (BLOCKER - 1-2h):** Issue #130 Fix (TestDataBuilder CDI-Konflikt)
-    - Legacy Builder aus src/main/java/de/freshplan/test/builders/ löschen
-    - ContactInteractionServiceIT auf neue Builder migrieren (12 Tests)
-    - Worktree CI "Test Suite Expansion" reaktivieren
-    - Migration Guide: `/docs/planung/claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md`
-  - **Feature-Branch:** `feature/issue-130-testdatabuilder-refactoring` (ERST Issue #130!)
-  - **Kern-Deliverables (nach Issue #130):**
-    - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run PFLICHT)
-    - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
-    - Stop-the-Clock UI (StopTheClockDialog, Manager-only)
-    - Backdating-Endpoint (PUT /api/leads/{id}/registered-at)
-    - Nightly Jobs (Progress Warning, Expiry, Pseudonymisierung)
-    - MUI Dialog Accessibility Fix (WCAG 2.1 Level A, aria-hidden Warning)
+- **Sprint 2.1.6 Implementation - Phase 2 IN PROGRESS:**
+  - **✅ COMPLETE:** Issue #130 Fix (PR #132 merged)
+  - **✅ COMPLETE:** Bestandsleads-Migrations-API (Phase 2, Branch: feature/mod02-sprint-2.1.6-admin-apis)
+    - LeadImportService + LeadImportResource implementiert
+    - 14 Tests (8 Service + 6 REST) ✅ PASSED
+    - Admin-only API mit Dry-Run, Validation, Idempotenz
+  - **🔄 IN PROGRESS - Phase 2 Core Backend APIs:**
+    - Backdating-Endpoint (PUT /api/leads/{id}/registered-at) - NEXT
+    - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert) - PENDING
+  - **📋 PENDING - Separate Branches:**
+    - Phase 3: Nightly Jobs (feature/mod02-sprint-2.1.6-nightly-jobs)
+    - Phase 4: Stop-the-Clock UI + Frontend (feature/mod02-sprint-2.1.6-lead-ui-phase2)
+    - Phase 5 (OPTIONAL): MUI Dialog Accessibility Fix (feature/mod02-sprint-2.1.6-accessibility)
   - **OPTIONAL (ADR-006 Phase 2 - falls Zeit!):**
     - Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
     - Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)

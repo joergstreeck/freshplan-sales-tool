@@ -7,6 +7,28 @@ owner: "team/leads-backend"
 date_start: "2025-10-12"
 date_end: "2025-10-18"
 modules: ["02_neukundengewinnung"]
+phases:
+  - phase: "Phase 1"
+    branch: "feature/issue-130-testdatabuilder-refactoring"
+    scope: "Issue #130 BLOCKER Fix"
+    status: "complete"
+    pr: "#132"
+  - phase: "Phase 2"
+    branch: "feature/mod02-sprint-2.1.6-admin-apis"
+    scope: "Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow)"
+    status: "in_progress"
+  - phase: "Phase 3"
+    branch: "feature/mod02-sprint-2.1.6-nightly-jobs"
+    scope: "Automated Jobs (Progress Warning, Expiry, Pseudonymisierung)"
+    status: "pending"
+  - phase: "Phase 4"
+    branch: "feature/mod02-sprint-2.1.6-lead-ui-phase2"
+    scope: "Frontend UI (Stop-the-Clock Dialog, Lead-Scoring, Workflows, Activity-Timeline)"
+    status: "pending"
+  - phase: "Phase 5"
+    branch: "feature/mod02-sprint-2.1.6-accessibility"
+    scope: "OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen)"
+    status: "pending"
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
@@ -17,13 +39,23 @@ entry_points:
   - "claude-work/daily-work/2025-10-05/MUI_ACCESSIBILITY_DECISION.md"
   - "claude-work/daily-work/2025-10-05/CRITICAL_FIXES_SUMMARY.md"
   - "claude-work/daily-work/2025-10-05/2025-10-05_HANDOVER_FINAL.md"
-pr_refs: []
-updated: "2025-10-05"
+pr_refs: ["#132"]
+updated: "2025-10-06"
 ---
 
 # Sprint 2.1.6 – Lead Completion & Admin Features
 
 **📍 Navigation:** Home → Planung → Sprint 2.1.6
+
+## 🚀 SPRINT-PHASEN ÜBERSICHT
+
+| Phase | Branch | Scope | Status | PR |
+|-------|--------|-------|--------|-----|
+| **Phase 1** | `feature/issue-130-testdatabuilder-refactoring` | Issue #130 BLOCKER Fix | ✅ COMPLETE | #132 |
+| **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | 🔄 IN PROGRESS | - |
+| **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) | 📋 PENDING | - |
+| **Phase 4** | `feature/mod02-sprint-2.1.6-lead-ui-phase2` | Frontend UI (Stop-the-Clock Dialog, Lead-Scoring, Workflows, Timeline) | 📋 PENDING | - |
+| **Phase 5** | `feature/mod02-sprint-2.1.6-accessibility` | OPTIONAL (MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen) | 📋 PENDING | - |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
 > - **Issue #130 Analyse:** [`ISSUE_130_ANALYSIS.md`](claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md) - Detaillierte Analyse + Migration Guide
@@ -542,22 +574,37 @@ void pseudonymizeExpiredLeads() {
 ## Definition of Done (Sprint 2.1.6)
 
 **PRIORITY #0 - BLOCKER (MUST DO FIRST!):**
-- [ ] **Issue #130 Fix - TestDataBuilder Refactoring** (1-2h)
-  - [ ] Legacy Builder aus `src/main/java/de/freshplan/test/builders/` gelöscht
-  - [ ] 12 Tests in ContactInteractionServiceIT grün
-  - [ ] Worktree CI "Test Suite Expansion" Job reaktiviert
-  - [ ] Migration Guide dokumentiert
+- [x] **Issue #130 Fix - TestDataBuilder Refactoring** ✅ COMPLETE (PR #132 merged)
+  - [x] Legacy Builder aus `src/main/java/de/freshplan/test/builders/` gelöscht
+  - [x] 12 Tests in ContactInteractionServiceIT grün
+  - [x] Worktree CI "Test Suite Expansion" Job reaktiviert
+  - [x] Migration Guide dokumentiert
 
-**Backend (Kern-Deliverables):**
-- [ ] **Bestandsleads-Migrations-API funktionsfähig** (Dry-Run + Real-Import)
-- [ ] **Lead → Kunde Convert Flow End-to-End** (POST /api/leads/{id}/convert)
-- [ ] **Backdating Endpoint** (PUT /api/leads/{id}/registered-at)
-- [ ] **Automated Jobs implementiert** (Progress Warning, Expiry, Pseudonymisierung)
-- [ ] **Backend Tests ≥80% Coverage**
+**Phase 2 - Core Backend APIs (Branch: feature/mod02-sprint-2.1.6-admin-apis):**
+- [x] **Bestandsleads-Migrations-API funktionsfähig** ✅ COMPLETE
+  - [x] LeadImportService + LeadImportResource implementiert
+  - [x] 14 Tests (8 Service + 6 REST) ✅ PASSED
+  - [x] Dry-Run Mode, Validation, Duplicate-Check, Idempotenz
+- [x] **Lead → Kunde Convert Flow End-to-End** ✅ COMPLETE
+  - [x] LeadConvertService + POST /api/leads/{id}/convert implementiert
+  - [x] Migration V261: customer.original_lead_id (Soft Reference)
+  - [x] 6 Service Tests ✅ PASSED
+- [x] **Backdating Endpoint** ✅ COMPLETE
+  - [x] LeadBackdatingService + PUT /api/leads/{id}/registered-at implementiert
+  - [x] Protection/Progress Deadline Recalculation + Stop-the-Clock Integration
+  - [x] 13 Tests (7 Service + 6 REST) ✅ PASSED
+- [x] **Backend Tests ≥80% Coverage** ✅ 33 Tests passing
 
-**Frontend (Kern-Deliverables):**
-- [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog, RBAC Manager/Admin)
+**Phase 3 - Automated Jobs (Branch: feature/mod02-sprint-2.1.6-nightly-jobs) - PENDING:**
+- [ ] **@Scheduled Progress Warning Job** (Tag 53 - 7 Tage vor Frist)
+- [ ] **@Scheduled Protection Expiry Job** (Tag 60 - Schutzfrist abgelaufen)
+- [ ] **@Scheduled DSGVO Pseudonymisierung Job** (60 Tage ohne Progress)
+- [ ] **Email-Benachrichtigungen** für alle Jobs
+
+**Phase 4 - Frontend UI (Branch: feature/mod02-sprint-2.1.6-lead-ui-phase2) - PENDING:**
+- [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog.tsx, RBAC Manager/Admin)
 - [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
+- [ ] **LeadProtectionBadge.tsx** (Pause/Resume Buttons)
 - [ ] **Frontend Tests ≥75% Coverage**
 
 **Optional (ADR-006 Phase 2 - Falls Zeit!):**

@@ -53,6 +53,10 @@ public class LeadResource {
 
   @Inject UserLeadSettingsService settingsService;
 
+  @Inject de.freshplan.modules.leads.service.LeadBackdatingService backdatingService;
+
+  @Inject de.freshplan.modules.leads.service.LeadConvertService leadConvertService;
+
   @Context UriInfo uriInfo;
 
   @Context Request request;
@@ -590,6 +594,89 @@ public class LeadResource {
   }
 
   /**
+   * PUT /api/leads/{id}/registered-at - Backdate registeredAt timestamp (Admin/Manager only).
+   *
+   * <p>Allows setting historical registration dates for Bestandsleads-Migration. Recalculates
+   * protection and progress deadlines based on new registeredAt.
+   *
+   * <p>Sprint 2.1.6 - User Story 4
+   */
+  @PUT
+  @Path("/{id}/registered-at")
+  @RolesAllowed({"ADMIN", "MANAGER"})
+  @Transactional
+  public Response updateRegisteredAt(
+      @PathParam("id") Long id,
+      @jakarta.validation.Valid
+          de.freshplan.modules.leads.api.admin.dto.BackdatingRequest request) {
+
+    String currentUserId = getCurrentUserId();
+    LOG.infof(
+        "Backdating request for lead %d by user %s: newDate=%s",
+        id, currentUserId, request.registeredAt);
+
+    try {
+      de.freshplan.modules.leads.api.admin.dto.BackdatingResponse response =
+          backdatingService.updateRegisteredAt(id, request, currentUserId);
+
+      return Response.ok(response).build();
+
+    } catch (jakarta.ws.rs.NotFoundException e) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Lead not found: " + id))
+          .build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    }
+  }
+
+  /**
+   * Convert Lead to Customer.
+   *
+   * <p>Endpoint: POST /api/leads/{id}/convert
+   *
+   * <p>Admin/Manager only. Creates a new Customer record from the Lead data and optionally marks
+   * the Lead as CONVERTED for audit purposes.
+   *
+   * <p>Sprint 2.1.6 - User Story 2
+   */
+  @POST
+  @Path("/{id}/convert")
+  @RolesAllowed({"ADMIN", "MANAGER"})
+  @Transactional
+  public Response convertToCustomer(
+      @PathParam("id") Long id,
+      @jakarta.validation.Valid
+          de.freshplan.modules.leads.api.admin.dto.LeadConvertRequest request) {
+
+    String currentUserId = getCurrentUserId();
+    LOG.infof("Convert request for lead %d by user %s", id, currentUserId);
+
+    try {
+      de.freshplan.modules.leads.api.admin.dto.LeadConvertResponse response =
+          leadConvertService.convertToCustomer(id, request, currentUserId);
+
+      return Response.status(Response.Status.CREATED).entity(response).build();
+
+    } catch (jakarta.ws.rs.NotFoundException e) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Lead not found: " + id))
+          .build();
+    } catch (IllegalStateException | IllegalArgumentException e) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to convert lead %d: %s", id, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Internal server error during conversion"))
+          .build();
+    }
+  }
+
+  /**
    * Helper method to create and persist activity entries. Reduces code duplication and ensures
    * consistent activity logging across all lead operations.
    *
@@ -608,5 +695,14 @@ public class LeadResource {
     activity.description = description;
     activity.persist();
     return activity;
+  }
+
+  /** Simple error response DTO. */
+  private static class ErrorResponse {
+    public String error;
+
+    public ErrorResponse(String error) {
+      this.error = error;
+    }
   }
 }
