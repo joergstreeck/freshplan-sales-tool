@@ -21,8 +21,9 @@ phases:
     fixes_applied: ["V262 Migration", "Duplikate-Policy", "Stop-the-Clock Fix", "RBAC Standardisierung", "Lead-Archivierung", "V263 BusinessType Harmonisierung"]
   - phase: "Phase 3"
     branch: "feature/mod02-sprint-2.1.6-nightly-jobs"
-    scope: "Automated Jobs (Progress Warning, Expiry, Pseudonymisierung)"
+    scope: "Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) + Issue #134 (Batch-Import Idempotency)"
     status: "pending"
+    issues: ["#134"]
   - phase: "Phase 4"
     branch: "feature/mod02-sprint-2.1.6-lead-ui-phase2"
     scope: "Frontend UI (Excel Upload, Stop-the-Clock Dialog, Lead-Scoring, Workflows, Activity-Timeline)"
@@ -55,7 +56,7 @@ updated: "2025-10-06"
 |-------|--------|-------|--------|-----|
 | **Phase 1** | `feature/issue-130-testdatabuilder-refactoring` | Issue #130 BLOCKER Fix | ✅ COMPLETE | #132 |
 | **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ FIXES APPLIED | - |
-| **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) | 📋 PENDING | - |
+| **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs (Progress Warning, Expiry, Pseudonymisierung) + **Issue #134** (Idempotency) | 📋 PENDING | - |
 | **Phase 4** | `feature/mod02-sprint-2.1.6-lead-ui-phase2` | Frontend UI (Stop-the-Clock Dialog, Lead-Scoring, Workflows, Timeline) | 📋 PENDING | - |
 | **Phase 5** | `feature/mod02-sprint-2.1.6-accessibility` | OPTIONAL (MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen) | 📋 PENDING | - |
 
@@ -460,6 +461,111 @@ The element is displayed on screen with 'display:block' or equivalent styles.
 - [React Focus Management Best Practices](https://react-spectrum.adobe.com/react-aria/FocusScope.html)
 
 **Aufwand:** 1-2h (Low Complexity - MUI Props-Konfiguration + Testing)
+
+---
+
+## 📋 PHASE 3 SCOPE (Nightly Jobs + Issue #134)
+
+**Branch:** `feature/mod02-sprint-2.1.6-nightly-jobs`
+**Geschätzter Aufwand:** 1.8 Tage (1.5 Tage Original + 0.3 Tage Issue #134)
+
+### Kern-Deliverables:
+
+#### 1. Progress Warning Job (Nightly)
+**Zweck:** Leads ohne Aktivität nach X Tagen warnen
+```java
+@Scheduled(cron = "0 1 * * *") // 1 Uhr nachts
+public void checkProgressWarnings() {
+  // Find leads with no activity in last 7 days
+  // Send notification to assigned user
+  // Update lead.progressWarningAt timestamp
+}
+```
+
+#### 2. Lead Expiry Job (Nightly)
+**Zweck:** Leads nach Ablauf automatisch auf EXPIRED setzen
+```java
+@Scheduled(cron = "0 2 * * *") // 2 Uhr nachts
+public void expireOldLeads() {
+  // Find leads where registeredAt + maxLeadAgeDays < NOW
+  // Set stage = EXPIRED
+  // Idempotency important: Don't expire twice!
+}
+```
+
+#### 3. Pseudonymisierung Job (DSGVO)
+**Zweck:** Abgelaufene Leads nach X Tagen anonymisieren
+```java
+@Scheduled(cron = "0 3 * * *") // 3 Uhr nachts
+public void pseudonymizeExpiredLeads() {
+  // Find expired leads > 30 days old
+  // Replace PII: email → hash, phone → null, contactPerson → "ANONYMIZED"
+  // Keep: companyName, city, businessType (for analytics)
+}
+```
+
+#### 4. **Issue #134: Batch-Import Idempotency** ⭐ NEU
+**Zweck:** Verhindere Duplikate bei Import-Retry
+**Quelle:** PR #133 Copilot/Gemini Review Feedback
+
+**Implementierung:**
+```java
+// ImportJob.java (NEW Entity)
+@Entity
+@Table(name = "import_jobs")
+public class ImportJob {
+  @Id @GeneratedValue
+  private Long id;
+
+  @Column(name = "request_fingerprint", unique = true)
+  private String requestFingerprint;
+
+  @Enumerated(EnumType.STRING)
+  private ImportStatus status; // PENDING, COMPLETED, FAILED
+
+  @Column(columnDefinition = "TEXT")
+  private String resultSummary; // JSON: {successCount, failureCount, errors}
+
+  private String createdBy;
+  private LocalDateTime createdAt;
+}
+
+// LeadImportService.java (UPDATED)
+private boolean isDuplicateImport(String requestHash) {
+  return importJobRepository
+    .find("request_fingerprint = ?1 AND status = 'COMPLETED'", requestHash)
+    .firstResultOptional()
+    .isPresent();
+}
+
+private void recordImportAudit(LeadImportResponse response, String userId) {
+  ImportJob job = new ImportJob();
+  job.setRequestFingerprint(response.requestHash);
+  job.setStatus(response.statistics.failureCount > 0 ? FAILED : COMPLETED);
+  job.setResultSummary(toJson(response.statistics));
+  job.setCreatedBy(userId);
+  importJobRepository.persist(job);
+}
+```
+
+**Benefits:**
+- ✅ Nightly Jobs können idempotent sein (z.B. External CRM Import)
+- ✅ Admin kann Import sicher wiederholen (bei Timeout/Crash)
+- ✅ Audit Trail: Wer hat wann was importiert
+- ✅ V262 Migration bereits deployed (Tabelle existiert)
+
+**Aufwand:**
+- ImportJob Entity: 30min
+- Service Logic (isDuplicate + recordAudit): 1h
+- Tests (95% Coverage): 1h
+- **Total: 2.5h**
+
+**Related:**
+- Migration: V262 (bereits deployed)
+- PR: #133 (Admin-APIs)
+- Review: Copilot/Gemini Feedback
+
+---
 
 ## Technische Details
 

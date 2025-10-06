@@ -142,7 +142,12 @@ Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2
                                         - Faker-Integration (RealisticDataGenerator für deutsche Testdaten)
                                         - Lead-spezifische TestDataFactories (LeadTestDataFactory, LeadActivityTestDataFactory)
                                         - Test-Pattern Library (TESTING_PATTERNS.md, TEST_DATA_CHEATSHEET.md)
+                                      → **Track 3 - Code Quality (NEU - aus PR #133 Review):**
+                                        - **Issue #135:** Name Parsing Robustness (LeadConvertService - Library-basiert statt String.split)
+                                        - EnumResource Refactoring: LeadSource + KitchenSize als Backend-Enums (konsistent mit BusinessType)
+                                        - Backend DTOs: Kapselung (private fields + getters statt public fields)
                                       → **Begründung Track 2:** Quality Investment für Sprint 2.2+ Velocity, Test-Szenarien für Onboarding
+                                      → **Begründung Track 3:** Gemini Code Review Feedback (Medium Priority - verbessert Datenqualität)
                                       → [TRIGGER_SPRINT_2_1_7.md](TRIGGER_SPRINT_2_1_7.md)
 Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
