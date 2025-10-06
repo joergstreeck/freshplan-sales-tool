@@ -243,7 +243,7 @@ class LeadImportServiceTest {
     lead.city = city;
     lead.postalCode = "80331";
     lead.countryCode = "DE";
-    lead.businessType = "Restaurant";
+    lead.businessType = "RESTAURANT"; // Sprint 2.1.6: Harmonized uppercase value
     lead.registeredAt = registeredAt;
     lead.importReason = "Bestandsdaten-Migration";
     lead.territoryCode = "DE";

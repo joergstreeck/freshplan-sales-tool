@@ -21,11 +21,13 @@ import {
   Box,
   Stack,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import type { LeadFormStage2, Problem, BusinessType, LeadSource, FirstContact } from './types';
 import { createLead } from './api';
+import { useBusinessTypes } from './hooks/useBusinessTypes';
 
 interface LeadWizardProps {
   open: boolean;
@@ -39,6 +41,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const [activeStep, setActiveStep] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Problem | null>(null);
+
+  // Sprint 2.1.6: Fetch business types from backend (Single Source of Truth)
+  const { data: businessTypes, isLoading: isLoadingBusinessTypes } = useBusinessTypes();
 
   // Form State (Progressive Profiling - Sprint 2.1.5)
   const [formData, setFormData] = useState<
@@ -324,15 +329,22 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   setFormData({ ...formData, businessType: e.target.value as BusinessType })
                 }
                 label={t('wizard.stage0.businessType')}
+                disabled={isLoadingBusinessTypes}
               >
                 <MenuItem value="">
                   <em>{t('wizard.stage0.businessTypePlaceholder')}</em>
                 </MenuItem>
-                <MenuItem value="restaurant">{t('wizard.businessTypes.restaurant')}</MenuItem>
-                <MenuItem value="hotel">{t('wizard.businessTypes.hotel')}</MenuItem>
-                <MenuItem value="catering">{t('wizard.businessTypes.catering')}</MenuItem>
-                <MenuItem value="canteen">{t('wizard.businessTypes.canteen')}</MenuItem>
-                <MenuItem value="other">{t('wizard.businessTypes.other')}</MenuItem>
+                {isLoadingBusinessTypes ? (
+                  <MenuItem value="" disabled>
+                    <CircularProgress size={20} />
+                  </MenuItem>
+                ) : (
+                  businessTypes?.map(type => (
+                    <MenuItem key={type.value} value={type.value}>
+                      {type.label}
+                    </MenuItem>
+                  ))
+                )}
               </Select>
             </FormControl>
 

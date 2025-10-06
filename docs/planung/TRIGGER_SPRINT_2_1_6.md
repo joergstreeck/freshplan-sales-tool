@@ -16,9 +16,9 @@ phases:
   - phase: "Phase 2"
     branch: "feature/mod02-sprint-2.1.6-admin-apis"
     scope: "Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow)"
-    status: "review_fixes"
+    status: "harmonization_complete"
     commits: ["01819eb51", "ce9206ab6", "cbf5bd95e", "f93356a0e"]
-    fixes_applied: ["V262 Migration", "Duplikate-Policy", "Stop-the-Clock Fix", "RBAC Standardisierung", "Lead-Archivierung"]
+    fixes_applied: ["V262 Migration", "Duplikate-Policy", "Stop-the-Clock Fix", "RBAC Standardisierung", "Lead-Archivierung", "V263 BusinessType Harmonisierung"]
   - phase: "Phase 3"
     branch: "feature/mod02-sprint-2.1.6-nightly-jobs"
     scope: "Automated Jobs (Progress Warning, Expiry, Pseudonymisierung)"
@@ -276,9 +276,46 @@ Customer customer = CustomerTestDataFactory.builder()
 
 **Zusammenfassung:**
 - ✅ **Migration V262** erstellt (Stop-the-Clock + Idempotency)
-- ✅ **6 Fixes** implementiert (Code + Kommentare)
-- ⏳ **Tests** laufen (LeadImportServiceTest, LeadBackdatingServiceTest, LeadConvertServiceTest)
-- 📝 **Dokumentation** wird aktualisiert (TRIGGER, BUSINESS_LOGIC, MP5)
+- ✅ **Migration V263** erstellt (BusinessType Harmonisierung)
+- ✅ **7 Fixes** implementiert (Code + Kommentare + Frontend SoT)
+- ✅ **Tests** alle grün (21/21 in LeadImportServiceTest, LeadBackdatingServiceTest, LeadConvertServiceTest)
+- ✅ **Dokumentation** aktualisiert (TRIGGER, BUSINESS_LOGIC, MP5)
+
+### Fix #9: BusinessType Harmonisierung (V263 + Frontend Single Source of Truth)
+**Problem:** Lead.businessType hatte 5 hardcodierte Werte im Frontend (restaurant, hotel, catering, canteen, other), Customer.industry hatte 9 Werte als Enum. Keine einheitliche Systematik, Frontend hardcodete Werte statt Backend-API zu nutzen.
+
+**Lösung:**
+- **Backend:**
+  - Neues Enum: `BusinessType` (9 Werte: RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
+  - Migration V263: Uppercase-Migration + CHECK constraint auf leads.business_type
+  - Neue REST-API: `GET /api/enums/business-types` → `[{value: "RESTAURANT", label: "Restaurant"}, ...]`
+  - EnumResource.java: Single Source of Truth für Dropdown-Werte
+- **Frontend:**
+  - Neuer Hook: `useBusinessTypes()` (React Query, 5min Cache)
+  - LeadWizard.tsx: Dynamisches Laden statt Hardcoding
+  - types.ts: Uppercase BusinessType values (harmonisiert mit Backend)
+
+**Migrierte Werte:**
+```sql
+'restaurant' → 'RESTAURANT'
+'hotel' → 'HOTEL'
+'catering' → 'CATERING'
+'canteen'/'kantine' → 'KANTINE'
+'other' → 'SONSTIGES'
+```
+
+**Migration:** V263__add_business_type_constraint.sql
+**Code:**
+- Backend: `BusinessType.java`, `EnumResource.java`, `LeadImportServiceTest.java`
+- Frontend: `useBusinessTypes.ts`, `LeadWizard.tsx`, `types.ts`
+
+**Tests:** 21/21 grün (Phase 2 Services)
+
+**Vorteile:**
+- ✅ NO Hardcoding: Frontend lädt Werte von Backend
+- ✅ Konsistenz: Lead + Customer nutzen gleiche Werte
+- ✅ Wartbarkeit: Neue BusinessTypes nur im Backend hinzufügen
+- ✅ Datenintegrität: CHECK constraint erzwingt gültige Werte
 
 ---
 
