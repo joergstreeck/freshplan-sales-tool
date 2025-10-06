@@ -118,12 +118,12 @@ class SettingsResourceIntegrationTest {
         new JsonObject().put("scope", "GLOBAL").put("key", TEST_KEY).put("value", value);
 
     given()
-            .contentType(ContentType.JSON)
-            .body(request.encode())
-            .when()
-            .post()
-            .then()
-            .statusCode(201);
+        .contentType(ContentType.JSON)
+        .body(request.encode())
+        .when()
+        .post()
+        .then()
+        .statusCode(201);
 
     // Get the FINAL ETag after flush by fetching the setting
     String etag =
