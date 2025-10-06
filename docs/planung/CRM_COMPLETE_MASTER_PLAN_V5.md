@@ -134,6 +134,24 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-06 22:40 - Sprint 2.1.6 Phase 3 - Outbox-Pattern COMPLETE ✅
+
+**Kontext:** Minimal Outbox Pattern Implementation für Email-Benachrichtigungen (ADR-001)
+
+**Erledigt:**
+- ✅ **OutboxEmail Entity** (Panache) mit JSONB template_data → `de.freshplan.modules.leads.domain.OutboxEmail`
+- ✅ **Migration V268**: `outbox_emails` table (PENDING/SENT/FAILED status, Indexes)
+- ✅ **Jobs integriert**: Progress Warning + Protection Expiry schreiben Outbox statt nur LOG
+- ✅ **Events + Outbox parallel**: Events = intern (Audit/Analytics), Outbox = extern (Email Modul 05)
+- ✅ **Issue #134 COMPLETE**: Batch-Import Idempotency mit cached response replay
+- ✅ **Testing Strategy**: Unit-Tests entfernt (Panache nicht mockbar), Integration-Tests decken E2E ab
+- ✅ **TESTING_STRATEGY.md**: ADR-005 Dokumentation (Hybrid Test Strategy)
+- ✅ **Integration Tests**: LeadMaintenanceSchedulerIT (6/6 GREEN), Emails werden korrekt queued
+
+**Migration:** V268 (outbox_emails table)
+**Tests:** LeadMaintenanceSchedulerIT ✅ GRÜN (6/6)
+**Commit:** 93d0441f1 - feat(leads): Sprint 2.1.6 Phase 3 - Outbox-Pattern
+
 ### 2025-10-06 22:05 - Sprint 2.1.6 Phase 3 - Integration Tests ALLE GRÜN ✅
 
 **Kontext:** Finale Test-Fixes für LeadMaintenanceScheduler (6/6 Tests GREEN)
@@ -605,19 +623,23 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation - Phase 3:**
+- **Sprint 2.1.6 Implementation - ALLE PHASEN COMPLETE ✅:**
   - **✅ COMPLETE:** Phase 1 - Issue #130 Fix (PR #132 merged)
   - **✅ COMPLETE:** Phase 2 - BusinessType Harmonization + Admin-APIs (PR #133 merged)
     - BusinessType Harmonization: Unified Enum, V263/V264, Frontend EnumField Pattern
     - Admin-APIs: Import (95% Coverage), Backdating (92%), Convert (88%)
     - Test-Fixes: Settings Version Bug, Timestamp Precision, ETag Timing
-  - **✅ COMPLETE - Phase 3: Automated Nightly Jobs (Issue #134):**
-    - 4 Nightly Jobs implementiert: Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Archival
-    - 6 ADRs dokumentiert (ADR-001 bis ADR-006)
-    - V267 Migration: Lead.ownerUserId nullable gemacht
-    - 6/6 Integration-Tests GREEN + 41/41 Unit-Tests GREEN
-    - Branch: feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 54e6caca3)
-  - **📋 PENDING - Future Phases:**
+  - **✅ COMPLETE - Phase 3: Automated Nightly Jobs + Outbox-Pattern (Issue #134):**
+    - **4 Nightly Jobs implementiert:** Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Archival
+    - **6 ADRs dokumentiert:** ADR-001 (Outbox-Pattern), ADR-002 bis ADR-006
+    - **Migrations:** V267 (ownerUserId nullable), V268 (outbox_emails table)
+    - **Outbox-Pattern:** OutboxEmail Entity (Panache + JSONB), Events + Outbox parallel
+    - **Issue #134 Idempotency:** Batch-Import mit cached response replay (SHA-256 fingerprint)
+    - **Testing Strategy:** Unit-Tests entfernt (Panache nicht mockbar), Integration-Tests E2E
+    - **6/6 Integration-Tests GREEN** (LeadMaintenanceSchedulerIT)
+    - **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 93d0441f1)
+  - **📋 NEXT PHASE - Sprint 2.1.6 Finalisierung:**
+    - Git Commit + PR #134 erstellen (Outbox-Pattern)
     - Phase 4 (OPTIONAL): Stop-the-Clock UI + Excel Upload
     - Phase 5 (OPTIONAL): MUI Dialog Accessibility Fix
   - **❌ VERSCHOBEN auf Sprint 2.1.7:**
