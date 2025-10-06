@@ -30,7 +30,8 @@ class LeadBackdatingServiceTest {
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean test data
+    // Clean test data - activities must be deleted before leads due to FK constraint
+    Lead.getEntityManager().createQuery("DELETE FROM LeadActivity").executeUpdate();
     Lead.deleteAll();
 
     // Ensure territory exists and is persisted
@@ -55,6 +56,11 @@ class LeadBackdatingServiceTest {
     testLead.protectionStartAt = testLead.registeredAt;
     testLead.progressDeadline = testLead.registeredAt.plusDays(60);
     testLead.persist();
+
+    // Flush and clear to ensure testLead is reloaded with DB-truncated timestamps
+    Lead.getEntityManager().flush();
+    Lead.getEntityManager().clear();
+    testLead = Lead.findById(testLead.id);
   }
 
   @Test

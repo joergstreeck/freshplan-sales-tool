@@ -86,12 +86,10 @@ public class SettingsService {
       setting.version = 1;
       setting.persist();
 
-      // Flush to ensure persistence and trigger DB updates
-      em.flush();
-
-      // Generate ETag AFTER flush to ensure consistent state
+      // Generate ETag before flush (DB trigger will handle version)
       setting.etag = generateEtag(setting);
-      // Persist the ETag
+
+      // Single flush to trigger DB updates (version increment happens once)
       em.flush();
 
       LOG.infof(
@@ -106,11 +104,10 @@ public class SettingsService {
       setting.updatedBy = userId;
       setting.version = (setting.version == null ? 1 : setting.version + 1);
 
-      // Flush first to ensure DB state is updated
-      em.flush();
-
-      // Generate new ETag AFTER flush
+      // Generate new ETag before flush (DB trigger will handle version)
       setting.etag = generateEtag(setting);
+
+      // Single flush to trigger DB updates (version increment happens once)
       em.flush();
 
       LOG.infof(
@@ -153,10 +150,11 @@ public class SettingsService {
 
     try {
       setting.persist();
-      em.flush();
 
-      // Generate ETag AFTER flush to ensure consistent state
+      // Generate ETag before flush (DB trigger will handle version)
       setting.etag = generateEtag(setting);
+
+      // Single flush to trigger DB updates (version increment happens once)
       em.flush();
 
       LOG.infof(
@@ -216,11 +214,10 @@ public class SettingsService {
     setting.updatedBy = userId;
     setting.version = (setting.version == null ? 1 : setting.version + 1);
 
-    // Flush first to ensure DB state is updated
-    em.flush();
-
-    // Generate new ETag AFTER flush
+    // Generate new ETag before flush (DB trigger will handle version)
     setting.etag = generateEtag(setting);
+
+    // Single flush to trigger DB updates (version increment happens once)
     em.flush();
 
     LOG.infof(

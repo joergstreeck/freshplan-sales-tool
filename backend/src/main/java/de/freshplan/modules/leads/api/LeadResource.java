@@ -4,6 +4,7 @@ import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
+import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import de.freshplan.modules.leads.service.LeadProtectionService;
@@ -262,6 +263,7 @@ public class LeadResource {
     // Set ownership and protection
     lead.ownerUserId = currentUserId;
     lead.status = LeadStatus.REGISTERED;
+    lead.stage = LeadStage.VORMERKUNG; // Sprint 2.1.6 - Progressive Profiling Stage
     lead.createdBy = currentUserId;
     lead.source = request.source != null ? request.source : "web";
     lead.sourceCampaign = request.sourceCampaign;
