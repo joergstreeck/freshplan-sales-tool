@@ -9,15 +9,20 @@ import LeadScoreIndicator from './LeadScoreIndicator';
 import LeadStatusWorkflow from './LeadStatusWorkflow';
 import StopTheClockDialog from './StopTheClockDialog';
 import LeadActivityTimeline from './LeadActivityTimeline';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function LeadList() {
   const { t } = useTranslation('leads');
+  const { hasRole } = useAuth();
   const [data, setData] = useState<Lead[] | null>(null);
   const [error, setError] = useState<Problem | null>(null);
   const [open, setOpen] = useState(false);
   const [stopClockDialogOpen, setStopClockDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showTimeline, setShowTimeline] = useState<number | null>(null);
+
+  // RBAC: Stop-the-Clock nur für ADMIN und MANAGER
+  const canStopClock = hasRole('ADMIN') || hasRole('MANAGER');
 
   const fetchLeads = async () => {
     try {
@@ -115,13 +120,15 @@ export default function LeadList() {
                 </Box>
 
                 {/* Stop-the-Clock Button (Admin/Manager only) */}
-                <IconButton
-                  onClick={() => handleStopClock(lead)}
-                  color={lead.clockStoppedAt ? 'success' : 'warning'}
-                  title={lead.clockStoppedAt ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}
-                >
-                  {lead.clockStoppedAt ? <PlayArrow /> : <Pause />}
-                </IconButton>
+                {canStopClock && (
+                  <IconButton
+                    onClick={() => handleStopClock(lead)}
+                    color={lead.clockStoppedAt ? 'success' : 'warning'}
+                    title={lead.clockStoppedAt ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}
+                  >
+                    {lead.clockStoppedAt ? <PlayArrow /> : <Pause />}
+                  </IconButton>
+                )}
 
                 {/* Timeline Toggle */}
                 <IconButton
