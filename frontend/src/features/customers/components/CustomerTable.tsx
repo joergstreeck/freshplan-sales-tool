@@ -22,6 +22,8 @@ import {
   customerStatusColors,
 } from '../../customer/types/customer.types';
 import type { ColumnConfig } from '../types/filter.types';
+import type { Lead } from '../../leads/types';
+import LeadScoreIndicator from '../../leads/LeadScoreIndicator';
 
 interface CustomerTableProps {
   customers: CustomerResponse[];
@@ -197,6 +199,18 @@ export function CustomerTable({
                         return customerTypeLabels[customer.customerType];
                       case 'industry':
                         return customer.industry ? industryLabels[customer.industry] : '-';
+                      case 'businessType':
+                        // Sprint 2.1.6: Harmonized businessType field (replaces industry for leads)
+                        return (customer as Lead).businessType || '-';
+                      case 'leadScore':
+                        // Sprint 2.1.6 Phase 4: Lead scoring visualization
+                        return (
+                          <LeadScoreIndicator
+                            score={(customer as Lead).leadScore}
+                            size="small"
+                            showLabel={false}
+                          />
+                        );
                       case 'status':
                         return (
                           <Chip
