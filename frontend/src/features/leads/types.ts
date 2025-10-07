@@ -86,6 +86,9 @@ export type Lead = {
   clockStoppedAt?: string;
   stopReason?: string;
 
+  // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2 - V269/V271)
+  leadScore?: number; // 0-100 points
+
   // Timestamps
   createdAt?: string;
   updatedAt?: string;
