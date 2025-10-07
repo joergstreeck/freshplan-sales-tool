@@ -5,6 +5,26 @@ export type LeadStage = 0 | 1 | 2;
 
 export type LeadStatus = 'REGISTERED' | 'ACTIVE' | 'QUALIFIED' | 'CONVERTED' | 'LOST' | 'DELETED';
 
+// Sprint 2.1.6 Phase 4: Lead Status Labels (German)
+export const leadStatusLabels: Record<LeadStatus, string> = {
+  REGISTERED: 'Vormerkung',
+  ACTIVE: 'Aktiv',
+  QUALIFIED: 'Qualifiziert',
+  CONVERTED: 'Konvertiert',
+  LOST: 'Verloren',
+  DELETED: 'Gelöscht',
+};
+
+// Sprint 2.1.6 Phase 4: Lead Status Colors
+export const leadStatusColors: Record<LeadStatus, string> = {
+  REGISTERED: '#2196F3', // Blue
+  ACTIVE: '#4CAF50', // Green
+  QUALIFIED: '#FF9800', // Orange
+  CONVERTED: '#9C27B0', // Purple
+  LOST: '#F44336', // Red
+  DELETED: '#9E9E9E', // Gray
+};
+
 // Sprint 2.1.6: Harmonized with Customer.industry (9 values instead of 5)
 // Values fetched from GET /api/enums/business-types (no hardcoding)
 export type BusinessType =

@@ -11,6 +11,7 @@ import {
   Box,
   Typography,
   TablePagination,
+  IconButton,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -23,13 +24,17 @@ import {
 } from '../../customer/types/customer.types';
 import type { ColumnConfig } from '../types/filter.types';
 import type { Lead } from '../../leads/types';
+import { leadStatusLabels, leadStatusColors } from '../../leads/types';
 import LeadScoreIndicator from '../../leads/LeadScoreIndicator';
+import StopTheClockDialog from '../../leads/StopTheClockDialog';
+import { Pause, PlayArrow, Timeline as TimelineIcon } from '@mui/icons-material';
 
 interface CustomerTableProps {
   customers: CustomerResponse[];
   onRowClick?: (customer: CustomerResponse) => void;
   highlightNew?: boolean;
   columns?: ColumnConfig[];
+  context?: 'customers' | 'leads'; // Sprint 2.1.6 Phase 4: Context for status labels
 }
 
 export function CustomerTable({
@@ -37,9 +42,13 @@ export function CustomerTable({
   onRowClick,
   highlightNew,
   columns,
+  context = 'customers',
 }: CustomerTableProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
+  const [stopClockDialogOpen, setStopClockDialogOpen] = React.useState(false);
+  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
+  const [timelineLeadId, setTimelineLeadId] = React.useState<number | null>(null);
 
   // Default columns if none provided
   const defaultColumns: ColumnConfig[] = [
@@ -211,17 +220,22 @@ export function CustomerTable({
                             showLabel={false}
                           />
                         );
-                      case 'status':
+                      case 'status': {
+                        // Sprint 2.1.6 Phase 4: Context-aware status labels
+                        const statusLabels = context === 'leads' ? leadStatusLabels : customerStatusLabels;
+                        const statusColors = context === 'leads' ? leadStatusColors : customerStatusColors;
+                        const statusValue = customer.status as keyof typeof statusLabels;
                         return (
                           <Chip
-                            label={customerStatusLabels[customer.status]}
+                            label={statusLabels[statusValue] || customer.status}
                             size="small"
                             sx={{
-                              bgcolor: customerStatusColors[customer.status],
+                              bgcolor: statusColors[statusValue] || '#9E9E9E',
                               color: 'white',
                             }}
                           />
                         );
+                      }
                       case 'expectedAnnualVolume':
                         return formatCurrency(customer.expectedAnnualVolume);
                       case 'lastContactDate':
@@ -289,6 +303,39 @@ export function CustomerTable({
                             </Typography>
                           </Box>
                         );
+                      case 'actions':
+                        // Sprint 2.1.6 Phase 4: Lead actions (Stop-the-Clock, Timeline)
+                        if (context === 'leads') {
+                          const lead = customer as Lead;
+                          return (
+                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                              <IconButton
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedLead(lead);
+                                  setStopClockDialogOpen(true);
+                                }}
+                                color={lead.clockStoppedAt ? 'success' : 'warning'}
+                                title={lead.clockStoppedAt ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}
+                              >
+                                {lead.clockStoppedAt ? <PlayArrow /> : <Pause />}
+                              </IconButton>
+                              <IconButton
+                                size="small"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setTimelineLeadId(timelineLeadId === Number(lead.id) ? null : Number(lead.id));
+                                }}
+                                color={timelineLeadId === Number(lead.id) ? 'primary' : 'default'}
+                                title="Aktivitäten anzeigen"
+                              >
+                                <TimelineIcon />
+                              </IconButton>
+                            </Box>
+                          );
+                        }
+                        return '-';
                       default:
                         return '-';
                     }
@@ -321,6 +368,20 @@ export function CustomerTable({
           `${from}–${to} von ${count !== -1 ? count : `mehr als ${to}`}`
         }
       />
+
+      {/* Sprint 2.1.6 Phase 4: Stop-the-Clock Dialog (Leads only) */}
+      {context === 'leads' && (
+        <StopTheClockDialog
+          open={stopClockDialogOpen}
+          lead={selectedLead}
+          onClose={() => setStopClockDialogOpen(false)}
+          onSuccess={() => {
+            setStopClockDialogOpen(false);
+            setSelectedLead(null);
+            // Trigger parent refresh would go here
+          }}
+        />
+      )}
     </Paper>
   );
 }

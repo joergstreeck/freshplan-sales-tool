@@ -555,6 +555,7 @@ export function CustomersPageV2({
                     }}
                     highlightNew
                     columns={columnConfig}
+                    context={context}
                   />
                 )}
 
