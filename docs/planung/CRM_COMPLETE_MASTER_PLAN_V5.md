@@ -17,13 +17,14 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ 97% IMPLEMENTED – Sprint 2.1.6 Phase 3 COMPLETE
+- **Module 02 Neukundengewinnung:** ✅ 99% IMPLEMENTED – Sprint 2.1.6 Phase 4 COMPLETE
   - Sprint 2.1.1-2.1.4: Territory, Lead Capture, Follow-up, Deduplication ✅ (PR #103, #105, #110, #111, #122, #123)
   - Sprint 2.1.5: Progressive Profiling + Lead Protection ✅ (PR #124 Backend, PR #129 Frontend)
   - Sprint 2.1.6 Phase 1: Issue #130 Fix ✅ (PR #132)
   - Sprint 2.1.6 Phase 2: Admin APIs (Import, Backdating, Convert) ✅ (PR #133)
   - Sprint 2.1.6 Phase 3: Automated Nightly Jobs + Outbox-Pattern + Issue #134 (Idempotency) ✅ (PR #134)
-  - 📋 PENDING: Phase 4 (Job Monitoring & Performance), Phase 5 (Frontend UI + Excel Upload)
+  - Sprint 2.1.6 Phase 4: Lead Intelligence Tests + LeadScoringService ✅ (PR #135)
+  - 📋 PENDING: Phase 5 (Frontend UI Polish + Excel Upload)
   - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
   - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
   - [Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) ✅
@@ -42,25 +43,33 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (07.10.2025 - 🎉 Sprint 2.1.6 Phase 3 COMPLETE):**
+**📋 LATEST UPDATE (08.10.2025 - 🎉 Sprint 2.1.6 Phase 4 COMPLETE):**
+- ✅ **Sprint 2.1.6 Phase 4 COMPLETE - Lead Intelligence Tests + LeadScoringService (PR #135):**
+  - **Branch:** feature/mod02-sprint-2.1.6-phase-4-complete
+  - **Backend Implementation:**
+    - ✅ **LeadScoringService** (264 LOC): 4-Faktoren-Berechnung (Umsatzpotenzial 25%, Engagement 25%, Fit 25%, Dringlichkeit 25%)
+    - ✅ **LeadScoringServiceTest** (19 Tests GREEN): Business-Logic-Tests für alle Faktoren + Integration + Edge-Cases
+    - ✅ **LeadResourceTest** (+3 DTO-Completeness-Tests): leadScore, progressPauseTotalSeconds, nullable fields
+    - ✅ **Bug Fix:** leadScore in LeadDTO gemapped (KRITISCH - fehlte komplett)
+  - **Frontend Implementation:**
+    - ✅ **StopTheClockDialog.test.tsx** (12 Tests GREEN): RBAC-Permission-Tests (USER/ADMIN/MANAGER/SALES)
+    - ✅ **Bug Fix:** RBAC UI-Check in StopTheClockDialog (UX - fehlender Permission-Check)
+  - **Documentation:**
+    - ✅ **Testing Guide** (/docs/grundlagen/testing_guide.md): "Tests sind kein Selbstzweck - Fehler finden bevor Produktion!"
+  - **Tests:** 103 Tests GREEN (43 Backend + 60 Frontend)
+  - **Bugs gefunden & gefixt:** 3 Produktionsbugs durch Test-driven Development
 - ✅ **Sprint 2.1.6 Phase 3 COMPLETE - Automated Nightly Jobs + Outbox-Pattern (PR #134):**
-  - **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs
   - **Backend Services (2 neue Services, ~588 LOC):**
     - ✅ **LeadMaintenanceService** (461 LOC): 4 Nightly Jobs (Progress Warning, Protection Expiry, Pseudonymization, Import Archival)
     - ✅ **LeadMaintenanceScheduler** (127 LOC): Cron-basierter Scheduler mit @Scheduled
   - **Domain Entities (2 neue, ~306 LOC):**
     - ✅ **ImportJob** (159 LOC): Idempotency für Batch-Imports (requestFingerprint, idempotencyKey, TTL 7 Tage)
     - ✅ **OutboxEmail** (147 LOC): Transactional Outbox Pattern für Email-Notifikationen
-  - **DB Migrations:** V265 (pseudonymizedAt), V266 (Customer.originalLeadId FK), V267 (ownerUserId nullable), V268 (outbox_emails)
   - **Tests:** 19 Tests GREEN (14 Import, 5 Maintenance Scheduler Integration)
-  - **Events:** 4 neue Domain-Events (ImportJobsArchived, LeadProgressWarning, ProtectionExpired, Pseudonymized)
 - ✅ **Sprint 2.1.6 Phase 2 COMPLETE - Core Backend APIs (PR #133):**
   - **33 Tests:** 100% passing (Import: 14, Backdating: 13, Convert: 6)
   - **Backend Services:** LeadImportService (297 LOC), LeadBackdatingService (107 LOC), LeadConvertService (204 LOC)
-  - **REST APIs:** POST /api/admin/migration/leads/import, PUT /api/leads/{id}/registered-at, POST /api/leads/{id}/convert
-- ✅ **PR #132 MERGED - Issue #130 BLOCKER Fix (TestDataBuilder CDI-Konflikte)**
-- ✅ **PR #129 MERGED - Sprint 2.1.5 Progressive Profiling & Lead Protection COMPLETE**
-- 📋 **NEXT:** Sprint 2.1.6 Phase 4 (Job Monitoring & Performance), Phase 5 (Frontend UI + Excel Upload)
+- 📋 **NEXT:** Sprint 2.1.6 Phase 5 (Frontend UI Polish + Excel Upload)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 

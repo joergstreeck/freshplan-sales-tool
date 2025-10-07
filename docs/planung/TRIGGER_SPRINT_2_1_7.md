@@ -23,9 +23,11 @@ entry_points:
   - "features-neu/02_neukundengewinnung/backend/_index.md"
   - "features-neu/02_neukundengewinnung/shared/adr/ADR-003-rls-leads-row-level-security.md"
   - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
-  - "grundlagen/TESTING_GUIDE.md"
-pr_refs: ["#133"]
-updated: "2025-10-06"
+  - "grundlagen/testing_guide.md"
+pr_refs: ["#133", "#134", "#135"]
+updated: "2025-10-08"
+prerequisites:
+  - "Sprint 2.1.6 Phase 4 COMPLETE (PR #135 - Lead Intelligence Tests + LeadScoringService)"
 ---
 
 # Sprint 2.1.7 – Lead Team Management & Test Infrastructure Overhaul
