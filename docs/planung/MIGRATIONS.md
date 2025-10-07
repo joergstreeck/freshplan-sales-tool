@@ -189,8 +189,9 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V266** | Idempotent Fix customer original_lead_id | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Idempotency Fix |
 | **V267** | Make lead owner_user_id nullable | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Unassigned Leads Support |
 | **V268** | Create outbox_emails table | 2.1.6 Phase 3 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Minimal Outbox Pattern |
-| **V269** | Add lead_score column | 2.1.6 Phase 4 | 🚧 Pending | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring |
-| **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | 🚧 Pending | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
+| **V269** | Add lead_score column | 2.1.6 Phase 4 | ⚠️ Conflict | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Out of Order conflict, applied via V271 |
+| **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
+| **V271** | Fix add lead_score column (V269 Hotfix) | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring (Idempotent) |
 
 ---
 
@@ -372,6 +373,6 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-07 (V270, Sprint 2.1.6 Phase 4 - Lead Scoring + Hotfix outbox_emails)
+**Letzte Aktualisierung:** 2025-10-07 (V271, Sprint 2.1.6 Phase 4 - Lead Scoring + Schema Hotfixes)
 
-**Nächste Migration:** V271 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V272 (ermitteln via `./scripts/get-next-migration.sh`)
