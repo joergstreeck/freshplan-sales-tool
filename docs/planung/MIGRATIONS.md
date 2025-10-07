@@ -185,6 +185,12 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V262** | Stop-the-Clock Cumulative Pause & Idempotency Infrastructure | 2.1.6 | ✅ Deployed | @joergstreeck | #133 | ✅ Yes | 🟢 Low | None | Phase 2 Review Fix #4 + #2 |
 | **V263** | BusinessType Harmonization & CHECK Constraint (Lead) | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Lead: industry→businessType + CHECK |
 | **V264** | Customer.businessType + Data Migration | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Customer: Industry→BusinessType + Sync |
+| **V265** | Add lead pseudonymized_at | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | DSGVO Compliance |
+| **V266** | Idempotent Fix customer original_lead_id | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Idempotency Fix |
+| **V267** | Make lead owner_user_id nullable | 2.1.6 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Unassigned Leads Support |
+| **V268** | Create outbox_emails table | 2.1.6 Phase 3 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Minimal Outbox Pattern |
+| **V269** | Add lead_score column | 2.1.6 Phase 4 | 🚧 Pending | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring |
+| **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | 🚧 Pending | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
 
 ---
 
@@ -366,6 +372,6 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-06 (V264, Sprint 2.1.6 Phase 2 - BusinessType Harmonization)
+**Letzte Aktualisierung:** 2025-10-07 (V270, Sprint 2.1.6 Phase 4 - Lead Scoring + Hotfix outbox_emails)
 
-**Nächste Migration:** (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V271 (ermitteln via `./scripts/get-next-migration.sh`)
