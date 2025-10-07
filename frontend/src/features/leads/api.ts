@@ -43,6 +43,24 @@ export async function createLead(payload: { name: string; email?: string }) {
   return res.json();
 }
 
+export async function updateLead(
+  id: number,
+  payload: { stopClock?: boolean; stopReason?: string }
+): Promise<Lead> {
+  const res = await fetch(`${BASE}/api/leads/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    body: JSON.stringify(payload),
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
 // RFC7807 Error Handling
 export async function toProblem(res: Response): Promise<Problem> {
   try {

@@ -412,12 +412,19 @@ public class LeadResource {
             ActivityType.CLOCK_STOPPED,
             "Clock stopped: " + updateRequest.stopReason);
       } else if (!updateRequest.stopClock && lead.clockStoppedAt != null) {
-        // Resume clock
+        // Resume clock: Calculate cumulative pause duration (Sprint 2.1.6 Phase 3 - V262)
+        var pauseDuration = java.time.Duration.between(lead.clockStoppedAt, LocalDateTime.now());
+        lead.progressPauseTotalSeconds += pauseDuration.toSeconds();
+
         lead.clockStoppedAt = null;
         lead.stopReason = null;
         lead.stopApprovedBy = null;
 
-        createAndPersistActivity(lead, currentUserId, ActivityType.CLOCK_RESUMED, "Clock resumed");
+        createAndPersistActivity(
+            lead,
+            currentUserId,
+            ActivityType.CLOCK_RESUMED,
+            "Clock resumed (paused: " + pauseDuration.toMinutes() + " minutes)");
       }
     }
 

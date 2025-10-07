@@ -195,6 +195,10 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "pseudonymized_at")
   public LocalDateTime pseudonymizedAt;
 
+  // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2 - V269)
+  @Column(name = "lead_score")
+  public Integer leadScore; // 0-100 Punkte (Umsatzpotenzial 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
+
   // Metadata
   @Size(max = 100)
   public String source; // web/email/phone/event/partner
