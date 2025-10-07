@@ -401,7 +401,8 @@ public class LeadResource {
     if (updateRequest.stopClock != null) {
       var settings = settingsService.getOrCreateForUser(currentUserId);
       if (updateRequest.stopClock && (settings.canStopClock || isAdmin)) {
-        lead.clockStoppedAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        lead.clockStoppedAt = now;
         lead.stopReason = updateRequest.stopReason;
         lead.stopApprovedBy = currentUserId;
 
@@ -443,6 +444,7 @@ public class LeadResource {
 
     lead.updatedBy = currentUserId;
     lead.persist();
+    lead.flush(); // Force version increment BEFORE creating ETag/DTO
 
     LOG.infof("Updated lead %s by user %s", id, currentUserId);
     // Return with new strong ETag after version bump
@@ -554,6 +556,7 @@ public class LeadResource {
   /** GET /api/leads/{id}/activities - Get activities for a lead. */
   @GET
   @Path("/{id}/activities")
+  @Transactional
   public Response getActivities(
       @PathParam("id") Long id,
       @QueryParam("page") @DefaultValue("0") int pageIndex,
@@ -612,7 +615,7 @@ public class LeadResource {
    */
   @PUT
   @Path("/{id}/registered-at")
-  @RolesAllowed({"ROLE_ADMIN", "ROLE_SALES_MANAGER"})
+  @RolesAllowed({"ADMIN", "MANAGER"})
   @Transactional
   public Response updateRegisteredAt(
       @PathParam("id") Long id,
@@ -653,7 +656,7 @@ public class LeadResource {
    */
   @POST
   @Path("/{id}/convert")
-  @RolesAllowed({"ROLE_ADMIN", "ROLE_SALES_MANAGER"})
+  @RolesAllowed({"ADMIN", "MANAGER"})
   @Transactional
   public Response convertToCustomer(
       @PathParam("id") Long id,

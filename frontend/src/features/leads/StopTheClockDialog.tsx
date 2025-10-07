@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import { updateLead } from './api';
 import type { Lead, Problem } from './types';
+import { useAuth } from '../../hooks/useAuth';
 
 interface StopTheClockDialogProps {
   open: boolean;
@@ -38,12 +39,34 @@ export default function StopTheClockDialog({
   onClose,
   onSuccess,
 }: StopTheClockDialogProps) {
+  const { hasRole } = useAuth();
   const [reason, setReason] = useState('');
   const [customReason, setCustomReason] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<Problem | null>(null);
 
   const isStopped = !!lead?.clockStoppedAt;
+
+  // RBAC: Only ADMIN and MANAGER can use Stop-the-Clock
+  const canStopClock = hasRole('ADMIN') || hasRole('MANAGER');
+
+  // If user doesn't have permission, show error message
+  if (!canStopClock) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+        <DialogTitle>Keine Berechtigung</DialogTitle>
+        <DialogContent>
+          <Alert severity="error">
+            Sie haben keine Berechtigung für diese Funktion.
+            Nur Administratoren und Manager können die Uhr anhalten.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Schließen</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
 
   // Predefined stop reasons (German, business-oriented language)
   const stopReasons = [

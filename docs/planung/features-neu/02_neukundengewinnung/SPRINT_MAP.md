@@ -323,7 +323,15 @@ updated: "2025-10-02"
    - LeadTestDataFactory (asPreClaimLead, asRegisteredLead, asQualifiedLead)
    - LeadActivityTestDataFactory (asProgressActivity, asNonProgressActivity)
 
-8. **Test-Pattern Library & Documentation**
+8. **Lead Activity Capture UI** (NEU - VERVOLLSTÄNDIGUNG, 4-6h)
+   - AddLeadActivityDialog.tsx (Activity-Type, Zusammenfassung, Details, Outcome)
+   - Action-Button in CustomerTable.tsx (nur für context='leads')
+   - API-Integration: POST /api/leads/{id}/activities
+   - German labels (E-Mail, Anruf, Termin, Notiz, etc.)
+   - Validation: min. 10 Zeichen Zusammenfassung, Pflicht-Activity-Type
+   - Success-Feedback: Snackbar "Aktivität erfasst"
+
+9. **Test-Pattern Library & Documentation**
    - TESTING_PATTERNS.md (5+ Patterns: Lead-Journey, RBAC+RLS, Activity-Progress)
    - TEST_DATA_CHEATSHEET.md (Quick Reference)
    - Migration Guide für alte Tests
@@ -339,6 +347,7 @@ updated: "2025-10-02"
 - Fuzzy-Matching Service + Review-UI (Track 1)
 - RLS Policies + Team Management (Track 1)
 - CRMScenarioBuilder + Faker + TestDataFactories (Track 2)
+- Lead Activity Capture UI (AddLeadActivityDialog.tsx) (Track 2)
 - TESTING_PATTERNS.md + TEST_DATA_CHEATSHEET.md (Track 2)
 
 ---

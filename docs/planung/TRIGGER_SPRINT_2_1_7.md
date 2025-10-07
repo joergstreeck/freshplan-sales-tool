@@ -751,7 +751,91 @@ public class LeadDeduplicationService {
 
 ---
 
-### 8. Test-Pattern Library & Documentation (NEU)
+### 8. Lead Activity Capture UI (NEU - VERVOLLSTÄNDIGUNG)
+**Begründung:** Timeline zeigt Aktivitäten, aber KEINE UI zum manuellen Erfassen neuer Aktivitäten existiert
+
+**Problem-Analyse:**
+- ✅ **LeadActivityTimeline.tsx:** Zeigt chronologische Historie aller Aktivitäten
+- ✅ **Backend-Endpoint:** POST /api/leads/{id}/activities existiert bereits (Sprint 2.1.5/2.1.6)
+- ❌ **Fehlende UI:** Kein Dialog zum Erfassen neuer Aktivitäten (E-Mail, Anruf, Termin, Notiz)
+- 🎯 **Ziel:** Lightweight Dialog für schnelle Activity-Capture → Integration in Lead-Table Actions
+
+**Akzeptanzkriterien:**
+- [ ] **AddLeadActivityDialog.tsx erstellen:**
+  ```typescript
+  interface AddLeadActivityDialogProps {
+    open: boolean;
+    leadId: number;
+    onClose: () => void;
+    onSuccess: () => void;
+  }
+
+  export function AddLeadActivityDialog({ open, leadId, onClose, onSuccess }: AddLeadActivityDialogProps) {
+    // Form mit:
+    // - Activity-Type Dropdown (E-Mail, Anruf, Termin, Notiz, Muster versendet, Bestellung)
+    // - Zusammenfassung (Textfeld, Pflicht, min. 10 Zeichen)
+    // - Details (Multiline Textfeld, optional)
+    // - Outcome Dropdown (optional): POSITIVE_INTEREST, NEEDS_MORE_INFO, etc.
+    // - "Meaningful Contact" Checkbox (automatisch checked für E-Mail/Anruf/Termin)
+  }
+  ```
+- [ ] **Action-Button in CustomerTable.tsx:**
+  ```typescript
+  // Spalte "actions" erweitern (nur für context='leads'):
+  <IconButton
+    size="small"
+    onClick={(e) => {
+      e.stopPropagation();
+      setSelectedLeadForActivity(lead);
+      setActivityDialogOpen(true);
+    }}
+    title="Aktivität erfassen"
+  >
+    <AddIcon />
+  </IconButton>
+  ```
+- [ ] **API-Integration:**
+  ```typescript
+  const handleSaveActivity = async (activity: LeadActivityRequest) => {
+    const response = await fetch(`/api/leads/${leadId}/activities`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify(activity),
+    });
+
+    if (!response.ok) throw new Error('Fehler beim Speichern der Aktivität');
+
+    onSuccess(); // Refresh timeline
+    onClose();
+  };
+  ```
+- [ ] **Validation:**
+  - Activity-Type: Pflichtfeld
+  - Zusammenfassung: min. 10 Zeichen, max. 255 Zeichen
+  - Meaningful Contact: Auto-checked für EMAIL/CALL/MEETING, editierbar
+- [ ] **UX-Details:**
+  - German labels (DESIGN_SYSTEM.md konform): "E-Mail", "Anruf", "Termin", "Notiz", "Muster versendet", "Bestellung"
+  - Validation-Feedback: Inline-Errors (Zusammenfassung zu kurz, etc.)
+  - Success-Feedback: Snackbar "Aktivität erfasst" (3s Auto-Close)
+  - Dialog schließt automatisch nach Success
+
+**Betroffene Komponenten:**
+- **Frontend:**
+  - AddLeadActivityDialog.tsx (NEW - Activity Capture Dialog)
+  - CustomerTable.tsx (Add Action Button + Dialog State)
+  - LeadActivityTimeline.tsx (Refresh nach neuer Activity)
+
+**Aufwand:** 4-6h (Medium Complexity - Dialog + Validation + API-Integration + UX)
+
+**Referenzen:**
+- POST /api/leads/{id}/activities: LeadResource.java (Sprint 2.1.5)
+- DESIGN_SYSTEM.md: UI-Sprachregeln (German labels)
+- Activity Types: [ACTIVITY_TYPES_PROGRESS_MAPPING.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/ACTIVITY_TYPES_PROGRESS_MAPPING.md)
+
+---
+
+### 9. Test-Pattern Library & Documentation (NEU)
 **Begründung:** Best Practices dokumentieren für Onboarding und Konsistenz
 
 **Akzeptanzkriterien:**

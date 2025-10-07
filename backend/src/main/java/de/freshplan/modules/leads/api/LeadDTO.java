@@ -70,10 +70,14 @@ public class LeadDTO {
   // protectionMonths)
   public LocalDateTime protectionUntil; // Sprint 2.1.5: Pre-Claim Badge (registeredAt + 6 Monate)
 
-  // Stop-the-clock feature
+  // Stop-the-clock feature (Sprint 2.1.6 Phase 3)
   public LocalDateTime clockStoppedAt;
   public String stopReason;
   public String stopApprovedBy;
+  public Long progressPauseTotalSeconds; // Cumulative pause duration
+
+  // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2)
+  public Integer leadScore; // 0-100 points (Umsatzpotenzial 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
   // Metadata
   public LocalDateTime createdAt;
@@ -142,6 +146,10 @@ public class LeadDTO {
     dto.clockStoppedAt = lead.clockStoppedAt;
     dto.stopReason = lead.stopReason;
     dto.stopApprovedBy = lead.stopApprovedBy;
+    dto.progressPauseTotalSeconds = lead.progressPauseTotalSeconds;
+
+    // Lead Scoring (Sprint 2.1.6 Phase 4)
+    dto.leadScore = lead.leadScore;
 
     dto.createdAt = lead.createdAt;
     dto.createdBy = lead.createdBy;

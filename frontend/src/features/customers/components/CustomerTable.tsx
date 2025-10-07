@@ -12,6 +12,7 @@ import {
   Typography,
   TablePagination,
   IconButton,
+  Collapse,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -27,6 +28,7 @@ import type { Lead } from '../../leads/types';
 import { leadStatusLabels, leadStatusColors } from '../../leads/types';
 import LeadScoreIndicator from '../../leads/LeadScoreIndicator';
 import StopTheClockDialog from '../../leads/StopTheClockDialog';
+import LeadActivityTimeline from '../../leads/LeadActivityTimeline';
 import { Pause, PlayArrow, Timeline as TimelineIcon } from '@mui/icons-material';
 
 interface CustomerTableProps {
@@ -140,20 +142,20 @@ export function CustomerTable({
           </TableHead>
           <TableBody>
             {paginatedCustomers.map(customer => (
-              <TableRow
-                key={customer.id}
-                hover
-                onClick={() => onRowClick?.(customer)}
-                sx={{
-                  cursor: onRowClick ? 'pointer' : 'default',
-                  bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.08)' : undefined,
-                  '&:hover': {
-                    bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.15)' : 'action.hover',
-                  },
-                }}
-              >
-                {visibleColumns.map(column => {
-                  const renderCellContent = () => {
+              <React.Fragment key={customer.id}>
+                <TableRow
+                  hover
+                  onClick={() => onRowClick?.(customer)}
+                  sx={{
+                    cursor: onRowClick ? 'pointer' : 'default',
+                    bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.08)' : undefined,
+                    '&:hover': {
+                      bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.15)' : 'action.hover',
+                    },
+                  }}
+                >
+                  {visibleColumns.map(column => {
+                    const renderCellContent = () => {
                     switch (column.id) {
                       case 'customerNumber':
                         return (
@@ -220,6 +222,30 @@ export function CustomerTable({
                             showLabel={false}
                           />
                         );
+                      case 'stage': {
+                        // Sprint 2.1.6 Phase 4: Lead stage with German labels (DESIGN_SYSTEM.md)
+                        const stageLabels: Record<number, string> = {
+                          0: 'Vormerkung',
+                          1: 'Registrierung',
+                          2: 'Qualifizierung',
+                        };
+                        const stageColors: Record<number, string> = {
+                          0: '#2196F3', // Blue
+                          1: '#FF9800', // Orange
+                          2: '#4CAF50', // Green
+                        };
+                        const stageValue = (customer as Lead).stage;
+                        return (
+                          <Chip
+                            label={stageLabels[stageValue] || stageValue?.toString()}
+                            size="small"
+                            sx={{
+                              bgcolor: stageColors[stageValue] || '#9E9E9E',
+                              color: 'white',
+                            }}
+                          />
+                        );
+                      }
                       case 'status': {
                         // Sprint 2.1.6 Phase 4: Context-aware status labels
                         const statusLabels = context === 'leads' ? leadStatusLabels : customerStatusLabels;
@@ -351,6 +377,20 @@ export function CustomerTable({
                   );
                 })}
               </TableRow>
+
+              {/* Sprint 2.1.6 Phase 4: Lead Activity Timeline Expansion Row */}
+              {context === 'leads' && timelineLeadId === Number(customer.id) && (
+                <TableRow>
+                  <TableCell colSpan={visibleColumns.length} sx={{ py: 0, bgcolor: 'grey.50' }}>
+                    <Collapse in={timelineLeadId === Number(customer.id)} timeout="auto" unmountOnExit>
+                      <Box sx={{ py: 2, px: 3 }}>
+                        <LeadActivityTimeline leadId={Number(customer.id)} />
+                      </Box>
+                    </Collapse>
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
             ))}
           </TableBody>
         </Table>

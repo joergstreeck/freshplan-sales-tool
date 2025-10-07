@@ -46,22 +46,21 @@ export const LEADS_TABLE_COLUMNS: TableColumn[] = [
     align: 'right',
   },
   {
-    id: 'stage',
-    label: 'Stage',
-    field: 'stage',
-    visible: false,
-    order: 5,
-    align: 'center',
-  },
-  {
     id: 'createdAt',
     label: 'Erstellt am',
     field: 'createdAt',
     visible: true,
-    order: 6,
+    order: 5,
   },
-  { id: 'assignedTo', label: 'Zugewiesen an', field: 'assignedTo', visible: false, order: 7 },
-  { id: 'actions', label: 'Aktionen', field: 'actions', visible: true, order: 8, align: 'right' },
+  { id: 'assignedTo', label: 'Zugewiesen an', field: 'assignedTo', visible: false, order: 6 },
+  {
+    id: 'actions',
+    label: 'Aktionen',
+    field: 'actions',
+    visible: true,
+    order: 7,
+    align: 'right',
+  },
 ];
 
 /**
@@ -107,12 +106,14 @@ export const CUSTOMERS_TABLE_COLUMNS: TableColumn[] = [
 
 /**
  * Sort options for Leads context
+ * Sprint 2.1.6 Phase 4: Added leadScore sorting, removed redundant stage
  */
 export const LEADS_SORT_OPTIONS: SortOption[] = [
   { field: 'companyName', label: 'Name', icon: '📋' },
+  { field: 'leadScore', label: 'Lead-Score', icon: '⭐' },
   { field: 'status', label: 'Status', icon: '🔄' },
   { field: 'expectedAnnualVolume', label: 'Erwarteter Umsatz', icon: '💰' },
-  { field: 'createdAt', label: 'Erstellt am', icon: '🌟' },
+  { field: 'createdAt', label: 'Erstellt am', icon: '📅' },
 ];
 
 /**

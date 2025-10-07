@@ -71,8 +71,9 @@ export default function LeadActivityTimeline({ leadId }: LeadActivityTimelinePro
           throw new Error('Fehler beim Laden der Aktivitäten');
         }
 
-        const data = await response.json();
-        setActivities(data);
+        const result = await response.json();
+        // Backend returns paginated response with {data: [], page, size, total}
+        setActivities(result.data || []);
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unbekannter Fehler');
@@ -128,6 +129,9 @@ export default function LeadActivityTimeline({ leadId }: LeadActivityTimelinePro
       STATUS_CHANGE: 'Statusänderung',
       CLOCK_STOPPED: 'Schutzfrist pausiert',
       CLOCK_RESUMED: 'Schutzfrist fortgesetzt',
+      LEAD_CREATED: 'Lead erstellt',
+      LEAD_ASSIGNED: 'Lead zugewiesen',
+      LEAD_IMPORTED: 'Lead importiert',
     };
     return labels[type] || type;
   };
