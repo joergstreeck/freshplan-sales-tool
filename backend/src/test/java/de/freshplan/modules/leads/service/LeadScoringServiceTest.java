@@ -48,7 +48,7 @@ class LeadScoringServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("Umsatzpotenzial: High volume (€50k) + Many employees (25) → Score ≥70")
+  @DisplayName("Umsatzpotenzial: High volume (€50k) + Many employees (25) → Factor Score 20-25 (max 25%)")
   void testHighVolumeLead() {
     Lead lead = createBaseLead();
     lead.estimatedVolume = new BigDecimal("50000"); // 15 points
@@ -65,7 +65,7 @@ class LeadScoringServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("Umsatzpotenzial: Medium volume (€25k) + Medium employees (10) → Score ≥15")
+  @DisplayName("Umsatzpotenzial: Medium volume (€25k) + Medium employees (10) → Factor Score 15-20 (mid-range)")
   void testMediumVolumeLead() {
     Lead lead = createBaseLead();
     lead.estimatedVolume = new BigDecimal("25000"); // 10 points
@@ -80,7 +80,7 @@ class LeadScoringServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("Umsatzpotenzial: Low volume (€5k) + Few employees (3) → Score ≥3")
+  @DisplayName("Umsatzpotenzial: Low volume (€5k) + Few employees (3) → Factor Score 3-5 (low)")
   void testLowVolumeLead() {
     Lead lead = createBaseLead();
     lead.estimatedVolume = new BigDecimal("5000"); // 2 points

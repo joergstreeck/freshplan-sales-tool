@@ -48,7 +48,7 @@ export async function updateLead(
   payload: { stopClock?: boolean; stopReason?: string }
 ): Promise<Lead> {
   const res = await fetch(`${BASE}/api/leads/${id}`, {
-    method: 'PUT',
+    method: 'PATCH', // Backend uses @PATCH (partial update)
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
