@@ -113,6 +113,52 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "estimated_volume", precision = 12, scale = 2)
   public BigDecimal estimatedVolume;
 
+  // Branch/Chain information (Sprint 2.1.6 Phase 5+)
+  @Column(name = "branch_count")
+  public Integer branchCount = 1; // Anzahl Filialen/Standorte (Default: 1 Einzelstandort)
+
+  @Column(name = "is_chain")
+  public Boolean isChain = false; // Kettenbetrieb ja/nein
+
+  // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V278)
+  // OPERATIONAL PAINS (35 Punkte max) - Strukturelle Betriebsprobleme
+  @Column(name = "pain_staff_shortage")
+  public Boolean painStaffShortage = false; // +10 Punkte
+
+  @Column(name = "pain_high_costs")
+  public Boolean painHighCosts = false; // +7 Punkte
+
+  @Column(name = "pain_food_waste")
+  public Boolean painFoodWaste = false; // +7 Punkte
+
+  @Column(name = "pain_quality_inconsistency")
+  public Boolean painQualityInconsistency = false; // +6 Punkte (-4 wenn mit Staff kombiniert)
+
+  @Column(name = "pain_time_pressure")
+  public Boolean painTimePressure = false; // +5 Punkte
+
+  // SWITCHING PAINS (21 Punkte max) - Probleme mit aktuellem Lieferanten
+  @Column(name = "pain_supplier_quality")
+  public Boolean painSupplierQuality = false; // +10 Punkte
+
+  @Column(name = "pain_unreliable_delivery")
+  public Boolean painUnreliableDelivery = false; // +8 Punkte
+
+  @Column(name = "pain_poor_service")
+  public Boolean painPoorService = false; // +3 Punkte
+
+  @Column(name = "pain_notes", columnDefinition = "TEXT")
+  public String painNotes;
+
+  // Urgency Dimension (separate von Pain - Zeitdruck vs. Pain)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "urgency_level", length = 20)
+  public UrgencyLevel urgencyLevel = UrgencyLevel.NORMAL; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
+
+  // Multi-Pain Bonus (auto-calculated)
+  @Column(name = "multi_pain_bonus")
+  public Integer multiPainBonus = 0; // +10 wenn 4+ Pains aktiv
+
   // Lead status and ownership
   @NotNull @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
@@ -344,6 +390,102 @@ public class Lead extends PanacheEntityBase {
 
   public static Lead findByIdAndOwner(Long id, String userId) {
     return find("id = ?1 and ownerUserId = ?2", id, userId).firstResult();
+  }
+
+  // ============================================================================
+  // PAIN SCORING LOGIC (Sprint 2.1.6 Phase 5+ - V278)
+  // ============================================================================
+
+  /**
+   * Calculate Pain Score (0-62 Punkte).
+   *
+   * <p>Berechnung: - Base Pain: 56 Punkte max (8 Felder) - Cap für Staff + Quality: -4 (von 16
+   * auf 12, Doppel-Counting vermeiden) - Multi-Pain Bonus: +10 (wenn 4+ Pains aktiv)
+   *
+   * <p>Max. Score: 52 (alle Pains + Cap) + 10 (Bonus) = 62
+   *
+   * @return Pain-Score (0-62)
+   */
+  public int calculatePainScore() {
+    int score = 0;
+    int activePains = 0;
+
+    // Operational Pains
+    if (Boolean.TRUE.equals(painStaffShortage)) {
+      score += 10;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painHighCosts)) {
+      score += 7;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painFoodWaste)) {
+      score += 7;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painQualityInconsistency)) {
+      score += 6;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painTimePressure)) {
+      score += 5;
+      activePains++;
+    }
+
+    // Switching Pains
+    if (Boolean.TRUE.equals(painSupplierQuality)) {
+      score += 10;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painUnreliableDelivery)) {
+      score += 8;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painPoorService)) {
+      score += 3;
+      activePains++;
+    }
+
+    // ERST Cap anwenden (vor Multi-Pain-Bonus!)
+    if (Boolean.TRUE.equals(painStaffShortage) && Boolean.TRUE.equals(painQualityInconsistency)) {
+      score -= 4; // Von 16 auf 12 reduzieren (Doppel-Counting vermeiden)
+    }
+
+    // DANN Multi-Pain Bonus
+    if (activePains >= 4) {
+      score += 10;
+      multiPainBonus = 10;
+    } else {
+      multiPainBonus = 0;
+    }
+
+    return score;
+  }
+
+  /**
+   * Calculate Dringlichkeit (0-25 Punkte).
+   *
+   * <p>Formel: (Pain/62 × 60%) + (Urgency/25 × 40%)
+   *
+   * <p>Pain dominiert (60%), aber Urgency entscheidet über Sales Cycle (40%).
+   *
+   * <p><strong>Beispiele:</strong>
+   *
+   * <ul>
+   *   <li>Hoher Pain + geringe Urgency = Nurturing-Lead (langfristiger Sales Cycle)
+   *   <li>Hoher Pain + hohe Urgency = Hot Lead (sofort schließen)
+   * </ul>
+   *
+   * @return Dringlichkeits-Score (0-25)
+   */
+  public int calculateUrgencyDimension() {
+    int painScore = calculatePainScore();
+    int urgencyScore = urgencyLevel != null ? urgencyLevel.getPoints() : 0;
+
+    double painPart = (painScore / 62.0) * 15.0; // 60% von 25 = 15
+    double urgencyPart = (urgencyScore / 25.0) * 10.0; // 40% von 25 = 10
+
+    return (int) Math.round(painPart + urgencyPart);
   }
 
   @PrePersist

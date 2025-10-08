@@ -17,8 +17,8 @@
 import React from 'react';
 import { Chip, Tooltip, Box } from '@mui/material';
 import {
-  CheckCircle as CheckCircleIcon,
-  Schedule as ScheduleIcon,
+  Lock as LockIcon,
+  Shield as ShieldIcon,
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import type { Lead } from '../types';
@@ -34,7 +34,26 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
   const hasFullProtection = !!lead.firstContactDocumentedAt;
 
   if (hasFullProtection) {
-    // ✅ Vollschutz aktiv
+    // ✅ Vollschutz aktiv - berechne verbleibende Zeit
+    const protectionEnd = lead.protectionUntil ? new Date(lead.protectionUntil) : null;
+    const now = new Date();
+
+    let remainingLabel = 'Geschützt';
+    let isExpiringSoon = false;
+
+    if (protectionEnd) {
+      const daysRemaining = Math.ceil((protectionEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const monthsRemaining = Math.floor(daysRemaining / 30);
+
+      // Warnung bei < 30 Tagen
+      if (daysRemaining < 30 && daysRemaining > 0) {
+        remainingLabel = `Schutz endet in ${daysRemaining} Tagen`;
+        isExpiringSoon = true;
+      } else if (monthsRemaining > 0) {
+        remainingLabel = `Geschützt (noch ${monthsRemaining} ${monthsRemaining === 1 ? 'Monat' : 'Monate'})`;
+      }
+    }
+
     return (
       <Tooltip
         title={
@@ -48,10 +67,10 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
               year: 'numeric',
             })}
             <br />
-            {lead.protectionUntil && (
+            {protectionEnd && (
               <>
                 Schutz bis:{' '}
-                {new Date(lead.protectionUntil).toLocaleDateString('de-DE', {
+                {protectionEnd.toLocaleDateString('de-DE', {
                   day: '2-digit',
                   month: '2-digit',
                   year: 'numeric',
@@ -62,17 +81,19 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
         }
       >
         <Chip
-          icon={<CheckCircleIcon />}
-          label="Vollschutz"
+          icon={isExpiringSoon ? <WarningIcon /> : <LockIcon />}
+          label={remainingLabel}
           size={size}
           variant={variant}
           sx={{
-            backgroundColor: variant === 'default' ? '#94C456' : undefined,
-            borderColor: '#94C456',
-            color: variant === 'default' ? '#fff' : '#94C456',
+            backgroundColor: variant === 'default'
+              ? (isExpiringSoon ? '#FF9800' : '#94C456')
+              : undefined,
+            borderColor: isExpiringSoon ? '#FF9800' : '#94C456',
+            color: variant === 'default' ? '#fff' : (isExpiringSoon ? '#FF9800' : '#94C456'),
             fontWeight: 600,
             '& .MuiChip-icon': {
-              color: variant === 'default' ? '#fff' : '#94C456',
+              color: variant === 'default' ? '#fff' : (isExpiringSoon ? '#FF9800' : '#94C456'),
             },
           }}
         />
@@ -130,7 +151,7 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
     <Tooltip
       title={
         <Box>
-          <strong>Pre-Claim aktiv</strong>
+          <strong>Vormerkung - Erstkontakt ausstehend</strong>
           <br />
           Registriert am: {registeredDate.toLocaleDateString('de-DE')}
           <br />
@@ -144,8 +165,8 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
       }
     >
       <Chip
-        icon={<ScheduleIcon />}
-        label={`Pre-Claim (${daysRemaining}d)`}
+        icon={<ShieldIcon />}
+        label={`Vormerkung (noch ${daysRemaining} ${daysRemaining === 1 ? 'Tag' : 'Tage'})`}
         size={size}
         variant={variant}
         sx={{

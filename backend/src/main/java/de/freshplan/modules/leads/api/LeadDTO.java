@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.api;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
+import de.freshplan.modules.leads.domain.UrgencyLevel;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -84,6 +85,29 @@ public class LeadDTO {
   // Note: Spotless may reformat this line - keeping it compact for readability
   public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
+  // Branch/Chain information (Sprint 2.1.6 Phase 5+)
+  public Integer branchCount; // Anzahl Filialen/Standorte
+  public Boolean isChain; // Kettenbetrieb ja/nein
+
+  // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V278)
+  // OPERATIONAL PAINS (35 Punkte max)
+  public Boolean painStaffShortage; // Personalmangel (+10)
+  public Boolean painHighCosts; // Hoher Kostendruck (+7)
+  public Boolean painFoodWaste; // Food Waste/Überproduktion (+7)
+  public Boolean painQualityInconsistency; // Interne Qualitätsinkonsistenz (+6, -4 mit Staff)
+  public Boolean painTimePressure; // Zeitdruck/Effizienz (+5)
+
+  // SWITCHING PAINS (21 Punkte max)
+  public Boolean painSupplierQuality; // Qualitätsprobleme beim Lieferanten (+10)
+  public Boolean painUnreliableDelivery; // Unzuverlässige Lieferzeiten (+8)
+  public Boolean painPoorService; // Schlechter Service/Support (+3)
+
+  public String painNotes; // Freitext für Details
+
+  // Urgency Dimension (separate von Pain)
+  public UrgencyLevel urgencyLevel; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
+  public Integer multiPainBonus; // Auto-calculated: +10 bei 4+ Pains
+
   // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
   public List<LeadContactDTO> contacts = new ArrayList<>();
 
@@ -157,6 +181,23 @@ public class LeadDTO {
 
     // Lead Scoring (Sprint 2.1.6 Phase 4)
     dto.leadScore = lead.leadScore;
+
+    // Branch/Chain information (Sprint 2.1.6 Phase 5+)
+    dto.branchCount = lead.branchCount;
+    dto.isChain = lead.isChain;
+
+    // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V278)
+    dto.painStaffShortage = lead.painStaffShortage;
+    dto.painHighCosts = lead.painHighCosts;
+    dto.painFoodWaste = lead.painFoodWaste;
+    dto.painQualityInconsistency = lead.painQualityInconsistency;
+    dto.painTimePressure = lead.painTimePressure;
+    dto.painSupplierQuality = lead.painSupplierQuality;
+    dto.painUnreliableDelivery = lead.painUnreliableDelivery;
+    dto.painPoorService = lead.painPoorService;
+    dto.painNotes = lead.painNotes;
+    dto.urgencyLevel = lead.urgencyLevel;
+    dto.multiPainBonus = lead.multiPainBonus;
 
     dto.createdAt = lead.createdAt;
     dto.createdBy = lead.createdBy;

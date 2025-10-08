@@ -24,6 +24,8 @@ import { LeadEditDialog } from '../features/leads/components/LeadEditDialog';
 import { ContactDialog } from '../features/leads/components/ContactDialog';
 import { ActivityDialog } from '../features/leads/components/ActivityDialog';
 import PreClaimBadge from '../features/leads/components/PreClaimBadge';
+import BusinessPotentialCard from '../features/leads/components/BusinessPotentialCard';
+import BusinessPotentialDialog from '../features/leads/components/BusinessPotentialDialog';
 import LeadActivityTimeline from '../features/leads/LeadActivityTimeline';
 import { toast } from 'react-hot-toast';
 import { getLeadById, deleteLeadContact, setLeadContactAsPrimary } from '../features/leads/api';
@@ -52,6 +54,7 @@ export function LeadDetailPage() {
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<LeadContactDTO | null>(null);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+  const [businessPotentialDialogOpen, setBusinessPotentialDialogOpen] = useState(false);
 
   // Extract Lead-ID from slug (e.g. "mueller-gmbh-123" → "123")
   const leadId = slug ? extractLeadIdFromSlug(slug) : null;
@@ -244,6 +247,12 @@ export function LeadDetailPage() {
               </CardContent>
             </Card>
 
+            {/* Business Potential Card */}
+            <BusinessPotentialCard
+              lead={lead}
+              onEdit={() => setBusinessPotentialDialogOpen(true)}
+            />
+
             {/* Contacts Card */}
             <LeadContactsCard
               contacts={contacts}
@@ -330,6 +339,12 @@ export function LeadDetailPage() {
           open={activityDialogOpen}
           onClose={() => setActivityDialogOpen(false)}
           leadId={lead.id}
+          onSave={loadLead}
+        />
+        <BusinessPotentialDialog
+          open={businessPotentialDialogOpen}
+          onClose={() => setBusinessPotentialDialogOpen(false)}
+          lead={lead}
           onSave={loadLead}
         />
       </Container>

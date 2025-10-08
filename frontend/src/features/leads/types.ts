@@ -169,6 +169,29 @@ export type Lead = {
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2 - V269/V271)
   leadScore?: number; // 0-100 points
 
+  // Branch/Chain information (Sprint 2.1.6 Phase 5+ - V277)
+  branchCount?: number; // Anzahl Filialen/Standorte (Default: 1)
+  isChain?: boolean; // Kettenbetrieb ja/nein
+
+  // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V278)
+  // OPERATIONAL PAINS (35 Punkte max)
+  painStaffShortage?: boolean; // Personalmangel (+10)
+  painHighCosts?: boolean; // Hoher Kostendruck (+7)
+  painFoodWaste?: boolean; // Food Waste/Überproduktion (+7)
+  painQualityInconsistency?: boolean; // Interne Qualitätsinkonsistenz (+6, -4 mit Staff)
+  painTimePressure?: boolean; // Zeitdruck/Effizienz (+5)
+
+  // SWITCHING PAINS (21 Punkte max)
+  painSupplierQuality?: boolean; // Qualitätsprobleme beim Lieferanten (+10)
+  painUnreliableDelivery?: boolean; // Unzuverlässige Lieferzeiten (+8)
+  painPoorService?: boolean; // Schlechter Service/Support (+3)
+
+  painNotes?: string; // Freitext für Details
+
+  // Urgency Dimension (separate von Pain)
+  urgencyLevel?: UrgencyLevel; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
+  multiPainBonus?: number; // Auto-calculated: +10 bei 4+ Pains
+
   // Timestamps
   createdAt?: string;
   updatedAt?: string;
@@ -281,6 +304,26 @@ export type LeadProtectionInfo = {
   progressDeadline?: string;
   daysUntilExpiry?: number;
   warningMessage?: string;
+};
+
+/**
+ * Urgency Level (Sprint 2.1.6 Phase 5+ - V278)
+ * Separate Dimension für Zeitdruck (nicht Pain!)
+ */
+export type UrgencyLevel = 'NORMAL' | 'MEDIUM' | 'HIGH' | 'EMERGENCY';
+
+export const urgencyLevelLabels: Record<UrgencyLevel, string> = {
+  NORMAL: 'Normal (6+ Monate)',
+  MEDIUM: 'Mittel (1-3 Monate)',
+  HIGH: 'Hoch (nächsten Monat)',
+  EMERGENCY: 'Notfall (sofort)',
+};
+
+export const urgencyLevelColors: Record<UrgencyLevel, string> = {
+  NORMAL: '#9E9E9E', // Gray
+  MEDIUM: '#2196F3', // Blue
+  HIGH: '#FF9800', // Orange
+  EMERGENCY: '#F44336', // Red
 };
 
 /**
