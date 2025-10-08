@@ -2,6 +2,8 @@ package de.freshplan.modules.leads.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.Territory;
@@ -157,8 +159,8 @@ class LeadScoringServiceTest {
   @DisplayName("Fit: Restaurant + Large kitchen + QUALIFIZIERT → Score ≥20")
   void testHighFitLead() {
     Lead lead = createBaseLead();
-    lead.businessType = "RESTAURANT"; // 10 points
-    lead.kitchenSize = "large"; // 8 points
+    lead.businessType = BusinessType.RESTAURANT; // 10 points
+    lead.kitchenSize = KitchenSize.SEHR_GROSS; // 8 points
     lead.stage = LeadStage.QUALIFIZIERT; // 7 points
 
     int score = scoringService.calculateScore(lead);
@@ -171,8 +173,8 @@ class LeadScoringServiceTest {
   @DisplayName("Fit: Catering + Medium kitchen + REGISTRIERUNG → Score ≥15")
   void testMediumFitLead() {
     Lead lead = createBaseLead();
-    lead.businessType = "CATERING"; // 7 points
-    lead.kitchenSize = "medium"; // 5 points
+    lead.businessType = BusinessType.CATERING; // 7 points
+    lead.kitchenSize = KitchenSize.MITTEL; // 4 points
     lead.stage = LeadStage.REGISTRIERUNG; // 4 points
 
     int score = scoringService.calculateScore(lead);
@@ -185,8 +187,8 @@ class LeadScoringServiceTest {
   @DisplayName("Fit: Generic businessType + Small kitchen + VORMERKUNG → Score ≥3")
   void testLowFitLead() {
     Lead lead = createBaseLead();
-    lead.businessType = "Other"; // 2 points
-    lead.kitchenSize = "small"; // 2 points
+    lead.businessType = BusinessType.SONSTIGES; // 2 points
+    lead.kitchenSize = KitchenSize.KLEIN; // 2 points
     lead.stage = LeadStage.VORMERKUNG; // 1 point
 
     int score = scoringService.calculateScore(lead);
@@ -259,8 +261,8 @@ class LeadScoringServiceTest {
     lead.followupCount = 6;
 
     // Fit (25): Restaurant + Large kitchen + QUALIFIZIERT
-    lead.businessType = "RESTAURANT";
-    lead.kitchenSize = "large";
+    lead.businessType = BusinessType.RESTAURANT;
+    lead.kitchenSize = KitchenSize.SEHR_GROSS;
     lead.stage = LeadStage.QUALIFIZIERT;
 
     // Dringlichkeit (25): Urgent deadlines
@@ -303,8 +305,8 @@ class LeadScoringServiceTest {
     lead.employeeCount = 10;
     lead.lastActivityAt = LocalDateTime.now().minusDays(25);
     lead.followupCount = 3;
-    lead.businessType = "CATERING";
-    lead.kitchenSize = "medium";
+    lead.businessType = BusinessType.CATERING;
+    lead.kitchenSize = KitchenSize.MITTEL;
     lead.stage = LeadStage.REGISTRIERUNG;
     lead.progressDeadline = LocalDateTime.now().plusDays(10);
     lead.protectionStartAt = LocalDateTime.now().minusMonths(4);
@@ -330,8 +332,8 @@ class LeadScoringServiceTest {
     lead.employeeCount = 1000;
     lead.lastActivityAt = LocalDateTime.now().minusHours(1);
     lead.followupCount = 100;
-    lead.businessType = "RESTAURANT";
-    lead.kitchenSize = "large";
+    lead.businessType = BusinessType.RESTAURANT;
+    lead.kitchenSize = KitchenSize.SEHR_GROSS;
     lead.stage = LeadStage.QUALIFIZIERT;
     lead.progressDeadline = LocalDateTime.now().plusHours(1);
     lead.protectionStartAt = LocalDateTime.now().minusMonths(5).minusDays(29);

@@ -63,7 +63,7 @@ updated: "2025-10-08"
 | **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ COMPLETE | #133 |
 | **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs + **Issue #134** (Idempotency) + Outbox-Pattern | ✅ COMPLETE | #134 |
 | **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4-complete` | Lead Quality Metrics & UI Components (LeadScoringService, 4 UI-Komponenten, 48 Tests) | ✅ COMPLETE | #135 |
-| **Phase 5** | `feature/mod02-sprint-2.1.6-enum-migration-phase-1` | Lead-Enums Migration (LeadSource, BusinessType, KitchenSize) - Enum-Migration Phase 1 | 📋 PENDING | ~8h |
+| **Phase 5** | `feature/mod02-sprint-2.1.6-enum-migration-phase-1` | Lead-Enums Migration (VARCHAR + CHECK Constraint Pattern - LeadSource, BusinessType, KitchenSize) | 📋 PENDING | ~8h |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
 > - **Issue #130 Analyse:** [`ISSUE_130_ANALYSIS.md`](claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md) - Detaillierte Analyse + Migration Guide
@@ -986,26 +986,28 @@ void pseudonymizeExpiredLeads() {
 
 **🎯 Kern-Deliverables (8h total):**
 
-**1. LeadSource Enum (2h)**
+**1. LeadSource Enum (2h) - VARCHAR + CHECK Pattern**
 - [ ] Backend: `LeadSource` Enum mit 6 Werten (MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGES)
-- [ ] DB-Migration V273: CREATE TYPE lead_source_type + ALTER TABLE leads
+- [ ] DB-Migration V273: **ALTER TABLE leads ADD CONSTRAINT chk_lead_source** (NICHT CREATE TYPE!)
+- [ ] B-Tree Index: `CREATE INDEX idx_leads_source ON leads(source)` für Performance
 - [ ] Business-Logic: `LeadSource.requiresFirstContact()` für Pre-Claim Logic
 - [ ] EnumResource: GET /api/enums/lead-sources Endpoint
 - [ ] Frontend: `useLeadSources()` Hook + LeadWizard Integration
 - [ ] Tests: ≥85% Coverage (Backend + Frontend)
 
-**2. BusinessType Enum (3h)**
+**2. BusinessType Enum (3h) - VARCHAR + CHECK Pattern**
 - [ ] Backend: `BusinessType` Enum mit 9 Werten (RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
-- [ ] DB-Migration V273: CREATE TYPE business_type + ALTER TABLE leads (Uppercase-Migration)
+- [ ] DB-Migration V273: **ALTER TABLE leads ADD CONSTRAINT chk_lead_business_type** (NICHT CREATE TYPE!)
+- [ ] B-Tree Index: `CREATE INDEX idx_leads_business_type ON leads(business_type)` für Performance
 - [ ] Daten-Migration: lowercase → UPPERCASE (restaurant → RESTAURANT, etc.)
 - [ ] EnumResource: GET /api/enums/business-types Endpoint
 - [ ] Frontend: `useBusinessTypes()` Hook + LeadWizard Integration
-- [ ] CHECK Constraint: 9 gültige Werte validieren
 - [ ] Tests: ≥85% Coverage (Backend + Frontend)
 
-**3. KitchenSize Enum (2h)**
+**3. KitchenSize Enum (2h) - VARCHAR + CHECK Pattern**
 - [ ] Backend: `KitchenSize` Enum mit 4 Werten (KLEIN, MITTEL, GROSS, SEHR_GROSS)
-- [ ] DB-Migration V273: CREATE TYPE kitchen_size_type + ALTER TABLE leads
+- [ ] DB-Migration V273: **ALTER TABLE leads ADD CONSTRAINT chk_lead_kitchen_size** (NICHT CREATE TYPE!)
+- [ ] B-Tree Index: `CREATE INDEX idx_leads_kitchen_size ON leads(kitchen_size)` für Performance
 - [ ] EnumResource: GET /api/enums/kitchen-sizes Endpoint
 - [ ] Frontend: `useKitchenSizes()` Hook + LeadWizard Integration
 - [ ] Tests: ≥85% Coverage (Backend + Frontend)
@@ -1018,9 +1020,11 @@ void pseudonymizeExpiredLeads() {
 
 **Strategische Begründung:**
 - ✅ **MESSE/TELEFON-Check funktioniert** (Pre-Claim Logic erfordert `source.requiresFirstContact()`)
-- ✅ **Performance ~10x schneller** (Enum-Index vs. String-LIKE)
+- ✅ **Performance ~9x schneller als String-LIKE** (B-Tree Index-Nutzung, nicht ENUM Type!)
 - ✅ **Type-Safety** (Compiler-Validierung statt Runtime-Errors)
 - ✅ **Pre-Production Timing** (keine Daten-Migration, Clean Slate, verhindert technische Schulden)
+- ✅ **JPA-Standard-Kompatibilität** (`@Enumerated(STRING)` funktioniert direkt, kein Custom Converter)
+- ✅ **Schema-Evolution einfach** (CHECK Constraint ändern = 2 Zeilen SQL, nicht ALTER TYPE komplex)
 
 **Verweis:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md) - Vollständiger 3-Phasen-Plan
 

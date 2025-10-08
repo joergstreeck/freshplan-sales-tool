@@ -406,22 +406,29 @@ Implementation-Details:
 - **REST APIs:** POST /api/admin/migration/leads/import (Admin-only) · PUT /api/leads/{id}/registered-at (Admin/Manager) · POST /api/leads/{id}/convert (All roles)
 - **DTOs:** 6 neue Request/Response-Paire für Import/Backdating/Convert
 - **DB Migrations:** V261 (Customer.originalLeadId), V263 (Lead.businessType), V264 (Customer.businessType + Data Migration)
-- **Enum-Migration Strategie (3-Phasen-Plan):**
+- **Enum-Migration Strategie (3-Phasen-Plan - VARCHAR + CHECK Constraint Pattern):**
+  - **Architektur-Entscheidung:** VARCHAR + CHECK Constraint (NICHT PostgreSQL ENUM Type!)
+    - Begründung: JPA-Standard `@Enumerated(STRING)` funktioniert direkt (kein Custom Converter)
+    - Schema-Evolution einfach (CHECK Constraint ändern = 2 Zeilen SQL)
+    - Performance nur ~5% langsamer als PostgreSQL ENUM bei B-Tree Index
   - **Phase 1 (Sprint 2.1.6 Phase 5):** Lead-Modul Enums (LeadSource, BusinessType, KitchenSize)
     - LeadSource: MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGES
     - BusinessType: 9 unified values (RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
     - KitchenSize: KLEIN, MITTEL, GROSS, SEHR_GROSS
-    - Migration V273, Frontend Hooks (useLeadSources, useBusinessTypes, useKitchenSizes)
+    - Migration V273: ALTER TABLE + CHECK Constraints + B-Tree Indizes
+    - Frontend Hooks (useLeadSources, useBusinessTypes, useKitchenSizes)
   - **Phase 2 (Sprint 2.1.6.1 Phase 1):** Customer-Modul BusinessType-Migration
     - Customer.industry → Customer.businessType (9 Werte harmonisiert)
     - Dual-Mode: Auto-Sync Setter für Rückwärtskompatibilität
-    - Migration V27X (dynamisch), Frontend useBusinessTypes()
+    - Migration V27X (dynamisch): VARCHAR + CHECK Constraint Pattern
+    - Frontend useBusinessTypes()
   - **Phase 3 (Sprint 2.1.6.1 Phase 2):** CRM-weit Enum-Harmonisierung
     - ActivityType erweitern, OpportunityStatus, PaymentMethod, DeliveryMethod
     - EnumResource API erweitert: 4 neue Endpoints
     - Frontend Hooks: useActivityTypes, useOpportunityStatuses, usePaymentMethods, useDeliveryMethods
+    - Pattern: Konsistent VARCHAR + CHECK für alle Enums
   - **Business-Rule:** MESSE/TELEFON = Erstkontakt PFLICHT (Pre-Claim Logic: `source.requiresFirstContact()`)
-  - **Performance:** Enum-Index ~10x schneller als String-LIKE
+  - **Performance:** ~9x schneller als String-LIKE durch B-Tree Index-Nutzung (nicht ENUM Type!)
   - **Type-Safety:** Compiler-Validierung statt Runtime-Errors
   - **Timing:** Pre-Production = optimales Zeitfenster (keine Daten-Migration, Clean Slate)
   - **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)

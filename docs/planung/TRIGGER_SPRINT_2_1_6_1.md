@@ -30,6 +30,28 @@ updated: "2025-10-08"
 
 **📍 Navigation:** Home → Planung → Sprint 2.1.6.1
 
+---
+
+## ⚠️ ARCHITEKTUR-HINWEIS: VARCHAR + CHECK Constraint Pattern
+
+**Dieser Sprint folgt dem VARCHAR + CHECK Constraint Pattern aus Sprint 2.1.6 Phase 5.**
+
+**Architektur-Entscheidung:**
+- **Database:** `VARCHAR(50)` + `CHECK (column IN (...))` + B-Tree Index
+- **JPA:** `@Enumerated(EnumType.STRING)` (Standard JPA, kein Custom Converter)
+- **Performance:** ~5% langsamer als PostgreSQL ENUM, aber flexibler + wartbarer
+- **Strategie-Dokument:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
+
+**Begründung:**
+- ✅ JPA-Standard-Kompatibilität (`@Enumerated(STRING)` funktioniert direkt)
+- ✅ Schema-Evolution einfach (CHECK Constraint ändern vs. `ALTER TYPE ... ADD VALUE`)
+- ✅ B-Tree Index kompensiert VARCHAR-Overhead (~5% Unterschied zu PostgreSQL ENUM)
+- ✅ Wartbarkeit höher (Standard-SQL, kein PostgreSQL-spezifisches Type Management)
+
+**WICHTIG:** Keine `CREATE TYPE ... AS ENUM` Statements mehr! Alle Enums verwenden VARCHAR + CHECK!
+
+---
+
 ## 🚀 SPRINT-PHASEN ÜBERSICHT
 
 | Phase | Branch | Scope | Status | Effort |
@@ -102,20 +124,20 @@ updated: "2025-10-08"
 
 4. **ActivityType erweitern**
    - Neue Activity-Types für erweiterte Lead-/Customer-Workflows
-   - DB: CREATE TYPE + ALTER TABLE lead_activities.activity_type
+   - DB: VARCHAR + CHECK Constraint erweitern (activity_type IN (...)) + B-Tree Index
    - Backend: ActivityType Enum erweitern
    - Frontend: Activity-Formulare aktualisieren
 
 5. **OpportunityStatus Enum**
    - Opportunity-Status als Enum statt String
-   - DB: CREATE TYPE + ALTER TABLE opportunities.status
+   - DB: VARCHAR + CHECK Constraint (status IN (...)) + B-Tree Index
    - Backend: OpportunityStatus Enum erstellen
    - Frontend: Opportunity-Workflows mit Enum-Validierung
 
 6. **Payment/Delivery-Enums**
    - Payment-Methods als Enum (SEPA, Kreditkarte, Rechnung)
    - Delivery-Methods als Enum (Standard, Express, Sameday)
-   - DB: CREATE TYPE für beide Enums
+   - DB: VARCHAR + CHECK Constraints für beide Enums + B-Tree Indizes
    - Backend: PaymentMethod, DeliveryMethod Enums
 
 7. **Vollständige CRM-Harmonisierung**
@@ -133,7 +155,7 @@ updated: "2025-10-08"
 **✅ VORTEILE:**
 - **Keine Daten-Migration in Production** - Clean Slate, keine Legacy-Daten
 - **Technische Schulden vermeiden** - Type-Safety von Anfang an
-- **Performance-Gewinn** - Enums ~10x schneller als String-Matching (Index-Lookup vs. LIKE)
+- **Performance-Gewinn** - B-Tree Index ~9x schneller als String-LIKE (Equality vs. LIKE, nicht ENUM Type!)
 - **MESSE/TELEFON-Check funktioniert** - Pre-Claim Logic erfordert Enum (siehe PRE_CLAIM_LOGIC.md)
 
 **❌ RISIKO OHNE ENUM-MIGRATION:**
@@ -352,23 +374,23 @@ const CustomerEditDialog = ({ customer, onSave, onCancel }) => {
 **Akzeptanzkriterien:**
 - [ ] **ActivityType Enum erweitert:**
   - Neue Types: SAMPLE_REQUEST, SAMPLE_FEEDBACK, CONTRACT_SIGNED, INVOICE_SENT, PAYMENT_RECEIVED
-  - Migration: ALTER TYPE lead_activity_type ADD VALUE
+  - Migration: CHECK Constraint erweitern (activity_type IN (...)) + B-Tree Index
   - Backend: ActivityType.java erweitert
   - Frontend: AddLeadActivityDialog, AddCustomerActivityDialog nutzen Backend-Enum
 - [ ] **OpportunityStatus Enum:**
-  - CREATE TYPE opportunity_status_type (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST)
+  - VARCHAR + CHECK Constraint (status IN ('LEAD', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST'))
   - Backend: OpportunityStatus.java Enum
-  - Migration: opportunities.status String → opportunity_status_type
+  - Migration: opportunities.status String → VARCHAR + CHECK Constraint + B-Tree Index
   - Frontend: OpportunityWorkflow mit Enum-Validierung
 - [ ] **PaymentMethod Enum:**
-  - CREATE TYPE payment_method_type (SEPA_LASTSCHRIFT, SEPA_UEBERWEISUNG, KREDITKARTE, RECHNUNG)
+  - VARCHAR + CHECK Constraint (payment_method IN ('SEPA_LASTSCHRIFT', 'SEPA_UEBERWEISUNG', 'KREDITKARTE', 'RECHNUNG'))
   - Backend: PaymentMethod.java Enum
-  - Migration: orders.payment_method String → payment_method_type
+  - Migration: orders.payment_method String → VARCHAR + CHECK Constraint + B-Tree Index
   - Frontend: PaymentSelector Component
 - [ ] **DeliveryMethod Enum:**
-  - CREATE TYPE delivery_method_type (STANDARD, EXPRESS, SAMEDAY, PICKUP)
+  - VARCHAR + CHECK Constraint (delivery_method IN ('STANDARD', 'EXPRESS', 'SAMEDAY', 'PICKUP'))
   - Backend: DeliveryMethod.java Enum
-  - Migration: orders.delivery_method String → delivery_method_type
+  - Migration: orders.delivery_method String → VARCHAR + CHECK Constraint + B-Tree Index
   - Frontend: DeliverySelector Component
 - [ ] **EnumResource API erweitert:**
   - GET /api/enums/activity-types
@@ -386,38 +408,76 @@ const CustomerEditDialog = ({ customer, onSave, onCancel }) => {
 **Technische Details:**
 ```sql
 -- Migration V27Y: ActivityType Enum erweitern
-ALTER TYPE lead_activity_type ADD VALUE 'SAMPLE_REQUEST';
-ALTER TYPE lead_activity_type ADD VALUE 'SAMPLE_FEEDBACK';
-ALTER TYPE lead_activity_type ADD VALUE 'CONTRACT_SIGNED';
-ALTER TYPE lead_activity_type ADD VALUE 'INVOICE_SENT';
-ALTER TYPE lead_activity_type ADD VALUE 'PAYMENT_RECEIVED';
+-- Sprint 2.1.6.1 Phase 2: Activity-Harmonisierung
+-- Pattern: VARCHAR + CHECK Constraint (konsistent mit Sprint 2.1.6 Phase 5)
+
+-- Existierende CHECK Constraint erweitern (6 neue Werte)
+ALTER TABLE lead_activities DROP CONSTRAINT IF EXISTS chk_activity_type;
+ALTER TABLE lead_activities ADD CONSTRAINT chk_activity_type CHECK (activity_type IN (
+  -- Existierende Werte (Phase 1)
+  'NOTE', 'CALL', 'EMAIL', 'MEETING', 'DEMO', 'FOLLOW_UP',
+  'QUALIFIED_CALL', 'ROI_PRESENTATION', 'SAMPLE_SENT', 'SAMPLE_FEEDBACK', 'FIRST_CONTACT_DOCUMENTED',
+  -- Neue Werte (Phase 3)
+  'SAMPLE_REQUEST', 'CONTRACT_SIGNED', 'INVOICE_SENT', 'PAYMENT_RECEIVED', 'COMPLAINT', 'RENEWAL_DISCUSSION'
+));
+
+-- B-Tree Index bereits vorhanden aus Phase 1 (idx_lead_activities_activity_type)
 
 -- Migration V27Z: OpportunityStatus Enum
-CREATE TYPE opportunity_status_type AS ENUM (
-  'LEAD', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST'
-);
+-- Sprint 2.1.6.1 Phase 2: Opportunity-Pipeline Type-Safety
+-- Pattern: VARCHAR + CHECK Constraint (NICHT PostgreSQL ENUM!)
 
+-- Daten-Migration: String-Normalisierung (lowercase/mixed-case → UPPERCASE)
+UPDATE opportunities SET status =
+  CASE
+    WHEN UPPER(status) IN ('LEAD', 'NEW') THEN 'LEAD'
+    WHEN UPPER(status) = 'QUALIFIED' THEN 'QUALIFIED'
+    WHEN UPPER(status) IN ('PROPOSAL', 'QUOTE') THEN 'PROPOSAL'
+    WHEN UPPER(status) IN ('NEGOTIATION', 'NEGO') THEN 'NEGOTIATION'
+    WHEN UPPER(status) IN ('WON', 'CLOSED_WON') THEN 'WON'
+    WHEN UPPER(status) IN ('LOST', 'CLOSED_LOST') THEN 'LOST'
+    ELSE 'LEAD' -- Fallback
+  END;
+
+-- CHECK Constraint (6 gültige Werte)
 ALTER TABLE opportunities
-ALTER COLUMN status TYPE opportunity_status_type
-USING status::opportunity_status_type;
+ADD CONSTRAINT chk_opportunity_status CHECK (status IN (
+  'LEAD', 'QUALIFIED', 'PROPOSAL', 'NEGOTIATION', 'WON', 'LOST'
+));
+
+-- B-Tree Index für Performance
+CREATE INDEX idx_opportunities_status ON opportunities(status);
 
 -- Migration V280: PaymentMethod Enum
-CREATE TYPE payment_method_type AS ENUM (
-  'SEPA_LASTSCHRIFT', 'SEPA_UEBERWEISUNG', 'KREDITKARTE', 'RECHNUNG'
-);
+-- Sprint 2.1.6.1 Phase 2: CRM-weite Enum-Harmonisierung
+-- Pattern: VARCHAR + CHECK Constraint
 
+-- CHECK Constraint (4 Zahlungsarten)
 ALTER TABLE orders
-ALTER COLUMN payment_method TYPE payment_method_type
-USING payment_method::payment_method_type;
+ADD CONSTRAINT chk_payment_method CHECK (payment_method IN (
+  'SEPA_LASTSCHRIFT',    -- SEPA Lastschrift
+  'SEPA_UEBERWEISUNG',   -- SEPA Überweisung
+  'KREDITKARTE',         -- Kreditkarte
+  'RECHNUNG'             -- Rechnung (30 Tage Ziel)
+));
+
+-- B-Tree Index für Performance
+CREATE INDEX idx_orders_payment_method ON orders(payment_method);
 
 -- Migration V281: DeliveryMethod Enum
-CREATE TYPE delivery_method_type AS ENUM (
-  'STANDARD', 'EXPRESS', 'SAMEDAY', 'PICKUP'
-);
+-- Pattern: VARCHAR + CHECK Constraint
 
+-- CHECK Constraint (4 Lieferarten)
 ALTER TABLE orders
-ALTER COLUMN delivery_method TYPE delivery_method_type
-USING delivery_method::delivery_method_type;
+ADD CONSTRAINT chk_delivery_method CHECK (delivery_method IN (
+  'STANDARD',   -- Standard (2-3 Tage)
+  'EXPRESS',    -- Express (1 Tag)
+  'SAMEDAY',    -- Same-Day (6h)
+  'PICKUP'      -- Selbstabholung
+));
+
+-- B-Tree Index für Performance
+CREATE INDEX idx_orders_delivery_method ON orders(delivery_method);
 ```
 
 **Backend Code-Pattern:**

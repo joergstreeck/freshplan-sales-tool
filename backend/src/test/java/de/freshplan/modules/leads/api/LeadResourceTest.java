@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
 
+import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
@@ -820,8 +822,8 @@ class LeadResourceTest {
     lead.progressPauseTotalSeconds = 1800L;
     lead.estimatedVolume = new BigDecimal("50000");
     lead.employeeCount = 25;
-    lead.businessType = "RESTAURANT";
-    lead.kitchenSize = "large";
+    lead.businessType = BusinessType.RESTAURANT;
+    lead.kitchenSize = KitchenSize.SEHR_GROSS;
     lead.progressDeadline = java.time.LocalDateTime.now().plusDays(5);
 
     lead.persist();
