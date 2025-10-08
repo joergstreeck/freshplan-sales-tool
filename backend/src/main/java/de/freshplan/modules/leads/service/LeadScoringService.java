@@ -1,7 +1,6 @@
 package de.freshplan.modules.leads.service;
 
 import de.freshplan.modules.leads.domain.Lead;
-import de.freshplan.modules.leads.domain.LeadStage;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
@@ -187,8 +186,7 @@ public class LeadScoringService {
 
     // Progress deadline urgency (max 15 points)
     if (lead.progressDeadline != null) {
-      long daysUntilDeadline =
-          ChronoUnit.DAYS.between(LocalDateTime.now(), lead.progressDeadline);
+      long daysUntilDeadline = ChronoUnit.DAYS.between(LocalDateTime.now(), lead.progressDeadline);
       if (daysUntilDeadline < 3) {
         deadlineScore = 15; // Very urgent
       } else if (daysUntilDeadline < 7) {

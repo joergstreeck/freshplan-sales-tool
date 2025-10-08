@@ -18,9 +18,9 @@ import org.junit.jupiter.api.Test;
 /**
  * Tests for LeadScoringService (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2).
  *
- * <p>Validates 4-factor scoring algorithm: - Umsatzpotenzial (25%): Volume + Employees -
- * Engagement (25%): Activity + Followups - Fit (25%): BusinessType + KitchenSize + Stage -
- * Dringlichkeit (25%): Deadlines + Protection Expiry
+ * <p>Validates 4-factor scoring algorithm: - Umsatzpotenzial (25%): Volume + Employees - Engagement
+ * (25%): Activity + Followups - Fit (25%): BusinessType + KitchenSize + Stage - Dringlichkeit
+ * (25%): Deadlines + Protection Expiry
  */
 @QuarkusTest
 class LeadScoringServiceTest {
@@ -48,7 +48,8 @@ class LeadScoringServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("Umsatzpotenzial: High volume (€50k) + Many employees (25) → Factor Score 20-25 (max 25%)")
+  @DisplayName(
+      "Umsatzpotenzial: High volume (€50k) + Many employees (25) → Factor Score 20-25 (max 25%)")
   void testHighVolumeLead() {
     Lead lead = createBaseLead();
     lead.estimatedVolume = new BigDecimal("50000"); // 15 points
@@ -65,7 +66,8 @@ class LeadScoringServiceTest {
 
   @Test
   @Transactional
-  @DisplayName("Umsatzpotenzial: Medium volume (€25k) + Medium employees (10) → Factor Score 15-20 (mid-range)")
+  @DisplayName(
+      "Umsatzpotenzial: Medium volume (€25k) + Medium employees (10) → Factor Score 15-20 (mid-range)")
   void testMediumVolumeLead() {
     Lead lead = createBaseLead();
     lead.estimatedVolume = new BigDecimal("25000"); // 10 points
@@ -74,8 +76,7 @@ class LeadScoringServiceTest {
     int score = scoringService.calculateScore(lead);
 
     assertTrue(
-        score >= 15,
-        String.format("Expected score ≥15 (Medium Umsatzpotenzial), got %d", score));
+        score >= 15, String.format("Expected score ≥15 (Medium Umsatzpotenzial), got %d", score));
   }
 
   @Test
@@ -88,8 +89,7 @@ class LeadScoringServiceTest {
 
     int score = scoringService.calculateScore(lead);
 
-    assertTrue(
-        score >= 3, String.format("Expected score ≥3 (Low Umsatzpotenzial), got %d", score));
+    assertTrue(score >= 3, String.format("Expected score ≥3 (Low Umsatzpotenzial), got %d", score));
   }
 
   @Test
@@ -119,8 +119,7 @@ class LeadScoringServiceTest {
 
     int score = scoringService.calculateScore(lead);
 
-    assertTrue(
-        score >= 20, String.format("Expected score ≥20 (High Engagement), got %d", score));
+    assertTrue(score >= 20, String.format("Expected score ≥20 (High Engagement), got %d", score));
   }
 
   @Test
@@ -134,8 +133,7 @@ class LeadScoringServiceTest {
     int score = scoringService.calculateScore(lead);
 
     assertTrue(
-        score >= 15,
-        String.format("Expected score ≥15 (Moderate Engagement), got %d", score));
+        score >= 15, String.format("Expected score ≥15 (Moderate Engagement), got %d", score));
   }
 
   @Test
@@ -149,8 +147,7 @@ class LeadScoringServiceTest {
     int score = scoringService.calculateScore(lead);
 
     assertTrue(
-        score >= 0,
-        String.format("Expected non-negative score for stale lead, got %d", score));
+        score >= 0, String.format("Expected non-negative score for stale lead, got %d", score));
   }
 
   // ================= Faktor 3: Fit (25%) =================
@@ -211,8 +208,7 @@ class LeadScoringServiceTest {
 
     int score = scoringService.calculateScore(lead);
 
-    assertTrue(
-        score >= 20, String.format("Expected score ≥20 (High Urgency), got %d", score));
+    assertTrue(score >= 20, String.format("Expected score ≥20 (High Urgency), got %d", score));
   }
 
   @Test
@@ -226,9 +222,7 @@ class LeadScoringServiceTest {
 
     int score = scoringService.calculateScore(lead);
 
-    assertTrue(
-        score >= 12,
-        String.format("Expected score ≥12 (Moderate Urgency), got %d", score));
+    assertTrue(score >= 12, String.format("Expected score ≥12 (Moderate Urgency), got %d", score));
   }
 
   @Test

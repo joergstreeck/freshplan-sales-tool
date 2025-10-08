@@ -128,14 +128,15 @@ public class ImportJob extends PanacheEntityBase {
    * @param maxResults Maximum number of results (Sprint 2.1.6 Phase 4: Batch-Processing)
    * @return List of import jobs
    */
-  public static java.util.List<ImportJob> findReadyForArchival(LocalDateTime threshold, int maxResults) {
+  public static java.util.List<ImportJob> findReadyForArchival(
+      LocalDateTime threshold, int maxResults) {
     // Code Review (Gemini): Berücksichtige auch FAILED Jobs für Cleanup
     // Phase 4: Batch-Processing mit LIMIT
     return find(
-        "status IN (?1, ?2) AND ttlExpiresAt < ?3 ORDER BY ttlExpiresAt ASC",
-        ImportStatus.COMPLETED,
-        ImportStatus.FAILED,
-        threshold)
+            "status IN (?1, ?2) AND ttlExpiresAt < ?3 ORDER BY ttlExpiresAt ASC",
+            ImportStatus.COMPLETED,
+            ImportStatus.FAILED,
+            threshold)
         .page(0, maxResults)
         .list();
   }
@@ -143,7 +144,8 @@ public class ImportJob extends PanacheEntityBase {
   /**
    * Static finder: Find completed jobs ready for archival (TTL expired) - ohne Limit (deprecated)
    *
-   * @deprecated Use {@link #findReadyForArchival(LocalDateTime, int)} instead for memory-safe batch processing
+   * @deprecated Use {@link #findReadyForArchival(LocalDateTime, int)} instead for memory-safe batch
+   *     processing
    */
   @Deprecated
   public static java.util.List<ImportJob> findReadyForArchival(LocalDateTime threshold) {

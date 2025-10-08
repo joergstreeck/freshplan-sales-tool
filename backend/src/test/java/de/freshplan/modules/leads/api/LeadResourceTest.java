@@ -446,7 +446,9 @@ class LeadResourceTest {
   // ==================== Sprint 2.1.6 Phase 4 Tests ====================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
   @DisplayName("Stop-Clock Resume: Should calculate cumulative pause duration")
   void testStopClockResumeCalculatesCumulativePause() throws InterruptedException {
     // Given: Create a lead via REST API to get initial version
@@ -454,13 +456,7 @@ class LeadResourceTest {
 
     // Get initial version and construct ETag
     Integer initialVersion =
-        given()
-            .when()
-            .get("/" + leadId)
-            .then()
-            .statusCode(200)
-            .extract()
-            .path("version");
+        given().when().get("/" + leadId).then().statusCode(200).extract().path("version");
 
     String initialEtag = String.format("\"lead-%d-%d\"", leadId, initialVersion);
 
@@ -490,13 +486,13 @@ class LeadResourceTest {
     resumeRequest.put("stopClock", false);
 
     given()
-            .contentType(ContentType.JSON)
-            .header("If-Match", etagAfterStop)
-            .body(resumeRequest)
-            .when()
-            .patch("/" + leadId)
-            .then()
-            .statusCode(200);
+        .contentType(ContentType.JSON)
+        .header("If-Match", etagAfterStop)
+        .body(resumeRequest)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200);
 
     // Verify: progressPauseTotalSeconds should be >= 2 seconds (via REST API)
     given()
@@ -510,7 +506,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
   @DisplayName("Stop-Clock Resume: Should add pause duration to activity log")
   @ActivateRequestContext
   void testStopClockResumeLogsPauseDuration() throws InterruptedException {
@@ -519,13 +517,7 @@ class LeadResourceTest {
 
     // Get initial version and construct ETag
     Integer initialVersion =
-        given()
-            .when()
-            .get("/" + leadId)
-            .then()
-            .statusCode(200)
-            .extract()
-            .path("version");
+        given().when().get("/" + leadId).then().statusCode(200).extract().path("version");
 
     String initialEtag = String.format("\"lead-%d-%d\"", leadId, initialVersion);
 
@@ -570,7 +562,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
   @DisplayName("RBAC: ADMIN role should access updateRegisteredAt endpoint")
   @ActivateRequestContext
   void testUpdateRegisteredAtWithAdminRole() {
@@ -597,7 +591,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"MANAGER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"MANAGER"})
   @DisplayName("RBAC: MANAGER role should access updateRegisteredAt endpoint")
   void testUpdateRegisteredAtWithManagerRole() {
     // Given: Create a lead as user1
@@ -618,7 +614,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("RBAC: USER role should be forbidden from updateRegisteredAt endpoint")
   void testUpdateRegisteredAtWithUserRoleForbidden() {
     // Given: Create a lead as user1
@@ -640,7 +638,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
   @DisplayName("RBAC: ADMIN role should access convertToCustomer endpoint")
   void testConvertToCustomerWithAdminRole() {
     // Given: Create a lead in QUALIFIED status (ready for conversion)
@@ -664,7 +664,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"MANAGER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"MANAGER"})
   @DisplayName("RBAC: MANAGER role should access convertToCustomer endpoint")
   void testConvertToCustomerWithManagerRole() {
     // Given: Create a lead in QUALIFIED status (ready for conversion)
@@ -687,7 +689,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("RBAC: USER role should be forbidden from convertToCustomer endpoint")
   void testConvertToCustomerWithUserRoleForbidden() {
     // Given: Create a lead in QUALIFIED status (ready for conversion)
@@ -708,10 +712,13 @@ class LeadResourceTest {
         .statusCode(403);
   }
 
-  // ================= DTO Completeness Tests (Sprint 2.1.6 Phase 4 - Test Gap Analysis) =================
+  // ================= DTO Completeness Tests (Sprint 2.1.6 Phase 4 - Test Gap Analysis)
+  // =================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("DTO Completeness: leadScore field is mapped correctly")
   void testLeadDtoIncludesLeadScore() {
     // Given: Create a lead with leadScore set
@@ -719,16 +726,13 @@ class LeadResourceTest {
 
     // When: GET lead via API
     // Then: leadScore should be present in response
-    given()
-        .when()
-        .get("/" + leadId)
-        .then()
-        .statusCode(200)
-        .body("leadScore", equalTo(75));
+    given().when().get("/" + leadId).then().statusCode(200).body("leadScore", equalTo(75));
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("DTO Completeness: progressPauseTotalSeconds field is mapped correctly")
   void testLeadDtoIncludesProgressPauseTotalSeconds() {
     // Given: Create a lead with progressPauseTotalSeconds set
@@ -745,7 +749,9 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("DTO Completeness: All nullable fields are mapped (not missing in JSON)")
   void testLeadDtoCompleteness() {
     // Given: Create a lead with all optional fields set

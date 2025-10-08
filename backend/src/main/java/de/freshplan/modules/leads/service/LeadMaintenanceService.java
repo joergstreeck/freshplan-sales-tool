@@ -515,8 +515,8 @@ public class LeadMaintenanceService {
   /**
    * Structured Job Metrics Logging (Sprint 2.1.6 Phase 4)
    *
-   * <p>Logs job execution metrics in a parseable format for log aggregation (Splunk, ELK).
-   * Prepares for future Prometheus-Metrics implementation (Modul 00).
+   * <p>Logs job execution metrics in a parseable format for log aggregation (Splunk, ELK). Prepares
+   * for future Prometheus-Metrics implementation (Modul 00).
    *
    * @param jobName Job identifier (e.g., "progress_warning_check")
    * @param processed Number of entities processed

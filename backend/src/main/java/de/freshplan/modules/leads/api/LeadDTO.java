@@ -77,7 +77,9 @@ public class LeadDTO {
   public Long progressPauseTotalSeconds; // Cumulative pause duration
 
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2)
-  public Integer leadScore; // 0-100 points (Umsatzpotenzial 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
+  public Integer
+      leadScore; // 0-100 points (Umsatzpotenzial 25% + Engagement 25% + Fit 25% + Dringlichkeit
+  // 25%)
 
   // Metadata
   public LocalDateTime createdAt;
