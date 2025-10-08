@@ -161,6 +161,36 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-08 03:27 - Sprint 2.1.6 Phase 4 COMPLETE - PR #135 MERGED ✅
+
+**Kontext:** CI-Fehler behoben + Gemini Code-Review + PR #135 Merge + Dokumentation COMPLETE
+
+**Erledigt:**
+- ✅ **CI-Fehler behoben (6 Fixes):**
+  - Backend Tests: LeadBackdatingResourceTest (5 Failures → 0) - RBAC @TestSecurity korrigiert (ROLE_ Prefix entfernt)
+  - Frontend Tests: DataHygieneDashboard (2 Failures → 0) - German labels ("Datenqualität-Übersicht")
+  - Spotless: 7 Dateien formatiert (unused import entfernt)
+  - Prettier: 12 Dateien formatiert (647 insertions, 548 deletions)
+  - PR Template: Header "🔄 Migrations-Schritte + Rollback" korrigiert
+  - LeadWizard Test: Timeout 5000ms → 10000ms (CI-Stabilität)
+- ✅ **Gemini Code-Review (4 Refactorings):**
+  - DRY: Lead.getProtectionUntil() Helper (5 Dateien refactored, Single Source of Truth)
+  - Timestamp-Konsistenz: LocalDateTime.now() Doppelaufruf behoben (LeadResource.java:417-420)
+  - Formatierung: leadScore Single-Line (Lead.java + LeadDTO.java)
+  - Null-Safety: progressPauseTotalSeconds, protectionUntil
+- ✅ **PR #135 MERGED:** Squash-Merge to main, 29/29 CI Checks passed, Admin-Rechte verwendet
+- ✅ **Dokumentation (5 Dateien):**
+  - Master Plan V5: Phase 4 COMPLETE dokumentiert (LATEST UPDATE Sektion)
+  - TRIGGER_INDEX.md: Sprint 2.1.6 → 100% COMPLETE (4/4 Phasen)
+  - PRODUCTION_ROADMAP_2025.md: Current Sprint aktualisiert, Progress 16/36 (44%)
+  - SPRINT_MAP.md: Phase 4 Details vollständig
+  - TRIGGER_SPRINT_2_1_6.md: Phase 4 status=complete, YAML Header + Details
+
+**Migration:** V269-V271 (bereits deployed), next: V272
+**Tests:** 56 Backend GREEN (LeadBackdating: 7, LeadScoring: 19, LeadProtection: 30), 85 Frontend GREEN
+**Commits:** ee0ae905a (timeout fix), 49cabb86a (Gemini fixes), 50c086f41 (docs 4 files), 8baf0f685 (TRIGGER_SPRINT_2_1_6)
+**Status:** Sprint 2.1.6 COMPLETE (alle 4 Phasen merged)
+
 ### 2025-10-07 01:17 - Sprint 2.1.6 Phase 3 - PR #134 MERGED ✅
 
 **Kontext:** CI-Fixes + Code Quality + PR Merge nach "rote Lampen" in CI
