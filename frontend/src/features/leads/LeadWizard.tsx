@@ -757,7 +757,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" fullScreen={false}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="md"
+      fullScreen={false}
+      disableEnforceFocus
+    >
       <DialogTitle>
         {t('wizard.title')}
         <IconButton
