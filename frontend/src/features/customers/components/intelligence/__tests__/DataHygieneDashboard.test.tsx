@@ -81,7 +81,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
 
       // Assert
       await waitFor(() => {
-        expect(screen.getByText('Data Intelligence Dashboard')).toBeInTheDocument();
+        expect(screen.getByText('Datenqualität-Übersicht')).toBeInTheDocument();
       });
 
       // Check key metrics display
@@ -331,7 +331,7 @@ describe('DataHygieneDashboard Integration Tests', () => {
       render(<DataHygieneDashboard />, { wrapper: createWrapper() });
 
       await waitFor(() => {
-        expect(screen.getByText('Data Intelligence Dashboard')).toBeInTheDocument();
+        expect(screen.getByText('Datenqualität-Übersicht')).toBeInTheDocument();
       });
 
       // Check for interactive buttons
