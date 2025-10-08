@@ -95,8 +95,8 @@ public class LeadBackdatingService {
         "AUDIT: lead_registered_at_backdated - leadId=%d, old=%s, new=%s, reason=%s, user=%s",
         leadId, oldRegisteredAt, request.registeredAt, request.reason, currentUserId);
 
-    // 9. Calculate protection end for response
-    LocalDateTime protectionEnd = lead.protectionStartAt.plusMonths(lead.protectionMonths);
+    // 9. Calculate protection end for response using Lead helper method
+    LocalDateTime protectionEnd = lead.getProtectionUntil();
 
     // 10. Return response
     return BackdatingResponse.success(

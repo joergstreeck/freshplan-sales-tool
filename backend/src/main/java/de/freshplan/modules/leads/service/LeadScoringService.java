@@ -198,10 +198,8 @@ public class LeadScoringService {
     }
 
     // Protection expiry urgency (max 10 points)
-    // TODO: Refactor - protectionUntil calculation is duplicated in LeadDTO.java
-    //       Consider moving to Lead entity as helper method (e.g., lead.getProtectionUntil())
-    if (lead.protectionStartAt != null && lead.protectionMonths != null) {
-      LocalDateTime protectionUntil = lead.protectionStartAt.plusMonths(lead.protectionMonths);
+    LocalDateTime protectionUntil = lead.getProtectionUntil();
+    if (protectionUntil != null) {
       long daysUntilExpiry = ChronoUnit.DAYS.between(LocalDateTime.now(), protectionUntil);
 
       if (daysUntilExpiry < 30) {

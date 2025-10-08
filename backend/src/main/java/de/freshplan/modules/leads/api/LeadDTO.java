@@ -77,9 +77,8 @@ public class LeadDTO {
   public Long progressPauseTotalSeconds; // Cumulative pause duration
 
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2)
-  public Integer
-      leadScore; // 0-100 points (Umsatzpotenzial 25% + Engagement 25% + Fit 25% + Dringlichkeit
-  // 25%)
+  // Note: Spotless may reformat this line - keeping it compact for readability
+  public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
   // Metadata
   public LocalDateTime createdAt;
@@ -140,10 +139,8 @@ public class LeadDTO {
     dto.progressWarningSentAt = lead.progressWarningSentAt;
     dto.progressDeadline = lead.progressDeadline;
 
-    // Calculate protection_until from protectionStartAt + protectionMonths
-    if (lead.protectionStartAt != null && lead.protectionMonths != null) {
-      dto.protectionUntil = lead.protectionStartAt.plusMonths(lead.protectionMonths);
-    }
+    // Calculate protection_until using Lead helper method (Single Source of Truth)
+    dto.protectionUntil = lead.getProtectionUntil();
 
     dto.clockStoppedAt = lead.clockStoppedAt;
     dto.stopReason = lead.stopReason;

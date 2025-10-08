@@ -197,10 +197,8 @@ public class Lead extends PanacheEntityBase {
 
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2 - V269)
   @Column(name = "lead_score")
-  public Integer
-      leadScore; // 0-100 Punkte (Umsatzpotenzial 25% + Engagement 25% + Fit 25% + Dringlichkeit
-
-  // 25%)
+  // Note: Spotless may reformat - keeping compact for readability
+  public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
   // Metadata
   @Size(max = 100)
@@ -253,12 +251,26 @@ public class Lead extends PanacheEntityBase {
   public List<LeadActivity> activities = new ArrayList<>();
 
   // Business methods
+  /**
+   * Calculate protection end date (Sprint 2.1.6 Phase 4) Single Source of Truth for protectionUntil
+   * calculation. Used by LeadDTO, LeadScoringService, LeadBackdatingService, LeadProtectionService.
+   */
+  public LocalDateTime getProtectionUntil() {
+    if (protectionStartAt == null || protectionMonths == null) {
+      return null;
+    }
+    return protectionStartAt.plusMonths(protectionMonths);
+  }
+
   public boolean isProtectionActive() {
     if (clockStoppedAt != null) {
       return true; // Clock is stopped, protection remains active
     }
 
-    LocalDateTime protectionEnd = protectionStartAt.plusMonths(protectionMonths);
+    LocalDateTime protectionEnd = getProtectionUntil();
+    if (protectionEnd == null) {
+      return false;
+    }
     return LocalDateTime.now().isBefore(protectionEnd);
   }
 

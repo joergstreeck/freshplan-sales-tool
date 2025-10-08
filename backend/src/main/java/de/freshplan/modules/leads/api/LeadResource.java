@@ -414,7 +414,9 @@ public class LeadResource {
             "Clock stopped: " + updateRequest.stopReason);
       } else if (!updateRequest.stopClock && lead.clockStoppedAt != null) {
         // Resume clock: Calculate cumulative pause duration (Sprint 2.1.6 Phase 3 - V262)
-        var pauseDuration = java.time.Duration.between(lead.clockStoppedAt, LocalDateTime.now());
+        var now = LocalDateTime.now();
+        var pauseDuration = java.time.Duration.between(lead.clockStoppedAt, now);
+        if (lead.progressPauseTotalSeconds == null) lead.progressPauseTotalSeconds = 0L;
         lead.progressPauseTotalSeconds += pauseDuration.toSeconds();
 
         lead.clockStoppedAt = null;
