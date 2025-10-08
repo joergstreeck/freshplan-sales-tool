@@ -4,6 +4,8 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import LeadWizard from '../features/leads/LeadWizard';
 import AddFirstContactDialog from '../features/leads/AddFirstContactDialog';
+import LeadEditDialog from '../features/leads/LeadEditDialog';
+import DeleteLeadDialog from '../features/leads/DeleteLeadDialog';
 import type { Lead } from '../features/leads/types';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
@@ -52,6 +54,8 @@ export function CustomersPageV2({
   const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
   const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   // Use focus list store for sort configuration only
@@ -564,15 +568,16 @@ export function CustomersPageV2({
                     context={context}
                     showActions={true}
                     onEdit={customer => {
+                      setSelectedLead(customer as unknown as Lead);
                       if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
-                        setSelectedLead(customer as unknown as Lead);
                         setFirstContactDialogOpen(true);
                       } else {
-                        toast.success(`Bearbeiten: ${customer.companyName}`);
+                        setEditDialogOpen(true);
                       }
                     }}
                     onDelete={customer => {
-                      toast.error(`Löschen: ${customer.companyName}`);
+                      setSelectedLead(customer as unknown as Lead);
+                      setDeleteDialogOpen(true);
                     }}
                   />
                 )}
@@ -632,6 +637,38 @@ export function CustomersPageV2({
             setSelectedLead(null);
             refetch();
             toast.success('Erstkontakt erfolgreich dokumentiert!');
+          }}
+        />
+
+        {/* LeadEdit Dialog */}
+        <LeadEditDialog
+          open={editDialogOpen}
+          lead={selectedLead}
+          onClose={() => {
+            setEditDialogOpen(false);
+            setSelectedLead(null);
+          }}
+          onSuccess={() => {
+            setEditDialogOpen(false);
+            setSelectedLead(null);
+            refetch();
+            toast.success('Lead erfolgreich aktualisiert!');
+          }}
+        />
+
+        {/* DeleteLead Dialog */}
+        <DeleteLeadDialog
+          open={deleteDialogOpen}
+          lead={selectedLead}
+          onClose={() => {
+            setDeleteDialogOpen(false);
+            setSelectedLead(null);
+          }}
+          onSuccess={() => {
+            setDeleteDialogOpen(false);
+            setSelectedLead(null);
+            refetch();
+            toast.success('Lead erfolgreich gelöscht!');
           }}
         />
       </Box>

@@ -45,13 +45,25 @@ export async function createLead(payload: { name: string; email?: string }) {
 
 export async function updateLead(
   id: number,
-  payload: { stopClock?: boolean; stopReason?: string }
+  payload: {
+    stopClock?: boolean;
+    stopReason?: string;
+    companyName?: string;
+    contactPerson?: string;
+    email?: string;
+    phone?: string;
+    website?: string;
+    street?: string;
+    postalCode?: string;
+    city?: string;
+  }
 ): Promise<Lead> {
   const res = await fetch(`${BASE}/api/leads/${id}`, {
     method: 'PATCH', // Backend uses @PATCH (partial update)
     headers: {
       'Content-Type': 'application/json',
       Accept: 'application/json',
+      'If-Match': '*', // Optimistic locking - use wildcard for now
       ...authHeaders(),
     },
     body: JSON.stringify(payload),
@@ -83,6 +95,19 @@ export async function addFirstContact(
   });
   if (!res.ok) throw await toProblem(res);
   return res.json();
+}
+
+export async function deleteLead(id: number): Promise<void> {
+  const res = await fetch(`${BASE}/api/leads/${id}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'If-Match': '*', // Optimistic locking - use wildcard for now
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
 }
 
 // RFC7807 Error Handling
