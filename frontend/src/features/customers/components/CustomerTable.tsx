@@ -29,7 +29,13 @@ import { leadStatusLabels, leadStatusColors } from '../../leads/types';
 import LeadScoreIndicator from '../../leads/LeadScoreIndicator';
 import StopTheClockDialog from '../../leads/StopTheClockDialog';
 import LeadActivityTimeline from '../../leads/LeadActivityTimeline';
-import { Pause, PlayArrow, Timeline as TimelineIcon } from '@mui/icons-material';
+import {
+  Pause,
+  PlayArrow,
+  Timeline as TimelineIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+} from '@mui/icons-material';
 
 interface CustomerTableProps {
   customers: CustomerResponse[];
@@ -37,6 +43,9 @@ interface CustomerTableProps {
   highlightNew?: boolean;
   columns?: ColumnConfig[];
   context?: 'customers' | 'leads'; // Sprint 2.1.6 Phase 4: Context for status labels
+  onEdit?: (customer: CustomerResponse) => void; // Sprint 2.1.6 Phase 5: Edit action
+  onDelete?: (customer: CustomerResponse) => void; // Sprint 2.1.6 Phase 5: Delete action
+  showActions?: boolean; // Sprint 2.1.6 Phase 5: Show action buttons column
 }
 
 export function CustomerTable({
@@ -45,6 +54,9 @@ export function CustomerTable({
   highlightNew,
   columns,
   context = 'customers',
+  onEdit,
+  onDelete,
+  showActions = false,
 }: CustomerTableProps) {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
@@ -138,6 +150,7 @@ export function CustomerTable({
                   {column.label}
                 </TableCell>
               ))}
+              {showActions && <TableCell align="right" sx={{ width: 120 }} />}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -386,6 +399,38 @@ export function CustomerTable({
                       </TableCell>
                     );
                   })}
+                  {showActions && (
+                    <TableCell align="right">
+                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
+                        {onEdit && (
+                          <IconButton
+                            size="small"
+                            onClick={e => {
+                              e.stopPropagation();
+                              onEdit(customer);
+                            }}
+                            title="Bearbeiten"
+                            sx={{ color: 'primary.main' }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        {onDelete && (
+                          <IconButton
+                            size="small"
+                            onClick={e => {
+                              e.stopPropagation();
+                              onDelete(customer);
+                            }}
+                            title="Löschen"
+                            sx={{ color: 'error.main' }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                      </Box>
+                    </TableCell>
+                  )}
                 </TableRow>
 
                 {/* Sprint 2.1.6 Phase 4: Lead Activity Timeline Expansion Row */}
