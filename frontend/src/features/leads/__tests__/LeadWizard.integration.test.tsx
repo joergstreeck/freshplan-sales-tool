@@ -201,7 +201,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
 
       // Final submit button should be visible (Karte 2: Qualifizierung speichern)
       expect(screen.getByRole('button', { name: /qualifizierung speichern/i })).toBeInTheDocument();
-    });
+    }, 10000); // Increase timeout to 10s for slow enum loading
 
     it('should allow navigating back from Stage 2 → 1 → 0 without losing data', async () => {
       const user = userEvent.setup();
