@@ -8,7 +8,7 @@ import {
   Button,
   Alert,
   Box,
-  Grid,
+  Stack,
 } from '@mui/material';
 import { updateLead } from './api';
 import type { Lead, Problem } from './types';
@@ -129,95 +129,80 @@ export default function LeadEditDialog({
           </Alert>
         )}
 
-        <Box mt={1}>
-          <Grid container spacing={2}>
-            {/* Company Section */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                required
-                label="Firmenname"
-                value={formData.companyName}
-                onChange={handleChange('companyName')}
-                disabled={saving}
-              />
-            </Grid>
+        <Stack spacing={2} mt={1}>
+          {/* Company Section */}
+          <TextField
+            fullWidth
+            required
+            label="Firmenname"
+            value={formData.companyName}
+            onChange={handleChange('companyName')}
+            disabled={saving}
+          />
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Website"
-                value={formData.website}
-                onChange={handleChange('website')}
-                disabled={saving}
-                placeholder="https://example.com"
-              />
-            </Grid>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              fullWidth
+              label="Website"
+              value={formData.website}
+              onChange={handleChange('website')}
+              disabled={saving}
+              placeholder="https://example.com"
+            />
+            <TextField
+              fullWidth
+              label="Ansprechpartner"
+              value={formData.contactPerson}
+              onChange={handleChange('contactPerson')}
+              disabled={saving}
+            />
+          </Box>
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Ansprechpartner"
-                value={formData.contactPerson}
-                onChange={handleChange('contactPerson')}
-                disabled={saving}
-              />
-            </Grid>
+          {/* Contact Section */}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              fullWidth
+              label="E-Mail"
+              type="email"
+              value={formData.email}
+              onChange={handleChange('email')}
+              disabled={saving}
+            />
+            <TextField
+              fullWidth
+              label="Telefon"
+              value={formData.phone}
+              onChange={handleChange('phone')}
+              disabled={saving}
+            />
+          </Box>
 
-            {/* Contact Section */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="E-Mail"
-                type="email"
-                value={formData.email}
-                onChange={handleChange('email')}
-                disabled={saving}
-              />
-            </Grid>
+          {/* Address Section */}
+          <TextField
+            fullWidth
+            label="Straße"
+            value={formData.street}
+            onChange={handleChange('street')}
+            disabled={saving}
+          />
 
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Telefon"
-                value={formData.phone}
-                onChange={handleChange('phone')}
-                disabled={saving}
-              />
-            </Grid>
-
-            {/* Address Section */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Straße"
-                value={formData.street}
-                onChange={handleChange('street')}
-                disabled={saving}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="PLZ"
-                value={formData.postalCode}
-                onChange={handleChange('postalCode')}
-                disabled={saving}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={8}>
-              <TextField
-                fullWidth
-                label="Stadt"
-                value={formData.city}
-                onChange={handleChange('city')}
-                disabled={saving}
-              />
-            </Grid>
-          </Grid>
-        </Box>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="PLZ"
+              value={formData.postalCode}
+              onChange={handleChange('postalCode')}
+              disabled={saving}
+              sx={{ width: '30%' }}
+            />
+            <TextField
+              fullWidth
+              label="Stadt"
+              value={formData.city}
+              onChange={handleChange('city')}
+              disabled={saving}
+            />
+          </Box>
+        </Stack>
       </DialogContent>
 
       <DialogActions>
