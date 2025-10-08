@@ -736,36 +736,22 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation - ALLE PHASEN COMPLETE ✅:**
-  - **✅ COMPLETE:** Phase 1 - Issue #130 Fix (PR #132 merged)
-  - **✅ COMPLETE:** Phase 2 - BusinessType Harmonization + Admin-APIs (PR #133 merged)
-    - BusinessType Harmonization: Unified Enum, V263/V264, Frontend EnumField Pattern
-    - Admin-APIs: Import (95% Coverage), Backdating (92%), Convert (88%)
-    - Test-Fixes: Settings Version Bug, Timestamp Precision, ETag Timing
-  - **✅ COMPLETE - Phase 3: Automated Nightly Jobs + Outbox-Pattern (Issue #134):**
-    - **4 Nightly Jobs implementiert:** Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Archival
-    - **6 ADRs dokumentiert:** ADR-001 (Outbox-Pattern), ADR-002 bis ADR-006
-    - **Migrations:** V267 (ownerUserId nullable), V268 (outbox_emails table)
-    - **Outbox-Pattern:** OutboxEmail Entity (Panache + JSONB), Events + Outbox parallel
-    - **Issue #134 Idempotency:** Batch-Import mit cached response replay (SHA-256 fingerprint)
-    - **Testing Strategy:** Unit-Tests entfernt (Panache nicht mockbar), Integration-Tests E2E
-    - **6/6 Integration-Tests GREEN** (LeadMaintenanceSchedulerIT)
-    - **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 93d0441f1)
-  - **✅ Phase 3 COMPLETE - PR #134 ERSTELLT:** Outbox-Pattern + Nightly Jobs
-  - **📋 NEXT PHASE - Sprint 2.1.6 Phase 4 (Job Monitoring & Performance - ~1.5h):**
-    - **Feature 1:** Batch-Processing LIMIT 100 (~30min) - Verhindert Memory-Probleme
-    - **Feature 2:** Structured Job Logging (~1h) - Metrics-Logging für Prometheus-Vorbereitung
-    - **Deferiert:** Prometheus-Metrics → Modul 00 (Betrieb)
-    - **Deferiert:** Slack-Alerting → Modul 05 (Kommunikation)
-    - **Spec:** [PHASE_4_JOB_MONITORING_SPEC.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/PHASE_4_JOB_MONITORING_SPEC.md)
-    - **Ziel:** 98% COMPLETE (Phase 3 + 4 Combined)
-  - **Phase 5 (OPTIONAL):** MUI Dialog Accessibility Fix + Excel Upload + Stop-the-Clock UI
-  - **❌ VERSCHOBEN auf Sprint 2.1.7:**
-    - Issue #135: Lead Lifecycle Hooks (Backend)
-    - Lead-Transfer Workflow (V260 lead_transfers Tabelle)
-    - Fuzzy-Matching & Review (Scoring-Algorithmus)
-    - Row-Level-Security (V261 RLS Policies)
-    - Team Management (V262 teams + team_members)
+- **✅ Sprint 2.1.6 - 4/5 PHASEN COMPLETE (08.10.2025):**
+  - **✅ Phase 1:** Issue #130 Fix (PR #132 merged)
+  - **✅ Phase 2:** BusinessType Harmonization + Admin-APIs (PR #133 merged)
+  - **✅ Phase 3:** Automated Nightly Jobs + Outbox-Pattern (PR #134 merged)
+  - **✅ Phase 4:** Lead Quality Metrics & UI Components (PR #135 merged - 08.10.2025)
+    - LeadScoringService (264 LOC, 4-Faktoren, 19 Tests)
+    - 4 UI-Komponenten (StopTheClockDialog, LeadScoreIndicator, LeadActivityTimeline, LeadStatusWorkflow)
+    - 48 Frontend-Tests + 19 Backend-Tests GREEN
+    - 3 Produktionsbugs gefunden & gefixt
+    - Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
+    - Migrations: V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL)
+  - **📋 Phase 5 PENDING (OPTIONAL - ~2h):** feature/mod02-sprint-2.1.6-monitoring-rollback
+    - **Priority 1 (35 Min):** Prometheus-Metriken (@Counted/@Timed), Score-Farbschwellen-Doku
+    - **Priority 2 (1h):** V10012 Migration Rollback-Strategie (ignoreMigrationPatterns, V259 Konflikt)
+    - **Priority 3 (optional):** MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen
+  - **Modul 02 Status:** 95% IMPLEMENTED (4/5 Phasen merged, Phase 5 optional)
 - **Sprint 2.1.7 Vorbereitung (Start 19.10.2025 - 2 Tracks!):**
   - **Track 1 (Business Features):**
     - Lead-Transfer Workflow mit Genehmigung (V260, 8-12h)

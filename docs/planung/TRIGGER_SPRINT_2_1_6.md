@@ -32,9 +32,10 @@ phases:
     pr: "#135"
     merged: "2025-10-08"
   - phase: "Phase 5"
-    branch: "feature/mod02-sprint-2.1.6-accessibility"
-    scope: "OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen)"
+    branch: "feature/mod02-sprint-2.1.6-monitoring-rollback"
+    scope: "OPTIONAL (Prometheus Metrics, Score-Doku, V10012 Rollback, Accessibility)"
     status: "pending"
+    effort: "~2h (Priority 1: 35 Min, Priority 2: 1h, Priority 3: optional)"
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
@@ -61,7 +62,7 @@ updated: "2025-10-08"
 | **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ COMPLETE | #133 |
 | **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs + **Issue #134** (Idempotency) + Outbox-Pattern | ✅ COMPLETE | #134 |
 | **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4-complete` | Lead Quality Metrics & UI Components (LeadScoringService, 4 UI-Komponenten, 48 Tests) | ✅ COMPLETE | #135 |
-| **Phase 5** | `feature/mod02-sprint-2.1.6-accessibility` | OPTIONAL (MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen) | 📋 PENDING | - |
+| **Phase 5** | `feature/mod02-sprint-2.1.6-monitoring-rollback` | OPTIONAL (Prometheus, Score-Doku, V10012, Accessibility) | 📋 PENDING | - |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
 > - **Issue #130 Analyse:** [`ISSUE_130_ANALYSIS.md`](claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md) - Detaillierte Analyse + Migration Guide
@@ -974,7 +975,29 @@ void pseudonymizeExpiredLeads() {
 - Testing Guide: [docs/grundlagen/testing_guide.md](../../grundlagen/testing_guide.md)
 - PR #135: https://github.com/joergstreeck/freshplan-sales-tool/pull/135
 
-**Phase 5 - OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen) - 📋 PENDING:**
+**Phase 5 - OPTIONAL (Quick Wins: Prometheus, Score-Doku, V10012 Rollback, Accessibility) - 📋 PENDING:**
+
+**🎯 Priority 1 - Quick Wins (35 Min total):**
+- [ ] **Prometheus-Metriken für Nightly Jobs** (~30 Min)
+  - Infrastructure bereits vorhanden (quarkus-micrometer seit Sprint 2.1.1)
+  - Nur Annotationen hinzufügen: @Counted + @Timed auf 4 Job-Methoden
+  - Beispiel: `@Counted(name="lead_job_runs_total", tags={"job=progress_warning"})`
+  - Benefit: Monitoring/Alerts sofort nutzbar, kein Setup-Aufwand
+  - Deliverable: `/q/metrics` Endpoint mit Job-Metriken
+- [ ] **Score-Farbschwellen Dokumentation** (~5 Min)
+  - Code-Kommentare bereits vorhanden (LeadScoreIndicator.tsx:17, 42-46)
+  - Copy-Paste nach: `artefakte/LEAD_SCORING_SPECIFICATION.md`
+  - Schwellen: <40 rot (#f44336), 40-69 orange (#ff9800), ≥70 grün (#94C456)
+
+**🔧 Priority 2 - V10012 Migration Rollback (~1h):**
+- [ ] **V10012 Migration Rollback-Strategie** (ignoreMigrationPatterns + Rollback-Safety)
+  - Deaktivierung: `quarkus.flyway.ignoreMigrationPatterns=*:10012` in application.properties
+  - Konflikt: V10012 (ui_leads_company_city UNIQUE) vs V259 (company+city SOFT collision)
+  - Rollback: `git revert HEAD` (5 Sekunden, keine DB-Änderungen)
+  - Testing: 1-2 Tage Lead-Import + Duplikaten-Detection validieren
+  - Risiko: Minimal (nur Config-Zeile, Indexes bleiben in DB)
+
+**📋 Priority 3 - Accessibility & UI Polish (optional, Zeit erlaubt):**
 - [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
 - [ ] **Excel-Upload für Leads-Migration** (Drag & Drop, Spalten-Mapping, Vorschau, Dry-Run)
 - [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog.tsx, RBAC Manager/Admin)

@@ -434,9 +434,15 @@ Phase 4 (Progressive Profiling): Sprint 2.1.4 + 2.1.5
   Result: Lead Protection + Progressive Profiling + Pre-Claim
   PRs: #123, #124, #129, #131 (alle merged)
 
-Phase 5 (Admin-Features): Sprint 2.1.6 (IN PROGRESS)
-  Status: 🔧 IN PROGRESS
-  Result: Migration-API, Convert-Flow, Stop-the-Clock UI, Automated Jobs
+Phase 5 (Admin-Features): Sprint 2.1.6 (4/5 PHASEN COMPLETE)
+  Status: ✅ 80% COMPLETE (4/5 Phasen merged - Phase 5 OPTIONAL pending)
+  Result: Migration-API, Convert-Flow, Lead Scoring, 4 UI-Komponenten, Automated Jobs
+  PRs: #132, #133, #134, #135 (alle merged)
+  Phase 5 PENDING (OPTIONAL - ~2h):
+    Branch: feature/mod02-sprint-2.1.6-monitoring-rollback
+    Priority 1 (35 Min): Prometheus-Metriken (@Counted/@Timed), Score-Farbschwellen-Doku
+    Priority 2 (1h): V10012 Migration Rollback (ignoreMigrationPatterns, V259 Konflikt)
+    Priority 3 (optional): MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen
 
 Phase 6 (Team Management): Sprint 2.1.7 (PLANNED)
   Status: 📅 PLANNED

@@ -11,8 +11,8 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (62% complete)
-- **Current Sprint:** ✅ Sprint 2.1.6 COMPLETE (08.10.2025) - **ALL 4 PHASES MERGED**
-- **Active Branch:** main (Sprint 2.1.6 vollständig merged)
+- **Current Sprint:** ✅ Sprint 2.1.6 - 4/5 PHASES MERGED (08.10.2025) - **Phase 5 OPTIONAL PENDING**
+- **Active Branch:** main (Sprint 2.1.6 Phase 1-4 merged, Phase 5 optional)
 - **Progress:** 16/36 PRs completed - 44% done
 - **Blockers:** ❌ Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
@@ -124,7 +124,7 @@ Sprint 2.1.5: Progressive Profiling   ✅ COMPLETE (05.10.2025) → PR #124 Back
                                       → **Verschoben auf 2.1.6:** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
-Sprint 2.1.6: Lead Completion         ✅ COMPLETE (05-08.10.2025) - PR #132, #133, #134, #135 MERGED
+Sprint 2.1.6: Lead Completion         ✅ 80% COMPLETE (05-08.10.2025) - PR #132, #133, #134, #135 MERGED
                                       → **Phase 1:** Issue #130 Fix (TestDataBuilder CDI-Konflikt) ✅ PR #132
                                       → **Phase 2:** Admin APIs (Import, Backdating, Convert) ✅ PR #133
                                         - LeadImportService (297 LOC), LeadBackdatingService (107 LOC), LeadConvertService (204 LOC)
@@ -139,6 +139,10 @@ Sprint 2.1.6: Lead Completion         ✅ COMPLETE (05-08.10.2025) - PR #132, #1
                                         - 48 Frontend-Tests + 19 Backend-Tests
                                         - 3 Produktionsbugs gefunden & gefixt (RBAC, German labels, DTO-Mapping)
                                         - Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
+                                      → **Phase 5:** 📋 PENDING (OPTIONAL - ~2h) - feature/mod02-sprint-2.1.6-monitoring-rollback
+                                        - **Priority 1 (35 Min):** Prometheus-Metriken (@Counted/@Timed auf 4 Jobs), Score-Farbschwellen-Doku
+                                        - **Priority 2 (1h):** V10012 Migration Rollback (ignoreMigrationPatterns, V259 Konflikt)
+                                        - **Priority 3 (optional):** MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen
                                       → **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL)
                                       → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
