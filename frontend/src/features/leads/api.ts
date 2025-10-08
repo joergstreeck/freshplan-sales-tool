@@ -61,6 +61,30 @@ export async function updateLead(
   return res.json();
 }
 
+export async function addFirstContact(
+  id: number,
+  payload: {
+    contactPerson: string;
+    email?: string;
+    phone?: string;
+    contactDate?: string;
+    notes?: string;
+  }
+): Promise<Lead> {
+  const res = await fetch(`${BASE}/api/leads/${id}/first-contact`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    body: JSON.stringify(payload),
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
 // RFC7807 Error Handling
 export async function toProblem(res: Response): Promise<Problem> {
   try {

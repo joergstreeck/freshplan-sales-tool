@@ -3,6 +3,8 @@ import { Box, Tabs, Tab, Button } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import LeadWizard from '../features/leads/LeadWizard';
+import AddFirstContactDialog from '../features/leads/AddFirstContactDialog';
+import type { Lead } from '../features/leads/types';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
 import { VirtualizedCustomerTable } from '../features/customers/components/VirtualizedCustomerTable';
@@ -49,6 +51,8 @@ export function CustomersPageV2({
   const [activeTab, setActiveTab] = useState(0);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
+  const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   // Use focus list store for sort configuration only
   const { sortBy, setSortBy } = useFocusListStore();
@@ -558,6 +562,18 @@ export function CustomersPageV2({
                     highlightNew
                     columns={columnConfig}
                     context={context}
+                    showActions={true}
+                    onEdit={customer => {
+                      if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                        setSelectedLead(customer as unknown as Lead);
+                        setFirstContactDialogOpen(true);
+                      } else {
+                        toast.success(`Bearbeiten: ${customer.companyName}`);
+                      }
+                    }}
+                    onDelete={customer => {
+                      toast.error(`Löschen: ${customer.companyName}`);
+                    }}
                   />
                 )}
 
@@ -602,6 +618,22 @@ export function CustomersPageV2({
             onComplete={handleCustomerCreated}
           />
         )}
+
+        {/* AddFirstContact Dialog - Sprint 2.1.6 Phase 5 */}
+        <AddFirstContactDialog
+          open={firstContactDialogOpen}
+          lead={selectedLead}
+          onClose={() => {
+            setFirstContactDialogOpen(false);
+            setSelectedLead(null);
+          }}
+          onSuccess={() => {
+            setFirstContactDialogOpen(false);
+            setSelectedLead(null);
+            refetch();
+            toast.success('Erstkontakt erfolgreich dokumentiert!');
+          }}
+        />
       </Box>
     </MainLayoutV2>
   );
