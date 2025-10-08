@@ -48,7 +48,7 @@ export const LEAD_FILTERS: QuickFilter[] = [
   },
   {
     id: 'prospects',
-    label: 'Prospects',
+    label: 'Interessenten',
     icon: <InactiveIcon fontSize="small" />,
     filter: { status: [CustomerStatus.PROSPECT] },
   },

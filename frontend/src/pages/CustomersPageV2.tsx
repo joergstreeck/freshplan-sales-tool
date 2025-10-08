@@ -10,6 +10,8 @@ import { CustomerListHeader } from '../features/customers/components/CustomerLis
 import { CustomerListSkeleton } from '../features/customers/components/CustomerListSkeleton';
 import { DataHygieneDashboard } from '../features/customers/components/intelligence/DataHygieneDashboard';
 import { DataFreshnessManager } from '../features/customers/components/intelligence/DataFreshnessManager';
+import { LeadQualityDashboard } from '../features/leads/components/intelligence/LeadQualityDashboard';
+import { LeadProtectionManager } from '../features/leads/components/intelligence/LeadProtectionManager';
 import { IntelligentFilterBar } from '../features/customers/components/filter/IntelligentFilterBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useCustomers, useCustomerSearchAdvanced } from '../features/customer/api/customerQueries';
@@ -482,8 +484,8 @@ export function CustomersPageV2({
         <Box sx={{ borderBottom: 1, borderColor: 'divider', px: 3 }}>
           <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
             <Tab label={context === 'leads' ? 'Lead-Liste' : 'Kundenliste'} />
-            <Tab label="Data Intelligence" />
-            <Tab label="Data Freshness" />
+            <Tab label={context === 'leads' ? 'Lead-Qualität' : 'Datenqualität'} />
+            <Tab label={context === 'leads' ? 'Schutzfristen' : 'Daten-Aktualität'} />
           </Tabs>
         </Box>
 
@@ -555,6 +557,7 @@ export function CustomersPageV2({
                     }}
                     highlightNew
                     columns={columnConfig}
+                    context={context}
                   />
                 )}
 
@@ -578,9 +581,11 @@ export function CustomersPageV2({
               </Box>
             ))}
 
-          {activeTab === 1 && <DataHygieneDashboard />}
+          {activeTab === 1 &&
+            (context === 'leads' ? <LeadQualityDashboard /> : <DataHygieneDashboard />)}
 
-          {activeTab === 2 && <DataFreshnessManager />}
+          {activeTab === 2 &&
+            (context === 'leads' ? <LeadProtectionManager /> : <DataFreshnessManager />)}
         </Box>
 
         {/* Wizard Modal/Drawer - Context-based */}

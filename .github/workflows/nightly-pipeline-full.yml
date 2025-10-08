@@ -24,7 +24,7 @@ jobs:
         env:
           POSTGRES_USER: freshplan
           POSTGRES_PASSWORD: freshplan
-          POSTGRES_DB: freshplan_test
+          POSTGRES_DB: freshplan
         ports:
           - 5432:5432
         options: >-
@@ -51,11 +51,21 @@ jobs:
 
       # Backend Full Tests
       - name: Backend Unit Tests (Full)
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/freshplan
+          DB_USER: freshplan
+          DB_PASSWORD: freshplan
+          QUARKUS_PROFILE: test
         run: |
           cd backend
           ./mvnw clean test
 
       - name: Backend Integration Tests
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/freshplan
+          DB_USER: freshplan
+          DB_PASSWORD: freshplan
+          QUARKUS_PROFILE: test
         run: |
           cd backend
           ./mvnw verify -DskipUnitTests
@@ -75,6 +85,11 @@ jobs:
 
       # Cross-Module Integration Tests
       - name: Cross-Module Integration Tests
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/freshplan
+          DB_USER: freshplan
+          DB_PASSWORD: freshplan
+          QUARKUS_PROFILE: test
         run: |
           cd backend
           ./mvnw test -Dtest="*CrossModuleTest,*IntegrationTest" -DfailIfNoTests=false

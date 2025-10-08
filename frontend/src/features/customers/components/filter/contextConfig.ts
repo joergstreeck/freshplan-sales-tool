@@ -17,26 +17,33 @@ export interface SortOption {
 
 /**
  * Table columns for Leads context
+ * Sprint 2.1.6 Phase 4: Added leadScore, changed industry→businessType
  */
 export const LEADS_TABLE_COLUMNS: TableColumn[] = [
   { id: 'companyName', label: 'Lead', field: 'companyName', visible: true, order: 0 },
   { id: 'status', label: 'Status', field: 'status', visible: true, order: 1 },
-  { id: 'industry', label: 'Branche', field: 'industry', visible: true, order: 2 },
+  {
+    id: 'businessType',
+    label: 'Branche',
+    field: 'businessType',
+    visible: true,
+    order: 2,
+  },
+  {
+    id: 'leadScore',
+    label: 'Score',
+    field: 'leadScore',
+    visible: true,
+    order: 3,
+    align: 'center',
+  },
   {
     id: 'expectedAnnualVolume',
     label: 'Erwarteter Umsatz',
     field: 'expectedAnnualVolume',
     visible: true,
-    order: 3,
-    align: 'right',
-  },
-  {
-    id: 'stage',
-    label: 'Stage',
-    field: 'stage',
-    visible: false,
     order: 4,
-    align: 'center',
+    align: 'right',
   },
   {
     id: 'createdAt',
@@ -46,7 +53,14 @@ export const LEADS_TABLE_COLUMNS: TableColumn[] = [
     order: 5,
   },
   { id: 'assignedTo', label: 'Zugewiesen an', field: 'assignedTo', visible: false, order: 6 },
-  { id: 'actions', label: 'Aktionen', field: 'actions', visible: true, order: 7, align: 'right' },
+  {
+    id: 'actions',
+    label: 'Aktionen',
+    field: 'actions',
+    visible: true,
+    order: 7,
+    align: 'right',
+  },
 ];
 
 /**
@@ -92,12 +106,14 @@ export const CUSTOMERS_TABLE_COLUMNS: TableColumn[] = [
 
 /**
  * Sort options for Leads context
+ * Sprint 2.1.6 Phase 4: Added leadScore sorting, removed redundant stage
  */
 export const LEADS_SORT_OPTIONS: SortOption[] = [
   { field: 'companyName', label: 'Name', icon: '📋' },
+  { field: 'leadScore', label: 'Lead-Score', icon: '⭐' },
   { field: 'status', label: 'Status', icon: '🔄' },
   { field: 'expectedAnnualVolume', label: 'Erwarteter Umsatz', icon: '💰' },
-  { field: 'createdAt', label: 'Erstellt am', icon: '🌟' },
+  { field: 'createdAt', label: 'Erstellt am', icon: '📅' },
 ];
 
 /**

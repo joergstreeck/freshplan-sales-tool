@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.api;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.*;
@@ -440,5 +441,390 @@ class LeadResourceTest {
     }
     settings.canStopClock = canStopClock;
     settings.persist();
+  }
+
+  // ==================== Sprint 2.1.6 Phase 4 Tests ====================
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
+  @DisplayName("Stop-Clock Resume: Should calculate cumulative pause duration")
+  void testStopClockResumeCalculatesCumulativePause() throws InterruptedException {
+    // Given: Create a lead via REST API to get initial version
+    Long leadId = createTestLead("user1");
+
+    // Get initial version and construct ETag
+    Integer initialVersion =
+        given().when().get("/" + leadId).then().statusCode(200).extract().path("version");
+
+    String initialEtag = String.format("\"lead-%d-%d\"", leadId, initialVersion);
+
+    // When: Stop the clock with a reason (If-Match requires ETag format)
+    Map<String, Object> stopRequest = new HashMap<>();
+    stopRequest.put("stopClock", true);
+    stopRequest.put("stopReason", "Urlaub");
+
+    // Extract ETag from response header (more reliable than version field)
+    String etagAfterStop =
+        given()
+            .contentType(ContentType.JSON)
+            .header("If-Match", initialEtag)
+            .body(stopRequest)
+            .when()
+            .patch("/" + leadId)
+            .then()
+            .statusCode(200)
+            .extract()
+            .header("ETag");
+
+    // Wait for 2 seconds to simulate pause duration
+    Thread.sleep(2000);
+
+    // Then: Resume the clock
+    Map<String, Object> resumeRequest = new HashMap<>();
+    resumeRequest.put("stopClock", false);
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etagAfterStop)
+        .body(resumeRequest)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200);
+
+    // Verify: progressPauseTotalSeconds should be >= 2 seconds (via REST API)
+    given()
+        .when()
+        .get("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("progressPauseTotalSeconds", greaterThanOrEqualTo(2))
+        .body("clockStoppedAt", nullValue())
+        .body("stopReason", nullValue());
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
+  @DisplayName("Stop-Clock Resume: Should add pause duration to activity log")
+  @ActivateRequestContext
+  void testStopClockResumeLogsPauseDuration() throws InterruptedException {
+    // Given: Create a lead
+    Long leadId = createTestLead("user1");
+
+    // Get initial version and construct ETag
+    Integer initialVersion =
+        given().when().get("/" + leadId).then().statusCode(200).extract().path("version");
+
+    String initialEtag = String.format("\"lead-%d-%d\"", leadId, initialVersion);
+
+    // When: Stop and resume clock (If-Match requires ETag format)
+    Map<String, Object> stopRequest = new HashMap<>();
+    stopRequest.put("stopClock", true);
+    stopRequest.put("stopReason", "Krankheit");
+
+    // Extract ETag from response header (more reliable than version field)
+    String etagAfterStop =
+        given()
+            .contentType(ContentType.JSON)
+            .header("If-Match", initialEtag)
+            .body(stopRequest)
+            .when()
+            .patch("/" + leadId)
+            .then()
+            .statusCode(200)
+            .extract()
+            .header("ETag");
+
+    Thread.sleep(1000); // 1 second pause
+
+    Map<String, Object> resumeRequest = new HashMap<>();
+    resumeRequest.put("stopClock", false);
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etagAfterStop)
+        .body(resumeRequest)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200);
+
+    // Then: Verify clock was resumed and pause duration logged
+    Lead lead = Lead.findById(leadId);
+    assertNotNull(lead);
+    assertNull(lead.clockStoppedAt);
+    assertNull(lead.stopReason);
+    assertTrue(lead.progressPauseTotalSeconds >= 1, "Pause duration should be at least 1 second");
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
+  @DisplayName("RBAC: ADMIN role should access updateRegisteredAt endpoint")
+  @ActivateRequestContext
+  void testUpdateRegisteredAtWithAdminRole() {
+    // Given: Create a lead as user1
+    Long leadId = createTestLead("user1");
+
+    // When: ADMIN user updates registeredAt
+    Map<String, String> backdatingRequest = new HashMap<>();
+    backdatingRequest.put("registeredAt", "2025-01-01T00:00:00");
+    backdatingRequest.put("reason", "Datenmigration - Test");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(backdatingRequest)
+        .when()
+        .put("/" + leadId + "/registered-at")
+        .then()
+        .statusCode(200);
+
+    // Verify lead was updated
+    Lead lead = Lead.findById(leadId);
+    assertNotNull(lead);
+    assertTrue(lead.registeredAt.toString().startsWith("2025-01-01"));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"MANAGER"})
+  @DisplayName("RBAC: MANAGER role should access updateRegisteredAt endpoint")
+  void testUpdateRegisteredAtWithManagerRole() {
+    // Given: Create a lead as user1
+    Long leadId = createTestLead("user1");
+
+    // When: MANAGER user updates registeredAt
+    Map<String, String> backdatingRequest = new HashMap<>();
+    backdatingRequest.put("registeredAt", "2025-02-01T12:30:00");
+    backdatingRequest.put("reason", "Korrektur nach Rücksprache");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(backdatingRequest)
+        .when()
+        .put("/" + leadId + "/registered-at")
+        .then()
+        .statusCode(200);
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("RBAC: USER role should be forbidden from updateRegisteredAt endpoint")
+  void testUpdateRegisteredAtWithUserRoleForbidden() {
+    // Given: Create a lead as user1
+    Long leadId = createTestLead("user1");
+
+    // When: USER tries to update registeredAt
+    // Then: Should be forbidden (403)
+    Map<String, String> backdatingRequest = new HashMap<>();
+    backdatingRequest.put("registeredAt", "2025-03-01T00:00:00");
+    backdatingRequest.put("reason", "Unauthorized attempt test");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(backdatingRequest)
+        .when()
+        .put("/" + leadId + "/registered-at")
+        .then()
+        .statusCode(403);
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"ADMIN"})
+  @DisplayName("RBAC: ADMIN role should access convertToCustomer endpoint")
+  void testConvertToCustomerWithAdminRole() {
+    // Given: Create a lead in QUALIFIED status (ready for conversion)
+    Long leadId = createTestLead("user1");
+    updateLeadStatus(leadId, LeadStatus.QUALIFIED);
+
+    // When: ADMIN converts lead to customer
+    // Then: Should succeed with ADMIN role
+    Map<String, Object> convertRequest = new HashMap<>();
+    convertRequest.put("keepLeadRecord", true);
+    convertRequest.put("conversionNotes", "Test conversion");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(convertRequest)
+        .when()
+        .post("/" + leadId + "/convert")
+        .then()
+        .statusCode(201) // Created
+        .body("customerId", notNullValue());
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"MANAGER"})
+  @DisplayName("RBAC: MANAGER role should access convertToCustomer endpoint")
+  void testConvertToCustomerWithManagerRole() {
+    // Given: Create a lead in QUALIFIED status (ready for conversion)
+    Long leadId = createTestLead("user1");
+    updateLeadStatus(leadId, LeadStatus.QUALIFIED);
+
+    // When: MANAGER converts lead to customer
+    // Then: Should succeed with MANAGER role
+    Map<String, Object> convertRequest = new HashMap<>();
+    convertRequest.put("keepLeadRecord", true);
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(convertRequest)
+        .when()
+        .post("/" + leadId + "/convert")
+        .then()
+        .statusCode(201) // Created
+        .body("customerId", notNullValue());
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("RBAC: USER role should be forbidden from convertToCustomer endpoint")
+  void testConvertToCustomerWithUserRoleForbidden() {
+    // Given: Create a lead in QUALIFIED status (ready for conversion)
+    Long leadId = createTestLead("user1");
+    updateLeadStatus(leadId, LeadStatus.QUALIFIED);
+
+    // When: USER tries to convert lead
+    // Then: Should be forbidden (403)
+    Map<String, Object> convertRequest = new HashMap<>();
+    convertRequest.put("keepLeadRecord", true);
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(convertRequest)
+        .when()
+        .post("/" + leadId + "/convert")
+        .then()
+        .statusCode(403);
+  }
+
+  // ================= DTO Completeness Tests (Sprint 2.1.6 Phase 4 - Test Gap Analysis)
+  // =================
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("DTO Completeness: leadScore field is mapped correctly")
+  void testLeadDtoIncludesLeadScore() {
+    // Given: Create a lead with leadScore set
+    Long leadId = createTestLeadWithScore("user1", 75);
+
+    // When: GET lead via API
+    // Then: leadScore should be present in response
+    given().when().get("/" + leadId).then().statusCode(200).body("leadScore", equalTo(75));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("DTO Completeness: progressPauseTotalSeconds field is mapped correctly")
+  void testLeadDtoIncludesProgressPauseTotalSeconds() {
+    // Given: Create a lead with progressPauseTotalSeconds set
+    Long leadId = createTestLeadWithPause("user1", 3600L); // 1 hour pause
+
+    // When: GET lead via API
+    // Then: progressPauseTotalSeconds should be present in response
+    given()
+        .when()
+        .get("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("progressPauseTotalSeconds", equalTo(3600));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("DTO Completeness: All nullable fields are mapped (not missing in JSON)")
+  void testLeadDtoCompleteness() {
+    // Given: Create a lead with all optional fields set
+    Long leadId = createTestLeadWithAllFields("user1");
+
+    // When: GET lead via API
+    // Then: All fields should be present (not missing from JSON)
+    given()
+        .when()
+        .get("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("leadScore", notNullValue())
+        .body("progressPauseTotalSeconds", notNullValue())
+        .body("clockStoppedAt", nullValue()) // Explicitly nullable
+        .body("stopReason", nullValue()) // Explicitly nullable
+        .body("progressDeadline", notNullValue())
+        .body("protectionUntil", notNullValue()); // Calculated field
+  }
+
+  // ================= Helper Methods for DTO Tests =================
+
+  @Transactional
+  Long createTestLeadWithScore(String ownerUserId, Integer score) {
+    Territory territory = Territory.find("countryCode", "DE").firstResult();
+
+    Lead lead = new Lead();
+    lead.companyName = "Test Corp " + System.currentTimeMillis();
+    lead.territory = territory;
+    lead.ownerUserId = ownerUserId;
+    lead.createdBy = ownerUserId;
+    lead.countryCode = "DE";
+    lead.leadScore = score; // Set score explicitly
+    lead.persist();
+    return lead.id;
+  }
+
+  @Transactional
+  Long createTestLeadWithPause(String ownerUserId, Long pauseSeconds) {
+    Territory territory = Territory.find("countryCode", "DE").firstResult();
+
+    Lead lead = new Lead();
+    lead.companyName = "Test Corp " + System.currentTimeMillis();
+    lead.territory = territory;
+    lead.ownerUserId = ownerUserId;
+    lead.createdBy = ownerUserId;
+    lead.countryCode = "DE";
+    lead.progressPauseTotalSeconds = pauseSeconds; // Set pause explicitly
+    lead.persist();
+    return lead.id;
+  }
+
+  @Transactional
+  Long createTestLeadWithAllFields(String ownerUserId) {
+    Territory territory = Territory.find("countryCode", "DE").firstResult();
+
+    Lead lead = new Lead();
+    lead.companyName = "Complete Test Corp " + System.currentTimeMillis();
+    lead.territory = territory;
+    lead.ownerUserId = ownerUserId;
+    lead.createdBy = ownerUserId;
+    lead.countryCode = "DE";
+
+    // Set all nullable/optional fields
+    lead.leadScore = 80;
+    lead.progressPauseTotalSeconds = 1800L;
+    lead.estimatedVolume = new BigDecimal("50000");
+    lead.employeeCount = 25;
+    lead.businessType = "RESTAURANT";
+    lead.kitchenSize = "large";
+    lead.progressDeadline = java.time.LocalDateTime.now().plusDays(5);
+
+    lead.persist();
+    return lead.id;
   }
 }

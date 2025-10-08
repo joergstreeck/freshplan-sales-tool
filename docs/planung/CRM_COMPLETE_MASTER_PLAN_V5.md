@@ -17,12 +17,14 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ 95% IMPLEMENTED – Sprint 2.1.6 Phase 2 COMPLETE
+- **Module 02 Neukundengewinnung:** ✅ 99% IMPLEMENTED – Sprint 2.1.6 Phase 4 COMPLETE
   - Sprint 2.1.1-2.1.4: Territory, Lead Capture, Follow-up, Deduplication ✅ (PR #103, #105, #110, #111, #122, #123)
   - Sprint 2.1.5: Progressive Profiling + Lead Protection ✅ (PR #124 Backend, PR #129 Frontend)
   - Sprint 2.1.6 Phase 1: Issue #130 Fix ✅ (PR #132)
-  - Sprint 2.1.6 Phase 2: Admin APIs (Import, Backdating, Convert) ✅ (Commits 01819eb, ce9206a)
-  - 📋 PENDING: Phase 3 (Nightly Jobs), Phase 4 (Frontend UI + Excel Upload), Phase 5 (Accessibility)
+  - Sprint 2.1.6 Phase 2: Admin APIs (Import, Backdating, Convert) ✅ (PR #133)
+  - Sprint 2.1.6 Phase 3: Automated Nightly Jobs + Outbox-Pattern + Issue #134 (Idempotency) ✅ (PR #134)
+  - Sprint 2.1.6 Phase 4: Lead Intelligence Tests + LeadScoringService ✅ (PR #135)
+  - 📋 PENDING: Phase 5 (Frontend UI Polish + Excel Upload)
   - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
   - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
   - [Event System Pattern](./features-neu/02_neukundengewinnung/artefakte/EVENT_SYSTEM_PATTERN.md) ✅
@@ -41,26 +43,33 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (06.10.2025 - 🎉 Sprint 2.1.6 Phase 2 COMPLETE):**
-- ✅ **Sprint 2.1.6 Phase 2 COMPLETE - Core Backend APIs (Branch: feature/mod02-sprint-2.1.6-admin-apis):**
-  - **Commits:** 01819eb51 (Core) + ce9206ab6 (Field Harmonization)
+**📋 LATEST UPDATE (08.10.2025 - 🎉 Sprint 2.1.6 Phase 4 COMPLETE):**
+- ✅ **Sprint 2.1.6 Phase 4 COMPLETE - Lead Intelligence Tests + LeadScoringService (PR #135):**
+  - **Branch:** feature/mod02-sprint-2.1.6-phase-4-complete
+  - **Backend Implementation:**
+    - ✅ **LeadScoringService** (264 LOC): 4-Faktoren-Berechnung (Umsatzpotenzial 25%, Engagement 25%, Fit 25%, Dringlichkeit 25%)
+    - ✅ **LeadScoringServiceTest** (19 Tests GREEN): Business-Logic-Tests für alle Faktoren + Integration + Edge-Cases
+    - ✅ **LeadResourceTest** (+3 DTO-Completeness-Tests): leadScore, progressPauseTotalSeconds, nullable fields
+    - ✅ **Bug Fix:** leadScore in LeadDTO gemapped (KRITISCH - fehlte komplett)
+  - **Frontend Implementation:**
+    - ✅ **StopTheClockDialog.test.tsx** (12 Tests GREEN): RBAC-Permission-Tests (USER/ADMIN/MANAGER/SALES)
+    - ✅ **Bug Fix:** RBAC UI-Check in StopTheClockDialog (UX - fehlender Permission-Check)
+  - **Documentation:**
+    - ✅ **Testing Guide** (/docs/grundlagen/testing_guide.md): "Tests sind kein Selbstzweck - Fehler finden bevor Produktion!"
+  - **Tests:** 103 Tests GREEN (43 Backend + 60 Frontend)
+  - **Bugs gefunden & gefixt:** 3 Produktionsbugs durch Test-driven Development
+- ✅ **Sprint 2.1.6 Phase 3 COMPLETE - Automated Nightly Jobs + Outbox-Pattern (PR #134):**
+  - **Backend Services (2 neue Services, ~588 LOC):**
+    - ✅ **LeadMaintenanceService** (461 LOC): 4 Nightly Jobs (Progress Warning, Protection Expiry, Pseudonymization, Import Archival)
+    - ✅ **LeadMaintenanceScheduler** (127 LOC): Cron-basierter Scheduler mit @Scheduled
+  - **Domain Entities (2 neue, ~306 LOC):**
+    - ✅ **ImportJob** (159 LOC): Idempotency für Batch-Imports (requestFingerprint, idempotencyKey, TTL 7 Tage)
+    - ✅ **OutboxEmail** (147 LOC): Transactional Outbox Pattern für Email-Notifikationen
+  - **Tests:** 19 Tests GREEN (14 Import, 5 Maintenance Scheduler Integration)
+- ✅ **Sprint 2.1.6 Phase 2 COMPLETE - Core Backend APIs (PR #133):**
   - **33 Tests:** 100% passing (Import: 14, Backdating: 13, Convert: 6)
-  - **Backend Services (3 neue Services, ~2400 LOC):**
-    - ✅ **LeadImportService** (297 LOC): Batch-Import mit Dry-Run, Idempotency (SHA-256), Duplikaten-Check
-    - ✅ **LeadBackdatingService** (107 LOC): Historisches registeredAt + Deadline-Neuberechnung + Stop-the-Clock
-    - ✅ **LeadConvertService** (204 LOC): Lead → Customer + Location + Address + Contact (vollständig harmonisiert)
-  - **REST APIs:**
-    - ✅ POST /api/admin/migration/leads/import (Admin-only, Batch bis 1000 Leads)
-    - ✅ PUT /api/leads/{id}/registered-at (Admin/Manager, Backdating mit Audit)
-    - ✅ POST /api/leads/{id}/convert (All roles, Customer-Generierung)
-  - **DB Migration V261:** Customer.originalLeadId (Soft Reference für Lead → Customer Tracking)
-  - **DTOs:** 6 neue (Request/Response für Import/Backdating/Convert)
-  - **Smart Engineering:** Java Locale für Country Code Mapping (DE → DEU, 200+ Länder, 0 Wartung)
-- ✅ **PR #132 MERGED - Issue #130 BLOCKER Fix (TestDataBuilder CDI-Konflikte):**
-  - ✅ Worktree CI reaktiviert
-- ✅ **PR #129 MERGED - Sprint 2.1.5 Progressive Profiling & Lead Protection COMPLETE**
-- ✅ **Sprint 2.1.5 Backend Phase 1 COMPLETE (PR #124)**
-- 📋 **NEXT:** Sprint 2.1.6 Phase 3 (Automated Jobs), Phase 4 (Frontend UI + Excel Upload)
+  - **Backend Services:** LeadImportService (297 LOC), LeadBackdatingService (107 LOC), LeadConvertService (204 LOC)
+- 📋 **NEXT:** Sprint 2.1.6 Phase 5 (Frontend UI Polish + Excel Upload)
 
 **🚀 STRATEGIC DECISION (21.09.2025):** CQRS Light Migration-First Strategy confirmed - CQRS Light Foundation (1-2 Wochen Q4 2025) → Business-Module (Q1 2026) für kosteneffiziente interne Performance + Zero Doppelarbeit
 
@@ -134,6 +143,30 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-07 01:17 - Sprint 2.1.6 Phase 3 - PR #134 MERGED ✅
+
+**Kontext:** CI-Fixes + Code Quality + PR Merge nach "rote Lampen" in CI
+
+**Erledigt:**
+- ✅ **Front-Matter Lint**: 6/6 Dateien fixed (ADR-007, AUTOMATED_JOBS_SPECIFICATION, PHASE_4_JOB_MONITORING_SPEC, etc.)
+- ✅ **Backend Tests**: 14/14 GREEN nach 2 kritischen Fixes:
+  - 🐛 Panache Query Bug: `find("request_fingerprint", ...)` → `find("requestFingerprint", ...)` (camelCase statt snake_case)
+  - 🧪 Test Isolation: `ImportJob.deleteAll()` in `@BeforeEach` ergänzt (Idempotent Replay verhindert)
+- ✅ **V269 Migration verhindert**: User-Feedback stoppte Production Data Loss (V262 hatte `import_jobs` bereits erstellt)
+- ✅ **Gemini Code Review**: 5 Verbesserungen implementiert
+  - HIGH: OutboxEmail.failedAt Field fehlte (Schema-Inkonsistenz)
+  - MEDIUM: ImportJob DRY-Refactoring (markFinished Helper)
+  - MEDIUM: LeadImportService redundanten Code entfernt
+  - MEDIUM: LeadMaintenanceService Text Blocks (2 Stellen)
+- ✅ **V268 Migration Fix**: `failed_at TIMESTAMP` Column ergänzt (Hibernate Schema-Validation Error behoben)
+- ✅ **PR #134 MERGED**: Mit Admin-Rechten gemerged, 32 Dateien, +5682 LOC
+- ✅ **Branch-Wechsel**: feature/mod02-sprint-2.1.6-lead-ui-phase2 erstellt
+
+**Migration:** V268 Fix (failed_at column)
+**Tests:** 14/14 GREEN, alle CI Checks GREEN
+**Commits:** f68d41dea (Panache+Tests), 5567d2724 (Gemini Fixes), 8bce9230b (V268 Fix)
+**Status:** Sprint 2.1.6 Phase 3 COMPLETE - in main gemerged
+
 ### 2025-10-06 23:48 - Sprint 2.1.6 Phase 3 - Gap Analysis & Sprint 2.1.7 Planning ✅
 
 **Kontext:** Vollständige Gap-Analyse Phase 3 + Technical Debt Review + Sprint 2.1.7 Integration

@@ -208,10 +208,10 @@ updated: "2025-10-02"
 
 ---
 
-### **Sprint 2.1.6 – Lead Completion & Admin Features (IN PROGRESS)**
+### **Sprint 2.1.6 – Lead Completion & Admin Features (PHASE 4 COMPLETE)**
 **Zentral:** [TRIGGER_SPRINT_2_1_6.md](../../TRIGGER_SPRINT_2_1_6.md)
-**Status:** 🔧 Phase 2 COMPLETE (2025-10-06) - BusinessType Harmonization ✅
-**Scope:** Bestandsleads-Migration, Convert-Flow, BusinessType Harmonization, Stop-the-Clock UI, Automated Jobs
+**Status:** ✅ Phase 4 COMPLETE (2025-10-08) - Lead Intelligence Tests + LeadScoringService ✅
+**Scope:** Bestandsleads-Migration, Convert-Flow, BusinessType Harmonization, Stop-the-Clock UI, Automated Jobs, Lead Intelligence
 
 **⚠️ PRIORITY #0 - BLOCKER FIRST:**
 - **Issue #130:** TestDataBuilder Refactoring (12 Tests broken, CI disabled)
@@ -256,11 +256,22 @@ updated: "2025-10-02"
   - Nightly Job: Protection Expiry (Tag 70)
   - Nightly Job: Pseudonymisierung (60 Tage ohne Progress)
 
-**Optional (ADR-006 Phase 2):**
-- Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
-- Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)
-- Lead-Activity-Timeline (Interaktions-Historie)
-- MUI Dialog Accessibility Fix (aria-hidden Warning)
+**✅ Phase 4 COMPLETE - Lead Intelligence Tests + LeadScoringService (PR #135):**
+- ✅ **LeadScoringService** (264 LOC): 4-Faktoren-Berechnung (Umsatzpotenzial, Engagement, Fit, Dringlichkeit)
+- ✅ **LeadScoringServiceTest** (19 Tests GREEN): Business-Logic-Tests + Integration + Edge-Cases
+- ✅ **StopTheClockDialog.test.tsx** (12 Tests GREEN): RBAC-Permission-Tests (USER/ADMIN/MANAGER/SALES)
+- ✅ **LeadResourceTest** (+3 DTO-Completeness-Tests): leadScore, progressPauseTotalSeconds, nullable fields
+- ✅ **Testing Guide** (/docs/grundlagen/testing_guide.md): "Tests sind kein Selbstzweck - Fehler finden!"
+- ✅ **Bug Fixes:** 3 Produktionsbugs gefunden & gefixt (leadScore DTO-Mapping, RBAC UI-Check, businessType UPPERCASE)
+- ✅ **Test-Statistik:** 103 Tests GREEN (43 Backend + 60 Frontend)
+
+**Frontend UI Components (ADR-006 Phase 2 - bereits implementiert in früherem Commit):**
+- ✅ Lead-Scoring-System (LeadScoreIndicator.tsx)
+- ✅ Lead-Status-Workflows (LeadStatusWorkflow.tsx)
+- ✅ Lead-Activity-Timeline (LeadActivityTimeline.tsx)
+- ✅ Stop-the-Clock Dialog (StopTheClockDialog.tsx)
+- ✅ Lead Protection Manager (LeadProtectionManager.tsx)
+- ✅ Lead Quality Dashboard (LeadQualityDashboard.tsx)
 
 **❌ VERSCHOBEN AUF SPRINT 2.1.7 (Scope-Overflow):**
 - ~~Lead-Transfer zwischen Partnern~~ (User Story 1 - zu komplex!)
@@ -323,7 +334,15 @@ updated: "2025-10-02"
    - LeadTestDataFactory (asPreClaimLead, asRegisteredLead, asQualifiedLead)
    - LeadActivityTestDataFactory (asProgressActivity, asNonProgressActivity)
 
-8. **Test-Pattern Library & Documentation**
+8. **Lead Activity Capture UI** (NEU - VERVOLLSTÄNDIGUNG, 4-6h)
+   - AddLeadActivityDialog.tsx (Activity-Type, Zusammenfassung, Details, Outcome)
+   - Action-Button in CustomerTable.tsx (nur für context='leads')
+   - API-Integration: POST /api/leads/{id}/activities
+   - German labels (E-Mail, Anruf, Termin, Notiz, etc.)
+   - Validation: min. 10 Zeichen Zusammenfassung, Pflicht-Activity-Type
+   - Success-Feedback: Snackbar "Aktivität erfasst"
+
+9. **Test-Pattern Library & Documentation**
    - TESTING_PATTERNS.md (5+ Patterns: Lead-Journey, RBAC+RLS, Activity-Progress)
    - TEST_DATA_CHEATSHEET.md (Quick Reference)
    - Migration Guide für alte Tests
@@ -339,6 +358,7 @@ updated: "2025-10-02"
 - Fuzzy-Matching Service + Review-UI (Track 1)
 - RLS Policies + Team Management (Track 1)
 - CRMScenarioBuilder + Faker + TestDataFactories (Track 2)
+- Lead Activity Capture UI (AddLeadActivityDialog.tsx) (Track 2)
 - TESTING_PATTERNS.md + TEST_DATA_CHEATSHEET.md (Track 2)
 
 ---

@@ -172,7 +172,7 @@ export const DataHygieneDashboard: React.FC = () => {
       {/* Header */}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h5" component="h2">
-          Data Intelligence Dashboard
+          Datenqualität-Übersicht
         </Typography>
         <Box>
           <Tooltip title="Daten aktualisieren">

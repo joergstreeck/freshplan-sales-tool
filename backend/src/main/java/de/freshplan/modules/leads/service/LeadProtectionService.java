@@ -104,10 +104,10 @@ public class LeadProtectionService {
     }
 
     LocalDateTime now = LocalDateTime.now();
-    LocalDateTime protectionEnd = lead.protectionStartAt.plusMonths(lead.protectionMonths);
+    LocalDateTime protectionEnd = lead.getProtectionUntil();
 
-    if (now.isAfter(protectionEnd)) {
-      return -1; // Protection expired
+    if (protectionEnd == null || now.isAfter(protectionEnd)) {
+      return -1; // Protection expired or not set
     }
 
     // Calculate remaining days
