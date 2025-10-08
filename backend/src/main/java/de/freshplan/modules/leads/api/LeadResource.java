@@ -691,6 +691,51 @@ public class LeadResource {
   }
 
   /**
+   * Add first contact to a Pre-Claim lead (Sprint 2.1.6 Phase 5).
+   *
+   * <p>Transitions lead from VORMERKUNG (Stage 0) to REGISTRIERUNG (Stage 1).
+   *
+   * <p>Endpoint: POST /api/leads/{id}/first-contact
+   *
+   * <p>Security: All authenticated users (USER, MANAGER, ADMIN)
+   *
+   * @param id Lead ID
+   * @param request First contact details
+   * @return Updated lead
+   */
+  @POST
+  @Path("/{id}/first-contact")
+  @Transactional
+  public Response addFirstContact(
+      @PathParam("id") Long id, @Valid de.freshplan.modules.leads.api.AddFirstContactRequest request) {
+
+    String currentUserId = getCurrentUserId();
+
+    try {
+      Lead updatedLead =
+          leadService.addFirstContact(
+              id,
+              request.contactPerson,
+              request.email,
+              request.phone,
+              request.contactDate,
+              request.notes,
+              currentUserId);
+
+      return Response.ok(updatedLead).build();
+
+    } catch (WebApplicationException e) {
+      // Re-throw WebApplicationException (404, 400) as-is
+      throw e;
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to add first contact to lead %d: %s", id, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Internal server error adding first contact"))
+          .build();
+    }
+  }
+
+  /**
    * Helper method to create and persist activity entries. Reduces code duplication and ensures
    * consistent activity logging across all lead operations.
    *
