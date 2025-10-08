@@ -119,7 +119,7 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - ADR-004: Inline-First Architecture, ADR-006: Hybrid Lead-UI
    - Status: ✅ COMPLETE (Backend PR #124, Frontend PR #129, Enum PR #131)
 
-✅ TRIGGER_SPRINT_2_1_6.md - Lead Completion & Admin Features ✅ COMPLETE (08.10.2025)
+✅ TRIGGER_SPRINT_2_1_6.md - Lead Completion & Admin Features (80% COMPLETE - 08.10.2025)
    - **Phase 1:** Issue #130 Fix (TestDataBuilder CDI-Konflikt) ✅ MERGED (PR #132)
    - **Phase 2:** Admin APIs (Import, Backdating, Convert) ✅ MERGED (PR #133)
    - **Phase 3:** Automated Nightly Jobs + Outbox-Pattern ✅ MERGED (PR #134)
@@ -130,9 +130,29 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
      - ✅ 48 neue Frontend-Tests + 19 Backend-Tests
      - ✅ 3 Produktionsbugs gefunden & gefixt (RBAC, German labels, DTO-Mapping)
      - ✅ Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
-   - **Migrations:** V269 (lead_score), V270 (outbox_emails), V271 (lead_score NOT NULL)
+   - **Phase 5:** Enum-Migration Phase 1 (Lead-Modul) 📋 PENDING (~8h)
+     - LeadSource, BusinessType, KitchenSize als Backend-Enums
+     - MESSE/TELEFON Pre-Claim Logic (Erstkontakt PFLICHT)
+     - Migration V273, Frontend Hooks (useLeadSources, useBusinessTypes, useKitchenSizes)
+   - **Migrations:** V269-V271 (Phase 4), V273 (Phase 5 geplant)
    - **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
-   - Status: ✅ 100% COMPLETE (4/4 Phasen merged, 08.10.2025)
+   - Status: ✅ 80% COMPLETE (4/5 Phasen merged, Phase 5 PENDING)
+
+📋 TRIGGER_SPRINT_2_1_6_1.md - Enum-Migration Phase 2+3 (NEU 08.10.2025)
+   - **Phase 1:** Customer-Modul BusinessType-Migration (6h)
+     - Customer.industry → Customer.businessType Migration
+     - Harmonisierung mit Lead.businessType (9 gemeinsame Werte)
+     - Dual-Mode: Legacy-Support für 1 Sprint (Auto-Sync Setter)
+     - Migration V27X (dynamisch ermittelt)
+   - **Phase 2:** Restliches CRM Enum-Harmonisierung (10h)
+     - ActivityType erweitern (SAMPLE_REQUEST, CONTRACT_SIGNED, etc.)
+     - OpportunityStatus Enum (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST)
+     - PaymentMethod Enum (SEPA_LASTSCHRIFT, KREDITKARTE, RECHNUNG)
+     - DeliveryMethod Enum (STANDARD, EXPRESS, SAMEDAY, PICKUP)
+   - **Strategisches Refactoring:** Technische Schulden vermeiden
+   - **Pre-Production Timing:** Optimales Zeitfenster (keine Daten-Migration)
+   - **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
+   - Status: 📋 PLANNED (Start: 09.10.2025)
 
 📋 TRIGGER_SPRINT_2_1_7.md - Team Management & Test Infrastructure (NEU 05.10.2025)
    - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching

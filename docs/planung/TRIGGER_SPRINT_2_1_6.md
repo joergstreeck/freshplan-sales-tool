@@ -32,10 +32,11 @@ phases:
     pr: "#135"
     merged: "2025-10-08"
   - phase: "Phase 5"
-    branch: "feature/mod02-sprint-2.1.6-monitoring-rollback"
-    scope: "OPTIONAL (Prometheus Metrics, Score-Doku, V10012 Rollback, Accessibility)"
+    branch: "feature/mod02-sprint-2.1.6-enum-migration-phase-1"
+    scope: "Lead-Enums Migration (LeadSource, BusinessType, KitchenSize) - Enum-Migration Phase 1"
     status: "pending"
-    effort: "~2h (Priority 1: 35 Min, Priority 2: 1h, Priority 3: optional)"
+    effort: "~8h"
+    migrations: ["V273"]
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
@@ -62,7 +63,7 @@ updated: "2025-10-08"
 | **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ COMPLETE | #133 |
 | **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs + **Issue #134** (Idempotency) + Outbox-Pattern | ✅ COMPLETE | #134 |
 | **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4-complete` | Lead Quality Metrics & UI Components (LeadScoringService, 4 UI-Komponenten, 48 Tests) | ✅ COMPLETE | #135 |
-| **Phase 5** | `feature/mod02-sprint-2.1.6-monitoring-rollback` | OPTIONAL (Prometheus, Score-Doku, V10012, Accessibility) | 📋 PENDING | - |
+| **Phase 5** | `feature/mod02-sprint-2.1.6-enum-migration-phase-1` | Lead-Enums Migration (LeadSource, BusinessType, KitchenSize) - Enum-Migration Phase 1 | 📋 PENDING | ~8h |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
 > - **Issue #130 Analyse:** [`ISSUE_130_ANALYSIS.md`](claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md) - Detaillierte Analyse + Migration Guide
@@ -131,6 +132,12 @@ updated: "2025-10-08"
 - ❌ **Lead-Transfer verschoben** auf Sprint 2.1.7 (User Story 1 entfernt - zu komplex!)
 - ❌ **RLS + Team Management verschoben** auf Sprint 2.1.7 (User Story 5 & 6 entfernt)
 - ❌ **Fuzzy-Matching verschoben** auf Sprint 2.1.7 (User Story 4 entfernt - eigene User Story verdient)
+
+**Scope-Erweiterung (08.10.2025) - Phase 5:**
+- ✅ **Enum-Migration Phase 1** (Lead-Modul: LeadSource, BusinessType, KitchenSize)
+- **Begründung:** MESSE/TELEFON-Check funktioniert NICHT ohne Enum (Pre-Claim Logic)
+- **Timing:** Pre-Production = goldene Zeit (keine Daten-Migration, verhindert technische Schulden)
+- **Verweis:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
 
 ## User Stories
 
@@ -975,39 +982,47 @@ void pseudonymizeExpiredLeads() {
 - Testing Guide: [docs/grundlagen/testing_guide.md](../../grundlagen/testing_guide.md)
 - PR #135: https://github.com/joergstreeck/freshplan-sales-tool/pull/135
 
-**Phase 5 - OPTIONAL (Quick Wins: Prometheus, Score-Doku, V10012 Rollback, Accessibility) - 📋 PENDING:**
+**Phase 5 - Enum-Migration Phase 1 (Lead-Modul) - 📋 PENDING:**
 
-**🎯 Priority 1 - Quick Wins (35 Min total):**
-- [ ] **Prometheus-Metriken für Nightly Jobs** (~30 Min)
-  - Infrastructure bereits vorhanden (quarkus-micrometer seit Sprint 2.1.1)
-  - Nur Annotationen hinzufügen: @Counted + @Timed auf 4 Job-Methoden
-  - Beispiel: `@Counted(name="lead_job_runs_total", tags={"job=progress_warning"})`
-  - Benefit: Monitoring/Alerts sofort nutzbar, kein Setup-Aufwand
-  - Deliverable: `/q/metrics` Endpoint mit Job-Metriken
-- [ ] **Score-Farbschwellen Dokumentation** (~5 Min)
-  - Code-Kommentare bereits vorhanden (LeadScoreIndicator.tsx:17, 42-46)
-  - Copy-Paste nach: `artefakte/LEAD_SCORING_SPECIFICATION.md`
-  - Schwellen: <40 rot (#f44336), 40-69 orange (#ff9800), ≥70 grün (#94C456)
+**🎯 Kern-Deliverables (8h total):**
 
-**🔧 Priority 2 - V10012 Migration Rollback (~1h):**
-- [ ] **V10012 Migration Rollback-Strategie** (ignoreMigrationPatterns + Rollback-Safety)
-  - Deaktivierung: `quarkus.flyway.ignoreMigrationPatterns=*:10012` in application.properties
-  - Konflikt: V10012 (ui_leads_company_city UNIQUE) vs V259 (company+city SOFT collision)
-  - Rollback: `git revert HEAD` (5 Sekunden, keine DB-Änderungen)
-  - Testing: 1-2 Tage Lead-Import + Duplikaten-Detection validieren
-  - Risiko: Minimal (nur Config-Zeile, Indexes bleiben in DB)
+**1. LeadSource Enum (2h)**
+- [ ] Backend: `LeadSource` Enum mit 6 Werten (MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGES)
+- [ ] DB-Migration V273: CREATE TYPE lead_source_type + ALTER TABLE leads
+- [ ] Business-Logic: `LeadSource.requiresFirstContact()` für Pre-Claim Logic
+- [ ] EnumResource: GET /api/enums/lead-sources Endpoint
+- [ ] Frontend: `useLeadSources()` Hook + LeadWizard Integration
+- [ ] Tests: ≥85% Coverage (Backend + Frontend)
 
-**📋 Priority 3 - Accessibility & UI Polish (optional, Zeit erlaubt):**
-- [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
-- [ ] **Excel-Upload für Leads-Migration** (Drag & Drop, Spalten-Mapping, Vorschau, Dry-Run)
-- [ ] **Stop-the-Clock UI funktional** (StopTheClockDialog.tsx, RBAC Manager/Admin)
-- [ ] **LeadProtectionBadge.tsx** (Pause/Resume Buttons)
-- [ ] **Frontend Tests ≥75% Coverage**
+**2. BusinessType Enum (3h)**
+- [ ] Backend: `BusinessType` Enum mit 9 Werten (RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
+- [ ] DB-Migration V273: CREATE TYPE business_type + ALTER TABLE leads (Uppercase-Migration)
+- [ ] Daten-Migration: lowercase → UPPERCASE (restaurant → RESTAURANT, etc.)
+- [ ] EnumResource: GET /api/enums/business-types Endpoint
+- [ ] Frontend: `useBusinessTypes()` Hook + LeadWizard Integration
+- [ ] CHECK Constraint: 9 gültige Werte validieren
+- [ ] Tests: ≥85% Coverage (Backend + Frontend)
 
-**Optional (ADR-006 Phase 2 - Falls Zeit!):**
-- [ ] **Lead-Scoring-System** (Backend + Frontend, 0-100 Punkte)
-- [ ] **Lead-Status-Workflows** (UI für LEAD → PROSPECT → AKTIV)
-- [ ] **Lead-Activity-Timeline** (Interaktions-Historie)
+**3. KitchenSize Enum (2h)**
+- [ ] Backend: `KitchenSize` Enum mit 4 Werten (KLEIN, MITTEL, GROSS, SEHR_GROSS)
+- [ ] DB-Migration V273: CREATE TYPE kitchen_size_type + ALTER TABLE leads
+- [ ] EnumResource: GET /api/enums/kitchen-sizes Endpoint
+- [ ] Frontend: `useKitchenSizes()` Hook + LeadWizard Integration
+- [ ] Tests: ≥85% Coverage (Backend + Frontend)
+
+**4. Frontend Single Source of Truth (1h)**
+- [ ] React Query Hooks mit 5min Cache (useLeadSources, useBusinessTypes, useKitchenSizes)
+- [ ] LeadWizard: Dynamische Dropdowns ohne Hardcoding
+- [ ] Pre-Claim Logic: MESSE/TELEFON → Erstkontakt PFLICHT (Enum-basiert)
+- [ ] Tests: MSW-basierte Integration Tests für alle 3 Enums
+
+**Strategische Begründung:**
+- ✅ **MESSE/TELEFON-Check funktioniert** (Pre-Claim Logic erfordert `source.requiresFirstContact()`)
+- ✅ **Performance ~10x schneller** (Enum-Index vs. String-LIKE)
+- ✅ **Type-Safety** (Compiler-Validierung statt Runtime-Errors)
+- ✅ **Pre-Production Timing** (keine Daten-Migration, Clean Slate, verhindert technische Schulden)
+
+**Verweis:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md) - Vollständiger 3-Phasen-Plan
 
 **Dokumentation:**
 - [x] **Convert-Flow dokumentiert** ✅ (BUSINESS_LOGIC_LEAD_ERFASSUNG.md Section 11)

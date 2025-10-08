@@ -192,6 +192,8 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V269** | Add lead_score column | 2.1.6 Phase 4 | ⚠️ Conflict | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Out of Order conflict, applied via V271 |
 | **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
 | **V271** | Fix add lead_score column (V269 Hotfix) | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring (Idempotent) |
+| **V272** | *(Reserved - Next available)* | - | 📋 Available | - | - | - | - | - | Use `./scripts/get-next-migration.sh` |
+| **V273** | Lead-Enums Migration (LeadSource, BusinessType, KitchenSize) | 2.1.6 Phase 5 | 📋 PLANNED | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Enum-Migration Phase 1 - Type-Safety |
 
 ---
 
@@ -285,7 +287,31 @@ V263 (BusinessType Harmonization)
   - Migrate lowercase → uppercase (restaurant → RESTAURANT, etc.)
   - CHECK constraint: 9 unified values
   - EnumResource.java: GET /api/enums/business-types
+  ↓
+V273 (Lead-Enums Migration - Phase 1) [PLANNED]
+  - LeadSource Enum: CREATE TYPE lead_source_type (6 values)
+  - BusinessType Enum: CREATE TYPE business_type (9 values - shared mit Customer)
+  - KitchenSize Enum: CREATE TYPE kitchen_size_type (4 values)
+  - EnumResource: GET /api/enums/lead-sources, /kitchen-sizes
+  - Business-Rule: source.requiresFirstContact() für MESSE/TELEFON
 ```
+
+### Sprint 2.1.6.1 (Enum-Migration Phase 2+3)
+```
+V27X (Customer BusinessType Migration) [PLANNED]
+  - Customer.industry → Customer.businessType (9 Werte harmonisiert)
+  - Dual-Mode: Auto-Sync Setter (industry ↔ businessType)
+  - Data Migration: Industry → BusinessType Mapping
+  - Frontend: CustomerEditDialog nutzt useBusinessTypes()
+  ↓
+V27Y-V281 (CRM-weit Enum-Harmonisierung) [PLANNED]
+  - V27Y: ActivityType erweitern (SAMPLE_REQUEST, CONTRACT_SIGNED, etc.)
+  - V27Z: OpportunityStatus Enum (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST)
+  - V280: PaymentMethod Enum (SEPA_LASTSCHRIFT, KREDITKARTE, RECHNUNG)
+  - V281: DeliveryMethod Enum (STANDARD, EXPRESS, SAMEDAY, PICKUP)
+```
+
+**Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
 
 ---
 
@@ -373,6 +399,6 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-07 (V271, Sprint 2.1.6 Phase 4 - Lead Scoring + Schema Hotfixes)
+**Letzte Aktualisierung:** 2025-10-08 (V273 PLANNED, Sprint 2.1.6 Phase 5 - Enum-Migration Phase 1)
 
-**Nächste Migration:** V272 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V272-V273 (ermitteln via `./scripts/get-next-migration.sh`)

@@ -406,15 +406,25 @@ Implementation-Details:
 - **REST APIs:** POST /api/admin/migration/leads/import (Admin-only) · PUT /api/leads/{id}/registered-at (Admin/Manager) · POST /api/leads/{id}/convert (All roles)
 - **DTOs:** 6 neue Request/Response-Paire für Import/Backdating/Convert
 - **DB Migrations:** V261 (Customer.originalLeadId), V263 (Lead.businessType), V264 (Customer.businessType + Data Migration)
-- **BusinessType Harmonization (Best Practice 100%):**
-  - Shared BusinessType Enum: 9 unified values (RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
-  - Single Source of Truth: GET /api/enums/business-types → useBusinessTypes() hook
-  - Frontend Harmonization: LeadWizard + CustomerDataStep use identical pattern
-  - Field Catalog Migration: industry → businessType with fieldType: "enum"
-  - EnumField Component: Generic dynamic enum rendering
-  - Backward Compatibility: Auto-sync setters between industry ↔ businessType
-  - Industry → BusinessType Mapping: All 9 values migrated (V264)
-  - All Hardcoding Eliminated: businessType, leadSource, kitchenSize (3 hooks)
+- **Enum-Migration Strategie (3-Phasen-Plan):**
+  - **Phase 1 (Sprint 2.1.6 Phase 5):** Lead-Modul Enums (LeadSource, BusinessType, KitchenSize)
+    - LeadSource: MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGES
+    - BusinessType: 9 unified values (RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
+    - KitchenSize: KLEIN, MITTEL, GROSS, SEHR_GROSS
+    - Migration V273, Frontend Hooks (useLeadSources, useBusinessTypes, useKitchenSizes)
+  - **Phase 2 (Sprint 2.1.6.1 Phase 1):** Customer-Modul BusinessType-Migration
+    - Customer.industry → Customer.businessType (9 Werte harmonisiert)
+    - Dual-Mode: Auto-Sync Setter für Rückwärtskompatibilität
+    - Migration V27X (dynamisch), Frontend useBusinessTypes()
+  - **Phase 3 (Sprint 2.1.6.1 Phase 2):** CRM-weit Enum-Harmonisierung
+    - ActivityType erweitern, OpportunityStatus, PaymentMethod, DeliveryMethod
+    - EnumResource API erweitert: 4 neue Endpoints
+    - Frontend Hooks: useActivityTypes, useOpportunityStatuses, usePaymentMethods, useDeliveryMethods
+  - **Business-Rule:** MESSE/TELEFON = Erstkontakt PFLICHT (Pre-Claim Logic: `source.requiresFirstContact()`)
+  - **Performance:** Enum-Index ~10x schneller als String-LIKE
+  - **Type-Safety:** Compiler-Validierung statt Runtime-Errors
+  - **Timing:** Pre-Production = optimales Zeitfenster (keine Daten-Migration, Clean Slate)
+  - **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
 
 **Migrations deployed:**
 - **V261:** Add customer.original_lead_id (BIGINT NULL, Soft Reference, Partial Index)

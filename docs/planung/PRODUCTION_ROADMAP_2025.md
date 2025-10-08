@@ -144,8 +144,25 @@ Sprint 2.1.6: Lead Completion         ✅ 80% COMPLETE (05-08.10.2025) - PR #132
                                         - **Priority 2 (1h):** V10012 Migration Rollback (ignoreMigrationPatterns, V259 Konflikt)
                                         - **Priority 3 (optional):** MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen
                                       → **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL)
+                                      → **Phase 5:** Enum-Migration Phase 1 (Lead-Modul) 📋 PENDING (~8h)
+                                        - LeadSource, BusinessType, KitchenSize als Backend-Enums
+                                        - MESSE/TELEFON Pre-Claim Logic (Erstkontakt PFLICHT)
+                                        - Migration V273, Frontend Hooks
                                       → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
+
+Sprint 2.1.6.1: Enum-Migration P2+3   📅 PLANNED (09-11.10.2025) - NEU 08.10.2025
+                                      → **Phase 1 (6h):** Customer-Modul BusinessType-Migration
+                                        - Customer.industry → Customer.businessType (9 Werte harmonisiert)
+                                        - Dual-Mode: Auto-Sync Setter für Rückwärtskompatibilität
+                                        - Migration V27X (dynamisch), Frontend useBusinessTypes()
+                                      → **Phase 2 (10h):** CRM-weit Enum-Harmonisierung
+                                        - ActivityType erweitern, OpportunityStatus Enum
+                                        - PaymentMethod Enum, DeliveryMethod Enum
+                                        - EnumResource API erweitert: 4 neue Endpoints
+                                        - Frontend Hooks: useActivityTypes, useOpportunityStatuses, usePaymentMethods, useDeliveryMethods
+                                      → **Begründung:** Pre-Production = goldene Zeit (keine Daten-Migration)
+                                      → **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
 
 Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2025
                                       → **Track 1 - Business (verschoben aus 2.1.6):**

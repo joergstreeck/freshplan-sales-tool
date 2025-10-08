@@ -130,30 +130,24 @@ public class LeadScoringService {
     int kitchenSizeScore = 0;
     int stageScore = 0;
 
-    // Business type (max 10 points)
+    // Business type (max 10 points) - Sprint 2.1.6 Phase 5: Enum-based
     if (lead.businessType != null) {
-      String type = lead.businessType.toLowerCase();
-      if (type.contains("restaurant") || type.contains("hotel")) {
-        businessTypeScore = 10; // High-value segments
-      } else if (type.contains("catering")) {
-        businessTypeScore = 7;
-      } else if (type.contains("kantine") || type.contains("kantinen")) {
-        businessTypeScore = 5;
-      } else {
-        businessTypeScore = 2; // Generic
-      }
+      businessTypeScore = switch (lead.businessType) {
+        case RESTAURANT, HOTEL -> 10; // High-value segments
+        case CATERING -> 7;
+        case KANTINE -> 5;
+        default -> 2; // Generic (GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
+      };
     }
 
-    // Kitchen size (max 8 points)
+    // Kitchen size (max 8 points) - Sprint 2.1.6 Phase 5: Enum-based
     if (lead.kitchenSize != null) {
-      String size = lead.kitchenSize.toLowerCase();
-      if (size.equals("large") || size.equals("groß")) {
-        kitchenSizeScore = 8;
-      } else if (size.equals("medium") || size.equals("mittel")) {
-        kitchenSizeScore = 5;
-      } else if (size.equals("small") || size.equals("klein")) {
-        kitchenSizeScore = 2;
-      }
+      kitchenSizeScore = switch (lead.kitchenSize) {
+        case SEHR_GROSS -> 8; // Very large
+        case GROSS -> 6; // Large
+        case MITTEL -> 4; // Medium
+        case KLEIN -> 2; // Small
+      };
     }
 
     // Stage (max 7 points)

@@ -109,8 +109,8 @@ public class LeadDTO {
       dto.territory.currencyCode = lead.territory.currencyCode;
     }
 
-    dto.businessType = lead.businessType;
-    dto.kitchenSize = lead.kitchenSize;
+    dto.businessType = lead.businessType != null ? lead.businessType.name() : null;
+    dto.kitchenSize = lead.kitchenSize != null ? lead.kitchenSize.name() : null;
     dto.employeeCount = lead.employeeCount;
     dto.estimatedVolume = lead.estimatedVolume;
     dto.industry = lead.industry;
@@ -122,7 +122,7 @@ public class LeadDTO {
       dto.collaboratorUserIds = new java.util.HashSet<>(lead.collaboratorUserIds);
     }
 
-    dto.source = lead.source;
+    dto.source = lead.source != null ? lead.source.name() : null;
     dto.sourceCampaign = lead.sourceCampaign;
 
     // Progressive Profiling (Sprint 2.1.5)

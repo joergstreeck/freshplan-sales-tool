@@ -161,6 +161,50 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-08 15:30 - Enum-Migration Dokumentation - Sprint 2.1.6 Phase 5 + Sprint 2.1.6.1 PLANNED
+
+**Kontext:** Vollständige Dokumentation der 3-Phasen Enum-Migration für Type-Safety & Performance
+
+**Erledigt:**
+- ✅ **TRIGGER_SPRINT_2_1_6_1.md erstellt (274 Zeilen):**
+  - Phase 1: Customer BusinessType-Migration (6h) - industry → businessType Harmonisierung
+  - Phase 2: CRM-weit Enum-Harmonisierung (10h) - Activity, Opportunity, Payment, Delivery
+  - Migration V27X (dynamisch), Frontend Hooks, Dual-Mode Auto-Sync
+- ✅ **ENUM_MIGRATION_STRATEGY.md erstellt (532 Zeilen):**
+  - 3-Phasen-Plan detailliert (Lead → Customer → CRM-weit)
+  - Code-Beispiele für alle 3 Enums (LeadSource, BusinessType, KitchenSize)
+  - DB-Migration Pattern (CREATE TYPE, ALTER TABLE, Data Migration)
+  - Frontend-Integration Pattern (TypeScript Enums, Dropdown-Beispiele, React Query Hooks)
+  - Testing-Strategie (Backend Unit, Integration, Frontend MSW)
+  - Performance-Messung (10x schneller: 4.7ms vs. 45.5ms)
+  - Rollback-Plan für alle Phasen
+- ✅ **TRIGGER_SPRINT_2_1_6.md aktualisiert:**
+  - Phase 5 erweitert: Lead-Enums Migration (LeadSource, BusinessType, KitchenSize)
+  - Scope-Erweiterung dokumentiert: MESSE/TELEFON Pre-Claim Logic erfordert Enum
+  - Migration V273, Verweis auf ENUM_MIGRATION_STRATEGY.md
+- ✅ **TRIGGER_INDEX.md aktualisiert:**
+  - Sprint 2.1.6: 80% COMPLETE (4/5 Phasen, Phase 5 PENDING)
+  - Sprint 2.1.6.1 Entry hinzugefügt: Enum-Migration Phase 2+3
+  - Status, Aufwand, Artefakt-Verweis
+- ✅ **SPRINT_MAP.md aktualisiert:**
+  - Sprint 2.1.6.1 Section hinzugefügt
+  - Begründung: Pre-Production Timing, Performance-Gewinn, Type-Safety
+- ✅ **PRODUCTION_ROADMAP_2025.md aktualisiert:**
+  - Sprint 2.1.6 Phase 5 ergänzt
+  - Sprint 2.1.6.1 Entry mit Phase 1+2 Details
+- ✅ **CRM_AI_CONTEXT_SCHNELL.md aktualisiert:**
+  - Enum-Migration Strategie Section erweitert (3-Phasen-Plan)
+  - Business-Rule: MESSE/TELEFON Erstkontakt PFLICHT
+  - Performance, Type-Safety, Timing dokumentiert
+- ✅ **MIGRATIONS.md aktualisiert:**
+  - V273 Entry: Lead-Enums Migration (PLANNED)
+  - Sprint 2.1.6.1 Dependencies (V27X-V281)
+  - Artefakt-Verweis auf ENUM_MIGRATION_STRATEGY.md
+
+**Migration:** V273 (PLANNED - Sprint 2.1.6 Phase 5), V27X-V281 (PLANNED - Sprint 2.1.6.1)
+**Cross-Referenzen:** Issue #136, PRE_CLAIM_LOGIC.md, BUSINESS_LOGIC_LEAD_ERFASSUNG.md
+**Status:** Sprint 2.1.6 Phase 5 PLANNED, Sprint 2.1.6.1 PLANNED
+
 ### 2025-10-08 03:27 - Sprint 2.1.6 Phase 4 COMPLETE - PR #135 MERGED ✅
 
 **Kontext:** CI-Fehler behoben + Gemini Code-Review + PR #135 Merge + Dokumentation COMPLETE

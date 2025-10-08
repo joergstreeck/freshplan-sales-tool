@@ -1,5 +1,8 @@
 package de.freshplan.modules.leads.api;
 
+import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.KitchenSize;
+import de.freshplan.domain.shared.LeadSource;
 import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
@@ -253,9 +256,9 @@ public class LeadResource {
     }
     lead.territory = territory;
 
-    // B2B-specific fields
-    lead.businessType = request.businessType;
-    lead.kitchenSize = request.kitchenSize;
+    // B2B-specific fields - Sprint 2.1.6 Phase 5: String → Enum conversion
+    lead.businessType = request.businessType != null ? BusinessType.fromString(request.businessType) : null;
+    lead.kitchenSize = request.kitchenSize != null ? KitchenSize.fromString(request.kitchenSize) : null;
     lead.employeeCount = request.employeeCount;
     lead.estimatedVolume = request.estimatedVolume;
     lead.industry = request.industry;
@@ -265,7 +268,7 @@ public class LeadResource {
     lead.status = LeadStatus.REGISTERED;
     lead.stage = LeadStage.VORMERKUNG; // Sprint 2.1.6 - Progressive Profiling Stage
     lead.createdBy = currentUserId;
-    lead.source = request.source != null ? request.source : "web";
+    lead.source = request.source != null ? LeadSource.fromString(request.source) : LeadSource.WEB_FORMULAR;
     lead.sourceCampaign = request.sourceCampaign;
 
     // Apply user's lead settings for protection periods
@@ -365,8 +368,8 @@ public class LeadResource {
     if (updateRequest.street != null) lead.street = updateRequest.street;
     if (updateRequest.postalCode != null) lead.postalCode = updateRequest.postalCode;
     if (updateRequest.city != null) lead.city = updateRequest.city;
-    if (updateRequest.businessType != null) lead.businessType = updateRequest.businessType;
-    if (updateRequest.kitchenSize != null) lead.kitchenSize = updateRequest.kitchenSize;
+    if (updateRequest.businessType != null) lead.businessType = BusinessType.fromString(updateRequest.businessType);
+    if (updateRequest.kitchenSize != null) lead.kitchenSize = KitchenSize.fromString(updateRequest.kitchenSize);
     if (updateRequest.employeeCount != null) lead.employeeCount = updateRequest.employeeCount;
     if (updateRequest.estimatedVolume != null) lead.estimatedVolume = updateRequest.estimatedVolume;
 

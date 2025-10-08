@@ -289,6 +289,33 @@ updated: "2025-10-02"
 
 ---
 
+### **Sprint 2.1.6.1 – Enum-Migration Phase 2+3 (PLANNED)**
+**Zentral:** [TRIGGER_SPRINT_2_1_6_1.md](../../TRIGGER_SPRINT_2_1_6_1.md)
+**Status:** 📋 PLANNED (09-11.10.2025)
+**Artefakt:** [ENUM_MIGRATION_STRATEGY.md](./artefakte/ENUM_MIGRATION_STRATEGY.md)
+**Ergebnisse:**
+- **Phase 1 (6h):** Customer-Modul Industry → BusinessType Migration
+  - Customer.industry → Customer.businessType Harmonisierung (9 Werte)
+  - Dual-Mode: Legacy-Support für 1 Sprint (Auto-Sync Setter)
+  - Migration V27X (dynamisch ermittelt via `./scripts/get-next-migration.sh`)
+  - Frontend: CustomerEditDialog nutzt useBusinessTypes() Hook
+- **Phase 2 (10h):** CRM-weit Enum-Harmonisierung
+  - ActivityType erweitern: SAMPLE_REQUEST, CONTRACT_SIGNED, INVOICE_SENT, PAYMENT_RECEIVED
+  - OpportunityStatus Enum: LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST
+  - PaymentMethod Enum: SEPA_LASTSCHRIFT, SEPA_UEBERWEISUNG, KREDITKARTE, RECHNUNG
+  - DeliveryMethod Enum: STANDARD, EXPRESS, SAMEDAY, PICKUP
+  - EnumResource API erweitert: 4 neue Endpoints
+  - Frontend Hooks: useActivityTypes, useOpportunityStatuses, usePaymentMethods, useDeliveryMethods
+
+**Begründung:**
+- ✅ Pre-Production = goldene Zeit (keine Daten-Migration, Clean Slate)
+- ✅ MESSE/TELEFON Erstkontakt-PFLICHT funktioniert (Pre-Claim Logic)
+- ✅ Performance ~10x schneller (Enum-Index vs. String-LIKE)
+- ✅ Type-Safety (Compiler-Validierung statt Runtime-Errors)
+- ✅ Technische Schulden vermeiden (später 3x teurer)
+
+---
+
 ### **Sprint 2.1.7 – Team Management & Test Infrastructure Overhaul (PLANNED)**
 **Zentral:** [TRIGGER_SPRINT_2_1_7.md](../../TRIGGER_SPRINT_2_1_7.md)
 **Status:** 📅 PLANNED (2025-10-19 - 2025-10-25)

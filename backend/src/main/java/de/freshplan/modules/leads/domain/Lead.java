@@ -1,5 +1,8 @@
 package de.freshplan.modules.leads.domain;
 
+import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.KitchenSize;
+import de.freshplan.domain.shared.LeadSource;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.vertx.core.json.JsonObject;
 import jakarta.persistence.*;
@@ -88,13 +91,13 @@ public class Lead extends PanacheEntityBase {
   @Size(max = 50)
   public String industry;
 
-  @Size(max = 100)
-  @Column(name = "business_type")
-  public String businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6: CHECK constraint)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "business_type", length = 50)
+  public BusinessType businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6 Phase 5: Enum)
 
-  @Size(max = 20)
-  @Column(name = "kitchen_size")
-  public String kitchenSize; // small/medium/large
+  @Enumerated(EnumType.STRING)
+  @Column(name = "kitchen_size", length = 20)
+  public KitchenSize kitchenSize; // Klein/Mittel/Groß/Sehr Groß (Sprint 2.1.6 Phase 5: Enum)
 
   @Column(name = "employee_count")
   public Integer employeeCount;
@@ -201,8 +204,9 @@ public class Lead extends PanacheEntityBase {
   public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
   // Metadata
-  @Size(max = 100)
-  public String source; // web/email/phone/event/partner
+  @Enumerated(EnumType.STRING)
+  @Column(length = 50)
+  public LeadSource source; // MESSE/EMPFEHLUNG/TELEFON/WEB_FORMULAR/PARTNER/SONSTIGES (Sprint 2.1.6 Phase 5: Enum)
 
   @Size(max = 255)
   @Column(name = "source_campaign")
