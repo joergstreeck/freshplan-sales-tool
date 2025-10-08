@@ -8,14 +8,7 @@ import {
   TimelineDot,
   TimelineOppositeContent,
 } from '@mui/lab';
-import {
-  Box,
-  Typography,
-  Paper,
-  CircularProgress,
-  Alert,
-  Chip,
-} from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Alert, Chip } from '@mui/material';
 import {
   Email,
   Phone,

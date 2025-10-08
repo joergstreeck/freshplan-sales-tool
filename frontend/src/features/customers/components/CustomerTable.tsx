@@ -150,247 +150,261 @@ export function CustomerTable({
                     cursor: onRowClick ? 'pointer' : 'default',
                     bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.08)' : undefined,
                     '&:hover': {
-                      bgcolor: isNewCustomer(customer) ? 'rgba(148, 196, 86, 0.15)' : 'action.hover',
+                      bgcolor: isNewCustomer(customer)
+                        ? 'rgba(148, 196, 86, 0.15)'
+                        : 'action.hover',
                     },
                   }}
                 >
                   {visibleColumns.map(column => {
                     const renderCellContent = () => {
-                    switch (column.id) {
-                      case 'customerNumber':
-                        return (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            {customer.customerNumber}
-                            {isNewCustomer(customer) && (
-                              <Chip
-                                label="NEU"
-                                size="small"
-                                sx={{
-                                  bgcolor: '#94C456',
-                                  color: 'white',
-                                  fontSize: '0.7rem',
-                                  height: 20,
-                                }}
-                              />
-                            )}
-                            {/* Sprint 2.1.5: Pre-Claim Badge */}
-                            {isPreClaim(customer) &&
-                              (() => {
-                                const daysRemaining = getPreClaimDaysRemaining(customer);
-                                const isUrgent = daysRemaining !== null && daysRemaining < 3;
-                                return (
-                                  <Chip
-                                    label={`⏳ Pre-Claim (${daysRemaining}T)`}
-                                    size="small"
-                                    sx={{
-                                      bgcolor: isUrgent ? '#FF6B6B' : '#FFA726',
-                                      color: 'white',
-                                      fontSize: '0.7rem',
-                                      height: 20,
-                                    }}
-                                  />
-                                );
-                              })()}
-                          </Box>
-                        );
-                      case 'companyName':
-                        return (
-                          <Box>
-                            <Typography variant="body2" fontWeight="medium">
-                              {customer.companyName}
-                            </Typography>
-                            {customer.tradingName && (
-                              <Typography variant="caption" color="text.secondary">
-                                {customer.tradingName}
-                              </Typography>
-                            )}
-                          </Box>
-                        );
-                      case 'customerType':
-                        return customerTypeLabels[customer.customerType];
-                      case 'industry':
-                        return customer.industry ? industryLabels[customer.industry] : '-';
-                      case 'businessType':
-                        // Sprint 2.1.6: Harmonized businessType field (replaces industry for leads)
-                        return (customer as Lead).businessType || '-';
-                      case 'leadScore':
-                        // Sprint 2.1.6 Phase 4: Lead scoring visualization
-                        return (
-                          <LeadScoreIndicator
-                            score={(customer as Lead).leadScore}
-                            size="small"
-                            showLabel={false}
-                          />
-                        );
-                      case 'stage': {
-                        // Sprint 2.1.6 Phase 4: Lead stage with German labels (DESIGN_SYSTEM.md)
-                        const stageLabels: Record<number, string> = {
-                          0: 'Vormerkung',
-                          1: 'Registrierung',
-                          2: 'Qualifizierung',
-                        };
-                        const stageColors: Record<number, string> = {
-                          0: '#2196F3', // Blue
-                          1: '#FF9800', // Orange
-                          2: '#4CAF50', // Green
-                        };
-                        const stageValue = (customer as Lead).stage;
-                        return (
-                          <Chip
-                            label={stageLabels[stageValue] || stageValue?.toString()}
-                            size="small"
-                            sx={{
-                              bgcolor: stageColors[stageValue] || '#9E9E9E',
-                              color: 'white',
-                            }}
-                          />
-                        );
-                      }
-                      case 'status': {
-                        // Sprint 2.1.6 Phase 4: Context-aware status labels
-                        const statusLabels = context === 'leads' ? leadStatusLabels : customerStatusLabels;
-                        const statusColors = context === 'leads' ? leadStatusColors : customerStatusColors;
-                        const statusValue = customer.status as keyof typeof statusLabels;
-                        return (
-                          <Chip
-                            label={statusLabels[statusValue] || customer.status}
-                            size="small"
-                            sx={{
-                              bgcolor: statusColors[statusValue] || '#9E9E9E',
-                              color: 'white',
-                            }}
-                          />
-                        );
-                      }
-                      case 'expectedAnnualVolume':
-                        return formatCurrency(customer.expectedAnnualVolume);
-                      case 'lastContactDate':
-                        return formatDate(customer.lastContactDate);
-                      case 'contactCount':
-                        return (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="body2">{customer.contactCount || 0}</Typography>
-                            {customer.contactCount > 0 && (
-                              <Typography variant="caption" color="text.secondary">
-                                Kontakt{customer.contactCount > 1 ? 'e' : ''}
-                              </Typography>
-                            )}
-                          </Box>
-                        );
-                      case 'createdAt':
-                        return formatDate(customer.createdAt);
-                      case 'revenue':
-                        return formatCurrency(customer.revenue);
-                      case 'location':
-                        return customer.city || '-';
-                      case 'tags':
-                        return customer.tags?.length > 0 ? (
-                          <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
-                            {customer.tags.slice(0, 2).map((tag, index) => (
-                              <Chip key={index} label={tag} size="small" variant="outlined" />
-                            ))}
-                            {customer.tags.length > 2 && (
-                              <Typography variant="caption" color="text.secondary">
-                                +{customer.tags.length - 2}
-                              </Typography>
-                            )}
-                          </Box>
-                        ) : (
-                          '-'
-                        );
-                      case 'riskScore':
-                        return (
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Box
-                              sx={{
-                                width: 60,
-                                height: 8,
-                                bgcolor: 'grey.200',
-                                borderRadius: 1,
-                                overflow: 'hidden',
-                              }}
-                            >
-                              <Box
-                                sx={{
-                                  width: `${customer.riskScore}%`,
-                                  height: '100%',
-                                  bgcolor:
-                                    customer.riskScore > 70
-                                      ? 'error.main'
-                                      : customer.riskScore > 40
-                                        ? 'warning.main'
-                                        : 'success.main',
-                                  transition: 'width 0.3s ease',
-                                }}
-                              />
-                            </Box>
-                            <Typography variant="caption" color="text.secondary">
-                              {customer.riskScore}%
-                            </Typography>
-                          </Box>
-                        );
-                      case 'actions':
-                        // Sprint 2.1.6 Phase 4: Lead actions (Stop-the-Clock, Timeline)
-                        if (context === 'leads') {
-                          const lead = customer as Lead;
+                      switch (column.id) {
+                        case 'customerNumber':
                           return (
-                            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setSelectedLead(lead);
-                                  setStopClockDialogOpen(true);
-                                }}
-                                color={lead.clockStoppedAt ? 'success' : 'warning'}
-                                title={lead.clockStoppedAt ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}
-                              >
-                                {lead.clockStoppedAt ? <PlayArrow /> : <Pause />}
-                              </IconButton>
-                              <IconButton
-                                size="small"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setTimelineLeadId(timelineLeadId === Number(lead.id) ? null : Number(lead.id));
-                                }}
-                                color={timelineLeadId === Number(lead.id) ? 'primary' : 'default'}
-                                title="Aktivitäten anzeigen"
-                              >
-                                <TimelineIcon />
-                              </IconButton>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              {customer.customerNumber}
+                              {isNewCustomer(customer) && (
+                                <Chip
+                                  label="NEU"
+                                  size="small"
+                                  sx={{
+                                    bgcolor: '#94C456',
+                                    color: 'white',
+                                    fontSize: '0.7rem',
+                                    height: 20,
+                                  }}
+                                />
+                              )}
+                              {/* Sprint 2.1.5: Pre-Claim Badge */}
+                              {isPreClaim(customer) &&
+                                (() => {
+                                  const daysRemaining = getPreClaimDaysRemaining(customer);
+                                  const isUrgent = daysRemaining !== null && daysRemaining < 3;
+                                  return (
+                                    <Chip
+                                      label={`⏳ Pre-Claim (${daysRemaining}T)`}
+                                      size="small"
+                                      sx={{
+                                        bgcolor: isUrgent ? '#FF6B6B' : '#FFA726',
+                                        color: 'white',
+                                        fontSize: '0.7rem',
+                                        height: 20,
+                                      }}
+                                    />
+                                  );
+                                })()}
                             </Box>
                           );
+                        case 'companyName':
+                          return (
+                            <Box>
+                              <Typography variant="body2" fontWeight="medium">
+                                {customer.companyName}
+                              </Typography>
+                              {customer.tradingName && (
+                                <Typography variant="caption" color="text.secondary">
+                                  {customer.tradingName}
+                                </Typography>
+                              )}
+                            </Box>
+                          );
+                        case 'customerType':
+                          return customerTypeLabels[customer.customerType];
+                        case 'industry':
+                          return customer.industry ? industryLabels[customer.industry] : '-';
+                        case 'businessType':
+                          // Sprint 2.1.6: Harmonized businessType field (replaces industry for leads)
+                          return (customer as Lead).businessType || '-';
+                        case 'leadScore':
+                          // Sprint 2.1.6 Phase 4: Lead scoring visualization
+                          return (
+                            <LeadScoreIndicator
+                              score={(customer as Lead).leadScore}
+                              size="small"
+                              showLabel={false}
+                            />
+                          );
+                        case 'stage': {
+                          // Sprint 2.1.6 Phase 4: Lead stage with German labels (DESIGN_SYSTEM.md)
+                          const stageLabels: Record<number, string> = {
+                            0: 'Vormerkung',
+                            1: 'Registrierung',
+                            2: 'Qualifizierung',
+                          };
+                          const stageColors: Record<number, string> = {
+                            0: '#2196F3', // Blue
+                            1: '#FF9800', // Orange
+                            2: '#4CAF50', // Green
+                          };
+                          const stageValue = (customer as Lead).stage;
+                          return (
+                            <Chip
+                              label={stageLabels[stageValue] || stageValue?.toString()}
+                              size="small"
+                              sx={{
+                                bgcolor: stageColors[stageValue] || '#9E9E9E',
+                                color: 'white',
+                              }}
+                            />
+                          );
                         }
-                        return '-';
-                      default:
-                        return '-';
-                    }
-                  };
+                        case 'status': {
+                          // Sprint 2.1.6 Phase 4: Context-aware status labels
+                          const statusLabels =
+                            context === 'leads' ? leadStatusLabels : customerStatusLabels;
+                          const statusColors =
+                            context === 'leads' ? leadStatusColors : customerStatusColors;
+                          const statusValue = customer.status as keyof typeof statusLabels;
+                          return (
+                            <Chip
+                              label={statusLabels[statusValue] || customer.status}
+                              size="small"
+                              sx={{
+                                bgcolor: statusColors[statusValue] || '#9E9E9E',
+                                color: 'white',
+                              }}
+                            />
+                          );
+                        }
+                        case 'expectedAnnualVolume':
+                          return formatCurrency(customer.expectedAnnualVolume);
+                        case 'lastContactDate':
+                          return formatDate(customer.lastContactDate);
+                        case 'contactCount':
+                          return (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Typography variant="body2">{customer.contactCount || 0}</Typography>
+                              {customer.contactCount > 0 && (
+                                <Typography variant="caption" color="text.secondary">
+                                  Kontakt{customer.contactCount > 1 ? 'e' : ''}
+                                </Typography>
+                              )}
+                            </Box>
+                          );
+                        case 'createdAt':
+                          return formatDate(customer.createdAt);
+                        case 'revenue':
+                          return formatCurrency(customer.revenue);
+                        case 'location':
+                          return customer.city || '-';
+                        case 'tags':
+                          return customer.tags?.length > 0 ? (
+                            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
+                              {customer.tags.slice(0, 2).map((tag, index) => (
+                                <Chip key={index} label={tag} size="small" variant="outlined" />
+                              ))}
+                              {customer.tags.length > 2 && (
+                                <Typography variant="caption" color="text.secondary">
+                                  +{customer.tags.length - 2}
+                                </Typography>
+                              )}
+                            </Box>
+                          ) : (
+                            '-'
+                          );
+                        case 'riskScore':
+                          return (
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                              <Box
+                                sx={{
+                                  width: 60,
+                                  height: 8,
+                                  bgcolor: 'grey.200',
+                                  borderRadius: 1,
+                                  overflow: 'hidden',
+                                }}
+                              >
+                                <Box
+                                  sx={{
+                                    width: `${customer.riskScore}%`,
+                                    height: '100%',
+                                    bgcolor:
+                                      customer.riskScore > 70
+                                        ? 'error.main'
+                                        : customer.riskScore > 40
+                                          ? 'warning.main'
+                                          : 'success.main',
+                                    transition: 'width 0.3s ease',
+                                  }}
+                                />
+                              </Box>
+                              <Typography variant="caption" color="text.secondary">
+                                {customer.riskScore}%
+                              </Typography>
+                            </Box>
+                          );
+                        case 'actions':
+                          // Sprint 2.1.6 Phase 4: Lead actions (Stop-the-Clock, Timeline)
+                          if (context === 'leads') {
+                            const lead = customer as Lead;
+                            return (
+                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
+                                <IconButton
+                                  size="small"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setSelectedLead(lead);
+                                    setStopClockDialogOpen(true);
+                                  }}
+                                  color={lead.clockStoppedAt ? 'success' : 'warning'}
+                                  title={
+                                    lead.clockStoppedAt
+                                      ? 'Schutzfrist fortsetzen'
+                                      : 'Schutzfrist pausieren'
+                                  }
+                                >
+                                  {lead.clockStoppedAt ? <PlayArrow /> : <Pause />}
+                                </IconButton>
+                                <IconButton
+                                  size="small"
+                                  onClick={e => {
+                                    e.stopPropagation();
+                                    setTimelineLeadId(
+                                      timelineLeadId === Number(lead.id) ? null : Number(lead.id)
+                                    );
+                                  }}
+                                  color={timelineLeadId === Number(lead.id) ? 'primary' : 'default'}
+                                  title="Aktivitäten anzeigen"
+                                >
+                                  <TimelineIcon />
+                                </IconButton>
+                              </Box>
+                            );
+                          }
+                          return '-';
+                        default:
+                          return '-';
+                      }
+                    };
 
-                  return (
-                    <TableCell
-                      key={column.id}
-                      align={column.id === 'expectedAnnualVolume' ? 'right' : 'left'}
-                    >
-                      {renderCellContent()}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-
-              {/* Sprint 2.1.6 Phase 4: Lead Activity Timeline Expansion Row */}
-              {context === 'leads' && timelineLeadId === Number(customer.id) && (
-                <TableRow>
-                  <TableCell colSpan={visibleColumns.length} sx={{ py: 0, bgcolor: 'grey.50' }}>
-                    <Collapse in={timelineLeadId === Number(customer.id)} timeout="auto" unmountOnExit>
-                      <Box sx={{ py: 2, px: 3 }}>
-                        <LeadActivityTimeline leadId={Number(customer.id)} />
-                      </Box>
-                    </Collapse>
-                  </TableCell>
+                    return (
+                      <TableCell
+                        key={column.id}
+                        align={column.id === 'expectedAnnualVolume' ? 'right' : 'left'}
+                      >
+                        {renderCellContent()}
+                      </TableCell>
+                    );
+                  })}
                 </TableRow>
-              )}
-            </React.Fragment>
+
+                {/* Sprint 2.1.6 Phase 4: Lead Activity Timeline Expansion Row */}
+                {context === 'leads' && timelineLeadId === Number(customer.id) && (
+                  <TableRow>
+                    <TableCell colSpan={visibleColumns.length} sx={{ py: 0, bgcolor: 'grey.50' }}>
+                      <Collapse
+                        in={timelineLeadId === Number(customer.id)}
+                        timeout="auto"
+                        unmountOnExit
+                      >
+                        <Box sx={{ py: 2, px: 3 }}>
+                          <LeadActivityTimeline leadId={Number(customer.id)} />
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </React.Fragment>
             ))}
           </TableBody>
         </Table>

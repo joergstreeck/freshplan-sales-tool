@@ -77,8 +77,7 @@ export default function LeadScoreIndicator({
             Qualität: {scoreLabel}
           </Typography>
           <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
-            Berechnet aus: Umsatzpotenzial (25%), Engagement (25%), Fit (25%),
-            Dringlichkeit (25%)
+            Berechnet aus: Umsatzpotenzial (25%), Engagement (25%), Fit (25%), Dringlichkeit (25%)
           </Typography>
         </Box>
       }

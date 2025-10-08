@@ -57,8 +57,8 @@ export default function StopTheClockDialog({
         <DialogTitle>Keine Berechtigung</DialogTitle>
         <DialogContent>
           <Alert severity="error">
-            Sie haben keine Berechtigung für diese Funktion.
-            Nur Administratoren und Manager können die Uhr anhalten.
+            Sie haben keine Berechtigung für diese Funktion. Nur Administratoren und Manager können
+            die Uhr anhalten.
           </Alert>
         </DialogContent>
         <DialogActions>
@@ -105,8 +105,7 @@ export default function StopTheClockDialog({
     setError(null);
 
     try {
-      const finalReason =
-        reason === 'Sonstiges (bitte angeben)' ? customReason.trim() : reason;
+      const finalReason = reason === 'Sonstiges (bitte angeben)' ? customReason.trim() : reason;
 
       await updateLead(lead.id, {
         stopClock: !isStopped,
@@ -138,9 +137,7 @@ export default function StopTheClockDialog({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>
-        {isStopped ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}
-      </DialogTitle>
+      <DialogTitle>{isStopped ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}</DialogTitle>
 
       <DialogContent>
         <Box mb={2}>
@@ -163,8 +160,8 @@ export default function StopTheClockDialog({
 
         {isStopped ? (
           <Alert severity="info">
-            Die Schutzfrist wurde pausiert. Durch Fortsetzen wird die
-            verstrichene Zeit zur kumulativen Pause hinzugefügt.
+            Die Schutzfrist wurde pausiert. Durch Fortsetzen wird die verstrichene Zeit zur
+            kumulativen Pause hinzugefügt.
           </Alert>
         ) : (
           <>
@@ -175,10 +172,10 @@ export default function StopTheClockDialog({
                 id="stop-reason"
                 value={reason}
                 label="Grund für Pause"
-                onChange={(e) => setReason(e.target.value)}
+                onChange={e => setReason(e.target.value)}
                 disabled={saving}
               >
-                {stopReasons.map((r) => (
+                {stopReasons.map(r => (
                   <MenuItem key={r} value={r}>
                     {r}
                   </MenuItem>
@@ -191,7 +188,7 @@ export default function StopTheClockDialog({
                 fullWidth
                 label="Benutzerdefinierter Grund"
                 value={customReason}
-                onChange={(e) => setCustomReason(e.target.value)}
+                onChange={e => setCustomReason(e.target.value)}
                 disabled={saving}
                 multiline
                 rows={3}

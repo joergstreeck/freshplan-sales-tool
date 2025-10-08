@@ -81,7 +81,7 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
       });
 
       // Check that activities are rendered (newest first is #1, oldest is #5)
-      const descriptions = screen.getAllByText(/.*/).map((el) => el.textContent);
+      const descriptions = screen.getAllByText(/.*/).map(el => el.textContent);
 
       // First activity should be EMAIL (id: 1, newest)
       expect(descriptions).toContain('Angebot per E-Mail versendet');
@@ -130,18 +130,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should show "Meaningful Contact" badge for isMeaningfulContact=true', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Angebot per E-Mail versendet',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Angebot per E-Mail versendet',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -154,18 +159,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should NOT show badge for isMeaningfulContact=false', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'NOTE',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Interne Notiz hinzugefügt',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'NOTE',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Interne Notiz hinzugefügt',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -178,38 +188,43 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should show badge for CALL, EMAIL, MEETING types', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'CALL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Telefonat',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-          {
-            id: 2,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-04T14:30:00',
-            description: 'E-Mail',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-04T14:30:00',
-          },
-          {
-            id: 3,
-            leadId: 100,
-            activityType: 'MEETING',
-            activityDate: '2025-10-03T14:30:00',
-            description: 'Meeting',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-03T14:30:00',
-          },
-        ], page: 1, size: 20, total: 3 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'CALL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Telefonat',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+            {
+              id: 2,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-04T14:30:00',
+              description: 'E-Mail',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-04T14:30:00',
+            },
+            {
+              id: 3,
+              leadId: 100,
+              activityType: 'MEETING',
+              activityDate: '2025-10-03T14:30:00',
+              description: 'Meeting',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-03T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 3,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -227,18 +242,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should render CLOCK_STOPPED with Pause icon and warning color', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'CLOCK_STOPPED',
-            activityDate: '2025-10-05T09:00:00',
-            description: 'Schutzfrist pausiert: Kunde im Urlaub',
-            isMeaningfulContact: false,
-            performedBy: 'admin1',
-            createdAt: '2025-10-05T09:00:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'CLOCK_STOPPED',
+              activityDate: '2025-10-05T09:00:00',
+              description: 'Schutzfrist pausiert: Kunde im Urlaub',
+              isMeaningfulContact: false,
+              performedBy: 'admin1',
+              createdAt: '2025-10-05T09:00:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -256,18 +276,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should render CLOCK_RESUMED with Play icon and success color', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'CLOCK_RESUMED',
-            activityDate: '2025-10-05T16:00:00',
-            description: 'Schutzfrist fortgesetzt',
-            isMeaningfulContact: false,
-            performedBy: 'admin1',
-            createdAt: '2025-10-05T16:00:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'CLOCK_RESUMED',
+              activityDate: '2025-10-05T16:00:00',
+              description: 'Schutzfrist fortgesetzt',
+              isMeaningfulContact: false,
+              performedBy: 'admin1',
+              createdAt: '2025-10-05T16:00:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -280,28 +305,33 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should NOT show Meaningful Contact badge for stop/resume activities', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'CLOCK_STOPPED',
-            activityDate: '2025-10-05T09:00:00',
-            description: 'Schutzfrist pausiert',
-            isMeaningfulContact: false,
-            performedBy: 'admin1',
-            createdAt: '2025-10-05T09:00:00',
-          },
-          {
-            id: 2,
-            leadId: 100,
-            activityType: 'CLOCK_RESUMED',
-            activityDate: '2025-10-05T16:00:00',
-            description: 'Schutzfrist fortgesetzt',
-            isMeaningfulContact: false,
-            performedBy: 'admin1',
-            createdAt: '2025-10-05T16:00:00',
-          },
-        ], page: 1, size: 20, total: 2 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'CLOCK_STOPPED',
+              activityDate: '2025-10-05T09:00:00',
+              description: 'Schutzfrist pausiert',
+              isMeaningfulContact: false,
+              performedBy: 'admin1',
+              createdAt: '2025-10-05T09:00:00',
+            },
+            {
+              id: 2,
+              leadId: 100,
+              activityType: 'CLOCK_RESUMED',
+              activityDate: '2025-10-05T16:00:00',
+              description: 'Schutzfrist fortgesetzt',
+              isMeaningfulContact: false,
+              performedBy: 'admin1',
+              createdAt: '2025-10-05T16:00:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 2,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -320,18 +350,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should format date as "dd. MMM yyyy" in German', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Test-Aktivität',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Test-Aktivität',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -345,18 +380,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should format time as "HH:mm" in German', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Test-Aktivität',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Test-Aktivität',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -369,28 +409,33 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should handle different months in German', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-01-15T10:00:00',
-            description: 'Januar',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-01-15T10:00:00',
-          },
-          {
-            id: 2,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-12-25T18:00:00',
-            description: 'Dezember',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-12-25T18:00:00',
-          },
-        ], page: 1, size: 20, total: 2 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-01-15T10:00:00',
+              description: 'Januar',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-01-15T10:00:00',
+            },
+            {
+              id: 2,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-12-25T18:00:00',
+              description: 'Dezember',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-12-25T18:00:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 2,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -485,7 +530,7 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should show loading indicator while fetching activities', () => {
       mockFetch.mockImplementationOnce(
         () =>
-          new Promise((resolve) =>
+          new Promise(resolve =>
             setTimeout(() => resolve({ ok: true, json: async () => [] }), 1000)
           )
       );
@@ -515,68 +560,73 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should render all supported activity types with correct icons', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'E-Mail',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-          {
-            id: 2,
-            leadId: 100,
-            activityType: 'CALL',
-            activityDate: '2025-10-04T14:30:00',
-            description: 'Anruf',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-04T14:30:00',
-          },
-          {
-            id: 3,
-            leadId: 100,
-            activityType: 'MEETING',
-            activityDate: '2025-10-03T14:30:00',
-            description: 'Meeting',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-03T14:30:00',
-          },
-          {
-            id: 4,
-            leadId: 100,
-            activityType: 'SAMPLE',
-            activityDate: '2025-10-02T14:30:00',
-            description: 'Muster versendet',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-02T14:30:00',
-          },
-          {
-            id: 5,
-            leadId: 100,
-            activityType: 'ORDER',
-            activityDate: '2025-10-01T14:30:00',
-            description: 'Bestellung eingegangen',
-            isMeaningfulContact: true,
-            performedBy: 'user1',
-            createdAt: '2025-10-01T14:30:00',
-          },
-          {
-            id: 6,
-            leadId: 100,
-            activityType: 'NOTE',
-            activityDate: '2025-09-30T14:30:00',
-            description: 'Notiz',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-09-30T14:30:00',
-          },
-        ], page: 1, size: 20, total: 6 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'E-Mail',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+            {
+              id: 2,
+              leadId: 100,
+              activityType: 'CALL',
+              activityDate: '2025-10-04T14:30:00',
+              description: 'Anruf',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-04T14:30:00',
+            },
+            {
+              id: 3,
+              leadId: 100,
+              activityType: 'MEETING',
+              activityDate: '2025-10-03T14:30:00',
+              description: 'Meeting',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-03T14:30:00',
+            },
+            {
+              id: 4,
+              leadId: 100,
+              activityType: 'SAMPLE',
+              activityDate: '2025-10-02T14:30:00',
+              description: 'Muster versendet',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-02T14:30:00',
+            },
+            {
+              id: 5,
+              leadId: 100,
+              activityType: 'ORDER',
+              activityDate: '2025-10-01T14:30:00',
+              description: 'Bestellung eingegangen',
+              isMeaningfulContact: true,
+              performedBy: 'user1',
+              createdAt: '2025-10-01T14:30:00',
+            },
+            {
+              id: 6,
+              leadId: 100,
+              activityType: 'NOTE',
+              activityDate: '2025-09-30T14:30:00',
+              description: 'Notiz',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-09-30T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 6,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -599,18 +649,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should handle activities with missing description', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: '',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: '',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -625,18 +680,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should handle activities with null performedBy', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Test',
-            isMeaningfulContact: false,
-            performedBy: null,
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Test',
+              isMeaningfulContact: false,
+              performedBy: null,
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       render(<LeadActivityTimeline leadId={100} />);
@@ -649,18 +709,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
     it('should handle leadId changes and refetch activities', async () => {
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 1,
-            leadId: 100,
-            activityType: 'EMAIL',
-            activityDate: '2025-10-05T14:30:00',
-            description: 'Lead 100',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T14:30:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 1,
+              leadId: 100,
+              activityType: 'EMAIL',
+              activityDate: '2025-10-05T14:30:00',
+              description: 'Lead 100',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T14:30:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       const { rerender } = render(<LeadActivityTimeline leadId={100} />);
@@ -672,18 +737,23 @@ describe('LeadActivityTimeline - Component Tests (Sprint 2.1.6 Phase 4)', () => 
       // Change leadId
       mockFetch.mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ data: [
-          {
-            id: 2,
-            leadId: 200,
-            activityType: 'CALL',
-            activityDate: '2025-10-05T15:00:00',
-            description: 'Lead 200',
-            isMeaningfulContact: false,
-            performedBy: 'user1',
-            createdAt: '2025-10-05T15:00:00',
-          },
-        ], page: 1, size: 20, total: 1 }),
+        json: async () => ({
+          data: [
+            {
+              id: 2,
+              leadId: 200,
+              activityType: 'CALL',
+              activityDate: '2025-10-05T15:00:00',
+              description: 'Lead 200',
+              isMeaningfulContact: false,
+              performedBy: 'user1',
+              createdAt: '2025-10-05T15:00:00',
+            },
+          ],
+          page: 1,
+          size: 20,
+          total: 1,
+        }),
       });
 
       rerender(<LeadActivityTimeline leadId={200} />);

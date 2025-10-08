@@ -53,14 +53,14 @@ const MOCK_LEAD_QUALITY_DATA = {
   totalLeads: 38,
   qualificationLevels: {
     complete: 18, // Vollständig qualifiziert
-    partial: 12,  // Teilweise qualifiziert
-    minimal: 8,   // Minimal-Daten
+    partial: 12, // Teilweise qualifiziert
+    minimal: 8, // Minimal-Daten
   },
   scoreDistribution: {
-    top: 5,      // 80-100
-    good: 13,    // 60-79
-    medium: 12,  // 40-59
-    weak: 8,     // 0-39
+    top: 5, // 80-100
+    good: 13, // 60-79
+    medium: 12, // 40-59
+    weak: 8, // 0-39
   },
   criticalGaps: {
     noContactPerson: 6,
@@ -75,10 +75,10 @@ const MOCK_LEAD_QUALITY_DATA = {
 
 // Farben für Lead-Score (FreshFoodz CI)
 const SCORE_COLORS = {
-  top: '#94C456',      // FreshFoodz Grün
-  good: '#4CAF50',     // Grün
-  medium: '#FF9800',   // Orange
-  weak: '#F44336',     // Rot
+  top: '#94C456', // FreshFoodz Grün
+  good: '#4CAF50', // Grün
+  medium: '#FF9800', // Orange
+  weak: '#F44336', // Rot
 };
 
 const QUALIFICATION_COLORS = {
@@ -144,7 +144,11 @@ export const LeadQualityDashboard: React.FC = () => {
   const scoreData = [
     { name: 'Top-Leads (80-100)', value: data.scoreDistribution.top, color: SCORE_COLORS.top },
     { name: 'Gute Leads (60-79)', value: data.scoreDistribution.good, color: SCORE_COLORS.good },
-    { name: 'Mittlere Leads (40-59)', value: data.scoreDistribution.medium, color: SCORE_COLORS.medium },
+    {
+      name: 'Mittlere Leads (40-59)',
+      value: data.scoreDistribution.medium,
+      color: SCORE_COLORS.medium,
+    },
     { name: 'Schwache Leads (0-39)', value: data.scoreDistribution.weak, color: SCORE_COLORS.weak },
   ];
 

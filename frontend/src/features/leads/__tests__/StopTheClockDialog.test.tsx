@@ -91,9 +91,7 @@ describe('StopTheClockDialog - RBAC Tests (Sprint 2.1.6 Phase 4 - Test Gap Analy
 
       expect(screen.getByText('Keine Berechtigung')).toBeInTheDocument();
       expect(
-        screen.getByText(
-          /Sie haben keine Berechtigung für diese Funktion/
-        )
+        screen.getByText(/Sie haben keine Berechtigung für diese Funktion/)
       ).toBeInTheDocument();
       expect(
         screen.getByText(/Nur Administratoren und Manager können die Uhr anhalten/)
@@ -210,9 +208,7 @@ describe('StopTheClockDialog - RBAC Tests (Sprint 2.1.6 Phase 4 - Test Gap Analy
       await user.click(sonstigesOption);
 
       await waitFor(() => {
-        expect(
-          screen.getByLabelText('Benutzerdefinierter Grund')
-        ).toBeInTheDocument();
+        expect(screen.getByLabelText('Benutzerdefinierter Grund')).toBeInTheDocument();
       });
     });
 

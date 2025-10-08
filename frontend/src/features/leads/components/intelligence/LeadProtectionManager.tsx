@@ -51,18 +51,36 @@ import {
 const MOCK_PROTECTION_DATA = {
   totalLeads: 38,
   protectionStatus: {
-    active: 23,      // Innerhalb 60 Tage Schutzfrist
-    expiring: 12,    // <10 Tage bis Ablauf
-    expired: 5,      // Schutzfrist abgelaufen
-    forgotten: 3,    // >90 Tage kein Kontakt
+    active: 23, // Innerhalb 60 Tage Schutzfrist
+    expiring: 12, // <10 Tage bis Ablauf
+    expired: 5, // Schutzfrist abgelaufen
+    forgotten: 3, // >90 Tage kein Kontakt
   },
-  paused: 4,         // Leads mit pausierter Schutzfrist
+  paused: 4, // Leads mit pausierter Schutzfrist
   averageDaysRemaining: 32,
   expiringNextWeek: 8,
   criticalLeads: [
-    { id: 1, companyName: 'Bäckerei Müller GmbH', daysRemaining: 2, lastContact: '2025-10-05', reason: 'Urlaub' },
-    { id: 2, companyName: 'Restaurant Schmidt', daysRemaining: 5, lastContact: '2025-10-02', reason: null },
-    { id: 3, companyName: 'Hotel Meier & Co', daysRemaining: 7, lastContact: '2025-09-30', reason: null },
+    {
+      id: 1,
+      companyName: 'Bäckerei Müller GmbH',
+      daysRemaining: 2,
+      lastContact: '2025-10-05',
+      reason: 'Urlaub',
+    },
+    {
+      id: 2,
+      companyName: 'Restaurant Schmidt',
+      daysRemaining: 5,
+      lastContact: '2025-10-02',
+      reason: null,
+    },
+    {
+      id: 3,
+      companyName: 'Hotel Meier & Co',
+      daysRemaining: 7,
+      lastContact: '2025-09-30',
+      reason: null,
+    },
   ],
   forgottenLeads: [
     { id: 4, companyName: 'Konditorei Wagner', daysSinceContact: 120, lastContact: '2025-06-08' },
@@ -73,9 +91,9 @@ const MOCK_PROTECTION_DATA = {
 
 // Farben für Schutzfristen-Status (FreshFoodz CI)
 const STATUS_COLORS = {
-  active: '#94C456',    // FreshFoodz Grün
-  expiring: '#FF9800',  // Orange
-  expired: '#F44336',   // Rot
+  active: '#94C456', // FreshFoodz Grün
+  expiring: '#FF9800', // Orange
+  expired: '#F44336', // Rot
   forgotten: '#B71C1C', // Dunkelrot
 };
 
@@ -128,7 +146,9 @@ const MetricCard: React.FC<MetricCardProps> = ({
 };
 
 export const LeadProtectionManager: React.FC = () => {
-  const [selectedStatus, setSelectedStatus] = useState<'expiring' | 'expired' | 'forgotten' | null>(null);
+  const [selectedStatus, setSelectedStatus] = useState<'expiring' | 'expired' | 'forgotten' | null>(
+    null
+  );
   const data = MOCK_PROTECTION_DATA;
 
   // Schutzfristen-Verteilung für Pie Chart
@@ -291,7 +311,7 @@ export const LeadProtectionManager: React.FC = () => {
               Diese Leads verlieren in Kürze ihre Schutzfrist:
             </Typography>
             <List dense>
-              {data.criticalLeads.map((lead) => (
+              {data.criticalLeads.map(lead => (
                 <ListItem key={lead.id} sx={{ px: 0 }}>
                   <ListItemIcon>
                     <Warning color="error" />
@@ -357,7 +377,7 @@ export const LeadProtectionManager: React.FC = () => {
               Diese Leads haben seit über 90 Tagen keinen Kontakt:
             </Typography>
             <List dense>
-              {data.forgottenLeads.map((lead) => (
+              {data.forgottenLeads.map(lead => (
                 <ListItem key={lead.id} sx={{ px: 0 }}>
                   <ListItemIcon>
                     <TrendingDown color="warning" />

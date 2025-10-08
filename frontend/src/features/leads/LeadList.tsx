@@ -142,7 +142,11 @@ export default function LeadList() {
 
               {/* Status Workflow */}
               <Box mb={2}>
-                <LeadStatusWorkflow currentStatus={lead.status || 'REGISTERED'} orientation="horizontal" size="small" />
+                <LeadStatusWorkflow
+                  currentStatus={lead.status || 'REGISTERED'}
+                  orientation="horizontal"
+                  size="small"
+                />
               </Box>
 
               {/* Clock Stopped Info */}

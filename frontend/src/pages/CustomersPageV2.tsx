@@ -581,13 +581,11 @@ export function CustomersPageV2({
               </Box>
             ))}
 
-          {activeTab === 1 && (
-            context === 'leads' ? <LeadQualityDashboard /> : <DataHygieneDashboard />
-          )}
+          {activeTab === 1 &&
+            (context === 'leads' ? <LeadQualityDashboard /> : <DataHygieneDashboard />)}
 
-          {activeTab === 2 && (
-            context === 'leads' ? <LeadProtectionManager /> : <DataFreshnessManager />
-          )}
+          {activeTab === 2 &&
+            (context === 'leads' ? <LeadProtectionManager /> : <DataFreshnessManager />)}
         </Box>
 
         {/* Wizard Modal/Drawer - Context-based */}

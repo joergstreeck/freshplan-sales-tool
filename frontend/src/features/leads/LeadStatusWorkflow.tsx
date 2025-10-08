@@ -38,7 +38,7 @@ export default function LeadStatusWorkflow({
   const terminalStatuses = ['EXPIRED', 'CONVERTED'];
 
   const getCurrentStepIndex = () => {
-    const index = workflowSteps.findIndex((step) => step.status === currentStatus);
+    const index = workflowSteps.findIndex(step => step.status === currentStatus);
     return index === -1 ? 0 : index;
   };
 

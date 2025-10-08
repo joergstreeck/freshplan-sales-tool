@@ -130,7 +130,9 @@ describe('LeadQualityDashboard', () => {
       renderWithTheme(<LeadQualityDashboard />);
 
       expect(screen.getByText('Nachqualifizierung starten')).toBeInTheDocument();
-      expect(screen.getByText('8 Leads mit Minimal-Daten gezielt nachbearbeiten')).toBeInTheDocument();
+      expect(
+        screen.getByText('8 Leads mit Minimal-Daten gezielt nachbearbeiten')
+      ).toBeInTheDocument();
     });
 
     it('should show top leads prioritization recommendation', () => {
@@ -196,7 +198,9 @@ describe('LeadQualityDashboard', () => {
       expect(screen.getByText('Lead-Score-Verteilung')).toBeInTheDocument();
       expect(screen.getByText('Qualifizierungs-Level')).toBeInTheDocument();
       expect(screen.getAllByText(/Kritische Datenlücken/).length).toBeGreaterThanOrEqual(1);
-      expect(screen.getAllByText(/Empfehlungen zur Qualitätsverbesserung/).length).toBeGreaterThanOrEqual(1);
+      expect(
+        screen.getAllByText(/Empfehlungen zur Qualitätsverbesserung/).length
+      ).toBeGreaterThanOrEqual(1);
     });
   });
 });
