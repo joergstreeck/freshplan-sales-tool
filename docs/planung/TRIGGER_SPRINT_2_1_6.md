@@ -979,7 +979,7 @@ void pseudonymizeExpiredLeads() {
 - [x] **CI Status** - 29/29 Checks passed (Backend, Frontend, E2E, Security, Performance)
 
 **📋 Artefakte:**
-- Testing Guide: [docs/grundlagen/testing_guide.md](../../grundlagen/testing_guide.md)
+- Testing Guide: [docs/planung/grundlagen/testing_guide.md](grundlagen/testing_guide.md)
 - PR #135: https://github.com/joergstreeck/freshplan-sales-tool/pull/135
 
 **Phase 5 - Enum-Migration Phase 1 (Lead-Modul) - 📋 PENDING:**
