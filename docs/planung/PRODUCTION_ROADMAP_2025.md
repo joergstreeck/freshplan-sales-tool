@@ -10,26 +10,32 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (60% complete)
-- **Current Sprint:** ✅ Sprint 2.1.6 Phase 3 COMPLETE (07.10.2025) - **PR #134 MERGED**
-- **Active Branch:** feature/mod02-sprint-2.1.6-lead-ui-phase2
-- **Progress:** 15/36 PRs completed - 42% done
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (62% complete)
+- **Current Sprint:** ✅ Sprint 2.1.6 COMPLETE (08.10.2025) - **ALL 4 PHASES MERGED**
+- **Active Branch:** main (Sprint 2.1.6 vollständig merged)
+- **Progress:** 16/36 PRs completed - 44% done
 - **Blockers:** ❌ Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉 **Sprint 2.1.6 Phase 3 COMPLETE - PR #134 MERGED** - Automated Nightly Jobs + Outbox-Pattern
-  - ✅ **Automated Jobs (2 Services, ~588 LOC, 19 Tests GREEN):**
-    - LeadMaintenanceService (461 LOC): Progress Warning, Protection Expiry, Pseudonymization, Import Archival
-    - LeadMaintenanceScheduler (127 LOC): @Scheduled Cron Jobs
-  - ✅ **Outbox-Pattern (Transactional Email Queue):**
-    - OutboxEmail Entity (147 LOC): PENDING/SENT/FAILED, JSONB template_data
-    - V268 Migration: outbox_emails table mit Indexes
-  - ✅ **Idempotency (Issue #134):**
-    - ImportJob Entity (159 LOC): requestFingerprint (SHA-256), TTL 7 Tage
-    - Cached Response Replay bei duplicate imports
-  - ✅ **Migrations:** V265 (pseudonymizedAt), V266 (Customer.originalLeadId FK), V267 (ownerUserId nullable), V268 (outbox_emails)
-  - ✅ **CI-Fixes:** Panache Query Bug (camelCase), Test Isolation, V268 Schema-Fix, 6 Front-Matter Lint
-- **Next Action:** Sprint 2.1.6 Phase 4 - Job Monitoring & Performance
+- **Latest:** 🎉 **Sprint 2.1.6 COMPLETE - PR #135 MERGED** - Lead Quality Metrics & UI Components
+  - ✅ **Lead Scoring System (264 LOC, 19 Tests):**
+    - LeadScoringService: 4-Faktoren-Berechnung (Umsatz 25%, Engagement 25%, Fit 25%, Dringlichkeit 25%)
+    - Lead.getProtectionUntil() Helper: Single Source of Truth (refactored 5 Dateien)
+  - ✅ **4 neue UI-Komponenten (~1100 LOC, 48 Tests):**
+    - StopTheClockDialog.tsx (217 LOC, 12 Tests): Admin/Manager Stop-the-Clock mit RBAC
+    - LeadScoreIndicator.tsx (121 LOC): 0-100 Score mit FreshFoodz CI (#94C456)
+    - LeadActivityTimeline.tsx (213 LOC, 20 Tests): Chronologische Historie mit "Meaningful Contact" Badge
+    - LeadStatusWorkflow.tsx (123 LOC): REGISTERED → LEAD → INTERESSENT → ACTIVE
+  - ✅ **Bug Fixes (3 Produktionsbugs gefunden durch Tests):**
+    - RBAC LeadList: fehlender Permission-Check für Stop-the-Clock Button
+    - German Labels: DataHygieneDashboard English → German
+    - LeadDTO: leadScore-Mapping fehlte komplett (KRITISCH)
+  - ✅ **Code Quality (Gemini Code-Review):**
+    - DRY: protectionUntil Duplizierung in 5 Dateien eliminiert
+    - Timestamp-Konsistenz: LocalDateTime.now() Doppelaufruf behoben
+  - ✅ **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL DEFAULT 0)
+  - ✅ **CI Status:** 29/29 Checks passed (Backend, Frontend, E2E, Security, Performance)
+- **Next Action:** Sprint 2.1.7 - Team Management & Test Infrastructure
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -118,21 +124,23 @@ Sprint 2.1.5: Progressive Profiling   ✅ COMPLETE (05.10.2025) → PR #124 Back
                                       → **Verschoben auf 2.1.6:** Quick-Action "Erstkontakt nachtragen", Pre-Claim Filter
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
-Sprint 2.1.6: Lead Completion         🔧 IN PROGRESS (12-18.10.2025) - UPDATED 05.10.2025
-                                      → **PRIORITY #0 (BLOCKER):** Issue #130 - TestDataBuilder CDI-Konflikt (12 Tests broken, Worktree CI disabled)
-                                      → **QUICK FIX:** Legacy Builder löschen (src/main/java/de/freshplan/test/builders/), Tests migrieren (1-2h)
-                                      → **Kern-Deliverables:**
-                                        - Bestandsleads-Migrations-API (Modul 08, POST /api/admin/migration/leads/import, Dry-Run + Real Import)
-                                        - Lead → Kunde Convert Flow (POST /api/leads/{id}/convert)
-                                        - Stop-the-Clock UI (Manager-only, StopTheClockDialog)
-                                        - Backdating Endpoint (PUT /api/leads/{id}/registered-at)
-                                        - Automated Jobs (Nightly: Progress Warning, Expiry, Pseudonymisierung)
-                                      → **Optional (ADR-006 Phase 2):**
-                                        - Lead-Scoring-System (Backend + Frontend, 0-100 Punkte)
-                                        - Lead-Status-Workflows (UI für LEAD → PROSPECT → AKTIV)
-                                        - Lead-Activity-Timeline (Interaktions-Historie)
-                                        - MUI Dialog Accessibility Fix (WCAG 2.1 Level A - aria-hidden Warning)
-                                      → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching (Scope-Overflow)
+Sprint 2.1.6: Lead Completion         ✅ COMPLETE (05-08.10.2025) - PR #132, #133, #134, #135 MERGED
+                                      → **Phase 1:** Issue #130 Fix (TestDataBuilder CDI-Konflikt) ✅ PR #132
+                                      → **Phase 2:** Admin APIs (Import, Backdating, Convert) ✅ PR #133
+                                        - LeadImportService (297 LOC), LeadBackdatingService (107 LOC), LeadConvertService (204 LOC)
+                                        - 33 Tests GREEN (Import: 14, Backdating: 13, Convert: 6)
+                                      → **Phase 3:** Automated Nightly Jobs + Outbox-Pattern ✅ PR #134
+                                        - LeadMaintenanceService (461 LOC), LeadMaintenanceScheduler (127 LOC)
+                                        - OutboxEmail Entity (147 LOC), ImportJob Idempotency (159 LOC)
+                                        - 19 Tests GREEN (14 Import, 5 Maintenance)
+                                      → **Phase 4:** Lead Quality Metrics & UI Components ✅ PR #135 (08.10.2025)
+                                        - LeadScoringService (264 LOC, 4-Faktoren: Umsatz/Engagement/Fit/Dringlichkeit)
+                                        - 4 UI-Komponenten (StopTheClockDialog, LeadScoreIndicator, LeadActivityTimeline, LeadStatusWorkflow)
+                                        - 48 Frontend-Tests + 19 Backend-Tests
+                                        - 3 Produktionsbugs gefunden & gefixt (RBAC, German labels, DTO-Mapping)
+                                        - Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
+                                      → **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL)
+                                      → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
 Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2025

@@ -17,13 +17,19 @@
 
 **🎯 BUSINESS MODULES (01-08):**
 - **Module 01 Cockpit:** ✅ Planning COMPLETE – Implementation pending (100% Foundation Standards, 44 Production-Ready Artefakte)
-- **Module 02 Neukundengewinnung:** ✅ 99% IMPLEMENTED – Sprint 2.1.6 Phase 4 COMPLETE
+- **Module 02 Neukundengewinnung:** ✅ 99% IMPLEMENTED – Sprint 2.1.6 Phase 4 COMPLETE (08.10.2025)
   - Sprint 2.1.1-2.1.4: Territory, Lead Capture, Follow-up, Deduplication ✅ (PR #103, #105, #110, #111, #122, #123)
   - Sprint 2.1.5: Progressive Profiling + Lead Protection ✅ (PR #124 Backend, PR #129 Frontend)
   - Sprint 2.1.6 Phase 1: Issue #130 Fix ✅ (PR #132)
   - Sprint 2.1.6 Phase 2: Admin APIs (Import, Backdating, Convert) ✅ (PR #133)
   - Sprint 2.1.6 Phase 3: Automated Nightly Jobs + Outbox-Pattern + Issue #134 (Idempotency) ✅ (PR #134)
-  - Sprint 2.1.6 Phase 4: Lead Intelligence Tests + LeadScoringService ✅ (PR #135)
+  - Sprint 2.1.6 Phase 4: Lead Quality Metrics & UI Components (ADR-006 Phase 2) ✅ MERGED (PR #135, 08.10.2025)
+    - ✅ Lead Scoring System (0-100 points, 4 Faktoren)
+    - ✅ 4 neue UI-Komponenten (StopTheClockDialog, LeadScoreIndicator, LeadActivityTimeline, LeadStatusWorkflow)
+    - ✅ Stop-the-Clock API mit kumulativer Pause-Tracking
+    - ✅ 48 neue Frontend-Tests (LeadWizard, StopTheClockDialog, LeadActivityTimeline)
+    - ✅ Produktionsbug-Fixes (RBAC LeadList, German labels DataHygieneDashboard)
+    - ✅ Gemini Code-Review: 4 Refactorings (DRY, Timestamp-Konsistenz, Formatierung)
   - 📋 PENDING: Phase 5 (Frontend UI Polish + Excel Upload)
   - [Security Test Pattern](./features-neu/02_neukundengewinnung/artefakte/SECURITY_TEST_PATTERN.md) ✅
   - [Performance Test Pattern](./features-neu/02_neukundengewinnung/artefakte/PERFORMANCE_TEST_PATTERN.md) ✅
@@ -43,21 +49,33 @@
 
 **🚨 NEXT:** Production Implementation Phase - Vollständige Planungsphase abgeschlossen mit 310+ Production-Ready Artefakten
 
-**📋 LATEST UPDATE (08.10.2025 - 🎉 Sprint 2.1.6 Phase 4 COMPLETE):**
-- ✅ **Sprint 2.1.6 Phase 4 COMPLETE - Lead Intelligence Tests + LeadScoringService (PR #135):**
-  - **Branch:** feature/mod02-sprint-2.1.6-phase-4-complete
-  - **Backend Implementation:**
+**📋 LATEST UPDATE (08.10.2025 - 🎉 Sprint 2.1.6 Phase 4 MERGED TO MAIN):**
+- ✅ **Sprint 2.1.6 Phase 4 COMPLETE - Lead Quality Metrics & UI Components (PR #135 - MERGED 08.10.2025):**
+  - **Status:** ✅ MERGED to main (Squash-Merge, all CI checks passed)
+  - **Backend Implementation (3 neue Services, ~600 LOC):**
     - ✅ **LeadScoringService** (264 LOC): 4-Faktoren-Berechnung (Umsatzpotenzial 25%, Engagement 25%, Fit 25%, Dringlichkeit 25%)
-    - ✅ **LeadScoringServiceTest** (19 Tests GREEN): Business-Logic-Tests für alle Faktoren + Integration + Edge-Cases
-    - ✅ **LeadResourceTest** (+3 DTO-Completeness-Tests): leadScore, progressPauseTotalSeconds, nullable fields
-    - ✅ **Bug Fix:** leadScore in LeadDTO gemapped (KRITISCH - fehlte komplett)
-  - **Frontend Implementation:**
-    - ✅ **StopTheClockDialog.test.tsx** (12 Tests GREEN): RBAC-Permission-Tests (USER/ADMIN/MANAGER/SALES)
-    - ✅ **Bug Fix:** RBAC UI-Check in StopTheClockDialog (UX - fehlender Permission-Check)
-  - **Documentation:**
-    - ✅ **Testing Guide** (/docs/grundlagen/testing_guide.md): "Tests sind kein Selbstzweck - Fehler finden bevor Produktion!"
-  - **Tests:** 103 Tests GREEN (43 Backend + 60 Frontend)
-  - **Bugs gefunden & gefixt:** 3 Produktionsbugs durch Test-driven Development
+    - ✅ **Lead.getProtectionUntil()** Helper: Single Source of Truth (refactored 5 Dateien)
+    - ✅ **LeadResource**: Stop-the-Clock API mit kumulativer Pause-Tracking (progressPauseTotalSeconds)
+  - **Frontend Implementation (4 neue UI-Komponenten, ~1100 LOC):**
+    - ✅ **StopTheClockDialog.tsx** (217 LOC): Admin/Manager Stop-the-Clock mit RBAC + German UI
+    - ✅ **LeadScoreIndicator.tsx** (121 LOC): 0-100 Score mit Farbcodierung (rot/orange/grün #94C456)
+    - ✅ **LeadActivityTimeline.tsx** (213 LOC): Chronologische Aktivitäten-Historie mit "Meaningful Contact" Badge
+    - ✅ **LeadStatusWorkflow.tsx** (123 LOC): Status-Stepper (REGISTERED → LEAD → INTERESSENT → ACTIVE)
+  - **Tests (48 neue Frontend-Tests, 19 Backend-Tests):**
+    - ✅ **LeadScoringServiceTest** (19 Tests): Business-Logic für alle 4 Faktoren
+    - ✅ **StopTheClockDialog.test.tsx** (12 Tests): RBAC Permission-Tests (USER/ADMIN/MANAGER)
+    - ✅ **LeadActivityTimeline.test.tsx** (20 Tests): Timeline-Rendering + Meaningful-Contact-Badge
+    - ✅ **LeadWizard.integration.test.tsx** (Timeout-Fix): 5s → 10s für CI-Stabilität
+  - **Bug Fixes (3 Produktionsbugs gefunden durch Tests):**
+    - ✅ **RBAC LeadList**: fehlender Permission-Check für Stop-the-Clock Button (UX-Bug)
+    - ✅ **German Labels**: DataHygieneDashboard suchte "Data Intelligence Dashboard" statt "Datenqualität-Übersicht"
+    - ✅ **LeadDTO**: leadScore-Feld fehlte komplett in DTO-Mapping (KRITISCH)
+  - **Code Quality (Gemini Code-Review - 4 Refactorings):**
+    - ✅ DRY: protectionUntil Duplizierung in 5 Dateien eliminiert
+    - ✅ Timestamp-Konsistenz: LocalDateTime.now() Doppelaufruf behoben
+    - ✅ Formatierung: leadScore Single-Line (Lead.java + LeadDTO.java)
+  - **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL DEFAULT 0)
+  - **CI Status:** ✅ 29/29 Checks passed (Backend Tests, Frontend Tests, E2E, Security, Performance)
 - ✅ **Sprint 2.1.6 Phase 3 COMPLETE - Automated Nightly Jobs + Outbox-Pattern (PR #134):**
   - **Backend Services (2 neue Services, ~588 LOC):**
     - ✅ **LeadMaintenanceService** (461 LOC): 4 Nightly Jobs (Progress Warning, Protection Expiry, Pseudonymization, Import Archival)

@@ -208,9 +208,9 @@ updated: "2025-10-02"
 
 ---
 
-### **Sprint 2.1.6 – Lead Completion & Admin Features (PHASE 4 COMPLETE)**
+### **Sprint 2.1.6 – Lead Completion & Admin Features (ALL 4 PHASES COMPLETE)**
 **Zentral:** [TRIGGER_SPRINT_2_1_6.md](../../TRIGGER_SPRINT_2_1_6.md)
-**Status:** ✅ Phase 4 COMPLETE (2025-10-08) - Lead Intelligence Tests + LeadScoringService ✅
+**Status:** ✅ COMPLETE (05-08.10.2025) - PR #132, #133, #134, #135 MERGED ✅
 **Scope:** Bestandsleads-Migration, Convert-Flow, BusinessType Harmonization, Stop-the-Clock UI, Automated Jobs, Lead Intelligence
 
 **⚠️ PRIORITY #0 - BLOCKER FIRST:**
@@ -256,22 +256,28 @@ updated: "2025-10-02"
   - Nightly Job: Protection Expiry (Tag 70)
   - Nightly Job: Pseudonymisierung (60 Tage ohne Progress)
 
-**✅ Phase 4 COMPLETE - Lead Intelligence Tests + LeadScoringService (PR #135):**
-- ✅ **LeadScoringService** (264 LOC): 4-Faktoren-Berechnung (Umsatzpotenzial, Engagement, Fit, Dringlichkeit)
-- ✅ **LeadScoringServiceTest** (19 Tests GREEN): Business-Logic-Tests + Integration + Edge-Cases
-- ✅ **StopTheClockDialog.test.tsx** (12 Tests GREEN): RBAC-Permission-Tests (USER/ADMIN/MANAGER/SALES)
-- ✅ **LeadResourceTest** (+3 DTO-Completeness-Tests): leadScore, progressPauseTotalSeconds, nullable fields
-- ✅ **Testing Guide** (/docs/grundlagen/testing_guide.md): "Tests sind kein Selbstzweck - Fehler finden!"
-- ✅ **Bug Fixes:** 3 Produktionsbugs gefunden & gefixt (leadScore DTO-Mapping, RBAC UI-Check, businessType UPPERCASE)
-- ✅ **Test-Statistik:** 103 Tests GREEN (43 Backend + 60 Frontend)
-
-**Frontend UI Components (ADR-006 Phase 2 - bereits implementiert in früherem Commit):**
-- ✅ Lead-Scoring-System (LeadScoreIndicator.tsx)
-- ✅ Lead-Status-Workflows (LeadStatusWorkflow.tsx)
-- ✅ Lead-Activity-Timeline (LeadActivityTimeline.tsx)
-- ✅ Stop-the-Clock Dialog (StopTheClockDialog.tsx)
-- ✅ Lead Protection Manager (LeadProtectionManager.tsx)
-- ✅ Lead Quality Dashboard (LeadQualityDashboard.tsx)
+**✅ Phase 4 COMPLETE - Lead Quality Metrics & UI Components (PR #135 - MERGED 08.10.2025):**
+- ✅ **Backend (LeadScoringService, 264 LOC, 19 Tests):**
+  - 4-Faktoren-Berechnung: Umsatzpotenzial (25%), Engagement (25%), Fit (25%), Dringlichkeit (25%)
+  - Lead.getProtectionUntil() Helper: Single Source of Truth (refactored 5 Dateien)
+  - LeadResource: Stop-the-Clock API mit kumulativer Pause-Tracking
+- ✅ **Frontend (4 UI-Komponenten, ~1100 LOC, 48 Tests):**
+  - StopTheClockDialog.tsx (217 LOC, 12 Tests): Admin/Manager Stop-the-Clock mit RBAC + German UI
+  - LeadScoreIndicator.tsx (121 LOC): 0-100 Score mit Farbcodierung (rot/orange/grün #94C456)
+  - LeadActivityTimeline.tsx (213 LOC, 20 Tests): Chronologische Historie mit "Meaningful Contact" Badge
+  - LeadStatusWorkflow.tsx (123 LOC): Status-Stepper (REGISTERED → LEAD → INTERESSENT → ACTIVE)
+  - LeadProtectionManager.tsx (467 LOC): Protection-Übersicht Dashboard
+  - LeadQualityDashboard.tsx (439 LOC): Quality-Metrics Dashboard
+- ✅ **Bug Fixes (3 Produktionsbugs gefunden durch Tests):**
+  - RBAC LeadList: fehlender Permission-Check für Stop-the-Clock Button (UX-Bug)
+  - German Labels: DataHygieneDashboard suchte English statt German text
+  - LeadDTO: leadScore-Feld fehlte komplett in DTO-Mapping (KRITISCH)
+- ✅ **Code Quality (Gemini Code-Review - 4 Refactorings):**
+  - DRY: protectionUntil Duplizierung in 5 Dateien eliminiert
+  - Timestamp-Konsistenz: LocalDateTime.now() Doppelaufruf behoben
+  - Formatierung: leadScore Single-Line (Lead.java + LeadDTO.java)
+- ✅ **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL DEFAULT 0)
+- ✅ **CI Status:** 29/29 Checks passed (Backend Tests, Frontend Tests, E2E, Security, Performance)
 
 **❌ VERSCHOBEN AUF SPRINT 2.1.7 (Scope-Overflow):**
 - ~~Lead-Transfer zwischen Partnern~~ (User Story 1 - zu komplex!)
