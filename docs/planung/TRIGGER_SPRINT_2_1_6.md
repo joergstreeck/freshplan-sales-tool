@@ -37,6 +37,13 @@ phases:
     status: "pending"
     effort: "~8h"
     migrations: ["V273"]
+  - phase: "Phase 5+"
+    branch: "feature/mod02-sprint-2.1.6-lead-contacts-refactoring"
+    scope: "Lead Contacts Refactoring - Multi-Contact Support (Harmonisierung mit Customer-Modul)"
+    status: "in_progress"
+    effort: "~3-5h"
+    migrations: ["V276", "V277"]
+    architecture_decision: "ADR-007"
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
@@ -64,6 +71,7 @@ updated: "2025-10-08"
 | **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs + **Issue #134** (Idempotency) + Outbox-Pattern | ✅ COMPLETE | #134 |
 | **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4-complete` | Lead Quality Metrics & UI Components (LeadScoringService, 4 UI-Komponenten, 48 Tests) | ✅ COMPLETE | #135 |
 | **Phase 5** | `feature/mod02-sprint-2.1.6-enum-migration-phase-1` | Lead-Enums Migration (VARCHAR + CHECK Constraint Pattern - LeadSource, BusinessType, KitchenSize) | 📋 PENDING | ~8h |
+| **Phase 5+** | `feature/mod02-sprint-2.1.6-lead-contacts-refactoring` | Lead Contacts Refactoring - Multi-Contact Support (Harmonisierung mit Customer-Modul - ADR-007) | 🚧 IN PROGRESS | ~3-5h |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
 > - **Issue #130 Analyse:** [`ISSUE_130_ANALYSIS.md`](claude-work/daily-work/2025-10-05/ISSUE_130_ANALYSIS.md) - Detaillierte Analyse + Migration Guide
@@ -71,6 +79,7 @@ updated: "2025-10-08"
 > - **MUI Accessibility:** [`MUI_ACCESSIBILITY_DECISION.md`](claude-work/daily-work/2025-10-05/MUI_ACCESSIBILITY_DECISION.md) - Warum KERN-DELIVERABLE (EU Accessibility Act)
 > - **Critical Fixes:** [`CRITICAL_FIXES_SUMMARY.md`](claude-work/daily-work/2025-10-05/CRITICAL_FIXES_SUMMARY.md) - 3 Fixes (Migration-Nummern, Scope, ADR-006)
 > - **Handover:** [`2025-10-05_HANDOVER_FINAL.md`](claude-work/daily-work/2025-10-05/2025-10-05_HANDOVER_FINAL.md) - Vollständiger Kontext für neuen Claude
+> - **Phase 5+ Architecture:** [`LEAD_CONTACTS_ARCHITECTURE.md`](features-neu/02_neukundengewinnung/artefakte/LEAD_CONTACTS_ARCHITECTURE.md) - Multi-Contact Support Design (ADR-007)
 
 > **⚠️ TEST-STRATEGIE BEACHTEN!**
 > Tests MÜSSEN Mocks verwenden, NICHT @QuarkusTest mit echter DB!
@@ -1028,8 +1037,81 @@ void pseudonymizeExpiredLeads() {
 
 **Verweis:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md) - Vollständiger 3-Phasen-Plan
 
+---
+
+**Phase 5+ - Lead Contacts Refactoring (Multi-Contact Support) - 🚧 IN PROGRESS:**
+
+**🎯 Kern-Deliverables (3-5h total):**
+
+**Architektur-Entscheidung (ADR-007 - OPTION C: 100% Parity):**
+- ✅ **Vollständige Harmonisierung** - ALLE Felder von `customer_contacts` übernommen
+- ✅ **Multi-Contact Support** - N:1 Beziehung (mehrere Kontakte pro Lead)
+- ✅ **Strukturierte Daten** - `firstName` + `lastName` getrennt (statt flat `contact_person`)
+- ✅ **CRM Intelligence Ready** - warmth_score, data_quality_score, relationship data (birthday, hobbies, etc.)
+- ✅ **Backward Compatibility** - Trigger synchronisiert `lead_contacts.primary` → `leads.contact_person`
+- ✅ **Pre-Production Timing** - Noch keine Produktionsdaten → Clean Migration ohne Legacy-Komplexität
+- ✅ **Future-Proof** - Alle Customer-Features funktionieren sofort für Leads (Same Code, Same Tools)
+
+**1. Database Migrations (1h) - V276 + V277 (OPTION C: Full Parity)**
+- [ ] V276: `lead_contacts` Tabelle erstellen - **ALLE customer_contacts Felder:**
+  - Basic Info: salutation, title, first_name, last_name, position, decision_level
+  - Contact Info: email, phone, mobile
+  - Relationship Data: birthday, hobbies, family_status, children_count, personal_notes
+  - Intelligence Data: warmth_score, warmth_confidence, last_interaction_date, interaction_count
+  - Data Quality: data_quality_score, data_quality_recommendations
+  - Flags: is_primary, is_active, is_decision_maker, is_deleted
+- [ ] V276: Indizes (idx_lead_contacts_lead_id, idx_lead_contacts_primary, idx_lead_contacts_active, idx_lead_contacts_email, idx_lead_contacts_deleted)
+- [ ] V276: CHECK Constraints (email_or_phone_or_mobile, names_not_empty)
+- [ ] V276: Trigger (updated_at auto-update)
+- [ ] V276: Daten-Migration (`contact_person` → `first_name` + `last_name` splitten, email/phone migrieren)
+- [ ] V276: Deprecate `leads.contact_person/email/phone` (COMMENT ON COLUMN - wird in V280 entfernt)
+- [ ] V277: Backward Compatibility Trigger (`lead_contacts.primary` → `leads.contact_person/email/phone` sync)
+- [ ] V277: UNIQUE Constraint (nur 1 primary contact per lead)
+
+**2. Backend - LeadContact Entity + Repository (1h) (OPTION C: Full Parity)**
+- [ ] Entity: `LeadContact` mit **ALLEN customer_contacts Feldern** (salutation, title, decision_level, mobile, birthday, hobbies, family_status, warmth_score, data_quality_score, etc.)
+- [ ] Entity: Builder Pattern für einfache Konstruktion
+- [ ] Entity: Business Methods (getFullName(), getDisplayName() wie Contact.java)
+- [ ] Repository: `LeadContact extends PanacheEntityBase`
+- [ ] Lead Entity: `@OneToMany List<LeadContact> contacts`
+- [ ] Lead Entity: `getPrimaryContact()` Helper-Methode
+- [ ] Lead Entity: `addContact()` / `removeContact()` Business Logic (mit Auto-Primary wenn erster Contact)
+
+**3. Backend - API Refactoring (1h)**
+- [ ] DTO: `LeadCreateRequest.ContactData` (nested DTO für strukturierte Contacts)
+- [ ] DTO: `LeadCreateRequest.contacts: List<ContactData>` (ersetzt flat contactPerson)
+- [ ] DTO: Backward Compatibility (deprecated contactPerson/email/phone fields mit @Deprecated)
+- [ ] Resource: `LeadResource.createLead()` - contacts[] statt contactPerson verarbeiten
+- [ ] DTO: `LeadDTO.contacts: List<ContactDTO>` (Response enthält alle Kontakte)
+
+**4. Frontend - TypeScript Types + LeadWizard (0.5h)**
+- [ ] Types: `LeadContact` Type (id, firstName, lastName, email, phone, isPrimary)
+- [ ] Types: `Lead.contacts: LeadContact[]` (ersetzt flat contact fields)
+- [ ] Types: `getPrimaryContact()` Helper-Funktion
+- [ ] LeadWizard: `contacts[]` senden statt flat contactPerson
+- [ ] LeadList: `getPrimaryContact()` für Anzeige nutzen
+
+**5. Tests (0.5-1h)**
+- [ ] Backend: `LeadContactTest` (CRUD, Primary Constraint, Builder Pattern)
+- [ ] Backend: `LeadResourceTest` (createLead mit contacts[], getPrimaryContact)
+- [ ] Backend: Migration Tests (V276 Daten-Migration korrekt?)
+- [ ] Frontend: LeadWizard Integration Tests (contacts[] API-Call)
+- [ ] Coverage: ≥85% für neue LeadContact Entity
+
+**Strategische Begründung:**
+- ✅ **Konsistenz** - Lead + Customer haben gleiche Contact-Architektur
+- ✅ **Erweiterbarkeit** - Position, decisionLevel, isPrimary später einfach hinzufügbar
+- ✅ **User-Feedback** - "weitere Kontakte können nicht nacherfasst werden" wird gelöst
+- ✅ **Frontend-Reality** - LeadWizard sendet bereits `{ firstName, lastName }` → Backend muss das verstehen
+- ✅ **Type-Safety** - Strukturierte Daten statt String-Konkatenation
+
+**Verweis:** [LEAD_CONTACTS_ARCHITECTURE.md](features-neu/02_neukundengewinnung/artefakte/LEAD_CONTACTS_ARCHITECTURE.md) - Vollständiges Architektur-Design (ADR-007)
+
+---
+
 **Dokumentation:**
 - [x] **Convert-Flow dokumentiert** ✅ (BUSINESS_LOGIC_LEAD_ERFASSUNG.md Section 11)
+- [x] **Lead Contacts Architecture** ✅ (LEAD_CONTACTS_ARCHITECTURE.md - ADR-007)
 - [ ] **Migration-API Runbook** (Modul 08, Betrieb) - Phase 4
 - [ ] **Stop-the-Clock RBAC Policy** (Modul 00 Sicherheit) - Phase 4
 

@@ -5,7 +5,10 @@ import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * DTO for Lead entity to avoid lazy loading issues. Sprint 2.1: Safe serialization without
@@ -56,7 +59,8 @@ public class LeadDTO {
   public LeadStage stage; // VORMERKUNG, REGISTRIERUNG, QUALIFIZIERT (serialized as 0, 1, 2)
 
   // Protection system fields
-  public LocalDateTime registeredAt; // Sprint 2.1.5: Pre-Claim Status Detection (null = Pre-Claim)
+  public LocalDateTime registeredAt; // Variante B: IMMER gesetzt (Audit Trail)
+  public LocalDateTime firstContactDocumentedAt; // Variante B: NULL = Pre-Claim aktiv (10 Tage Frist)
   public LocalDateTime lastActivityAt;
   public LocalDateTime reminderSentAt;
   public LocalDateTime gracePeriodStartAt;
@@ -79,6 +83,9 @@ public class LeadDTO {
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2)
   // Note: Spotless may reformat this line - keeping it compact for readability
   public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
+
+  // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
+  public List<LeadContactDTO> contacts = new ArrayList<>();
 
   // Metadata
   public LocalDateTime createdAt;
@@ -128,8 +135,9 @@ public class LeadDTO {
     // Progressive Profiling (Sprint 2.1.5)
     dto.stage = lead.stage;
 
-    // Sprint 2.1.5: Pre-Claim Status Detection (registeredAt === null → Pre-Claim)
+    // Variante B: Pre-Claim Status Detection (firstContactDocumentedAt === null → Pre-Claim)
     dto.registeredAt = lead.registeredAt;
+    dto.firstContactDocumentedAt = lead.firstContactDocumentedAt;
     dto.lastActivityAt = lead.lastActivityAt;
     dto.reminderSentAt = lead.reminderSentAt;
     dto.gracePeriodStartAt = lead.gracePeriodStartAt;
@@ -154,6 +162,75 @@ public class LeadDTO {
     dto.createdBy = lead.createdBy;
     dto.updatedAt = lead.updatedAt;
     dto.updatedBy = lead.updatedBy;
+
+    // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
+    // IMPORTANT: Always map contacts (even if empty) to avoid null in DTO
+    if (lead.contacts != null) {
+      dto.contacts =
+          lead.contacts.stream().map(LeadDTO::toContactDTO).collect(Collectors.toList());
+    }
+
+    return dto;
+  }
+
+  /**
+   * Converts LeadContact entity to LeadContactDTO.
+   *
+   * <p>Maps all fields including CRM Intelligence data (warmth_score, data_quality_score,
+   * relationship data).
+   */
+  private static LeadContactDTO toContactDTO(de.freshplan.modules.leads.domain.LeadContact contact) {
+    LeadContactDTO dto = new LeadContactDTO();
+    dto.setId(contact.getId());
+    dto.setLeadId(contact.getLead() != null ? contact.getLead().id : null);
+
+    // Basic Info
+    dto.setSalutation(contact.getSalutation());
+    dto.setTitle(contact.getTitle());
+    dto.setFirstName(contact.getFirstName());
+    dto.setLastName(contact.getLastName());
+    dto.setPosition(contact.getPosition());
+    dto.setDecisionLevel(contact.getDecisionLevel());
+
+    // Contact Info
+    dto.setEmail(contact.getEmail());
+    dto.setPhone(contact.getPhone());
+    dto.setMobile(contact.getMobile());
+
+    // Flags
+    dto.setPrimary(contact.isPrimary());
+    dto.setActive(contact.isActive());
+
+    // Relationship Data
+    dto.setBirthday(contact.getBirthday());
+    dto.setHobbies(contact.getHobbies());
+    dto.setFamilyStatus(contact.getFamilyStatus());
+    dto.setChildrenCount(contact.getChildrenCount());
+    dto.setPersonalNotes(contact.getPersonalNotes());
+
+    // Intelligence Data
+    dto.setWarmthScore(contact.getWarmthScore());
+    dto.setWarmthConfidence(contact.getWarmthConfidence());
+    dto.setLastInteractionDate(contact.getLastInteractionDate());
+    dto.setInteractionCount(contact.getInteractionCount());
+
+    // Data Quality
+    dto.setDataQualityScore(contact.getDataQualityScore());
+    dto.setDataQualityRecommendations(contact.getDataQualityRecommendations());
+
+    // Legacy Compatibility
+    dto.setIsDecisionMaker(contact.getIsDecisionMaker());
+    dto.setIsDeleted(contact.getIsDeleted());
+
+    // Audit Fields
+    dto.setCreatedAt(contact.getCreatedAt());
+    dto.setUpdatedAt(contact.getUpdatedAt());
+    dto.setCreatedBy(contact.getCreatedBy());
+    dto.setUpdatedBy(contact.getUpdatedBy());
+
+    // Computed Fields
+    dto.setFullName(contact.getFullName());
+    dto.setDisplayName(contact.getDisplayName());
 
     return dto;
   }

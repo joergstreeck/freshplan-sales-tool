@@ -161,6 +161,33 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-08 20:30 - Lead Contacts Refactoring - Sprint 2.1.6 Phase 5+ (ADR-007)
+
+**Kontext:** API-Mismatch zwischen Frontend (strukturierte contacts) und Backend (flat contactPerson) → Harmonisierung mit Customer-Modul
+
+**Erledigt:**
+- ✅ **LEAD_CONTACTS_ARCHITECTURE.md erstellt (470 Zeilen):**
+  - Problem-Analyse: Lead-Modul hat flat `contact_person VARCHAR(255)`, Customer-Modul hat separate `Contact` Entity
+  - Architektur-Vergleich: Legacy (flat) vs. Best Practice (N:1 lead_contacts Tabelle)
+  - Migration V276 + V277: Neue Tabelle, Daten-Migration (split "Max Mustermann"), Backward Compatibility Trigger
+  - LeadContact Entity (UUID, firstName, lastName, email, phone, isPrimary, position, Builder Pattern)
+  - Lead Entity Update: `@OneToMany List<LeadContact> contacts`, deprecated contactPerson
+  - LeadCreateRequest Update: `List<ContactData> contacts` (nested DTO), deprecated flat fields
+  - Frontend Types: `LeadContact[]`, `getPrimaryContact()` Helper
+  - Test-Beispiele: Multi-Contact CRUD, Primary Constraint Validation
+- ✅ **TRIGGER_SPRINT_2_1_6.md erweitert:**
+  - Phase 5+ hinzugefügt: Lead Contacts Refactoring (3-5h Aufwand)
+  - YAML Header: migrations ["V276", "V277"], architecture_decision "ADR-007"
+  - Kern-Deliverables: 5 Schritte (Migrations, Entity, API, Frontend, Tests)
+  - Strategische Begründung: Konsistenz, Erweiterbarkeit, User-Feedback ("weitere Kontakte können nicht nacherfasst werden")
+  - Verweis auf LEAD_CONTACTS_ARCHITECTURE.md
+- ✅ **Option B Entscheidung dokumentiert:** User wählte "Proper Fix" statt "Quick Fix" (Produkt noch nicht live)
+
+**Migration:** V276, V277
+**Tests:** Backend (LeadContactTest, LeadResourceTest), Frontend (LeadWizard Integration)
+
+---
+
 ### 2025-10-08 15:30 - Enum-Migration Dokumentation - Sprint 2.1.6 Phase 5 + Sprint 2.1.6.1 PLANNED
 
 **Kontext:** Vollständige Dokumentation der 3-Phasen Enum-Migration für Type-Safety & Performance
@@ -780,6 +807,15 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
+- **🚧 Sprint 2.1.6 Phase 5+ - Lead Contacts Refactoring (IN PROGRESS):**
+  - **JETZT:** Migration V276 (lead_contacts Tabelle) + V277 (Backward Compatibility)
+  - **JETZT:** LeadContact Entity + Lead.contacts Beziehung
+  - **JETZT:** LeadCreateRequest.contacts API Refactoring
+  - **JETZT:** Frontend types.ts + LeadWizard API-Mapping
+  - **JETZT:** Tests (LeadContactTest, LeadResourceTest, LeadWizard Integration)
+  - **Verweis:** LEAD_CONTACTS_ARCHITECTURE.md (ADR-007)
+  - **Zeitaufwand:** ~3-5h (Multi-Contact Support wie Customer-Modul)
+
 - **✅ Sprint 2.1.6 - 4/5 PHASEN COMPLETE (08.10.2025):**
   - **✅ Phase 1:** Issue #130 Fix (PR #132 merged)
   - **✅ Phase 2:** BusinessType Harmonization + Admin-APIs (PR #133 merged)
@@ -825,11 +861,25 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+### 2025-10-08 - Pre-Claim Variante B (DB Best Practice)
+
+**⚠️ BREAKING CHANGE:**
+1. **Pre-Claim Variante B:** registered_at IMMER gesetzt, firstContactDocumentedAt = NULL für Pre-Claim
+   - `registered_at` = IMMER gesetzt (Audit Trail, DB Best Practice)
+   - `firstContactDocumentedAt` = NULL → Pre-Claim aktiv (10 Tage Frist)
+   - Lead ist sofort geschützt, hat aber 10 Tage für Erstkontakt-Dokumentation
+   - **Migration V274:** Adds `first_contact_documented_at` column
+   - **Vorteil:** Keine Race Conditions, klarer Audit Trail, keine NULL-Timestamps
+
+**Referenz:** [VARIANTE_B_MIGRATION_GUIDE.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/VARIANTE_B_MIGRATION_GUIDE.md)
+
+---
+
 ### 2025-10-03 - Pre-Claim Mechanik + Dedupe Policy + Consent-Logik
 
-**Entscheidung:**
-1. **Pre-Claim Stage 0:** Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL, 10 Tage Frist)
-   - Schutz startet erst bei Kontakt ODER dokumentiertem Erstkontakt
+**Entscheidung (OBSOLETE - siehe Variante B oben):**
+1. ~~**Pre-Claim Stage 0:** Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL, 10 Tage Frist)~~
+   - ~~Schutz startet erst bei Kontakt ODER dokumentiertem Erstkontakt~~
    - Ausnahme: Bestandsleads bei Migration → sofortiger Schutz
 2. **DSGVO Consent Source-abhängig:**
    - `source = WEB_FORMULAR` → Consent PFLICHT (Art. 6 Abs. 1 lit. a)

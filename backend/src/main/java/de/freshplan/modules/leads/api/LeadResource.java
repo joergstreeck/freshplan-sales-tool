@@ -7,6 +7,7 @@ import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
+import de.freshplan.modules.leads.domain.LeadContact;
 import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
@@ -18,6 +19,7 @@ import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
@@ -50,6 +52,8 @@ public class LeadResource {
   private static final Logger LOG = Logger.getLogger(LeadResource.class);
 
   @Context SecurityContext securityContext;
+
+  @Inject EntityManager em;
 
   @Inject LeadService leadService;
 
@@ -263,10 +267,8 @@ public class LeadResource {
     lead.estimatedVolume = request.estimatedVolume;
     lead.industry = request.industry;
 
-    // Set ownership and protection
+    // Set ownership and source
     lead.ownerUserId = currentUserId;
-    lead.status = LeadStatus.REGISTERED;
-    lead.stage = LeadStage.VORMERKUNG; // Sprint 2.1.6 - Progressive Profiling Stage
     lead.createdBy = currentUserId;
     lead.source = request.source != null ? LeadSource.fromString(request.source) : LeadSource.WEB_FORMULAR;
     lead.sourceCampaign = request.sourceCampaign;
@@ -277,8 +279,95 @@ public class LeadResource {
     lead.protectionDays60 = settings.activityReminderDays;
     lead.protectionDays10 = settings.gracePeriodDays;
 
+    // ================================================================================
+    // BUSINESS RULE: Pre-Claim Logic Variante B (Handelsvertretervertrag §2(8)(a))
+    // ================================================================================
+    // MESSE/TELEFON → Erstkontakt PFLICHT → direkt REGISTRIERUNG + Vollschutz
+    // Andere Sources → Pre-Claim erlaubt → VORMERKUNG (10 Tage Frist für Erstkontakt)
+    //
+    // Variante B: registered_at IMMER gesetzt (Audit Trail)
+    //             firstContactDocumentedAt = NULL → Pre-Claim aktiv
+    //
+    // Referenz: docs/planung/features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/VARIANTE_B_MIGRATION_GUIDE.md
+    // ================================================================================
+
+    // Variante B: registered_at IMMER setzen (Audit Trail)
+    lead.registeredAt = LocalDateTime.now();
+
+    if (lead.source != null && lead.source.requiresFirstContact()) {
+      // MESSE/TELEFON: Erstkontakt muss bei Erstellung dokumentiert werden
+      if (request.contactPerson == null || request.contactPerson.isBlank()) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(Map.of(
+                "error", "First contact required",
+                "message", "MESSE/TELEFON leads require contact person name for first contact documentation",
+                "source", lead.source.name()
+            ))
+            .build();
+      }
+
+      // Vollschutz: Erstkontakt dokumentiert
+      lead.status = LeadStatus.REGISTERED;
+      lead.stage = LeadStage.REGISTRIERUNG;
+      lead.firstContactDocumentedAt = LocalDateTime.now(); // ← Vollschutz!
+
+      LOG.infof("Lead %s (%s source): Direct REGISTRIERUNG (first contact documented: %s)",
+          lead.companyName, lead.source.name(), request.contactPerson);
+
+    } else {
+      // EMPFEHLUNG/WEB/PARTNER/SONSTIGE: Pre-Claim erlaubt
+      lead.status = LeadStatus.REGISTERED;
+      lead.stage = LeadStage.VORMERKUNG;
+      lead.firstContactDocumentedAt = null; // ← Pre-Claim! (10 Tage Frist)
+
+      LOG.infof("Lead %s (%s source): VORMERKUNG with Pre-Claim (10 days to document first contact)",
+          lead.companyName, lead.source != null ? lead.source.name() : "UNKNOWN");
+    }
+
     // Persist lead
     lead.persist();
+
+    // ================================================================================
+    // Sprint 2.1.6 Phase 5+: Create LeadContact from structured contact data (ADR-007)
+    // ================================================================================
+    // Process nested contact object (new structured data) or fallback to legacy flat fields
+    if (request.contact != null && request.contact.firstName != null && !request.contact.firstName.isBlank()) {
+      // NEW: Structured contact data from frontend
+      LeadContact primaryContact = new LeadContact();
+      primaryContact.setLead(lead);
+      primaryContact.setFirstName(request.contact.firstName);
+      primaryContact.setLastName(request.contact.lastName);
+      primaryContact.setEmail(request.contact.email);
+      primaryContact.setPhone(request.contact.phone);
+      primaryContact.setPrimary(true);
+      primaryContact.setActive(true);
+      primaryContact.setCreatedBy(currentUserId);
+      primaryContact.persist();
+
+      LOG.infof("Created primary contact for lead %s: %s %s (email: %s)",
+          lead.id, request.contact.firstName, request.contact.lastName, request.contact.email);
+
+    } else if (request.contactPerson != null && !request.contactPerson.isBlank()) {
+      // LEGACY: Backward compatibility - split flat contactPerson into firstName/lastName
+      String[] nameParts = request.contactPerson.trim().split("\\s+", 2);
+      String firstName = nameParts[0];
+      String lastName = nameParts.length > 1 ? nameParts[1] : "";
+
+      LeadContact primaryContact = new LeadContact();
+      primaryContact.setLead(lead);
+      primaryContact.setFirstName(firstName);
+      primaryContact.setLastName(lastName);
+      primaryContact.setEmail(request.email);
+      primaryContact.setPhone(request.phone);
+      primaryContact.setPrimary(true);
+      primaryContact.setActive(true);
+      primaryContact.setCreatedBy(currentUserId);
+      primaryContact.persist();
+
+      LOG.infof("Created primary contact for lead %s from legacy contactPerson: %s (split: %s %s)",
+          lead.id, request.contactPerson, firstName, lastName);
+    }
+    // V276 trigger will automatically sync primary contact → leads.contact_person/email/phone
 
     // Create initial activity (use LEAD_ASSIGNED instead of CREATED - V258 constraint)
     createAndPersistActivity(lead, currentUserId, ActivityType.LEAD_ASSIGNED, "Lead created");
@@ -287,6 +376,12 @@ public class LeadResource {
 
     // Return created lead with location header
     URI location = uriInfo.getAbsolutePathBuilder().path(lead.id.toString()).build();
+
+    // Force load of contacts collection before converting to DTO (avoid lazy loading)
+    em.flush(); // Ensure LeadContact is persisted to DB
+    em.refresh(lead); // Reload lead with relationships
+    lead.contacts.size(); // Trigger lazy loading of contacts collection
+
     // Return DTO to avoid lazy loading issues
     LeadDTO dto = LeadDTO.from(lead);
     return Response.created(location).entity(dto).build();
@@ -757,6 +852,301 @@ public class LeadResource {
     activity.description = description;
     activity.persist();
     return activity;
+  }
+
+  // ===========================
+  // Lead Contacts Management - Sprint 2.1.6 Phase 5+
+  // ===========================
+
+  /**
+   * POST /api/leads/{id}/contacts - Create new contact for lead
+   *
+   * @param leadId Lead ID
+   * @param contactDTO Contact data
+   * @return Created contact with HTTP 201
+   */
+  @POST
+  @Path("/{id}/contacts")
+  @Transactional
+  public Response createLeadContact(
+      @PathParam("id") Long leadId,
+      @Valid LeadContactDTO contactDTO) {
+
+    String currentUserId = getCurrentUserId();
+
+    try {
+      // 1. Load Lead
+      Lead lead = Lead.findById(leadId);
+      if (lead == null) {
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity(new ErrorResponse("Lead not found"))
+            .build();
+      }
+
+      // 2. Create LeadContact entity
+      LeadContact contact = new LeadContact();
+      contact.setLead(lead);
+      contact.setFirstName(contactDTO.getFirstName());
+      contact.setLastName(contactDTO.getLastName());
+      contact.setSalutation(contactDTO.getSalutation());
+      contact.setTitle(contactDTO.getTitle());
+      contact.setPosition(contactDTO.getPosition());
+      contact.setDecisionLevel(contactDTO.getDecisionLevel());
+      contact.setEmail(contactDTO.getEmail());
+      contact.setPhone(contactDTO.getPhone());
+      contact.setMobile(contactDTO.getMobile());
+      contact.setPrimary(contactDTO.isPrimary());
+      contact.setActive(true);
+      contact.setCreatedBy(currentUserId);
+      contact.setUpdatedBy(currentUserId);
+
+      // 3. If this is primary contact, unset other primary contacts
+      if (contactDTO.isPrimary()) {
+        em.createQuery("UPDATE LeadContact c SET c.isPrimary = false WHERE c.lead.id = :leadId")
+            .setParameter("leadId", leadId)
+            .executeUpdate();
+      }
+
+      // 4. Persist
+      contact.persist();
+
+      // 5. Create activity log
+      createAndPersistActivity(
+          lead,
+          currentUserId,
+          ActivityType.NOTE,
+          "Kontakt hinzugefügt: " + contact.getFullName()
+      );
+
+      // 6. Build response DTO
+      LeadContactDTO responseDTO = mapContactToDTO(contact);
+
+      return Response.created(
+          URI.create(uriInfo.getPath() + "/" + contact.getId())
+      ).entity(responseDTO).build();
+
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to create contact for lead %d: %s", leadId, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Failed to create contact"))
+          .build();
+    }
+  }
+
+  /**
+   * PATCH /api/leads/{id}/contacts/{contactId} - Update existing contact
+   *
+   * @param leadId Lead ID
+   * @param contactId Contact ID (UUID)
+   * @param contactDTO Updated contact data
+   * @return Updated contact
+   */
+  @PATCH
+  @Path("/{id}/contacts/{contactId}")
+  @Transactional
+  public Response updateLeadContact(
+      @PathParam("id") Long leadId,
+      @PathParam("contactId") String contactId,
+      @Valid LeadContactDTO contactDTO) {
+
+    String currentUserId = getCurrentUserId();
+
+    try {
+      // 1. Load contact
+      LeadContact contact = em.find(LeadContact.class, java.util.UUID.fromString(contactId));
+      if (contact == null || !contact.getLead().id.equals(leadId)) {
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity(new ErrorResponse("Contact not found"))
+            .build();
+      }
+
+      // 2. Update fields
+      contact.setFirstName(contactDTO.getFirstName());
+      contact.setLastName(contactDTO.getLastName());
+      contact.setSalutation(contactDTO.getSalutation());
+      contact.setTitle(contactDTO.getTitle());
+      contact.setPosition(contactDTO.getPosition());
+      contact.setDecisionLevel(contactDTO.getDecisionLevel());
+      contact.setEmail(contactDTO.getEmail());
+      contact.setPhone(contactDTO.getPhone());
+      contact.setMobile(contactDTO.getMobile());
+      contact.setUpdatedBy(currentUserId);
+
+      // 3. If primary flag changed, handle uniqueness
+      if (contactDTO.isPrimary() && !contact.isPrimary()) {
+        em.createQuery("UPDATE LeadContact c SET c.isPrimary = false WHERE c.lead.id = :leadId")
+            .setParameter("leadId", leadId)
+            .executeUpdate();
+        contact.setPrimary(true);
+      }
+
+      // 4. Persist
+      em.merge(contact);
+
+      // 5. Create activity log
+      createAndPersistActivity(
+          contact.getLead(),
+          currentUserId,
+          ActivityType.NOTE,
+          "Kontakt aktualisiert: " + contact.getFullName()
+      );
+
+      // 6. Build response DTO
+      LeadContactDTO responseDTO = mapContactToDTO(contact);
+
+      return Response.ok(responseDTO).build();
+
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to update contact %s for lead %d: %s", contactId, leadId, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Failed to update contact"))
+          .build();
+    }
+  }
+
+  /**
+   * DELETE /api/leads/{id}/contacts/{contactId} - Soft delete contact
+   *
+   * @param leadId Lead ID
+   * @param contactId Contact ID (UUID)
+   * @return HTTP 204 No Content
+   */
+  @DELETE
+  @Path("/{id}/contacts/{contactId}")
+  @Transactional
+  public Response deleteLeadContact(
+      @PathParam("id") Long leadId,
+      @PathParam("contactId") String contactId) {
+
+    String currentUserId = getCurrentUserId();
+
+    try {
+      // 1. Load contact
+      LeadContact contact = em.find(LeadContact.class, java.util.UUID.fromString(contactId));
+      if (contact == null || !contact.getLead().id.equals(leadId)) {
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity(new ErrorResponse("Contact not found"))
+            .build();
+      }
+
+      // 2. Soft delete
+      contact.setIsDeleted(true);
+      contact.setActive(false);
+      contact.setUpdatedBy(currentUserId);
+      em.merge(contact);
+
+      // 3. Create activity log
+      createAndPersistActivity(
+          contact.getLead(),
+          currentUserId,
+          ActivityType.NOTE,
+          "Kontakt gelöscht: " + contact.getFullName()
+      );
+
+      return Response.noContent().build();
+
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to delete contact %s for lead %d: %s", contactId, leadId, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Failed to delete contact"))
+          .build();
+    }
+  }
+
+  /**
+   * PATCH /api/leads/{id}/contacts/{contactId}/primary - Set contact as primary
+   *
+   * @param leadId Lead ID
+   * @param contactId Contact ID (UUID)
+   * @return Updated contact
+   */
+  @PATCH
+  @Path("/{id}/contacts/{contactId}/primary")
+  @Transactional
+  public Response setContactAsPrimary(
+      @PathParam("id") Long leadId,
+      @PathParam("contactId") String contactId) {
+
+    String currentUserId = getCurrentUserId();
+
+    try {
+      // 1. Load contact
+      LeadContact contact = em.find(LeadContact.class, java.util.UUID.fromString(contactId));
+      if (contact == null || !contact.getLead().id.equals(leadId)) {
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity(new ErrorResponse("Contact not found"))
+            .build();
+      }
+
+      // 2. Unset all other primary contacts for this lead
+      em.createQuery("UPDATE LeadContact c SET c.isPrimary = false WHERE c.lead.id = :leadId")
+          .setParameter("leadId", leadId)
+          .executeUpdate();
+
+      // 3. Set this contact as primary
+      contact.setPrimary(true);
+      contact.setUpdatedBy(currentUserId);
+      em.merge(contact);
+
+      // 4. Create activity log
+      createAndPersistActivity(
+          contact.getLead(),
+          currentUserId,
+          ActivityType.NOTE,
+          "Hauptkontakt gesetzt: " + contact.getFullName()
+      );
+
+      // 5. Build response DTO
+      LeadContactDTO responseDTO = mapContactToDTO(contact);
+
+      return Response.ok(responseDTO).build();
+
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to set contact %s as primary for lead %d: %s", contactId, leadId, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Failed to set primary contact"))
+          .build();
+    }
+  }
+
+  /**
+   * Helper: Map LeadContact entity to LeadContactDTO
+   */
+  private LeadContactDTO mapContactToDTO(LeadContact contact) {
+    LeadContactDTO dto = new LeadContactDTO();
+    dto.setId(contact.getId());
+    dto.setLeadId(contact.getLead().id);
+    dto.setFirstName(contact.getFirstName());
+    dto.setLastName(contact.getLastName());
+    dto.setSalutation(contact.getSalutation());
+    dto.setTitle(contact.getTitle());
+    dto.setPosition(contact.getPosition());
+    dto.setDecisionLevel(contact.getDecisionLevel());
+    dto.setEmail(contact.getEmail());
+    dto.setPhone(contact.getPhone());
+    dto.setMobile(contact.getMobile());
+    dto.setPrimary(contact.isPrimary());
+    dto.setActive(contact.isActive());
+    dto.setBirthday(contact.getBirthday());
+    dto.setHobbies(contact.getHobbies());
+    dto.setFamilyStatus(contact.getFamilyStatus());
+    dto.setChildrenCount(contact.getChildrenCount());
+    dto.setPersonalNotes(contact.getPersonalNotes());
+    dto.setWarmthScore(contact.getWarmthScore());
+    dto.setWarmthConfidence(contact.getWarmthConfidence());
+    dto.setLastInteractionDate(contact.getLastInteractionDate());
+    dto.setInteractionCount(contact.getInteractionCount());
+    dto.setDataQualityScore(contact.getDataQualityScore());
+    dto.setDataQualityRecommendations(contact.getDataQualityRecommendations());
+    dto.setIsDecisionMaker(contact.getIsDecisionMaker());
+    dto.setIsDeleted(contact.getIsDeleted());
+    dto.setCreatedAt(contact.getCreatedAt());
+    dto.setUpdatedAt(contact.getUpdatedAt());
+    dto.setCreatedBy(contact.getCreatedBy());
+    dto.setUpdatedBy(contact.getUpdatedBy());
+    dto.setFullName(contact.getFullName());
+    dto.setDisplayName(contact.getDisplayName());
+    return dto;
   }
 
   /** Simple error response DTO. */

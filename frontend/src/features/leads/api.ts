@@ -1,4 +1,4 @@
-import type { Lead, Problem } from './types';
+import type { Lead, LeadContactDTO, Problem } from './types';
 
 const BASE = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
 
@@ -97,6 +97,15 @@ export async function addFirstContact(
   return res.json();
 }
 
+export async function getLeadById(id: string): Promise<Lead> {
+  const res = await fetch(`${BASE}/api/leads/${id}`, {
+    headers: { Accept: 'application/json', ...authHeaders() },
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
 export async function deleteLead(id: number): Promise<void> {
   const res = await fetch(`${BASE}/api/leads/${id}`, {
     method: 'DELETE',
@@ -108,6 +117,75 @@ export async function deleteLead(id: number): Promise<void> {
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);
+}
+
+// ===========================
+// Lead Contacts API - Sprint 2.1.6 Phase 5+
+// ===========================
+
+export async function createLeadContact(
+  leadId: number,
+  contactData: Partial<LeadContactDTO>
+): Promise<LeadContactDTO> {
+  const res = await fetch(`${BASE}/api/leads/${leadId}/contacts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    body: JSON.stringify(contactData),
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
+export async function updateLeadContact(
+  leadId: number,
+  contactId: string,
+  contactData: Partial<LeadContactDTO>
+): Promise<LeadContactDTO> {
+  const res = await fetch(`${BASE}/api/leads/${leadId}/contacts/${contactId}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    body: JSON.stringify(contactData),
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
+export async function deleteLeadContact(leadId: number, contactId: string): Promise<void> {
+  const res = await fetch(`${BASE}/api/leads/${leadId}/contacts/${contactId}`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+}
+
+export async function setLeadContactAsPrimary(
+  leadId: number,
+  contactId: string
+): Promise<LeadContactDTO> {
+  const res = await fetch(`${BASE}/api/leads/${leadId}/contacts/${contactId}/primary`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
 }
 
 // RFC7807 Error Handling

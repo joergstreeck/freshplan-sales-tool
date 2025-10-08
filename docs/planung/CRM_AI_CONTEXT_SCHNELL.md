@@ -427,7 +427,7 @@ Implementation-Details:
     - EnumResource API erweitert: 4 neue Endpoints
     - Frontend Hooks: useActivityTypes, useOpportunityStatuses, usePaymentMethods, useDeliveryMethods
     - Pattern: Konsistent VARCHAR + CHECK für alle Enums
-  - **Business-Rule:** MESSE/TELEFON = Erstkontakt PFLICHT (Pre-Claim Logic: `source.requiresFirstContact()`)
+  - **Business-Rule:** MESSE/TELEFON = Erstkontakt PFLICHT (Pre-Claim Logic Variante B: `source.requiresFirstContact()` → `firstContactDocumentedAt` != NULL)
   - **Performance:** ~9x schneller als String-LIKE durch B-Tree Index-Nutzung (nicht ENUM Type!)
   - **Type-Safety:** Compiler-Validierung statt Runtime-Errors
   - **Timing:** Pre-Production = optimales Zeitfenster (keine Daten-Migration, Clean Slate)

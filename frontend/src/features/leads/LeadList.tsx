@@ -9,6 +9,7 @@ import LeadScoreIndicator from './LeadScoreIndicator';
 import LeadStatusWorkflow from './LeadStatusWorkflow';
 import StopTheClockDialog from './StopTheClockDialog';
 import LeadActivityTimeline from './LeadActivityTimeline';
+import PreClaimBadge from './components/PreClaimBadge';
 import { useAuth } from '../../hooks/useAuth';
 
 export default function LeadList() {
@@ -147,6 +148,11 @@ export default function LeadList() {
                   orientation="horizontal"
                   size="small"
                 />
+              </Box>
+
+              {/* Pre-Claim Badge (Variante B Logic) */}
+              <Box mb={2}>
+                <PreClaimBadge lead={lead} size="small" />
               </Box>
 
               {/* Clock Stopped Info */}

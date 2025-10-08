@@ -44,11 +44,66 @@ export type Territory = {
   countryCode: string;
 };
 
+// Sprint 2.1.6 Phase 5+: Structured Contact Data (Request DTO - simplified)
 export type LeadContact = {
   firstName?: string;
   lastName?: string;
   email?: string;
   phone?: string;
+};
+
+// Sprint 2.1.6 Phase 5+: Full Contact DTO (Response from Backend - ADR-007 100% Parity)
+export type LeadContactDTO = {
+  id: string;
+  leadId: string;
+
+  // Basic Info
+  salutation?: string; // 'herr' | 'frau' | 'divers'
+  title?: string;
+  firstName: string;
+  lastName: string;
+  position?: string;
+  decisionLevel?: string; // 'executive' | 'manager' | 'operational' | 'influencer'
+
+  // Contact Info
+  email?: string;
+  phone?: string;
+  mobile?: string;
+
+  // Flags
+  primary: boolean;
+  active: boolean;
+
+  // Relationship Data (CRM Intelligence)
+  birthday?: string; // ISO 8601 date
+  hobbies?: string;
+  familyStatus?: string; // 'single' | 'married' | 'divorced' | 'widowed'
+  childrenCount?: number;
+  personalNotes?: string;
+
+  // Intelligence Data (Sales Excellence)
+  warmthScore?: number; // 0-100
+  warmthConfidence?: number; // 0-100
+  lastInteractionDate?: string; // ISO 8601 timestamp
+  interactionCount?: number;
+
+  // Data Quality
+  dataQualityScore?: number; // 0-100
+  dataQualityRecommendations?: string;
+
+  // Legacy Compatibility
+  isDecisionMaker?: boolean;
+  isDeleted?: boolean;
+
+  // Computed Fields
+  fullName?: string; // "Dr. Maria Schmidt"
+  displayName?: string; // "Frau Dr. Maria Schmidt"
+
+  // Audit Fields
+  createdAt: string;
+  updatedAt: string;
+  createdBy?: string;
+  updatedBy?: string;
 };
 
 export type Lead = {
@@ -67,11 +122,12 @@ export type Lead = {
   territory?: Territory;
 
   // Contact Information (Stage 1)
-  contact?: LeadContact;
-  contactPerson?: string; // Legacy field
-  email?: string; // Legacy field
+  contact?: LeadContact; // For requests (simple)
+  contacts?: LeadContactDTO[]; // Sprint 2.1.6 Phase 5+: For responses (full data)
+  contactPerson?: string; // Legacy field (deprecated)
+  email?: string; // Legacy field (deprecated)
   emailNormalized?: string;
-  phone?: string; // Legacy field
+  phone?: string; // Legacy field (deprecated)
   phoneE164?: string;
 
   // DSGVO Compliance (Stage 1)
@@ -94,9 +150,13 @@ export type Lead = {
   // Lead Source (Sprint 2.1.5)
   source?: LeadSource;
 
-  // Protection & Progress Tracking (V255, V257)
-  // Sprint 2.1.5: registeredAt nullable für Pre-Claim Detection (null = Pre-Claim)
-  registeredAt?: string;
+  // Protection & Progress Tracking (V255, V257, V274)
+  // Variante B (2025-10-08): registered_at IMMER gesetzt (Audit Trail)
+  registeredAt: string; // NOT NULL - wann wurde Lead erfasst?
+
+  // Variante B: NULL = Pre-Claim aktiv (10 Tage Frist für Erstkontakt)
+  firstContactDocumentedAt?: string; // NULL → Pre-Claim, NOT NULL → Vollschutz
+
   protectionUntil?: string;
   progressDeadline?: string;
   progressWarningSentAt?: string;

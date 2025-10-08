@@ -1,23 +1,54 @@
 package de.freshplan.modules.leads.api;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 
-/** Request DTO for creating a new lead. Supports B2B-specific fields for gastronomy businesses. */
+/**
+ * Request DTO for creating a new lead.
+ *
+ * <p>Supports B2B-specific fields for gastronomy businesses.
+ *
+ * <p><b>Sprint 2.1.6 Phase 5+:</b> Added nested `contact` object for structured contact data (ADR-007 Option C).
+ */
 public class LeadCreateRequest {
+
+  /** Nested DTO for structured contact data (Sprint 2.1.6 Phase 5+ - ADR-007). */
+  public static class ContactData {
+    @Size(max = 100)
+    public String firstName;
+
+    @Size(max = 100)
+    public String lastName;
+
+    @Email(message = "Invalid email format")
+    @Size(max = 255)
+    public String email;
+
+    @Size(max = 50)
+    public String phone;
+  }
 
   @NotNull(message = "Company name is required") @Size(min = 1, max = 255, message = "Company name must be between 1 and 255 characters")
   public String companyName;
 
+  // Sprint 2.1.6 Phase 5+: Structured contact data (NEW - preferred)
+  @Valid
+  public ContactData contact;
+
+  // Legacy fields (for backward compatibility with old clients)
+  @Deprecated
   @Size(max = 255)
   public String contactPerson;
 
+  @Deprecated
   @Email(message = "Invalid email format")
   @Size(max = 255)
   public String email;
 
+  @Deprecated
   @Size(max = 50)
   public String phone;
 

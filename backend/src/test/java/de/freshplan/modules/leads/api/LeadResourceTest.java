@@ -23,6 +23,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.*;
@@ -396,6 +397,7 @@ class LeadResourceTest {
     lead.territory = Territory.find("countryCode", "DE").firstResult();
     lead.countryCode = "DE";
     lead.createdBy = ownerUserId;
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     // Don't set version manually - let JPA handle it
     lead.persist();
     lead.flush(); // Ensure version is set
@@ -414,6 +416,7 @@ class LeadResourceTest {
     lead.territory = Territory.find("countryCode", "DE").firstResult();
     lead.countryCode = "DE";
     lead.createdBy = ownerUserId;
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     // Don't set version manually - let JPA handle it
     lead.persist();
     lead.flush(); // Ensure version is set
@@ -786,6 +789,7 @@ class LeadResourceTest {
     lead.ownerUserId = ownerUserId;
     lead.createdBy = ownerUserId;
     lead.countryCode = "DE";
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     lead.leadScore = score; // Set score explicitly
     lead.persist();
     return lead.id;
@@ -801,6 +805,7 @@ class LeadResourceTest {
     lead.ownerUserId = ownerUserId;
     lead.createdBy = ownerUserId;
     lead.countryCode = "DE";
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     lead.progressPauseTotalSeconds = pauseSeconds; // Set pause explicitly
     lead.persist();
     return lead.id;
@@ -816,6 +821,7 @@ class LeadResourceTest {
     lead.ownerUserId = ownerUserId;
     lead.createdBy = ownerUserId;
     lead.countryCode = "DE";
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
 
     // Set all nullable/optional fields
     lead.leadScore = 80;
@@ -828,5 +834,91 @@ class LeadResourceTest {
 
     lead.persist();
     return lead.id;
+  }
+
+  // ===========================
+  // Sprint 2.1.6 Phase 5+ Tests - Structured Contact Data (ADR-007)
+  // ===========================
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName(
+      "Should create lead with structured contact data and return contacts array in response")
+  void testCreateLeadWithStructuredContact() {
+    Map<String, Object> contactData = new HashMap<>();
+    contactData.put("firstName", "Maria");
+    contactData.put("lastName", "Schmidt");
+    contactData.put("email", "maria.schmidt@restaurant.de");
+    contactData.put("phone", "+49 30 12345678");
+
+    Map<String, Object> leadRequest = new HashMap<>();
+    leadRequest.put("companyName", "Test Restaurant GmbH");
+    leadRequest.put("contact", contactData); // NEW: Structured contact
+    leadRequest.put("street", "Teststraße 1");
+    leadRequest.put("postalCode", "10115");
+    leadRequest.put("city", "Berlin");
+    leadRequest.put("countryCode", "DE");
+    leadRequest.put("businessType", "RESTAURANT");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(leadRequest)
+        .when()
+        .post()
+        .then()
+        .statusCode(201)
+        .header("Location", notNullValue())
+        .body("id", notNullValue())
+        .body("companyName", is("Test Restaurant GmbH"))
+        .body("ownerUserId", is("user1"))
+        .body("status", is("REGISTERED"))
+        // Verify contacts array is populated
+        .body("contacts", hasSize(1))
+        .body("contacts[0].firstName", is("Maria"))
+        .body("contacts[0].lastName", is("Schmidt"))
+        .body("contacts[0].email", is("maria.schmidt@restaurant.de"))
+        .body("contacts[0].phone", is("+49 30 12345678"))
+        .body("contacts[0].primary", is(true))
+        .body("contacts[0].fullName", is("Maria Schmidt"))
+        .body("contacts[0].displayName", is("Maria Schmidt"))
+        // Backward compatibility: legacy fields should also be synced via V276 trigger
+        .body("contactPerson", is("Maria Schmidt"))
+        .body("email", is("maria.schmidt@restaurant.de"))
+        .body("phone", is("+49 30 12345678"));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("Should support backward compatibility with legacy flat contactPerson field")
+  void testCreateLeadWithLegacyContactPerson() {
+    Map<String, Object> leadRequest = new HashMap<>();
+    leadRequest.put("companyName", "Test Restaurant Alt GmbH");
+    leadRequest.put("contactPerson", "Max Mustermann"); // Legacy flat field
+    leadRequest.put("email", "max@restaurant.de");
+    leadRequest.put("phone", "+49 123 456789");
+    leadRequest.put("city", "Berlin");
+    leadRequest.put("countryCode", "DE");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(leadRequest)
+        .when()
+        .post()
+        .then()
+        .statusCode(201)
+        .body("companyName", is("Test Restaurant Alt GmbH"))
+        // Verify contact was created from legacy data (split "Max Mustermann" → firstName, lastName)
+        .body("contacts", hasSize(1))
+        .body("contacts[0].firstName", is("Max"))
+        .body("contacts[0].lastName", is("Mustermann"))
+        .body("contacts[0].email", is("max@restaurant.de"))
+        .body("contacts[0].primary", is(true))
+        // Backward compatibility: legacy fields synced
+        .body("contactPerson", is("Max Mustermann"))
+        .body("email", is("max@restaurant.de"));
   }
 }

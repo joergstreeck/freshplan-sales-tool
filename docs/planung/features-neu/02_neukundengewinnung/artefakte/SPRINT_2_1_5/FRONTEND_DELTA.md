@@ -5,7 +5,7 @@ domain: "frontend"
 doc_type: "konzept"
 status: "approved"
 owner: "team/frontend"
-updated: "2025-10-04"
+updated: "2025-10-08"
 ---
 
 # Frontend Delta – Sprint 2.1.5
@@ -20,6 +20,38 @@ updated: "2025-10-04"
 > - DSGVO Consent (UI-only in 2.1.5)
 > - Dedupe 409 Handling (Hard/Soft mit Problem+JSON extensions)
 > - Pre-Claim UX (Badge + Filter)
+
+---
+
+## ⚠️ BREAKING CHANGE: Variante B (2025-10-08)
+
+**API-Änderung - Pre-Claim Logic:**
+
+| Alt (Variante A) | Neu (Variante B) |
+|------------------|------------------|
+| `registeredAt = null` bei Pre-Claim | `registeredAt` IMMER gesetzt |
+| Pre-Claim = "Kein Schutz" | Pre-Claim = "Schutz aktiv, 10 Tage Frist" |
+| Erkennbar an: `registeredAt IS NULL` | Erkennbar an: `firstContactDocumentedAt IS NULL` |
+
+**Frontend-Anpassungen erforderlich:**
+1. **Pre-Claim Check ändern:**
+   ```typescript
+   // ALT:
+   const isPreClaim = lead.registeredAt === null;
+
+   // NEU:
+   const isPreClaim = lead.firstContactDocumentedAt === null;
+   ```
+
+2. **Badge-Logik anpassen:**
+   - Pre-Claim Badge nur wenn `firstContactDocumentedAt === null`
+   - `registeredAt` ist nie NULL → kein NULL-Check mehr nötig
+
+3. **Filter anpassen:**
+   - "Pre-Claim Leads" Filter: `firstContactDocumentedAt === null`
+   - Statistiken: `registeredAt` ist immer vorhanden
+
+**Siehe:** [PRE_CLAIM_LOGIC.md](./PRE_CLAIM_LOGIC.md) für vollständige Spezifikation
 
 ---
 

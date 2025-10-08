@@ -82,6 +82,14 @@ public class Lead extends PanacheEntityBase {
   @JoinColumn(name = "territory_id", nullable = false)
   public Territory territory;
 
+  // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C - 100% Parity with Customer)
+  @OneToMany(
+      mappedBy = "lead",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  public List<LeadContact> contacts = new ArrayList<>();
+
   // Industry specific
   /**
    * @deprecated Use {@link #businessType} instead. This field will be removed in next migration
@@ -120,8 +128,13 @@ public class Lead extends PanacheEntityBase {
   public Set<String> collaboratorUserIds = new HashSet<>();
 
   // State machine timestamps
+  // Variante B: registered_at IMMER gesetzt (Audit Trail)
   @Column(name = "registered_at", nullable = false)
-  public LocalDateTime registeredAt = LocalDateTime.now();
+  public LocalDateTime registeredAt;
+
+  // Pre-Claim Logic Variante B: NULL = Pre-Claim aktiv (10 Tage Frist)
+  @Column(name = "first_contact_documented_at", nullable = true)
+  public LocalDateTime firstContactDocumentedAt;
 
   @Size(max = 250)
   @Column(name = "registered_at_override_reason")
@@ -279,6 +292,10 @@ public class Lead extends PanacheEntityBase {
   }
 
   public boolean needsReminder() {
+    // Pre-Claim leads (registeredAt = null) don't need reminders yet
+    if (registeredAt == null) {
+      return false;
+    }
     if (lastActivityAt == null) {
       return registeredAt.plusDays(protectionDays60).isBefore(LocalDateTime.now());
     }
@@ -333,9 +350,7 @@ public class Lead extends PanacheEntityBase {
   protected void onCreate() {
     createdAt = LocalDateTime.now();
     updatedAt = LocalDateTime.now();
-    if (registeredAt == null) {
-      registeredAt = LocalDateTime.now();
-    }
+    // Variante B: registeredAt wird explizit in LeadResource gesetzt
     if (protectionStartAt == null) {
       protectionStartAt = LocalDateTime.now();
     }

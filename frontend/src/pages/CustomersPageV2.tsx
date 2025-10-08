@@ -4,7 +4,6 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import LeadWizard from '../features/leads/LeadWizard';
 import AddFirstContactDialog from '../features/leads/AddFirstContactDialog';
-import LeadEditDialog from '../features/leads/LeadEditDialog';
 import DeleteLeadDialog from '../features/leads/DeleteLeadDialog';
 import type { Lead } from '../features/leads/types';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
@@ -18,6 +17,7 @@ import { LeadQualityDashboard } from '../features/leads/components/intelligence/
 import { LeadProtectionManager } from '../features/leads/components/intelligence/LeadProtectionManager';
 import { IntelligentFilterBar } from '../features/customers/components/filter/IntelligentFilterBar';
 import { useAuth } from '../contexts/AuthContext';
+import { generateLeadUrl } from '../utils/slugify';
 import { useCustomers, useCustomerSearchAdvanced } from '../features/customer/api/customerQueries';
 import { useLeads } from '../features/leads/hooks/useLeads';
 import { useNavigate } from 'react-router-dom';
@@ -54,7 +54,6 @@ export function CustomersPageV2({
   const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
   const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
@@ -571,7 +570,11 @@ export function CustomersPageV2({
                       setSelectedLead(customer as unknown as Lead);
                       if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
                         setFirstContactDialogOpen(true);
+                      } else if (context === 'leads') {
+                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                       } else {
+                        // Customer context - keep old behavior for now
                         setEditDialogOpen(true);
                       }
                     }}
@@ -637,22 +640,6 @@ export function CustomersPageV2({
             setSelectedLead(null);
             refetch();
             toast.success('Erstkontakt erfolgreich dokumentiert!');
-          }}
-        />
-
-        {/* LeadEdit Dialog */}
-        <LeadEditDialog
-          open={editDialogOpen}
-          lead={selectedLead}
-          onClose={() => {
-            setEditDialogOpen(false);
-            setSelectedLead(null);
-          }}
-          onSuccess={() => {
-            setEditDialogOpen(false);
-            setSelectedLead(null);
-            refetch();
-            toast.success('Lead erfolgreich aktualisiert!');
           }}
         />
 

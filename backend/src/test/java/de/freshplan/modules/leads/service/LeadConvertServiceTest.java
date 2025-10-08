@@ -14,6 +14,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +57,7 @@ class LeadConvertServiceTest {
     testLead.createdBy = TEST_USER;
     testLead.updatedBy = TEST_USER;
     testLead.status = LeadStatus.QUALIFIED;
+    testLead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     testLead.persist();
   }
 

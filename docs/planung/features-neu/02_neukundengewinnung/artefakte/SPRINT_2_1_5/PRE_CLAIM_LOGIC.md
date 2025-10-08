@@ -5,10 +5,10 @@ doc_type: "guideline"
 status: "approved"
 sprint: "2.1.5"
 owner: "team/leads-backend"
-updated: "2025-10-03"
+updated: "2025-10-08"
 ---
 
-# Pre-Claim Logic – Stage 0 Schutz-Mechanik
+# Pre-Claim Logic – Stage 0 Schutz-Mechanik (Variante B)
 
 **📍 Navigation:** Home → Planung → 02 Neukundengewinnung → Artefakte → Sprint 2.1.5 → Pre-Claim Logic
 
@@ -21,7 +21,12 @@ Dokumentiert die **Pre-Claim Mechanik** für Stage 0 Leads gemäß Handelsvertre
 **Business-Problem:**
 - Partner erfassen Lead bei Messe → haben nur Firma + Stadt, noch **keinen namentlichen Kontakt**
 - Vertrag verlangt **entweder** Kontakt **oder** dokumentierten Erstkontakt für Schutzbeginn
-- **Pre-Claim** = Vormerkung **ohne Schutz** (10 Tage Frist) bis Daten vervollständigt werden
+- **Pre-Claim** = Vormerkung **MIT Schutz** (10 Tage Frist) bis Erstkontakt dokumentiert wird
+
+**⚠️ ARCHITEKTUR-ENTSCHEIDUNG (2025-10-08):**
+- **Variante B**: `registered_at` IMMER gesetzt (Audit Trail + DB Best Practice)
+- **Neues Feld**: `first_contact_documented_at` entscheidet über Schutz-Vollständigkeit
+- **Vorteil**: Keine NULL-Werte in Timestamps, keine Race Conditions, klarer Audit Trail
 
 ---
 
@@ -29,69 +34,106 @@ Dokumentiert die **Pre-Claim Mechanik** für Stage 0 Leads gemäß Handelsvertre
 
 ### Rule 1: Schutzbeginn-Kriterien
 
-**⚠️ OPTION A: FINALE REGELUNG (2025-10-04 - User-Feedback integriert)**
+**✅ VARIANTE B: FINALE REGELUNG (2025-10-08 - DB Best Practice)**
 
 **Erstkontakt PFLICHT (kein Pre-Claim):**
 - 🎪 **MESSE:** Partner HAT direkten Erstkontakt → Dokumentation PFLICHT
 - 📞 **TELEFON:** Partner HAT direkten Erstkontakt → Dokumentation PFLICHT
-- → **Schutz startet SOFORT** bei Speicherung
+- → **Schutz vollständig** ab Speicherung (`registered_at` + `first_contact_documented_at` beide gesetzt)
 
 **Pre-Claim MÖGLICH (Erstkontakt optional):**
 - 🤝 **EMPFEHLUNG:** Partner hat KEINEN direkten Erstkontakt (nur Empfehlung) → Pre-Claim erlaubt
 - 🌐 **WEB_FORMULAR:** Kein direkter Erstkontakt → Pre-Claim erlaubt
 - 🔗 **PARTNER:** API-Import → Pre-Claim erlaubt
-- ❓ **SONSTIGE:** Fallback → Pre-Claim erlaubt
-- → **10 Tage Frist** zur Vervollständigung
+- ❓ **SONSTIGES:** Fallback → Pre-Claim erlaubt
+- → **Lead ist sofort geschützt** (`registered_at` gesetzt), aber hat **10 Tage Frist** für Erstkontakt
+- → Erkennbar an: `first_contact_documented_at IS NULL`
 
-**Schutz startet SOFORT wenn:**
-- ✅ **Kontakt vorhanden** (`contact.firstName` + `contact.lastName` + (`contact.email` OR `contact.phone`))
-- **ODER**
-- ✅ **Erstkontakt dokumentiert** (`firstContactActivity.channel` + `firstContactActivity.date` + `firstContactActivity.notes`)
+**Schutz-Status (2 Stufen):**
 
-**Pre-Claim (kein Schutz) wenn:**
-- ❌ **Weder Kontakt noch dokumentierter Erstkontakt**
-- ❌ **Source erlaubt Pre-Claim** (EMPFEHLUNG, WEB_FORMULAR, PARTNER, SONSTIGE)
-- Lead hat 10 Tage Zeit zur Vervollständigung
-- Erkennbar an: `registered_at IS NULL`
+| Status | `registered_at` | `first_contact_documented_at` | Bedeutung | Vertrags-Status |
+|--------|-----------------|-------------------------------|-----------|-----------------|
+| **Vollständig geschützt** | ✅ Gesetzt | ✅ Gesetzt | MESSE/TELEFON mit dokumentiertem Erstkontakt | 6 Monate Schutz aktiv |
+| **Pre-Claim (unvollständig)** | ✅ Gesetzt | ❌ NULL | EMPFEHLUNG/WEB/PARTNER ohne Erstkontakt | Schutz aktiv, 10 Tage Frist |
+
+**Warum Variante B (registered_at IMMER gesetzt)?**
+
+1. **Audit Trail**: Jeder Lead hat klaren Timestamp "Wann erfasst?"
+2. **Keine Race Conditions**: Zwei Vertreter können nicht gleichzeitig denselben Lead "vormerken"
+3. **DB Best Practice**: NOT NULL für Timestamps (Standard-Pattern created_at, updated_at, registered_at)
+4. **Einfache Queries**: Keine NULL-Checks bei Statistiken ("Wie viele Leads diese Woche?")
+5. **Semantische Klarheit**: `registered_at` = "Erfassung im System", `first_contact_documented_at` = "Erstkontakt"
 
 ---
 
 ### Rule 2: Pre-Claim Ablauf
 
 ```
-Tag 0:  Lead erstellt mit stage=0, registered_at=NULL
-        → Pre-Claim aktiv (kein Schutz!)
+Tag 0:  Lead erstellt mit stage=0
+        → registered_at = NOW() (Lead geschützt!)
+        → first_contact_documented_at = NULL (Pre-Claim aktiv)
 
-Tag 1-10: Lead muss vervollständigt werden:
-          - Entweder Kontakt hinzufügen (Stage 1)
-          - Oder Erstkontakt dokumentieren (Activity FIRST_CONTACT_DOCUMENTED)
+Tag 1-10: Lead muss Erstkontakt dokumentieren:
+          - Activity FIRST_CONTACT_DOCUMENTED erstellen
+          - first_contact_documented_at wird gesetzt
+          - Pre-Claim → Vollständiger Schutz
 
-Tag 10: Pre-Claim läuft ab
-        → Lead wird archiviert/gelöscht (manuell in 2.1.5, Job in 2.1.6)
+Tag 10: Pre-Claim-Frist läuft ab
+        → Lead bleibt geschützt (registered_at vorhanden)
+        → Supervisor kann Lead freigeben oder Vertreter mahnen
+        → Nightly Job markiert als "unvollständig"
 ```
+
+**Kernunterschied zu Variante A:**
+- **Variante A**: `registered_at = NULL` → Lead hat KEINEN Schutz (Race Condition möglich!)
+- **Variante B**: `registered_at = NOW()` → Lead hat SOFORT Schutz (10 Tage für Erstkontakt)
 
 ---
 
 ### Rule 3: Migration-Ausnahme (WICHTIG!)
 
 **Bestandsleads bei go-live:**
-- ✅ **Sofortiger Schutz** (auch ohne Kontakt/Erstkontakt)
+- ✅ **Sofortiger Vollschutz** (auch ohne explizite Erstkontakt-Dokumentation)
 - Begründung: Bestehende Geschäftsbeziehung impliziert dokumentierten Kontakt
-- Technisch: Migration setzt `registered_at = created_at` für alle Bestandsleads
+- Technisch: Migration setzt `registered_at = created_at` UND `first_contact_documented_at = created_at`
 
 ---
 
 ## Datenmodell
 
-### Existierende Felder (KEINE neue Migration!)
+### Migration V274: Neues Feld first_contact_documented_at
 
 ```sql
--- leads Table (V255 bereits deployed)
+-- V274__add_first_contact_documented_at_for_preclaim.sql
+ALTER TABLE leads
+  ADD COLUMN first_contact_documented_at TIMESTAMPTZ NULL;
+
+COMMENT ON COLUMN leads.first_contact_documented_at IS
+  'Zeitpunkt der Erstkontakt-Dokumentation (MESSE/TELEFON: Pflicht bei Erstellung,
+   EMPFEHLUNG/WEB/PARTNER: Optional, 10 Tage Frist). NULL = Pre-Claim aktiv.';
+
+-- Index für Pre-Claim Queries (Nightly Job)
+CREATE INDEX IF NOT EXISTS idx_leads_first_contact_documented_at
+  ON leads(first_contact_documented_at)
+  WHERE first_contact_documented_at IS NULL;
+
+-- Backfill für Bestandsleads (bereits geschützte Leads)
+UPDATE leads
+SET first_contact_documented_at = registered_at
+WHERE first_contact_documented_at IS NULL
+  AND registered_at IS NOT NULL;
+```
+
+### Schema-Übersicht
+
+```sql
+-- leads Table
 leads:
   id UUID PRIMARY KEY
   company_name VARCHAR(255) NOT NULL
   city VARCHAR(255) NOT NULL
-  registered_at TIMESTAMPTZ NULL  -- ← NULL = Pre-Claim!
+  registered_at TIMESTAMPTZ NOT NULL DEFAULT NOW()  -- ← IMMER gesetzt!
+  first_contact_documented_at TIMESTAMPTZ NULL      -- ← NULL = Pre-Claim
   protected_until TIMESTAMPTZ NULL
   progress_deadline TIMESTAMPTZ NULL
   stage SMALLINT NOT NULL DEFAULT 0
@@ -100,86 +142,112 @@ leads:
 
 **Pre-Claim Erkennung:**
 ```sql
--- Leads im Pre-Claim (kein Schutz)
-SELECT id, company_name, city, created_at
+-- Leads im Pre-Claim (noch kein Erstkontakt)
+SELECT id, company_name, city, registered_at,
+       (registered_at + INTERVAL '10 days') AS preclaim_expires_at
 FROM leads
-WHERE registered_at IS NULL;
+WHERE first_contact_documented_at IS NULL;
 
--- Leads mit Schutz aktiv
+-- Leads mit vollständigem Schutz
 SELECT id, company_name, protected_until
 FROM leads
-WHERE registered_at IS NOT NULL;
+WHERE first_contact_documented_at IS NOT NULL;
 
 -- Pre-Claim läuft bald ab (< 3 Tage verbleibend)
-SELECT id, company_name, city, created_at,
-       (created_at + INTERVAL '10 days') AS expires_at
+SELECT id, company_name, city, registered_at,
+       (registered_at + INTERVAL '10 days') AS expires_at
 FROM leads
-WHERE registered_at IS NULL
-  AND created_at < NOW() - INTERVAL '7 days';
+WHERE first_contact_documented_at IS NULL
+  AND registered_at < NOW() - INTERVAL '7 days';
 ```
 
 ---
 
 ## Backend Implementation
 
-### LeadService.createLead()
+### LeadResource.createLead() - Variante B
 
 ```java
-public Lead createLead(LeadDTO dto) {
+@POST
+@Transactional
+public Response createLead(LeadCreateRequest request, @Context UriInfo uriInfo) {
     Lead lead = new Lead();
-    lead.setCompanyName(dto.companyName());
-    lead.setCity(dto.city());
-    lead.setStage(dto.stage());
-    lead.setSource(dto.source());
-    lead.setOwnerUserId(dto.ownerUserId());
+    lead.setCompanyName(request.companyName);
+    lead.setCity(request.city);
+    lead.setStage(LeadStage.VORMERKUNG);
+    lead.setSource(LeadSource.fromString(request.source));
+    lead.setOwnerUserId(currentUserId);
 
-    // PRE-CLAIM LOGIC
-    if (hasContact(dto) || hasDocumentedFirstContact(dto)) {
-        // ✅ Schutz startet SOFORT
-        lead.setRegisteredAt(Instant.now());
-        lead.setProtectedUntil(calculateProtectionUntil(lead.getRegisteredAt()));
-        lead.setProgressDeadline(calculateProgressDeadline(Instant.now()));
+    // Variante B: registered_at IMMER setzen (Audit Trail)
+    lead.setRegisteredAt(LocalDateTime.now());
 
-        // Activity erstellen falls dokumentierter Erstkontakt
-        if (hasDocumentedFirstContact(dto)) {
-            createFirstContactActivity(lead, dto.firstContactActivity());
+    // PRE-CLAIM LOGIC: Erstkontakt-Check
+    if (lead.getSource() != null && lead.getSource().requiresFirstContact()) {
+        // MESSE/TELEFON: Erstkontakt PFLICHT
+        if (request.contactPerson == null || request.contactPerson.isBlank()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                .entity(Map.of(
+                    "error", "First contact required",
+                    "message", "MESSE/TELEFON leads require contact person name",
+                    "source", lead.getSource().name()
+                ))
+                .build();
         }
+
+        // Erstkontakt dokumentiert → Vollschutz
+        lead.setFirstContactDocumentedAt(LocalDateTime.now());
+        lead.setStage(LeadStage.REGISTRIERUNG);
+        lead.setStatus(LeadStatus.REGISTERED);
+        lead.setProtectedUntil(calculateProtectionUntil(lead.getRegisteredAt()));
+        lead.setProgressDeadline(calculateProgressDeadline(LocalDateTime.now()));
+
+        LOG.infof("Lead %s (%s source): Direct REGISTRIERUNG (first contact: %s)",
+            lead.getCompanyName(), lead.getSource().name(), request.contactPerson);
+
     } else {
-        // ❌ PRE-CLAIM: Kein Schutz
-        lead.setRegisteredAt(null);
-        lead.setProtectedUntil(null);
-        lead.setProgressDeadline(null);
-        // created_at + 10 days = Ablauf Pre-Claim
+        // EMPFEHLUNG/WEB/PARTNER: Pre-Claim erlaubt
+        lead.setFirstContactDocumentedAt(null);  // ← Pre-Claim aktiv!
+        lead.setStage(LeadStage.VORMERKUNG);
+        lead.setStatus(LeadStatus.REGISTERED);
+        lead.setProtectedUntil(calculateProtectionUntil(lead.getRegisteredAt()));
+        lead.setProgressDeadline(null);  // Kein Progress-Deadline bei Pre-Claim
+
+        LOG.infof("Lead %s (%s source): VORMERKUNG (10 days to document first contact)",
+            lead.getCompanyName(), lead.getSource() != null ? lead.getSource().name() : "UNKNOWN");
     }
 
-    return leadRepository.persist(lead);
-}
+    lead.persist();
 
-private boolean hasContact(LeadDTO dto) {
-    return dto.contact() != null
-        && dto.contact().firstName() != null
-        && dto.contact().lastName() != null
-        && (dto.contact().email() != null || dto.contact().phone() != null);
+    URI location = uriInfo.getAbsolutePathBuilder().path(lead.getId().toString()).build();
+    LeadDTO dto = LeadDTO.from(lead);
+    return Response.created(location).entity(dto).build();
 }
+```
 
-private boolean hasDocumentedFirstContact(LeadDTO dto) {
-    FirstContactActivityDTO activity = dto.firstContactActivity();
-    return activity != null
-        && activity.channel() != null
-        && activity.date() != null
-        && activity.notes() != null
-        && activity.notes().length() >= 10; // Mindestlänge
-}
+### LeadSource.requiresFirstContact()
 
-private void createFirstContactActivity(Lead lead, FirstContactActivityDTO dto) {
-    LeadActivity activity = new LeadActivity();
-    activity.setLeadId(lead.getId());
-    activity.setActivityType("FIRST_CONTACT_DOCUMENTED");
-    activity.setActivityDate(dto.date());
-    activity.setChannel(dto.channel());
-    activity.setSummary(dto.notes());
-    activity.setCountsAsProgress(false); // ← WICHTIG: kein Progress!
-    activityRepository.persist(activity);
+```java
+public enum LeadSource {
+    MESSE,
+    TELEFON,
+    EMPFEHLUNG,
+    WEB_FORMULAR,
+    PARTNER,
+    SONSTIGES;
+
+    /**
+     * Check if this lead source requires documented first contact for full protection.
+     *
+     * <p>Business Rule (Handelsvertretervertrag §2(8)(a)):
+     * MESSE and TELEFON sources require documented first contact (contact person name + date)
+     * at lead creation. Other sources allow Pre-Claim: Lead protection starts immediately,
+     * but has 10-day window to document first contact.
+     *
+     * @return true if first contact documentation is required (MESSE, TELEFON), false otherwise
+     */
+    public boolean requiresFirstContact() {
+        return this == MESSE || this == TELEFON;
+    }
 }
 ```
 
@@ -187,20 +255,15 @@ private void createFirstContactActivity(Lead lead, FirstContactActivityDTO dto) 
 
 ## Frontend Implementation
 
-### LeadWizard Stage 0 - Vormerkung (Zwei-Felder-Lösung)
-
-**Design-Entscheidung (2025-10-04):**
-- **Feld 1: Notizen/Quelle** (immer sichtbar, optional) → für Kontext, kein Einfluss auf Schutz
-- **Feld 2: Erstkontakt-Dokumentation** (conditional) → aktiviert Schutz
+### LeadWizard Stage 0 - Vormerkung (Variante B)
 
 **Logik:**
-- Bei **MESSE/TELEFON:** Erstkontakt-Block immer sichtbar, PFLICHT
-- Bei **EMPFEHLUNG/WEB/PARTNER/SONSTIGE:** Checkbox "Ich hatte bereits Erstkontakt" → nur dann Erstkontakt-Block anzeigen
+- Bei **MESSE/TELEFON:** Erstkontakt-Felder immer sichtbar, PFLICHT
+- Bei **EMPFEHLUNG/WEB/PARTNER/SONSTIGES:** Optional (Pre-Claim erlaubt)
 
 ```typescript
 // LeadWizard.tsx - Stage 0
 const LeadWizardStage0 = () => {
-  const [showFirstContactFields, setShowFirstContactFields] = useState(false);
   const requiresFirstContact = ['MESSE', 'TELEFON'].includes(formData.source);
 
   return (
@@ -216,83 +279,34 @@ const LeadWizardStage0 = () => {
         <MenuItem value="TELEFON">Kaltakquise</MenuItem>
         <MenuItem value="WEB_FORMULAR">Web-Formular</MenuItem>
         <MenuItem value="PARTNER">Partner</MenuItem>
-        <MenuItem value="SONSTIGE">Sonstige</MenuItem>
+        <MenuItem value="SONSTIGES">Sonstige</MenuItem>
       </Select>
 
-      {/* FELD 1: Notizen/Quelle (immer sichtbar, optional) */}
+      {/* Kontaktperson (bei MESSE/TELEFON PFLICHT) */}
       <TextField
-        name="notes"
-        label="Notizen / Quelle (optional)"
-        multiline
-        rows={2}
-        helperText="Z.B. Empfehlung von Herrn Schulz, Partner-Liste Nr. 47"
+        name="contactPerson"
+        label={requiresFirstContact ? "Kontaktperson (Erstkontakt) *" : "Kontaktperson (optional)"}
+        required={requiresFirstContact}
+        helperText={
+          requiresFirstContact
+            ? "PFLICHT: Name der Person bei Erstkontakt (Messe/Telefonat)"
+            : "Optional: Name der Kontaktperson"
+        }
       />
 
-      {/* FELD 2: Erstkontakt-Dokumentation (conditional) */}
-
-      {/* Bei EMPFEHLUNG/WEB/PARTNER: Checkbox zeigen */}
-      {!requiresFirstContact && (
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showFirstContactFields}
-              onChange={(e) => setShowFirstContactFields(e.target.checked)}
-            />
-          }
-          label="☑ Ich hatte bereits Erstkontakt (für sofortigen Lead-Schutz)"
-        />
-      )}
-
-      {/* Erstkontakt-Block anzeigen wenn: MESSE/TELEFON ODER Checkbox aktiviert */}
-      {(requiresFirstContact || showFirstContactFields) && (
-        <Box sx={{ mt: 2, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-          <Typography variant="subtitle2" gutterBottom>
-            Erstkontakt dokumentieren
-            {requiresFirstContact && (
-              <Chip label="PFLICHT" color="error" size="small" sx={{ ml: 1 }} />
-            )}
-          </Typography>
-
-          <Select
-            name="firstContact.channel"
-            label="Kanal *"
-            required={requiresFirstContact}
-          >
-            <MenuItem value="MESSE">Messe-Gespräch</MenuItem>
-            <MenuItem value="PHONE">Telefonat</MenuItem>
-            <MenuItem value="EMAIL">E-Mail</MenuItem>
-            <MenuItem value="REFERRAL">Empfehlung/Vorstellung</MenuItem>
-            <MenuItem value="OTHER">Sonstige</MenuItem>
-          </Select>
-
-          <DateTimePicker
-            name="firstContact.performedAt"
-            label="Datum/Uhrzeit *"
-            required={requiresFirstContact}
-          />
-
-          <TextField
-            name="firstContact.notes"
-            label="Gesprächsnotiz *"
-            multiline
-            rows={3}
-            required={requiresFirstContact}
-            helperText="Mindestens 10 Zeichen (z.B. 'Gespräch mit Frau Müller am Stand 12, Interesse an Bio-Produkten')"
-          />
-        </Box>
-      )}
-
       {/* Schutz-Status-Hinweis */}
-      {!showFirstContactFields && !requiresFirstContact && (
-        <Alert severity="warning" sx={{ mt: 2 }}>
-          ⚠️ <strong>Pre-Claim:</strong> Kein Schutz aktiv!<br/>
-          Lead läuft in 10 Tagen ab. Aktivieren Sie den Erstkontakt oder fügen Sie später Kontaktdaten hinzu (Stage 1).
+      {requiresFirstContact && (
+        <Alert severity="success" sx={{ mt: 2 }}>
+          ✅ <strong>Vollständiger Schutz ab Speicherung</strong><br/>
+          Erstkontakt dokumentiert → 6 Monate Lead-Schutz aktiv
         </Alert>
       )}
 
-      {(requiresFirstContact || showFirstContactFields) && (
-        <Alert severity="success" sx={{ mt: 2 }}>
-          ✅ Schutz startet bei Speicherung (6 Monate ab heute)
+      {!requiresFirstContact && (
+        <Alert severity="info" sx={{ mt: 2 }}>
+          ℹ️ <strong>Pre-Claim aktiv</strong><br/>
+          Lead ist geschützt, aber 10 Tage Zeit für Erstkontakt-Dokumentation.
+          Danach wird Lead als "unvollständig" markiert.
         </Alert>
       )}
     </Box>
@@ -300,69 +314,63 @@ const LeadWizardStage0 = () => {
 };
 ```
 
-**Wichtige Unterscheidung:**
-- **Notizen-Feld:** Freier Text, keine Auswirkung auf `registered_at`
-- **Erstkontakt-Felder:** Strukturiert (Kanal, Datum, Notiz), löst `registered_at = NOW()` aus
-
 ---
 
 ## API Contract
 
-### POST /api/leads (erweitert)
+### POST /api/leads (Variante B)
 
-**Request Body:**
+**Request Body (MESSE - Erstkontakt PFLICHT):**
 ```json
 {
   "companyName": "Test GmbH",
   "city": "Hamburg",
   "source": "MESSE",
+  "contactPerson": "Max Mustermann",
   "stage": 0,
-  "ownerUserId": "partner-123",
-
-  // OPTION 1: Kontakt vorhanden → Schutz startet
-  "contact": {
-    "firstName": "Max",
-    "lastName": "Mustermann",
-    "email": "max@test.de"
-  }
-
-  // OPTION 2: Erstkontakt dokumentiert → Schutz startet
-  "firstContactActivity": {
-    "channel": "MESSE",
-    "date": "2025-10-03T14:30:00Z",
-    "notes": "Gespräch am Stand 12, Interesse an Bio-Produkten"
-  }
-
-  // OPTION 3: Weder Kontakt noch Erstkontakt → Pre-Claim (kein Schutz)
+  "ownerUserId": "partner-123"
 }
 ```
 
-**Response (Pre-Claim):**
+**Response (Vollständiger Schutz):**
 ```json
 {
   "id": "lead-uuid",
   "companyName": "Test GmbH",
   "city": "Hamburg",
   "stage": 0,
-  "registeredAt": null,  // ← NULL = Pre-Claim!
-  "protectedUntil": null,
-  "progressDeadline": null,
-  "createdAt": "2025-10-03T14:30:00Z",
-  "preClaimExpiresAt": "2025-10-13T14:30:00Z"  // created_at + 10 days
+  "registeredAt": "2025-10-08T14:30:00Z",          // ← IMMER gesetzt
+  "firstContactDocumentedAt": "2025-10-08T14:30:00Z",  // ← Vollschutz!
+  "protectedUntil": "2026-04-08T14:30:00Z",        // +6 Monate
+  "progressDeadline": "2025-12-07T14:30:00Z",      // +60 Tage
+  "createdAt": "2025-10-08T14:30:00Z"
 }
 ```
 
-**Response (Schutz aktiv):**
+**Request Body (EMPFEHLUNG - Pre-Claim):**
+```json
+{
+  "companyName": "Hotel Müller",
+  "city": "Dresden",
+  "source": "EMPFEHLUNG",
+  "stage": 0,
+  "ownerUserId": "partner-456"
+}
+```
+
+**Response (Pre-Claim aktiv):**
 ```json
 {
   "id": "lead-uuid",
-  "companyName": "Test GmbH",
-  "city": "Hamburg",
+  "companyName": "Hotel Müller",
+  "city": "Dresden",
   "stage": 0,
-  "registeredAt": "2025-10-03T14:30:00Z",  // ← Schutz aktiv!
-  "protectedUntil": "2026-04-03T14:30:00Z",  // +6 Monate
-  "progressDeadline": "2025-12-02T14:30:00Z",  // +60 Tage
-  "createdAt": "2025-10-03T14:30:00Z"
+  "registeredAt": "2025-10-08T14:30:00Z",          // ← IMMER gesetzt (Audit Trail)
+  "firstContactDocumentedAt": null,                 // ← NULL = Pre-Claim!
+  "protectedUntil": "2026-04-08T14:30:00Z",        // Schutz aktiv
+  "progressDeadline": null,                         // Kein Progress-Deadline
+  "preClaimExpiresAt": "2025-10-18T14:30:00Z",     // registeredAt + 10 days
+  "createdAt": "2025-10-08T14:30:00Z"
 }
 ```
 
@@ -370,77 +378,82 @@ const LeadWizardStage0 = () => {
 
 ## Tests
 
-### Unit Tests (Mock-first)
+### Integration Tests (LeadPreClaimLogicTest.java)
 
 ```java
-@Test
-void createLead_withContact_shouldStartProtection() {
-    // Given
-    LeadDTO dto = LeadDTO.builder()
-        .companyName("Test GmbH")
-        .city("Hamburg")
-        .stage(0)
-        .contact(new ContactDTO("Max", "Mustermann", "max@test.de", null))
-        .build();
+@QuarkusTest
+public class LeadPreClaimLogicTest {
 
-    // When
-    Lead lead = leadService.createLead(dto);
+  @Test
+  @TestSecurity(user = "test-user", roles = {"USER"})
+  @DisplayName("MESSE lead with contact person → direct REGISTRIERUNG")
+  public void testMesseLeadWithContactPerson_DirectRegistrierung() {
+    Map<String, Object> request = Map.of(
+        "companyName", "Z-Catering Mitte GmbH",
+        "contactPerson", "Max Mustermann",  // ← PFLICHT für MESSE!
+        "source", "MESSE",
+        "city", "Berlin",
+        "countryCode", "DE");
 
-    // Then
-    assertThat(lead.getRegisteredAt()).isNotNull();  // Schutz aktiv
-    assertThat(lead.getProtectedUntil()).isNotNull();
-    assertThat(lead.getProgressDeadline()).isNotNull();
-}
+    given()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .when()
+        .post("/api/leads")
+        .then()
+        .statusCode(201)
+        .body("source", equalTo("MESSE"))
+        .body("stage", equalTo("REGISTRIERUNG"))
+        .body("status", equalTo(LeadStatus.REGISTERED.name()))
+        .body("registeredAt", notNullValue())              // ← IMMER gesetzt!
+        .body("firstContactDocumentedAt", notNullValue())  // ← Vollschutz!
+        .body("contactPerson", equalTo("Max Mustermann"));
+  }
 
-@Test
-void createLead_withDocumentedFirstContact_shouldStartProtection() {
-    // Given
-    FirstContactActivityDTO activity = new FirstContactActivityDTO(
-        "MESSE",
-        Instant.now(),
-        "Gespräch am Stand 12, Interesse an Bio-Produkten"
-    );
-    LeadDTO dto = LeadDTO.builder()
-        .companyName("Test GmbH")
-        .city("Hamburg")
-        .stage(0)
-        .firstContactActivity(activity)
-        .build();
+  @Test
+  @TestSecurity(user = "test-user", roles = {"USER"})
+  @DisplayName("MESSE lead without contact person → 400 Bad Request")
+  public void testMesseLeadWithoutContactPerson_BadRequest() {
+    Map<String, Object> request = Map.of(
+        "companyName", "Y-Hotel Berlin",
+        "source", "MESSE",
+        "city", "Berlin",
+        "countryCode", "DE");
 
-    // When
-    Lead lead = leadService.createLead(dto);
+    given()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .when()
+        .post("/api/leads")
+        .then()
+        .statusCode(400)
+        .body("error", equalTo("First contact required"))
+        .body("source", equalTo("MESSE"));
+  }
 
-    // Then
-    assertThat(lead.getRegisteredAt()).isNotNull();  // Schutz aktiv
-    assertThat(lead.getProtectedUntil()).isNotNull();
+  @Test
+  @TestSecurity(user = "test-user", roles = {"USER"})
+  @DisplayName("EMPFEHLUNG lead → VORMERKUNG (Pre-Claim allowed)")
+  public void testEmpfehlungLead_VormerkungPreClaim() {
+    Map<String, Object> request = Map.of(
+        "companyName", "V-Hotel Dresden",
+        "source", "EMPFEHLUNG",
+        "city", "Dresden",
+        "countryCode", "DE");
 
-    // Activity erstellt
-    List<LeadActivity> activities = activityRepository.findByLeadId(lead.getId());
-    assertThat(activities).hasSize(1);
-    assertThat(activities.get(0).getActivityType()).isEqualTo("FIRST_CONTACT_DOCUMENTED");
-    assertThat(activities.get(0).getCountsAsProgress()).isFalse();
-}
-
-@Test
-void createLead_withoutContactOrFirstContact_shouldBePreClaim() {
-    // Given
-    LeadDTO dto = LeadDTO.builder()
-        .companyName("Test GmbH")
-        .city("Hamburg")
-        .stage(0)
-        .build();
-
-    // When
-    Lead lead = leadService.createLead(dto);
-
-    // Then
-    assertThat(lead.getRegisteredAt()).isNull();  // ← Pre-Claim!
-    assertThat(lead.getProtectedUntil()).isNull();
-    assertThat(lead.getProgressDeadline()).isNull();
-
-    // Pre-Claim läuft in 10 Tagen ab
-    Instant expiresAt = lead.getCreatedAt().plus(Duration.ofDays(10));
-    assertThat(expiresAt).isAfter(Instant.now());
+    given()
+        .contentType(ContentType.JSON)
+        .body(request)
+        .when()
+        .post("/api/leads")
+        .then()
+        .statusCode(201)
+        .body("source", equalTo("EMPFEHLUNG"))
+        .body("stage", equalTo("VORMERKUNG"))
+        .body("status", equalTo(LeadStatus.REGISTERED.name()))
+        .body("registeredAt", notNullValue())            // ← IMMER gesetzt (Audit Trail)
+        .body("firstContactDocumentedAt", nullValue());  // ← NULL = Pre-Claim!
+  }
 }
 ```
 
@@ -448,48 +461,35 @@ void createLead_withoutContactOrFirstContact_shouldBePreClaim() {
 
 ## Cleanup-Strategie
 
-### Sprint 2.1.5 (Manuell)
-
-**Listen-Filter in Frontend:**
-```sql
--- Pre-Claim läuft bald ab (<= 3 Tage)
-SELECT id, company_name, city, created_at,
-       (created_at + INTERVAL '10 days') AS expires_at
-FROM leads
-WHERE registered_at IS NULL
-  AND created_at < NOW() - INTERVAL '7 days'
-ORDER BY created_at ASC;
-```
-
-**Manuelle Aktion:**
-- Partner bekommt "Pre-Claim expiring soon" Badge
-- Kann Lead vervollständigen oder archivieren
-
----
-
 ### Sprint 2.1.6 (Nightly Job)
 
 ```java
 @Scheduled(cron = "0 2 * * *")  // 02:00 Uhr täglich
-public void cleanupExpiredPreClaims() {
+public void checkPreClaimExpiry() {
     LocalDateTime cutoff = LocalDateTime.now().minusDays(10);
 
+    // Finde Pre-Claims mit abgelaufener Frist
     List<Lead> expiredPreClaims = leadRepository.find(
-        "registeredAt IS NULL AND createdAt < ?1",
+        "firstContactDocumentedAt IS NULL AND registeredAt < ?1",
         cutoff
     ).list();
 
     for (Lead lead : expiredPreClaims) {
         // Log für Audit
-        auditService.log("pre_claim_expired", lead.getId(),
+        auditService.log("preclaim_expired", lead.getId(),
             Map.of("companyName", lead.getCompanyName(),
-                   "createdAt", lead.getCreatedAt()));
+                   "registeredAt", lead.getRegisteredAt()));
 
-        // Archivieren oder löschen
-        leadRepository.delete(lead);
+        // NICHT löschen! Lead bleibt geschützt (registered_at vorhanden)
+        // Supervisor kann entscheiden: Freigeben oder Vertreter mahnen
+        lead.setStatus(LeadStatus.INCOMPLETE);
+        lead.persist();
+
+        // Optional: Email an Supervisor
+        emailService.sendPreClaimExpiryNotification(lead);
     }
 
-    logger.info("Cleaned up {} expired pre-claims", expiredPreClaims.size());
+    logger.info("Marked {} expired pre-claims as INCOMPLETE", expiredPreClaims.size());
 }
 ```
 
@@ -501,18 +501,20 @@ public void cleanupExpiredPreClaims() {
 // LeadMetrics.java
 @Gauge(name = "leads_preclaim_active", description = "Anzahl aktive Pre-Claims")
 public long activePreClaims() {
-    return leadRepository.count("registeredAt IS NULL");
+    return leadRepository.count("firstContactDocumentedAt IS NULL");
 }
 
 @Gauge(name = "leads_preclaim_expiring_soon", description = "Pre-Claims < 3 Tage")
 public long expiringPreClaims() {
     LocalDateTime cutoff = LocalDateTime.now().minusDays(7);
-    return leadRepository.count("registeredAt IS NULL AND createdAt < ?1", cutoff);
+    return leadRepository.count(
+        "firstContactDocumentedAt IS NULL AND registeredAt < ?1",
+        cutoff);
 }
 
-@Gauge(name = "leads_protected", description = "Anzahl geschützte Leads")
-public long protectedLeads() {
-    return leadRepository.count("registeredAt IS NOT NULL");
+@Gauge(name = "leads_fully_protected", description = "Anzahl vollständig geschützte Leads")
+public long fullyProtectedLeads() {
+    return leadRepository.count("firstContactDocumentedAt IS NOT NULL");
 }
 ```
 
@@ -523,10 +525,11 @@ public long protectedLeads() {
 - **Handelsvertretervertrag:** §2(8)(a) - Lead-Schutz mit Registrierung
 - **ADR-004:** Inline-First Architecture (kein separate lead_protection table)
 - **V255:** `stage`, `progress_deadline`, `progress_warning_sent_at` Felder
+- **V274:** `first_contact_documented_at` Feld (Variante B)
 - **V257:** `calculate_protection_until()`, `calculate_progress_deadline()` Functions
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-03
-**Autor:** Claude Code (Sprint 2.1.5 Pre-Claim Implementation)
-**Status:** ✅ Production-Ready (Validiert gegen Handelsvertretervertrag)
+**Letzte Aktualisierung:** 2025-10-08
+**Autor:** Claude Code (Sprint 2.1.5/2.1.6 Pre-Claim Implementation Variante B)
+**Status:** ✅ Production-Ready (DB Best Practice, validiert gegen Handelsvertretervertrag)

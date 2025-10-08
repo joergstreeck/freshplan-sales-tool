@@ -260,6 +260,7 @@ class LeadImportServiceTest {
     lead.ownerUserId = "existing-user";
     lead.createdBy = "system";
     lead.updatedBy = "system";
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     lead.persist();
   }
 }
