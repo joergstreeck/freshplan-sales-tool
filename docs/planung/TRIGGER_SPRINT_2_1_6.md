@@ -26,10 +26,11 @@ phases:
     issues: ["#134"]
     pr: "#134"
   - phase: "Phase 4"
-    branch: "feature/mod02-sprint-2.1.6-phase-4"
-    scope: "Job Monitoring & Performance (Batch-Processing LIMIT 100, Structured Logging)"
-    status: "pending"
-    effort: "~1.5h"
+    branch: "feature/mod02-sprint-2.1.6-phase-4-complete"
+    scope: "Lead Quality Metrics & UI Components (LeadScoringService, 4 UI-Komponenten, 48 Tests)"
+    status: "complete"
+    pr: "#135"
+    merged: "2025-10-08"
   - phase: "Phase 5"
     branch: "feature/mod02-sprint-2.1.6-accessibility"
     scope: "OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen)"
@@ -44,8 +45,8 @@ entry_points:
   - "claude-work/daily-work/2025-10-05/MUI_ACCESSIBILITY_DECISION.md"
   - "claude-work/daily-work/2025-10-05/CRITICAL_FIXES_SUMMARY.md"
   - "claude-work/daily-work/2025-10-05/2025-10-05_HANDOVER_FINAL.md"
-pr_refs: ["#132"]
-updated: "2025-10-06"
+pr_refs: ["#132", "#133", "#134", "#135"]
+updated: "2025-10-08"
 ---
 
 # Sprint 2.1.6 – Lead Completion & Admin Features
@@ -59,7 +60,7 @@ updated: "2025-10-06"
 | **Phase 1** | `feature/issue-130-testdatabuilder-refactoring` | Issue #130 BLOCKER Fix | ✅ COMPLETE | #132 |
 | **Phase 2** | `feature/mod02-sprint-2.1.6-admin-apis` | Core Backend APIs (Bestandsleads-Migration, Backdating, Convert Flow) | ✅ COMPLETE | #133 |
 | **Phase 3** | `feature/mod02-sprint-2.1.6-nightly-jobs` | Automated Jobs + **Issue #134** (Idempotency) + Outbox-Pattern | ✅ COMPLETE | #134 |
-| **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4` | Job Monitoring & Performance (Batch-Processing LIMIT 100, Structured Logging) | 📋 PENDING | - |
+| **Phase 4** | `feature/mod02-sprint-2.1.6-phase-4-complete` | Lead Quality Metrics & UI Components (LeadScoringService, 4 UI-Komponenten, 48 Tests) | ✅ COMPLETE | #135 |
 | **Phase 5** | `feature/mod02-sprint-2.1.6-accessibility` | OPTIONAL (MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen) | 📋 PENDING | - |
 
 > **📚 WICHTIGE DOKUMENTE (entry_points - siehe YAML Header oben):**
@@ -956,14 +957,22 @@ void pseudonymizeExpiredLeads() {
 - [PHASE_3_GAP_ANALYSIS.md](../backend/src/test/java/de/freshplan/modules/leads/service/PHASE_3_GAP_ANALYSIS.md)
 - [TECHNICAL_DEBT_ANALYSIS.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/TECHNICAL_DEBT_ANALYSIS.md)
 
-**Phase 4 - Job Monitoring & Performance (Branch: feature/mod02-sprint-2.1.6-phase-4) - 📋 PENDING (~1.5h):**
-- [ ] **Batch-Processing LIMIT 100** (~30min) - Verhindert Memory-Probleme bei >1000 Leads
-- [ ] **Structured Job Logging** (~1h) - Metrics-Logging als Vorbereitung für Prometheus
-- ⏸️ **Prometheus-Metrics** - DEFERIERT → Modul 00 (Betrieb)
-- ⏸️ **Slack-Alerting** - DEFERIERT → Modul 05 (Kommunikation)
+**Phase 4 - Lead Quality Metrics & UI Components (Branch: feature/mod02-sprint-2.1.6-phase-4-complete) - ✅ COMPLETE (PR #135, merged 08.10.2025):**
+- [x] **LeadScoringService** (264 LOC, 19 Tests) - 4-Faktoren-Berechnung: Umsatzpotenzial (25%), Engagement (25%), Fit (25%), Dringlichkeit (25%)
+- [x] **Lead.getProtectionUntil() Helper** - Single Source of Truth (refactored 5 Dateien)
+- [x] **4 neue UI-Komponenten** (~1100 LOC, 48 Tests):
+  - StopTheClockDialog.tsx (217 LOC, 12 Tests) - Admin/Manager Stop-the-Clock mit RBAC
+  - LeadScoreIndicator.tsx (121 LOC) - 0-100 Score mit Farbcodierung (#94C456)
+  - LeadActivityTimeline.tsx (213 LOC, 20 Tests) - Chronologische Historie
+  - LeadStatusWorkflow.tsx (123 LOC) - Status-Stepper (REGISTERED → INTERESSENT → ACTIVE)
+- [x] **Bug Fixes** - 3 Produktionsbugs gefunden & gefixt (RBAC, German labels, DTO-Mapping)
+- [x] **Code Quality** - Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
+- [x] **Migrations** - V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL DEFAULT 0)
+- [x] **CI Status** - 29/29 Checks passed (Backend, Frontend, E2E, Security, Performance)
 
-**📋 Artefakt:**
-- [PHASE_4_JOB_MONITORING_SPEC.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/PHASE_4_JOB_MONITORING_SPEC.md)
+**📋 Artefakte:**
+- Testing Guide: [docs/grundlagen/testing_guide.md](../../grundlagen/testing_guide.md)
+- PR #135: https://github.com/joergstreeck/freshplan-sales-tool/pull/135
 
 **Phase 5 - OPTIONAL (MUI Dialog aria-hidden Fix, Pre-Claim UI-Erweiterungen) - 📋 PENDING:**
 - [ ] **MUI Dialog Accessibility Fix** (aria-hidden Warning - WCAG 2.1 Level A)
