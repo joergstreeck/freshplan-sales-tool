@@ -18,7 +18,17 @@
 | **V20000+** | Reserved (Future) | ⏸️ TBD | Noch nicht genutzt |
 | **R__*** | Repeatable Migrations | ✅ Ja | R__normalize_functions.sql |
 
-**Production Skip Pattern:** `flyway.ignoreMigrationPatterns=*:10*,*:11*,*:12*,*:13*,*:14*,*:15*,*:16*,*:17*,*:18*,*:19*`
+**Production Skip Pattern:** `flyway.ignoreMigrationPatterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012`
+
+**Ignoriert:**
+- V8001-V8002: Dev-only (CQRS events, RLS demo) in `db/dev-migration/`
+- V10000-V10001, V10003: CI-only (test data cleanup/monitoring)
+- V10012: Test-only (conflicts with V259 business logic)
+
+**NICHT ignoriert (Production-kritisch):**
+- V10002: opportunities/audit_trail.is_test_data (TestDataService Infrastructure!)
+- V10008-V10011: Production fixes (SEED cleanup, users.is_test_data mit 33 Code-Refs!, settings fixes)
+- V10013-V10022: Production migrations (renamed from V272-V280)
 
 ---
 
@@ -199,19 +209,23 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 
 ### V10000-V10012: Test/Dev-Only Migrations (SKIPPED in Production)
 
-⚠️ **Production:** Diese Migrations werden übersprungen via `flyway.ignoreMigrationPatterns=*:10*`
+⚠️ **Production:** Folgende CI-only Migrations werden übersprungen: V10000, V10001, V10003, V10012
+
+**Pattern:** `ignoreMigrationPatterns=*:10000,*:10001,*:10003,*:10012` (+ V8001, V8002 in dev-migration/)
+
+**WICHTIG:** V10002, V10008-V10011, V10013-V10022 sind **Production-relevant** und werden NICHT ignoriert!
 
 | Version | Beschreibung | Sprint | Notes |
 |---------|--------------|--------|-------|
 | **V10000** | Cleanup Test Data in CI | 2.1 | CI-only: DELETE WHERE test_data = true |
 | **V10001** | Test Data Contract Guard | 2.1 | CI-only: CONSTRAINT CHECK für test_data |
-| **V10002** | Ensure Unique Constraints | 2.1 | CI-only: Test-Validierung |
+| **V10002** | Ensure Unique Constraints (opportunities/audit_trail.is_test_data) | 2.1.6 | ✅ Production-KRITISCH: TestDataService Infrastructure |
 | **V10003** | Test Data Dashboard | 2.1 | CI-only: Statistik-View für Tests |
-| **V10005** | Seed Sample Customers | 2.1 | DISABLED (.disabled Extension) |
-| **V10008** | Remove Seed Protection | 2.1 | CI-only: Cleanup |
-| **V10009** | Add test_data Flag to Users | 2.1 | CI-only: users.test_data Column |
-| **V10010** | Fix Settings scope_type | 2.1 | CI-only: Enum Constraint Fix |
-| **V10011** | Fix Settings ETag Functions | 2.1 | CI-only: Function Signature Fix |
+| **V10005** | Seed Sample Customers | 2.1 | ❌ DELETED (2025-09-28, commit 753c9272c - caused CI failures) |
+| **V10008** | Remove Seed Protection | 2.1.6 | ✅ Production: Cleanup (Konsistenz) |
+| **V10009** | Add test_data Flag to Users | 2.1.6 | ✅ Production-KRITISCH: 33 Code-Referenzen! |
+| **V10010** | Fix Settings scope_type | 2.1.6 | ✅ Production: Enum Constraint Fix |
+| **V10011** | Fix Settings ETag Functions | 2.1.6 | ✅ Production: Function Signature Fix |
 | **V10012** | Leads UNIQUE Indexes (Simple) | 2.1.4 | **CI-only:** UNIQUE Indizes OHNE CONCURRENTLY |
 
 #### V10012 Details (ehem. V248)
@@ -379,14 +393,61 @@ Beispiele:
 - ⚠️ Wenn CONCURRENTLY nicht möglich → V10xxx + Manuelle Production Creation
 
 ### 4. Test-Only Migrations
-- **Range:** V10000-V19999
-- **Production Skip:** `flyway.ignoreMigrationPatterns=*:10*,...`
+- **Range:** V8000-V8999 (dev-migration/), V10000-V10099 (migration/, CI-only)
+- **Production Skip:** `flyway.ignoreMigrationPatterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012`
+- **WICHTIG:** Nicht alle V10xxx sind Test-only! V10002, V10008-V10011, V10013+ sind Production!
 - **Use Cases:** Test Data Cleanup, CI-Performance Indices, Dev Debugging Views
+- **Prozess:** Siehe Section "Test-Migrationen erstellen" unten
 
 ### 5. Repeatable Migrations
 - **Naming:** `R__{DESCRIPTION}.sql`
 - **Idempotenz:** MUSS idempotent sein (CREATE OR REPLACE FUNCTION, etc.)
 - **Versionierung:** Flyway nutzt Checksum für Änderungserkennung
+
+### 6. Test-Migrationen erstellen
+
+**Wann Test-Only Migrationen verwenden:**
+- **Dev-only:** Debugging, Demo-Daten, RLS-Tests → V8000-V8999 in `db/dev-migration/`
+- **CI-only:** Test Data Cleanup, Performance-Checks → V10000-V10099 in `db/migration/`
+
+**⚠️ WICHTIG:** Nicht jede V10xxx Migration ist Test-only! V10002, V10008-V10011, V10013+ sind Production!
+
+**Prozess:**
+
+1. **Lege Migration in korrekten Ordner:**
+   ```bash
+   # Dev-only (V8xxx)
+   touch backend/src/main/resources/db/dev-migration/V8003__your_debug_feature.sql
+
+   # CI-only (V100xx) - nur wenn wirklich Test-only!
+   MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+   touch backend/src/main/resources/db/migration/${MIGRATION}__your_ci_test.sql
+   ```
+
+2. **Füge zu ignoreMigrationPatterns hinzu:**
+   ```properties
+   # backend/src/main/resources/application.properties (Zeile 64)
+   quarkus.flyway.ignoreMigrationPatterns=...,*:NEUE_NUMMER
+   ```
+
+3. **Teste lokal:**
+   ```bash
+   ./mvnw flyway:info  # Prüfe: Migration hat Status "Ignored"
+   ./mvnw test         # Prüfe: Tests sind grün
+   ```
+
+4. **Dokumentiere in diesem File:**
+   - Trage Migration in Section "V10000-V10012: Test/Dev-Only Migrations" ein
+   - Begründe, warum Test-only (z.B. "CI-only: Cleanup logic")
+
+**Beispiel:**
+```sql
+-- V10050__cleanup_old_test_data.sql
+-- CI-only: Delete test data older than 30 days
+-- ⚠️  WICHTIG: Muss zu application.properties ignoreMigrationPatterns hinzugefügt werden!
+
+DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVAL '30 days';
+```
 
 ---
 

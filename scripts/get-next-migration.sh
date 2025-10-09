@@ -61,8 +61,8 @@ fi
 echo -e "${BLUE}📁 Migration-Verzeichnis: ${NC}$MIGRATION_DIR"
 echo ""
 
-# Zeige die wirklich letzten 5 Produktions-Migrationen (NUMERISCH sortiert, < V8000)
-echo -e "${YELLOW}📋 Letzte 5 Produktions-Migrationen (< V8000):${NC}"
+# Zeige die wirklich letzten 5 Produktions-Migrationen (V1-V7999 + V10000-V19999)
+echo -e "${YELLOW}📋 Letzte 5 Produktions-Migrationen (V1-V7999, V10000-V19999):${NC}"
 
 # Erstelle temporäre Liste mit Nummer und Dateiname
 for file in "$MIGRATION_DIR"/V*.sql; do
@@ -72,7 +72,8 @@ for file in "$MIGRATION_DIR"/V*.sql; do
 done | while read -r filename; do
     # Extrahiere Nummer
     num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
-    if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -lt 8000 ]; then
+    # Production: V1-V7999 oder V10000-V19999 (V8000-V9999 = Test/CI reserved)
+    if [[ "$num" =~ ^[0-9]+$ ]] && { [ "$num" -lt 8000 ] || { [ "$num" -ge 10000 ] && [ "$num" -lt 20000 ]; }; }; then
         echo "$num $filename"
     fi
 done | sort -n | tail -5 | while read -r num filename; do
@@ -95,18 +96,18 @@ if [ "$DEBUG" = "1" ]; then
 fi
 
 # Drei verschiedene Methoden zur Sicherheit
-# WICHTIG: Nur Migrationen V1-V7999 sind für Production (V8000+ sind Test/CI-only)
+# WICHTIG: Production Migrationen: V1-V7999 + V10000-V19999 (V8000-V9999 = Test/CI reserved)
 METHOD1=$(ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
     basename "$filepath" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//'
-done | grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
+done | grep -E '^[0-9]+$' | awk '($1 < 8000) || ($1 >= 10000 && $1 < 20000)' | sort -n | tail -1)
 
 METHOD2=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
           sed 's/.*\/V//' | sed 's/[_].*$//' | \
-          grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
+          grep -E '^[0-9]+$' | awk '($1 < 8000) || ($1 >= 10000 && $1 < 20000)' | sort -n | tail -1)
 
 METHOD3=$(cd "$MIGRATION_DIR" 2>/dev/null && ls V*.sql 2>/dev/null | \
           sed 's/^V//' | cut -d'_' -f1 | \
-          grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
+          grep -E '^[0-9]+$' | awk '($1 < 8000) || ($1 >= 10000 && $1 < 20000)' | sort -n | tail -1)
 
 # Verwende Method1 als Standard
 HIGHEST="$METHOD1"
@@ -150,10 +151,36 @@ if [ "$NEXT" -ge 7900 ] && [ "$NEXT" -lt 8000 ]; then
     echo ""
 fi
 
-# Kritischer Check: Keine Produktions-Migrationen über V7999
-if [ "$NEXT" -ge 8000 ]; then
-    echo -e "${RED}❌ FEHLER: Produktions-Limit erreicht!${NC}"
-    echo -e "${RED}   V8000+ ist für Test/CI-Migrationen reserviert.${NC}"
+# Kritischer Check: Keine Migrationen in V8000-V9999 Range (Test/CI reserved)
+if [ "$NEXT" -ge 8000 ] && [ "$NEXT" -lt 10000 ]; then
+    echo -e "${RED}❌ FEHLER: V8000-V9999 ist für Test/CI-Migrationen reserviert!${NC}"
+    echo -e "${YELLOW}   Production Migrationen: V1-V7999 oder V10000-V19999${NC}"
+    echo -e "${YELLOW}   Bitte V10000+ verwenden oder mit dem Team besprechen.${NC}"
+    exit 1
+fi
+
+# Interaktive Warnung für V10000-V10099 (oft CI-only Range)
+if [ "$NEXT" -ge 10000 ] && [ "$NEXT" -lt 10100 ]; then
+    echo -e "${YELLOW}⚠️  V10000-V10099 wird oft für CI-only Migrationen verwendet${NC}"
+    echo -e "${YELLOW}   Ist das eine Test-Migration (nur CI/Dev)? (y/n):${NC}"
+    read -r answer
+
+    if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+        echo ""
+        echo -e "${RED}   ❌ WICHTIG: Füge die Migration zu application.properties hinzu:${NC}"
+        echo -e "${YELLOW}      quarkus.flyway.ignoreMigrationPatterns=...,*:${NEXT}${NC}"
+        echo ""
+        echo -e "${YELLOW}   Siehe: docs/planung/MIGRATIONS.md Section 'Test-Migrationen erstellen'${NC}"
+        echo ""
+    else
+        echo -e "${GREEN}   ✅ OK, dies ist eine Production-Migration${NC}"
+        echo ""
+    fi
+fi
+
+# Check: Keine Migrationen über V19999
+if [ "$NEXT" -ge 20000 ]; then
+    echo -e "${RED}❌ FEHLER: V20000+ ist aktuell nicht erlaubt!${NC}"
     echo -e "${YELLOW}   Bitte mit dem Team besprechen, wie weiter vorgegangen werden soll.${NC}"
     exit 1
 fi
@@ -210,10 +237,10 @@ if [ "$DEBUG" = "1" ]; then
     echo "   Höchste gefundene Migration: V${HIGHEST:-0}"
     echo "   Nächste freie Migration: V${NEXT}"
     
-    # Double-Check mit alternativer Methode (ignoriere >= V8000)
+    # Double-Check mit alternativer Methode (V1-V7999 + V10000-V19999)
     ALT_HIGHEST=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
                    sed 's/.*\/V//' | sed 's/[_].*$//' | \
-                   grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
+                   grep -E '^[0-9]+$' | awk '($1 < 8000) || ($1 >= 10000 && $1 < 20000)' | sort -n | tail -1)
     if [ -n "$ALT_HIGHEST" ] && [ "$ALT_HIGHEST" != "$HIGHEST" ]; then
         echo -e "${RED}   ⚠️  WARNUNG: Alternative Methode ergab V${ALT_HIGHEST}${NC}"
     fi
