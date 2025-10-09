@@ -161,6 +161,29 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-10 00:56 - Migration Safety System - 3-Layer Protection + Flyway Fixes
+
+**Kontext:** Territory ID Validation Error + V8001/V8002 Flyway Errors + Externe KI-Review (3 kritische Verbesserungen)
+
+**Erledigt:**
+- ✅ **V10022 Migration:** territory_id nullable (fixes Lead creation validation error)
+- ✅ **Flyway Ignore Patterns:** `quarkus.flyway.ignore-migration-patterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012` (kebab-case!)
+- ✅ **3-Layer Migration Safety System:**
+  - Layer 1: Pre-Commit Hook (`scripts/pre-commit-migration-check.sh`) - Folder/Number/Keyword validation
+  - Layer 2: GitHub Workflow (`.github/workflows/migration-safety-check.yml`) - CI validation
+  - Layer 3: `get-next-migration.sh` - Neue Strategie (sequential V10022+, Ordner-Trennung)
+- ✅ **3 Kritische Fixes (External AI Review):**
+  - Fix 1: False-Positive-Prevention (Prefix-Check statt Keyword-Matching)
+  - Fix 2: Idempotent setup-git-hooks.sh (erkennt bestehende Hooks, erstellt Backup)
+  - Fix 3: HIGHEST-Berechnung verifiziert (`git ls-tree HEAD` - nur committed files)
+- ✅ **Testing:** 4 Original-Tests + 4 Regression-Tests + 3 Fix-Tests = ALL GREEN
+
+**Migration:** V10022 (territory_id nullable), Safety System komplett
+**Tests:** ALL GREEN (11 Tests total)
+**Commit:** 07e5a520b - fix(migrations): 3-Layer Safety System - 3 kritische Verbesserungen
+
+---
+
 ### 2025-10-08 20:30 - Lead Contacts Refactoring - Sprint 2.1.6 Phase 5+ (ADR-007)
 
 **Kontext:** API-Mismatch zwischen Frontend (strukturierte contacts) und Backend (flat contactPerson) → Harmonisierung mit Customer-Modul
@@ -807,12 +830,22 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🚧 Sprint 2.1.6 Phase 5+ - Lead Contacts Refactoring (IN PROGRESS):**
-  - **JETZT:** Migration V276 (lead_contacts Tabelle) + V277 (Backward Compatibility)
-  - **JETZT:** LeadContact Entity + Lead.contacts Beziehung
-  - **JETZT:** LeadCreateRequest.contacts API Refactoring
-  - **JETZT:** Frontend types.ts + LeadWizard API-Mapping
-  - **JETZT:** Tests (LeadContactTest, LeadResourceTest, LeadWizard Integration)
+- **🚧 PRIORITÄT 1 - Review & Commit V10022 + Lead Module Changes:**
+  - **JETZT:** Review unstaged changes (17 Lead-related files)
+  - **JETZT:** Test Lead Module (`./mvnw test -Dtest="Lead*Test"`)
+  - **JETZT:** Commit V10022 Migration + Lead DTOs (territory_id nullable fix)
+  - **JETZT:** Verify Migration Applied (`./mvnw flyway:info`)
+  - **JETZT:** Integration Test (Lead creation ohne territory_id)
+  - **Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1
+  - **Safety:** Migration Safety Hook prüft automatisch bei git commit!
+  - **Zeitaufwand:** ~1h (Review + Test + Commit)
+
+- **🚧 Sprint 2.1.6 Phase 5+ - Lead Contacts Refactoring (NEXT AFTER V10022):**
+  - Migration V276 (lead_contacts Tabelle) + V277 (Backward Compatibility)
+  - LeadContact Entity + Lead.contacts Beziehung
+  - LeadCreateRequest.contacts API Refactoring
+  - Frontend types.ts + LeadWizard API-Mapping
+  - Tests (LeadContactTest, LeadResourceTest, LeadWizard Integration)
   - **Verweis:** LEAD_CONTACTS_ARCHITECTURE.md (ADR-007)
   - **Zeitaufwand:** ~3-5h (Multi-Contact Support wie Customer-Modul)
 

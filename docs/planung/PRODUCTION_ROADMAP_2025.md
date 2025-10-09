@@ -12,9 +12,9 @@
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (62% complete)
 - **Current Sprint:** ✅ Sprint 2.1.6 - 4/5 PHASES MERGED (08.10.2025) - **Phase 5 OPTIONAL PENDING**
-- **Active Branch:** main (Sprint 2.1.6 Phase 1-4 merged, Phase 5 optional)
+- **Active Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1 (V10022 Migration + Safety System)
 - **Progress:** 16/36 PRs completed - 44% done
-- **Blockers:** ❌ Keine
+- **Blockers:** ❌ Keine - **🔧 V10022 Migration pending review** (territory_id nullable fix)
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉 **Sprint 2.1.6 COMPLETE - PR #135 MERGED** - Lead Quality Metrics & UI Components
@@ -35,7 +35,9 @@
     - Timestamp-Konsistenz: LocalDateTime.now() Doppelaufruf behoben
   - ✅ **Migrations:** V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL DEFAULT 0)
   - ✅ **CI Status:** 29/29 Checks passed (Backend, Frontend, E2E, Security, Performance)
-- **Next Action:** Sprint 2.1.7 - Team Management & Test Infrastructure
+- **Next Action:**
+  1. **JETZT:** Review & Commit V10022 Migration + Lead Module Changes (territory_id nullable)
+  2. **DANN:** Sprint 2.1.6 Phase 5+ (Lead Contacts Refactoring) oder Sprint 2.1.7 (Team Management & Test Infrastructure)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
