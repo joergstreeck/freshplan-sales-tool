@@ -63,11 +63,15 @@ for FILE in $MIGRATION_FILES; do
     echo -e "   📁 Ordner: $ORDNER ($ORDNER_TYPE)"
 
     # CHECK 3: Dateiname-Keywords vs. Ordner
-    if echo "$FILENAME" | grep -qiE "(test|demo|seed|sample|debug)"; then
-        # Hat Test-Keywords
+    # Prüfe auf Test-Prefix (nicht irgendwo im Namen, sondern am Anfang der Beschreibung)
+    # Beschreibung ist alles nach V<nummer>__
+    DESCRIPTION=$(echo "$FILENAME" | sed 's/^V[0-9]*__//' | sed 's/\.sql$//')
+
+    if echo "$DESCRIPTION" | grep -qiE "^(test_|demo_|seed_|sample_|debug_)"; then
+        # Hat Test-Prefix
         if [ "$ORDNER" = "migration" ]; then
-            echo -e "${RED}❌ FEHLER: Dateiname enthält Test-Keywords aber liegt in migration/!${NC}"
-            echo -e "${RED}   Keywords gefunden: test|demo|seed|sample|debug${NC}"
+            echo -e "${RED}❌ FEHLER: Migration startet mit Test-Prefix aber liegt in migration/!${NC}"
+            echo -e "${RED}   Gefundener Prefix: $(echo "$DESCRIPTION" | grep -oiE "^(test_|demo_|seed_|sample_|debug_)")${NC}"
             echo -e "${RED}   Test-Migrationen gehören in dev-migration/!${NC}"
             echo ""
             echo -e "${YELLOW}   Korrektur:${NC}"
@@ -76,14 +80,14 @@ for FILE in $MIGRATION_FILES; do
             ERROR=1
             continue
         else
-            echo -e "   ✅ Test-Keywords + dev-migration/ = korrekt"
+            echo -e "   ✅ Test-Prefix + dev-migration/ = korrekt"
         fi
     else
-        # Keine Test-Keywords
+        # Kein Test-Prefix
         if [ "$ORDNER" = "dev-migration" ]; then
-            echo -e "${YELLOW}   ⚠️  WARNUNG: Keine Test-Keywords aber in dev-migration/!${NC}"
-            echo -e "${YELLOW}   Ist das wirklich eine Test-Migration?${NC}"
-            # Kein Error, nur Warnung
+            echo -e "${YELLOW}   ⚠️  WARNUNG: dev-migration/ aber kein Test-Prefix!${NC}"
+            echo -e "${YELLOW}   Empfohlen: test_/demo_/seed_/sample_/debug_ am Anfang${NC}"
+            # Kein Error, nur Warnung (könnte legitim sein)
         else
             echo -e "   ✅ Production-Migration in migration/ = korrekt"
         fi
