@@ -12,9 +12,9 @@
 -- Referenz: docs/planung/features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/VARIANTE_B_MIGRATION_GUIDE.md
 -- =====================================================
 
--- 1. ADD COLUMN: first_contact_documented_at
+-- 1. ADD COLUMN: first_contact_documented_at (IDEMPOTENT)
 ALTER TABLE leads
-  ADD COLUMN first_contact_documented_at TIMESTAMPTZ NULL;
+  ADD COLUMN IF NOT EXISTS first_contact_documented_at TIMESTAMPTZ NULL;
 
 COMMENT ON COLUMN leads.first_contact_documented_at IS
   'Zeitpunkt der Erstkontakt-Dokumentation (MESSE/TELEFON: Pflicht bei Erstellung,

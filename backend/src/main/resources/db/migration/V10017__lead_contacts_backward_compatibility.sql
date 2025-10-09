@@ -72,6 +72,7 @@ $$ LANGUAGE plpgsql;
 -- ============================================================================
 
 -- Trigger on INSERT: Sync when primary contact is created
+DROP TRIGGER IF EXISTS trg_sync_primary_lead_contact_insert ON lead_contacts;
 CREATE TRIGGER trg_sync_primary_lead_contact_insert
   AFTER INSERT ON lead_contacts
   FOR EACH ROW
@@ -79,6 +80,7 @@ CREATE TRIGGER trg_sync_primary_lead_contact_insert
   EXECUTE FUNCTION sync_primary_lead_contact_to_lead();
 
 -- Trigger on UPDATE: Sync when primary contact is modified
+DROP TRIGGER IF EXISTS trg_sync_primary_lead_contact_update ON lead_contacts;
 CREATE TRIGGER trg_sync_primary_lead_contact_update
   AFTER UPDATE ON lead_contacts
   FOR EACH ROW
@@ -86,6 +88,7 @@ CREATE TRIGGER trg_sync_primary_lead_contact_update
   EXECUTE FUNCTION sync_primary_lead_contact_to_lead();
 
 -- Trigger on DELETE: Sync when primary contact is deleted
+DROP TRIGGER IF EXISTS trg_sync_primary_lead_contact_delete ON lead_contacts;
 CREATE TRIGGER trg_sync_primary_lead_contact_delete
   AFTER DELETE ON lead_contacts
   FOR EACH ROW
@@ -98,6 +101,7 @@ CREATE TRIGGER trg_sync_primary_lead_contact_delete
 -- 3. UNIQUE CONSTRAINT: Only 1 primary contact per lead allowed
 -- ============================================================================
 
+DROP INDEX IF EXISTS idx_lead_contacts_one_primary_per_lead;
 CREATE UNIQUE INDEX idx_lead_contacts_one_primary_per_lead
   ON lead_contacts(lead_id)
   WHERE is_primary = true AND is_deleted = false;

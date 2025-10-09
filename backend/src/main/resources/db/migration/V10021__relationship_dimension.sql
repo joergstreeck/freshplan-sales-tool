@@ -23,26 +23,40 @@
 -- ============================================================================
 
 ALTER TABLE leads
-    ADD COLUMN relationship_status VARCHAR(30) DEFAULT 'COLD',
-    ADD COLUMN decision_maker_access VARCHAR(30) DEFAULT 'UNKNOWN',
-    ADD COLUMN competitor_in_use VARCHAR(100),
-    ADD COLUMN internal_champion_name VARCHAR(100);
+    ADD COLUMN IF NOT EXISTS relationship_status VARCHAR(30) DEFAULT 'COLD',
+    ADD COLUMN IF NOT EXISTS decision_maker_access VARCHAR(30) DEFAULT 'UNKNOWN',
+    ADD COLUMN IF NOT EXISTS competitor_in_use VARCHAR(100),
+    ADD COLUMN IF NOT EXISTS internal_champion_name VARCHAR(100);
 
 -- ============================================================================
 -- 2. ADD CONSTRAINTS
 -- ============================================================================
 
-ALTER TABLE leads ADD CONSTRAINT chk_relationship_status
-    CHECK (relationship_status IN (
-        'COLD', 'CONTACTED', 'ENGAGED_SKEPTICAL',
-        'ENGAGED_POSITIVE', 'TRUSTED', 'ADVOCATE'
-    ));
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.constraint_column_usage
+    WHERE table_name = 'leads' AND constraint_name = 'chk_relationship_status'
+  ) THEN
+    ALTER TABLE leads ADD CONSTRAINT chk_relationship_status
+        CHECK (relationship_status IN (
+            'COLD', 'CONTACTED', 'ENGAGED_SKEPTICAL',
+            'ENGAGED_POSITIVE', 'TRUSTED', 'ADVOCATE'
+        ));
+  END IF;
+END $$;
 
-ALTER TABLE leads ADD CONSTRAINT chk_decision_maker_access
-    CHECK (decision_maker_access IN (
-        'UNKNOWN', 'BLOCKED', 'INDIRECT',
-        'DIRECT', 'IS_DECISION_MAKER'
-    ));
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.constraint_column_usage
+    WHERE table_name = 'leads' AND constraint_name = 'chk_decision_maker_access'
+  ) THEN
+    ALTER TABLE leads ADD CONSTRAINT chk_decision_maker_access
+        CHECK (decision_maker_access IN (
+            'UNKNOWN', 'BLOCKED', 'INDIRECT',
+            'DIRECT', 'IS_DECISION_MAKER'
+        ));
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 3. ADD COMMENTS (Documentation)
@@ -80,19 +94,19 @@ COMMENT ON COLUMN leads.internal_champion_name IS
 -- ============================================================================
 
 -- Hot Leads: TRUSTED + ADVOCATE (priorisieren!)
-CREATE INDEX idx_leads_relationship_hot ON leads(relationship_status)
+CREATE INDEX IF NOT EXISTS idx_leads_relationship_hot ON leads(relationship_status)
     WHERE relationship_status IN ('TRUSTED', 'ADVOCATE');
 
 -- Decision Maker Access: DIRECT + IS_DECISION_MAKER (schneller Close!)
-CREATE INDEX idx_leads_decision_maker_hot ON leads(decision_maker_access)
+CREATE INDEX IF NOT EXISTS idx_leads_decision_maker_hot ON leads(decision_maker_access)
     WHERE decision_maker_access IN ('DIRECT', 'IS_DECISION_MAKER');
 
 -- Problem-Leads: BLOCKED (brauchen Taktik-Wechsel)
-CREATE INDEX idx_leads_blocked ON leads(decision_maker_access)
+CREATE INDEX IF NOT EXISTS idx_leads_blocked ON leads(decision_maker_access)
     WHERE decision_maker_access = 'BLOCKED';
 
 -- Kombinierter Index: Relationship + Decision Maker für Engagement-Score-Queries
-CREATE INDEX idx_leads_engagement ON leads(relationship_status, decision_maker_access);
+CREATE INDEX IF NOT EXISTS idx_leads_engagement ON leads(relationship_status, decision_maker_access);
 
 -- ============================================================================
 -- 5. UPDATE EXISTING LEADS (Default-Werte)

@@ -921,4 +921,69 @@ class LeadResourceTest {
         .body("contactPerson", is("Max Mustermann"))
         .body("email", is("max@restaurant.de"));
   }
+
+  // ================= V280: Relationship Dimension Tests =================
+
+  @Test
+  @TestSecurity(user = "user1", roles = {"USER"})
+  @DisplayName("V280: Should update relationship fields via PATCH")
+  void testUpdateRelationshipFields() {
+    Long leadId = createTestLead("user1");
+
+    // Get current ETag
+    String etag =
+        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+
+    // PATCH request with all 4 relationship fields
+    Map<String, Object> request = new HashMap<>();
+    request.put("relationshipStatus", "ADVOCATE");
+    request.put("decisionMakerAccess", "DIRECT");
+    request.put("competitorInUse", "Metro");
+    request.put("internalChampionName", "Max Müller");
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etag)
+        .body(request)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("relationshipStatus", equalTo("ADVOCATE"))
+        .body("decisionMakerAccess", equalTo("DIRECT"))
+        .body("competitorInUse", equalTo("Metro"))
+        .body("internalChampionName", equalTo("Max Müller"));
+    // Note: leadScore is calculated by LeadScoringService, not automatically on PATCH
+  }
+
+  @Test
+  @TestSecurity(user = "user1", roles = {"USER"})
+  @DisplayName("V280: GET should return relationship fields")
+  void testGetRelationshipFields() {
+    Long leadId = createTestLead("user1");
+
+    // Update via PATCH first
+    String etag =
+        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+
+    Map<String, Object> request = new HashMap<>();
+    request.put("relationshipStatus", "TRUSTED");
+    request.put("decisionMakerAccess", "IS_DECISION_MAKER");
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etag)
+        .body(request)
+        .when()
+        .patch("/" + leadId);
+
+    // GET should reflect updated values
+    given()
+        .when()
+        .get("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("relationshipStatus", equalTo("TRUSTED"))
+        .body("decisionMakerAccess", equalTo("IS_DECISION_MAKER"));
+  }
 }

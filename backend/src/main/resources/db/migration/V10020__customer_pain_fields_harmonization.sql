@@ -22,19 +22,19 @@
 
 ALTER TABLE customers
   -- OPERATIONAL PAINS (5 Felder)
-  ADD COLUMN pain_staff_shortage BOOLEAN DEFAULT false,
-  ADD COLUMN pain_high_costs BOOLEAN DEFAULT false,
-  ADD COLUMN pain_food_waste BOOLEAN DEFAULT false,
-  ADD COLUMN pain_quality_inconsistency BOOLEAN DEFAULT false,
-  ADD COLUMN pain_time_pressure BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_staff_shortage BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_high_costs BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_food_waste BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_quality_inconsistency BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_time_pressure BOOLEAN DEFAULT false,
 
   -- SWITCHING PAINS (3 Felder)
-  ADD COLUMN pain_supplier_quality BOOLEAN DEFAULT false,
-  ADD COLUMN pain_unreliable_delivery BOOLEAN DEFAULT false,
-  ADD COLUMN pain_poor_service BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_supplier_quality BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_unreliable_delivery BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_poor_service BOOLEAN DEFAULT false,
 
   -- Notes (Freitext)
-  ADD COLUMN pain_notes TEXT;
+  ADD COLUMN IF NOT EXISTS pain_notes TEXT;
 
 -- ============================================================================
 -- 2. MIGRATE EXISTING DATA (JSONB → Boolean)
@@ -88,15 +88,15 @@ COMMENT ON COLUMN customers.pain_notes IS
 -- ============================================================================
 
 -- Index für Operational Pains (Segmentierung)
-CREATE INDEX idx_customers_operational_pains ON customers(pain_staff_shortage, pain_food_waste, pain_high_costs)
+CREATE INDEX IF NOT EXISTS idx_customers_operational_pains ON customers(pain_staff_shortage, pain_food_waste, pain_high_costs)
     WHERE pain_staff_shortage = true OR pain_food_waste = true OR pain_high_costs = true;
 
 -- Index für Switching Pains (Abwanderungsrisiko)
-CREATE INDEX idx_customers_switching_pains ON customers(pain_supplier_quality, pain_unreliable_delivery)
+CREATE INDEX IF NOT EXISTS idx_customers_switching_pains ON customers(pain_supplier_quality, pain_unreliable_delivery)
     WHERE pain_supplier_quality = true OR pain_unreliable_delivery = true;
 
 -- Index für Staff + Quality Kombination (analog zu Lead Cap-Logic)
-CREATE INDEX idx_customers_staff_quality ON customers(pain_staff_shortage, pain_quality_inconsistency)
+CREATE INDEX IF NOT EXISTS idx_customers_staff_quality ON customers(pain_staff_shortage, pain_quality_inconsistency)
     WHERE pain_staff_shortage = true AND pain_quality_inconsistency = true;
 
 -- ============================================================================

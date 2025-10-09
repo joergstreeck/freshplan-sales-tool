@@ -108,6 +108,12 @@ public class LeadDTO {
   public UrgencyLevel urgencyLevel; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
   public Integer multiPainBonus; // Auto-calculated: +10 bei 4+ Pains
 
+  // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
+  public String relationshipStatus; // COLD, CONTACTED, ENGAGED_SKEPTICAL, ENGAGED_POSITIVE, TRUSTED, ADVOCATE
+  public String decisionMakerAccess; // UNKNOWN, BLOCKED, INDIRECT, DIRECT, IS_DECISION_MAKER
+  public String competitorInUse; // Aktueller Wettbewerber (falls bekannt)
+  public String internalChampionName; // Name des internen Champions (falls vorhanden)
+
   // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
   public List<LeadContactDTO> contacts = new ArrayList<>();
 
@@ -198,6 +204,12 @@ public class LeadDTO {
     dto.painNotes = lead.painNotes;
     dto.urgencyLevel = lead.urgencyLevel;
     dto.multiPainBonus = lead.multiPainBonus;
+
+    // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
+    dto.relationshipStatus = lead.relationshipStatus != null ? lead.relationshipStatus.name() : null;
+    dto.decisionMakerAccess = lead.decisionMakerAccess != null ? lead.decisionMakerAccess.name() : null;
+    dto.competitorInUse = lead.competitorInUse;
+    dto.internalChampionName = lead.internalChampionName;
 
     dto.createdAt = lead.createdAt;
     dto.createdBy = lead.createdBy;

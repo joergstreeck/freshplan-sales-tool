@@ -277,4 +277,39 @@ class LeadDTOCompletenessTest {
         .body("contacts", hasSize(2));
   }
 
+  // ===========================
+  // 3. V280 Relationship Dimension Fields
+  // ===========================
+
+  @Test
+  @TestSecurity(user = "user1", roles = {"USER"})
+  @DisplayName("V280: LeadDTO should include all 4 relationship fields")
+  void testLeadDtoRelationshipFields() {
+    Long leadId = createTestLeadWithContacts("user1");
+
+    // Update lead with relationship data via domain model (not REST API)
+    updateLeadRelationshipData(leadId);
+
+    given()
+        .when()
+        .get("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("relationshipStatus", equalTo("ADVOCATE"))
+        .body("decisionMakerAccess", equalTo("DIRECT"))
+        .body("competitorInUse", equalTo("Metro"))
+        .body("internalChampionName", equalTo("Max Müller"));
+  }
+
+  /** Helper: Update lead with V280 relationship data. */
+  @Transactional
+  void updateLeadRelationshipData(Long leadId) {
+    Lead lead = em.find(Lead.class, leadId);
+    lead.relationshipStatus = de.freshplan.modules.leads.domain.RelationshipStatus.ADVOCATE;
+    lead.decisionMakerAccess = de.freshplan.modules.leads.domain.DecisionMakerAccess.DIRECT;
+    lead.competitorInUse = "Metro";
+    lead.internalChampionName = "Max Müller";
+    em.flush();
+  }
+
 }

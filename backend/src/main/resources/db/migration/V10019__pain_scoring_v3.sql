@@ -23,7 +23,17 @@
 -- 1. RENAME EXISTING FIELDS (Safe: V277 ist frisch, keine Daten)
 -- ============================================================================
 
-ALTER TABLE leads RENAME COLUMN pain_quality_issues TO pain_supplier_quality;
+DO $$ BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'leads' AND column_name = 'pain_quality_issues'
+  ) AND NOT EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'leads' AND column_name = 'pain_supplier_quality'
+  ) THEN
+    ALTER TABLE leads RENAME COLUMN pain_quality_issues TO pain_supplier_quality;
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 2. DROP UNUSED FIELD (Clean Cut)
@@ -38,25 +48,32 @@ ALTER TABLE leads DROP COLUMN IF EXISTS pain_limited_product_range;
 -- ============================================================================
 
 ALTER TABLE leads
-  ADD COLUMN pain_staff_shortage BOOLEAN DEFAULT false,
-  ADD COLUMN pain_food_waste BOOLEAN DEFAULT false,
-  ADD COLUMN pain_quality_inconsistency BOOLEAN DEFAULT false,
-  ADD COLUMN pain_time_pressure BOOLEAN DEFAULT false;
+  ADD COLUMN IF NOT EXISTS pain_staff_shortage BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_food_waste BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_quality_inconsistency BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS pain_time_pressure BOOLEAN DEFAULT false;
 
 -- ============================================================================
 -- 4. ADD URGENCY + MULTI-PAIN BONUS
 -- ============================================================================
 
 ALTER TABLE leads
-  ADD COLUMN urgency_level VARCHAR(20) DEFAULT 'NORMAL',
-  ADD COLUMN multi_pain_bonus INTEGER DEFAULT 0;
+  ADD COLUMN IF NOT EXISTS urgency_level VARCHAR(20) DEFAULT 'NORMAL',
+  ADD COLUMN IF NOT EXISTS multi_pain_bonus INTEGER DEFAULT 0;
 
 -- ============================================================================
 -- 5. ADD CONSTRAINTS
 -- ============================================================================
 
-ALTER TABLE leads ADD CONSTRAINT chk_urgency_level
-    CHECK (urgency_level IN ('NORMAL', 'MEDIUM', 'HIGH', 'EMERGENCY'));
+DO $$ BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.constraint_column_usage
+    WHERE table_name = 'leads' AND constraint_name = 'chk_urgency_level'
+  ) THEN
+    ALTER TABLE leads ADD CONSTRAINT chk_urgency_level
+        CHECK (urgency_level IN ('NORMAL', 'MEDIUM', 'HIGH', 'EMERGENCY'));
+  END IF;
+END $$;
 
 -- ============================================================================
 -- 6. UPDATE COMMENTS (Documentation)
@@ -93,15 +110,15 @@ COMMENT ON COLUMN leads.multi_pain_bonus IS
 -- ============================================================================
 
 -- Index für Hot Lead Queries (Urgency-Filter)
-CREATE INDEX idx_leads_urgency_hot ON leads(urgency_level)
+CREATE INDEX IF NOT EXISTS idx_leads_urgency_hot ON leads(urgency_level)
     WHERE urgency_level IN ('HIGH', 'EMERGENCY');
 
 -- Index für Pain-Kombinationen (Doppel-Counting Detection)
-CREATE INDEX idx_leads_staff_quality ON leads(pain_staff_shortage, pain_quality_inconsistency)
+CREATE INDEX IF NOT EXISTS idx_leads_staff_quality ON leads(pain_staff_shortage, pain_quality_inconsistency)
     WHERE pain_staff_shortage = true AND pain_quality_inconsistency = true;
 
 -- Index für Operational Pains (Segmentierung)
-CREATE INDEX idx_leads_operational_pains ON leads(pain_staff_shortage, pain_food_waste, pain_high_costs)
+CREATE INDEX IF NOT EXISTS idx_leads_operational_pains ON leads(pain_staff_shortage, pain_food_waste, pain_high_costs)
     WHERE pain_staff_shortage = true OR pain_food_waste = true OR pain_high_costs = true;
 
 -- ============================================================================

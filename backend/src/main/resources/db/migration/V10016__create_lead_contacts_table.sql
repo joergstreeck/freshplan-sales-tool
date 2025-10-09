@@ -16,7 +16,7 @@
 -- 1. CREATE TABLE lead_contacts (100% PARITY mit customer_contacts)
 -- ============================================================================
 
-CREATE TABLE lead_contacts (
+CREATE TABLE IF NOT EXISTS lead_contacts (
   -- Primary Key & Foreign Key
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   lead_id BIGINT NOT NULL,
@@ -83,22 +83,22 @@ CREATE TABLE lead_contacts (
 -- 2. CREATE INDEXES (IDENTICAL pattern to customer_contacts)
 -- ============================================================================
 
-CREATE INDEX idx_lead_contacts_lead_id
+CREATE INDEX IF NOT EXISTS idx_lead_contacts_lead_id
   ON lead_contacts(lead_id);
 
-CREATE INDEX idx_lead_contacts_primary
+CREATE INDEX IF NOT EXISTS idx_lead_contacts_primary
   ON lead_contacts(lead_id, is_primary)
   WHERE is_primary = true;
 
-CREATE INDEX idx_lead_contacts_active
+CREATE INDEX IF NOT EXISTS idx_lead_contacts_active
   ON lead_contacts(is_active)
   WHERE is_active = true;
 
-CREATE INDEX idx_lead_contacts_email
+CREATE INDEX IF NOT EXISTS idx_lead_contacts_email
   ON lead_contacts(email)
   WHERE email IS NOT NULL;
 
-CREATE INDEX idx_lead_contacts_deleted
+CREATE INDEX IF NOT EXISTS idx_lead_contacts_deleted
   ON lead_contacts(is_deleted)
   WHERE is_deleted = false;
 
@@ -118,6 +118,7 @@ $$ LANGUAGE plpgsql;
 -- 4. CREATE TRIGGER for updated_at auto-update
 -- ============================================================================
 
+DROP TRIGGER IF EXISTS trg_update_lead_contacts_updated_at ON lead_contacts;
 CREATE TRIGGER trg_update_lead_contacts_updated_at
   BEFORE UPDATE ON lead_contacts
   FOR EACH ROW
@@ -170,9 +171,12 @@ SELECT
 
 FROM leads l
 WHERE
-  l.contact_person IS NOT NULL
-  OR l.email IS NOT NULL
-  OR l.phone IS NOT NULL;
+  (l.contact_person IS NOT NULL
+   OR l.email IS NOT NULL
+   OR l.phone IS NOT NULL)
+  AND NOT EXISTS (
+    SELECT 1 FROM lead_contacts lc WHERE lc.lead_id = l.id
+  );
 
 -- ============================================================================
 -- 5. DEPRECATE old contact fields in leads table (Backward Compatibility)

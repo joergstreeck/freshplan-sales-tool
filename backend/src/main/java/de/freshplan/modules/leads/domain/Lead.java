@@ -159,6 +159,23 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "multi_pain_bonus")
   public Integer multiPainBonus = 0; // +10 wenn 4+ Pains aktiv
 
+  // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "relationship_status", length = 30)
+  public RelationshipStatus relationshipStatus = RelationshipStatus.COLD; // 0-25 Punkte (40% Gewicht)
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "decision_maker_access", length = 30)
+  public DecisionMakerAccess decisionMakerAccess = DecisionMakerAccess.UNKNOWN; // -3 bis +25 Punkte (60% Gewicht)
+
+  @Size(max = 100)
+  @Column(name = "competitor_in_use")
+  public String competitorInUse; // Aktueller Wettbewerber (falls bekannt)
+
+  @Size(max = 100)
+  @Column(name = "internal_champion_name")
+  public String internalChampionName; // Name des internen Champions (falls vorhanden)
+
   // Lead status and ownership
   @NotNull @Enumerated(EnumType.STRING)
   @Column(nullable = false, length = 30)
@@ -486,6 +503,152 @@ public class Lead extends PanacheEntityBase {
     double urgencyPart = (urgencyScore / 25.0) * 10.0; // 40% von 25 = 10
 
     return (int) Math.round(painPart + urgencyPart);
+  }
+
+  // ============================================================================
+  // ENGAGEMENT SCORING LOGIC (Sprint 2.1.6 Phase 5+ - V280)
+  // ============================================================================
+
+  /**
+   * Calculate Engagement Score (0-25 Punkte).
+   *
+   * <p>Formel: (Relationship × 40%) + (DecisionMaker × 60%) + Recency Bonus + Touchpoint Bonus
+   *
+   * <p>Decision Maker Access ist kritischste Faktor (60% Gewicht):
+   *
+   * <ul>
+   *   <li>IS_DECISION_MAKER: ~70-80% Win-Rate
+   *   <li>DIRECT: ~50-60% Win-Rate
+   *   <li>INDIRECT: ~25-35% Win-Rate
+   *   <li>BLOCKED/UNKNOWN: ~10-15% Win-Rate
+   * </ul>
+   *
+   * <p>Relationship Status (40% Gewicht) misst Beziehungsqualität unabhängig vom Entscheider-Zugang.
+   *
+   * <p>Recency Bonus/Malus (-5 bis +5):
+   *
+   * <ul>
+   *   <li>Letzte meaningful Interaktion <7 Tage: +5
+   *   <li>7-30 Tage: +3
+   *   <li>30-90 Tage: 0
+   *   <li>90-180 Tage: -3
+   *   <li>>180 Tage: -5
+   * </ul>
+   *
+   * <p>Touchpoint Bonus (+0 bis +5):
+   *
+   * <ul>
+   *   <li>>10 meaningful Touchpoints: +5
+   *   <li>6-10 Touchpoints: +3
+   *   <li>≤5 Touchpoints: 0
+   * </ul>
+   *
+   * <p>Meaningful Interaktion: isMeaningfulContact = true ODER description > 100 Zeichen
+   *
+   * @return Engagement-Score (0-25, gecappt)
+   */
+  public int calculateEngagementScore() {
+    int score = 0;
+
+    // Relationship Status (0-25 Punkte, 40% Gewicht = max 10)
+    int relationshipPoints = relationshipStatus != null ? relationshipStatus.getPoints() : 0;
+    score += (int) (relationshipPoints * 0.4);
+
+    // Decision Maker Access (-3 bis +25 Punkte, 60% Gewicht = max 15)
+    int dmPoints = decisionMakerAccess != null ? decisionMakerAccess.getPoints() : 0;
+    score += (int) (dmPoints * 0.6);
+
+    // Recency Bonus/Malus (-5 bis +5)
+    score += getInteractionRecencyScore();
+
+    // Touchpoint Bonus (+0 bis +5)
+    int touchpoints = getMeaningfulTouchpointCount();
+    if (touchpoints > 10) {
+      score += 5;
+    } else if (touchpoints >= 6) {
+      score += 3;
+    }
+
+    // Cap auf 0-25
+    return Math.max(0, Math.min(25, score));
+  }
+
+  /**
+   * Get recency score based on last meaningful interaction.
+   *
+   * <p>Meaningful = isMeaningfulContact = true OR description > 100 chars
+   *
+   * @return Recency score (-5 bis +5)
+   */
+  private int getInteractionRecencyScore() {
+    LocalDateTime lastMeaningful = getLastMeaningfulInteraction();
+    if (lastMeaningful == null) {
+      return -5; // Keine meaningful Interaktion = schlechtester Score
+    }
+
+    long daysSince = java.time.temporal.ChronoUnit.DAYS.between(lastMeaningful, LocalDateTime.now());
+
+    if (daysSince < 7) return +5;
+    if (daysSince < 30) return +3;
+    if (daysSince < 90) return 0;
+    if (daysSince < 180) return -3;
+    return -5;
+  }
+
+  /**
+   * Get last meaningful interaction timestamp.
+   *
+   * <p>Meaningful = isMeaningfulContact = true OR description > 100 chars
+   *
+   * @return Timestamp oder null wenn keine meaningful Interaktion
+   */
+  private LocalDateTime getLastMeaningfulInteraction() {
+    if (activities == null || activities.isEmpty()) {
+      return null;
+    }
+
+    return activities.stream()
+        .filter(this::isMeaningfulActivity)
+        .map(activity -> activity.activityDate)
+        .max(LocalDateTime::compareTo)
+        .orElse(null);
+  }
+
+  /**
+   * Count meaningful touchpoints.
+   *
+   * <p>Meaningful = isMeaningfulContact = true OR description > 100 chars
+   *
+   * @return Anzahl meaningful Touchpoints
+   */
+  private int getMeaningfulTouchpointCount() {
+    if (activities == null || activities.isEmpty()) {
+      return 0;
+    }
+
+    return (int) activities.stream().filter(this::isMeaningfulActivity).count();
+  }
+
+  /**
+   * Check if activity is meaningful.
+   *
+   * <p>Heuristik: description > 100 Zeichen ODER isMeaningfulContact = true
+   *
+   * @param activity LeadActivity
+   * @return true wenn meaningful
+   */
+  private boolean isMeaningfulActivity(LeadActivity activity) {
+    // isMeaningfulContact Flag (z.B. MEETING, PHONE_CALL)
+    if (activity.isMeaningfulContact) {
+      return true;
+    }
+
+    // Description > 100 Zeichen (detaillierte Notizen = meaningful)
+    if (activity.description != null && activity.description.length() > 100) {
+      return true;
+    }
+
+    return false;
   }
 
   @PrePersist

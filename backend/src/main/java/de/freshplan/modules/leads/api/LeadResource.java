@@ -542,6 +542,20 @@ public class LeadResource {
       }
     }
 
+    // V280: Update Relationship Dimension fields
+    if (updateRequest.relationshipStatus != null) {
+      lead.relationshipStatus = de.freshplan.modules.leads.domain.RelationshipStatus.valueOf(updateRequest.relationshipStatus);
+    }
+    if (updateRequest.decisionMakerAccess != null) {
+      lead.decisionMakerAccess = de.freshplan.modules.leads.domain.DecisionMakerAccess.valueOf(updateRequest.decisionMakerAccess);
+    }
+    if (updateRequest.competitorInUse != null) {
+      lead.competitorInUse = updateRequest.competitorInUse;
+    }
+    if (updateRequest.internalChampionName != null) {
+      lead.internalChampionName = updateRequest.internalChampionName;
+    }
+
     lead.updatedBy = currentUserId;
     lead.persist();
     lead.flush(); // Force version increment BEFORE creating ETag/DTO

@@ -192,6 +192,12 @@ export type Lead = {
   urgencyLevel?: UrgencyLevel; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
   multiPainBonus?: number; // Auto-calculated: +10 bei 4+ Pains
 
+  // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
+  relationshipStatus?: RelationshipStatus;
+  decisionMakerAccess?: DecisionMakerAccess;
+  competitorInUse?: string; // Aktueller Wettbewerber (falls bekannt)
+  internalChampionName?: string; // Name des internen Champions (falls vorhanden)
+
   // Timestamps
   createdAt?: string;
   updatedAt?: string;
@@ -377,4 +383,56 @@ export type Problem = {
     severity?: 'WARNING'; // Nur bei Soft Collisions
     duplicates?: DuplicateLead[];
   };
+};
+
+/**
+ * Relationship Status (Sprint 2.1.6 Phase 5+ - V280)
+ * Beziehungsqualität zum Lead-Kontakt (40% Gewicht im Engagement-Score)
+ */
+export type RelationshipStatus =
+  | 'COLD'
+  | 'CONTACTED'
+  | 'ENGAGED_SKEPTICAL'
+  | 'ENGAGED_POSITIVE'
+  | 'TRUSTED'
+  | 'ADVOCATE';
+
+export const relationshipStatusLabels: Record<RelationshipStatus, string> = {
+  COLD: 'Kein Kontakt',
+  CONTACTED: 'Erstkontakt hergestellt',
+  ENGAGED_SKEPTICAL: 'Mehrere Touchpoints, skeptisch',
+  ENGAGED_POSITIVE: 'Mehrere Touchpoints, positiv',
+  TRUSTED: 'Vertrauensbasis vorhanden',
+  ADVOCATE: 'Kämpft aktiv für uns',
+};
+
+export const relationshipStatusPoints: Record<RelationshipStatus, number> = {
+  COLD: 0,
+  CONTACTED: 5,
+  ENGAGED_SKEPTICAL: 8,
+  ENGAGED_POSITIVE: 12,
+  TRUSTED: 17,
+  ADVOCATE: 25,
+};
+
+/**
+ * Decision Maker Access (Sprint 2.1.6 Phase 5+ - V280)
+ * Zugang zum Entscheider (60% Gewicht im Engagement-Score)
+ */
+export type DecisionMakerAccess = 'UNKNOWN' | 'BLOCKED' | 'INDIRECT' | 'DIRECT' | 'IS_DECISION_MAKER';
+
+export const decisionMakerAccessLabels: Record<DecisionMakerAccess, string> = {
+  UNKNOWN: 'Noch nicht identifiziert',
+  BLOCKED: 'Entscheider bekannt, Zugang blockiert',
+  INDIRECT: 'Zugang über Dritte (Assistent, Mitarbeiter, Partner)',
+  DIRECT: 'Direkter Kontakt zum Entscheider',
+  IS_DECISION_MAKER: 'Unser Kontakt IST der Entscheider',
+};
+
+export const decisionMakerAccessPoints: Record<DecisionMakerAccess, number> = {
+  UNKNOWN: 0,
+  BLOCKED: -3,
+  INDIRECT: 10,
+  DIRECT: 20,
+  IS_DECISION_MAKER: 25,
 };

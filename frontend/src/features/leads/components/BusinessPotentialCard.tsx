@@ -31,7 +31,12 @@ import {
   Restaurant as RestaurantIcon,
 } from '@mui/icons-material';
 import type { Lead } from '../types';
-import { urgencyLevelLabels, urgencyLevelColors } from '../types';
+import {
+  urgencyLevelLabels,
+  urgencyLevelColors,
+  relationshipStatusLabels,
+  decisionMakerAccessLabels,
+} from '../types';
 
 interface BusinessPotentialCardProps {
   lead: Lead;
@@ -81,7 +86,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
         title={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <TrendingUpIcon />
-            <Typography variant="h6">Geschäftspotenzial</Typography>
+            <Typography variant="h6">Vertriebsintelligenz</Typography>
           </Box>
         }
         action={
@@ -253,6 +258,56 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
                   {lead.painNotes}
                 </Typography>
               )}
+            </Grid>
+          )}
+
+          {/* Relationship Dimension (V280) */}
+          {(lead.relationshipStatus || lead.decisionMakerAccess || lead.competitorInUse || lead.internalChampionName) && (
+            <Grid item xs={12}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                <GroupIcon fontSize="small" color="action" />
+                <Typography variant="body2" color="text.secondary">
+                  Beziehungsebene
+                </Typography>
+              </Box>
+              <Grid container spacing={2}>
+                {lead.relationshipStatus && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="caption" color="text.secondary">
+                      Beziehungsqualität
+                    </Typography>
+                    <Typography variant="body2">
+                      {relationshipStatusLabels[lead.relationshipStatus]}
+                    </Typography>
+                  </Grid>
+                )}
+                {lead.decisionMakerAccess && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="caption" color="text.secondary">
+                      Entscheider-Zugang
+                    </Typography>
+                    <Typography variant="body2">
+                      {decisionMakerAccessLabels[lead.decisionMakerAccess]}
+                    </Typography>
+                  </Grid>
+                )}
+                {lead.competitorInUse && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="caption" color="text.secondary">
+                      Aktueller Wettbewerber
+                    </Typography>
+                    <Typography variant="body2">{lead.competitorInUse}</Typography>
+                  </Grid>
+                )}
+                {lead.internalChampionName && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="caption" color="text.secondary">
+                      Interner Champion
+                    </Typography>
+                    <Typography variant="body2">{lead.internalChampionName}</Typography>
+                  </Grid>
+                )}
+              </Grid>
             </Grid>
           )}
 
