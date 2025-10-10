@@ -28,7 +28,7 @@ export async function listLeads(): Promise<Lead[]> {
   return json.data || [];
 }
 
-export async function createLead(payload: { name: string; email?: string }) {
+export async function createLead(payload: Record<string, unknown>) {
   const res = await fetch(`${BASE}/api/leads`, {
     method: 'POST',
     headers: {
@@ -36,7 +36,7 @@ export async function createLead(payload: { name: string; email?: string }) {
       Accept: 'application/json',
       ...authHeaders(),
     },
-    body: JSON.stringify({ ...payload, source: 'manual' }),
+    body: JSON.stringify(payload),
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);
