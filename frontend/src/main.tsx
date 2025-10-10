@@ -55,26 +55,25 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-// TEMPORARY FIX: MSW Service Worker blocks Lead POST requests with 400
-// Disable MSW completely until we fix the handler configuration
-// enableMocking()
-//   .then(() => {
-createRoot(rootElement).render(
-  <StrictMode>
-    <Suspense fallback={<div>Loading...</div>}>
-      <AppProviders />
-    </Suspense>
-  </StrictMode>
-);
-//   })
-//   .catch(_error => {
-//     // Failed to initialize app - error handled
-//     // Render app anyway - don't let initialization errors block the entire app
-//     createRoot(rootElement).render(
-//       <StrictMode>
-//         <Suspense fallback={<div>Loading...</div>}>
-//           <AppProviders />
-//         </Suspense>
-//       </StrictMode>
-//     );
-//   });
+// Enable MSW in development mode (only if VITE_USE_MSW=true)
+// MSW handlers use 'bypass' for unhandled requests, so real backend is always used
+enableMocking()
+  .then(() => {
+    createRoot(rootElement).render(
+      <StrictMode>
+        <Suspense fallback={<div>Loading...</div>}>
+          <AppProviders />
+        </Suspense>
+      </StrictMode>
+    );
+  })
+  .catch(_error => {
+    // Failed to initialize MSW - render app anyway with real backend
+    createRoot(rootElement).render(
+      <StrictMode>
+        <Suspense fallback={<div>Loading...</div>}>
+          <AppProviders />
+        </Suspense>
+      </StrictMode>
+    );
+  });

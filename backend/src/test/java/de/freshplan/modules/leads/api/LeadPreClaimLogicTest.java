@@ -12,6 +12,7 @@ import de.freshplan.modules.leads.domain.LeadStatus;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
+import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,15 +20,16 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration Tests für Pre-Claim Business Logic Variante B (Handelsvertretervertrag §2(8)(a)).
  *
- * <p>BUSINESS RULE (Variante B):
+ * <p>BUSINESS RULE (Variante B - Sprint 2.1.6 Phase 5+):
  *
  * <ul>
- *   <li>MESSE/TELEFON → Erstkontakt PFLICHT → direkt REGISTRIERUNG + Vollschutz (firstContactDocumentedAt gesetzt)
+ *   <li>MESSE/TELEFON → Erstkontakt PFLICHT → activities[] mit FIRST_CONTACT_DOCUMENTED Activity → direkt REGISTRIERUNG + Vollschutz
  *   <li>EMPFEHLUNG/WEB/PARTNER/SONSTIGE → Pre-Claim erlaubt → VORMERKUNG (firstContactDocumentedAt = NULL, 10 Tage Frist)
  *   <li>registered_at IMMER gesetzt (Audit Trail, DB Best Practice)
+ *   <li>Erstkontakt = Activity mit activityType=FIRST_CONTACT_DOCUMENTED, performedAt (LocalDate), summary
  * </ul>
  *
- * <p>Referenz: VARIANTE_B_MIGRATION_GUIDE.md, LeadSource.requiresFirstContact()
+ * <p>Referenz: VARIANTE_B_MIGRATION_GUIDE.md, LeadSource.requiresFirstContact(), ADR-007 Option C
  */
 @QuarkusTest
 public class LeadPreClaimLogicTest {
@@ -35,20 +37,31 @@ public class LeadPreClaimLogicTest {
   /**
    * Test 1: MESSE Lead MIT Erstkontakt → direkt REGISTRIERUNG (Variante B)
    *
-   * <p>Business Rule: MESSE erfordert Erstkontakt (contactPerson) → Lead startet in REGISTRIERUNG,
-   * registeredAt UND firstContactDocumentedAt gesetzt (Vollschutz).
+   * <p>Business Rule (Sprint 2.1.6): MESSE erfordert Erstkontakt (activities[] mit FIRST_CONTACT_DOCUMENTED)
+   * → Lead startet in REGISTRIERUNG, registeredAt UND firstContactDocumentedAt gesetzt (Vollschutz).
    */
   @Test
   @TestSecurity(user = "test-user", roles = {"USER"})
-  @DisplayName("MESSE lead with contact person → direct REGISTRIERUNG (Variante B)")
-  public void testMesseLeadWithContactPerson_DirectRegistrierung() {
+  @DisplayName("MESSE lead with first contact activity → direct REGISTRIERUNG (Variante B)")
+  public void testMesseLeadWithFirstContactActivity_DirectRegistrierung() {
     Map<String, Object> request =
         Map.of(
             "companyName", "Z-Catering Mitte GmbH",
-            "contactPerson", "Max Mustermann", // ← PFLICHT für MESSE!
             "source", "MESSE",
             "city", "Berlin",
-            "countryCode", "DE");
+            "countryCode", "DE",
+            "activities", List.of(
+                Map.of(
+                    "activityType", "FIRST_CONTACT_DOCUMENTED",
+                    "performedAt", "2025-10-06", // LocalDate format (yyyy-MM-dd)
+                    "summary", "MESSE: Gespräch am Messestand in Berlin",
+                    "countsAsProgress", false,
+                    "metadata", Map.of(
+                        "channel", "MESSE",
+                        "notes", "Gespräch am Messestand in Berlin"
+                    )
+                )
+            ));
 
     given()
         .contentType(ContentType.JSON)
@@ -61,23 +74,22 @@ public class LeadPreClaimLogicTest {
         .body("stage", equalTo("REGISTRIERUNG")) // Stage 1 (JSON serializes as String)
         .body("status", equalTo(LeadStatus.REGISTERED.name()))
         .body("registeredAt", notNullValue()) // ← IMMER gesetzt (Audit Trail)!
-        .body("firstContactDocumentedAt", notNullValue()) // ← Vollschutz!
-        .body("contactPerson", equalTo("Max Mustermann"));
+        .body("firstContactDocumentedAt", notNullValue()); // ← Vollschutz!
   }
 
   /**
    * Test 2: MESSE Lead OHNE Erstkontakt → 400 Bad Request
    *
-   * <p>Business Rule: MESSE ohne contactPerson wird ABGELEHNT (Erstkontakt ist Pflicht).
+   * <p>Business Rule (Sprint 2.1.6): MESSE ohne activities[] mit FIRST_CONTACT_DOCUMENTED wird ABGELEHNT.
    */
   @Test
   @TestSecurity(user = "test-user", roles = {"USER"})
-  @DisplayName("MESSE lead without contact person → 400 Bad Request")
-  public void testMesseLeadWithoutContactPerson_BadRequest() {
+  @DisplayName("MESSE lead without first contact activity → 400 Bad Request")
+  public void testMesseLeadWithoutFirstContactActivity_BadRequest() {
     Map<String, Object> request =
         Map.of(
             "companyName", "Y-Hotel Berlin",
-            // "contactPerson" FEHLT! ← Sollte 400 triggern
+            // NO activities[] ← Sollte 400 triggern
             "source", "MESSE",
             "city", "Berlin",
             "countryCode", "DE");
@@ -90,25 +102,37 @@ public class LeadPreClaimLogicTest {
         .then()
         .statusCode(400)
         .body("error", equalTo("First contact required"))
+        .body("message", equalTo("MESSE/TELEFON leads require first contact documentation (date + notes)"))
         .body("source", equalTo("MESSE"));
   }
 
   /**
    * Test 3: TELEFON Lead MIT Erstkontakt → direkt REGISTRIERUNG
    *
-   * <p>Business Rule: TELEFON erfordert Erstkontakt (identisch zu MESSE).
+   * <p>Business Rule (Sprint 2.1.6): TELEFON erfordert Erstkontakt (activities[] mit FIRST_CONTACT_DOCUMENTED).
    */
   @Test
   @TestSecurity(user = "test-user", roles = {"USER"})
-  @DisplayName("TELEFON lead with contact person → direct REGISTRIERUNG")
-  public void testTelefonLeadWithContactPerson_DirectRegistrierung() {
+  @DisplayName("TELEFON lead with first contact activity → direct REGISTRIERUNG")
+  public void testTelefonLeadWithFirstContactActivity_DirectRegistrierung() {
     Map<String, Object> request =
         Map.of(
             "companyName", "X-Restaurant München",
-            "contactPerson", "Anna Schmidt", // ← PFLICHT für TELEFON!
             "source", "TELEFON",
             "city", "München",
-            "countryCode", "DE");
+            "countryCode", "DE",
+            "activities", List.of(
+                Map.of(
+                    "activityType", "FIRST_CONTACT_DOCUMENTED",
+                    "performedAt", "2025-10-08", // LocalDate format (yyyy-MM-dd)
+                    "summary", "TELEFON: Telefonat mit Geschäftsführer",
+                    "countsAsProgress", false,
+                    "metadata", Map.of(
+                        "channel", "TELEFON",
+                        "notes", "Telefonat mit Geschäftsführer"
+                    )
+                )
+            ));
 
     given()
         .contentType(ContentType.JSON)
@@ -121,22 +145,22 @@ public class LeadPreClaimLogicTest {
         .body("stage", equalTo("REGISTRIERUNG")) // Stage 1 (JSON serializes as String)
         .body("status", equalTo(LeadStatus.REGISTERED.name()))
         .body("registeredAt", notNullValue()) // ← IMMER gesetzt (Audit Trail)!
-        .body("firstContactDocumentedAt", notNullValue()) // ← Vollschutz!
-        .body("contactPerson", equalTo("Anna Schmidt"));
+        .body("firstContactDocumentedAt", notNullValue()); // ← Vollschutz!
   }
 
   /**
    * Test 4: TELEFON Lead OHNE Erstkontakt → 400 Bad Request
    *
-   * <p>Business Rule: TELEFON ohne contactPerson wird ABGELEHNT.
+   * <p>Business Rule (Sprint 2.1.6): TELEFON ohne activities[] mit FIRST_CONTACT_DOCUMENTED wird ABGELEHNT.
    */
   @Test
   @TestSecurity(user = "test-user", roles = {"USER"})
-  @DisplayName("TELEFON lead without contact person → 400 Bad Request")
-  public void testTelefonLeadWithoutContactPerson_BadRequest() {
+  @DisplayName("TELEFON lead without first contact activity → 400 Bad Request")
+  public void testTelefonLeadWithoutFirstContactActivity_BadRequest() {
     Map<String, Object> request =
         Map.of(
             "companyName", "W-Kantine Hamburg",
+            // NO activities[] ← Sollte 400 triggern
             "source", "TELEFON",
             "city", "Hamburg",
             "countryCode", "DE");
@@ -149,6 +173,7 @@ public class LeadPreClaimLogicTest {
         .then()
         .statusCode(400)
         .body("error", equalTo("First contact required"))
+        .body("message", equalTo("MESSE/TELEFON leads require first contact documentation (date + notes)"))
         .body("source", equalTo("TELEFON"));
   }
 
