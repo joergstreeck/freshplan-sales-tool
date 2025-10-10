@@ -9,6 +9,8 @@ import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,12 +24,17 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 class LeadBackdatingResourceTest {
 
+  @Inject EntityManager em;
+
   private Lead testLead;
 
   @BeforeEach
   @Transactional
   void setup() {
-    Lead.deleteAll();
+    // IMPORTANT: Delete LeadContact BEFORE Lead (Hibernate bulk delete doesn't trigger CASCADE)
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
 
     Territory territory = Territory.findByCode("DE");
     if (territory == null) {

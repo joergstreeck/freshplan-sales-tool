@@ -218,9 +218,26 @@ public class LeadDTO {
 
     // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
     // IMPORTANT: Always map contacts (even if empty) to avoid null in DTO
+    // IMPORTANT: Sort contacts so PRIMARY contact comes FIRST (test expectations)
     if (lead.contacts != null) {
       dto.contacts =
-          lead.contacts.stream().map(LeadDTO::toContactDTO).collect(Collectors.toList());
+          lead.contacts.stream()
+              .sorted((c1, c2) -> Boolean.compare(c1.isPrimary(), c2.isPrimary()) * -1) // Descending: primary (TRUE) first
+              .map(LeadDTO::toContactDTO)
+              .collect(Collectors.toList());
+    }
+
+    // Backward Compatibility: Sync PRIMARY contact to legacy fields (V10017 parity)
+    // This ensures existing API consumers still get contactPerson, email, phone
+    if (!dto.contacts.isEmpty()) {
+      LeadContactDTO primaryContact =
+          dto.contacts.stream().filter(c -> c.isPrimary()).findFirst().orElse(dto.contacts.get(0));
+      dto.contactPerson = primaryContact.getFullName();
+      dto.email = primaryContact.getEmail();
+      dto.phone =
+          primaryContact.getPhone() != null
+              ? primaryContact.getPhone()
+              : primaryContact.getMobile();
     }
 
     return dto;

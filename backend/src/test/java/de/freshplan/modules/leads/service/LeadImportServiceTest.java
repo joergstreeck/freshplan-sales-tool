@@ -10,6 +10,7 @@ import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,12 +31,16 @@ class LeadImportServiceTest {
 
   private static final String TEST_USER = "admin-test";
 
+  @Inject EntityManager em;
+
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean test data
-    Lead.deleteAll();
-    de.freshplan.modules.leads.domain.ImportJob.deleteAll(); // Prevent idempotent replays
+    // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
+    em.createQuery("DELETE FROM ImportJob").executeUpdate(); // Prevent idempotent replays
 
     // Ensure territory exists
     if (Territory.count() == 0) {

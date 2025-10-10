@@ -34,11 +34,11 @@ public class LeadContactDTO {
   @Size(max = 50)
   private String title; // Dr., Prof., etc.
 
-  @NotBlank(message = "First name is required")
+  // NOTE: @NotBlank removed - Response DTOs should not validate (Pre-Claim leads have empty contacts)
+  // Validation happens in Request DTOs (LeadCreateRequest.ContactData)
   @Size(max = 100)
   private String firstName;
 
-  @NotBlank(message = "Last name is required")
   @Size(max = 100)
   private String lastName;
 

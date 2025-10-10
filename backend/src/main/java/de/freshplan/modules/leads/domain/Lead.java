@@ -78,8 +78,8 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "country_code", nullable = false)
   public String countryCode = "DE";
 
-  @NotNull @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "territory_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "territory_id", nullable = true) // Nullable - territory is optional (only for Currency/Tax rules)
   public Territory territory;
 
   // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C - 100% Parity with Customer)

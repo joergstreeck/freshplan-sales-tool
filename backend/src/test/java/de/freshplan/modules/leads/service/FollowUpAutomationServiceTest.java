@@ -47,7 +47,8 @@ class FollowUpAutomationServiceTest {
   void setUp() {
     TestTx.committed(
         () -> {
-          // Clean up
+          // Clean up - IMPORTANT: Delete in correct order (FK constraints!)
+          em.createQuery("DELETE FROM LeadContact").executeUpdate();
           em.createQuery("DELETE FROM LeadActivity").executeUpdate();
           em.createQuery("DELETE FROM Lead").executeUpdate();
           em.createQuery("DELETE FROM CampaignTemplate").executeUpdate();

@@ -308,7 +308,7 @@ public class LeadResource {
 
       // Vollschutz: Erstkontakt dokumentiert
       lead.status = LeadStatus.REGISTERED;
-      lead.stage = LeadStage.REGISTRIERUNG;
+      lead.stage = request.stage != null ? LeadStage.fromValue(request.stage) : LeadStage.REGISTRIERUNG; // MESSE/TELEFON → REGISTRIERUNG
       lead.firstContactDocumentedAt = LocalDateTime.now(); // ← Vollschutz!
 
       LOG.infof("Lead %s (%s source): Direct REGISTRIERUNG (first contact documented: %s)",
@@ -317,7 +317,7 @@ public class LeadResource {
     } else {
       // EMPFEHLUNG/WEB/PARTNER/SONSTIGE: Pre-Claim erlaubt
       lead.status = LeadStatus.REGISTERED;
-      lead.stage = LeadStage.VORMERKUNG;
+      lead.stage = request.stage != null ? LeadStage.fromValue(request.stage) : LeadStage.VORMERKUNG; // Pre-Claim → VORMERKUNG
       lead.firstContactDocumentedAt = null; // ← Pre-Claim! (10 Tage Frist)
 
       LOG.infof("Lead %s (%s source): VORMERKUNG with Pre-Claim (10 days to document first contact)",
@@ -349,25 +349,43 @@ public class LeadResource {
 
     } else if (request.contactPerson != null && !request.contactPerson.isBlank()) {
       // LEGACY: Backward compatibility - split flat contactPerson into firstName/lastName
-      String[] nameParts = request.contactPerson.trim().split("\\s+", 2);
-      String firstName = nameParts[0];
-      String lastName = nameParts.length > 1 ? nameParts[1] : "";
+      // IMPORTANT: Only create LeadContact if at least ONE contact method (email/phone/mobile) is provided
+      // Pre-Claim allows leads with contactPerson but NO contact methods (documentFirstContact later)
 
-      LeadContact primaryContact = new LeadContact();
-      primaryContact.setLead(lead);
-      primaryContact.setFirstName(firstName);
-      primaryContact.setLastName(lastName);
-      primaryContact.setEmail(request.email);
-      primaryContact.setPhone(request.phone);
-      primaryContact.setPrimary(true);
-      primaryContact.setActive(true);
-      primaryContact.setCreatedBy(currentUserId);
-      primaryContact.persist();
+      boolean hasContactMethod = (request.email != null && !request.email.isBlank())
+                               || (request.phone != null && !request.phone.isBlank());
 
-      LOG.infof("Created primary contact for lead %s from legacy contactPerson: %s (split: %s %s)",
-          lead.id, request.contactPerson, firstName, lastName);
+      if (hasContactMethod) {
+        String[] nameParts = request.contactPerson.trim().split("\\s+", 2);
+        String firstName = nameParts[0];
+        String lastName = nameParts.length > 1 ? nameParts[1] : "";
+
+        LeadContact primaryContact = new LeadContact();
+        primaryContact.setLead(lead);
+        primaryContact.setFirstName(firstName);
+        primaryContact.setLastName(lastName);
+        primaryContact.setEmail(request.email);
+        primaryContact.setPhone(request.phone);
+        primaryContact.setPrimary(true);
+        primaryContact.setActive(true);
+        primaryContact.setCreatedBy(currentUserId);
+        primaryContact.persist();
+
+        LOG.infof("Created primary contact for lead %s from legacy contactPerson: %s (split: %s %s, email: %s, phone: %s)",
+            lead.id, request.contactPerson, firstName, lastName, request.email, request.phone);
+      } else {
+        LOG.infof("Lead %s created with contactPerson but NO contact methods (Pre-Claim: will be added via addFirstContact)", lead.id);
+      }
+
+    } else {
+      // VORMERKUNG (Pre-Claim): No contact data provided
+      // Pre-Claim allows leads WITHOUT contact for 10 days (firstContactDocumentedAt = NULL)
+      // V10017 trigger will set leads.contact_person/email/phone = NULL (no primary contact exists)
+      LOG.infof("VORMERKUNG lead %s created without contact data (Pre-Claim: 10 days to document first contact)", lead.id);
     }
-    // V276 trigger will automatically sync primary contact → leads.contact_person/email/phone
+    // Note: V10017 trigger handles backward compatibility:
+    // - If primary contact exists → sync to leads.contact_person/email/phone
+    // - If NO contact exists → set leads.contact_person/email/phone = NULL
 
     // Create initial activity (use LEAD_ASSIGNED instead of CREATED - V258 constraint)
     createAndPersistActivity(lead, currentUserId, ActivityType.LEAD_ASSIGNED, "Lead created");
@@ -384,6 +402,10 @@ public class LeadResource {
 
     // Return DTO to avoid lazy loading issues
     LeadDTO dto = LeadDTO.from(lead);
+
+    // DEBUG: Log contact count to diagnose validation error
+    LOG.infof("Lead %s created with %d contacts", dto.id, dto.contacts.size());
+
     return Response.created(location).entity(dto).build();
   }
 

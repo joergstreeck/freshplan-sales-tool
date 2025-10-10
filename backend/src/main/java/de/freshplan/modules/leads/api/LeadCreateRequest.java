@@ -34,6 +34,9 @@ public class LeadCreateRequest {
   @NotNull(message = "Company name is required") @Size(min = 1, max = 255, message = "Company name must be between 1 and 255 characters")
   public String companyName;
 
+  // Progressive Profiling (Sprint 2.1.5) - Stage: VORMERKUNG (0), REGISTRIERUNG (1), QUALIFIZIERT (2)
+  public Integer stage; // 0=VORMERKUNG, 1=REGISTRIERUNG, 2=QUALIFIZIERT
+
   // Sprint 2.1.6 Phase 5+: Structured contact data (NEW - preferred)
   @Valid
   public ContactData contact;

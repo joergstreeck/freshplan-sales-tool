@@ -59,9 +59,9 @@ class LeadContactTest {
 
     Lead lead = new Lead();
     lead.companyName = "Test Restaurant GmbH";
-    lead.contactPerson = "Max Mustermann"; // Legacy field (deprecated)
-    lead.email = "max@restaurant.de"; // Legacy field (deprecated)
-    lead.phone = "+49 123 456789"; // Legacy field (deprecated)
+    // IMPORTANT: Do NOT set legacy contact fields (contactPerson, email, phone)!
+    // V10016 migration would auto-migrate them to lead_contacts, causing test conflicts
+    // Tests should explicitly create LeadContact records as needed
     lead.city = "Berlin";
     lead.postalCode = "10115";
     lead.countryCode = "DE";
@@ -139,13 +139,14 @@ class LeadContactTest {
     contact.setLead(lead);
     contact.setFirstName("Maria");
     contact.setLastName("Schmidt");
+    contact.setCreatedBy("user1"); // Required for audit
     // All contact methods NULL!
 
     assertThrows(
         Exception.class,
         () -> {
-          contact.persist();
-          em.flush();
+          em.persist(contact); // Use em.persist() instead of Panache persist()
+          em.flush(); // Force DB constraint check immediately
         },
         "Should fail due to CHECK constraint (email OR phone OR mobile required)");
   }
