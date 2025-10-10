@@ -85,6 +85,16 @@ public class LeadDTO {
   // Note: Spotless may reformat this line - keeping it compact for readability
   public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
+  // Sprint 2.1.6+: Lead Scoring System - 4 Dimensions + Revenue Input Fields
+  public Integer painScore; // 0-100
+  public Integer revenueScore; // 0-100
+  public Integer fitScore; // 0-100
+  public Integer engagementScore; // 0-100
+
+  // Revenue Scoring Input Fields (user input)
+  public Boolean budgetConfirmed;
+  public String dealSize; // SMALL, MEDIUM, LARGE, ENTERPRISE
+
   // Branch/Chain information (Sprint 2.1.6 Phase 5+)
   public Integer branchCount; // Anzahl Filialen/Standorte
   public Boolean isChain; // Kettenbetrieb ja/nein
@@ -187,6 +197,14 @@ public class LeadDTO {
 
     // Lead Scoring (Sprint 2.1.6 Phase 4)
     dto.leadScore = lead.leadScore;
+    dto.painScore = lead.painScore;
+    dto.revenueScore = lead.revenueScore;
+    dto.fitScore = lead.fitScore;
+    dto.engagementScore = lead.engagementScore;
+
+    // Revenue Scoring Input Fields
+    dto.budgetConfirmed = lead.budgetConfirmed;
+    dto.dealSize = lead.dealSize != null ? lead.dealSize.name() : null;
 
     // Branch/Chain information (Sprint 2.1.6 Phase 5+)
     dto.branchCount = lead.branchCount;
