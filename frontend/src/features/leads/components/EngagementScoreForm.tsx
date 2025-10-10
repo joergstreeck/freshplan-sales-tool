@@ -30,6 +30,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRenderRef = useRef(true);
+  const isSavingRef = useRef(false);
 
   // Auto-Save Handler
   const autoSave = useCallback(async (immediate = false) => {
@@ -37,7 +38,12 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
       clearTimeout(debounceTimerRef.current);
     }
 
+    if (isSavingRef.current) {
+      return;
+    }
+
     const saveFunction = async () => {
+      isSavingRef.current = true;
       setSaveStatus('saving');
       try {
         await onUpdate(formData);
@@ -46,6 +52,8 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
       } catch (error) {
         setSaveStatus('idle');
         console.error('Auto-save failed:', error);
+      } finally {
+        isSavingRef.current = false;
       }
     };
 
@@ -60,6 +68,10 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
   useEffect(() => {
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
+      return;
+    }
+
+    if (isSavingRef.current) {
       return;
     }
 

@@ -43,14 +43,22 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRenderRef = useRef(true);
+  const isSavingRef = useRef(false);
 
   // Auto-Save Handler with debounce for text fields
   const autoSave = useCallback(async (immediate = false) => {
+    // Cancel pending debounce
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
 
+    // Prevent concurrent saves
+    if (isSavingRef.current) {
+      return;
+    }
+
     const saveFunction = async () => {
+      isSavingRef.current = true;
       setSaveStatus('saving');
       try {
         await onUpdate(formData);
@@ -59,6 +67,8 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
       } catch (error) {
         setSaveStatus('idle');
         console.error('Auto-save failed:', error);
+      } finally {
+        isSavingRef.current = false;
       }
     };
 
@@ -73,6 +83,11 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
   useEffect(() => {
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
+      return;
+    }
+
+    // Skip if already saving
+    if (isSavingRef.current) {
       return;
     }
 
