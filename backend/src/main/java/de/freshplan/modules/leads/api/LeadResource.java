@@ -625,6 +625,11 @@ public class LeadResource {
     lead.persist();
     lead.flush(); // Force version increment BEFORE creating ETag/DTO
 
+    // Sprint 2.1.6+ Lead Scoring: Recalculate scores BEFORE response (auto-update on data change)
+    // Ensures frontend receives updated scores without extra API call
+    leadScoringService.updateLeadScore(lead);
+    lead.persist(); // Persist updated scores
+
     LOG.infof("Updated lead %s by user %s", id, currentUserId);
     // Return with new strong ETag after version bump
     EntityTag newEtag = ETags.strongLead(lead.id, lead.version);

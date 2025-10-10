@@ -38,7 +38,6 @@ import {
   getLeadById,
   deleteLeadContact,
   setLeadContactAsPrimary,
-  recalculateLeadScore,
   updateLead,
 } from '../features/leads/api';
 import type { Lead, LeadContactDTO } from '../features/leads/types';
@@ -106,29 +105,25 @@ export function LeadDetailPage() {
       setExpandedAccordion(isExpanded ? panel : false);
     };
 
-  const handleRecalculateScore = async () => {
-    if (!lead) return;
-
-    try {
-      const scores = await recalculateLeadScore(lead.id);
-      setLead({ ...lead, ...scores });
-      toast.success('Score erfolgreich neu berechnet');
-    } catch (error) {
-      console.error('Failed to recalculate score:', error);
-      toast.error('Fehler beim Neuberechnen des Scores');
-    }
-  };
-
   const handleUpdate = async (updates: Partial<Lead>) => {
     if (!lead) return;
 
     try {
+      // Backend now returns updated scores in response (Sprint 2.1.6+ auto-scoring)
       const updatedLead = await updateLead(lead.id, updates);
       setLead(updatedLead);
       toast.success('Lead erfolgreich aktualisiert');
     } catch (error) {
       console.error('Failed to update lead:', error);
       toast.error('Fehler beim Aktualisieren des Leads');
+
+      // Fallback: Reload lead if update fails but we want fresh data
+      try {
+        const refreshedLead = await getLeadById(lead.id);
+        setLead(refreshedLead);
+      } catch (reloadError) {
+        console.error('Failed to reload lead:', reloadError);
+      }
     }
   };
 
@@ -338,13 +333,6 @@ export function LeadDetailPage() {
               >
                 <FitScoreDisplay lead={lead} />
               </ScoreAccordion>
-
-              {/* Manual Recalculate Button */}
-              <Box sx={{ mt: 2 }}>
-                <Button variant="outlined" size="small" onClick={handleRecalculateScore}>
-                  Score neu berechnen
-                </Button>
-              </Box>
             </Box>
 
             {/* Contacts Card */}
