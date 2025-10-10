@@ -988,4 +988,97 @@ class LeadResourceTest {
         .body("relationshipStatus", equalTo("TRUSTED"))
         .body("decisionMakerAccess", equalTo("IS_DECISION_MAKER"));
   }
+
+  // ================= Sprint 2.1.6 Phase 5+: Pain & Engagement Auto-Save Tests =================
+
+  @Test
+  @TestSecurity(user = "user1", roles = {"USER"})
+  @DisplayName("Pain Score: Should update pain fields and trigger auto-scoring")
+  void testUpdateLeadWithPainFields() {
+    Long leadId = createTestLead("user1");
+
+    // Get current ETag
+    String etag =
+        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+
+    // Update with pain fields
+    Map<String, Object> request = new HashMap<>();
+    request.put("painStaffShortage", true);
+    request.put("painHighCosts", true);
+    request.put("urgencyLevel", "HIGH");
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etag)
+        .body(request)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("painStaffShortage", is(true))
+        .body("painHighCosts", is(true))
+        .body("urgencyLevel", equalTo("HIGH"))
+        .body("painScore", notNullValue())
+        .body("painScore", greaterThanOrEqualTo(0));
+  }
+
+  @Test
+  @TestSecurity(user = "user1", roles = {"USER"})
+  @DisplayName("Engagement Score: Should update engagement fields and trigger auto-scoring")
+  void testUpdateLeadWithEngagementFields() {
+    Long leadId = createTestLead("user1");
+
+    // Get current ETag
+    String etag =
+        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+
+    // Update with engagement fields
+    Map<String, Object> request = new HashMap<>();
+    request.put("relationshipStatus", "ADVOCATE");
+    request.put("decisionMakerAccess", "IS_DECISION_MAKER");
+    request.put("internalChampionName", "Max Mustermann");
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etag)
+        .body(request)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("relationshipStatus", equalTo("ADVOCATE"))
+        .body("decisionMakerAccess", equalTo("IS_DECISION_MAKER"))
+        .body("internalChampionName", equalTo("Max Mustermann"))
+        .body("engagementScore", notNullValue())
+        .body("engagementScore", greaterThanOrEqualTo(50)); // High engagement
+  }
+
+  @Test
+  @TestSecurity(user = "user1", roles = {"USER"})
+  @DisplayName("Lead Score: Should recalculate total score after pain update")
+  void testScoreRecalculationOnPainUpdate() {
+    Long leadId = createTestLead("user1");
+
+    // Get current ETag
+    String etag =
+        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+
+    // Update pain fields with high urgency
+    Map<String, Object> request = new HashMap<>();
+    request.put("painStaffShortage", true);
+    request.put("painHighCosts", true);
+    request.put("painFoodWaste", true);
+    request.put("urgencyLevel", "EMERGENCY");
+
+    given()
+        .contentType(ContentType.JSON)
+        .header("If-Match", etag)
+        .body(request)
+        .when()
+        .patch("/" + leadId)
+        .then()
+        .statusCode(200)
+        .body("painScore", greaterThanOrEqualTo(30)) // Should be high with 3 pains + emergency
+        .body("leadScore", notNullValue()); // Total score should be recalculated
+  }
 }
