@@ -11,6 +11,8 @@ import {
   TextField,
   Button,
   Alert,
+  Typography,
+  Divider,
 } from '@mui/material';
 import type { Lead } from '../types';
 
@@ -60,10 +62,13 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
             : '❌'}
       </Alert>
 
-      <Grid container spacing={2}>
-        {/* Pain Points Checkboxes */}
+      <Grid container spacing={3}>
+        {/* Section 1: Operational Pains */}
         <Grid item xs={12}>
-          <strong>Operational Pains (Strukturelle Betriebsprobleme)</strong>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+            Operational Pains (Strukturelle Betriebsprobleme)
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
         </Grid>
 
         <Grid item xs={12} sm={6}>
@@ -128,9 +133,12 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        {/* Lieferanten-Probleme Section Header */}
-        <Grid item xs={12}>
-          <strong>Lieferanten-Probleme</strong>
+        {/* Section 2: Lieferanten-Probleme */}
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+            Lieferanten-Probleme
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
         </Grid>
 
         <Grid item xs={12} sm={6}>
@@ -171,23 +179,37 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        {/* Urgency Level */}
+        {/* Section 3: Dringlichkeit */}
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+            Dringlichkeit
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+        </Grid>
+
         <Grid item xs={12} sm={6}>
           <FormControl fullWidth>
-            <InputLabel>Dringlichkeit</InputLabel>
+            <InputLabel>Dringlichkeitsstufe</InputLabel>
             <Select
               value={formData.urgencyLevel}
               onChange={e => setFormData({ ...formData, urgencyLevel: e.target.value })}
             >
-              <MenuItem value="NORMAL">Normal (0 Punkte)</MenuItem>
-              <MenuItem value="MEDIUM">Mittel (15 Punkte)</MenuItem>
-              <MenuItem value="HIGH">Hoch (22 Punkte)</MenuItem>
-              <MenuItem value="EMERGENCY">Notfall (30 Punkte)</MenuItem>
+              <MenuItem value="NORMAL">⏸️ Normal (0 Punkte)</MenuItem>
+              <MenuItem value="MEDIUM">⏰ Mittel (15 Punkte)</MenuItem>
+              <MenuItem value="HIGH">🔥 Hoch (22 Punkte)</MenuItem>
+              <MenuItem value="EMERGENCY">🚨 Notfall (30 Punkte)</MenuItem>
             </Select>
           </FormControl>
         </Grid>
 
-        {/* Pain Details */}
+        {/* Section 4: Details */}
+        <Grid item xs={12} sx={{ mt: 2 }}>
+          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
+            Weitere Details
+          </Typography>
+          <Divider sx={{ mb: 2 }} />
+        </Grid>
+
         <Grid item xs={12}>
           <TextField
             label="Weitere Details zu Pain-Faktoren (optional)"
@@ -202,7 +224,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
 
         {/* Save Button */}
         <Grid item xs={12}>
-          <Button variant="contained" onClick={handleSave} disabled={saving}>
+          <Button variant="contained" onClick={handleSave} disabled={saving} fullWidth>
             {saving ? 'Speichert...' : 'Speichern'}
           </Button>
         </Grid>

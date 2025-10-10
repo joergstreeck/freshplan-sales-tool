@@ -79,4 +79,22 @@ public class LeadUpdateRequest {
 
   @Size(max = 100, message = "internalChampionName must not exceed 100 characters")
   public String internalChampionName;
+
+  // Pain Dimension (Sprint 2.1.6 Phase 5+ - Pain Scoring)
+  public Boolean painStaffShortage;
+  public Boolean painHighCosts;
+  public Boolean painFoodWaste;
+  public Boolean painQualityInconsistency;
+  public Boolean painUnreliableDelivery;
+  public Boolean painPoorService;
+  public Boolean painSupplierQuality;
+  public Boolean painTimePressure;
+
+  @Size(max = 20, message = "urgencyLevel must not exceed 20 characters")
+  public String urgencyLevel; // NORMAL, MEDIUM, HIGH, EMERGENCY
+
+  public Integer multiPainBonus;
+
+  @Size(max = 1000, message = "painNotes must not exceed 1000 characters")
+  public String painNotes;
 }

@@ -627,6 +627,21 @@ public class LeadResource {
       lead.internalChampionName = updateRequest.internalChampionName;
     }
 
+    // Sprint 2.1.6+ Pain Dimension fields
+    if (updateRequest.painStaffShortage != null) lead.painStaffShortage = updateRequest.painStaffShortage;
+    if (updateRequest.painHighCosts != null) lead.painHighCosts = updateRequest.painHighCosts;
+    if (updateRequest.painFoodWaste != null) lead.painFoodWaste = updateRequest.painFoodWaste;
+    if (updateRequest.painQualityInconsistency != null) lead.painQualityInconsistency = updateRequest.painQualityInconsistency;
+    if (updateRequest.painUnreliableDelivery != null) lead.painUnreliableDelivery = updateRequest.painUnreliableDelivery;
+    if (updateRequest.painPoorService != null) lead.painPoorService = updateRequest.painPoorService;
+    if (updateRequest.painSupplierQuality != null) lead.painSupplierQuality = updateRequest.painSupplierQuality;
+    if (updateRequest.painTimePressure != null) lead.painTimePressure = updateRequest.painTimePressure;
+    if (updateRequest.urgencyLevel != null) {
+      lead.urgencyLevel = de.freshplan.modules.leads.domain.UrgencyLevel.valueOf(updateRequest.urgencyLevel);
+    }
+    if (updateRequest.multiPainBonus != null) lead.multiPainBonus = updateRequest.multiPainBonus;
+    if (updateRequest.painNotes != null) lead.painNotes = updateRequest.painNotes;
+
     lead.updatedBy = currentUserId;
     lead.persist();
     lead.flush(); // Force version increment BEFORE creating ETag/DTO
