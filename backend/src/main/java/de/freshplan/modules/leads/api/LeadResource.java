@@ -65,6 +65,8 @@ public class LeadResource {
 
   @Inject de.freshplan.modules.leads.service.LeadConvertService leadConvertService;
 
+  @Inject de.freshplan.modules.leads.service.LeadScoringService leadScoringService;
+
   @Context UriInfo uriInfo;
 
   @Context Request request;
@@ -1184,6 +1186,50 @@ public class LeadResource {
           .entity(new ErrorResponse("Failed to set primary contact"))
           .build();
     }
+  }
+
+  /**
+   * Recalculate lead score (manual trigger).
+   *
+   * <p>Sprint 2.1.6+ Lead Scoring System
+   *
+   * <p>Use cases:
+   * <ul>
+   *   <li>After batch updates to lead data</li>
+   *   <li>After ICP configuration changes</li>
+   *   <li>User-requested recalculation (UI button)</li>
+   * </ul>
+   *
+   * @param id Lead ID (Long, not UUID - this project uses Long for Lead IDs)
+   * @return Updated scores
+   */
+  @POST
+  @Path("/{id}/recalculate-score")
+  @RolesAllowed({"USER", "ADMIN"})
+  @Transactional
+  public Response recalculateScore(@PathParam("id") Long id) {
+    String currentUserId = getCurrentUserId();
+    Lead lead = Lead.findById(id);
+
+    if (lead == null) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(Map.of("error", "Lead not found"))
+          .build();
+    }
+
+    // Recalculate scores
+    leadScoringService.updateLeadScore(lead);
+    lead.persist();
+
+    LOG.infof("Lead %s score manually recalculated by user %s", id, currentUserId);
+
+    return Response.ok(Map.of(
+        "leadScore", lead.leadScore != null ? lead.leadScore : 0,
+        "painScore", lead.painScore != null ? lead.painScore : 0,
+        "revenueScore", lead.revenueScore != null ? lead.revenueScore : 0,
+        "fitScore", lead.fitScore != null ? lead.fitScore : 0,
+        "engagementScore", lead.engagementScore != null ? lead.engagementScore : 0
+    )).build();
   }
 
   /**
