@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Box,
-  Grid,
   FormControl,
   InputLabel,
   Select,
@@ -12,6 +11,7 @@ import {
   Typography,
   Divider,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
 
 interface EngagementScoreFormProps {
@@ -51,7 +51,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
 
       <Grid container spacing={3}>
         {/* Section 1: Beziehungsebene */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             Beziehungsebene
           </Typography>
@@ -59,7 +59,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
         </Grid>
 
         {/* Relationship Status */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <InputLabel>Beziehungsqualität</InputLabel>
             <Select
@@ -81,7 +81,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
         </Grid>
 
         {/* Decision Maker Access */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <InputLabel>Entscheider-Zugang</InputLabel>
             <Select
@@ -98,7 +98,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
         </Grid>
 
         {/* Section 2: Weitere Informationen */}
-        <Grid item xs={12} sx={{ mt: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             Weitere Informationen
           </Typography>
@@ -106,7 +106,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
         </Grid>
 
         {/* Internal Champion + Competitor nebeneinander */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Fürsprecher im Unternehmen"
             value={formData.internalChampionName}
@@ -117,7 +117,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Aktueller Wettbewerber"
             value={formData.competitorInUse}
@@ -129,7 +129,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
         </Grid>
 
         {/* Save Button */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Button variant="contained" onClick={handleSave} disabled={saving} fullWidth>
             {saving ? 'Speichert...' : 'Speichern'}
           </Button>

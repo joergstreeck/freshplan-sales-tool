@@ -98,7 +98,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
       <CardContent>
         <Grid container spacing={3}>
           {/* Business Type */}
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <RestaurantIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
@@ -111,7 +111,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
           </Grid>
 
           {/* Kitchen Size */}
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <StoreIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
@@ -130,7 +130,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
           </Grid>
 
           {/* Employee Count */}
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <GroupIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
@@ -143,7 +143,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
           </Grid>
 
           {/* Branch Count / Chain Indicator */}
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <StoreIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
@@ -161,7 +161,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
           </Grid>
 
           {/* Estimated Volume */}
-          <Grid item xs={12} sm={6}>
+          <Grid size={{ xs: 12, sm: 6 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
               <MoneyIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
@@ -177,7 +177,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
 
           {/* Total Potential (if chain) */}
           {lead.isChain && totalPotential && totalPotential !== lead.estimatedVolume && (
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <TrendingUpIcon fontSize="small" color="action" />
                 <Typography variant="body2" color="text.secondary">
@@ -195,7 +195,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
 
           {/* Lead Score + Urgency (V278 - neue Anzeige) */}
           {lead.leadScore !== undefined && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <TrendingUpIcon fontSize="small" color="action" />
                 <Typography variant="body2" color="text.secondary">
@@ -235,7 +235,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
 
           {/* Pain Factors (Details) */}
           {activePainFactors.length > 0 && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <WarningIcon fontSize="small" color="action" />
                 <Typography variant="body2" color="text.secondary">
@@ -263,7 +263,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
 
           {/* Relationship Dimension (V280) */}
           {(lead.relationshipStatus || lead.decisionMakerAccess || lead.competitorInUse || lead.internalChampionName) && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <GroupIcon fontSize="small" color="action" />
                 <Typography variant="body2" color="text.secondary">
@@ -272,7 +272,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
               </Box>
               <Grid container spacing={2}>
                 {lead.relationshipStatus && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Beziehungsqualität
                     </Typography>
@@ -282,7 +282,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
                   </Grid>
                 )}
                 {lead.decisionMakerAccess && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Entscheider-Zugang
                     </Typography>
@@ -292,7 +292,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
                   </Grid>
                 )}
                 {lead.competitorInUse && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Aktueller Wettbewerber
                     </Typography>
@@ -300,7 +300,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
                   </Grid>
                 )}
                 {lead.internalChampionName && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography variant="caption" color="text.secondary">
                       Interner Champion
                     </Typography>
@@ -317,7 +317,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
             !lead.employeeCount &&
             !lead.estimatedVolume &&
             activePainFactors.length === 0 && (
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Typography variant="body2" color="text.secondary" textAlign="center">
                   Noch keine Geschäftsdaten erfasst
                 </Typography>

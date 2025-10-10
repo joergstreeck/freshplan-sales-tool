@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Box,
-  Grid,
   TextField,
   FormControl,
   InputLabel,
@@ -14,6 +13,7 @@ import {
   InputAdornment,
   FormHelperText,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
 
 interface RevenueScoreFormProps {
@@ -67,7 +67,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
 
       <Grid container spacing={2}>
         {/* Estimated Volume */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <TextField
             label="Geschätztes Jahresvolumen"
             type="number"
@@ -88,7 +88,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
         </Grid>
 
         {/* Deal Size */}
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <InputLabel>Deal Size</InputLabel>
             <Select
@@ -111,7 +111,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
         </Grid>
 
         {/* Budget Confirmed */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -124,7 +124,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
         </Grid>
 
         {/* Save Button */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Button variant="contained" onClick={handleSave} disabled={saving}>
             {saving ? 'Speichert...' : 'Speichern'}
           </Button>

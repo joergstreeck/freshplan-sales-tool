@@ -66,16 +66,16 @@ export function LeadScoreSummaryCard({
 
         {/* Mini-Scores Grid */}
         <Grid container spacing={2}>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 3 }}>
             <MiniScoreChip icon="💰" label="Umsatz (25%)" score={revenueScore} />
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 3 }}>
             <MiniScoreChip icon="🎯" label="Fit (25%)" score={fitScore} />
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 3 }}>
             <MiniScoreChip icon="⚠️" label="Pain (25%)" score={painScore} />
           </Grid>
-          <Grid item xs={3}>
+          <Grid size={{ xs: 3 }}>
             <MiniScoreChip icon="🤝" label="Engagement (25%)" score={engagementScore} />
           </Grid>
         </Grid>

@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   Box,
-  Grid,
   FormControlLabel,
   Checkbox,
   FormControl,
@@ -14,6 +13,7 @@ import {
   Typography,
   Divider,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
 
 interface PainScoreFormProps {
@@ -64,14 +64,14 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
 
       <Grid container spacing={3}>
         {/* Section 1: Operational Pains */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             Operational Pains (Strukturelle Betriebsprobleme)
           </Typography>
           <Divider sx={{ mb: 2 }} />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -83,7 +83,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -95,7 +95,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -107,7 +107,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -121,7 +121,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -134,14 +134,14 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
         </Grid>
 
         {/* Section 2: Lieferanten-Probleme */}
-        <Grid item xs={12} sx={{ mt: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             Lieferanten-Probleme
           </Typography>
           <Divider sx={{ mb: 2 }} />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -153,7 +153,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -167,7 +167,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
           />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControlLabel
             control={
               <Checkbox
@@ -180,14 +180,14 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
         </Grid>
 
         {/* Section 3: Dringlichkeit */}
-        <Grid item xs={12} sx={{ mt: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             Dringlichkeit
           </Typography>
           <Divider sx={{ mb: 2 }} />
         </Grid>
 
-        <Grid item xs={12} sm={6}>
+        <Grid size={{ xs: 12, sm: 6 }}>
           <FormControl fullWidth>
             <InputLabel>Dringlichkeitsstufe</InputLabel>
             <Select
@@ -203,14 +203,14 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
         </Grid>
 
         {/* Section 4: Details */}
-        <Grid item xs={12} sx={{ mt: 2 }}>
+        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
             Weitere Details
           </Typography>
           <Divider sx={{ mb: 2 }} />
         </Grid>
 
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <TextField
             label="Weitere Details zu Pain-Faktoren (optional)"
             multiline
@@ -223,7 +223,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
         </Grid>
 
         {/* Save Button */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <Button variant="contained" onClick={handleSave} disabled={saving} fullWidth>
             {saving ? 'Speichert...' : 'Speichern'}
           </Button>
