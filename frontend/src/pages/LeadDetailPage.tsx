@@ -70,7 +70,7 @@ export function LeadDetailPage() {
   const [businessPotentialDialogOpen, setBusinessPotentialDialogOpen] = useState(false);
 
   // Sprint 2.1.6+ Lead Scoring Accordion State
-  const [expandedAccordion, setExpandedAccordion] = useState<string | false>('revenue');
+  const [expandedAccordion, setExpandedAccordion] = useState<string | false>(false);
 
   // Extract Lead-ID from slug (e.g. "mueller-gmbh-123" → "123")
   const leadId = slug ? extractLeadIdFromSlug(slug) : null;

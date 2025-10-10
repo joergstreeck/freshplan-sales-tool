@@ -26,16 +26,13 @@ import {
   Typography,
   Divider,
   InputAdornment,
-  FormGroup,
 } from '@mui/material';
 import {
   TrendingUp as TrendingUpIcon,
   Store as StoreIcon,
-  Warning as WarningIcon,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import type { Lead, BusinessType, UrgencyLevel, RelationshipStatus, DecisionMakerAccess } from '../types';
-import { urgencyLevelLabels, relationshipStatusLabels, decisionMakerAccessLabels } from '../types';
+import type { Lead, BusinessType } from '../types';
 import { updateLead } from '../api';
 
 interface BusinessPotentialDialogProps {
@@ -58,24 +55,6 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
     estimatedVolume: lead.estimatedVolume || '',
     branchCount: lead.branchCount || 1,
     isChain: lead.isChain || false,
-    // Pain Scoring V3 - OPERATIONAL PAINS
-    painStaffShortage: lead.painStaffShortage || false,
-    painHighCosts: lead.painHighCosts || false,
-    painFoodWaste: lead.painFoodWaste || false,
-    painQualityInconsistency: lead.painQualityInconsistency || false,
-    painTimePressure: lead.painTimePressure || false,
-    // Pain Scoring V3 - SWITCHING PAINS
-    painSupplierQuality: lead.painSupplierQuality || false,
-    painUnreliableDelivery: lead.painUnreliableDelivery || false,
-    painPoorService: lead.painPoorService || false,
-    painNotes: lead.painNotes || '',
-    // Urgency Dimension
-    urgencyLevel: lead.urgencyLevel || 'NORMAL',
-    // Relationship Dimension (V280)
-    relationshipStatus: lead.relationshipStatus || '',
-    decisionMakerAccess: lead.decisionMakerAccess || '',
-    competitorInUse: lead.competitorInUse || '',
-    internalChampionName: lead.internalChampionName || '',
   });
 
   // Reset form when lead changes
@@ -87,24 +66,6 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
       estimatedVolume: lead.estimatedVolume || '',
       branchCount: lead.branchCount || 1,
       isChain: lead.isChain || false,
-      // Pain Scoring V3 - OPERATIONAL PAINS
-      painStaffShortage: lead.painStaffShortage || false,
-      painHighCosts: lead.painHighCosts || false,
-      painFoodWaste: lead.painFoodWaste || false,
-      painQualityInconsistency: lead.painQualityInconsistency || false,
-      painTimePressure: lead.painTimePressure || false,
-      // Pain Scoring V3 - SWITCHING PAINS
-      painSupplierQuality: lead.painSupplierQuality || false,
-      painUnreliableDelivery: lead.painUnreliableDelivery || false,
-      painPoorService: lead.painPoorService || false,
-      painNotes: lead.painNotes || '',
-      // Urgency Dimension
-      urgencyLevel: lead.urgencyLevel || 'NORMAL',
-      // Relationship Dimension (V280)
-      relationshipStatus: lead.relationshipStatus || '',
-      decisionMakerAccess: lead.decisionMakerAccess || '',
-      competitorInUse: lead.competitorInUse || '',
-      internalChampionName: lead.internalChampionName || '',
     });
   }, [lead]);
 
@@ -123,24 +84,6 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
         estimatedVolume: formData.estimatedVolume ? Number(formData.estimatedVolume) : undefined,
         branchCount: Number(formData.branchCount),
         isChain: formData.isChain,
-        // Pain Scoring V3 - OPERATIONAL PAINS
-        painStaffShortage: formData.painStaffShortage,
-        painHighCosts: formData.painHighCosts,
-        painFoodWaste: formData.painFoodWaste,
-        painQualityInconsistency: formData.painQualityInconsistency,
-        painTimePressure: formData.painTimePressure,
-        // Pain Scoring V3 - SWITCHING PAINS
-        painSupplierQuality: formData.painSupplierQuality,
-        painUnreliableDelivery: formData.painUnreliableDelivery,
-        painPoorService: formData.painPoorService,
-        painNotes: formData.painNotes.trim() || undefined,
-        // Urgency Dimension
-        urgencyLevel: formData.urgencyLevel as UrgencyLevel,
-        // Relationship Dimension (V280)
-        relationshipStatus: formData.relationshipStatus as RelationshipStatus || undefined,
-        decisionMakerAccess: formData.decisionMakerAccess as DecisionMakerAccess || undefined,
-        competitorInUse: formData.competitorInUse.trim() || undefined,
-        internalChampionName: formData.internalChampionName.trim() || undefined,
       };
 
       await updateLead(lead.id, payload);
@@ -269,191 +212,6 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
           )}
         </Box>
 
-        {/* Pain Factors */}
-        <Box>
-          <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <WarningIcon fontSize="small" />
-            Pain-Faktoren
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-
-          <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-            OPERATIONAL PAINS (Strukturelle Betriebsprobleme)
-          </Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painStaffShortage}
-                  onChange={e => setFormData({ ...formData, painStaffShortage: e.target.checked })}
-                />
-              }
-              label="Personalmangel / Fachkräftemangel"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painHighCosts}
-                  onChange={e => setFormData({ ...formData, painHighCosts: e.target.checked })}
-                />
-              }
-              label="Hoher Kostendruck"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painFoodWaste}
-                  onChange={e => setFormData({ ...formData, painFoodWaste: e.target.checked })}
-                />
-              }
-              label="Food Waste / Überproduktion"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painQualityInconsistency}
-                  onChange={e => setFormData({ ...formData, painQualityInconsistency: e.target.checked })}
-                />
-              }
-              label="Interne Qualitätsinkonsistenz"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painTimePressure}
-                  onChange={e => setFormData({ ...formData, painTimePressure: e.target.checked })}
-                />
-              }
-              label="Zeitdruck / Effizienzprobleme"
-            />
-          </FormGroup>
-
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 2, mb: 1, display: 'block' }}>
-            SWITCHING PAINS (Probleme mit aktuellem Lieferanten)
-          </Typography>
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painSupplierQuality}
-                  onChange={e => setFormData({ ...formData, painSupplierQuality: e.target.checked })}
-                />
-              }
-              label="Qualitätsprobleme beim Lieferanten"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painUnreliableDelivery}
-                  onChange={e => setFormData({ ...formData, painUnreliableDelivery: e.target.checked })}
-                />
-              }
-              label="Unzuverlässige Lieferzeiten"
-            />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={formData.painPoorService}
-                  onChange={e => setFormData({ ...formData, painPoorService: e.target.checked })}
-                />
-              }
-              label="Schlechter Service/Support"
-            />
-          </FormGroup>
-
-          <TextField
-            fullWidth
-            label="Weitere Details zu Pain-Faktoren"
-            multiline
-            rows={3}
-            value={formData.painNotes}
-            onChange={e => setFormData({ ...formData, painNotes: e.target.value })}
-            sx={{ mt: 2 }}
-          />
-        </Box>
-
-        {/* Urgency Dimension */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <WarningIcon fontSize="small" />
-            Zeitdruck / Dringlichkeit
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-
-          <FormControl fullWidth>
-            <InputLabel>Dringlichkeit</InputLabel>
-            <Select
-              value={formData.urgencyLevel}
-              label="Dringlichkeit"
-              onChange={e => setFormData({ ...formData, urgencyLevel: e.target.value as UrgencyLevel })}
-            >
-              <MenuItem value="NORMAL">{urgencyLevelLabels.NORMAL}</MenuItem>
-              <MenuItem value="MEDIUM">{urgencyLevelLabels.MEDIUM}</MenuItem>
-              <MenuItem value="HIGH">{urgencyLevelLabels.HIGH}</MenuItem>
-              <MenuItem value="EMERGENCY">{urgencyLevelLabels.EMERGENCY}</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-
-        {/* Relationship Dimension (V280) */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="subtitle2" gutterBottom sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <StoreIcon fontSize="small" />
-            Beziehungsebene
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
-            <FormControl fullWidth>
-              <InputLabel>Beziehungsqualität</InputLabel>
-              <Select
-                value={formData.relationshipStatus}
-                label="Beziehungsqualität"
-                onChange={e => setFormData({ ...formData, relationshipStatus: e.target.value as RelationshipStatus })}
-              >
-                <MenuItem value="">Keine Angabe</MenuItem>
-                <MenuItem value="COLD">{relationshipStatusLabels.COLD}</MenuItem>
-                <MenuItem value="CONTACTED">{relationshipStatusLabels.CONTACTED}</MenuItem>
-                <MenuItem value="ENGAGED_SKEPTICAL">{relationshipStatusLabels.ENGAGED_SKEPTICAL}</MenuItem>
-                <MenuItem value="ENGAGED_POSITIVE">{relationshipStatusLabels.ENGAGED_POSITIVE}</MenuItem>
-                <MenuItem value="TRUSTED">{relationshipStatusLabels.TRUSTED}</MenuItem>
-                <MenuItem value="ADVOCATE">{relationshipStatusLabels.ADVOCATE}</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel>Entscheider-Zugang</InputLabel>
-              <Select
-                value={formData.decisionMakerAccess}
-                label="Entscheider-Zugang"
-                onChange={e => setFormData({ ...formData, decisionMakerAccess: e.target.value as DecisionMakerAccess })}
-              >
-                <MenuItem value="">Keine Angabe</MenuItem>
-                <MenuItem value="UNKNOWN">{decisionMakerAccessLabels.UNKNOWN}</MenuItem>
-                <MenuItem value="BLOCKED">{decisionMakerAccessLabels.BLOCKED}</MenuItem>
-                <MenuItem value="INDIRECT">{decisionMakerAccessLabels.INDIRECT}</MenuItem>
-                <MenuItem value="DIRECT">{decisionMakerAccessLabels.DIRECT}</MenuItem>
-                <MenuItem value="IS_DECISION_MAKER">{decisionMakerAccessLabels.IS_DECISION_MAKER}</MenuItem>
-              </Select>
-            </FormControl>
-
-            <TextField
-              fullWidth
-              label="Aktueller Wettbewerber"
-              value={formData.competitorInUse}
-              onChange={e => setFormData({ ...formData, competitorInUse: e.target.value })}
-              placeholder="z.B. Metro, Transgourmet"
-            />
-
-            <TextField
-              fullWidth
-              label="Interner Champion"
-              value={formData.internalChampionName}
-              onChange={e => setFormData({ ...formData, internalChampionName: e.target.value })}
-              placeholder="z.B. Max Müller (Küchenchef)"
-            />
-          </Box>
-        </Box>
       </DialogContent>
 
       <DialogActions>

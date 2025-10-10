@@ -89,10 +89,9 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
       return;
     }
 
-    // Immediate save for checkbox/dropdown, debounced for number field
-    const hasNumberChanged = formData.estimatedVolume !== lead.estimatedVolume;
-    autoSave(!hasNumberChanged);
-  }, [formData, autoSave, lead.estimatedVolume]);
+    autoSave(true); // Always immediate
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]); // ONLY formData - autoSave causes infinite loop!
 
   // Cleanup
   useEffect(() => {

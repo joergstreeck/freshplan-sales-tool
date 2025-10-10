@@ -91,10 +91,10 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
       return;
     }
 
-    // Immediate save for checkboxes/dropdowns, debounced for text
-    const hasTextChanged = formData.painNotes !== lead.painNotes;
-    autoSave(!hasTextChanged);
-  }, [formData, autoSave, lead.painNotes]);
+    // Trigger auto-save
+    autoSave(true); // Always immediate for now
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]); // ONLY formData - autoSave causes infinite loop!
 
   // Cleanup
   useEffect(() => {

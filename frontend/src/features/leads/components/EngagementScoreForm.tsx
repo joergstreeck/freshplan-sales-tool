@@ -75,11 +75,9 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
       return;
     }
 
-    const hasTextChanged =
-      formData.competitorInUse !== lead.competitorInUse ||
-      formData.internalChampionName !== lead.internalChampionName;
-    autoSave(!hasTextChanged);
-  }, [formData, autoSave, lead.competitorInUse, lead.internalChampionName]);
+    autoSave(true); // Always immediate
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]); // ONLY formData - autoSave causes infinite loop!
 
   // Cleanup
   useEffect(() => {
