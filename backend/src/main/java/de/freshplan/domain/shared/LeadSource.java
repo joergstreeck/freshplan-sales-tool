@@ -19,8 +19,8 @@ public enum LeadSource {
   /** Referral / Recommendation (Empfehlung). Optional Pre-Claim. */
   EMPFEHLUNG("Empfehlung"),
 
-  /** Cold calling / Telemarketing (Kaltakquise). Requires first contact documentation. */
-  TELEFON("Kaltakquise"),
+  /** Phone contact / Cold calling (Telefon). Requires first contact documentation. */
+  TELEFON("Telefon"),
 
   /** Web form / Online inquiry (Web-Formular). Optional Pre-Claim. */
   WEB_FORMULAR("Web-Formular"),
@@ -40,7 +40,7 @@ public enum LeadSource {
   /**
    * Get human-readable display name.
    *
-   * @return Display name (e.g., "Messe/Event", "Kaltakquise")
+   * @return Display name (e.g., "Messe/Event", "Telefon")
    */
   public String getDisplayName() {
     return displayName;
