@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   FormControlLabel,
@@ -8,10 +8,10 @@ import {
   Select,
   MenuItem,
   TextField,
-  Button,
   Alert,
   Typography,
   Divider,
+  Chip,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
@@ -40,27 +40,74 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
     painNotes: lead.painNotes || '',
   });
 
-  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isFirstRenderRef = useRef(true);
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await onUpdate(formData);
-    } finally {
-      setSaving(false);
+  // Auto-Save Handler with debounce for text fields
+  const autoSave = useCallback(async (immediate = false) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
-  };
+
+    const saveFunction = async () => {
+      setSaveStatus('saving');
+      try {
+        await onUpdate(formData);
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } catch (error) {
+        setSaveStatus('idle');
+        console.error('Auto-save failed:', error);
+      }
+    };
+
+    if (immediate) {
+      await saveFunction();
+    } else {
+      debounceTimerRef.current = setTimeout(saveFunction, 1000);
+    }
+  }, [formData, onUpdate]);
+
+  // Auto-save on formData changes (skip first render)
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+
+    // Immediate save for checkboxes/dropdowns, debounced for text
+    const hasTextChanged = formData.painNotes !== lead.painNotes;
+    autoSave(!hasTextChanged);
+  }, [formData, autoSave, lead.painNotes]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <Box sx={{ p: 2 }}>
-      <Alert severity="info" sx={{ mb: 2 }}>
-        Score: {lead.painScore || 0}/100{' '}
-        {lead.painScore && lead.painScore >= 70
-          ? '✅'
-          : lead.painScore && lead.painScore >= 40
-            ? '⚠️'
-            : '❌'}
-      </Alert>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Alert severity="info" sx={{ flex: 1, mr: 2 }}>
+          Score: {lead.painScore || 0}/100{' '}
+          {lead.painScore && lead.painScore >= 70
+            ? '✅'
+            : lead.painScore && lead.painScore >= 40
+              ? '⚠️'
+              : '❌'}
+        </Alert>
+        {saveStatus === 'saving' && (
+          <Chip label="Speichert..." size="small" color="default" />
+        )}
+        {saveStatus === 'saved' && (
+          <Chip label="Gespeichert ✓" size="small" color="success" />
+        )}
+      </Box>
 
       <Grid container spacing={3}>
         {/* Section 1: Operational Pains */}
@@ -220,13 +267,6 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
             fullWidth
             placeholder="Beschreiben Sie konkrete Probleme, Auswirkungen oder besondere Umstände..."
           />
-        </Grid>
-
-        {/* Save Button */}
-        <Grid size={{ xs: 12 }}>
-          <Button variant="contained" onClick={handleSave} disabled={saving} fullWidth>
-            {saving ? 'Speichert...' : 'Speichern'}
-          </Button>
         </Grid>
       </Grid>
     </Box>

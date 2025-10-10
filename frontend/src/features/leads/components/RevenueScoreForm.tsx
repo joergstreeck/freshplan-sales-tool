@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Box,
   TextField,
@@ -8,10 +8,10 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
-  Button,
   Alert,
   InputAdornment,
   FormHelperText,
+  Chip,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
@@ -37,33 +37,80 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
     budgetConfirmed: lead.budgetConfirmed || false,
     dealSize: lead.dealSize || '',
   });
-  const [saving, setSaving] = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isFirstRenderRef = useRef(true);
 
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      await onUpdate({
-        estimatedVolume: formData.estimatedVolume,
-        budgetConfirmed: formData.budgetConfirmed,
-        dealSize: formData.dealSize || undefined,
-      });
-    } finally {
-      setSaving(false);
+  // Auto-Save Handler
+  const autoSave = useCallback(async (immediate = false) => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
     }
-  };
+
+    const saveFunction = async () => {
+      setSaveStatus('saving');
+      try {
+        await onUpdate({
+          estimatedVolume: formData.estimatedVolume,
+          budgetConfirmed: formData.budgetConfirmed,
+          dealSize: formData.dealSize || undefined,
+        });
+        setSaveStatus('saved');
+        setTimeout(() => setSaveStatus('idle'), 2000);
+      } catch (error) {
+        setSaveStatus('idle');
+        console.error('Auto-save failed:', error);
+      }
+    };
+
+    if (immediate) {
+      await saveFunction();
+    } else {
+      debounceTimerRef.current = setTimeout(saveFunction, 1000);
+    }
+  }, [formData, onUpdate]);
+
+  // Auto-save on formData changes
+  useEffect(() => {
+    if (isFirstRenderRef.current) {
+      isFirstRenderRef.current = false;
+      return;
+    }
+
+    // Immediate save for checkbox/dropdown, debounced for number field
+    const hasNumberChanged = formData.estimatedVolume !== lead.estimatedVolume;
+    autoSave(!hasNumberChanged);
+  }, [formData, autoSave, lead.estimatedVolume]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, []);
 
   const autoDealSize = calculateDealSize(formData.estimatedVolume);
 
   return (
     <Box sx={{ p: 2 }}>
-      <Alert severity="info" sx={{ mb: 2 }}>
-        Score: {lead.revenueScore || 0}/100{' '}
-        {lead.revenueScore && lead.revenueScore >= 70
-          ? '✅'
-          : lead.revenueScore && lead.revenueScore >= 40
-            ? '⚠️'
-            : '❌'}
-      </Alert>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Alert severity="info" sx={{ flex: 1, mr: 2 }}>
+          Score: {lead.revenueScore || 0}/100{' '}
+          {lead.revenueScore && lead.revenueScore >= 70
+            ? '✅'
+            : lead.revenueScore && lead.revenueScore >= 40
+              ? '⚠️'
+              : '❌'}
+        </Alert>
+        {saveStatus === 'saving' && (
+          <Chip label="Speichert..." size="small" color="default" />
+        )}
+        {saveStatus === 'saved' && (
+          <Chip label="Gespeichert ✓" size="small" color="success" />
+        )}
+      </Box>
 
       <Grid container spacing={2}>
         {/* Estimated Volume */}
@@ -121,13 +168,6 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
             }
             label="Budget freigegeben / bestätigt"
           />
-        </Grid>
-
-        {/* Save Button */}
-        <Grid size={{ xs: 12 }}>
-          <Button variant="contained" onClick={handleSave} disabled={saving}>
-            {saving ? 'Speichert...' : 'Speichern'}
-          </Button>
         </Grid>
       </Grid>
     </Box>
