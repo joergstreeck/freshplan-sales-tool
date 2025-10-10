@@ -27,8 +27,20 @@ import PreClaimBadge from '../features/leads/components/PreClaimBadge';
 import BusinessPotentialCard from '../features/leads/components/BusinessPotentialCard';
 import BusinessPotentialDialog from '../features/leads/components/BusinessPotentialDialog';
 import LeadActivityTimeline from '../features/leads/LeadActivityTimeline';
+import {
+  LeadScoreSummaryCard,
+  ScoreAccordion,
+  RevenueScoreForm,
+  FitScoreDisplay,
+} from '../features/leads/components';
 import { toast } from 'react-hot-toast';
-import { getLeadById, deleteLeadContact, setLeadContactAsPrimary } from '../features/leads/api';
+import {
+  getLeadById,
+  deleteLeadContact,
+  setLeadContactAsPrimary,
+  recalculateLeadScore,
+  updateLead,
+} from '../features/leads/api';
 import type { Lead, LeadContactDTO } from '../features/leads/types';
 import { extractLeadIdFromSlug } from '../utils/slugify';
 
@@ -56,6 +68,9 @@ export function LeadDetailPage() {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [businessPotentialDialogOpen, setBusinessPotentialDialogOpen] = useState(false);
 
+  // Sprint 2.1.6+ Lead Scoring Accordion State
+  const [expandedAccordion, setExpandedAccordion] = useState<string | false>('revenue');
+
   // Extract Lead-ID from slug (e.g. "mueller-gmbh-123" → "123")
   const leadId = slug ? extractLeadIdFromSlug(slug) : null;
 
@@ -82,6 +97,38 @@ export function LeadDetailPage() {
       navigate('/lead-generation/leads');
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Sprint 2.1.6+ Lead Scoring Handlers
+  const handleAccordionChange =
+    (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpandedAccordion(isExpanded ? panel : false);
+    };
+
+  const handleRecalculateScore = async () => {
+    if (!lead) return;
+
+    try {
+      const scores = await recalculateLeadScore(lead.id);
+      setLead({ ...lead, ...scores });
+      toast.success('Score erfolgreich neu berechnet');
+    } catch (error) {
+      console.error('Failed to recalculate score:', error);
+      toast.error('Fehler beim Neuberechnen des Scores');
+    }
+  };
+
+  const handleUpdate = async (updates: Partial<Lead>) => {
+    if (!lead) return;
+
+    try {
+      const updatedLead = await updateLead(lead.id, updates);
+      setLead(updatedLead);
+      toast.success('Lead erfolgreich aktualisiert');
+    } catch (error) {
+      console.error('Failed to update lead:', error);
+      toast.error('Fehler beim Aktualisieren des Leads');
     }
   };
 
@@ -252,6 +299,53 @@ export function LeadDetailPage() {
               lead={lead}
               onEdit={() => setBusinessPotentialDialogOpen(true)}
             />
+
+            {/* Sprint 2.1.6+ Lead Scoring Section */}
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h5" sx={{ mb: 2 }}>
+                Lead Scoring
+              </Typography>
+
+              {/* Score Summary Card */}
+              <LeadScoreSummaryCard
+                leadScore={lead.leadScore}
+                painScore={lead.painScore}
+                revenueScore={lead.revenueScore}
+                fitScore={lead.fitScore}
+                engagementScore={lead.engagementScore}
+              />
+
+              {/* Revenue Score Accordion */}
+              <ScoreAccordion
+                title="Umsatzpotenzial"
+                icon="💰"
+                score={lead.revenueScore}
+                weight={25}
+                expanded={expandedAccordion === 'revenue'}
+                onChange={handleAccordionChange('revenue')}
+              >
+                <RevenueScoreForm lead={lead} onUpdate={handleUpdate} />
+              </ScoreAccordion>
+
+              {/* Fit Score Accordion */}
+              <ScoreAccordion
+                title="ICP Fit"
+                icon="🎯"
+                score={lead.fitScore}
+                weight={25}
+                expanded={expandedAccordion === 'fit'}
+                onChange={handleAccordionChange('fit')}
+              >
+                <FitScoreDisplay lead={lead} />
+              </ScoreAccordion>
+
+              {/* Manual Recalculate Button */}
+              <Box sx={{ mt: 2 }}>
+                <Button variant="outlined" size="small" onClick={handleRecalculateScore}>
+                  Score neu berechnen
+                </Button>
+              </Box>
+            </Box>
 
             {/* Contacts Card */}
             <LeadContactsCard

@@ -2,3 +2,4 @@
 export { LeadScoreSummaryCard } from './LeadScoreSummaryCard';
 export { ScoreAccordion } from './ScoreAccordion';
 export { RevenueScoreForm } from './RevenueScoreForm';
+export { FitScoreDisplay } from './FitScoreDisplay';

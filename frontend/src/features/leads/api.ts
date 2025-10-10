@@ -188,6 +188,35 @@ export async function setLeadContactAsPrimary(
   return res.json();
 }
 
+/**
+ * Recalculate lead score manually.
+ * Sprint 2.1.6+ Lead Scoring System.
+ */
+export async function recalculateLeadScore(leadId: number): Promise<{
+  leadScore: number;
+  painScore: number;
+  revenueScore: number;
+  fitScore: number;
+  engagementScore: number;
+}> {
+  const res = await fetch(`${BASE}/api/leads/${leadId}/recalculate-score`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ error: 'Unknown error' }));
+    throw new Error(error.message || 'Failed to recalculate score');
+  }
+
+  return res.json();
+}
+
 // RFC7807 Error Handling
 export async function toProblem(res: Response): Promise<Problem> {
   try {
