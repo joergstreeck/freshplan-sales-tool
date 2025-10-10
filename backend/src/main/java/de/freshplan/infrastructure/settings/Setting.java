@@ -90,11 +90,46 @@ public class Setting extends PanacheEntityBase {
     if (metadata == null) {
       metadata = new JsonObject();
     }
+    // Generate ETag on create
+    generateEtag();
   }
 
   @PreUpdate
   protected void onUpdate() {
     updatedAt = Instant.now();
+    // Increment version for optimistic locking
+    // Note: Could also be managed by DB trigger, but doing it here for consistency
+    if (version == null) {
+      version = 1;
+    } else {
+      version++;
+    }
+    // Regenerate ETag after version increment
+    generateEtag();
+  }
+
+  /**
+   * Generates ETag based on version, value, and metadata.
+   * Uses MD5 hash for consistency with DB trigger (if implemented).
+   */
+  private void generateEtag() {
+    String data = String.format("%d:%s:%s",
+        version != null ? version : 1,
+        value != null ? value.encode() : "",
+        metadata != null ? metadata.encode() : "");
+
+    try {
+      java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+      byte[] hash = md.digest(data.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+      StringBuilder hex = new StringBuilder();
+      for (byte b : hash) {
+        hex.append(String.format("%02x", b));
+      }
+      this.etag = "\"" + hex.toString() + "\""; // Quoted ETag per HTTP spec
+    } catch (java.security.NoSuchAlgorithmException e) {
+      // Fallback to simple hash if MD5 not available
+      this.etag = "\"" + Integer.toHexString(data.hashCode()) + "\"";
+    }
   }
 
   /** Finds a setting by scope, scope ID, and key. */
