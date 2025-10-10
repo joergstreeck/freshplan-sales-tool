@@ -8,12 +8,12 @@ interface FitScoreDisplayProps {
 const IDEAL_SEGMENTS = ['RESTAURANT', 'CATERING', 'HOTEL', 'KANTINE'];
 const TOP_CITIES = [
   'Berlin',
-  'M¸nchen',
+  'M√ºnchen',
   'Hamburg',
-  'Kˆln',
+  'K√∂ln',
   'Frankfurt',
   'Stuttgart',
-  'D¸sseldorf',
+  'D√ºsseldorf',
   'Dortmund',
   'Essen',
   'Leipzig',
@@ -34,9 +34,9 @@ function isHighQualitySource(source?: string): boolean {
 
 function getSourceQualityLabel(source?: string): string {
   if (!source) return 'Nicht angegeben';
-  if (HIGH_QUALITY_SOURCES.includes(source)) return `${source} (Hohe Qualit‰t )`;
-  if (source === 'MESSE') return 'MESSE (Mittel †)';
-  if (source === 'WEB_FORMULAR') return 'WEB_FORMULAR (Niedrig †)';
+  if (HIGH_QUALITY_SOURCES.includes(source)) return `${source} (Hohe Qualit√§t ‚úÖ)`;
+  if (source === 'MESSE') return 'MESSE (Mittel ‚ö†Ô∏è)';
+  if (source === 'WEB_FORMULAR') return 'WEB_FORMULAR (Niedrig ‚ö†Ô∏è)';
   return `${source} (Sonstige)`;
 }
 
@@ -46,10 +46,10 @@ export function FitScoreDisplay({ lead }: FitScoreDisplayProps) {
       <Alert severity="info" sx={{ mb: 2 }}>
         Score: {lead.fitScore || 0}/100{' '}
         {lead.fitScore && lead.fitScore >= 70
-          ? ''
+          ? '‚úÖ'
           : lead.fitScore && lead.fitScore >= 40
-            ? '†'
-            : 'L'}
+            ? '‚ö†Ô∏è'
+            : '‚ùå'}
         <Box component="span" display="block" sx={{ fontSize: '0.85em', mt: 0.5 }}>
           Automatisch berechnet aus Stammdaten
         </Box>
@@ -58,16 +58,16 @@ export function FitScoreDisplay({ lead }: FitScoreDisplayProps) {
       <List>
         <ListItem>
           <ListItemIcon sx={{ minWidth: 40 }}>
-            {isIdealSegment(lead.businessType) ? '' : '†'}
+            {isIdealSegment(lead.businessType) ? '‚úÖ' : '‚ö†Ô∏è'}
           </ListItemIcon>
           <ListItemText
-            primary="Gesch‰ftstyp"
+            primary="Gesch√§ftstyp"
             secondary={`${lead.businessType || 'Nicht angegeben'} ${isIdealSegment(lead.businessType) ? '(Ideal)' : ''}`}
           />
         </ListItem>
 
         <ListItem>
-          <ListItemIcon sx={{ minWidth: 40 }}>{isTopCity(lead.city) ? '' : '†'}</ListItemIcon>
+          <ListItemIcon sx={{ minWidth: 40 }}>{isTopCity(lead.city) ? '‚úÖ' : '‚ö†Ô∏è'}</ListItemIcon>
           <ListItemText
             primary="Standort"
             secondary={`${lead.city || 'Nicht angegeben'} ${isTopCity(lead.city) ? '(Top 10)' : ''}`}
@@ -76,14 +76,14 @@ export function FitScoreDisplay({ lead }: FitScoreDisplayProps) {
 
         <ListItem>
           <ListItemIcon sx={{ minWidth: 40 }}>
-            {isHighQualitySource(lead.source) ? '' : '†'}
+            {isHighQualitySource(lead.source) ? '‚úÖ' : '‚ö†Ô∏è'}
           </ListItemIcon>
           <ListItemText primary="Quelle" secondary={getSourceQualityLabel(lead.source)} />
         </ListItem>
       </List>
 
       <Box sx={{ mt: 2, color: 'text.secondary', fontSize: '0.875rem' }}>
-        =° Tipp: Stammdaten ‰ndern, um Fit Score zu verbessern
+        üí° Tipp: Stammdaten √§ndern, um Fit Score zu verbessern
       </Box>
     </Box>
   );

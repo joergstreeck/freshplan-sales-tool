@@ -59,17 +59,17 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
       <Alert severity="info" sx={{ mb: 2 }}>
         Score: {lead.revenueScore || 0}/100{' '}
         {lead.revenueScore && lead.revenueScore >= 70
-          ? ''
+          ? '‚úÖ'
           : lead.revenueScore && lead.revenueScore >= 40
-            ? '†'
-            : 'L'}
+            ? '‚ö†Ô∏è'
+            : '‚ùå'}
       </Alert>
 
       <Grid container spacing={2}>
         {/* Estimated Volume */}
         <Grid item xs={12} sm={6}>
           <TextField
-            label="Gesch‰tztes Jahresvolumen"
+            label="Gesch√§tztes Jahresvolumen"
             type="number"
             value={formData.estimatedVolume || ''}
             onChange={e =>
@@ -79,7 +79,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
               })
             }
             InputProps={{
-              startAdornment: <InputAdornment position="start">¨</InputAdornment>,
+              startAdornment: <InputAdornment position="start">‚Ç¨</InputAdornment>,
               endAdornment: <InputAdornment position="end">/Monat</InputAdornment>,
             }}
             helperText="Erwartetes monatliches Bestellvolumen"
@@ -95,10 +95,10 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
               value={formData.dealSize || autoDealSize}
               onChange={e => setFormData({ ...formData, dealSize: e.target.value })}
             >
-              <MenuItem value="SMALL">Klein (1-5k ¨/Jahr)</MenuItem>
-              <MenuItem value="MEDIUM">Mittel (5-20k ¨/Jahr)</MenuItem>
-              <MenuItem value="LARGE">Groﬂ (20-100k ¨/Jahr)</MenuItem>
-              <MenuItem value="ENTERPRISE">Enterprise (100k+ ¨/Jahr)</MenuItem>
+              <MenuItem value="SMALL">Klein (1-5k ‚Ç¨/Jahr)</MenuItem>
+              <MenuItem value="MEDIUM">Mittel (5-20k ‚Ç¨/Jahr)</MenuItem>
+              <MenuItem value="LARGE">Gro√ü (20-100k ‚Ç¨/Jahr)</MenuItem>
+              <MenuItem value="ENTERPRISE">Enterprise (100k+ ‚Ç¨/Jahr)</MenuItem>
             </Select>
             <FormHelperText>
               {formData.dealSize
@@ -119,7 +119,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
                 onChange={e => setFormData({ ...formData, budgetConfirmed: e.target.checked })}
               />
             }
-            label="Budget freigegeben / best‰tigt"
+            label="Budget freigegeben / best√§tigt"
           />
         </Grid>
 

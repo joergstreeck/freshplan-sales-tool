@@ -25,9 +25,9 @@ function getScoreColor(score: number): 'success' | 'warning' | 'error' {
 }
 
 function getScoreIcon(score: number): string {
-  if (score >= 70) return '';
-  if (score >= 40) return '�';
-  return 'L';
+  if (score >= 70) return '✅';
+  if (score >= 40) return '⚠️';
+  return '❌';
 }
 
 export function ScoreAccordion({

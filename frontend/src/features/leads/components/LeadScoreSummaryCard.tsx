@@ -15,9 +15,9 @@ function getScoreColor(score: number): 'success' | 'warning' | 'error' {
 }
 
 function getScoreIcon(score: number): string {
-  if (score >= 70) return '';
-  if (score >= 40) return '�';
-  return 'L';
+  if (score >= 70) return '✅';
+  if (score >= 40) return '⚠️';
+  return '❌';
 }
 
 function MiniScoreChip({ icon, label, score }: { icon: string; label: string; score: number }) {
@@ -67,16 +67,16 @@ export function LeadScoreSummaryCard({
         {/* Mini-Scores Grid */}
         <Grid container spacing={2}>
           <Grid item xs={3}>
-            <MiniScoreChip icon="=�" label="Umsatz (25%)" score={revenueScore} />
+            <MiniScoreChip icon="💰" label="Umsatz (25%)" score={revenueScore} />
           </Grid>
           <Grid item xs={3}>
-            <MiniScoreChip icon="<�" label="Fit (25%)" score={fitScore} />
+            <MiniScoreChip icon="🎯" label="Fit (25%)" score={fitScore} />
           </Grid>
           <Grid item xs={3}>
-            <MiniScoreChip icon="�" label="Pain (25%)" score={painScore} />
+            <MiniScoreChip icon="⚠️" label="Pain (25%)" score={painScore} />
           </Grid>
           <Grid item xs={3}>
-            <MiniScoreChip icon=">" label="Engagement (25%)" score={engagementScore} />
+            <MiniScoreChip icon="🤝" label="Engagement (25%)" score={engagementScore} />
           </Grid>
         </Grid>
       </CardContent>
