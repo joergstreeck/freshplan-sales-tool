@@ -86,7 +86,7 @@
     "sources": {
       "messe": "Messe / Event",
       "empfehlung": "Empfehlung / Partner",
-      "telefon": "Cold Call / Telefon",
+      "telefon": "Telefon",
       "webFormular": "Web-Formular",
       "partner": "Partner-API",
       "sonstige": "Sonstige"
