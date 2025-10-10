@@ -167,7 +167,17 @@ export type Lead = {
   stopReason?: string;
 
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2 - V269/V271)
-  leadScore?: number; // 0-100 points
+  leadScore?: number; // 0-100 points (total weighted score)
+
+  // Sprint 2.1.6+: Lead Scoring System - 4 Dimensions
+  budgetConfirmed?: boolean; // Revenue scoring input
+  dealSize?: 'SMALL' | 'MEDIUM' | 'LARGE' | 'ENTERPRISE'; // Revenue scoring input
+
+  // Score Cache (calculated by LeadScoringService)
+  painScore?: number; // 0-100 points (25% weight)
+  revenueScore?: number; // 0-100 points (25% weight)
+  fitScore?: number; // 0-100 points (25% weight)
+  engagementScore?: number; // 0-100 points (25% weight)
 
   // Branch/Chain information (Sprint 2.1.6 Phase 5+ - V277)
   branchCount?: number; // Anzahl Filialen/Standorte (Default: 1)
