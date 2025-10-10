@@ -48,6 +48,12 @@ public class LeadUpdateRequest {
 
   public BigDecimal estimatedVolume;
 
+  // Sprint 2.1.6+ Lead Scoring - Revenue Dimension
+  public Boolean budgetConfirmed;
+
+  @Size(max = 20)
+  public String dealSize; // SMALL, MEDIUM, LARGE, ENTERPRISE
+
   // Status management
   public LeadStatus status;
 

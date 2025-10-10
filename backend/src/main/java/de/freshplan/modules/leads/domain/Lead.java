@@ -4,6 +4,7 @@ import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.DealSize;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
+import de.freshplan.modules.leads.service.LeadScoringService;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.vertx.core.json.JsonObject;
 import jakarta.persistence.*;
@@ -692,5 +693,39 @@ public class Lead extends PanacheEntityBase {
   @PreUpdate
   protected void onUpdate() {
     updatedAt = LocalDateTime.now();
+  }
+
+  // ================================================================================
+  // Sprint 2.1.6+: Lead Scoring Integration
+  // ================================================================================
+
+  /**
+   * Calculate and update lead score after persist.
+   * Called automatically by JPA lifecycle.
+   */
+  @PostPersist
+  protected void calculateScoreOnCreate() {
+    // Get scoring service from CDI
+    LeadScoringService scoringService =
+        io.quarkus.arc.Arc.container().instance(LeadScoringService.class).get();
+
+    if (scoringService != null) {
+      scoringService.updateLeadScore(this);
+    }
+  }
+
+  /**
+   * Recalculate lead score after update.
+   * Called automatically by JPA lifecycle.
+   */
+  @PostUpdate
+  protected void calculateScoreOnUpdate() {
+    // Get scoring service from CDI
+    LeadScoringService scoringService =
+        io.quarkus.arc.Arc.container().instance(LeadScoringService.class).get();
+
+    if (scoringService != null) {
+      scoringService.updateLeadScore(this);
+    }
   }
 }

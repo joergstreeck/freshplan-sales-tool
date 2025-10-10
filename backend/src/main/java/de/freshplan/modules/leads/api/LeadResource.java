@@ -533,6 +533,12 @@ public class LeadResource {
     if (updateRequest.employeeCount != null) lead.employeeCount = updateRequest.employeeCount;
     if (updateRequest.estimatedVolume != null) lead.estimatedVolume = updateRequest.estimatedVolume;
 
+    // Sprint 2.1.6+ Lead Scoring - Revenue Dimension fields
+    if (updateRequest.budgetConfirmed != null) lead.budgetConfirmed = updateRequest.budgetConfirmed;
+    if (updateRequest.dealSize != null) {
+      lead.dealSize = de.freshplan.domain.shared.DealSize.valueOf(updateRequest.dealSize);
+    }
+
     // Handle status change with state machine
     if (updateRequest.status != null && updateRequest.status != lead.status) {
       if (!protectionService.canTransitionStatus(lead, updateRequest.status, currentUserId)) {
