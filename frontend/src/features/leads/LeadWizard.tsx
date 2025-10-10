@@ -506,7 +506,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
                 <TextField
                   label={t('wizard.stage0.firstContactDate')}
-                  type="datetime-local"
+                  type="date"
                   value={formData.firstContact?.performedAt || ''}
                   onChange={e => {
                     // Auto-derive channel from source
@@ -533,7 +533,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   fullWidth
                   margin="dense"
                   error={!!fieldErrors['firstContact.performedAt']}
-                  helperText={fieldErrors['firstContact.performedAt']?.[0] || ''}
+                  helperText={fieldErrors['firstContact.performedAt']?.[0] || 'Wann fand der Erstkontakt statt?'}
                   InputLabelProps={{ shrink: true }}
                 />
 

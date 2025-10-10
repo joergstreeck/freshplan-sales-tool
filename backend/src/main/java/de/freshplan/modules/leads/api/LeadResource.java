@@ -295,12 +295,17 @@ public class LeadResource {
     lead.registeredAt = LocalDateTime.now();
 
     if (lead.source != null && lead.source.requiresFirstContact()) {
-      // MESSE/TELEFON: Erstkontakt muss bei Erstellung dokumentiert werden
-      if (request.contactPerson == null || request.contactPerson.isBlank()) {
+      // MESSE/TELEFON: Erstkontakt-EVENT muss bei Erstellung dokumentiert werden
+      // Check if activities array contains FIRST_CONTACT_DOCUMENTED activity
+      boolean hasFirstContactActivity = request.activities != null
+          && request.activities.stream()
+              .anyMatch(a -> "FIRST_CONTACT_DOCUMENTED".equals(a.activityType));
+
+      if (!hasFirstContactActivity) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(Map.of(
                 "error", "First contact required",
-                "message", "MESSE/TELEFON leads require contact person name for first contact documentation",
+                "message", "MESSE/TELEFON leads require first contact documentation (date + notes)",
                 "source", lead.source.name()
             ))
             .build();
@@ -311,8 +316,8 @@ public class LeadResource {
       lead.stage = request.stage != null ? LeadStage.fromValue(request.stage) : LeadStage.REGISTRIERUNG; // MESSE/TELEFON → REGISTRIERUNG
       lead.firstContactDocumentedAt = LocalDateTime.now(); // ← Vollschutz!
 
-      LOG.infof("Lead %s (%s source): Direct REGISTRIERUNG (first contact documented: %s)",
-          lead.companyName, lead.source.name(), request.contactPerson);
+      LOG.infof("Lead %s (%s source): Direct REGISTRIERUNG (first contact documented via activities)",
+          lead.companyName, lead.source.name());
 
     } else {
       // EMPFEHLUNG/WEB/PARTNER/SONSTIGE: Pre-Claim erlaubt
@@ -386,6 +391,42 @@ public class LeadResource {
     // Note: V10017 trigger handles backward compatibility:
     // - If primary contact exists → sync to leads.contact_person/email/phone
     // - If NO contact exists → set leads.contact_person/email/phone = NULL
+
+    // ================================================================================
+    // Sprint 2.1.5: Process activities array (First Contact Documentation)
+    // ================================================================================
+    if (request.activities != null && !request.activities.isEmpty()) {
+      for (var activityData : request.activities) {
+        try {
+          ActivityType activityType = ActivityType.valueOf(activityData.activityType.toUpperCase());
+
+          LeadActivity activity = new LeadActivity();
+          activity.lead = lead;
+          activity.userId = currentUserId;
+          activity.activityType = activityType;
+          activity.description = activityData.summary;
+
+          // Convert LocalDate to LocalDateTime at start of day (00:00:00)
+          // Frontend sends date-only (yyyy-MM-dd), we store as timestamp at midnight
+          if (activityData.performedAt != null) {
+            activity.activityDate = activityData.performedAt.atStartOfDay();
+          }
+
+          // Set countsAsProgress flag if provided
+          if (activityData.countsAsProgress != null) {
+            activity.countsAsProgress = activityData.countsAsProgress;
+          }
+
+          activity.persist();
+
+          LOG.infof("Created activity %s for lead %s on %s: %s",
+              activityType, lead.id, activityData.performedAt, activityData.summary);
+
+        } catch (IllegalArgumentException e) {
+          LOG.warnf("Invalid activity type %s in request, skipping", activityData.activityType);
+        }
+      }
+    }
 
     // Create initial activity (use LEAD_ASSIGNED instead of CREATED - V258 constraint)
     createAndPersistActivity(lead, currentUserId, ActivityType.LEAD_ASSIGNED, "Lead created");

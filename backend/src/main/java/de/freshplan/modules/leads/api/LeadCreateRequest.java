@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Request DTO for creating a new lead.
@@ -12,6 +16,8 @@ import java.math.BigDecimal;
  * <p>Supports B2B-specific fields for gastronomy businesses.
  *
  * <p><b>Sprint 2.1.6 Phase 5+:</b> Added nested `contact` object for structured contact data (ADR-007 Option C).
+ *
+ * <p><b>Sprint 2.1.5:</b> Added `activities` array for first contact documentation.
  */
 public class LeadCreateRequest {
 
@@ -29,6 +35,27 @@ public class LeadCreateRequest {
 
     @Size(max = 50)
     public String phone;
+  }
+
+  /** Nested DTO for activity data (Sprint 2.1.5 - Pre-Claim Logic / First Contact Documentation). */
+  public static class ActivityData {
+    @Size(max = 100)
+    public String activityType; // FIRST_CONTACT_DOCUMENTED, NOTE, etc.
+
+    // Date-only field (no time) for first contact documentation
+    // Frontend sends "yyyy-MM-dd" format from date input
+    @com.fasterxml.jackson.annotation.JsonFormat(
+        pattern = "yyyy-MM-dd",
+        shape = com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING
+    )
+    public LocalDate performedAt;
+
+    @Size(max = 1000)
+    public String summary;
+
+    public Boolean countsAsProgress;
+
+    public Map<String, Object> metadata; // channel, notes, etc.
   }
 
   @NotNull(message = "Company name is required") @Size(min = 1, max = 255, message = "Company name must be between 1 and 255 characters")
@@ -91,4 +118,8 @@ public class LeadCreateRequest {
 
   @Size(max = 255)
   public String sourceCampaign;
+
+  // Sprint 2.1.5: Activities for first contact documentation (MESSE/TELEFON requires FIRST_CONTACT_DOCUMENTED)
+  @Valid
+  public List<ActivityData> activities;
 }
