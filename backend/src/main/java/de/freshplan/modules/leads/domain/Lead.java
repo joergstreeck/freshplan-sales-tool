@@ -1,6 +1,7 @@
 package de.freshplan.modules.leads.domain;
 
 import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.DealSize;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
@@ -278,6 +279,33 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "lead_score")
   // Note: Spotless may reformat - keeping compact for readability
   public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
+
+  // ================================================================================
+  // Sprint 2.1.6+: Lead Scoring System - 4 Dimensions
+  // ================================================================================
+
+  // Revenue Scoring Fields (user input)
+  @Column(name = "budget_confirmed")
+  public Boolean budgetConfirmed;
+
+  @Column(name = "deal_size")
+  @Enumerated(EnumType.STRING)
+  public DealSize dealSize;
+
+  // Score Cache (calculated by LeadScoringService for performance)
+  @Column(name = "pain_score")
+  public Integer painScore;
+
+  @Column(name = "revenue_score")
+  public Integer revenueScore;
+
+  @Column(name = "fit_score")
+  public Integer fitScore;
+
+  @Column(name = "engagement_score")
+  public Integer engagementScore;
+
+  // Note: leadScore (total 0-100) already exists above
 
   // Metadata
   @Enumerated(EnumType.STRING)
