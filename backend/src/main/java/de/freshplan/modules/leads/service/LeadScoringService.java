@@ -168,7 +168,7 @@ public class LeadScoringService {
             case EMERGENCY -> 30;
             case HIGH -> 22;
             case MEDIUM -> 15;
-            case NORMAL -> 8;
+            case NORMAL -> 0; // Baseline: Keine Dringlichkeit = 0 Punkte
           };
     }
 

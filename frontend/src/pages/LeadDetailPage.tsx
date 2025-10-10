@@ -32,6 +32,8 @@ import {
   ScoreAccordion,
   RevenueScoreForm,
   FitScoreDisplay,
+  PainScoreForm,
+  EngagementScoreForm,
 } from '../features/leads/components';
 import { toast } from 'react-hot-toast';
 import {
@@ -332,6 +334,30 @@ export function LeadDetailPage() {
                 onChange={handleAccordionChange('fit')}
               >
                 <FitScoreDisplay lead={lead} />
+              </ScoreAccordion>
+
+              {/* Pain Score Accordion */}
+              <ScoreAccordion
+                title="Pain Points"
+                icon="⚠️"
+                score={lead.painScore}
+                weight={25}
+                expanded={expandedAccordion === 'pain'}
+                onChange={handleAccordionChange('pain')}
+              >
+                <PainScoreForm lead={lead} onUpdate={handleUpdate} />
+              </ScoreAccordion>
+
+              {/* Engagement Score Accordion */}
+              <ScoreAccordion
+                title="Beziehungsebene"
+                icon="🤝"
+                score={lead.engagementScore}
+                weight={25}
+                expanded={expandedAccordion === 'engagement'}
+                onChange={handleAccordionChange('engagement')}
+              >
+                <EngagementScoreForm lead={lead} onUpdate={handleUpdate} />
               </ScoreAccordion>
             </Box>
 
