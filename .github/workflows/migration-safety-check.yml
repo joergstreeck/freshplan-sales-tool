@@ -39,6 +39,12 @@ jobs:
             for FILE in $MIGRATION_FILES; do
               FILENAME=$(basename "$FILE")
 
+              # Exception: V19 ist bereits deployed (seit 2025-08-08)
+              if [ "$FILENAME" = "V19__add_test_data_flag.sql" ]; then
+                echo "   ⚠️  $FILENAME (Exception: bereits deployed)"
+                continue
+              fi
+
               # Prüfe auf Test-Keywords
               if echo "$FILENAME" | grep -qiE "(test|demo|seed|sample|debug)"; then
                 echo "❌ FEHLER: $FILENAME enthält Test-Keywords!"
