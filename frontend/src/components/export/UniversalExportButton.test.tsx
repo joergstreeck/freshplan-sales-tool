@@ -159,8 +159,7 @@ describe('UniversalExportButton', () => {
 
   describe('Export Functionality', () => {
     describe('CSV (Excel-kompatibel)', () => {
-      it.skip('should export as CSV when CSV option is selected', async () => {
-        // TODO: Fix timing issue with mockFetch and async blob handling
+      it('should export as CSV when CSV option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['test,data'], { type: 'text/csv' });
         mockFetch.mockResolvedValueOnce({
@@ -217,8 +216,7 @@ describe('UniversalExportButton', () => {
     });
 
     describe('Excel Export', () => {
-      it.skip('should export as Excel when Excel option is selected', async () => {
-        // TODO: Fix timing issue with mockFetch and async blob handling
+      it('should export as Excel when Excel option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['excel'], {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -254,8 +252,7 @@ describe('UniversalExportButton', () => {
     });
 
     describe('JSON (Datenformat)', () => {
-      it.skip('should export as JSON when JSON option is selected', async () => {
-        // TODO: Fix timing issue with mockFetch and async blob handling
+      it('should export as JSON when JSON option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['{"test":"data"}'], { type: 'application/json' });
         mockFetch.mockResolvedValueOnce({
@@ -289,8 +286,7 @@ describe('UniversalExportButton', () => {
     });
 
     describe('PDF (Druckversion)', () => {
-      it.skip('should export as PDF when PDF option is selected', async () => {
-        // TODO: Fix timing issue with mockFetch and async blob handling
+      it('should export as PDF when PDF option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['pdf'], { type: 'application/pdf' });
         mockFetch.mockResolvedValueOnce({
@@ -324,8 +320,7 @@ describe('UniversalExportButton', () => {
     });
 
     describe('HTML (Webseite)', () => {
-      it.skip('should export as HTML when HTML option is selected', async () => {
-        // TODO: Fix timing issue with mockFetch and async blob handling
+      it('should export as HTML when HTML option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['<html></html>'], { type: 'text/html' });
         mockFetch.mockResolvedValueOnce({
@@ -557,8 +552,7 @@ describe('UniversalExportButton', () => {
       expect(firstOption).toBeInTheDocument();
     });
 
-    it.skip('should announce export completion to screen readers', async () => {
-      // TODO: Fix timing issue with mockFetch and async blob handling
+    it('should announce export completion to screen readers', async () => {
       const user = userEvent.setup();
       const { toast } = await import('react-hot-toast');
       mockFetch.mockResolvedValueOnce({
@@ -584,8 +578,7 @@ describe('UniversalExportButton', () => {
   });
 
   describe('Performance', () => {
-    it.skip('should cleanup blob URLs after download', async () => {
-      // TODO: Fix URL.revokeObjectURL mock timing issue
+    it('should cleanup blob URLs after download', async () => {
       const user = userEvent.setup();
       mockFetch.mockResolvedValueOnce({
         ok: true,
