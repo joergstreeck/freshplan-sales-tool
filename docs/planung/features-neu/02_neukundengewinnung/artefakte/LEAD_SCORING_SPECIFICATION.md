@@ -1,6 +1,6 @@
 ---
 module: "02_neukundengewinnung"
-doc_type: "artefakt"
+doc_type: "technical_concept"
 title: "Lead Scoring Specification"
 sprint: "2.1.6"
 status: "complete"

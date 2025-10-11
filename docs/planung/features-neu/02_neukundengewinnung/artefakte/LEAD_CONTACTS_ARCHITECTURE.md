@@ -1,6 +1,6 @@
 ---
 module: "02_neukundengewinnung"
-doc_type: "artefakt"
+doc_type: "technical_concept"
 title: "Lead Contacts Architecture - Multi-Contact Support"
 sprint: "2.1.6 Phase 5+"
 status: "in_progress"

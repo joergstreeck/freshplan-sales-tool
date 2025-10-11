@@ -1,7 +1,7 @@
 ---
 module: "02_neukundengewinnung"
 sprint: "2.1.5"
-doc_type: "artefakt"
+doc_type: "technical_concept"
 status: "approved"
 owner: "team/leads"
 created: "2025-10-08"
