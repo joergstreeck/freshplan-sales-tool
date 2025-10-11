@@ -1,3 +1,14 @@
+---
+module: "02_neukundengewinnung"
+doc_type: "artefakt"
+title: "Lead Scoring Specification"
+sprint: "2.1.6"
+status: "complete"
+owner: "team/leads-backend"
+created: "2025-10-08"
+updated: "2025-10-11"
+---
+
 # Lead Scoring Specification
 
 **Erstellt:** 2025-10-08 (Sprint 2.1.6 Phase 4)

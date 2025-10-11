@@ -1,10 +1,12 @@
 ---
-doc_type: "architecture"
+module: "02_neukundengewinnung"
+doc_type: "artefakt"
 title: "Lead Contacts Architecture - Multi-Contact Support"
 sprint: "2.1.6 Phase 5+"
 status: "in_progress"
 owner: "team/leads-backend"
 created: "2025-10-08"
+updated: "2025-10-11"
 decision_id: "ADR-007"
 ---
 

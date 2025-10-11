@@ -1,10 +1,11 @@
 ---
 module: "02_neukundengewinnung"
 sprint: "2.1.5"
-doc_type: "migration-guide"
+doc_type: "artefakt"
 status: "approved"
 owner: "team/leads"
 created: "2025-10-08"
+updated: "2025-10-11"
 ---
 
 # Variante B Migration Guide – Pre-Claim Logic
