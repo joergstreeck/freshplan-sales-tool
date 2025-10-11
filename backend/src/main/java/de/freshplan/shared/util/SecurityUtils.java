@@ -3,6 +3,7 @@ package de.freshplan.shared.util;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 /**
@@ -29,7 +30,7 @@ public class SecurityUtils {
     } catch (IllegalArgumentException e) {
       // If principal is not a UUID, generate one based on username
       // In production, this should map to actual user ID from database
-      return UUID.nameUUIDFromBytes(principal.getBytes());
+      return UUID.nameUUIDFromBytes(principal.getBytes(StandardCharsets.UTF_8));
     }
   }
 
@@ -67,7 +68,8 @@ public class SecurityUtils {
     }
 
     return UUID.nameUUIDFromBytes(
-        (securityIdentity.getPrincipal().getName() + System.currentTimeMillis()).getBytes());
+        (securityIdentity.getPrincipal().getName() + System.currentTimeMillis())
+            .getBytes(StandardCharsets.UTF_8));
   }
 
   /** Check if user has a specific role */

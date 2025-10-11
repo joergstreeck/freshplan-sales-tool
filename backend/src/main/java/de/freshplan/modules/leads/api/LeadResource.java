@@ -149,9 +149,11 @@ public class LeadResource {
         securityAuditLogger.logInjectionAttempt(currentUserId, "SQL_INJECTION", search, "/api/leads");
       }
 
+      // ADR-007 Fix: Qualify 'email' column to prevent ambiguity with lead_contacts.email
+      // Search in leads.email (legacy field for backward compatibility)
       query.append(
           " and (lower(companyName) like :search or lower(contactPerson) like :search"
-              + " or lower(email) like :search or lower(city) like :search)");
+              + " or lower(l.email) like :search or lower(city) like :search)");
       params.put("search", "%" + sanitizedSearch + "%");
     }
 
@@ -168,7 +170,13 @@ public class LeadResource {
 
     // N+1 Prevention: Use HQL with JOIN FETCH to load contacts in ONE query
     // STEP 1: Count query (without JOIN FETCH - not needed for count)
-    long total = Lead.count(query.toString(), params);
+    // ADR-007 Fix: Use HQL with alias "l" to match fetch query (ambiguous email column)
+    String countHql = "SELECT COUNT(DISTINCT l) FROM Lead l WHERE " + query.toString();
+    jakarta.persistence.TypedQuery<Long> countQuery = em.createQuery(countHql, Long.class);
+    for (Map.Entry<String, Object> param : params.entrySet()) {
+      countQuery.setParameter(param.getKey(), param.getValue());
+    }
+    long total = countQuery.getSingleResult();
 
     // STEP 2: Build HQL with JOIN FETCH + sorting
     String sortClause = sort.getColumns().stream()
@@ -682,13 +690,13 @@ public class LeadResource {
     if (updateRequest.painNotes != null) lead.painNotes = xssSanitizer.sanitizeLenient(updateRequest.painNotes); // Allow basic formatting
 
     lead.updatedBy = currentUserId;
+
+    // Sprint 2.1.6+ Lead Scoring: Recalculate scores BEFORE persist/flush
+    // This ensures ONE version increment instead of two (persist + scoring)
+    leadScoringService.updateLeadScore(lead);
+
     lead.persist();
     lead.flush(); // Force version increment BEFORE creating ETag/DTO
-
-    // Sprint 2.1.6+ Lead Scoring: Recalculate scores BEFORE response (auto-update on data change)
-    // Ensures frontend receives updated scores without extra API call
-    leadScoringService.updateLeadScore(lead);
-    lead.persist(); // Persist updated scores
 
     LOG.infof("Updated lead %s by user %s", id, currentUserId);
     // Return with new strong ETag after version bump

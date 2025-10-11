@@ -19,8 +19,8 @@
 CREATE OR REPLACE FUNCTION sync_primary_lead_contact_to_lead()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Only sync if this is the primary contact
-  IF NEW.is_primary = true AND NEW.is_deleted = false THEN
+  -- Only sync if this is the primary contact (NULL-safe: COALESCE handles missing is_deleted)
+  IF NEW.is_primary = true AND COALESCE(NEW.is_deleted, false) = false THEN
     UPDATE leads
     SET
       contact_person = NEW.first_name || ' ' || NEW.last_name,
@@ -29,8 +29,8 @@ BEGIN
     WHERE id = NEW.lead_id;
   END IF;
 
-  -- If contact is no longer primary or deleted, check if another primary exists
-  IF (NEW.is_primary = false OR NEW.is_deleted = true) THEN
+  -- If contact is no longer primary or deleted, check if another primary exists (NULL-safe)
+  IF (NEW.is_primary = false OR COALESCE(NEW.is_deleted, false) = true) THEN
     -- Find another primary contact for this lead
     DECLARE
       other_primary RECORD;
@@ -39,7 +39,7 @@ BEGIN
       FROM lead_contacts
       WHERE lead_id = NEW.lead_id
         AND is_primary = true
-        AND is_deleted = false
+        AND COALESCE(is_deleted, false) = false
         AND id != NEW.id
       LIMIT 1;
 
@@ -104,7 +104,7 @@ CREATE TRIGGER trg_sync_primary_lead_contact_delete
 DROP INDEX IF EXISTS idx_lead_contacts_one_primary_per_lead;
 CREATE UNIQUE INDEX idx_lead_contacts_one_primary_per_lead
   ON lead_contacts(lead_id)
-  WHERE is_primary = true AND is_deleted = false;
+  WHERE is_primary = true AND COALESCE(is_deleted, false) = false;
 
 -- ============================================================================
 -- 4. VALIDATE MIGRATION: Ensure all leads have synced contact_person
@@ -119,7 +119,7 @@ BEGIN
   FROM leads l
   INNER JOIN lead_contacts lc ON l.id = lc.lead_id
   WHERE lc.is_primary = true
-    AND lc.is_deleted = false
+    AND COALESCE(lc.is_deleted, false) = false
     AND (
       l.contact_person IS NULL
       OR l.contact_person != (lc.first_name || ' ' || lc.last_name)
@@ -137,7 +137,7 @@ BEGIN
     FROM lead_contacts lc
     WHERE l.id = lc.lead_id
       AND lc.is_primary = true
-      AND lc.is_deleted = false;
+      AND COALESCE(lc.is_deleted, false) = false;
 
     RAISE NOTICE 'Manual sync completed for % leads.', unsynced_count;
   ELSE
