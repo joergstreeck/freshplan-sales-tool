@@ -84,11 +84,11 @@ export function ContactDialog({ open, onClose, leadId: _leadId, contact, onSave 
     try {
       if (contact) {
         // Update existing contact
-        await updateLeadContact(leadId, contact.id, formData);
+        await updateLeadContact(_leadId, contact.id, formData);
         toast.success('Kontakt erfolgreich aktualisiert');
       } else {
         // Create new contact
-        await createLeadContact(leadId, formData);
+        await createLeadContact(_leadId, formData);
         toast.success('Kontakt erfolgreich hinzugefügt');
       }
 

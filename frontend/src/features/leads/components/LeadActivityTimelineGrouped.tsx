@@ -120,7 +120,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
 
   // Render Activity Item
   const renderActivity = (activity: Activity) => {
-    const { icon, color } = getActivityTypeInfo(activity.type);
+    const { icon, color } = getActivityTypeInfo(activity.activityType);
 
     return (
       <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start' }}>

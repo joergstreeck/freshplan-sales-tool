@@ -20,19 +20,21 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
 
   @Override
   public Response toResponse(ConstraintViolationException exception) {
-    // DEBUG: Log all constraint violations to diagnose validation errors
+    // Log detailed violations SERVER-SIDE for debugging (not exposed to client)
     String violations = exception.getConstraintViolations().stream()
         .map(cv -> cv.getPropertyPath() + ": " + cv.getMessage())
         .collect(Collectors.joining(", "));
 
     LOG.severe("Validation failed with violations: " + violations);
 
+    // SECURITY: Return generic message to client (no internal field names/validation logic exposed)
+    // Detailed violations are logged server-side for debugging
     return Response.status(Response.Status.BAD_REQUEST)
         .entity(
             new ErrorResponse(
                 Response.Status.BAD_REQUEST.getStatusCode(),
                 "Bad Request",
-                "Validation failed: " + violations,
+                "Validation failed. Please check your input.",
                 null,
                 null))
         .build();

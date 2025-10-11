@@ -133,6 +133,59 @@ public class LeadContactDTO {
   }
 
   // ===========================
+  // Factory Methods
+  // ===========================
+
+  /**
+   * Create DTO from LeadContact entity.
+   *
+   * <p>Centralizes mapping logic to avoid duplication in LeadResource.
+   *
+   * @param contact LeadContact entity
+   * @return LeadContactDTO
+   */
+  public static LeadContactDTO fromEntity(de.freshplan.modules.leads.domain.LeadContact contact) {
+    if (contact == null) {
+      return null;
+    }
+
+    LeadContactDTO dto = new LeadContactDTO();
+    dto.setId(contact.getId());
+    dto.setLeadId(contact.getLead().id);
+    dto.setFirstName(contact.getFirstName());
+    dto.setLastName(contact.getLastName());
+    dto.setSalutation(contact.getSalutation());
+    dto.setTitle(contact.getTitle());
+    dto.setPosition(contact.getPosition());
+    dto.setDecisionLevel(contact.getDecisionLevel());
+    dto.setEmail(contact.getEmail());
+    dto.setPhone(contact.getPhone());
+    dto.setMobile(contact.getMobile());
+    dto.setPrimary(contact.isPrimary());
+    dto.setActive(contact.isActive());
+    dto.setBirthday(contact.getBirthday());
+    dto.setHobbies(contact.getHobbies());
+    dto.setFamilyStatus(contact.getFamilyStatus());
+    dto.setChildrenCount(contact.getChildrenCount());
+    dto.setPersonalNotes(contact.getPersonalNotes());
+    dto.setWarmthScore(contact.getWarmthScore());
+    dto.setWarmthConfidence(contact.getWarmthConfidence());
+    dto.setLastInteractionDate(contact.getLastInteractionDate());
+    dto.setInteractionCount(contact.getInteractionCount());
+    dto.setDataQualityScore(contact.getDataQualityScore());
+    dto.setDataQualityRecommendations(contact.getDataQualityRecommendations());
+    dto.setIsDecisionMaker(contact.getIsDecisionMaker());
+    dto.setIsDeleted(contact.getIsDeleted());
+    dto.setCreatedAt(contact.getCreatedAt());
+    dto.setUpdatedAt(contact.getUpdatedAt());
+    dto.setCreatedBy(contact.getCreatedBy());
+    dto.setUpdatedBy(contact.getUpdatedBy());
+    dto.setFullName(contact.getFullName());
+    dto.setDisplayName(contact.getDisplayName());
+    return dto;
+  }
+
+  // ===========================
   // Builder Pattern
   // ===========================
 

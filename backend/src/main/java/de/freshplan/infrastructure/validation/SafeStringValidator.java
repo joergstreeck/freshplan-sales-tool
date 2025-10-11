@@ -30,9 +30,11 @@ public class SafeStringValidator implements ConstraintValidator<SafeString, Stri
         // Command Injection
         Pattern.compile("[|&;`$(){}\\[\\]<>]"),
         // Path Traversal
-        Pattern.compile("(\\.\\./)|(\\.\\\\)"),
-        // LDAP Injection
-        Pattern.compile("[*()\\\\]")
+        Pattern.compile("(\\.\\./)|(\\.\\\\)")
+        // LDAP Injection - REMOVED (too broad, blocks legitimate parentheses in notes)
+        // This application does not use LDAP, so LDAP injection is NOT a relevant threat
+        // If LDAP is added in future, use specific LDAP filter syntax pattern instead:
+        // Pattern.compile("\\(\\s*[&|!].*\\)") // Matches LDAP filter syntax like (&(cn=*))
       };
 
   @Override
