@@ -11,7 +11,6 @@ import {
   Chip,
   Stack,
   Divider,
-  Alert,
   Accordion,
   AccordionSummary,
   AccordionDetails,
@@ -20,7 +19,6 @@ import {
 import Grid from '@mui/material/Grid';
 import {
   ArrowBack as ArrowBackIcon,
-  Edit as EditIcon,
   Add as AddIcon,
   ExpandMore as ExpandMoreIcon,
   TrendingUp as TrendingUpIcon,
@@ -133,7 +131,7 @@ export function LeadDetailPage() {
       const updatedLead = await updateLead(lead.id, updates);
       setLead(updatedLead);
       toast.success('Lead erfolgreich aktualisiert');
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to update lead:', error);
 
       // ETag Conflict (412 Precondition Failed): Data changed by someone else

@@ -164,8 +164,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
   const renderGroup = (
     key: string,
     title: string,
-    activities: Activity[],
-    defaultExpanded: boolean
+    activities: Activity[]
   ) => {
     if (activities.length === 0) return null;
 

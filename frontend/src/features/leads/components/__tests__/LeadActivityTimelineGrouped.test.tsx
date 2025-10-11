@@ -2,8 +2,8 @@ import { describe, test, expect, beforeEach, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { LeadActivityTimelineGrouped } from '../LeadActivityTimelineGrouped';
-import { server } from '@/mocks/server';
 import { http, HttpResponse } from 'msw';
+import { server } from '@/mocks/server';
 
 /**
  * Enterprise-Level Tests for LeadActivityTimelineGrouped
