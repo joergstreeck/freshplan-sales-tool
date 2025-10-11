@@ -14,7 +14,6 @@ import de.freshplan.modules.leads.domain.Territory;
 import de.freshplan.modules.leads.service.LeadProtectionService;
 import de.freshplan.modules.leads.service.LeadService;
 import de.freshplan.modules.leads.service.UserLeadSettingsService;
-import io.quarkus.hibernate.orm.panache.PanacheQuery;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import jakarta.annotation.security.RolesAllowed;
@@ -145,8 +144,12 @@ public class LeadResource {
       String sanitizedSearch = xssSanitizer.sanitizeStrict(search).toLowerCase();
 
       // Log potential injection attempt if search contains suspicious patterns
-      if (search.contains("'") || search.contains(";") || search.contains("--") || search.contains("DROP")) {
-        securityAuditLogger.logInjectionAttempt(currentUserId, "SQL_INJECTION", search, "/api/leads");
+      if (search.contains("'")
+          || search.contains(";")
+          || search.contains("--")
+          || search.contains("DROP")) {
+        securityAuditLogger.logInjectionAttempt(
+            currentUserId, "SQL_INJECTION", search, "/api/leads");
       }
 
       // ADR-007 Fix: Qualify 'email' column to prevent ambiguity with lead_contacts.email
@@ -179,12 +182,20 @@ public class LeadResource {
     long total = countQuery.getSingleResult();
 
     // STEP 2: Build HQL with JOIN FETCH + sorting
-    String sortClause = sort.getColumns().stream()
-        .map(col -> "l." + col.getName() + " " + (col.getDirection() == Sort.Direction.Descending ? "DESC" : "ASC"))
-        .collect(Collectors.joining(", "));
-    String hql = "SELECT DISTINCT l FROM Lead l LEFT JOIN FETCH l.contacts WHERE "
-        + query.toString()
-        + " ORDER BY " + sortClause;
+    String sortClause =
+        sort.getColumns().stream()
+            .map(
+                col ->
+                    "l."
+                        + col.getName()
+                        + " "
+                        + (col.getDirection() == Sort.Direction.Descending ? "DESC" : "ASC"))
+            .collect(Collectors.joining(", "));
+    String hql =
+        "SELECT DISTINCT l FROM Lead l LEFT JOIN FETCH l.contacts WHERE "
+            + query.toString()
+            + " ORDER BY "
+            + sortClause;
 
     // STEP 3: Execute query with parameters
     jakarta.persistence.TypedQuery<Lead> typedQuery = em.createQuery(hql, Lead.class);
@@ -242,8 +253,8 @@ public class LeadResource {
     // DATA ISOLATION: Non-admin users can only access their own leads or those they collaborate on
     if (!securityContext.isUserInRole("ADMIN")) {
       boolean isOwner = lead.ownerUserId.equals(currentUserId);
-      boolean isCollaborator = lead.collaboratorUserIds != null
-          && lead.collaboratorUserIds.contains(currentUserId);
+      boolean isCollaborator =
+          lead.collaboratorUserIds != null && lead.collaboratorUserIds.contains(currentUserId);
 
       if (!isOwner && !isCollaborator) {
         securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD", id.toString(), "READ");
@@ -310,8 +321,10 @@ public class LeadResource {
     lead.territory = territory;
 
     // B2B-specific fields - Sprint 2.1.6 Phase 5: String → Enum conversion
-    lead.businessType = request.businessType != null ? BusinessType.fromString(request.businessType) : null;
-    lead.kitchenSize = request.kitchenSize != null ? KitchenSize.fromString(request.kitchenSize) : null;
+    lead.businessType =
+        request.businessType != null ? BusinessType.fromString(request.businessType) : null;
+    lead.kitchenSize =
+        request.kitchenSize != null ? KitchenSize.fromString(request.kitchenSize) : null;
     lead.employeeCount = request.employeeCount;
     lead.estimatedVolume = request.estimatedVolume;
     lead.industry = request.industry;
@@ -319,7 +332,8 @@ public class LeadResource {
     // Set ownership and source
     lead.ownerUserId = currentUserId;
     lead.createdBy = currentUserId;
-    lead.source = request.source != null ? LeadSource.fromString(request.source) : LeadSource.WEB_FORMULAR;
+    lead.source =
+        request.source != null ? LeadSource.fromString(request.source) : LeadSource.WEB_FORMULAR;
     lead.sourceCampaign = request.sourceCampaign;
 
     // Apply user's lead settings for protection periods
@@ -337,7 +351,8 @@ public class LeadResource {
     // Variante B: registered_at IMMER gesetzt (Audit Trail)
     //             firstContactDocumentedAt = NULL → Pre-Claim aktiv
     //
-    // Referenz: docs/planung/features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/VARIANTE_B_MIGRATION_GUIDE.md
+    // Referenz:
+    // docs/planung/features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/VARIANTE_B_MIGRATION_GUIDE.md
     // ================================================================================
 
     // Variante B: registered_at IMMER setzen (Audit Trail)
@@ -346,35 +361,45 @@ public class LeadResource {
     if (lead.source != null && lead.source.requiresFirstContact()) {
       // MESSE/TELEFON: Erstkontakt-EVENT muss bei Erstellung dokumentiert werden
       // Check if activities array contains FIRST_CONTACT_DOCUMENTED activity
-      boolean hasFirstContactActivity = request.activities != null
-          && request.activities.stream()
-              .anyMatch(a -> "FIRST_CONTACT_DOCUMENTED".equals(a.activityType));
+      boolean hasFirstContactActivity =
+          request.activities != null
+              && request.activities.stream()
+                  .anyMatch(a -> "FIRST_CONTACT_DOCUMENTED".equals(a.activityType));
 
       if (!hasFirstContactActivity) {
         return Response.status(Response.Status.BAD_REQUEST)
-            .entity(Map.of(
-                "error", "First contact required",
-                "message", "MESSE/TELEFON leads require first contact documentation (date + notes)",
-                "source", lead.source.name()
-            ))
+            .entity(
+                Map.of(
+                    "error", "First contact required",
+                    "message",
+                        "MESSE/TELEFON leads require first contact documentation (date + notes)",
+                    "source", lead.source.name()))
             .build();
       }
 
       // Vollschutz: Erstkontakt dokumentiert
       lead.status = LeadStatus.REGISTERED;
-      lead.stage = request.stage != null ? LeadStage.fromValue(request.stage) : LeadStage.REGISTRIERUNG; // MESSE/TELEFON → REGISTRIERUNG
+      lead.stage =
+          request.stage != null
+              ? LeadStage.fromValue(request.stage)
+              : LeadStage.REGISTRIERUNG; // MESSE/TELEFON → REGISTRIERUNG
       lead.firstContactDocumentedAt = LocalDateTime.now(); // ← Vollschutz!
 
-      LOG.infof("Lead %s (%s source): Direct REGISTRIERUNG (first contact documented via activities)",
+      LOG.infof(
+          "Lead %s (%s source): Direct REGISTRIERUNG (first contact documented via activities)",
           lead.companyName, lead.source.name());
 
     } else {
       // EMPFEHLUNG/WEB/PARTNER/SONSTIGE: Pre-Claim erlaubt
       lead.status = LeadStatus.REGISTERED;
-      lead.stage = request.stage != null ? LeadStage.fromValue(request.stage) : LeadStage.VORMERKUNG; // Pre-Claim → VORMERKUNG
+      lead.stage =
+          request.stage != null
+              ? LeadStage.fromValue(request.stage)
+              : LeadStage.VORMERKUNG; // Pre-Claim → VORMERKUNG
       lead.firstContactDocumentedAt = null; // ← Pre-Claim! (10 Tage Frist)
 
-      LOG.infof("Lead %s (%s source): VORMERKUNG with Pre-Claim (10 days to document first contact)",
+      LOG.infof(
+          "Lead %s (%s source): VORMERKUNG with Pre-Claim (10 days to document first contact)",
           lead.companyName, lead.source != null ? lead.source.name() : "UNKNOWN");
     }
 
@@ -385,7 +410,9 @@ public class LeadResource {
     // Sprint 2.1.6 Phase 5+: Create LeadContact from structured contact data (ADR-007)
     // ================================================================================
     // Process nested contact object (new structured data) or fallback to legacy flat fields
-    if (request.contact != null && request.contact.firstName != null && !request.contact.firstName.isBlank()) {
+    if (request.contact != null
+        && request.contact.firstName != null
+        && !request.contact.firstName.isBlank()) {
       // NEW: Structured contact data from frontend
       LeadContact primaryContact = new LeadContact();
       primaryContact.setLead(lead);
@@ -398,16 +425,20 @@ public class LeadResource {
       primaryContact.setCreatedBy(currentUserId);
       primaryContact.persist();
 
-      LOG.infof("Created primary contact for lead %s: %s %s (email: %s)",
+      LOG.infof(
+          "Created primary contact for lead %s: %s %s (email: %s)",
           lead.id, request.contact.firstName, request.contact.lastName, request.contact.email);
 
     } else if (request.contactPerson != null && !request.contactPerson.isBlank()) {
       // LEGACY: Backward compatibility - split flat contactPerson into firstName/lastName
-      // IMPORTANT: Only create LeadContact if at least ONE contact method (email/phone/mobile) is provided
-      // Pre-Claim allows leads with contactPerson but NO contact methods (documentFirstContact later)
+      // IMPORTANT: Only create LeadContact if at least ONE contact method (email/phone/mobile) is
+      // provided
+      // Pre-Claim allows leads with contactPerson but NO contact methods (documentFirstContact
+      // later)
 
-      boolean hasContactMethod = (request.email != null && !request.email.isBlank())
-                               || (request.phone != null && !request.phone.isBlank());
+      boolean hasContactMethod =
+          (request.email != null && !request.email.isBlank())
+              || (request.phone != null && !request.phone.isBlank());
 
       if (hasContactMethod) {
         String[] nameParts = request.contactPerson.trim().split("\\s+", 2);
@@ -425,17 +456,22 @@ public class LeadResource {
         primaryContact.setCreatedBy(currentUserId);
         primaryContact.persist();
 
-        LOG.infof("Created primary contact for lead %s from legacy contactPerson: %s (split: %s %s, email: %s, phone: %s)",
+        LOG.infof(
+            "Created primary contact for lead %s from legacy contactPerson: %s (split: %s %s, email: %s, phone: %s)",
             lead.id, request.contactPerson, firstName, lastName, request.email, request.phone);
       } else {
-        LOG.infof("Lead %s created with contactPerson but NO contact methods (Pre-Claim: will be added via addFirstContact)", lead.id);
+        LOG.infof(
+            "Lead %s created with contactPerson but NO contact methods (Pre-Claim: will be added via addFirstContact)",
+            lead.id);
       }
 
     } else {
       // VORMERKUNG (Pre-Claim): No contact data provided
       // Pre-Claim allows leads WITHOUT contact for 10 days (firstContactDocumentedAt = NULL)
       // V10017 trigger will set leads.contact_person/email/phone = NULL (no primary contact exists)
-      LOG.infof("VORMERKUNG lead %s created without contact data (Pre-Claim: 10 days to document first contact)", lead.id);
+      LOG.infof(
+          "VORMERKUNG lead %s created without contact data (Pre-Claim: 10 days to document first contact)",
+          lead.id);
     }
     // Note: V10017 trigger handles backward compatibility:
     // - If primary contact exists → sync to leads.contact_person/email/phone
@@ -468,7 +504,8 @@ public class LeadResource {
 
           activity.persist();
 
-          LOG.infof("Created activity %s for lead %s on %s: %s",
+          LOG.infof(
+              "Created activity %s for lead %s on %s: %s",
               activityType, lead.id, activityData.performedAt, activityData.summary);
 
         } catch (IllegalArgumentException e) {
@@ -549,8 +586,10 @@ public class LeadResource {
     }
 
     // Update basic fields if provided (with XSS sanitization)
-    if (updateRequest.companyName != null) lead.companyName = xssSanitizer.sanitizeStrict(updateRequest.companyName);
-    if (updateRequest.contactPerson != null) lead.contactPerson = xssSanitizer.sanitizeStrict(updateRequest.contactPerson);
+    if (updateRequest.companyName != null)
+      lead.companyName = xssSanitizer.sanitizeStrict(updateRequest.companyName);
+    if (updateRequest.contactPerson != null)
+      lead.contactPerson = xssSanitizer.sanitizeStrict(updateRequest.contactPerson);
     if (updateRequest.email != null) {
       String newNormalizedEmail = Lead.normalizeEmail(updateRequest.email);
       // Check for duplicate if email is changing
@@ -571,12 +610,17 @@ public class LeadResource {
       lead.emailNormalized = newNormalizedEmail;
     }
     if (updateRequest.phone != null) lead.phone = xssSanitizer.sanitizeStrict(updateRequest.phone);
-    if (updateRequest.website != null) lead.website = xssSanitizer.sanitizeStrict(updateRequest.website);
-    if (updateRequest.street != null) lead.street = xssSanitizer.sanitizeStrict(updateRequest.street);
-    if (updateRequest.postalCode != null) lead.postalCode = xssSanitizer.sanitizeStrict(updateRequest.postalCode);
+    if (updateRequest.website != null)
+      lead.website = xssSanitizer.sanitizeStrict(updateRequest.website);
+    if (updateRequest.street != null)
+      lead.street = xssSanitizer.sanitizeStrict(updateRequest.street);
+    if (updateRequest.postalCode != null)
+      lead.postalCode = xssSanitizer.sanitizeStrict(updateRequest.postalCode);
     if (updateRequest.city != null) lead.city = xssSanitizer.sanitizeStrict(updateRequest.city);
-    if (updateRequest.businessType != null) lead.businessType = BusinessType.fromString(updateRequest.businessType);
-    if (updateRequest.kitchenSize != null) lead.kitchenSize = KitchenSize.fromString(updateRequest.kitchenSize);
+    if (updateRequest.businessType != null)
+      lead.businessType = BusinessType.fromString(updateRequest.businessType);
+    if (updateRequest.kitchenSize != null)
+      lead.kitchenSize = KitchenSize.fromString(updateRequest.kitchenSize);
     if (updateRequest.employeeCount != null) lead.employeeCount = updateRequest.employeeCount;
     if (updateRequest.estimatedVolume != null) lead.estimatedVolume = updateRequest.estimatedVolume;
 
@@ -662,10 +706,14 @@ public class LeadResource {
 
     // V280: Update Relationship Dimension fields (with XSS sanitization)
     if (updateRequest.relationshipStatus != null) {
-      lead.relationshipStatus = de.freshplan.modules.leads.domain.RelationshipStatus.valueOf(updateRequest.relationshipStatus);
+      lead.relationshipStatus =
+          de.freshplan.modules.leads.domain.RelationshipStatus.valueOf(
+              updateRequest.relationshipStatus);
     }
     if (updateRequest.decisionMakerAccess != null) {
-      lead.decisionMakerAccess = de.freshplan.modules.leads.domain.DecisionMakerAccess.valueOf(updateRequest.decisionMakerAccess);
+      lead.decisionMakerAccess =
+          de.freshplan.modules.leads.domain.DecisionMakerAccess.valueOf(
+              updateRequest.decisionMakerAccess);
     }
     if (updateRequest.competitorInUse != null) {
       lead.competitorInUse = xssSanitizer.sanitizeStrict(updateRequest.competitorInUse);
@@ -675,19 +723,27 @@ public class LeadResource {
     }
 
     // Sprint 2.1.6+ Pain Dimension fields
-    if (updateRequest.painStaffShortage != null) lead.painStaffShortage = updateRequest.painStaffShortage;
+    if (updateRequest.painStaffShortage != null)
+      lead.painStaffShortage = updateRequest.painStaffShortage;
     if (updateRequest.painHighCosts != null) lead.painHighCosts = updateRequest.painHighCosts;
     if (updateRequest.painFoodWaste != null) lead.painFoodWaste = updateRequest.painFoodWaste;
-    if (updateRequest.painQualityInconsistency != null) lead.painQualityInconsistency = updateRequest.painQualityInconsistency;
-    if (updateRequest.painUnreliableDelivery != null) lead.painUnreliableDelivery = updateRequest.painUnreliableDelivery;
+    if (updateRequest.painQualityInconsistency != null)
+      lead.painQualityInconsistency = updateRequest.painQualityInconsistency;
+    if (updateRequest.painUnreliableDelivery != null)
+      lead.painUnreliableDelivery = updateRequest.painUnreliableDelivery;
     if (updateRequest.painPoorService != null) lead.painPoorService = updateRequest.painPoorService;
-    if (updateRequest.painSupplierQuality != null) lead.painSupplierQuality = updateRequest.painSupplierQuality;
-    if (updateRequest.painTimePressure != null) lead.painTimePressure = updateRequest.painTimePressure;
+    if (updateRequest.painSupplierQuality != null)
+      lead.painSupplierQuality = updateRequest.painSupplierQuality;
+    if (updateRequest.painTimePressure != null)
+      lead.painTimePressure = updateRequest.painTimePressure;
     if (updateRequest.urgencyLevel != null) {
-      lead.urgencyLevel = de.freshplan.modules.leads.domain.UrgencyLevel.valueOf(updateRequest.urgencyLevel);
+      lead.urgencyLevel =
+          de.freshplan.modules.leads.domain.UrgencyLevel.valueOf(updateRequest.urgencyLevel);
     }
     if (updateRequest.multiPainBonus != null) lead.multiPainBonus = updateRequest.multiPainBonus;
-    if (updateRequest.painNotes != null) lead.painNotes = xssSanitizer.sanitizeLenient(updateRequest.painNotes); // Allow basic formatting
+    if (updateRequest.painNotes != null)
+      lead.painNotes =
+          xssSanitizer.sanitizeLenient(updateRequest.painNotes); // Allow basic formatting
 
     lead.updatedBy = currentUserId;
 
@@ -707,8 +763,8 @@ public class LeadResource {
   }
 
   /**
-   * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only MANAGER or
-   * ADMIN can delete. Requires If-Match header for safe deletion.
+   * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only MANAGER
+   * or ADMIN can delete. Requires If-Match header for safe deletion.
    */
   @DELETE
   @Path("/{id}")
@@ -791,11 +847,12 @@ public class LeadResource {
     // DATA ISOLATION: Non-admin users can only add activities to their own leads
     if (!securityContext.isUserInRole("ADMIN")) {
       boolean isOwner = lead.ownerUserId.equals(currentUserId);
-      boolean isCollaborator = lead.collaboratorUserIds != null
-          && lead.collaboratorUserIds.contains(currentUserId);
+      boolean isCollaborator =
+          lead.collaboratorUserIds != null && lead.collaboratorUserIds.contains(currentUserId);
 
       if (!isOwner && !isCollaborator) {
-        securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD_ACTIVITIES", id.toString(), "CREATE");
+        securityAuditLogger.logUnauthorizedAccess(
+            currentUserId, "LEAD_ACTIVITIES", id.toString(), "CREATE");
         return Response.status(Response.Status.FORBIDDEN)
             .entity(Map.of("error", "Access denied"))
             .build();
@@ -846,11 +903,12 @@ public class LeadResource {
     // DATA ISOLATION: Non-admin users can only access activities for their own leads
     if (!securityContext.isUserInRole("ADMIN")) {
       boolean isOwner = lead.ownerUserId.equals(currentUserId);
-      boolean isCollaborator = lead.collaboratorUserIds != null
-          && lead.collaboratorUserIds.contains(currentUserId);
+      boolean isCollaborator =
+          lead.collaboratorUserIds != null && lead.collaboratorUserIds.contains(currentUserId);
 
       if (!isOwner && !isCollaborator) {
-        securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD_ACTIVITIES", id.toString(), "READ");
+        securityAuditLogger.logUnauthorizedAccess(
+            currentUserId, "LEAD_ACTIVITIES", id.toString(), "READ");
         return Response.status(Response.Status.FORBIDDEN)
             .entity(Map.of("error", "Access denied"))
             .build();
@@ -988,7 +1046,8 @@ public class LeadResource {
   @Path("/{id}/first-contact")
   @Transactional
   public Response addFirstContact(
-      @PathParam("id") Long id, @Valid de.freshplan.modules.leads.api.AddFirstContactRequest request) {
+      @PathParam("id") Long id,
+      @Valid de.freshplan.modules.leads.api.AddFirstContactRequest request) {
 
     String currentUserId = getCurrentUserId();
 
@@ -1052,8 +1111,7 @@ public class LeadResource {
   @Path("/{id}/contacts")
   @Transactional
   public Response createLeadContact(
-      @PathParam("id") Long leadId,
-      @Valid LeadContactDTO contactDTO) {
+      @PathParam("id") Long leadId, @Valid LeadContactDTO contactDTO) {
 
     String currentUserId = getCurrentUserId();
 
@@ -1095,18 +1153,14 @@ public class LeadResource {
 
       // 5. Create activity log
       createAndPersistActivity(
-          lead,
-          currentUserId,
-          ActivityType.NOTE,
-          "Kontakt hinzugefügt: " + contact.getFullName()
-      );
+          lead, currentUserId, ActivityType.NOTE, "Kontakt hinzugefügt: " + contact.getFullName());
 
       // 6. Build response DTO
       LeadContactDTO responseDTO = mapContactToDTO(contact);
 
-      return Response.created(
-          URI.create(uriInfo.getPath() + "/" + contact.getId())
-      ).entity(responseDTO).build();
+      return Response.created(URI.create(uriInfo.getPath() + "/" + contact.getId()))
+          .entity(responseDTO)
+          .build();
 
     } catch (Exception e) {
       LOG.errorf(e, "Failed to create contact for lead %d: %s", leadId, e.getMessage());
@@ -1171,8 +1225,7 @@ public class LeadResource {
           contact.getLead(),
           currentUserId,
           ActivityType.NOTE,
-          "Kontakt aktualisiert: " + contact.getFullName()
-      );
+          "Kontakt aktualisiert: " + contact.getFullName());
 
       // 6. Build response DTO
       LeadContactDTO responseDTO = mapContactToDTO(contact);
@@ -1180,7 +1233,8 @@ public class LeadResource {
       return Response.ok(responseDTO).build();
 
     } catch (Exception e) {
-      LOG.errorf(e, "Failed to update contact %s for lead %d: %s", contactId, leadId, e.getMessage());
+      LOG.errorf(
+          e, "Failed to update contact %s for lead %d: %s", contactId, leadId, e.getMessage());
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(new ErrorResponse("Failed to update contact"))
           .build();
@@ -1198,8 +1252,7 @@ public class LeadResource {
   @Path("/{id}/contacts/{contactId}")
   @Transactional
   public Response deleteLeadContact(
-      @PathParam("id") Long leadId,
-      @PathParam("contactId") String contactId) {
+      @PathParam("id") Long leadId, @PathParam("contactId") String contactId) {
 
     String currentUserId = getCurrentUserId();
 
@@ -1223,13 +1276,13 @@ public class LeadResource {
           contact.getLead(),
           currentUserId,
           ActivityType.NOTE,
-          "Kontakt gelöscht: " + contact.getFullName()
-      );
+          "Kontakt gelöscht: " + contact.getFullName());
 
       return Response.noContent().build();
 
     } catch (Exception e) {
-      LOG.errorf(e, "Failed to delete contact %s for lead %d: %s", contactId, leadId, e.getMessage());
+      LOG.errorf(
+          e, "Failed to delete contact %s for lead %d: %s", contactId, leadId, e.getMessage());
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(new ErrorResponse("Failed to delete contact"))
           .build();
@@ -1247,8 +1300,7 @@ public class LeadResource {
   @Path("/{id}/contacts/{contactId}/primary")
   @Transactional
   public Response setContactAsPrimary(
-      @PathParam("id") Long leadId,
-      @PathParam("contactId") String contactId) {
+      @PathParam("id") Long leadId, @PathParam("contactId") String contactId) {
 
     String currentUserId = getCurrentUserId();
 
@@ -1276,8 +1328,7 @@ public class LeadResource {
           contact.getLead(),
           currentUserId,
           ActivityType.NOTE,
-          "Hauptkontakt gesetzt: " + contact.getFullName()
-      );
+          "Hauptkontakt gesetzt: " + contact.getFullName());
 
       // 5. Build response DTO
       LeadContactDTO responseDTO = mapContactToDTO(contact);
@@ -1285,7 +1336,12 @@ public class LeadResource {
       return Response.ok(responseDTO).build();
 
     } catch (Exception e) {
-      LOG.errorf(e, "Failed to set contact %s as primary for lead %d: %s", contactId, leadId, e.getMessage());
+      LOG.errorf(
+          e,
+          "Failed to set contact %s as primary for lead %d: %s",
+          contactId,
+          leadId,
+          e.getMessage());
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(new ErrorResponse("Failed to set primary contact"))
           .build();
@@ -1298,10 +1354,11 @@ public class LeadResource {
    * <p>Sprint 2.1.6+ Lead Scoring System
    *
    * <p>Use cases:
+   *
    * <ul>
-   *   <li>After batch updates to lead data</li>
-   *   <li>After ICP configuration changes</li>
-   *   <li>User-requested recalculation (UI button)</li>
+   *   <li>After batch updates to lead data
+   *   <li>After ICP configuration changes
+   *   <li>User-requested recalculation (UI button)
    * </ul>
    *
    * @param id Lead ID (Long, not UUID - this project uses Long for Lead IDs)
@@ -1327,20 +1384,21 @@ public class LeadResource {
 
     LOG.infof("Lead %s score manually recalculated by user %s", id, currentUserId);
 
-    return Response.ok(Map.of(
-        "leadScore", lead.leadScore != null ? lead.leadScore : 0,
-        "painScore", lead.painScore != null ? lead.painScore : 0,
-        "revenueScore", lead.revenueScore != null ? lead.revenueScore : 0,
-        "fitScore", lead.fitScore != null ? lead.fitScore : 0,
-        "engagementScore", lead.engagementScore != null ? lead.engagementScore : 0
-    )).build();
+    return Response.ok(
+            Map.of(
+                "leadScore", lead.leadScore != null ? lead.leadScore : 0,
+                "painScore", lead.painScore != null ? lead.painScore : 0,
+                "revenueScore", lead.revenueScore != null ? lead.revenueScore : 0,
+                "fitScore", lead.fitScore != null ? lead.fitScore : 0,
+                "engagementScore", lead.engagementScore != null ? lead.engagementScore : 0))
+        .build();
   }
 
   /**
    * Helper: Map LeadContact entity to LeadContactDTO
    *
-   * <p>REFACTORING: Delegates to LeadContactDTO.fromEntity() to centralize mapping logic
-   * and eliminate code duplication (Gemini Code Review Fix).
+   * <p>REFACTORING: Delegates to LeadContactDTO.fromEntity() to centralize mapping logic and
+   * eliminate code duplication (Gemini Code Review Fix).
    */
   private LeadContactDTO mapContactToDTO(LeadContact contact) {
     return LeadContactDTO.fromEntity(contact);

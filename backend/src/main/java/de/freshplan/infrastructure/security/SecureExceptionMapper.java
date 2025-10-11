@@ -14,16 +14,18 @@ import org.jboss.logging.Logger;
  * Global Exception Mapper for Secure Error Disclosure Prevention.
  *
  * <p>Prevents sensitive information leakage in production error responses:
+ *
  * <ul>
- *   <li>Database schema details (SQL error messages)</li>
- *   <li>File paths and stack traces</li>
- *   <li>Internal service names and versions</li>
+ *   <li>Database schema details (SQL error messages)
+ *   <li>File paths and stack traces
+ *   <li>Internal service names and versions
  * </ul>
  *
  * <p>Behavior:
+ *
  * <ul>
- *   <li>Production: Generic error messages with correlation ID</li>
- *   <li>Development: Full error details for debugging</li>
+ *   <li>Production: Generic error messages with correlation ID
+ *   <li>Development: Full error details for debugging
  * </ul>
  *
  * <p>Sprint 2.1.6 - Security Hardening Phase 2
@@ -67,11 +69,13 @@ public class SecureExceptionMapper implements ExceptionMapper<Throwable> {
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(
               Map.of(
-                  "error", "Internal server error",
+                  "error",
+                  "Internal server error",
                   "message",
-                      "An unexpected error occurred. Please contact support with correlation ID: "
-                          + correlationId,
-                  "correlationId", correlationId))
+                  "An unexpected error occurred. Please contact support with correlation ID: "
+                      + correlationId,
+                  "correlationId",
+                  correlationId))
           .build();
     }
 
@@ -79,11 +83,16 @@ public class SecureExceptionMapper implements ExceptionMapper<Throwable> {
     return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
         .entity(
             Map.of(
-                "error", "Internal server error",
-                "message", exception.getMessage() != null ? exception.getMessage() : "Unknown error",
-                "type", exception.getClass().getSimpleName(),
-                "correlationId", correlationId,
-                "note", "Full stack trace available in server logs (dev mode only)"))
+                "error",
+                "Internal server error",
+                "message",
+                exception.getMessage() != null ? exception.getMessage() : "Unknown error",
+                "type",
+                exception.getClass().getSimpleName(),
+                "correlationId",
+                correlationId,
+                "note",
+                "Full stack trace available in server logs (dev mode only)"))
         .build();
   }
 

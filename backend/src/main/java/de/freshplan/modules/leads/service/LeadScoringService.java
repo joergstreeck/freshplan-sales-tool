@@ -3,10 +3,7 @@ package de.freshplan.modules.leads.service;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.DealSize;
 import de.freshplan.domain.shared.LeadSource;
-import de.freshplan.modules.leads.domain.DecisionMakerAccess;
 import de.freshplan.modules.leads.domain.Lead;
-import de.freshplan.modules.leads.domain.RelationshipStatus;
-import de.freshplan.modules.leads.domain.UrgencyLevel;
 import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
@@ -21,11 +18,12 @@ import java.util.Set;
  * <p>Sprint 2.1.6+ Lead Scoring System
  *
  * <p>Scoring Model (0-100 total):
+ *
  * <ul>
- *   <li>Pain Points:  25% - Customer pain severity + urgency</li>
- *   <li>Revenue:      25% - Deal value potential (volume + budget + size)</li>
- *   <li>Fit:          25% - ICP match quality (segment + location + source)</li>
- *   <li>Engagement:   25% - Relationship strength (contact + activities)</li>
+ *   <li>Pain Points: 25% - Customer pain severity + urgency
+ *   <li>Revenue: 25% - Deal value potential (volume + budget + size)
+ *   <li>Fit: 25% - ICP match quality (segment + location + source)
+ *   <li>Engagement: 25% - Relationship strength (contact + activities)
  * </ul>
  *
  * <p>Usage: Call {@link #updateLeadScore(Lead)} after lead creation/update.
@@ -40,10 +38,7 @@ public class LeadScoringService {
 
   private static final Set<BusinessType> IDEAL_SEGMENTS =
       Set.of(
-          BusinessType.RESTAURANT,
-          BusinessType.CATERING,
-          BusinessType.HOTEL,
-          BusinessType.KANTINE);
+          BusinessType.RESTAURANT, BusinessType.CATERING, BusinessType.HOTEL, BusinessType.KANTINE);
 
   private static final Set<String> IDEAL_CITIES =
       Set.of(
@@ -74,17 +69,19 @@ public class LeadScoringService {
    * Calculate and update all scoring dimensions for a lead.
    *
    * <p>This method:
+   *
    * <ul>
-   *   <li>Calculates all 4 sub-scores (pain, revenue, fit, engagement)</li>
-   *   <li>Computes weighted total score (25% each)</li>
-   *   <li>Updates cached score fields in Lead entity</li>
+   *   <li>Calculates all 4 sub-scores (pain, revenue, fit, engagement)
+   *   <li>Computes weighted total score (25% each)
+   *   <li>Updates cached score fields in Lead entity
    * </ul>
    *
    * <p>Call this method:
+   *
    * <ul>
-   *   <li>After lead creation</li>
-   *   <li>After lead update (business data, pain points, engagement)</li>
-   *   <li>After new activity added</li>
+   *   <li>After lead creation
+   *   <li>After lead update (business data, pain points, engagement)
+   *   <li>After new activity added
    * </ul>
    *
    * @param lead The lead to score (will be updated in-place)
@@ -143,10 +140,11 @@ public class LeadScoringService {
    * Calculate Pain Score based on identified pain points and urgency.
    *
    * <p>Scoring breakdown:
+   *
    * <ul>
-   *   <li>Pain count (0-8 pains): 5 points each = max 40 points</li>
-   *   <li>Multi-pain bonus: +30 points (if multiPainBonus > 0)</li>
-   *   <li>Urgency level: EMERGENCY=30, HIGH=22, MEDIUM=15, NORMAL=8 points</li>
+   *   <li>Pain count (0-8 pains): 5 points each = max 40 points
+   *   <li>Multi-pain bonus: +30 points (if multiPainBonus > 0)
+   *   <li>Urgency level: EMERGENCY=30, HIGH=22, MEDIUM=15, NORMAL=8 points
    * </ul>
    *
    * @param lead The lead to score
@@ -195,10 +193,11 @@ public class LeadScoringService {
    * Calculate Revenue Score based on deal value potential.
    *
    * <p>Scoring breakdown:
+   *
    * <ul>
-   *   <li>Estimated volume (annual): ENTERPRISE=40, LARGE=30, MEDIUM=20, SMALL=10</li>
-   *   <li>Budget confirmed: +30 points</li>
-   *   <li>Deal size category: ENTERPRISE=30, LARGE=22, MEDIUM=15, SMALL=8</li>
+   *   <li>Estimated volume (annual): ENTERPRISE=40, LARGE=30, MEDIUM=20, SMALL=10
+   *   <li>Budget confirmed: +30 points
+   *   <li>Deal size category: ENTERPRISE=30, LARGE=22, MEDIUM=15, SMALL=8
    * </ul>
    *
    * @param lead The lead to score
@@ -263,10 +262,11 @@ public class LeadScoringService {
    * Calculate Fit Score based on ICP (Ideal Customer Profile) match.
    *
    * <p>Scoring breakdown:
+   *
    * <ul>
-   *   <li>Segment match: Ideal=40, Other gastro=15 points</li>
-   *   <li>Location: Top 15 cities=25, Other=10 points</li>
-   *   <li>Source quality: High (Referral/Partner)=35, Medium (Messe)=25, Low (Web)=15, Other=5</li>
+   *   <li>Segment match: Ideal=40, Other gastro=15 points
+   *   <li>Location: Top 15 cities=25, Other=10 points
+   *   <li>Source quality: High (Referral/Partner)=35, Medium (Messe)=25, Low (Web)=15, Other=5
    * </ul>
    *
    * @param lead The lead to score
@@ -317,11 +317,14 @@ public class LeadScoringService {
    * Calculate Engagement Score based on relationship quality and activity.
    *
    * <p>Scoring breakdown:
+   *
    * <ul>
-   *   <li>Relationship status: COLD=0, CONTACTED=5, ENGAGED_SKEPTICAL=8, ENGAGED_POSITIVE=12, TRUSTED=17, ADVOCATE=25</li>
-   *   <li>Decision maker access: UNKNOWN=0, BLOCKED=-3, INDIRECT=10, DIRECT=20, IS_DECISION_MAKER=25</li>
-   *   <li>Internal champion: +30 points if present</li>
-   *   <li>Recent activity bonus: +10 points if active in last 7 days</li>
+   *   <li>Relationship status: COLD=0, CONTACTED=5, ENGAGED_SKEPTICAL=8, ENGAGED_POSITIVE=12,
+   *       TRUSTED=17, ADVOCATE=25
+   *   <li>Decision maker access: UNKNOWN=0, BLOCKED=-3, INDIRECT=10, DIRECT=20,
+   *       IS_DECISION_MAKER=25
+   *   <li>Internal champion: +30 points if present
+   *   <li>Recent activity bonus: +10 points if active in last 7 days
    * </ul>
    *
    * @param lead The lead to score

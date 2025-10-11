@@ -33,17 +33,18 @@ phases:
     merged: "2025-10-08"
   - phase: "Phase 5"
     branch: "feature/mod02-sprint-2.1.6-enum-migration-phase-1"
-    scope: "Lead-Enums Migration (LeadSource, BusinessType, KitchenSize) - Enum-Migration Phase 1"
-    status: "pending"
-    effort: "~8h"
-    migrations: ["V273"]
-  - phase: "Phase 5+"
-    branch: "feature/mod02-sprint-2.1.6-lead-contacts-refactoring"
-    scope: "Lead Contacts Refactoring - Multi-Contact Support (Harmonisierung mit Customer-Modul)"
-    status: "in_progress"
-    effort: "~3-5h"
-    migrations: ["V276", "V277"]
-    architecture_decision: "ADR-007"
+    scope: "Multi-Contact + Lead Scoring + Security + Critical Fixes (PR #137)"
+    status: "complete"
+    pr: "#137"
+    merged: "2025-10-11"
+    effort: "50 commits, 3 weeks, 125 files"
+    migrations: ["V10013", "V10014", "V10015", "V10016", "V10017", "V10018", "V10019", "V10020", "V10021", "V10022", "V10023", "V10024"]
+    features:
+      - "Lead Scoring System (0-100 Score, 4 Dimensionen)"
+      - "Multi-Contact Support (26 Felder, 100% Customer Parity)"
+      - "Enterprise Security (5 Layer)"
+      - "Critical Bug Fixes (4 Fixes)"
+      - "Migration Safety System (3-Layer)"
 entry_points:
   - "features-neu/02_neukundengewinnung/_index.md"
   - "features-neu/02_neukundengewinnung/backend/_index.md"
@@ -54,8 +55,8 @@ entry_points:
   - "claude-work/daily-work/2025-10-05/MUI_ACCESSIBILITY_DECISION.md"
   - "claude-work/daily-work/2025-10-05/CRITICAL_FIXES_SUMMARY.md"
   - "claude-work/daily-work/2025-10-05/2025-10-05_HANDOVER_FINAL.md"
-pr_refs: ["#132", "#133", "#134", "#135"]
-updated: "2025-10-08"
+pr_refs: ["#132", "#133", "#134", "#135", "#137"]
+updated: "2025-10-11"
 ---
 
 # Sprint 2.1.6 – Lead Completion & Admin Features

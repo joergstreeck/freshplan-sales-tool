@@ -8,12 +8,13 @@ import java.lang.annotation.*;
  * Validates phone numbers for German/European format.
  *
  * <p>Accepted formats:
+ *
  * <ul>
- *   <li>+49 123 456789 (international format)</li>
- *   <li>0049 123 456789 (international format)</li>
- *   <li>0123 456789 (national format)</li>
- *   <li>+41 44 123 45 67 (Swiss format)</li>
- *   <li>+43 1 234 5678 (Austrian format)</li>
+ *   <li>+49 123 456789 (international format)
+ *   <li>0049 123 456789 (international format)
+ *   <li>0123 456789 (national format)
+ *   <li>+41 44 123 45 67 (Swiss format)
+ *   <li>+43 1 234 5678 (Austrian format)
  * </ul>
  *
  * <p>Sprint 2.1.6 - Security Hardening Phase 2

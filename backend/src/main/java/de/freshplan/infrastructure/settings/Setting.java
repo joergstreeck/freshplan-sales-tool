@@ -109,14 +109,16 @@ public class Setting extends PanacheEntityBase {
   }
 
   /**
-   * Generates ETag based on version, value, and metadata.
-   * Uses MD5 hash for consistency with DB trigger (if implemented).
+   * Generates ETag based on version, value, and metadata. Uses MD5 hash for consistency with DB
+   * trigger (if implemented).
    */
   private void generateEtag() {
-    String data = String.format("%d:%s:%s",
-        version != null ? version : 1,
-        value != null ? value.encode() : "",
-        metadata != null ? metadata.encode() : "");
+    String data =
+        String.format(
+            "%d:%s:%s",
+            version != null ? version : 1,
+            value != null ? value.encode() : "",
+            metadata != null ? metadata.encode() : "");
 
     try {
       java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");

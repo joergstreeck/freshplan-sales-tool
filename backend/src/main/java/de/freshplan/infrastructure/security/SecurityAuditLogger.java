@@ -7,10 +7,11 @@ import org.jboss.logging.Logger;
  * Security Audit Logger for Enterprise Compliance.
  *
  * <p>Logs all security-relevant events for:
+ *
  * <ul>
- *   <li>GDPR Compliance (data access audit trail)</li>
- *   <li>Incident Response (detect attack patterns)</li>
- *   <li>Forensics (post-incident analysis)</li>
+ *   <li>GDPR Compliance (data access audit trail)
+ *   <li>Incident Response (detect attack patterns)
+ *   <li>Forensics (post-incident analysis)
  * </ul>
  *
  * <p>Sprint 2.1.6 - Enterprise Security Hardening
@@ -77,7 +78,10 @@ public class SecurityAuditLogger {
   public void logInjectionAttempt(
       String userId, String attackType, String payload, String endpoint) {
     // Sanitize payload for logging (max 100 chars, escape special chars)
-    String sanitizedPayload = payload != null ? payload.substring(0, Math.min(100, payload.length())).replaceAll("[\\r\\n]", " ") : "null";
+    String sanitizedPayload =
+        payload != null
+            ? payload.substring(0, Math.min(100, payload.length())).replaceAll("[\\r\\n]", " ")
+            : "null";
 
     LOG.warnf(
         "SECURITY_AUDIT: INJECTION_ATTEMPT | user=%s | type=%s | endpoint=%s | payload=%s",

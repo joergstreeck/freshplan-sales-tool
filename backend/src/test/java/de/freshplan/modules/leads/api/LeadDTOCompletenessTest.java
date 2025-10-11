@@ -126,7 +126,9 @@ class LeadDTOCompletenessTest {
   // ===========================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("LeadDTO should include contacts array (non-null)")
   void testLeadDtoIncludesContactsArray() {
     Long leadId = createTestLeadWithContacts("user1");
@@ -142,7 +144,9 @@ class LeadDTOCompletenessTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("LeadDTO.contacts should have correct count (2 contacts)")
   void testLeadDtoContactsCount() {
     Long leadId = createTestLeadWithContacts("user1");
@@ -158,8 +162,11 @@ class LeadDTOCompletenessTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
-  @DisplayName("LeadDTO.contacts should include ALL basic fields (firstName, lastName, email, etc.)")
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName(
+      "LeadDTO.contacts should include ALL basic fields (firstName, lastName, email, etc.)")
   void testLeadDtoContactBasicFields() {
     Long leadId = createTestLeadWithContacts("user1");
 
@@ -186,8 +193,11 @@ class LeadDTOCompletenessTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
-  @DisplayName("LeadDTO.contacts should include CRM Intelligence fields (warmthScore, dataQualityScore)")
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName(
+      "LeadDTO.contacts should include CRM Intelligence fields (warmthScore, dataQualityScore)")
   void testLeadDtoContactIntelligenceFields() {
     Long leadId = createTestLeadWithContacts("user1");
 
@@ -204,7 +214,9 @@ class LeadDTOCompletenessTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("LeadDTO.contacts should include computed fields (fullName, displayName)")
   void testLeadDtoContactComputedFields() {
     Long leadId = createTestLeadWithContacts("user1");
@@ -223,7 +235,9 @@ class LeadDTOCompletenessTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("LeadDTO.contacts should include audit fields (createdAt, createdBy)")
   void testLeadDtoContactAuditFields() {
     Long leadId = createTestLeadWithContacts("user1");
@@ -240,7 +254,9 @@ class LeadDTOCompletenessTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("LeadDTO.contacts should distinguish primary vs secondary contact")
   void testLeadDtoContactPrimaryFlag() {
     Long leadId = createTestLeadWithContacts("user1");
@@ -250,7 +266,7 @@ class LeadDTOCompletenessTest {
         .get("/" + leadId)
         .then()
         .statusCode(200)
-        .body("contacts[0].primary", equalTo(true))  // Maria
+        .body("contacts[0].primary", equalTo(true)) // Maria
         .body("contacts[1].primary", equalTo(false)); // Karl
   }
 
@@ -259,8 +275,11 @@ class LeadDTOCompletenessTest {
   // ===========================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
-  @DisplayName("LeadDTO should still include deprecated contactPerson field (Backward Compatibility)")
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName(
+      "LeadDTO should still include deprecated contactPerson field (Backward Compatibility)")
   void testLeadDtoBackwardCompatibility() {
     Long leadId = createTestLeadWithContacts("user1");
 
@@ -282,7 +301,9 @@ class LeadDTOCompletenessTest {
   // ===========================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("V280: LeadDTO should include all 4 relationship fields")
   void testLeadDtoRelationshipFields() {
     Long leadId = createTestLeadWithContacts("user1");
@@ -311,5 +332,4 @@ class LeadDTOCompletenessTest {
     lead.internalChampionName = "Max Müller";
     em.flush();
   }
-
 }

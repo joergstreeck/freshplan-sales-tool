@@ -1,7 +1,6 @@
 package de.freshplan.modules.leads.api;
 
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -34,7 +33,8 @@ public class LeadContactDTO {
   @Size(max = 50)
   private String title; // Dr., Prof., etc.
 
-  // NOTE: @NotBlank removed - Response DTOs should not validate (Pre-Claim leads have empty contacts)
+  // NOTE: @NotBlank removed - Response DTOs should not validate (Pre-Claim leads have empty
+  // contacts)
   // Validation happens in Request DTOs (LeadCreateRequest.ContactData)
   @Size(max = 100)
   private String firstName;

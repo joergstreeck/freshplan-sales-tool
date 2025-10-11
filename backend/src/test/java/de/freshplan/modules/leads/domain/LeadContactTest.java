@@ -2,7 +2,6 @@ package de.freshplan.modules.leads.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import de.freshplan.domain.shared.BusinessType;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
@@ -201,8 +200,7 @@ class LeadContactTest {
     Lead fetchedLead = Lead.findById(lead.id);
     assertNotNull(fetchedLead);
     assertEquals("Maria Schmidt", fetchedLead.contactPerson, "Trigger should sync full name");
-    assertEquals(
-        "maria.schmidt@restaurant.de", fetchedLead.email, "Trigger should sync email");
+    assertEquals("maria.schmidt@restaurant.de", fetchedLead.email, "Trigger should sync email");
     assertEquals("+49 30 98765432", fetchedLead.phone, "Trigger should sync phone");
   }
 

@@ -50,8 +50,8 @@ public enum LeadSource {
    * Check if this lead source requires documented first contact for lead protection.
    *
    * <p>Business Rule (Handelsvertretervertrag §2(8)(a)): MESSE and TELEFON sources require
-   * documented first contact (contact person name + date) to activate lead protection
-   * (registeredAt timestamp).
+   * documented first contact (contact person name + date) to activate lead protection (registeredAt
+   * timestamp).
    *
    * <p>Other sources (EMPFEHLUNG, WEB_FORMULAR, PARTNER, SONSTIGES) allow Pre-Claim: Lead
    * protection starts with 10-day window to document first contact.

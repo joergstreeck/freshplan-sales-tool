@@ -6,7 +6,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -15,7 +14,8 @@ import java.util.Map;
  *
  * <p>Supports B2B-specific fields for gastronomy businesses.
  *
- * <p><b>Sprint 2.1.6 Phase 5+:</b> Added nested `contact` object for structured contact data (ADR-007 Option C).
+ * <p><b>Sprint 2.1.6 Phase 5+:</b> Added nested `contact` object for structured contact data
+ * (ADR-007 Option C).
  *
  * <p><b>Sprint 2.1.5:</b> Added `activities` array for first contact documentation.
  */
@@ -37,7 +37,9 @@ public class LeadCreateRequest {
     public String phone;
   }
 
-  /** Nested DTO for activity data (Sprint 2.1.5 - Pre-Claim Logic / First Contact Documentation). */
+  /**
+   * Nested DTO for activity data (Sprint 2.1.5 - Pre-Claim Logic / First Contact Documentation).
+   */
   public static class ActivityData {
     @Size(max = 100)
     public String activityType; // FIRST_CONTACT_DOCUMENTED, NOTE, etc.
@@ -46,8 +48,7 @@ public class LeadCreateRequest {
     // Frontend sends "yyyy-MM-dd" format from date input
     @com.fasterxml.jackson.annotation.JsonFormat(
         pattern = "yyyy-MM-dd",
-        shape = com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING
-    )
+        shape = com.fasterxml.jackson.annotation.JsonFormat.Shape.STRING)
     public LocalDate performedAt;
 
     @Size(max = 1000)
@@ -61,12 +62,12 @@ public class LeadCreateRequest {
   @NotNull(message = "Company name is required") @Size(min = 1, max = 255, message = "Company name must be between 1 and 255 characters")
   public String companyName;
 
-  // Progressive Profiling (Sprint 2.1.5) - Stage: VORMERKUNG (0), REGISTRIERUNG (1), QUALIFIZIERT (2)
+  // Progressive Profiling (Sprint 2.1.5) - Stage: VORMERKUNG (0), REGISTRIERUNG (1), QUALIFIZIERT
+  // (2)
   public Integer stage; // 0=VORMERKUNG, 1=REGISTRIERUNG, 2=QUALIFIZIERT
 
   // Sprint 2.1.6 Phase 5+: Structured contact data (NEW - preferred)
-  @Valid
-  public ContactData contact;
+  @Valid public ContactData contact;
 
   // Legacy fields (for backward compatibility with old clients)
   @Deprecated
@@ -119,7 +120,7 @@ public class LeadCreateRequest {
   @Size(max = 255)
   public String sourceCampaign;
 
-  // Sprint 2.1.5: Activities for first contact documentation (MESSE/TELEFON requires FIRST_CONTACT_DOCUMENTED)
-  @Valid
-  public List<ActivityData> activities;
+  // Sprint 2.1.5: Activities for first contact documentation (MESSE/TELEFON requires
+  // FIRST_CONTACT_DOCUMENTED)
+  @Valid public List<ActivityData> activities;
 }

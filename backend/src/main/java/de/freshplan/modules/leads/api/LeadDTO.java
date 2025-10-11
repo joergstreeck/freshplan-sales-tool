@@ -61,7 +61,8 @@ public class LeadDTO {
 
   // Protection system fields
   public LocalDateTime registeredAt; // Variante B: IMMER gesetzt (Audit Trail)
-  public LocalDateTime firstContactDocumentedAt; // Variante B: NULL = Pre-Claim aktiv (10 Tage Frist)
+  public LocalDateTime
+      firstContactDocumentedAt; // Variante B: NULL = Pre-Claim aktiv (10 Tage Frist)
   public LocalDateTime lastActivityAt;
   public LocalDateTime reminderSentAt;
   public LocalDateTime gracePeriodStartAt;
@@ -119,7 +120,8 @@ public class LeadDTO {
   public Integer multiPainBonus; // Auto-calculated: +10 bei 4+ Pains
 
   // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
-  public String relationshipStatus; // COLD, CONTACTED, ENGAGED_SKEPTICAL, ENGAGED_POSITIVE, TRUSTED, ADVOCATE
+  public String
+      relationshipStatus; // COLD, CONTACTED, ENGAGED_SKEPTICAL, ENGAGED_POSITIVE, TRUSTED, ADVOCATE
   public String decisionMakerAccess; // UNKNOWN, BLOCKED, INDIRECT, DIRECT, IS_DECISION_MAKER
   public String competitorInUse; // Aktueller Wettbewerber (falls bekannt)
   public String internalChampionName; // Name des internen Champions (falls vorhanden)
@@ -224,8 +226,10 @@ public class LeadDTO {
     dto.multiPainBonus = lead.multiPainBonus;
 
     // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
-    dto.relationshipStatus = lead.relationshipStatus != null ? lead.relationshipStatus.name() : null;
-    dto.decisionMakerAccess = lead.decisionMakerAccess != null ? lead.decisionMakerAccess.name() : null;
+    dto.relationshipStatus =
+        lead.relationshipStatus != null ? lead.relationshipStatus.name() : null;
+    dto.decisionMakerAccess =
+        lead.decisionMakerAccess != null ? lead.decisionMakerAccess.name() : null;
     dto.competitorInUse = lead.competitorInUse;
     dto.internalChampionName = lead.internalChampionName;
 
@@ -240,7 +244,10 @@ public class LeadDTO {
     if (lead.contacts != null) {
       dto.contacts =
           lead.contacts.stream()
-              .sorted((c1, c2) -> Boolean.compare(c1.isPrimary(), c2.isPrimary()) * -1) // Descending: primary (TRUE) first
+              .sorted(
+                  (c1, c2) ->
+                      Boolean.compare(c1.isPrimary(), c2.isPrimary())
+                          * -1) // Descending: primary (TRUE) first
               .map(LeadDTO::toContactDTO)
               .collect(Collectors.toList());
     }
@@ -267,7 +274,8 @@ public class LeadDTO {
    * <p>Maps all fields including CRM Intelligence data (warmth_score, data_quality_score,
    * relationship data).
    */
-  private static LeadContactDTO toContactDTO(de.freshplan.modules.leads.domain.LeadContact contact) {
+  private static LeadContactDTO toContactDTO(
+      de.freshplan.modules.leads.domain.LeadContact contact) {
     LeadContactDTO dto = new LeadContactDTO();
     dto.setId(contact.getId());
     dto.setLeadId(contact.getLead() != null ? contact.getLead().id : null);

@@ -19,9 +19,11 @@ public class SafeStringValidator implements ConstraintValidator<SafeString, Stri
   private static final Pattern[] DANGEROUS_PATTERNS =
       new Pattern[] {
         // SQL Injection
-        Pattern.compile("('.+--)|(--.+)|(;.*(drop|delete|insert|update|create|alter|truncate))",
+        Pattern.compile(
+            "('.+--)|(--.+)|(;.*(drop|delete|insert|update|create|alter|truncate))",
             Pattern.CASE_INSENSITIVE),
-        Pattern.compile("(union.+select)|(select.+from)|(insert.+into)|(delete.+from)",
+        Pattern.compile(
+            "(union.+select)|(select.+from)|(insert.+into)|(delete.+from)",
             Pattern.CASE_INSENSITIVE),
         // XSS (Script tags)
         Pattern.compile("<script[^>]*>.*?</script>", Pattern.CASE_INSENSITIVE | Pattern.DOTALL),

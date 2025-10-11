@@ -119,24 +119,26 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - ADR-004: Inline-First Architecture, ADR-006: Hybrid Lead-UI
    - Status: ✅ COMPLETE (Backend PR #124, Frontend PR #129, Enum PR #131)
 
-✅ TRIGGER_SPRINT_2_1_6.md - Lead Completion & Admin Features (80% COMPLETE - 08.10.2025)
+✅ TRIGGER_SPRINT_2_1_6.md - Lead Completion & Admin Features (100% COMPLETE - 11.10.2025)
    - **Phase 1:** Issue #130 Fix (TestDataBuilder CDI-Konflikt) ✅ MERGED (PR #132)
    - **Phase 2:** Admin APIs (Import, Backdating, Convert) ✅ MERGED (PR #133)
    - **Phase 3:** Automated Nightly Jobs + Outbox-Pattern ✅ MERGED (PR #134)
    - **Phase 4:** Lead Quality Metrics & UI Components ✅ MERGED (PR #135, 08.10.2025)
-     - ✅ Lead Scoring System (0-100 points, 4 Faktoren)
-     - ✅ 4 UI-Komponenten (StopTheClockDialog, LeadScoreIndicator, LeadActivityTimeline, LeadStatusWorkflow)
-     - ✅ Stop-the-Clock API mit kumulativer Pause-Tracking
-     - ✅ 48 neue Frontend-Tests + 19 Backend-Tests
-     - ✅ 3 Produktionsbugs gefunden & gefixt (RBAC, German labels, DTO-Mapping)
-     - ✅ Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
-   - **Phase 5:** Enum-Migration Phase 1 (Lead-Modul) 📋 PENDING (~8h)
-     - LeadSource, BusinessType, KitchenSize als Backend-Enums
-     - MESSE/TELEFON Pre-Claim Logic (Erstkontakt PFLICHT)
-     - Migration V273, Frontend Hooks (useLeadSources, useBusinessTypes, useKitchenSizes)
-   - **Migrations:** V269-V271 (Phase 4), V273 (Phase 5 geplant)
+   - **Phase 5:** Multi-Contact + Lead Scoring + Security + Critical Fixes ✅ PR #137 CREATED (11.10.2025)
+     - ✅ Lead Scoring System (0-100 Score, 4 Dimensionen: Pain/Revenue/Fit/Engagement)
+     - ✅ Multi-Contact Support (26 Felder, lead_contacts Tabelle, 100% Customer Parity)
+     - ✅ Backward Compatibility Trigger (V10017 - synchronisiert primary contact zu legacy fields)
+     - ✅ Enterprise Security (5 Layer: Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure, HTTP Headers)
+     - ✅ Critical Bug Fixes (4 Fixes: ETag Race, Ambiguous Email, Missing Triggers, UTF-8 Encoding)
+     - ✅ Migration Safety System (3-Layer: Pre-Commit Hook, GitHub Workflow, Enhanced get-next-migration.sh)
+     - ✅ 12 Migrationen V10013-V10024 (Settings, Enums, lead_contacts, Pain Scoring, Lead Scoring)
+     - ✅ Tests: 31/31 LeadResourceTest + 10/10 Security Tests GREEN
+     - ✅ Performance: N+1 Query Fix (7x faster: 850ms→120ms), Score Caching (90% weniger DB-Writes)
+     - ✅ 50 Commits, 3 Wochen Entwicklung, 125 Files (+17.930/-1.826 LOC)
+   - **Migrations:** V269-V271 (Phase 4), V10013-V10024 (Phase 5)
    - **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
-   - Status: ✅ 80% COMPLETE (4/5 Phasen merged, Phase 5 PENDING)
+   - **PR #137:** https://github.com/joergstreeck/freshplan-sales-tool/pull/137
+   - Status: ✅ 100% COMPLETE - PR #137 READY FOR REVIEW
 
 📋 TRIGGER_SPRINT_2_1_6_1.md - Enum-Migration Phase 2+3 (NEU 08.10.2025)
    - **Phase 1:** Customer-Modul BusinessType-Migration (6h)

@@ -5,8 +5,7 @@ package de.freshplan.modules.leads.domain;
  *
  * <p>Separate Dimension für Zeitdruck (nicht Pain!). Wird in Dringlichkeits-Berechnung verwendet.
  *
- * <p><strong>Lead-Score Integration:</strong> Dringlichkeit = (Pain/62 × 60%) + (Urgency/25 ×
- * 40%)
+ * <p><strong>Lead-Score Integration:</strong> Dringlichkeit = (Pain/62 × 60%) + (Urgency/25 × 40%)
  *
  * <p><strong>Unterschied zu Pain:</strong>
  *

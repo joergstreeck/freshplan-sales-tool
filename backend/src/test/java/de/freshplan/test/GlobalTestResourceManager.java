@@ -49,13 +49,14 @@ public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleMa
     // This ensures fresh DB with all constraints/triggers for EVERY test run
     try {
       LOG.info("Executing programmatic Flyway clean + migrate...");
-      org.flywaydb.core.Flyway flyway = org.flywaydb.core.Flyway.configure()
-          .dataSource(jdbcUrl, username, password)
-          .locations("classpath:db/migration", "classpath:db/dev-migration")
-          .baselineOnMigrate(true)
-          .outOfOrder(true)
-          .cleanDisabled(false) // Override global cleanDisabled=true
-          .load();
+      org.flywaydb.core.Flyway flyway =
+          org.flywaydb.core.Flyway.configure()
+              .dataSource(jdbcUrl, username, password)
+              .locations("classpath:db/migration", "classpath:db/dev-migration")
+              .baselineOnMigrate(true)
+              .outOfOrder(true)
+              .cleanDisabled(false) // Override global cleanDisabled=true
+              .load();
 
       flyway.clean();
       LOG.info("✅ Flyway clean completed");

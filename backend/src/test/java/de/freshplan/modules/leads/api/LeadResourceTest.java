@@ -27,7 +27,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Tag;
 
 /**
@@ -338,9 +337,10 @@ class LeadResourceTest {
         .when()
         .get()
         .then()
-        .log().all() // Debug: print full response
+        .log()
+        .all() // Debug: print full response
         .statusCode(200)
-        .body("data", hasSize(greaterThanOrEqualTo(1)))  // At least 1 result
+        .body("data", hasSize(greaterThanOrEqualTo(1))) // At least 1 result
         .body("data[0].companyName", containsString("Berlin"));
   }
 
@@ -912,7 +912,8 @@ class LeadResourceTest {
         .then()
         .statusCode(201)
         .body("companyName", is("Test Restaurant Alt GmbH"))
-        // Verify contact was created from legacy data (split "Max Mustermann" → firstName, lastName)
+        // Verify contact was created from legacy data (split "Max Mustermann" → firstName,
+        // lastName)
         .body("contacts", hasSize(1))
         .body("contacts[0].firstName", is("Max"))
         .body("contacts[0].lastName", is("Mustermann"))
@@ -926,14 +927,15 @@ class LeadResourceTest {
   // ================= V280: Relationship Dimension Tests =================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("V280: Should update relationship fields via PATCH")
   void testUpdateRelationshipFields() {
     Long leadId = createTestLead("user1");
 
     // Get current ETag
-    String etag =
-        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+    String etag = given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
 
     // PATCH request with all 4 relationship fields
     Map<String, Object> request = new HashMap<>();
@@ -958,14 +960,15 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("V280: GET should return relationship fields")
   void testGetRelationshipFields() {
     Long leadId = createTestLead("user1");
 
     // Update via PATCH first
-    String etag =
-        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+    String etag = given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
 
     Map<String, Object> request = new HashMap<>();
     request.put("relationshipStatus", "TRUSTED");
@@ -991,14 +994,15 @@ class LeadResourceTest {
   // ================= Sprint 2.1.6 Phase 5+: Pain & Engagement Auto-Save Tests =================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Pain Score: Should update pain fields and trigger auto-scoring")
   void testUpdateLeadWithPainFields() {
     Long leadId = createTestLead("user1");
 
     // Get current ETag
-    String etag =
-        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+    String etag = given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
 
     // Update with pain fields
     Map<String, Object> request = new HashMap<>();
@@ -1022,14 +1026,15 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Engagement Score: Should update engagement fields and trigger auto-scoring")
   void testUpdateLeadWithEngagementFields() {
     Long leadId = createTestLead("user1");
 
     // Get current ETag
-    String etag =
-        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+    String etag = given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
 
     // Update with engagement fields
     Map<String, Object> request = new HashMap<>();
@@ -1053,14 +1058,15 @@ class LeadResourceTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Lead Score: Should recalculate total score after pain update")
   void testScoreRecalculationOnPainUpdate() {
     Long leadId = createTestLead("user1");
 
     // Get current ETag
-    String etag =
-        given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
+    String etag = given().when().get("/" + leadId).then().statusCode(200).extract().header("ETag");
 
     // Update pain fields with high urgency
     Map<String, Object> request = new HashMap<>();

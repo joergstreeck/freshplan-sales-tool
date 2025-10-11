@@ -21,12 +21,13 @@ import org.junit.jupiter.api.Test;
  * <p>Sprint 2.1.6+ Lead Scoring System
  *
  * <p>Tests verify:
+ *
  * <ul>
- *   <li>Revenue Score calculation (volume + budget + deal size)</li>
- *   <li>Fit Score calculation (segment + location + source)</li>
- *   <li>Pain Score calculation (pain count + urgency + multi-pain bonus)</li>
- *   <li>Engagement Score calculation (relationship + decision maker + champion)</li>
- *   <li>Total Score calculation (weighted average 25% each dimension)</li>
+ *   <li>Revenue Score calculation (volume + budget + deal size)
+ *   <li>Fit Score calculation (segment + location + source)
+ *   <li>Pain Score calculation (pain count + urgency + multi-pain bonus)
+ *   <li>Engagement Score calculation (relationship + decision maker + champion)
+ *   <li>Total Score calculation (weighted average 25% each dimension)
  * </ul>
  */
 @QuarkusTest
@@ -159,7 +160,8 @@ public class LeadScoringServiceTest {
 
     // Perfect engagement
     lead.relationshipStatus = RelationshipStatus.ADVOCATE; // ADVOCATE = 25 points
-    lead.decisionMakerAccess = DecisionMakerAccess.IS_DECISION_MAKER; // IS_DECISION_MAKER = 25 points
+    lead.decisionMakerAccess =
+        DecisionMakerAccess.IS_DECISION_MAKER; // IS_DECISION_MAKER = 25 points
     lead.internalChampionName = "Anna Schmidt";
 
     scoringService.updateLeadScore(lead);

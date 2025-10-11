@@ -23,11 +23,12 @@ import org.junit.jupiter.api.*;
  * Enterprise-Level Security Tests for Lead Resource
  *
  * <p>Tests cover:
+ *
  * <ul>
- *   <li>Unauthorized access attempts</li>
- *   <li>Permission-based operations (RBAC)</li>
- *   <li>Data isolation between users</li>
- *   <li>Injection attack prevention</li>
+ *   <li>Unauthorized access attempts
+ *   <li>Permission-based operations (RBAC)
+ *   <li>Data isolation between users
+ *   <li>Injection attack prevention
  * </ul>
  */
 @QuarkusTest
@@ -89,7 +90,9 @@ public class LeadResourceSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Security: User cannot access other user's leads")
   void testUserCannotAccessOtherUsersLeads() {
     // Given: Lead owned by user2
@@ -97,15 +100,13 @@ public class LeadResourceSecurityTest {
 
     // When: user1 tries to access user2's lead
     // Then: Should return 403 Forbidden or 404 Not Found (data isolation)
-    given()
-        .when()
-        .get("/{id}", leadId)
-        .then()
-        .statusCode(anyOf(is(403), is(404)));
+    given().when().get("/{id}", leadId).then().statusCode(anyOf(is(403), is(404)));
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Security: User cannot update other user's lead scores")
   void testLeadScoreUpdateWithoutPermissions() {
     // Given: Lead owned by user2
@@ -127,7 +128,9 @@ public class LeadResourceSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "admin", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "admin",
+      roles = {"ADMIN"})
   @DisplayName("Security: Admin can access all leads (correct permission)")
   void testAdminCanAccessAllLeads() {
     // Given: Leads owned by different users
@@ -146,7 +149,9 @@ public class LeadResourceSecurityTest {
   // ================================================================================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("RBAC: USER role cannot delete leads")
   void testUserCannotDeleteLeads() {
     // Given: User's own lead
@@ -159,7 +164,9 @@ public class LeadResourceSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "manager1", roles = {"MANAGER"})
+  @TestSecurity(
+      user = "manager1",
+      roles = {"MANAGER"})
   @DisplayName("RBAC: MANAGER can delete leads")
   void testManagerCanDeleteLeads() {
     // Given: Lead in system
@@ -172,7 +179,9 @@ public class LeadResourceSecurityTest {
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("RBAC: USER cannot convert leads to customers")
   void testUserCannotConvertLeads() {
     // Given: Qualified lead
@@ -198,25 +207,33 @@ public class LeadResourceSecurityTest {
   // ================================================================================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Security: SQL Injection in search query is prevented")
   void testSqlInjectionPrevention() {
     // Given: Malicious search query
     String maliciousQuery = "'; DROP TABLE leads; --";
 
     // When: Search with SQL injection attempt
-    // Then: XSS Sanitizer removes dangerous chars, returns 200 with 0 results (sanitized query doesn't match anything)
+    // Then: XSS Sanitizer removes dangerous chars, returns 200 with 0 results (sanitized query
+    // doesn't match anything)
     // OR: Returns 400 if sanitized string becomes invalid (both are acceptable security responses)
     given()
         .queryParam("search", maliciousQuery)
         .when()
         .get()
         .then()
-        .statusCode(anyOf(is(200), is(400))); // Accept both: sanitized empty search (200) or invalid input (400)
+        .statusCode(
+            anyOf(
+                is(200),
+                is(400))); // Accept both: sanitized empty search (200) or invalid input (400)
   }
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Security: XSS in company name is sanitized")
   void testXssPreventionInCompanyName() {
     // Given: Lead creation with XSS attempt
@@ -245,8 +262,7 @@ public class LeadResourceSecurityTest {
 
     // Should not contain raw script tag
     assertFalse(
-        companyName.contains("<script>"),
-        "Script tags should be sanitized: " + companyName);
+        companyName.contains("<script>"), "Script tags should be sanitized: " + companyName);
   }
 
   // ================================================================================
@@ -254,7 +270,9 @@ public class LeadResourceSecurityTest {
   // ================================================================================
 
   @Test
-  @TestSecurity(user = "user1", roles = {"USER"})
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
   @DisplayName("Security: User can only see their own leads in list")
   void testDataIsolationInLeadList() {
     // Given: Leads from different users

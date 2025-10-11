@@ -80,7 +80,9 @@ public class Lead extends PanacheEntityBase {
   public String countryCode = "DE";
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "territory_id", nullable = true) // Nullable - territory is optional (only for Currency/Tax rules)
+  @JoinColumn(
+      name = "territory_id",
+      nullable = true) // Nullable - territory is optional (only for Currency/Tax rules)
   public Territory territory;
 
   // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C - 100% Parity with Customer)
@@ -102,7 +104,8 @@ public class Lead extends PanacheEntityBase {
 
   @Enumerated(EnumType.STRING)
   @Column(name = "business_type", length = 50)
-  public BusinessType businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6 Phase 5: Enum)
+  public BusinessType
+      businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6 Phase 5: Enum)
 
   @Enumerated(EnumType.STRING)
   @Column(name = "kitchen_size", length = 20)
@@ -154,7 +157,8 @@ public class Lead extends PanacheEntityBase {
   // Urgency Dimension (separate von Pain - Zeitdruck vs. Pain)
   @Enumerated(EnumType.STRING)
   @Column(name = "urgency_level", length = 20)
-  public UrgencyLevel urgencyLevel = UrgencyLevel.NORMAL; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
+  public UrgencyLevel urgencyLevel =
+      UrgencyLevel.NORMAL; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
 
   // Multi-Pain Bonus (auto-calculated)
   @Column(name = "multi_pain_bonus")
@@ -163,11 +167,13 @@ public class Lead extends PanacheEntityBase {
   // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
   @Enumerated(EnumType.STRING)
   @Column(name = "relationship_status", length = 30)
-  public RelationshipStatus relationshipStatus = RelationshipStatus.COLD; // 0-25 Punkte (40% Gewicht)
+  public RelationshipStatus relationshipStatus =
+      RelationshipStatus.COLD; // 0-25 Punkte (40% Gewicht)
 
   @Enumerated(EnumType.STRING)
   @Column(name = "decision_maker_access", length = 30)
-  public DecisionMakerAccess decisionMakerAccess = DecisionMakerAccess.UNKNOWN; // -3 bis +25 Punkte (60% Gewicht)
+  public DecisionMakerAccess decisionMakerAccess =
+      DecisionMakerAccess.UNKNOWN; // -3 bis +25 Punkte (60% Gewicht)
 
   @Size(max = 100)
   @Column(name = "competitor_in_use")
@@ -310,7 +316,10 @@ public class Lead extends PanacheEntityBase {
   // Metadata
   @Enumerated(EnumType.STRING)
   @Column(length = 50)
-  public LeadSource source; // MESSE/EMPFEHLUNG/TELEFON/WEB_FORMULAR/PARTNER/SONSTIGES (Sprint 2.1.6 Phase 5: Enum)
+  public LeadSource
+      source; // MESSE/EMPFEHLUNG/TELEFON/WEB_FORMULAR/PARTNER/SONSTIGES (Sprint 2.1.6 Phase 5:
+
+  // Enum)
 
   @Size(max = 255)
   @Column(name = "source_campaign")
@@ -444,8 +453,8 @@ public class Lead extends PanacheEntityBase {
   /**
    * Calculate Pain Score (0-62 Punkte).
    *
-   * <p>Berechnung: - Base Pain: 56 Punkte max (8 Felder) - Cap für Staff + Quality: -4 (von 16
-   * auf 12, Doppel-Counting vermeiden) - Multi-Pain Bonus: +10 (wenn 4+ Pains aktiv)
+   * <p>Berechnung: - Base Pain: 56 Punkte max (8 Felder) - Cap für Staff + Quality: -4 (von 16 auf
+   * 12, Doppel-Counting vermeiden) - Multi-Pain Bonus: +10 (wenn 4+ Pains aktiv)
    *
    * <p>Max. Score: 52 (alle Pains + Cap) + 10 (Bonus) = 62
    *
@@ -551,7 +560,8 @@ public class Lead extends PanacheEntityBase {
    *   <li>BLOCKED/UNKNOWN: ~10-15% Win-Rate
    * </ul>
    *
-   * <p>Relationship Status (40% Gewicht) misst Beziehungsqualität unabhängig vom Entscheider-Zugang.
+   * <p>Relationship Status (40% Gewicht) misst Beziehungsqualität unabhängig vom
+   * Entscheider-Zugang.
    *
    * <p>Recency Bonus/Malus (-5 bis +5):
    *
@@ -614,7 +624,8 @@ public class Lead extends PanacheEntityBase {
       return -5; // Keine meaningful Interaktion = schlechtester Score
     }
 
-    long daysSince = java.time.temporal.ChronoUnit.DAYS.between(lastMeaningful, LocalDateTime.now());
+    long daysSince =
+        java.time.temporal.ChronoUnit.DAYS.between(lastMeaningful, LocalDateTime.now());
 
     if (daysSince < 7) return +5;
     if (daysSince < 30) return +3;

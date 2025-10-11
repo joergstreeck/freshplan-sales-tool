@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.*;
 
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest;
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest.LeadImportData;
-import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;

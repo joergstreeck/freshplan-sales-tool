@@ -5,9 +5,8 @@ package de.freshplan.modules.leads.domain;
  *
  * <p>Sprint 2.1.6 Phase 5+ - V280 Migration
  *
- * <p>Wird verwendet für Engagement-Score-Berechnung (60% Gewicht). Orthogonal zu
- * RelationshipStatus (wie gut ist die Beziehung?) - hier geht es um: Sprechen wir mit der
- * richtigen Person?
+ * <p>Wird verwendet für Engagement-Score-Berechnung (60% Gewicht). Orthogonal zu RelationshipStatus
+ * (wie gut ist die Beziehung?) - hier geht es um: Sprechen wir mit der richtigen Person?
  *
  * <p>Punkte-System:
  *

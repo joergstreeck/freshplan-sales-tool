@@ -22,8 +22,7 @@ import java.time.LocalDateTime;
 public class AddFirstContactRequest {
 
   /** Contact person name (required). */
-  @NotNull(message = "Contact person name is required")
-  @Size(min = 2, max = 255, message = "Contact person name must be between 2 and 255 characters")
+  @NotNull(message = "Contact person name is required") @Size(min = 2, max = 255, message = "Contact person name must be between 2 and 255 characters")
   public String contactPerson;
 
   /** Contact email (optional, but recommended). */

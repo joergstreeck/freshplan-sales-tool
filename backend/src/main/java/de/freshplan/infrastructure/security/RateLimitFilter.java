@@ -19,17 +19,19 @@ import org.jboss.logging.Logger;
  * Rate Limiting Filter for API Protection.
  *
  * <p>Protects against:
+ *
  * <ul>
- *   <li>Brute Force Attacks (Login/Auth attempts)</li>
- *   <li>API Abuse (excessive requests)</li>
- *   <li>DDoS Attacks (distributed denial of service)</li>
+ *   <li>Brute Force Attacks (Login/Auth attempts)
+ *   <li>API Abuse (excessive requests)
+ *   <li>DDoS Attacks (distributed denial of service)
  * </ul>
  *
  * <p>Limits per User ID (Token Bucket Algorithm):
+ *
  * <ul>
- *   <li>General API: 100 requests/minute</li>
- *   <li>Write Operations (POST/PUT/PATCH): 50 requests/minute</li>
- *   <li>Delete Operations: 10 requests/minute</li>
+ *   <li>General API: 100 requests/minute
+ *   <li>Write Operations (POST/PUT/PATCH): 50 requests/minute
+ *   <li>Delete Operations: 10 requests/minute
  * </ul>
  *
  * <p>Sprint 2.1.6 - Security Hardening Phase 2
@@ -99,10 +101,8 @@ public class RateLimitFilter implements ContainerRequestFilter {
             .entity(
                 Map.of(
                     "error", "Rate limit exceeded",
-                    "message",
-                        "Too many requests. Please try again later.",
-                    "retryAfter",
-                        "60 seconds"))
+                    "message", "Too many requests. Please try again later.",
+                    "retryAfter", "60 seconds"))
             .header("Retry-After", "60") // Client should wait 60 seconds
             .header("X-RateLimit-Limit", getLimit(limitType))
             .header("X-RateLimit-Remaining", "0")
@@ -127,15 +127,16 @@ public class RateLimitFilter implements ContainerRequestFilter {
    * Get user identifier for rate limiting.
    *
    * <p>Priority:
+   *
    * <ol>
-   *   <li>User ID from JWT token (authenticated users)</li>
-   *   <li>IP address from X-Forwarded-For header (reverse proxy)</li>
-   *   <li>Session ID (fallback for anonymous users without X-Forwarded-For)</li>
+   *   <li>User ID from JWT token (authenticated users)
+   *   <li>IP address from X-Forwarded-For header (reverse proxy)
+   *   <li>Session ID (fallback for anonymous users without X-Forwarded-For)
    * </ol>
    *
-   * <p>SECURITY FIX: Previously used static "unknown" string for all anonymous users
-   * without X-Forwarded-For, which allowed a single attacker to exhaust the rate limit
-   * for ALL anonymous users (DoS vulnerability). Now uses unique session IDs.
+   * <p>SECURITY FIX: Previously used static "unknown" string for all anonymous users without
+   * X-Forwarded-For, which allowed a single attacker to exhaust the rate limit for ALL anonymous
+   * users (DoS vulnerability). Now uses unique session IDs.
    *
    * @param requestContext Request context
    * @return User identifier (never null, always unique per user/session)
@@ -169,9 +170,10 @@ public class RateLimitFilter implements ContainerRequestFilter {
     // This is NOT perfect but better than static "unknown" string
     String userAgent = requestContext.getHeaderString("User-Agent");
     String acceptLanguage = requestContext.getHeaderString("Accept-Language");
-    String fingerprint = (userAgent != null ? userAgent : "no-ua") +
-                        "_" +
-                        (acceptLanguage != null ? acceptLanguage : "no-lang");
+    String fingerprint =
+        (userAgent != null ? userAgent : "no-ua")
+            + "_"
+            + (acceptLanguage != null ? acceptLanguage : "no-lang");
 
     // Use hash to keep identifier length manageable
     int hash = fingerprint.hashCode();

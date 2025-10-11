@@ -21,10 +21,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * <p>Sprint 2.1.6 Phase 5: Enum-Migration Phase 1 (Lead-Modul)
  *
- * <p>Frontend loads enum values from Backend-API instead of hardcoding. Benefits:
- * - Consistency: Same values in DB, Backend, and Frontend
- * - Maintainability: Add new values in ONE place (Backend Enum)
- * - Type-Safety: Compiler validates all enum usage
+ * <p>Frontend loads enum values from Backend-API instead of hardcoding. Benefits: - Consistency:
+ * Same values in DB, Backend, and Frontend - Maintainability: Add new values in ONE place (Backend
+ * Enum) - Type-Safety: Compiler validates all enum usage
  *
  * <p>Cache Strategy: Frontend uses React Query with 5min stale time.
  *

@@ -8,10 +8,11 @@ import java.lang.annotation.*;
  * Validates that a string is safe from injection attacks.
  *
  * <p>Blocks:
+ *
  * <ul>
- *   <li>SQL Injection patterns: ', --, ;, DROP, UNION, etc.</li>
- *   <li>XSS patterns: &lt;script&gt;, javascript:, onerror=, etc.</li>
- *   <li>Command Injection: |, &, $(, etc.</li>
+ *   <li>SQL Injection patterns: ', --, ;, DROP, UNION, etc.
+ *   <li>XSS patterns: &lt;script&gt;, javascript:, onerror=, etc.
+ *   <li>Command Injection: |, &, $(, etc.
  * </ul>
  *
  * <p>Use for: Free-text fields like notes, descriptions, comments

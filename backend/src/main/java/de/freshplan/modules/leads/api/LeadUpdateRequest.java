@@ -69,7 +69,8 @@ public class LeadUpdateRequest {
 
   // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
   @Size(max = 30, message = "relationshipStatus must not exceed 30 characters")
-  public String relationshipStatus; // COLD, CONTACTED, ENGAGED_SKEPTICAL, ENGAGED_POSITIVE, TRUSTED, ADVOCATE
+  public String
+      relationshipStatus; // COLD, CONTACTED, ENGAGED_SKEPTICAL, ENGAGED_POSITIVE, TRUSTED, ADVOCATE
 
   @Size(max = 30, message = "decisionMakerAccess must not exceed 30 characters")
   public String decisionMakerAccess; // UNKNOWN, BLOCKED, INDIRECT, DIRECT, IS_DECISION_MAKER

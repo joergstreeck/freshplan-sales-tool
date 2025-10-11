@@ -8,15 +8,12 @@ import java.math.BigDecimal;
  *
  * <p>Based on estimated annual volume (monthly × 12).
  *
- * <p>Scoring Impact: Part of Revenue Score calculation (25% of total lead score):
- * - SMALL (1-5k): 25 points (baseline)
- * - MEDIUM (5-20k): 50 points
- * - LARGE (20-100k): 75 points
- * - ENTERPRISE (100k+): 100 points
+ * <p>Scoring Impact: Part of Revenue Score calculation (25% of total lead score): - SMALL (1-5k):
+ * 25 points (baseline) - MEDIUM (5-20k): 50 points - LARGE (20-100k): 75 points - ENTERPRISE
+ * (100k+): 100 points
  *
- * <p>Usage:
- * - Auto-calculated from {@code estimatedVolume} field
- * - Can be manually overridden by sales rep (domain expertise)
+ * <p>Usage: - Auto-calculated from {@code estimatedVolume} field - Can be manually overridden by
+ * sales rep (domain expertise)
  */
 public enum DealSize {
   /** Small deal: 1-5k €/year (baseline revenue potential) */

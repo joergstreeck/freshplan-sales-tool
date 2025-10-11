@@ -203,7 +203,63 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
 | **V271** | Fix add lead_score column (V269 Hotfix) | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring (Idempotent) |
 | **V272** | *(Reserved - Next available)* | - | 📋 Available | - | - | - | - | - | Use `./scripts/get-next-migration.sh` |
-| **V273** | Lead-Enums Migration (LeadSource, BusinessType, KitchenSize) | 2.1.6 Phase 5 | 📋 PLANNED | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Enum-Migration Phase 1 - Type-Safety |
+
+---
+
+### V10013-V10024: Sprint 2.1.6 Phase 5 Migrations (PR #137)
+
+⚠️ **WICHTIG:** Diese Migrationen sind **PRODUCTION-RELEVANT** und werden NICHT ignoriert!
+
+| Version | Beschreibung | Sprint | Owner | PR | Rollback | Risk | Downtime | Notes |
+|---------|--------------|--------|-------|-----|----------|------|----------|-------|
+| **V10013** | Settings ETag Triggers | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | ETag-Trigger für settings Tabelle (45 Zeilen SQL) |
+| **V10014** | Lead Enums (VARCHAR + CHECK) | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | lead_source, business_type, kitchen_size mit CHECK Constraints (312 Zeilen) |
+| **V10015** | Add first_contact_documented_at | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | MESSE/TELEFON Pre-Claim Logic (28 Zeilen) |
+| **V10016** | Create lead_contacts Table | 2.1.6 Phase 5 | @joergstreeck | #137 | ⚠️ Manual | 🔴 HIGH | None | 26 Felder, 100% Customer Parity, **Daten gehen bei Rollback verloren!** |
+| **V10017** | Backward Compatibility Trigger | 2.1.6 Phase 5 | @joergstreeck | #137 | ❌ No | 🔴 HIGH | None | **KRITISCH!** Synchronisiert primary contact → legacy fields. **NIEMALS löschen!** |
+| **V10018** | Pain Score Base | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | pain_score INT, urgency_level VARCHAR(20) |
+| **V10019** | Pain Fields Part 1 | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | 4 Pain-Felder (quality_issues, cost_pressure, time_pressure, compliance_gaps) |
+| **V10020** | Pain Fields Part 2 | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | 4 Pain-Felder (scalability_limits, staff_turnover, system_integration, market_competition) |
+| **V10021** | Estimated Volume | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | estimated_volume INT |
+| **V10022** | Make territory_id Nullable | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | Fixes Lead creation validation error, ermöglicht unassigned Leads |
+| **V10023** | Lead Contacts Constraints | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | Unique constraint für is_primary per lead_id |
+| **V10024** | Lead Scoring Complete | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | 5 Score-Felder (pain_score, revenue_score, fit_score, engagement_score, lead_score) |
+
+**Rollback Scripts:**
+
+**Phase 1 (V10013-V10015) - Einfach:**
+```sql
+ALTER TABLE leads DROP COLUMN IF EXISTS first_contact_documented_at;
+-- V10014: Enums bleiben (Breaking Change vermeiden)
+-- V10013: Triggers bleiben (harmlos)
+```
+
+**Phase 2 (V10016-V10017) - KRITISCH! ⚠️**
+```sql
+-- ⚠️ WARNUNG: DATEN GEHEN VERLOREN!
+DROP TRIGGER IF EXISTS sync_primary_contact_to_lead_trigger ON lead_contacts;
+DROP FUNCTION IF EXISTS sync_primary_contact_to_lead();
+DROP TABLE IF EXISTS lead_contacts CASCADE;
+
+-- Legacy contact_person bleibt erhalten (aus Backup)
+```
+
+**Alternative (Daten erhalten):**
+- ❌ Keine Migration zurückrollen
+- ✅ Frontend-Feature-Flag deaktivieren
+- ✅ Trigger läuft weiter (keine Breaking Changes)
+
+**Phase 3 (V10018-V10024) - Einfach:**
+```sql
+ALTER TABLE leads ALTER COLUMN territory_id SET NOT NULL;
+
+UPDATE leads SET
+  pain_score = NULL,
+  revenue_score = NULL,
+  fit_score = NULL,
+  engagement_score = NULL,
+  lead_score = NULL;
+```
 
 ---
 
@@ -287,7 +343,7 @@ V256 (Lead Activities Augmentation)
 V257 (DB Functions + Triggers)
 ```
 
-### Sprint 2.1.6 (Admin APIs & BusinessType Harmonization)
+### Sprint 2.1.6 Phase 1-4 (Admin APIs & BusinessType Harmonization)
 ```
 V261 (Customer.originalLeadId)
   - Lead → Customer conversion tracking
@@ -297,18 +353,64 @@ V262 (Stop-the-Clock Cumulative Pause + Idempotency Infrastructure)
   - progress_pause_total_seconds (BIGINT)
   - import_jobs table (Idempotency-Key Tracking)
   ↓
-V263 (BusinessType Harmonization)
+V263 (BusinessType Harmonization - Lead)
   - Migrate lowercase → uppercase (restaurant → RESTAURANT, etc.)
   - CHECK constraint: 9 unified values
   - EnumResource.java: GET /api/enums/business-types
   ↓
-V273 (Lead-Enums Migration - Phase 1) [PLANNED]
-  - LeadSource Enum: CREATE TYPE lead_source_type (6 values)
-  - BusinessType Enum: CREATE TYPE business_type (9 values - shared mit Customer)
-  - KitchenSize Enum: CREATE TYPE kitchen_size_type (4 values)
-  - EnumResource: GET /api/enums/lead-sources, /kitchen-sizes
-  - Business-Rule: source.requiresFirstContact() für MESSE/TELEFON
+V264 (BusinessType Harmonization - Customer)
+  - Customer.industry → Customer.businessType Migration
+  - Data Migration + Auto-Sync Setter
+  ↓
+V265-V271 (Lead Scoring Phase 4)
+  - V265: pseudonymized_at
+  - V266: Idempotent fixes
+  - V267: owner_user_id nullable
+  - V268: outbox_emails
+  - V269-V271: lead_score (mit V269 conflict fix)
 ```
+
+### Sprint 2.1.6 Phase 5 (Multi-Contact + Lead Scoring + Security) ✅ PR #137
+```
+V10013 (Settings ETag Triggers)
+  ↓
+V10014 (Lead Enums - VARCHAR + CHECK)
+  - lead_source, business_type, kitchen_size
+  - CHECK Constraints (nicht PostgreSQL ENUM Type!)
+  ↓
+V10015 (first_contact_documented_at)
+  - MESSE/TELEFON Pre-Claim Logic
+  ↓
+V10016 (lead_contacts Table) 🔴 KRITISCH
+  - 26 Felder, 100% Customer Parity
+  - Primary Contact Management
+  ↓
+V10017 (Backward Compatibility Trigger) 🔴 KRITISCH - NIEMALS LÖSCHEN!
+  - Synchronisiert primary contact → legacy fields
+  - Breaking Change wenn gelöscht!
+  ↓
+V10018-V10021 (Pain Scoring V3)
+  - V10018: pain_score + urgency_level
+  - V10019: 4 Pain-Felder (quality_issues, cost_pressure, ...)
+  - V10020: 4 Pain-Felder (scalability_limits, staff_turnover, ...)
+  - V10021: estimated_volume
+  ↓
+V10022 (territory_id nullable)
+  - Fixes Lead creation validation error
+  ↓
+V10023 (lead_contacts Constraints)
+  - Unique is_primary per lead_id
+  ↓
+V10024 (Lead Scoring Complete)
+  - 5 Score-Felder (pain, revenue, fit, engagement, lead_score)
+```
+
+**PR #137 Details:**
+- 50 Commits, 3 Wochen Entwicklung
+- 125 Files changed (+17.930/-1.826 LOC)
+- Tests: 31/31 LeadResourceTest + 10/10 Security Tests GREEN
+- Performance: N+1 Query Fix (7x faster), Score Caching (90% weniger DB-Writes)
+- Security: 5 Layer (Rate Limiting, Audit Logs, XSS, Error Disclosure, HTTP Headers)
 
 ### Sprint 2.1.6.1 (Enum-Migration Phase 2+3)
 ```
@@ -460,6 +562,9 @@ DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVA
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-08 (V273 PLANNED, Sprint 2.1.6 Phase 5 - Enum-Migration Phase 1)
+**Letzte Aktualisierung:** 2025-10-11 (V10013-V10024 dokumentiert, PR #137 erstellt)
 
-**Nächste Migration:** V272-V273 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V272 oder V10025+ (ermitteln via `./scripts/get-next-migration.sh`)
+
+**Aktuelle PR:** #137 - Sprint 2.1.6 Phase 5 (READY FOR REVIEW)
+**Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1
