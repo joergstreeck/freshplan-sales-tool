@@ -154,11 +154,27 @@ public class LeadResource {
     Sort sort = safeSort(sortField, sortDirection);
     Page page = Page.of(pageIndex, pageSize);
 
-    // Create ONE PanacheQuery and use it for both list() and count()
-    PanacheQuery<Lead> pq = Lead.find(query.toString(), sort, params).page(page);
+    // N+1 Prevention: Use HQL with JOIN FETCH to load contacts in ONE query
+    // STEP 1: Count query (without JOIN FETCH - not needed for count)
+    long total = Lead.count(query.toString(), params);
 
-    List<Lead> entities = pq.list();
-    long total = pq.count(); // Use the SAME query's count() method
+    // STEP 2: Build HQL with JOIN FETCH + sorting
+    String sortClause = sort.getColumns().stream()
+        .map(col -> "l." + col.getName() + " " + (col.getDirection() == Sort.Direction.Descending ? "DESC" : "ASC"))
+        .collect(Collectors.joining(", "));
+    String hql = "SELECT DISTINCT l FROM Lead l LEFT JOIN FETCH l.contacts WHERE "
+        + query.toString()
+        + " ORDER BY " + sortClause;
+
+    // STEP 3: Execute query with parameters
+    jakarta.persistence.TypedQuery<Lead> typedQuery = em.createQuery(hql, Lead.class);
+    for (Map.Entry<String, Object> param : params.entrySet()) {
+      typedQuery.setParameter(param.getKey(), param.getValue());
+    }
+    typedQuery.setFirstResult(pageIndex * pageSize);
+    typedQuery.setMaxResults(pageSize);
+
+    List<Lead> entities = typedQuery.getResultList();
 
     // Convert to DTOs within the transaction to avoid lazy loading issues
     List<LeadDTO> items = entities.stream().map(LeadDTO::from).collect(Collectors.toList());

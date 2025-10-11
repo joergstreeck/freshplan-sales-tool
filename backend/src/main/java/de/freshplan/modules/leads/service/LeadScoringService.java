@@ -111,16 +111,28 @@ public class LeadScoringService {
                     + (fitScore * 0.25)
                     + (engagementScore * 0.25));
 
-    // Update cached scores
-    lead.painScore = painScore;
-    lead.revenueScore = revenueScore;
-    lead.fitScore = fitScore;
-    lead.engagementScore = engagementScore;
-    lead.leadScore = totalScore;
+    // OPTIMIZATION: Only persist if scores changed (avoid unnecessary DB writes)
+    boolean scoresChanged =
+        !Integer.valueOf(painScore).equals(lead.painScore)
+            || !Integer.valueOf(revenueScore).equals(lead.revenueScore)
+            || !Integer.valueOf(fitScore).equals(lead.fitScore)
+            || !Integer.valueOf(engagementScore).equals(lead.engagementScore)
+            || !Integer.valueOf(totalScore).equals(lead.leadScore);
 
-    Log.infof(
-        "Lead %s score updated: Total=%d (Pain=%d, Revenue=%d, Fit=%d, Engagement=%d)",
-        lead.id, totalScore, painScore, revenueScore, fitScore, engagementScore);
+    if (scoresChanged) {
+      // Update cached scores
+      lead.painScore = painScore;
+      lead.revenueScore = revenueScore;
+      lead.fitScore = fitScore;
+      lead.engagementScore = engagementScore;
+      lead.leadScore = totalScore;
+
+      Log.infof(
+          "Lead %s score updated: Total=%d (Pain=%d, Revenue=%d, Fit=%d, Engagement=%d)",
+          lead.id, totalScore, painScore, revenueScore, fitScore, engagementScore);
+    } else {
+      Log.debugf("Lead %s scores unchanged, skipping DB write", lead.id);
+    }
   }
 
   // ================================================================================

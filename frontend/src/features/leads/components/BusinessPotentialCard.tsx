@@ -12,16 +12,17 @@
 
 import React from 'react';
 import {
-  Card,
-  CardHeader,
-  CardContent,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
   Box,
   Typography,
   Chip,
-  Button,
+  IconButton,
   Grid,
 } from '@mui/material';
 import {
+  ExpandMore as ExpandMoreIcon,
   Edit as EditIcon,
   Store as StoreIcon,
   Group as GroupIcon,
@@ -31,27 +32,53 @@ import type { Lead } from '../types';
 
 interface BusinessPotentialCardProps {
   lead: Lead;
+  expanded: boolean;
+  onChange: (event: React.SyntheticEvent, isExpanded: boolean) => void;
   onEdit: () => void;
 }
 
-const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onEdit }) => {
+const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, expanded, onChange, onEdit }) => {
+  // Preview Info für Header
+  const previewParts = [
+    lead.businessType || '—',
+    lead.city || '—',
+    `${lead.branchCount || 1} Standort${(lead.branchCount || 1) > 1 ? 'e' : ''}`
+  ].filter(part => part !== '—');
+
+  const previewText = previewParts.join(' • ');
 
   return (
-    <Card sx={{ mb: 3 }}>
-      <CardHeader
-        title={
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <RestaurantIcon />
+    <Accordion
+      expanded={expanded}
+      onChange={onChange}
+      sx={{ mb: 2, border: '1px solid', borderColor: 'divider' }}
+    >
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+          <RestaurantIcon color="primary" />
+          <Box sx={{ flexGrow: 1 }}>
             <Typography variant="h6">Vertriebsintelligenz</Typography>
+            {!expanded && (
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                {previewText || 'Noch keine Daten erfasst'}
+              </Typography>
+            )}
           </Box>
-        }
-        action={
-          <Button startIcon={<EditIcon />} onClick={onEdit} size="small" variant="outlined">
-            Bearbeiten
-          </Button>
-        }
-      />
-      <CardContent>
+          <IconButton
+            size="small"
+            component="div"
+            onClick={(e) => {
+              e.stopPropagation();
+              onEdit();
+            }}
+            sx={{ cursor: 'pointer' }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Box>
+      </AccordionSummary>
+
+      <AccordionDetails>
         <Grid container spacing={3}>
           {/* Business Type */}
           <Grid size={{ xs: 12, sm: 6 }}>
@@ -129,8 +156,8 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, onE
               </Grid>
             )}
         </Grid>
-      </CardContent>
-    </Card>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 

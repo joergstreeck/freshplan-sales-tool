@@ -75,7 +75,8 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
     if (immediate) {
       await saveFunction();
     } else {
-      debounceTimerRef.current = setTimeout(saveFunction, 1000);
+      // 2s debounce for text fields (good balance between responsiveness and API load)
+      debounceTimerRef.current = setTimeout(saveFunction, 2000);
     }
   }, [formData, onUpdate]);
 
@@ -91,8 +92,11 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
       return;
     }
 
-    // Trigger auto-save
-    autoSave(true); // Always immediate for now
+    // Trigger auto-save with smart debouncing:
+    // - Checkboxes/Selects: immediate (better UX)
+    // - TextField (painNotes): 2s debounce (prevent spam while typing)
+    const isTextFieldChange = formData.painNotes !== lead.painNotes;
+    autoSave(!isTextFieldChange); // Immediate if NOT text field
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]); // ONLY formData - autoSave causes infinite loop!
 

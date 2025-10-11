@@ -12,11 +12,19 @@ import {
   Stack,
   Divider,
   Alert,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  IconButton,
 } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import {
   ArrowBack as ArrowBackIcon,
   Edit as EditIcon,
   Add as AddIcon,
+  ExpandMore as ExpandMoreIcon,
+  TrendingUp as TrendingUpIcon,
+  Group as GroupIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { LeadContactsCard } from '../features/leads/components/LeadContactsCard';
@@ -26,7 +34,6 @@ import { ActivityDialog } from '../features/leads/components/ActivityDialog';
 import PreClaimBadge from '../features/leads/components/PreClaimBadge';
 import BusinessPotentialCard from '../features/leads/components/BusinessPotentialCard';
 import BusinessPotentialDialog from '../features/leads/components/BusinessPotentialDialog';
-import LeadActivityTimeline from '../features/leads/LeadActivityTimeline';
 import {
   LeadScoreSummaryCard,
   ScoreAccordion,
@@ -34,6 +41,8 @@ import {
   FitScoreDisplay,
   PainScoreForm,
   EngagementScoreForm,
+  LeadBasicDataAccordion,
+  LeadActivityTimelineGrouped,
 } from '../features/leads/components';
 import { toast } from 'react-hot-toast';
 import {
@@ -69,8 +78,11 @@ export function LeadDetailPage() {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [businessPotentialDialogOpen, setBusinessPotentialDialogOpen] = useState(false);
 
-  // Sprint 2.1.6+ Lead Scoring Accordion State
-  const [expandedAccordion, setExpandedAccordion] = useState<string | false>(false);
+  // Accordion State - Main Sections (default: basicData expanded)
+  const [expandedSection, setExpandedSection] = useState<string | false>('basicData');
+
+  // Lead Scoring Sub-Accordions State
+  const [expandedScoringAccordion, setExpandedScoringAccordion] = useState<string | false>(false);
 
   // Extract Lead-ID from slug (e.g. "mueller-gmbh-123" → "123")
   const leadId = slug ? extractLeadIdFromSlug(slug) : null;
@@ -101,10 +113,16 @@ export function LeadDetailPage() {
     }
   };
 
-  // Sprint 2.1.6+ Lead Scoring Handlers
-  const handleAccordionChange =
-    (panel: string) => (_event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpandedAccordion(isExpanded ? panel : false);
+  // Main Section Accordion Handler
+  const handleSectionChange =
+    (section: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpandedSection(isExpanded ? section : false);
+    };
+
+  // Lead Scoring Sub-Accordion Handler
+  const handleScoringAccordionChange =
+    (accordion: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpandedScoringAccordion(isExpanded ? accordion : false);
     };
 
   const handleUpdate = async (updates: Partial<Lead>) => {
@@ -115,16 +133,33 @@ export function LeadDetailPage() {
       const updatedLead = await updateLead(lead.id, updates);
       setLead(updatedLead);
       toast.success('Lead erfolgreich aktualisiert');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to update lead:', error);
-      toast.error('Fehler beim Aktualisieren des Leads');
 
-      // Fallback: Reload lead if update fails but we want fresh data
-      try {
-        const refreshedLead = await getLeadById(lead.id);
-        setLead(refreshedLead);
-      } catch (reloadError) {
-        console.error('Failed to reload lead:', reloadError);
+      // ETag Conflict (412 Precondition Failed): Data changed by someone else
+      if (error?.status === 412) {
+        try {
+          const refreshedLead = await getLeadById(lead.id);
+          setLead(refreshedLead);
+          toast.error(
+            'Daten wurden zwischenzeitlich geändert. Die Seite wurde aktualisiert. Bitte versuchen Sie es erneut.',
+            { duration: 5000 }
+          );
+        } catch (reloadError) {
+          console.error('Failed to reload lead after ETag conflict:', reloadError);
+          toast.error('Fehler beim Neuladen der Daten');
+        }
+      } else {
+        // Generic error
+        toast.error('Fehler beim Aktualisieren des Leads');
+
+        // Fallback: Reload lead to ensure fresh data
+        try {
+          const refreshedLead = await getLeadById(lead.id);
+          setLead(refreshedLead);
+        } catch (reloadError) {
+          console.error('Failed to reload lead:', reloadError);
+        }
       }
     }
   };
@@ -202,204 +237,191 @@ export function LeadDetailPage() {
           </Box>
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', md: 'row' } }}>
-          {/* Left Column: Lead Info + Contacts */}
-          <Box sx={{ flex: '1 1 66%', minWidth: 0 }}>
-            {/* Stammdaten Card - READ ONLY */}
-            <Card sx={{ mb: 3 }}>
-              <CardHeader
-                title="Stammdaten"
-                action={
-                  <Button
-                    startIcon={<EditIcon />}
-                    onClick={() => setEditDialogOpen(true)}
-                    variant="outlined"
-                    size="small"
-                  >
-                    Bearbeiten
-                  </Button>
-                }
-              />
-              <Divider />
-              <CardContent>
-                <Box
-                  sx={{
-                    display: 'grid',
-                    gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-                    gap: 2,
-                  }}
-                >
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      Firmenname
-                    </Typography>
-                    <Typography variant="body1">{lead.companyName}</Typography>
-                  </Box>
-                  <Box>
-                    <Typography variant="caption" color="text.secondary">
-                      Website
-                    </Typography>
-                    <Typography variant="body1">{lead.website || '—'}</Typography>
-                  </Box>
-                  <Box sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Straße
-                    </Typography>
-                    <Typography variant="body1">{lead.street || '—'}</Typography>
-                  </Box>
-                  <Box sx={{ gridColumn: { xs: '1', sm: 'span 1' } }}>
-                    <Typography variant="caption" color="text.secondary">
-                      PLZ
-                    </Typography>
-                    <Typography variant="body1">{lead.postalCode || '—'}</Typography>
-                  </Box>
-                  <Box sx={{ gridColumn: { xs: '1', sm: 'span 1' } }}>
-                    <Typography variant="caption" color="text.secondary">
-                      Stadt
-                    </Typography>
-                    <Typography variant="body1">{lead.city || '—'}</Typography>
-                  </Box>
-                </Box>
+        <Grid container spacing={3}>
+          {/* Left Column: Main Content */}
+          <Grid size={{ xs: 12, lg: 8 }}>
+            {/* Lead Score Summary Card - ALWAYS VISIBLE */}
+            <LeadScoreSummaryCard
+              leadScore={lead.leadScore}
+              painScore={lead.painScore}
+              revenueScore={lead.revenueScore}
+              fitScore={lead.fitScore}
+              engagementScore={lead.engagementScore}
+            />
 
-                {/* Legacy Contact Info (Backward Compatibility) */}
-                {(lead.contactPerson || lead.email || lead.phone) && (
-                  <Box sx={{ mt: 3 }}>
-                    <Alert severity="info" sx={{ mb: 2 }}>
-                      <strong>Hinweis:</strong> Dieser Lead verwendet das alte Kontakt-Format.
-                      Bitte migrieren Sie zu strukturierten Kontakten.
-                    </Alert>
-                    <Typography variant="subtitle2" gutterBottom>
-                      Legacy Kontakt
-                    </Typography>
-                    {lead.contactPerson && (
-                      <Typography variant="body2" color="text.secondary">
-                        Name: {lead.contactPerson}
-                      </Typography>
-                    )}
-                    {lead.email && (
-                      <Typography variant="body2" color="text.secondary">
-                        E-Mail: {lead.email}
-                      </Typography>
-                    )}
-                    {lead.phone && (
-                      <Typography variant="body2" color="text.secondary">
-                        Telefon: {lead.phone}
-                      </Typography>
-                    )}
-                  </Box>
-                )}
-              </CardContent>
-            </Card>
+            {/* Stammdaten Accordion */}
+            <LeadBasicDataAccordion
+              lead={lead}
+              expanded={expandedSection === 'basicData'}
+              onChange={handleSectionChange('basicData')}
+              onEdit={() => setEditDialogOpen(true)}
+            />
 
-            {/* Business Potential Card */}
+            {/* Vertriebsintelligenz Accordion */}
             <BusinessPotentialCard
               lead={lead}
+              expanded={expandedSection === 'businessPotential'}
+              onChange={handleSectionChange('businessPotential')}
               onEdit={() => setBusinessPotentialDialogOpen(true)}
             />
 
-            {/* Sprint 2.1.6+ Lead Scoring Section */}
-            <Box sx={{ mt: 3 }}>
-              <Typography variant="h5" sx={{ mb: 2 }}>
-                Lead Scoring
-              </Typography>
+            {/* Lead Scoring Accordion */}
+            <Accordion
+              expanded={expandedSection === 'scoring'}
+              onChange={handleSectionChange('scoring')}
+              sx={{ mb: 2, border: '1px solid', borderColor: 'divider' }}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+                  <TrendingUpIcon color="primary" />
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6">Lead Scoring</Typography>
+                    {expandedSection !== 'scoring' && (
+                      <Box sx={{ display: 'flex', gap: 1.5, mt: 0.5 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          💰 {lead.revenueScore || 0}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          🎯 {lead.fitScore || 0}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          ⚠️ {lead.painScore || 0}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          🤝 {lead.engagementScore || 0}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+              </AccordionSummary>
 
-              {/* Score Summary Card */}
-              <LeadScoreSummaryCard
-                leadScore={lead.leadScore}
-                painScore={lead.painScore}
-                revenueScore={lead.revenueScore}
-                fitScore={lead.fitScore}
-                engagementScore={lead.engagementScore}
-              />
+              <AccordionDetails>
+                {/* Revenue Score Sub-Accordion */}
+                <ScoreAccordion
+                  title="Umsatzpotenzial"
+                  icon="💰"
+                  score={lead.revenueScore}
+                  weight={25}
+                  expanded={expandedScoringAccordion === 'revenue'}
+                  onChange={handleScoringAccordionChange('revenue')}
+                >
+                  <RevenueScoreForm lead={lead} onUpdate={handleUpdate} />
+                </ScoreAccordion>
 
-              {/* Revenue Score Accordion */}
-              <ScoreAccordion
-                title="Umsatzpotenzial"
-                icon="💰"
-                score={lead.revenueScore}
-                weight={25}
-                expanded={expandedAccordion === 'revenue'}
-                onChange={handleAccordionChange('revenue')}
-              >
-                <RevenueScoreForm lead={lead} onUpdate={handleUpdate} />
-              </ScoreAccordion>
+                {/* Fit Score Sub-Accordion */}
+                <ScoreAccordion
+                  title="ICP Fit"
+                  icon="🎯"
+                  score={lead.fitScore}
+                  weight={25}
+                  expanded={expandedScoringAccordion === 'fit'}
+                  onChange={handleScoringAccordionChange('fit')}
+                >
+                  <FitScoreDisplay lead={lead} />
+                </ScoreAccordion>
 
-              {/* Fit Score Accordion */}
-              <ScoreAccordion
-                title="ICP Fit"
-                icon="🎯"
-                score={lead.fitScore}
-                weight={25}
-                expanded={expandedAccordion === 'fit'}
-                onChange={handleAccordionChange('fit')}
-              >
-                <FitScoreDisplay lead={lead} />
-              </ScoreAccordion>
+                {/* Pain Score Sub-Accordion */}
+                <ScoreAccordion
+                  title="Pain Points"
+                  icon="⚠️"
+                  score={lead.painScore}
+                  weight={25}
+                  expanded={expandedScoringAccordion === 'pain'}
+                  onChange={handleScoringAccordionChange('pain')}
+                >
+                  <PainScoreForm lead={lead} onUpdate={handleUpdate} />
+                </ScoreAccordion>
 
-              {/* Pain Score Accordion */}
-              <ScoreAccordion
-                title="Pain Points"
-                icon="⚠️"
-                score={lead.painScore}
-                weight={25}
-                expanded={expandedAccordion === 'pain'}
-                onChange={handleAccordionChange('pain')}
-              >
-                <PainScoreForm lead={lead} onUpdate={handleUpdate} />
-              </ScoreAccordion>
+                {/* Engagement Score Sub-Accordion */}
+                <ScoreAccordion
+                  title="Beziehungsebene"
+                  icon="🤝"
+                  score={lead.engagementScore}
+                  weight={25}
+                  expanded={expandedScoringAccordion === 'engagement'}
+                  onChange={handleScoringAccordionChange('engagement')}
+                >
+                  <EngagementScoreForm lead={lead} onUpdate={handleUpdate} />
+                </ScoreAccordion>
+              </AccordionDetails>
+            </Accordion>
 
-              {/* Engagement Score Accordion */}
-              <ScoreAccordion
-                title="Beziehungsebene"
-                icon="🤝"
-                score={lead.engagementScore}
-                weight={25}
-                expanded={expandedAccordion === 'engagement'}
-                onChange={handleAccordionChange('engagement')}
-              >
-                <EngagementScoreForm lead={lead} onUpdate={handleUpdate} />
-              </ScoreAccordion>
-            </Box>
+            {/* Kontakte Accordion */}
+            <Accordion
+              expanded={expandedSection === 'contacts'}
+              onChange={handleSectionChange('contacts')}
+              sx={{ mb: 2, border: '1px solid', borderColor: 'divider' }}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+                  <GroupIcon color="primary" />
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6">Kontakte ({contacts.length})</Typography>
+                    {expandedSection !== 'contacts' && (
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        {contacts.length > 0
+                          ? contacts.slice(0, 2).map(c => `${c.firstName} ${c.lastName}`).join(' • ')
+                          : 'Noch keine Kontakte erfasst'}
+                      </Typography>
+                    )}
+                  </Box>
+                  <IconButton
+                    size="small"
+                    component="div"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingContact(null);
+                      setContactDialogOpen(true);
+                    }}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <AddIcon fontSize="small" />
+                  </IconButton>
+                </Box>
+              </AccordionSummary>
 
-            {/* Contacts Card */}
-            <LeadContactsCard
-              contacts={contacts}
-              onAdd={() => {
-                setEditingContact(null);
-                setContactDialogOpen(true);
-              }}
-              onEdit={contact => {
-                setEditingContact(contact);
-                setContactDialogOpen(true);
-              }}
-              onDelete={async contactId => {
-                if (!window.confirm('Möchten Sie diesen Kontakt wirklich löschen?')) {
-                  return;
-                }
-                try {
-                  await deleteLeadContact(lead.id, contactId);
-                  toast.success('Kontakt erfolgreich gelöscht');
-                  loadLead();
-                } catch (error) {
-                  console.error('Failed to delete contact:', error);
-                  toast.error('Fehler beim Löschen des Kontakts');
-                }
-              }}
-              onSetPrimary={async contactId => {
-                try {
-                  await setLeadContactAsPrimary(lead.id, contactId);
-                  toast.success('Hauptkontakt erfolgreich gesetzt');
-                  loadLead();
-                } catch (error) {
-                  console.error('Failed to set primary contact:', error);
-                  toast.error('Fehler beim Setzen des Hauptkontakts');
-                }
-              }}
-            />
-          </Box>
+              <AccordionDetails>
+                <LeadContactsCard
+                  contacts={contacts}
+                  onAdd={() => {
+                    setEditingContact(null);
+                    setContactDialogOpen(true);
+                  }}
+                  onEdit={contact => {
+                    setEditingContact(contact);
+                    setContactDialogOpen(true);
+                  }}
+                  onDelete={async contactId => {
+                    if (!window.confirm('Möchten Sie diesen Kontakt wirklich löschen?')) {
+                      return;
+                    }
+                    try {
+                      await deleteLeadContact(lead.id, contactId);
+                      toast.success('Kontakt erfolgreich gelöscht');
+                      loadLead();
+                    } catch (error) {
+                      console.error('Failed to delete contact:', error);
+                      toast.error('Fehler beim Löschen des Kontakts');
+                    }
+                  }}
+                  onSetPrimary={async contactId => {
+                    try {
+                      await setLeadContactAsPrimary(lead.id, contactId);
+                      toast.success('Hauptkontakt erfolgreich gesetzt');
+                      loadLead();
+                    } catch (error) {
+                      console.error('Failed to set primary contact:', error);
+                      toast.error('Fehler beim Setzen des Hauptkontakts');
+                    }
+                  }}
+                />
+              </AccordionDetails>
+            </Accordion>
+          </Grid>
 
           {/* Right Column: Activity Timeline */}
-          <Box sx={{ flex: '1 1 33%', minWidth: 0 }}>
+          <Grid size={{ xs: 12, lg: 4 }}>
             <Card>
               <CardHeader
                 title="Aktivitäten"
@@ -419,12 +441,12 @@ export function LeadDetailPage() {
                 }
               />
               <Divider />
-              <CardContent sx={{ p: 0 }}>
-                <LeadActivityTimeline leadId={lead.id} />
+              <CardContent>
+                <LeadActivityTimelineGrouped leadId={lead.id} />
               </CardContent>
             </Card>
-          </Box>
-        </Box>
+          </Grid>
+        </Grid>
 
         {/* Dialogs */}
         <LeadEditDialog
