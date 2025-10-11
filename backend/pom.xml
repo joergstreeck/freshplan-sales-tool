@@ -107,6 +107,18 @@
       <artifactId>openpdf</artifactId>
       <version>1.3.30</version>
     </dependency>
+    <!-- OWASP HTML Sanitizer for XSS Protection -->
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>owasp-java-html-sanitizer</artifactId>
+      <version>20220608.1</version>
+    </dependency>
+    <!-- Bucket4j for Rate Limiting (Sprint 2.1.6 - Security Hardening Phase 2) -->
+    <dependency>
+      <groupId>com.bucket4j</groupId>
+      <artifactId>bucket4j-core</artifactId>
+      <version>8.7.0</version>
+    </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-junit5</artifactId>

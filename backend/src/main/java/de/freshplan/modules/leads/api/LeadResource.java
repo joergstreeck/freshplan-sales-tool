@@ -67,6 +67,10 @@ public class LeadResource {
 
   @Inject de.freshplan.modules.leads.service.LeadScoringService leadScoringService;
 
+  @Inject de.freshplan.infrastructure.security.XssSanitizer xssSanitizer;
+
+  @Inject de.freshplan.infrastructure.security.SecurityAuditLogger securityAuditLogger;
+
   @Context UriInfo uriInfo;
 
   @Context Request request;
@@ -137,10 +141,18 @@ public class LeadResource {
     }
 
     if (search != null && !search.trim().isEmpty()) {
+      // SQL Injection Protection: Sanitize search input before using in query
+      String sanitizedSearch = xssSanitizer.sanitizeStrict(search).toLowerCase();
+
+      // Log potential injection attempt if search contains suspicious patterns
+      if (search.contains("'") || search.contains(";") || search.contains("--") || search.contains("DROP")) {
+        securityAuditLogger.logInjectionAttempt(currentUserId, "SQL_INJECTION", search, "/api/leads");
+      }
+
       query.append(
           " and (lower(companyName) like :search or lower(contactPerson) like :search"
               + " or lower(email) like :search or lower(city) like :search)");
-      params.put("search", "%" + search.toLowerCase() + "%");
+      params.put("search", "%" + sanitizedSearch + "%");
     }
 
     // For non-admin users: show only leads they own or collaborate on
@@ -219,8 +231,19 @@ public class LeadResource {
           .build();
     }
 
-    // RLS handles access control - if lead is null, user has no access
-    // No additional check needed since RLS policies filter at database level
+    // DATA ISOLATION: Non-admin users can only access their own leads or those they collaborate on
+    if (!securityContext.isUserInRole("ADMIN")) {
+      boolean isOwner = lead.ownerUserId.equals(currentUserId);
+      boolean isCollaborator = lead.collaboratorUserIds != null
+          && lead.collaboratorUserIds.contains(currentUserId);
+
+      if (!isOwner && !isCollaborator) {
+        securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD", id.toString(), "READ");
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(Map.of("error", "Access denied"))
+            .build();
+      }
+    }
 
     // Generate strong ETag for preconditions
     EntityTag etag = ETags.strongLead(lead.id, lead.version);
@@ -258,18 +281,18 @@ public class LeadResource {
       }
     }
 
-    // Create new lead
+    // Create new lead with XSS-sanitized inputs
     Lead lead = new Lead();
-    lead.companyName = request.companyName;
-    lead.contactPerson = request.contactPerson;
-    lead.email = request.email;
+    lead.companyName = xssSanitizer.sanitizeStrict(request.companyName);
+    lead.contactPerson = xssSanitizer.sanitizeStrict(request.contactPerson);
+    lead.email = request.email; // Email is validated, no HTML expected
     lead.emailNormalized = normalizedEmail;
-    lead.phone = request.phone;
-    lead.website = request.website;
-    lead.street = request.street;
-    lead.postalCode = request.postalCode;
-    lead.city = request.city;
-    lead.countryCode = request.countryCode;
+    lead.phone = xssSanitizer.sanitizeStrict(request.phone);
+    lead.website = xssSanitizer.sanitizeStrict(request.website);
+    lead.street = xssSanitizer.sanitizeStrict(request.street);
+    lead.postalCode = xssSanitizer.sanitizeStrict(request.postalCode);
+    lead.city = xssSanitizer.sanitizeStrict(request.city);
+    lead.countryCode = request.countryCode; // Enum/validated field, no sanitization needed
 
     // Set territory based on country (for currency/tax rules only)
     Territory territory = Territory.findByCountryCode(lead.countryCode);
@@ -502,7 +525,7 @@ public class LeadResource {
     boolean isOwner = lead.ownerUserId.equals(currentUserId);
 
     if (!isOwner && !isAdmin) {
-      LOG.warnf("User %s denied update access to lead %s", currentUserId, id);
+      securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD", id.toString(), "UPDATE");
       return Response.status(Response.Status.FORBIDDEN)
           .entity(Map.of("error", "Only lead owner or admin can update"))
           .build();
@@ -517,9 +540,9 @@ public class LeadResource {
       return preconditions.tag(currentEtag).build();
     }
 
-    // Update basic fields if provided
-    if (updateRequest.companyName != null) lead.companyName = updateRequest.companyName;
-    if (updateRequest.contactPerson != null) lead.contactPerson = updateRequest.contactPerson;
+    // Update basic fields if provided (with XSS sanitization)
+    if (updateRequest.companyName != null) lead.companyName = xssSanitizer.sanitizeStrict(updateRequest.companyName);
+    if (updateRequest.contactPerson != null) lead.contactPerson = xssSanitizer.sanitizeStrict(updateRequest.contactPerson);
     if (updateRequest.email != null) {
       String newNormalizedEmail = Lead.normalizeEmail(updateRequest.email);
       // Check for duplicate if email is changing
@@ -539,11 +562,11 @@ public class LeadResource {
       lead.email = updateRequest.email;
       lead.emailNormalized = newNormalizedEmail;
     }
-    if (updateRequest.phone != null) lead.phone = updateRequest.phone;
-    if (updateRequest.website != null) lead.website = updateRequest.website;
-    if (updateRequest.street != null) lead.street = updateRequest.street;
-    if (updateRequest.postalCode != null) lead.postalCode = updateRequest.postalCode;
-    if (updateRequest.city != null) lead.city = updateRequest.city;
+    if (updateRequest.phone != null) lead.phone = xssSanitizer.sanitizeStrict(updateRequest.phone);
+    if (updateRequest.website != null) lead.website = xssSanitizer.sanitizeStrict(updateRequest.website);
+    if (updateRequest.street != null) lead.street = xssSanitizer.sanitizeStrict(updateRequest.street);
+    if (updateRequest.postalCode != null) lead.postalCode = xssSanitizer.sanitizeStrict(updateRequest.postalCode);
+    if (updateRequest.city != null) lead.city = xssSanitizer.sanitizeStrict(updateRequest.city);
     if (updateRequest.businessType != null) lead.businessType = BusinessType.fromString(updateRequest.businessType);
     if (updateRequest.kitchenSize != null) lead.kitchenSize = KitchenSize.fromString(updateRequest.kitchenSize);
     if (updateRequest.employeeCount != null) lead.employeeCount = updateRequest.employeeCount;
@@ -629,7 +652,7 @@ public class LeadResource {
       }
     }
 
-    // V280: Update Relationship Dimension fields
+    // V280: Update Relationship Dimension fields (with XSS sanitization)
     if (updateRequest.relationshipStatus != null) {
       lead.relationshipStatus = de.freshplan.modules.leads.domain.RelationshipStatus.valueOf(updateRequest.relationshipStatus);
     }
@@ -637,10 +660,10 @@ public class LeadResource {
       lead.decisionMakerAccess = de.freshplan.modules.leads.domain.DecisionMakerAccess.valueOf(updateRequest.decisionMakerAccess);
     }
     if (updateRequest.competitorInUse != null) {
-      lead.competitorInUse = updateRequest.competitorInUse;
+      lead.competitorInUse = xssSanitizer.sanitizeStrict(updateRequest.competitorInUse);
     }
     if (updateRequest.internalChampionName != null) {
-      lead.internalChampionName = updateRequest.internalChampionName;
+      lead.internalChampionName = xssSanitizer.sanitizeStrict(updateRequest.internalChampionName);
     }
 
     // Sprint 2.1.6+ Pain Dimension fields
@@ -656,7 +679,7 @@ public class LeadResource {
       lead.urgencyLevel = de.freshplan.modules.leads.domain.UrgencyLevel.valueOf(updateRequest.urgencyLevel);
     }
     if (updateRequest.multiPainBonus != null) lead.multiPainBonus = updateRequest.multiPainBonus;
-    if (updateRequest.painNotes != null) lead.painNotes = updateRequest.painNotes;
+    if (updateRequest.painNotes != null) lead.painNotes = xssSanitizer.sanitizeLenient(updateRequest.painNotes); // Allow basic formatting
 
     lead.updatedBy = currentUserId;
     lead.persist();
@@ -676,11 +699,12 @@ public class LeadResource {
   }
 
   /**
-   * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only admin or
-   * owner can delete. Requires If-Match header for safe deletion.
+   * DELETE /api/leads/{id} - Delete lead (soft delete by setting status to DELETED). Only MANAGER or
+   * ADMIN can delete. Requires If-Match header for safe deletion.
    */
   @DELETE
   @Path("/{id}")
+  @RolesAllowed({"MANAGER", "ADMIN"})
   @Transactional
   public Response deleteLead(@PathParam("id") Long id, @HeaderParam("If-Match") String ifMatch) {
 
@@ -699,14 +723,22 @@ public class LeadResource {
           .build();
     }
 
-    // Check permission
+    // Check permission: MANAGER and ADMIN can delete any lead, USER only their own
     boolean isAdmin = securityContext.isUserInRole("ADMIN");
+    boolean isManager = securityContext.isUserInRole("MANAGER");
     boolean isOwner = lead.ownerUserId.equals(currentUserId);
 
-    if (!isOwner && !isAdmin) {
+    if (!isManager && !isAdmin && !isOwner) {
+      securityAuditLogger.logRoleViolation(currentUserId, "MANAGER", "DELETE_LEAD");
       return Response.status(Response.Status.FORBIDDEN)
-          .entity(Map.of("error", "Only lead owner or admin can delete"))
+          .entity(Map.of("error", "Only lead owner, manager or admin can delete"))
           .build();
+    }
+
+    // Log privileged delete action
+    if (isManager || isAdmin) {
+      securityAuditLogger.logPrivilegedAction(
+          currentUserId, isAdmin ? "ADMIN" : "MANAGER", "DELETE", "LEAD", id.toString());
     }
 
     // Check ETag for safe deletion
@@ -748,8 +780,19 @@ public class LeadResource {
           .build();
     }
 
-    // RLS handles access control - if lead is null, user has no access
-    // No additional check needed since RLS policies filter at database level
+    // DATA ISOLATION: Non-admin users can only add activities to their own leads
+    if (!securityContext.isUserInRole("ADMIN")) {
+      boolean isOwner = lead.ownerUserId.equals(currentUserId);
+      boolean isCollaborator = lead.collaboratorUserIds != null
+          && lead.collaboratorUserIds.contains(currentUserId);
+
+      if (!isOwner && !isCollaborator) {
+        securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD_ACTIVITIES", id.toString(), "CREATE");
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(Map.of("error", "Access denied"))
+            .build();
+      }
+    }
 
     // Validate and convert activity type
     ActivityType activityType;
@@ -792,8 +835,19 @@ public class LeadResource {
           .build();
     }
 
-    // RLS handles access control - if lead is null, user has no access
-    // No additional check needed since RLS policies filter at database level
+    // DATA ISOLATION: Non-admin users can only access activities for their own leads
+    if (!securityContext.isUserInRole("ADMIN")) {
+      boolean isOwner = lead.ownerUserId.equals(currentUserId);
+      boolean isCollaborator = lead.collaboratorUserIds != null
+          && lead.collaboratorUserIds.contains(currentUserId);
+
+      if (!isOwner && !isCollaborator) {
+        securityAuditLogger.logUnauthorizedAccess(currentUserId, "LEAD_ACTIVITIES", id.toString(), "READ");
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(Map.of("error", "Access denied"))
+            .build();
+      }
+    }
 
     // Get activities with pagination
     Page page = Page.of(pageIndex, pageSize);
