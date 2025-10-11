@@ -11,9 +11,15 @@ vi.mock('react-hot-toast', () => ({
   },
 }));
 
-// Mock fetch API with proper headers (must be vi.fn() to support mockResolvedValueOnce, etc.)
-const mockFetch = vi.fn();
-global.fetch = mockFetch as unknown as typeof fetch;
+// Mock fetch API with proper headers
+global.fetch = vi.fn(() =>
+  Promise.resolve({
+    ok: true,
+    headers: new Headers(),
+    blob: async () => new Blob(['test'], { type: 'text/plain' }),
+    json: async () => ({}),
+  })
+) as unknown as typeof fetch;
 
 // Mock URL.createObjectURL and URL.revokeObjectURL
 global.URL.createObjectURL = vi.fn(() => 'blob:mock-url');
@@ -37,14 +43,6 @@ describe('UniversalExportButton', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-
-    // Reset fetch mock with default resolved value
-    mockFetch.mockResolvedValue({
-      ok: true,
-      headers: new Headers(),
-      blob: async () => new Blob(['test'], { type: 'text/plain' }),
-      json: async () => ({}),
-    });
 
     // Mock createElement for anchor element
     document.createElement = vi.fn((tagName: string) => {
@@ -137,7 +135,7 @@ describe('UniversalExportButton', () => {
 
     it('should close menu after selecting format', async () => {
       const user = userEvent.setup();
-      mockFetch.mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
@@ -162,7 +160,7 @@ describe('UniversalExportButton', () => {
       it('should export as CSV when CSV option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['test,data'], { type: 'text/csv' });
-        mockFetch.mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
@@ -177,7 +175,7 @@ describe('UniversalExportButton', () => {
         await user.click(csvOption);
 
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith(
+          expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/csv',
             expect.objectContaining({
               method: 'GET',
@@ -194,7 +192,7 @@ describe('UniversalExportButton', () => {
       it.skip('should trigger download with correct filename', async () => {
         // Skipped: Document.createElement mock not working as expected in test environment
         const user = userEvent.setup();
-        mockFetch.mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => new Blob(['test'], { type: 'text/csv' }),
@@ -221,7 +219,7 @@ describe('UniversalExportButton', () => {
         const mockBlob = new Blob(['excel'], {
           type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         });
-        mockFetch.mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
@@ -236,7 +234,7 @@ describe('UniversalExportButton', () => {
         await user.click(excelOption);
 
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith(
+          expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/excel',
             expect.objectContaining({
               method: 'GET',
@@ -255,7 +253,7 @@ describe('UniversalExportButton', () => {
       it('should export as JSON when JSON option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['{"test":"data"}'], { type: 'application/json' });
-        mockFetch.mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
@@ -270,7 +268,7 @@ describe('UniversalExportButton', () => {
         await user.click(jsonOption);
 
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith(
+          expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/json',
             expect.objectContaining({
               method: 'GET',
@@ -289,7 +287,7 @@ describe('UniversalExportButton', () => {
       it('should export as PDF when PDF option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['pdf'], { type: 'application/pdf' });
-        mockFetch.mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
@@ -304,7 +302,7 @@ describe('UniversalExportButton', () => {
         await user.click(pdfOption);
 
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith(
+          expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/pdf',
             expect.objectContaining({
               method: 'GET',
@@ -323,7 +321,7 @@ describe('UniversalExportButton', () => {
       it('should export as HTML when HTML option is selected', async () => {
         const user = userEvent.setup();
         const mockBlob = new Blob(['<html></html>'], { type: 'text/html' });
-        mockFetch.mockResolvedValueOnce({
+        (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
           ok: true,
           headers: new Headers(),
           blob: async () => mockBlob,
@@ -338,7 +336,7 @@ describe('UniversalExportButton', () => {
         await user.click(htmlOption);
 
         await waitFor(() => {
-          expect(mockFetch).toHaveBeenCalledWith(
+          expect(global.fetch).toHaveBeenCalledWith(
             '/api/v2/export/customers/html',
             expect.objectContaining({
               method: 'GET',
@@ -362,7 +360,7 @@ describe('UniversalExportButton', () => {
         resolvePromise = resolve;
       });
 
-      mockFetch.mockReturnValueOnce(promise);
+      (global.fetch as ReturnType<typeof vi.fn>).mockReturnValueOnce(promise);
 
       render(<UniversalExportButton {...defaultProps} />);
 
@@ -394,7 +392,7 @@ describe('UniversalExportButton', () => {
         resolvePromise = resolve;
       });
 
-      mockFetch.mockReturnValueOnce(promise);
+      (global.fetch as ReturnType<typeof vi.fn>).mockReturnValueOnce(promise);
 
       render(<UniversalExportButton {...defaultProps} />);
 
@@ -426,7 +424,7 @@ describe('UniversalExportButton', () => {
       const consoleError = console.error;
       console.error = vi.fn();
 
-      mockFetch.mockRejectedValueOnce(new Error('Network error'));
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
 
       render(<UniversalExportButton {...defaultProps} />);
 
@@ -445,7 +443,7 @@ describe('UniversalExportButton', () => {
 
     it('should handle HTTP error responses', async () => {
       const user = userEvent.setup();
-      mockFetch.mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: false,
         status: 500,
         statusText: 'Internal Server Error',
@@ -468,7 +466,7 @@ describe('UniversalExportButton', () => {
       // Skipped: Toast mock not working correctly with dynamic import
       const user = userEvent.setup();
       const { toast } = await import('react-hot-toast');
-      mockFetch.mockRejectedValueOnce(new Error('Export failed'));
+      (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Export failed'));
 
       render(<UniversalExportButton {...defaultProps} />);
 
@@ -503,7 +501,7 @@ describe('UniversalExportButton', () => {
 
     it('should use custom API endpoint when provided', async () => {
       const user = userEvent.setup();
-      mockFetch.mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
@@ -518,7 +516,7 @@ describe('UniversalExportButton', () => {
       await user.click(csvOption);
 
       await waitFor(() => {
-        expect(mockFetch).toHaveBeenCalledWith('/custom/export/customers/csv');
+        expect(global.fetch).toHaveBeenCalledWith('/custom/export/customers/csv');
       });
     });
   });
@@ -555,7 +553,7 @@ describe('UniversalExportButton', () => {
     it('should announce export completion to screen readers', async () => {
       const user = userEvent.setup();
       const { toast } = await import('react-hot-toast');
-      mockFetch.mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
@@ -580,7 +578,7 @@ describe('UniversalExportButton', () => {
   describe('Performance', () => {
     it('should cleanup blob URLs after download', async () => {
       const user = userEvent.setup();
-      mockFetch.mockResolvedValueOnce({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
         ok: true,
         headers: new Headers(),
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
@@ -601,7 +599,7 @@ describe('UniversalExportButton', () => {
 
     it('should not make duplicate requests during export', async () => {
       const user = userEvent.setup();
-      mockFetch.mockResolvedValue({
+      (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
         ok: true,
         blob: async () => new Blob(['test'], { type: 'text/csv' }),
       });
@@ -619,7 +617,7 @@ describe('UniversalExportButton', () => {
 
       await waitFor(() => {
         // Should only make one request
-        expect(mockFetch).toHaveBeenCalledTimes(1);
+        expect(global.fetch).toHaveBeenCalledTimes(1);
       });
     });
   });
