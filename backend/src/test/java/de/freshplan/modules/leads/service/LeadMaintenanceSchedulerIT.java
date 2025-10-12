@@ -298,6 +298,7 @@ class LeadMaintenanceSchedulerIT {
     lead.updatedBy = "IT-TEST";
     lead.createdAt = LocalDateTime.now();
     lead.updatedAt = LocalDateTime.now();
+    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     return lead;
   }
 }

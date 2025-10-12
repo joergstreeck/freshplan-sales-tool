@@ -3,6 +3,9 @@ import { Box, Tabs, Tab, Button } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import LeadWizard from '../features/leads/LeadWizard';
+import AddFirstContactDialog from '../features/leads/AddFirstContactDialog';
+import DeleteLeadDialog from '../features/leads/DeleteLeadDialog';
+import type { Lead } from '../features/leads/types';
 import { EmptyStateHero } from '../components/common/EmptyStateHero';
 import { CustomerTable } from '../features/customers/components/CustomerTable';
 import { VirtualizedCustomerTable } from '../features/customers/components/VirtualizedCustomerTable';
@@ -14,6 +17,7 @@ import { LeadQualityDashboard } from '../features/leads/components/intelligence/
 import { LeadProtectionManager } from '../features/leads/components/intelligence/LeadProtectionManager';
 import { IntelligentFilterBar } from '../features/customers/components/filter/IntelligentFilterBar';
 import { useAuth } from '../contexts/AuthContext';
+import { generateLeadUrl } from '../utils/slugify';
 import { useCustomers, useCustomerSearchAdvanced } from '../features/customer/api/customerQueries';
 import { useLeads } from '../features/leads/hooks/useLeads';
 import { useNavigate } from 'react-router-dom';
@@ -49,6 +53,9 @@ export function CustomersPageV2({
   const [activeTab, setActiveTab] = useState(0);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
+  const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   // Use focus list store for sort configuration only
   const { sortBy, setSortBy } = useFocusListStore();
@@ -558,6 +565,23 @@ export function CustomersPageV2({
                     highlightNew
                     columns={columnConfig}
                     context={context}
+                    showActions={true}
+                    onEdit={customer => {
+                      setSelectedLead(customer as unknown as Lead);
+                      if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                        setFirstContactDialogOpen(true);
+                      } else if (context === 'leads') {
+                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                      } else {
+                        // Customer context - keep old behavior for now
+                        setEditDialogOpen(true);
+                      }
+                    }}
+                    onDelete={customer => {
+                      setSelectedLead(customer as unknown as Lead);
+                      setDeleteDialogOpen(true);
+                    }}
                   />
                 )}
 
@@ -602,6 +626,38 @@ export function CustomersPageV2({
             onComplete={handleCustomerCreated}
           />
         )}
+
+        {/* AddFirstContact Dialog - Sprint 2.1.6 Phase 5 */}
+        <AddFirstContactDialog
+          open={firstContactDialogOpen}
+          lead={selectedLead}
+          onClose={() => {
+            setFirstContactDialogOpen(false);
+            setSelectedLead(null);
+          }}
+          onSuccess={() => {
+            setFirstContactDialogOpen(false);
+            setSelectedLead(null);
+            refetch();
+            toast.success('Erstkontakt erfolgreich dokumentiert!');
+          }}
+        />
+
+        {/* DeleteLead Dialog */}
+        <DeleteLeadDialog
+          open={deleteDialogOpen}
+          lead={selectedLead}
+          onClose={() => {
+            setDeleteDialogOpen(false);
+            setSelectedLead(null);
+          }}
+          onSuccess={() => {
+            setDeleteDialogOpen(false);
+            setSelectedLead(null);
+            refetch();
+            toast.success('Lead erfolgreich gelöscht!');
+          }}
+        />
       </Box>
     </MainLayoutV2>
   );

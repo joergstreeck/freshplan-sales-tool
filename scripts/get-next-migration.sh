@@ -6,7 +6,7 @@
 # Datum: 2025-08-07
 # Update: 2025-08-08 - Robuster gemacht, funktioniert aus jedem Verzeichnis
 # Update: 2025-08-09 - KRITISCH: Konsistente Berechnung sichergestellt
-# Update: 2025-08-17 - WICHTIG: Ignoriere V8000+ (nur V1-V7999 für Production)
+# Update: 2025-10-10 - NEUE STRATEGIE: Fortlaufende Nummerierung, Trennung durch Ordner
 
 set -e
 
@@ -19,6 +19,17 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
+
+echo ""
+echo -e "${GREEN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+echo -e "${GREEN}┃  📋 NEUE MIGRATIONS-STRATEGIE (ab Oktober 2025)              ┃${NC}"
+echo -e "${GREEN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+echo -e "${GREEN}┃  • Alle Migrationen fortlaufend: V10022, V10023, V10024...   ┃${NC}"
+echo -e "${GREEN}┃  • Trennung durch ORDNER (nicht durch Nummern):              ┃${NC}"
+echo -e "${GREEN}┃    - Production: db/migration/                               ┃${NC}"
+echo -e "${GREEN}┃    - Test/Dev: db/dev-migration/                             ┃${NC}"
+echo -e "${GREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+echo ""
 
 # Finde das Projekt-Root (wo .git liegt)
 find_project_root() {
@@ -40,17 +51,20 @@ if [ -z "$PROJECT_ROOT" ]; then
     exit 1
 fi
 
-# Bestimme Migration-Verzeichnis relativ zum Projekt-Root
+# Bestimme Migration-Verzeichnisse relativ zum Projekt-Root
 MIGRATION_DIR="$PROJECT_ROOT/backend/src/main/resources/db/migration"
+DEV_MIGRATION_DIR="$PROJECT_ROOT/backend/src/main/resources/db/dev-migration"
 
 # Alternative Pfade falls wir bereits im backend-Ordner sind
 if [ ! -d "$MIGRATION_DIR" ] && [ -d "src/main/resources/db/migration" ]; then
     MIGRATION_DIR="src/main/resources/db/migration"
+    DEV_MIGRATION_DIR="src/main/resources/db/dev-migration"
 elif [ ! -d "$MIGRATION_DIR" ] && [ -d "../backend/src/main/resources/db/migration" ]; then
     MIGRATION_DIR="../backend/src/main/resources/db/migration"
+    DEV_MIGRATION_DIR="../backend/src/main/resources/db/dev-migration"
 fi
 
-# Prüfe ob Verzeichnis existiert
+# Prüfe ob Verzeichnisse existieren
 if [ ! -d "$MIGRATION_DIR" ]; then
     echo -e "${RED}❌ Migration-Verzeichnis nicht gefunden${NC}"
     echo -e "${YELLOW}   Gesucht in: $MIGRATION_DIR${NC}"
@@ -58,21 +72,23 @@ if [ ! -d "$MIGRATION_DIR" ]; then
     exit 1
 fi
 
-echo -e "${BLUE}📁 Migration-Verzeichnis: ${NC}$MIGRATION_DIR"
+echo -e "${BLUE}📁 Migration-Verzeichnisse:${NC}"
+echo -e "${BLUE}   Production: $MIGRATION_DIR${NC}"
+echo -e "${BLUE}   Test/Dev:   $DEV_MIGRATION_DIR${NC}"
 echo ""
 
-# Zeige die wirklich letzten 5 Produktions-Migrationen (NUMERISCH sortiert, < V8000)
-echo -e "${YELLOW}📋 Letzte 5 Produktions-Migrationen (< V8000):${NC}"
+# Zeige die letzten 5 Migrationen (aus BEIDEN Ordnern)
+echo -e "${YELLOW}📋 Letzte 5 Migrationen (alle Ordner):${NC}"
 
-# Erstelle temporäre Liste mit Nummer und Dateiname
-for file in "$MIGRATION_DIR"/V*.sql; do
+# Sammle aus beiden Ordnern
+ALL_FILES=""
+for file in "$MIGRATION_DIR"/V*.sql "$DEV_MIGRATION_DIR"/V*.sql; do
     if [ -f "$file" ]; then
         basename "$file"
     fi
 done | while read -r filename; do
-    # Extrahiere Nummer
     num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
-    if [[ "$num" =~ ^[0-9]+$ ]] && [ "$num" -lt 8000 ]; then
+    if [[ "$num" =~ ^[0-9]+$ ]]; then
         echo "$num $filename"
     fi
 done | sort -n | tail -5 | while read -r num filename; do
@@ -81,80 +97,39 @@ done
 
 echo ""
 
-# Ermittle höchste Nummer (KRITISCH: numerische Sortierung!)
-# Extrahiere nur die Nummer aus V<nummer>__beschreibung.sql
-
-if [ "$DEBUG" = "1" ]; then
-    echo -e "${BLUE}🔍 DEBUG: Analysiere alle Migrations...${NC}"
-    ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
-        filename=$(basename "$filepath")
-        num=$(echo "$filename" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//')
-        echo "   $filename -> Nummer: $num"
-    done | head -10
-    echo ""
-fi
-
-# Drei verschiedene Methoden zur Sicherheit
-# WICHTIG: Nur Migrationen V1-V7999 sind für Production (V8000+ sind Test/CI-only)
-METHOD1=$(ls "$MIGRATION_DIR"/V*.sql 2>/dev/null | while read -r filepath; do
-    basename "$filepath" | sed 's/^V//' | sed 's/__.*$//' | sed 's/_.*$//'
-done | grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
-
-METHOD2=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
-          sed 's/.*\/V//' | sed 's/[_].*$//' | \
-          grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
-
-METHOD3=$(cd "$MIGRATION_DIR" 2>/dev/null && ls V*.sql 2>/dev/null | \
-          sed 's/^V//' | cut -d'_' -f1 | \
-          grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
-
-# Verwende Method1 als Standard
-HIGHEST="$METHOD1"
-
-# Konsistenz-Check: Alle Methoden müssen dasselbe Ergebnis liefern
-if [ "$DEBUG" = "1" ]; then
-    echo -e "${BLUE}🔍 DEBUG: Konsistenz-Prüfung der Methoden${NC}"
-    echo "   Method 1 (ls + basename): $METHOD1"
-    echo "   Method 2 (find): $METHOD2"
-    echo "   Method 3 (cd + ls): $METHOD3"
-fi
-
-# Warnung wenn Methoden unterschiedliche Ergebnisse liefern
-if [ -n "$METHOD1" ] && [ -n "$METHOD2" ] && [ "$METHOD1" != "$METHOD2" ]; then
-    echo -e "${RED}⚠️  WARNUNG: Inkonsistente Ergebnisse!${NC}"
-    echo "   Method1: V$METHOD1, Method2: V$METHOD2"
-    # Im Zweifel das höhere nehmen
-    HIGHEST=$(echo -e "$METHOD1\n$METHOD2" | sort -n | tail -1)
-    echo "   Verwende sicherheitshalber: V$HIGHEST"
-fi
+# Ermittle höchste Nummer (aus BEIDEN Ordnern)
+HIGHEST=$(find "$MIGRATION_DIR" "$DEV_MIGRATION_DIR" -name "V*.sql" 2>/dev/null | \
+  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
 
 if [ -z "$HIGHEST" ]; then
-    echo -e "${YELLOW}⚠️  Keine Produktions-Migrationen gefunden. Starte mit V1${NC}"
+    echo -e "${YELLOW}⚠️  Keine Migrationen gefunden. Starte mit V1${NC}"
     NEXT=1
 else
     NEXT=$((HIGHEST + 1))
-    echo -e "${GREEN}✅ Höchste Produktions-Migration: V${HIGHEST}${NC}"
-    echo -e "${BLUE}   (Nur V1-V7999 für Production, V8000+ sind Test/CI-only)${NC}"
+    echo -e "${GREEN}✅ Höchste Migration: V${HIGHEST}${NC}"
     
     # Zeige auch die aktuelle höchste Migration-Datei
-    HIGHEST_FILE=$(ls "$MIGRATION_DIR"/V${HIGHEST}*.sql 2>/dev/null | head -1 | sed 's/.*\///')
+    HIGHEST_FILE=$(find "$MIGRATION_DIR" "$DEV_MIGRATION_DIR" -name "V${HIGHEST}*.sql" 2>/dev/null | head -1 | xargs basename 2>/dev/null)
     if [ -n "$HIGHEST_FILE" ]; then
         echo -e "${BLUE}   Datei: $HIGHEST_FILE${NC}"
     fi
 fi
 
-# Warnung wenn wir uns der Produktions-Grenze nähern
-if [ "$NEXT" -ge 7900 ] && [ "$NEXT" -lt 8000 ]; then
-    echo -e "${YELLOW}⚠️  ACHTUNG: Näherung an Produktions-Limit (V8000)${NC}"
-    echo -e "${YELLOW}   Nur noch $((8000 - NEXT)) Produktions-Migrationen möglich!${NC}"
+# Sanity-Check: Verhindert Tippfehler (z.B. V100023 statt V10023)
+MAX_JUMP=100
+if [ "$NEXT" -gt $((HIGHEST + MAX_JUMP)) ]; then
     echo ""
-fi
-
-# Kritischer Check: Keine Produktions-Migrationen über V7999
-if [ "$NEXT" -ge 8000 ]; then
-    echo -e "${RED}❌ FEHLER: Produktions-Limit erreicht!${NC}"
-    echo -e "${RED}   V8000+ ist für Test/CI-Migrationen reserviert.${NC}"
-    echo -e "${YELLOW}   Bitte mit dem Team besprechen, wie weiter vorgegangen werden soll.${NC}"
+    echo -e "${RED}❌ FEHLER: Berechnete Nummer V$NEXT erscheint unrealistisch!${NC}"
+    echo -e "${RED}   Maximal erwarteter Sprung: $MAX_JUMP${NC}"
+    echo -e "${RED}   Aktuell höchste Nummer: V$HIGHEST${NC}"
+    echo ""
+    echo -e "${YELLOW}Mögliche Ursachen:${NC}"
+    echo -e "${YELLOW}  1. Falsche Migration-Dateien im Verzeichnis${NC}"
+    echo -e "${YELLOW}  2. Tippfehler in Dateinamen (z.B. V100023 statt V10023)${NC}"
+    echo ""
+    echo -e "${YELLOW}Bitte prüfen:${NC}"
+    echo -e "${YELLOW}  ls backend/src/main/resources/db/migration/V*.sql | tail -5${NC}"
+    echo -e "${YELLOW}  ls backend/src/main/resources/db/dev-migration/V*.sql | tail -5${NC}"
     exit 1
 fi
 
@@ -162,64 +137,88 @@ fi
 echo ""
 echo -e "${RED}🚨 NÄCHSTE FREIE MIGRATION: V${NEXT}${NC}"
 echo ""
-echo "Verwende diese Nummer für deine neue Migration:"
-echo -e "${GREEN}  V${NEXT}__deine_migration_beschreibung.sql${NC}"
+
+# Frage nach Ordner-Auswahl
+echo -e "${YELLOW}In welchem Ordner soll die Migration erstellt werden?${NC}"
+echo ""
+echo -e "  ${GREEN}1)${NC} 🏭 Production (db/migration/)"
+echo -e "     → Läuft in ALLEN Umgebungen (Dev, Test, Production)"
+echo -e "     → Für: Schema-Änderungen, Production-Features"
+echo ""
+echo -e "  ${GREEN}2)${NC} 🧪 Test/Dev (db/dev-migration/)"
+echo -e "     → Läuft NUR in Dev/Test (NICHT in Production)"
+echo -e "     → Für: Test-Daten, Demo-Features, Debug-Views"
+echo ""
+echo -e "  ${BLUE}💡 Tipp: Im Zweifel → Option 1 (Production)${NC}"
+echo -e "  ${BLUE}   Test-Migrationen sind selten nötig!${NC}"
 echo ""
 
-# Prüfe auf Lücken in den letzten 20 Nummern (nicht alle, das wäre zu viel Output)
-if [ "$HIGHEST" -gt 1 ]; then
-    START=$((HIGHEST - 20))
-    if [ $START -lt 1 ]; then
-        START=1
-    fi
-    
-    MISSING=""
-    MISSING_COUNT=0
-    EXPECTED=$START
-    
-    while [ $EXPECTED -lt $HIGHEST ]; do
-        if ! ls "$MIGRATION_DIR"/V${EXPECTED}[_]*.sql >/dev/null 2>&1; then
-            if [ $MISSING_COUNT -lt 10 ]; then
-                MISSING="$MISSING V$EXPECTED"
-            fi
-            MISSING_COUNT=$((MISSING_COUNT + 1))
-        fi
-        EXPECTED=$((EXPECTED + 1))
-    done
-    
-    if [ -n "$MISSING" ]; then
-        echo -e "${YELLOW}⚠️  Fehlende Migrations-Nummern (letzte 20):${MISSING}${NC}"
-        if [ $MISSING_COUNT -gt 10 ]; then
-            echo -e "${YELLOW}   ... und $((MISSING_COUNT - 10)) weitere${NC}"
-        fi
-        echo "   (Das ist OK, wenn diese absichtlich übersprungen wurden)"
-    fi
-fi
+read -p "Deine Wahl (1 oder 2): " CHOICE
 
-# Prüfe ob die nächste Nummer bereits existiert (Sicherheitscheck)
-if ls "$MIGRATION_DIR"/V${NEXT}[_]*.sql >/dev/null 2>&1; then
-    echo ""
-    echo -e "${RED}⚠️  WARNUNG: V${NEXT} existiert bereits!${NC}"
-    echo -e "${YELLOW}   Bitte prüfe die Migrations manuell.${NC}"
+if [ "$CHOICE" = "1" ]; then
+    TARGET_DIR="$MIGRATION_DIR"
+    TARGET_TYPE="Production"
+    echo -e "${GREEN}✅ Production-Migration in db/migration/${NC}"
+elif [ "$CHOICE" = "2" ]; then
+    TARGET_DIR="$DEV_MIGRATION_DIR"
+    TARGET_TYPE="Test/Dev"
+    echo -e "${YELLOW}✅ Test/Dev-Migration in db/dev-migration/${NC}"
+else
+    echo -e "${RED}❌ Ungültige Auswahl. Abbruch.${NC}"
     exit 1
 fi
 
-# Konsistenz-Check: Verifiziere nochmal
-if [ "$DEBUG" = "1" ]; then
-    echo -e "${BLUE}🔍 DEBUG: Konsistenz-Check${NC}"
-    echo "   Höchste gefundene Migration: V${HIGHEST:-0}"
-    echo "   Nächste freie Migration: V${NEXT}"
-    
-    # Double-Check mit alternativer Methode (ignoriere >= V8000)
-    ALT_HIGHEST=$(find "$MIGRATION_DIR" -name "V*.sql" -type f 2>/dev/null | \
-                   sed 's/.*\/V//' | sed 's/[_].*$//' | \
-                   grep -E '^[0-9]+$' | awk '$1 < 8000' | sort -n | tail -1)
-    if [ -n "$ALT_HIGHEST" ] && [ "$ALT_HIGHEST" != "$HIGHEST" ]; then
-        echo -e "${RED}   ⚠️  WARNUNG: Alternative Methode ergab V${ALT_HIGHEST}${NC}"
-    fi
+echo ""
+
+# Frage nach Beschreibung
+read -p "Migration-Beschreibung (snake_case, z.B. 'add_user_role'): " DESC
+
+if [ -z "$DESC" ]; then
+    echo -e "${RED}❌ Beschreibung erforderlich. Abbruch.${NC}"
+    exit 1
 fi
+
+# Konstruiere Dateinamen
+FILENAME="V${NEXT}__${DESC}.sql"
+FILEPATH="$TARGET_DIR/$FILENAME"
+
+# Prüfe ob Datei bereits existiert
+if [ -f "$FILEPATH" ]; then
+    echo ""
+    echo -e "${RED}❌ FEHLER: $FILENAME existiert bereits!${NC}"
+    exit 1
+fi
+
+echo ""
+echo "========================================="
+echo -e "${YELLOW}🤖 ANWEISUNG FÜR CLAUDE:${NC}"
+echo "========================================="
+echo ""
+echo "  'Schreibe SQL-Code für $DESC."
+echo "   WICHTIG: KEINE Datei erstellen, nur SQL-Code!'"
+echo ""
+echo "========================================="
+echo -e "${YELLOW}⚠️  MIGRATION SAFETY:${NC}"
+echo "========================================="
+echo ""
+echo "  Nach Erstellen der Datei:"
+echo "  1. Datei speichern als: $FILEPATH"
+echo "  2. git add $FILEPATH"
+echo "  3. git commit"
+echo "  4. → Pre-Commit Hook prüft automatisch!"
+echo ""
+echo "  Falls Hook blockt:"
+echo "  → Datei im falschen Ordner oder Nummer falsch"
+echo "  → Siehe Fehler-Message für Details"
+echo ""
+echo "========================================="
+echo -e "${GREEN}📁 ZIEL-DATEI:${NC}"
+echo "========================================="
+echo ""
+echo "  $FILEPATH"
+echo ""
 
 # Return nur die Nummer für Scripting
 echo "---"
-echo "Für Scripting: V${NEXT}"
+echo "Für Scripting: V${NEXT} ($TARGET_TYPE)"
 exit 0

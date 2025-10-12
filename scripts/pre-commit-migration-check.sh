@@ -1,67 +1,111 @@
 #!/bin/bash
-# Pre-commit hook to prevent duplicate migration numbers
-# Install: cp scripts/pre-commit-migration-check.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Pre-Commit Hook: Migration Safety Check  
+# Prüft Migrations-Dateien vor jedem Commit
 
-echo "🔍 Checking for migration duplicates..."
+echo "🔍 Migration Safety Check..."
 
-# Change to backend migration directory
-MIGRATION_DIR="backend/src/main/resources/db/migration"
+# Farben
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
 
-# Check if we have any SQL files being committed
-if ! git diff --cached --name-only | grep -q "$MIGRATION_DIR.*\.sql$"; then
-    echo "✅ No migration files in commit"
+# Finde alle neuen/geänderten Migrations-Dateien
+MIGRATION_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E "db/(migration|dev-migration)/V[0-9]+__.*\.sql")
+
+if [ -z "$MIGRATION_FILES" ]; then
+    echo -e "${GREEN}✅ Keine Migrations-Änderungen${NC}"
     exit 0
 fi
 
-# Extract all migration numbers from existing files
-existing_numbers=$(find $MIGRATION_DIR -name "V*.sql" 2>/dev/null | \
-    sed 's/.*V\([0-9]*\)__.*/\1/' | sort -n)
+echo -e "${YELLOW}📄 Gefundene Migrationen:${NC}"
+echo "$MIGRATION_FILES"
+echo ""
 
-# Extract migration numbers from staged files
-staged_numbers=$(git diff --cached --name-only | \
-    grep "$MIGRATION_DIR.*\.sql$" | \
-    sed 's/.*V\([0-9]*\)__.*/\1/')
+# Finde höchste existierende Nummer (aus BEIDEN Ordnern, NUR committed files!)
+# Wichtig: git ls-tree HEAD verwenden (zeigt NUR committed files)
+HIGHEST=$(git ls-tree -r --name-only HEAD backend/src/main/resources/db/migration/ backend/src/main/resources/db/dev-migration/ 2>/dev/null | \
+  grep "V[0-9]*__.*\.sql" | sed 's/.*V\([0-9]*\)__.*/\1/' | sort -n | tail -1)
 
-# Check for duplicates in all files (existing + staged)
-all_numbers=$(echo -e "$existing_numbers\n$staged_numbers" | sort -n)
-duplicates=$(echo "$all_numbers" | uniq -d)
+if [ -z "$HIGHEST" ]; then
+    HIGHEST=0
+fi
 
-if [ ! -z "$duplicates" ]; then
-    echo "🚨 FEHLER: Doppelte Migrationsnummern gefunden!"
+echo -e "${YELLOW}📊 Höchste existierende Nummer: V$HIGHEST${NC}"
+echo ""
+
+# Prüfe jede neue Migration
+ERROR=0
+for FILE in $MIGRATION_FILES; do
+    # Extrahiere Nummer
+    VERSION=$(echo "$FILE" | sed 's/.*V\([0-9]*\)__.*/\1/')
+    FILENAME=$(basename "$FILE")
+
+    echo -e "${YELLOW}🔍 Prüfe: $FILENAME (V$VERSION)${NC}"
+
+    # CHECK 1: Nummer muss höher sein als bisherige
+    if [ "$VERSION" -le "$HIGHEST" ]; then
+        echo -e "${RED}❌ FEHLER: V$VERSION ist nicht höher als V$HIGHEST!${NC}"
+        echo -e "${RED}   Verwende: ./scripts/get-next-migration.sh${NC}"
+        ERROR=1
+        continue
+    fi
+
+    # CHECK 2: Bestimme Ordner
+    if echo "$FILE" | grep -q "/dev-migration/"; then
+        ORDNER="dev-migration"
+        ORDNER_TYPE="Test/Dev"
+    else
+        ORDNER="migration"
+        ORDNER_TYPE="Production"
+    fi
+
+    echo -e "   📁 Ordner: $ORDNER ($ORDNER_TYPE)"
+
+    # CHECK 3: Dateiname-Keywords vs. Ordner
+    # Prüfe auf Test-Prefix (nicht irgendwo im Namen, sondern am Anfang der Beschreibung)
+    # Beschreibung ist alles nach V<nummer>__
+    DESCRIPTION=$(echo "$FILENAME" | sed 's/^V[0-9]*__//' | sed 's/\.sql$//')
+
+    if echo "$DESCRIPTION" | grep -qiE "^(test_|demo_|seed_|sample_|debug_)"; then
+        # Hat Test-Prefix
+        if [ "$ORDNER" = "migration" ]; then
+            echo -e "${RED}❌ FEHLER: Migration startet mit Test-Prefix aber liegt in migration/!${NC}"
+            echo -e "${RED}   Gefundener Prefix: $(echo "$DESCRIPTION" | grep -oiE "^(test_|demo_|seed_|sample_|debug_)")${NC}"
+            echo -e "${RED}   Test-Migrationen gehören in dev-migration/!${NC}"
+            echo ""
+            echo -e "${YELLOW}   Korrektur:${NC}"
+            echo -e "${YELLOW}   mv backend/src/main/resources/db/migration/$FILENAME \\${NC}"
+            echo -e "${YELLOW}      backend/src/main/resources/db/dev-migration/${NC}"
+            ERROR=1
+            continue
+        else
+            echo -e "   ✅ Test-Prefix + dev-migration/ = korrekt"
+        fi
+    else
+        # Kein Test-Prefix
+        if [ "$ORDNER" = "dev-migration" ]; then
+            echo -e "${YELLOW}   ⚠️  WARNUNG: dev-migration/ aber kein Test-Prefix!${NC}"
+            echo -e "${YELLOW}   Empfohlen: test_/demo_/seed_/sample_/debug_ am Anfang${NC}"
+            # Kein Error, nur Warnung (könnte legitim sein)
+        else
+            echo -e "   ✅ Production-Migration in migration/ = korrekt"
+        fi
+    fi
+
     echo ""
-    echo "Folgende Nummern sind bereits vergeben:"
-    for num in $duplicates; do
-        echo "  - V$num"
-        find $MIGRATION_DIR -name "V${num}__*.sql" | sed 's/^/    /'
-    done
+done
+
+if [ $ERROR -eq 1 ]; then
+    echo -e "${RED}❌ Migration Safety Check FEHLGESCHLAGEN!${NC}"
+    echo -e "${RED}   Commit wurde BLOCKIERT.${NC}"
     echo ""
-    echo "📋 Nächste freie Nummer ermitteln:"
-    echo "   cat docs/MIGRATION_REGISTRY.md | grep 'NÄCHSTE VERFÜGBARE'"
-    echo ""
-    echo "💡 Tipp: Nutze das Migration Creation Script:"
-    echo "   ./scripts/create-migration.sh [nummer] [beschreibung]"
-    echo ""
-    echo "⚠️  Um trotzdem zu committen (NICHT EMPFOHLEN):"
-    echo "   git commit --no-verify"
+    echo -e "${YELLOW}Hilfe:${NC}"
+    echo -e "${YELLOW}  1. Verwende: ./scripts/get-next-migration.sh${NC}"
+    echo -e "${YELLOW}  2. Migration im richtigen Ordner erstellen${NC}"
+    echo -e "${YELLOW}  3. Erneut committen${NC}"
     exit 1
 fi
 
-# Check if MIGRATION_REGISTRY.md is updated when adding new migrations
-if git diff --cached --name-only | grep -q "$MIGRATION_DIR.*\.sql$"; then
-    if ! git diff --cached --name-only | grep -q "docs/MIGRATION_REGISTRY.md"; then
-        echo "⚠️  WARNUNG: Neue Migration aber MIGRATION_REGISTRY.md nicht aktualisiert!"
-        echo ""
-        echo "📝 Bitte aktualisiere die Registry:"
-        echo "   ./scripts/update-migration-registry.sh"
-        echo "   git add docs/MIGRATION_REGISTRY.md"
-        echo ""
-        echo "Trotzdem committen? (y/N)"
-        read -r response
-        if [[ ! "$response" =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
-    fi
-fi
-
-echo "✅ Keine Migrations-Duplikate gefunden"
+echo -e "${GREEN}✅ Migration Safety Check BESTANDEN!${NC}"
 exit 0

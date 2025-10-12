@@ -1,5 +1,6 @@
 package de.freshplan.modules.leads.service;
 
+import de.freshplan.domain.shared.LeadSource;
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest;
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest.ActivityImportData;
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest.LeadImportData;
@@ -223,9 +224,15 @@ public class LeadImportService {
     // Territory (resolve from territoryCode or default)
     lead.territory = resolveTerritory(leadData.territoryCode, leadData.countryCode);
 
-    // Business Details
-    lead.businessType = leadData.businessType;
-    lead.kitchenSize = leadData.kitchenSize;
+    // Business Details - Sprint 2.1.6 Phase 5: String → Enum conversion
+    lead.businessType =
+        leadData.businessType != null
+            ? de.freshplan.domain.shared.BusinessType.fromString(leadData.businessType)
+            : null;
+    lead.kitchenSize =
+        leadData.kitchenSize != null
+            ? de.freshplan.domain.shared.KitchenSize.fromString(leadData.kitchenSize)
+            : null;
     lead.employeeCount = leadData.employeeCount;
     lead.estimatedVolume = leadData.estimatedVolume;
 
@@ -250,8 +257,11 @@ public class LeadImportService {
     // Canonical flag (duplicates get isCanonical=false to avoid unique constraint violation)
     lead.isCanonical = isCanonical;
 
-    // Metadata
-    lead.source = leadData.source != null ? leadData.source : "BESTAND_IMPORT";
+    // Metadata - Sprint 2.1.6 Phase 5: Convert String → Enum
+    lead.source =
+        leadData.source != null
+            ? LeadSource.fromString(leadData.source)
+            : LeadSource.SONSTIGES; // Fallback for BESTAND_IMPORT
     lead.sourceCampaign = leadData.sourceCampaign;
     lead.createdBy = currentUserId;
     lead.updatedBy = currentUserId;

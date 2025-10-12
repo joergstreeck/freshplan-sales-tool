@@ -106,6 +106,9 @@ const HilfeDashboard = lazy(() =>
 
 // Feature-flagged components
 const LeadsPage = lazy(() => import('./pages/LeadsPage'));
+const LeadDetailPage = lazy(() =>
+  import('./pages/LeadDetailPage').then(m => ({ default: m.LeadDetailPage }))
+);
 
 // Lazy load all placeholder pages
 import * as Placeholders from './pages/placeholders';
@@ -255,8 +258,13 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/lead-generation/leads"
                             element={FEAT_LEADGEN ? <LeadsPage /> : <Placeholders.LeadErfassung />}
                           />
-                          {/* Feature-flagged standalone route */}
-                          {FEAT_LEADGEN && <Route path="/leads" element={<LeadsPage />} />}
+                          {/* Lead Detail Page */}
+                          {FEAT_LEADGEN && (
+                            <Route
+                              path="/lead-generation/leads/:slug"
+                              element={<LeadDetailPage />}
+                            />
+                          )}
                           <Route
                             path="/lead-generation/campaigns"
                             element={<Placeholders.Kampagnen />}

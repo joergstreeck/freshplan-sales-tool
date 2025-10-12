@@ -7,6 +7,8 @@ import de.freshplan.modules.leads.events.ImportJobsArchivedEvent;
 import de.freshplan.modules.leads.events.LeadProgressWarningIssuedEvent;
 import de.freshplan.modules.leads.events.LeadProtectionExpiredEvent;
 import de.freshplan.modules.leads.events.LeadsPseudonymizedEvent;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.inject.Inject;
@@ -85,6 +87,8 @@ public class LeadMaintenanceService {
    *
    * @return Anzahl versendeter Warnungen
    */
+  @Counted(value = "lead_job_runs_total", description = "Total number of nightly job executions")
+  @Timed(value = "lead_job_duration_seconds", description = "Duration of nightly job execution")
   @RlsContext
   @Transactional
   public int checkProgressWarnings() {
@@ -201,6 +205,8 @@ public class LeadMaintenanceService {
    *
    * @return Anzahl abgelaufener Lead-Schutze
    */
+  @Counted(value = "lead_job_runs_total", description = "Total number of nightly job executions")
+  @Timed(value = "lead_job_duration_seconds", description = "Duration of nightly job execution")
   @RlsContext
   @Transactional
   public int checkProtectionExpiry() {
@@ -331,6 +337,8 @@ public class LeadMaintenanceService {
    *
    * @return Anzahl pseudonymisierter Leads
    */
+  @Counted(value = "lead_job_runs_total", description = "Total number of nightly job executions")
+  @Timed(value = "lead_job_duration_seconds", description = "Duration of nightly job execution")
   @RlsContext
   @Transactional
   public int pseudonymizeExpiredLeads() {
@@ -437,6 +445,8 @@ public class LeadMaintenanceService {
    *
    * @return Anzahl gelöschter Import-Jobs
    */
+  @Counted(value = "lead_job_runs_total", description = "Total number of nightly job executions")
+  @Timed(value = "lead_job_duration_seconds", description = "Duration of nightly job execution")
   @RlsContext
   @Transactional
   public int archiveCompletedImportJobs() {

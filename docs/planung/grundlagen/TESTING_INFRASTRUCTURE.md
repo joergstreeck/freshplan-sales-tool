@@ -1,9 +1,12 @@
-# 🧪 Testing Guide - FreshPlan Quality Assurance
+# 🧪 Testing Infrastructure - FreshPlan Quality Assurance
 
-**Erstellt:** 2025-09-17 | **Aktualisiert:** 2025-10-05
+**Erstellt:** 2025-09-17 | **Aktualisiert:** 2025-10-08
+**Umbenannt:** 2025-10-08 (TESTING_GUIDE.md → TESTING_INFRASTRUCTURE.md)
 **Status:** ✅ Verlässliche Analyse via Test-Runner (KORRIGIERT!)
 **Basis:** Echte Test-Runner Ergebnisse (npm test:ci + Maven Surefire)
 **Erkenntnis:** Viel mehr Tests als erwartet, aber viele deaktiviert
+
+> **💡 Hinweis:** Für Entwickler-Guide zu Testing-Prinzipien siehe: `testing_guide.md`
 
 ## 🎯 Coverage Infrastructure (NEU - 2025-10-05)
 

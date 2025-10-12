@@ -29,7 +29,7 @@ export default tseslint.config(
       'react-hooks/rules-of-hooks': 'error'
     },
   },
-  // Mock-Governance: Business-Logic mock-frei
+  // Mock-Governance: Business-Logic mock-frei (Test-Dateien ausgenommen)
   {
     files: [
       'src/app/**/*.{ts,tsx}',
@@ -37,6 +37,11 @@ export default tseslint.config(
       'src/lib/**/*.{ts,tsx}',
       'src/hooks/**/*.{ts,tsx}',
       'src/store/**/*.{ts,tsx}',
+    ],
+    ignores: [
+      '**/__tests__/**',
+      '**/*.test.{ts,tsx}',
+      '**/*.spec.{ts,tsx}',
     ],
     rules: {
       'no-restricted-imports': ['error', {

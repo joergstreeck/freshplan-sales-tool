@@ -9,7 +9,11 @@
 
 import React from 'react';
 import { Stack, Chip } from '@mui/material';
-import { CheckCircle as ActiveIcon, Cancel as InactiveIcon } from '@mui/icons-material';
+import {
+  CheckCircle as ActiveIcon,
+  Cancel as InactiveIcon,
+  BookmarkBorder as PreClaimIcon,
+} from '@mui/icons-material';
 import { useTheme } from '@mui/material/styles';
 
 import type { FilterConfig } from '../../types/filter.types';
@@ -51,6 +55,12 @@ export const LEAD_FILTERS: QuickFilter[] = [
     label: 'Interessenten',
     icon: <InactiveIcon fontSize="small" />,
     filter: { status: [CustomerStatus.PROSPECT] },
+  },
+  {
+    id: 'pre-claim',
+    label: 'Vormerkungen',
+    icon: <PreClaimIcon fontSize="small" />,
+    filter: { leadStage: ['REGISTERED'], hasFirstContact: false },
   },
 ];
 

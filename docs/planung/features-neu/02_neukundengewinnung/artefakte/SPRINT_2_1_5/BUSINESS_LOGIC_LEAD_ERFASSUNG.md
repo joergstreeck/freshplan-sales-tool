@@ -5,7 +5,7 @@ domain: "business-logic"
 doc_type: "konzept"
 status: "approved"
 owner: "team/product"
-updated: "2025-10-04"
+updated: "2025-10-08"
 ---
 
 # Business-Logik: Lead-Erfassung (Progressive Profiling)
@@ -20,15 +20,19 @@ updated: "2025-10-04"
 
 ## 0. Kern-Prinzipien (Quick-Start)
 
-**Lead-Stage vs. Lead-Schutz vs. Pre-Claim:**
+**Lead-Stage vs. Lead-Schutz vs. Pre-Claim (Variante B):**
 
 | Konzept | Bedeutung | Trigger |
 |---------|-----------|---------|
 | **Lead-Stage** (0→1→2) | Inhaltsreife: Vormerkung → Registrierung → Qualifizierung | Daten-Vollständigkeit |
-| **Lead-Schutz** (6M) | Exklusives Bearbeitungsrecht (6 Monate ab `registeredAt`) | **NUR** Erstkontakt-Dokumentation |
-| **Pre-Claim** (10T) | Vormerkung ohne Schutz, 10-Tage-Frist | Kein Erstkontakt dokumentiert |
+| **Lead-Schutz** (6M) | Exklusives Bearbeitungsrecht (6 Monate ab `registeredAt`) | `registeredAt` IMMER gesetzt |
+| **Pre-Claim** (10T) | Vormerkung MIT Schutz, aber 10-Tage-Frist für Erstkontakt | `first_contact_documented_at IS NULL` |
 
-**⚠️ Wichtig:** Stage 1 (Registrierung) bedeutet **NICHT** automatisch Schutz! Ein Lead kann Stage 1 haben (Kontaktdaten erfasst), aber im **Pre-Claim** bleiben (kein Erstkontakt dokumentiert). Schutz startet **ausschließlich** durch **Erstkontakt-Dokumentation** (Activity-Type: FIRST_CONTACT_DOCUMENTED).
+**⚠️ Variante B (2025-10-08):**
+- `registeredAt` = IMMER gesetzt (Audit Trail: "Wann erfasst?")
+- `firstContactDocumentedAt` = NULL bei Pre-Claim (10 Tage Frist)
+- **Lead ist sofort geschützt**, aber hat 10 Tage für Erstkontakt-Dokumentation
+- **Vorteil**: Keine Race Conditions, klarer Audit Trail, DB Best Practice
 
 ---
 
@@ -66,19 +70,18 @@ updated: "2025-10-04"
 - **Notizen/Quelle:** Freies Textfeld für Kontext (z.B. "Empfehlung von Herrn Schulz", "Partner-Liste Nr. 47") - **KEIN Einfluss auf Schutz**
 - **Erstkontakt-Dokumentation:** Kanal, Datum, Gesprächsnotiz (≥10 Zeichen) - **Aktiviert Schutz**
 
-**Zwei-Felder-Lösung (Design-Entscheidung 2025-10-04):**
-- **Feld 1: Notizen/Quelle** (immer sichtbar, optional) → Für Hintergrund-Infos, kein Schutz-Einfluss
-- **Feld 2: Erstkontakt-Dokumentation** (conditional) → Strukturiert, aktiviert `registered_at`
-
-**Erstkontakt-Logik (Option A - Finale Regelung 2025-10-04):**
-- **PFLICHT bei MESSE/TELEFON:** Partner HAT direkten Erstkontakt → Erstkontakt-Block immer sichtbar, muss dokumentiert werden
-- **OPTIONAL bei EMPFEHLUNG/WEB_FORMULAR/PARTNER/SONSTIGE:**
-  - Checkbox: "☑ Ich hatte bereits Erstkontakt (für sofortigen Lead-Schutz)"
-  - Nur wenn aktiviert → Erstkontakt-Block erscheint
-  - Partner kann unbedenklich Notizen-Feld nutzen (keine Schutz-Aktivierung)
-- **WENN Erstkontakt dokumentiert →** Schutz startet (registered_at = now, protection_until = +6 Monate)
-- **WENN NICHT →** Pre-Claim (registered_at = NULL, 10-Tage-Frist)
-- **Nachträglich möglich:** Quick-Action in Liste oder Lead bearbeiten → Erstkontakt hinzufügen
+**Erstkontakt-Logik (Variante B - Finale Regelung 2025-10-08):**
+- **PFLICHT bei MESSE/TELEFON:** Partner HAT direkten Erstkontakt → Kontaktperson-Feld PFLICHT
+- **OPTIONAL bei EMPFEHLUNG/WEB_FORMULAR/PARTNER/SONSTIGE:** Kontaktperson-Feld optional
+- **WENN Kontaktperson angegeben →**
+  - `registered_at` = NOW() (immer gesetzt!)
+  - `first_contact_documented_at` = NOW() (Vollschutz!)
+  - `stage` = REGISTRIERUNG
+- **WENN NICHT (Pre-Claim) →**
+  - `registered_at` = NOW() (Lead sofort geschützt!)
+  - `first_contact_documented_at` = NULL (10-Tage-Frist!)
+  - `stage` = VORMERKUNG
+- **Nachträglich möglich:** Lead bearbeiten → Kontaktperson hinzufügen → setzt `first_contact_documented_at`
 
 **Button:** `[Vormerkung speichern]` → POST /api/leads mit stage=0, schließt Dialog
 

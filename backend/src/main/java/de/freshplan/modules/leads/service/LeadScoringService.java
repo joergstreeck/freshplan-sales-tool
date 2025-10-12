@@ -1,233 +1,363 @@
 package de.freshplan.modules.leads.service;
 
+import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.DealSize;
+import de.freshplan.domain.shared.LeadSource;
 import de.freshplan.modules.leads.domain.Lead;
+import io.quarkus.logging.Log;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Set;
 
 /**
- * Service for calculating Lead Scores based on 4 factors (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2).
+ * Lead Scoring Service - Calculates quality scores for sales prioritization.
  *
- * <p>Score Calculation (0-100 points): - Umsatzpotenzial (25%): estimatedVolume + employeeCount -
- * Engagement (25%): lastActivityAt + followupCount - Fit (25%): businessType + kitchenSize + stage
- * - Dringlichkeit (25%): progressDeadline proximity + protectionUntil proximity
+ * <p>Sprint 2.1.6+ Lead Scoring System
+ *
+ * <p>Scoring Model (0-100 total):
+ *
+ * <ul>
+ *   <li>Pain Points: 25% - Customer pain severity + urgency
+ *   <li>Revenue: 25% - Deal value potential (volume + budget + size)
+ *   <li>Fit: 25% - ICP match quality (segment + location + source)
+ *   <li>Engagement: 25% - Relationship strength (contact + activities)
+ * </ul>
+ *
+ * <p>Usage: Call {@link #updateLeadScore(Lead)} after lead creation/update.
  */
 @ApplicationScoped
 public class LeadScoringService {
 
-  private static final int MAX_SCORE = 100;
-  private static final int FACTOR_WEIGHT = 25; // Each factor contributes 25%
+  // ================================================================================
+  // ICP Configuration (Ideal Customer Profile)
+  // TODO: Move to settings/database for configurability
+  // ================================================================================
+
+  private static final Set<BusinessType> IDEAL_SEGMENTS =
+      Set.of(
+          BusinessType.RESTAURANT, BusinessType.CATERING, BusinessType.HOTEL, BusinessType.KANTINE);
+
+  private static final Set<String> IDEAL_CITIES =
+      Set.of(
+          "Berlin",
+          "München",
+          "Hamburg",
+          "Köln",
+          "Frankfurt",
+          "Stuttgart",
+          "Düsseldorf",
+          "Dortmund",
+          "Essen",
+          "Leipzig",
+          "Bremen",
+          "Dresden",
+          "Hannover",
+          "Nürnberg",
+          "Duisburg");
+
+  private static final Set<LeadSource> HIGH_QUALITY_SOURCES =
+      Set.of(LeadSource.EMPFEHLUNG, LeadSource.PARTNER, LeadSource.MESSE);
+
+  // ================================================================================
+  // Main Scoring Method
+  // ================================================================================
 
   /**
-   * Calculates and updates the lead score based on 4 factors.
+   * Calculate and update all scoring dimensions for a lead.
    *
-   * @param lead The lead to score (will be modified in-place)
-   * @return The calculated score (0-100)
+   * <p>This method:
+   *
+   * <ul>
+   *   <li>Calculates all 4 sub-scores (pain, revenue, fit, engagement)
+   *   <li>Computes weighted total score (25% each)
+   *   <li>Updates cached score fields in Lead entity
+   * </ul>
+   *
+   * <p>Call this method:
+   *
+   * <ul>
+   *   <li>After lead creation
+   *   <li>After lead update (business data, pain points, engagement)
+   *   <li>After new activity added
+   * </ul>
+   *
+   * @param lead The lead to score (will be updated in-place)
    */
   @Transactional
-  public int calculateScore(Lead lead) {
-    int umsatzpotenzial = calculateUmsatzpotenzial(lead);
-    int engagement = calculateEngagement(lead);
-    int fit = calculateFit(lead);
-    int dringlichkeit = calculateDringlichkeit(lead);
+  public void updateLeadScore(Lead lead) {
+    if (lead == null) {
+      Log.warn("Cannot update score for null lead");
+      return;
+    }
 
-    // Weighted sum (each factor = 25%)
-    int totalScore = umsatzpotenzial + engagement + fit + dringlichkeit;
+    // Calculate all 4 dimensions
+    int painScore = calculatePainScore(lead);
+    int revenueScore = calculateRevenueScore(lead);
+    int fitScore = calculateFitScore(lead);
+    int engagementScore = calculateEngagementScore(lead);
 
-    // Ensure 0-100 range
-    lead.leadScore = Math.max(0, Math.min(MAX_SCORE, totalScore));
-    return lead.leadScore;
+    // Weighted average (25% each dimension)
+    int totalScore =
+        (int)
+            Math.round(
+                (painScore * 0.25)
+                    + (revenueScore * 0.25)
+                    + (fitScore * 0.25)
+                    + (engagementScore * 0.25));
+
+    // OPTIMIZATION: Only persist if scores changed (avoid unnecessary DB writes)
+    boolean scoresChanged =
+        !Integer.valueOf(painScore).equals(lead.painScore)
+            || !Integer.valueOf(revenueScore).equals(lead.revenueScore)
+            || !Integer.valueOf(fitScore).equals(lead.fitScore)
+            || !Integer.valueOf(engagementScore).equals(lead.engagementScore)
+            || !Integer.valueOf(totalScore).equals(lead.leadScore);
+
+    if (scoresChanged) {
+      // Update cached scores
+      lead.painScore = painScore;
+      lead.revenueScore = revenueScore;
+      lead.fitScore = fitScore;
+      lead.engagementScore = engagementScore;
+      lead.leadScore = totalScore;
+
+      Log.infof(
+          "Lead %s score updated: Total=%d (Pain=%d, Revenue=%d, Fit=%d, Engagement=%d)",
+          lead.id, totalScore, painScore, revenueScore, fitScore, engagementScore);
+    } else {
+      Log.debugf("Lead %s scores unchanged, skipping DB write", lead.id);
+    }
   }
 
-  /**
-   * Faktor 1: Umsatzpotenzial (25% weight).
-   *
-   * <p>Sub-factors: - estimatedVolume (15 points): €0 = 0, €10k = 5, €50k = 15 - employeeCount (10
-   * points): 0 = 0, 10 = 3, 25+ = 10
-   */
-  private int calculateUmsatzpotenzial(Lead lead) {
-    int volumeScore = 0;
-    int employeeScore = 0;
+  // ================================================================================
+  // Pain Score Calculation (0-100)
+  // ================================================================================
 
-    // Volume scoring (max 15 points)
+  /**
+   * Calculate Pain Score based on identified pain points and urgency.
+   *
+   * <p>Scoring breakdown:
+   *
+   * <ul>
+   *   <li>Pain count (0-8 pains): 5 points each = max 40 points
+   *   <li>Multi-pain bonus: +30 points (if multiPainBonus > 0)
+   *   <li>Urgency level: EMERGENCY=30, HIGH=22, MEDIUM=15, NORMAL=8 points
+   * </ul>
+   *
+   * @param lead The lead to score
+   * @return Pain score (0-100)
+   */
+  public int calculatePainScore(Lead lead) {
+    int score = 0;
+
+    // 1. Count identified pain points (40 points max)
+    int painCount = 0;
+    if (Boolean.TRUE.equals(lead.painStaffShortage)) painCount++;
+    if (Boolean.TRUE.equals(lead.painHighCosts)) painCount++;
+    if (Boolean.TRUE.equals(lead.painFoodWaste)) painCount++;
+    if (Boolean.TRUE.equals(lead.painQualityInconsistency)) painCount++;
+    if (Boolean.TRUE.equals(lead.painUnreliableDelivery)) painCount++;
+    if (Boolean.TRUE.equals(lead.painPoorService)) painCount++;
+    if (Boolean.TRUE.equals(lead.painSupplierQuality)) painCount++;
+    if (Boolean.TRUE.equals(lead.painTimePressure)) painCount++;
+
+    score += Math.min(painCount * 5, 40); // Max 40 points (8 pains × 5)
+
+    // 2. Multi-pain bonus (30 points)
+    if (lead.multiPainBonus != null && lead.multiPainBonus > 0) {
+      score += 30;
+    }
+
+    // 3. Urgency level (30 points max)
+    if (lead.urgencyLevel != null) {
+      score +=
+          switch (lead.urgencyLevel) {
+            case EMERGENCY -> 30;
+            case HIGH -> 22;
+            case MEDIUM -> 15;
+            case NORMAL -> 0; // Baseline: Keine Dringlichkeit = 0 Punkte
+          };
+    }
+
+    return Math.min(score, 100);
+  }
+
+  // ================================================================================
+  // Revenue Score Calculation (0-100)
+  // ================================================================================
+
+  /**
+   * Calculate Revenue Score based on deal value potential.
+   *
+   * <p>Scoring breakdown:
+   *
+   * <ul>
+   *   <li>Estimated volume (annual): ENTERPRISE=40, LARGE=30, MEDIUM=20, SMALL=10
+   *   <li>Budget confirmed: +30 points
+   *   <li>Deal size category: ENTERPRISE=30, LARGE=22, MEDIUM=15, SMALL=8
+   * </ul>
+   *
+   * @param lead The lead to score
+   * @return Revenue score (0-100)
+   */
+  public int calculateRevenueScore(Lead lead) {
+    int score = 0;
+
+    // 1. Estimated Volume (40 points max)
     if (lead.estimatedVolume != null) {
-      BigDecimal volume = lead.estimatedVolume;
-      if (volume.compareTo(BigDecimal.valueOf(50000)) >= 0) {
-        volumeScore = 15; // ≥€50k
-      } else if (volume.compareTo(BigDecimal.valueOf(25000)) >= 0) {
-        volumeScore = 10; // €25k-€49k
-      } else if (volume.compareTo(BigDecimal.valueOf(10000)) >= 0) {
-        volumeScore = 5; // €10k-€24k
-      } else if (volume.compareTo(BigDecimal.ZERO) > 0) {
-        volumeScore = 2; // >€0
-      }
-    }
+      BigDecimal annualVolume = lead.estimatedVolume.multiply(new BigDecimal("12"));
 
-    // Employee scoring (max 10 points)
-    if (lead.employeeCount != null) {
-      if (lead.employeeCount >= 25) {
-        employeeScore = 10;
-      } else if (lead.employeeCount >= 10) {
-        employeeScore = 6;
-      } else if (lead.employeeCount >= 5) {
-        employeeScore = 3;
-      } else if (lead.employeeCount > 0) {
-        employeeScore = 1;
-      }
-    }
-
-    return Math.min(FACTOR_WEIGHT, volumeScore + employeeScore);
-  }
-
-  /**
-   * Faktor 2: Engagement (25% weight).
-   *
-   * <p>Sub-factors: - lastActivityAt (15 points): <7d = 15, <30d = 10, <90d = 5, else 0 -
-   * followupCount (10 points): 0 = 0, 1-2 = 3, 3-5 = 7, 6+ = 10
-   */
-  private int calculateEngagement(Lead lead) {
-    int activityScore = 0;
-    int followupScore = 0;
-
-    // Activity recency (max 15 points)
-    if (lead.lastActivityAt != null) {
-      long daysSinceActivity = ChronoUnit.DAYS.between(lead.lastActivityAt, LocalDateTime.now());
-      if (daysSinceActivity < 7) {
-        activityScore = 15; // Very recent
-      } else if (daysSinceActivity < 30) {
-        activityScore = 10; // Recent
-      } else if (daysSinceActivity < 90) {
-        activityScore = 5; // Moderate
-      }
-      // else: 0 points (>90 days = stale)
-    }
-
-    // Followup count (max 10 points)
-    if (lead.followupCount != null) {
-      if (lead.followupCount >= 6) {
-        followupScore = 10;
-      } else if (lead.followupCount >= 3) {
-        followupScore = 7;
-      } else if (lead.followupCount >= 1) {
-        followupScore = 3;
-      }
-    }
-
-    return Math.min(FACTOR_WEIGHT, activityScore + followupScore);
-  }
-
-  /**
-   * Faktor 3: Fit (25% weight).
-   *
-   * <p>Sub-factors: - businessType (10 points): Restaurant/Hotel = 10, Catering = 7, Kantine = 5,
-   * Other = 2 - kitchenSize (8 points): large = 8, medium = 5, small = 2 - stage (7 points):
-   * QUALIFIZIERT = 7, REGISTRIERUNG = 4, VORMERKUNG = 1
-   */
-  private int calculateFit(Lead lead) {
-    int businessTypeScore = 0;
-    int kitchenSizeScore = 0;
-    int stageScore = 0;
-
-    // Business type (max 10 points)
-    if (lead.businessType != null) {
-      String type = lead.businessType.toLowerCase();
-      if (type.contains("restaurant") || type.contains("hotel")) {
-        businessTypeScore = 10; // High-value segments
-      } else if (type.contains("catering")) {
-        businessTypeScore = 7;
-      } else if (type.contains("kantine") || type.contains("kantinen")) {
-        businessTypeScore = 5;
+      if (annualVolume.compareTo(new BigDecimal("100000")) >= 0) {
+        score += 40; // Enterprise: 100k+ €/year
+      } else if (annualVolume.compareTo(new BigDecimal("20000")) >= 0) {
+        score += 30; // Large: 20-100k €/year
+      } else if (annualVolume.compareTo(new BigDecimal("5000")) >= 0) {
+        score += 20; // Medium: 5-20k €/year
       } else {
-        businessTypeScore = 2; // Generic
+        score += 10; // Small: 1-5k €/year
       }
     }
 
-    // Kitchen size (max 8 points)
-    if (lead.kitchenSize != null) {
-      String size = lead.kitchenSize.toLowerCase();
-      if (size.equals("large") || size.equals("groß")) {
-        kitchenSizeScore = 8;
-      } else if (size.equals("medium") || size.equals("mittel")) {
-        kitchenSizeScore = 5;
-      } else if (size.equals("small") || size.equals("klein")) {
-        kitchenSizeScore = 2;
+    // 2. Budget Confirmed (30 points)
+    if (Boolean.TRUE.equals(lead.budgetConfirmed)) {
+      score += 30;
+    }
+
+    // 3. Deal Size Category (30 points max)
+    if (lead.dealSize != null) {
+      score +=
+          switch (lead.dealSize) {
+            case ENTERPRISE -> 30;
+            case LARGE -> 22;
+            case MEDIUM -> 15;
+            case SMALL -> 8;
+          };
+    } else if (lead.estimatedVolume != null) {
+      // Auto-calculate deal size if not set
+      BigDecimal annualVolume = lead.estimatedVolume.multiply(new BigDecimal("12"));
+      DealSize autoSize = DealSize.fromAnnualVolume(annualVolume);
+      if (autoSize != null) {
+        lead.dealSize = autoSize; // Set it for next time
+        score +=
+            switch (autoSize) {
+              case ENTERPRISE -> 30;
+              case LARGE -> 22;
+              case MEDIUM -> 15;
+              case SMALL -> 8;
+            };
       }
     }
 
-    // Stage (max 7 points)
-    if (lead.stage != null) {
-      switch (lead.stage) {
-        case QUALIFIZIERT:
-          stageScore = 7;
-          break;
-        case REGISTRIERUNG:
-          stageScore = 4;
-          break;
-        case VORMERKUNG:
-          stageScore = 1;
-          break;
-      }
-    }
-
-    return Math.min(FACTOR_WEIGHT, businessTypeScore + kitchenSizeScore + stageScore);
+    return Math.min(score, 100);
   }
 
+  // ================================================================================
+  // Fit Score Calculation (0-100)
+  // ================================================================================
+
   /**
-   * Faktor 4: Dringlichkeit (25% weight).
+   * Calculate Fit Score based on ICP (Ideal Customer Profile) match.
    *
-   * <p>Sub-factors: - progressDeadline (15 points): <3d = 15, <7d = 10, <14d = 5, else 0 -
-   * protectionUntil (10 points): <30d = 10, <90d = 5, <180d = 2, else 0
+   * <p>Scoring breakdown:
+   *
+   * <ul>
+   *   <li>Segment match: Ideal=40, Other gastro=15 points
+   *   <li>Location: Top 15 cities=25, Other=10 points
+   *   <li>Source quality: High (Referral/Partner)=35, Medium (Messe)=25, Low (Web)=15, Other=5
+   * </ul>
+   *
+   * @param lead The lead to score
+   * @return Fit score (0-100)
    */
-  private int calculateDringlichkeit(Lead lead) {
-    int deadlineScore = 0;
-    int protectionScore = 0;
+  public int calculateFitScore(Lead lead) {
+    int score = 0;
 
-    // Progress deadline urgency (max 15 points)
-    if (lead.progressDeadline != null) {
-      long daysUntilDeadline = ChronoUnit.DAYS.between(LocalDateTime.now(), lead.progressDeadline);
-      if (daysUntilDeadline < 3) {
-        deadlineScore = 15; // Very urgent
-      } else if (daysUntilDeadline < 7) {
-        deadlineScore = 10; // Urgent
-      } else if (daysUntilDeadline < 14) {
-        deadlineScore = 5; // Moderate urgency
+    // 1. Segment Match (40 points max)
+    if (lead.businessType != null) {
+      if (IDEAL_SEGMENTS.contains(lead.businessType)) {
+        score += 40; // Perfect fit: Restaurant, Catering, Hotel, Kantine
+      } else {
+        score += 15; // Other B2B gastro = acceptable but not ideal
       }
-      // else: 0 points (>14 days = not urgent)
     }
 
-    // Protection expiry urgency (max 10 points)
-    LocalDateTime protectionUntil = lead.getProtectionUntil();
-    if (protectionUntil != null) {
-      long daysUntilExpiry = ChronoUnit.DAYS.between(LocalDateTime.now(), protectionUntil);
-
-      if (daysUntilExpiry < 30) {
-        protectionScore = 10; // Expiring soon
-      } else if (daysUntilExpiry < 90) {
-        protectionScore = 5; // Expiring medium-term
-      } else if (daysUntilExpiry < 180) {
-        protectionScore = 2; // Long-term
+    // 2. Location Match (25 points max)
+    if (lead.city != null) {
+      if (IDEAL_CITIES.contains(lead.city)) {
+        score += 25; // Top 15 cities in Germany
+      } else {
+        score += 10; // Other cities
       }
-      // else: 0 points (>180 days = safe)
     }
 
-    return Math.min(FACTOR_WEIGHT, deadlineScore + protectionScore);
+    // 3. Source Quality (35 points max)
+    if (lead.source != null) {
+      if (HIGH_QUALITY_SOURCES.contains(lead.source)) {
+        score += 35; // Referral/Partner = high quality
+      } else if (lead.source == LeadSource.MESSE) {
+        score += 25; // Messe = medium quality
+      } else if (lead.source == LeadSource.WEB_FORMULAR) {
+        score += 15; // Web = lower quality
+      } else {
+        score += 5; // Other sources (TELEFON, SONSTIGES)
+      }
+    }
+
+    return Math.min(score, 100);
   }
 
+  // ================================================================================
+  // Engagement Score Calculation (0-100)
+  // ================================================================================
+
   /**
-   * Recalculates scores for all leads in batch (for nightly jobs).
+   * Calculate Engagement Score based on relationship quality and activity.
    *
-   * @param leads List of leads to score
-   * @return Count of leads scored
+   * <p>Scoring breakdown:
+   *
+   * <ul>
+   *   <li>Relationship status: COLD=0, CONTACTED=5, ENGAGED_SKEPTICAL=8, ENGAGED_POSITIVE=12,
+   *       TRUSTED=17, ADVOCATE=25
+   *   <li>Decision maker access: UNKNOWN=0, BLOCKED=-3, INDIRECT=10, DIRECT=20,
+   *       IS_DECISION_MAKER=25
+   *   <li>Internal champion: +30 points if present
+   *   <li>Recent activity bonus: +10 points if active in last 7 days
+   * </ul>
+   *
+   * @param lead The lead to score
+   * @return Engagement score (0-100, capped)
    */
-  @Transactional
-  public int recalculateAllScores(Iterable<Lead> leads) {
-    int count = 0;
-    for (Lead lead : leads) {
-      calculateScore(lead);
-      count++;
+  public int calculateEngagementScore(Lead lead) {
+    int score = 0;
+
+    // 1. Relationship Quality (use enum's built-in points: 0-25)
+    if (lead.relationshipStatus != null) {
+      score += lead.relationshipStatus.getPoints();
     }
-    return count;
+
+    // 2. Decision Maker Access (use enum's built-in points: -3 to +25)
+    if (lead.decisionMakerAccess != null) {
+      score += lead.decisionMakerAccess.getPoints();
+    }
+
+    // 3. Internal Champion (30 points)
+    if (lead.internalChampionName != null && !lead.internalChampionName.isBlank()) {
+      score += 30;
+    }
+
+    // 4. Recent Activity Bonus (+10 if active in last 7 days)
+    if (lead.lastActivityAt != null) {
+      long daysSinceActivity =
+          ChronoUnit.DAYS.between(
+              lead.lastActivityAt.toLocalDate(), LocalDateTime.now().toLocalDate());
+      if (daysSinceActivity <= 7) {
+        score += 10;
+      }
+    }
+
+    return Math.min(score, 100);
   }
 }

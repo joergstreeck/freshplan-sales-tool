@@ -30,7 +30,8 @@ class LeadBackdatingServiceTest {
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean test data - activities must be deleted before leads due to FK constraint
+    // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
+    Lead.getEntityManager().createQuery("DELETE FROM LeadContact").executeUpdate();
     Lead.getEntityManager().createQuery("DELETE FROM LeadActivity").executeUpdate();
     Lead.deleteAll();
 

@@ -1,8 +1,9 @@
 import '@testing-library/jest-dom';
 import { cleanup, configure } from '@testing-library/react';
-import { afterEach, vi } from 'vitest';
+import { afterEach, beforeAll, afterAll, vi } from 'vitest';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import { server } from '@/mocks/server';
 
 // Configure Testing Library with shorter timeouts
 configure({
@@ -10,9 +11,18 @@ configure({
   computedStyleSupportsPseudoElements: false,
 });
 
-// Cleanup nach jedem Test
+// MSW Server Setup
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'warn' });
+});
+
 afterEach(() => {
   cleanup();
+  server.resetHandlers();
+});
+
+afterAll(() => {
+  server.close();
 });
 
 // Mock für window.matchMedia

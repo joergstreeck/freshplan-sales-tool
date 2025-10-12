@@ -12,8 +12,10 @@ import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -32,11 +34,15 @@ class LeadConvertServiceTest {
   private static final String TEST_USER = "admin-test";
   private Lead testLead;
 
+  @Inject EntityManager em;
+
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean test data (only Leads - Customers have FK constraints)
-    Lead.deleteAll();
+    // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
 
     // Ensure territory exists
     Territory territory = Territory.findByCode("DE");
@@ -56,6 +62,7 @@ class LeadConvertServiceTest {
     testLead.createdBy = TEST_USER;
     testLead.updatedBy = TEST_USER;
     testLead.status = LeadStatus.QUALIFIED;
+    testLead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
     testLead.persist();
   }
 

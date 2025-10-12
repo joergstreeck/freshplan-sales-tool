@@ -55,7 +55,8 @@ if (!rootElement) {
   throw new Error('Root element not found');
 }
 
-// Start the app with optional mocking
+// Enable MSW in development mode (only if VITE_USE_MSW=true)
+// MSW handlers use 'bypass' for unhandled requests, so real backend is always used
 enableMocking()
   .then(() => {
     createRoot(rootElement).render(
@@ -67,8 +68,7 @@ enableMocking()
     );
   })
   .catch(_error => {
-    // Failed to initialize app - error handled
-    // Render app anyway - don't let initialization errors block the entire app
+    // Failed to initialize MSW - render app anyway with real backend
     createRoot(rootElement).render(
       <StrictMode>
         <Suspense fallback={<div>Loading...</div>}>

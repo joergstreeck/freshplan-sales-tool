@@ -149,9 +149,47 @@ public class Customer extends PanacheEntityBase {
   private FinancingType primaryFinancing;
 
   // Pain Points as JSON - NEW for Sprint 2
+  /**
+   * @deprecated Use Boolean pain_* fields instead (V279+). This JSONB field is kept for backward
+   *     compatibility only.
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "pain_points", columnDefinition = "jsonb")
   private List<String> painPoints = new ArrayList<>();
+
+  // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V279)
+  // 100% Harmonized with Lead Entity (8 Boolean fields)
+
+  // OPERATIONAL PAINS (5 fields)
+  @Column(name = "pain_staff_shortage")
+  private Boolean painStaffShortage = false; // Personalmangel (+10)
+
+  @Column(name = "pain_high_costs")
+  private Boolean painHighCosts = false; // Hoher Kostendruck (+7)
+
+  @Column(name = "pain_food_waste")
+  private Boolean painFoodWaste = false; // Food Waste/Überproduktion (+7)
+
+  @Column(name = "pain_quality_inconsistency")
+  private Boolean painQualityInconsistency = false; // Interne Qualitätsinkonsistenz (+6)
+
+  @Column(name = "pain_time_pressure")
+  private Boolean painTimePressure = false; // Zeitdruck/Effizienz (+5)
+
+  // SWITCHING PAINS (3 fields)
+  @Column(name = "pain_supplier_quality")
+  private Boolean painSupplierQuality = false; // Qualitätsprobleme beim Lieferanten (+10)
+
+  @Column(name = "pain_unreliable_delivery")
+  private Boolean painUnreliableDelivery = false; // Unzuverlässige Lieferzeiten (+8)
+
+  @Column(name = "pain_poor_service")
+  private Boolean painPoorService = false; // Schlechter Service/Support (+3)
+
+  // Notes (Freitext)
+  @Column(name = "pain_notes", columnDefinition = "TEXT")
+  private String painNotes;
 
   // Risk Management
   @Column(name = "risk_score")
@@ -662,12 +700,94 @@ public class Customer extends PanacheEntityBase {
     this.primaryFinancing = primaryFinancing;
   }
 
+  /**
+   * @deprecated Use Boolean pain_* getters instead (V279+)
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   public List<String> getPainPoints() {
     return painPoints;
   }
 
+  /**
+   * @deprecated Use Boolean pain_* setters instead (V279+)
+   */
+  @Deprecated(since = "2.1.6", forRemoval = true)
   public void setPainPoints(List<String> painPoints) {
     this.painPoints = painPoints;
+  }
+
+  // Pain Scoring V3 Getters/Setters (Sprint 2.1.6 Phase 5+ - V279)
+
+  public Boolean getPainStaffShortage() {
+    return painStaffShortage;
+  }
+
+  public void setPainStaffShortage(Boolean painStaffShortage) {
+    this.painStaffShortage = painStaffShortage;
+  }
+
+  public Boolean getPainHighCosts() {
+    return painHighCosts;
+  }
+
+  public void setPainHighCosts(Boolean painHighCosts) {
+    this.painHighCosts = painHighCosts;
+  }
+
+  public Boolean getPainFoodWaste() {
+    return painFoodWaste;
+  }
+
+  public void setPainFoodWaste(Boolean painFoodWaste) {
+    this.painFoodWaste = painFoodWaste;
+  }
+
+  public Boolean getPainQualityInconsistency() {
+    return painQualityInconsistency;
+  }
+
+  public void setPainQualityInconsistency(Boolean painQualityInconsistency) {
+    this.painQualityInconsistency = painQualityInconsistency;
+  }
+
+  public Boolean getPainTimePressure() {
+    return painTimePressure;
+  }
+
+  public void setPainTimePressure(Boolean painTimePressure) {
+    this.painTimePressure = painTimePressure;
+  }
+
+  public Boolean getPainSupplierQuality() {
+    return painSupplierQuality;
+  }
+
+  public void setPainSupplierQuality(Boolean painSupplierQuality) {
+    this.painSupplierQuality = painSupplierQuality;
+  }
+
+  public Boolean getPainUnreliableDelivery() {
+    return painUnreliableDelivery;
+  }
+
+  public void setPainUnreliableDelivery(Boolean painUnreliableDelivery) {
+    this.painUnreliableDelivery = painUnreliableDelivery;
+  }
+
+  public Boolean getPainPoorService() {
+    return painPoorService;
+  }
+
+  public void setPainPoorService(Boolean painPoorService) {
+    this.painPoorService = painPoorService;
+  }
+
+  public String getPainNotes() {
+    return painNotes;
+  }
+
+  public void setPainNotes(String painNotes) {
+    this.painNotes = painNotes;
   }
 
   // Business methods for relationships

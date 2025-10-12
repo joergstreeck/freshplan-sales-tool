@@ -1,5 +1,9 @@
 package de.freshplan.modules.leads.domain;
 
+import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.DealSize;
+import de.freshplan.domain.shared.KitchenSize;
+import de.freshplan.domain.shared.LeadSource;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.vertx.core.json.JsonObject;
 import jakarta.persistence.*;
@@ -75,9 +79,19 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "country_code", nullable = false)
   public String countryCode = "DE";
 
-  @NotNull @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "territory_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(
+      name = "territory_id",
+      nullable = true) // Nullable - territory is optional (only for Currency/Tax rules)
   public Territory territory;
+
+  // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C - 100% Parity with Customer)
+  @OneToMany(
+      mappedBy = "lead",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  public List<LeadContact> contacts = new ArrayList<>();
 
   // Industry specific
   /**
@@ -88,19 +102,86 @@ public class Lead extends PanacheEntityBase {
   @Size(max = 50)
   public String industry;
 
-  @Size(max = 100)
-  @Column(name = "business_type")
-  public String businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6: CHECK constraint)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "business_type", length = 50)
+  public BusinessType
+      businessType; // Restaurant/Hotel/Kantinen/Catering (Sprint 2.1.6 Phase 5: Enum)
 
-  @Size(max = 20)
-  @Column(name = "kitchen_size")
-  public String kitchenSize; // small/medium/large
+  @Enumerated(EnumType.STRING)
+  @Column(name = "kitchen_size", length = 20)
+  public KitchenSize kitchenSize; // Klein/Mittel/Groß/Sehr Groß (Sprint 2.1.6 Phase 5: Enum)
 
   @Column(name = "employee_count")
   public Integer employeeCount;
 
   @Column(name = "estimated_volume", precision = 12, scale = 2)
   public BigDecimal estimatedVolume;
+
+  // Branch/Chain information (Sprint 2.1.6 Phase 5+)
+  @Column(name = "branch_count")
+  public Integer branchCount = 1; // Anzahl Filialen/Standorte (Default: 1 Einzelstandort)
+
+  @Column(name = "is_chain")
+  public Boolean isChain = false; // Kettenbetrieb ja/nein
+
+  // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V278)
+  // OPERATIONAL PAINS (35 Punkte max) - Strukturelle Betriebsprobleme
+  @Column(name = "pain_staff_shortage")
+  public Boolean painStaffShortage = false; // +10 Punkte
+
+  @Column(name = "pain_high_costs")
+  public Boolean painHighCosts = false; // +7 Punkte
+
+  @Column(name = "pain_food_waste")
+  public Boolean painFoodWaste = false; // +7 Punkte
+
+  @Column(name = "pain_quality_inconsistency")
+  public Boolean painQualityInconsistency = false; // +6 Punkte (-4 wenn mit Staff kombiniert)
+
+  @Column(name = "pain_time_pressure")
+  public Boolean painTimePressure = false; // +5 Punkte
+
+  // SWITCHING PAINS (21 Punkte max) - Probleme mit aktuellem Lieferanten
+  @Column(name = "pain_supplier_quality")
+  public Boolean painSupplierQuality = false; // +10 Punkte
+
+  @Column(name = "pain_unreliable_delivery")
+  public Boolean painUnreliableDelivery = false; // +8 Punkte
+
+  @Column(name = "pain_poor_service")
+  public Boolean painPoorService = false; // +3 Punkte
+
+  @Column(name = "pain_notes", columnDefinition = "TEXT")
+  public String painNotes;
+
+  // Urgency Dimension (separate von Pain - Zeitdruck vs. Pain)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "urgency_level", length = 20)
+  public UrgencyLevel urgencyLevel =
+      UrgencyLevel.NORMAL; // NORMAL(0), MEDIUM(5), HIGH(10), EMERGENCY(25)
+
+  // Multi-Pain Bonus (auto-calculated)
+  @Column(name = "multi_pain_bonus")
+  public Integer multiPainBonus = 0; // +10 wenn 4+ Pains aktiv
+
+  // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
+  @Enumerated(EnumType.STRING)
+  @Column(name = "relationship_status", length = 30)
+  public RelationshipStatus relationshipStatus =
+      RelationshipStatus.COLD; // 0-25 Punkte (40% Gewicht)
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "decision_maker_access", length = 30)
+  public DecisionMakerAccess decisionMakerAccess =
+      DecisionMakerAccess.UNKNOWN; // -3 bis +25 Punkte (60% Gewicht)
+
+  @Size(max = 100)
+  @Column(name = "competitor_in_use")
+  public String competitorInUse; // Aktueller Wettbewerber (falls bekannt)
+
+  @Size(max = 100)
+  @Column(name = "internal_champion_name")
+  public String internalChampionName; // Name des internen Champions (falls vorhanden)
 
   // Lead status and ownership
   @NotNull @Enumerated(EnumType.STRING)
@@ -117,8 +198,13 @@ public class Lead extends PanacheEntityBase {
   public Set<String> collaboratorUserIds = new HashSet<>();
 
   // State machine timestamps
+  // Variante B: registered_at IMMER gesetzt (Audit Trail)
   @Column(name = "registered_at", nullable = false)
-  public LocalDateTime registeredAt = LocalDateTime.now();
+  public LocalDateTime registeredAt;
+
+  // Pre-Claim Logic Variante B: NULL = Pre-Claim aktiv (10 Tage Frist)
+  @Column(name = "first_contact_documented_at", nullable = true)
+  public LocalDateTime firstContactDocumentedAt;
 
   @Size(max = 250)
   @Column(name = "registered_at_override_reason")
@@ -200,9 +286,40 @@ public class Lead extends PanacheEntityBase {
   // Note: Spotless may reformat - keeping compact for readability
   public Integer leadScore; // 0-100 (Umsatz 25% + Engagement 25% + Fit 25% + Dringlichkeit 25%)
 
+  // ================================================================================
+  // Sprint 2.1.6+: Lead Scoring System - 4 Dimensions
+  // ================================================================================
+
+  // Revenue Scoring Fields (user input)
+  @Column(name = "budget_confirmed")
+  public Boolean budgetConfirmed;
+
+  @Column(name = "deal_size")
+  @Enumerated(EnumType.STRING)
+  public DealSize dealSize;
+
+  // Score Cache (calculated by LeadScoringService for performance)
+  @Column(name = "pain_score")
+  public Integer painScore;
+
+  @Column(name = "revenue_score")
+  public Integer revenueScore;
+
+  @Column(name = "fit_score")
+  public Integer fitScore;
+
+  @Column(name = "engagement_score")
+  public Integer engagementScore;
+
+  // Note: leadScore (total 0-100) already exists above
+
   // Metadata
-  @Size(max = 100)
-  public String source; // web/email/phone/event/partner
+  @Enumerated(EnumType.STRING)
+  @Column(length = 50)
+  public LeadSource
+      source; // MESSE/EMPFEHLUNG/TELEFON/WEB_FORMULAR/PARTNER/SONSTIGES (Sprint 2.1.6 Phase 5:
+
+  // Enum)
 
   @Size(max = 255)
   @Column(name = "source_campaign")
@@ -275,6 +392,10 @@ public class Lead extends PanacheEntityBase {
   }
 
   public boolean needsReminder() {
+    // Pre-Claim leads (registeredAt = null) don't need reminders yet
+    if (registeredAt == null) {
+      return false;
+    }
     if (lastActivityAt == null) {
       return registeredAt.plusDays(protectionDays60).isBefore(LocalDateTime.now());
     }
@@ -325,13 +446,255 @@ public class Lead extends PanacheEntityBase {
     return find("id = ?1 and ownerUserId = ?2", id, userId).firstResult();
   }
 
+  // ============================================================================
+  // PAIN SCORING LOGIC (Sprint 2.1.6 Phase 5+ - V278)
+  // ============================================================================
+
+  /**
+   * Calculate Pain Score (0-62 Punkte).
+   *
+   * <p>Berechnung: - Base Pain: 56 Punkte max (8 Felder) - Cap für Staff + Quality: -4 (von 16 auf
+   * 12, Doppel-Counting vermeiden) - Multi-Pain Bonus: +10 (wenn 4+ Pains aktiv)
+   *
+   * <p>Max. Score: 52 (alle Pains + Cap) + 10 (Bonus) = 62
+   *
+   * @return Pain-Score (0-62)
+   */
+  public int calculatePainScore() {
+    int score = 0;
+    int activePains = 0;
+
+    // Operational Pains
+    if (Boolean.TRUE.equals(painStaffShortage)) {
+      score += 10;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painHighCosts)) {
+      score += 7;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painFoodWaste)) {
+      score += 7;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painQualityInconsistency)) {
+      score += 6;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painTimePressure)) {
+      score += 5;
+      activePains++;
+    }
+
+    // Switching Pains
+    if (Boolean.TRUE.equals(painSupplierQuality)) {
+      score += 10;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painUnreliableDelivery)) {
+      score += 8;
+      activePains++;
+    }
+    if (Boolean.TRUE.equals(painPoorService)) {
+      score += 3;
+      activePains++;
+    }
+
+    // ERST Cap anwenden (vor Multi-Pain-Bonus!)
+    if (Boolean.TRUE.equals(painStaffShortage) && Boolean.TRUE.equals(painQualityInconsistency)) {
+      score -= 4; // Von 16 auf 12 reduzieren (Doppel-Counting vermeiden)
+    }
+
+    // DANN Multi-Pain Bonus
+    if (activePains >= 4) {
+      score += 10;
+      multiPainBonus = 10;
+    } else {
+      multiPainBonus = 0;
+    }
+
+    return score;
+  }
+
+  /**
+   * Calculate Dringlichkeit (0-25 Punkte).
+   *
+   * <p>Formel: (Pain/62 × 60%) + (Urgency/25 × 40%)
+   *
+   * <p>Pain dominiert (60%), aber Urgency entscheidet über Sales Cycle (40%).
+   *
+   * <p><strong>Beispiele:</strong>
+   *
+   * <ul>
+   *   <li>Hoher Pain + geringe Urgency = Nurturing-Lead (langfristiger Sales Cycle)
+   *   <li>Hoher Pain + hohe Urgency = Hot Lead (sofort schließen)
+   * </ul>
+   *
+   * @return Dringlichkeits-Score (0-25)
+   */
+  public int calculateUrgencyDimension() {
+    int painScore = calculatePainScore();
+    int urgencyScore = urgencyLevel != null ? urgencyLevel.getPoints() : 0;
+
+    double painPart = (painScore / 62.0) * 15.0; // 60% von 25 = 15
+    double urgencyPart = (urgencyScore / 25.0) * 10.0; // 40% von 25 = 10
+
+    return (int) Math.round(painPart + urgencyPart);
+  }
+
+  // ============================================================================
+  // ENGAGEMENT SCORING LOGIC (Sprint 2.1.6 Phase 5+ - V280)
+  // ============================================================================
+
+  /**
+   * Calculate Engagement Score (0-25 Punkte).
+   *
+   * <p>Formel: (Relationship × 40%) + (DecisionMaker × 60%) + Recency Bonus + Touchpoint Bonus
+   *
+   * <p>Decision Maker Access ist kritischste Faktor (60% Gewicht):
+   *
+   * <ul>
+   *   <li>IS_DECISION_MAKER: ~70-80% Win-Rate
+   *   <li>DIRECT: ~50-60% Win-Rate
+   *   <li>INDIRECT: ~25-35% Win-Rate
+   *   <li>BLOCKED/UNKNOWN: ~10-15% Win-Rate
+   * </ul>
+   *
+   * <p>Relationship Status (40% Gewicht) misst Beziehungsqualität unabhängig vom
+   * Entscheider-Zugang.
+   *
+   * <p>Recency Bonus/Malus (-5 bis +5):
+   *
+   * <ul>
+   *   <li>Letzte meaningful Interaktion <7 Tage: +5
+   *   <li>7-30 Tage: +3
+   *   <li>30-90 Tage: 0
+   *   <li>90-180 Tage: -3
+   *   <li>>180 Tage: -5
+   * </ul>
+   *
+   * <p>Touchpoint Bonus (+0 bis +5):
+   *
+   * <ul>
+   *   <li>>10 meaningful Touchpoints: +5
+   *   <li>6-10 Touchpoints: +3
+   *   <li>≤5 Touchpoints: 0
+   * </ul>
+   *
+   * <p>Meaningful Interaktion: isMeaningfulContact = true ODER description > 100 Zeichen
+   *
+   * @return Engagement-Score (0-25, gecappt)
+   */
+  public int calculateEngagementScore() {
+    int score = 0;
+
+    // Relationship Status (0-25 Punkte, 40% Gewicht = max 10)
+    int relationshipPoints = relationshipStatus != null ? relationshipStatus.getPoints() : 0;
+    score += (int) (relationshipPoints * 0.4);
+
+    // Decision Maker Access (-3 bis +25 Punkte, 60% Gewicht = max 15)
+    int dmPoints = decisionMakerAccess != null ? decisionMakerAccess.getPoints() : 0;
+    score += (int) (dmPoints * 0.6);
+
+    // Recency Bonus/Malus (-5 bis +5)
+    score += getInteractionRecencyScore();
+
+    // Touchpoint Bonus (+0 bis +5)
+    int touchpoints = getMeaningfulTouchpointCount();
+    if (touchpoints > 10) {
+      score += 5;
+    } else if (touchpoints >= 6) {
+      score += 3;
+    }
+
+    // Cap auf 0-25
+    return Math.max(0, Math.min(25, score));
+  }
+
+  /**
+   * Get recency score based on last meaningful interaction.
+   *
+   * <p>Meaningful = isMeaningfulContact = true OR description > 100 chars
+   *
+   * @return Recency score (-5 bis +5)
+   */
+  private int getInteractionRecencyScore() {
+    LocalDateTime lastMeaningful = getLastMeaningfulInteraction();
+    if (lastMeaningful == null) {
+      return -5; // Keine meaningful Interaktion = schlechtester Score
+    }
+
+    long daysSince =
+        java.time.temporal.ChronoUnit.DAYS.between(lastMeaningful, LocalDateTime.now());
+
+    if (daysSince < 7) return +5;
+    if (daysSince < 30) return +3;
+    if (daysSince < 90) return 0;
+    if (daysSince < 180) return -3;
+    return -5;
+  }
+
+  /**
+   * Get last meaningful interaction timestamp.
+   *
+   * <p>Meaningful = isMeaningfulContact = true OR description > 100 chars
+   *
+   * @return Timestamp oder null wenn keine meaningful Interaktion
+   */
+  private LocalDateTime getLastMeaningfulInteraction() {
+    if (activities == null || activities.isEmpty()) {
+      return null;
+    }
+
+    return activities.stream()
+        .filter(this::isMeaningfulActivity)
+        .map(activity -> activity.activityDate)
+        .max(LocalDateTime::compareTo)
+        .orElse(null);
+  }
+
+  /**
+   * Count meaningful touchpoints.
+   *
+   * <p>Meaningful = isMeaningfulContact = true OR description > 100 chars
+   *
+   * @return Anzahl meaningful Touchpoints
+   */
+  private int getMeaningfulTouchpointCount() {
+    if (activities == null || activities.isEmpty()) {
+      return 0;
+    }
+
+    return (int) activities.stream().filter(this::isMeaningfulActivity).count();
+  }
+
+  /**
+   * Check if activity is meaningful.
+   *
+   * <p>Heuristik: description > 100 Zeichen ODER isMeaningfulContact = true
+   *
+   * @param activity LeadActivity
+   * @return true wenn meaningful
+   */
+  private boolean isMeaningfulActivity(LeadActivity activity) {
+    // isMeaningfulContact Flag (z.B. MEETING, PHONE_CALL)
+    if (activity.isMeaningfulContact) {
+      return true;
+    }
+
+    // Description > 100 Zeichen (detaillierte Notizen = meaningful)
+    if (activity.description != null && activity.description.length() > 100) {
+      return true;
+    }
+
+    return false;
+  }
+
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();
     updatedAt = LocalDateTime.now();
-    if (registeredAt == null) {
-      registeredAt = LocalDateTime.now();
-    }
+    // Variante B: registeredAt wird explizit in LeadResource gesetzt
     if (protectionStartAt == null) {
       protectionStartAt = LocalDateTime.now();
     }

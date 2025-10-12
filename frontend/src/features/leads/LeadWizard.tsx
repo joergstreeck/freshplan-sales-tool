@@ -26,7 +26,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import type { LeadFormStage2, Problem, BusinessType, LeadSource, FirstContact } from './types';
-import { createLead } from './api';
+import { createLead, createLeadContact } from './api';
 import { useBusinessTypes } from './hooks/useBusinessTypes';
 import { useLeadSources } from './hooks/useLeadSources';
 import { useKitchenSizes } from './hooks/useKitchenSizes';
@@ -198,7 +198,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     setError(null);
 
     try {
-      const hasContactData = formData.contact.email?.trim() || formData.contact.phone?.trim();
+      // Sprint 2.1.6 Phase 5+: Harmonisierung mit lead_contacts (ADR-007 Option C)
+      const hasContactData =
+        formData.contact.firstName?.trim() &&
+        formData.contact.lastName?.trim() &&
+        (formData.contact.email?.trim() || formData.contact.phone?.trim());
 
       // Sprint 2.1.5: Erstkontakt → activities[] Transformation
       const activities = formData.firstContact
@@ -216,6 +220,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
           ]
         : undefined;
 
+      // Step 1: Create Lead WITHOUT contact fields (new harmonized approach)
       const payload = {
         stage,
         companyName: formData.companyName.trim(),
@@ -224,15 +229,6 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         postalCode: formData.postalCode?.trim() || undefined,
         businessType: formData.businessType,
         source: formData.source,
-        contact: hasContactData
-          ? {
-              firstName: formData.contact.firstName?.trim() || undefined,
-              lastName: formData.contact.lastName?.trim() || undefined,
-              email: formData.contact.email?.trim() || undefined,
-              phone: formData.contact.phone?.trim() || undefined,
-            }
-          : undefined,
-        email: formData.contact.email?.trim() || undefined, // Legacy support (Backend compatibility)
         activities,
         estimatedVolume: stage >= 2 ? formData.estimatedVolume : undefined,
         kitchenSize: stage >= 2 ? formData.kitchenSize : undefined,
@@ -241,9 +237,25 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         industry: stage >= 2 ? formData.industry?.trim() || undefined : undefined,
       };
 
-      console.log('🚀 Submitting lead:', payload); // DEBUG
+      console.log('🚀 Step 1: Creating lead (without contact):', payload); // DEBUG
       const result = await createLead(payload);
       console.log('✅ Lead created:', result); // DEBUG
+
+      // Step 2: Create separate contact via lead_contacts API (if data provided)
+      if (hasContactData) {
+        console.log('🚀 Step 2: Creating contact for lead:', result.id); // DEBUG
+
+        const contactPayload = {
+          firstName: formData.contact.firstName.trim(),
+          lastName: formData.contact.lastName.trim(),
+          email: formData.contact.email?.trim() || undefined,
+          phone: formData.contact.phone?.trim() || undefined,
+          isPrimary: true, // First contact is always primary
+        };
+
+        await createLeadContact(result.id, contactPayload);
+        console.log('✅ Contact created'); // DEBUG
+      }
 
       // Reset & Close
       setFormData({
@@ -388,6 +400,33 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               </Select>
             </FormControl>
 
+            {/* Variante B Pre-Claim Hints */}
+            {formData.source && (
+              <Box
+                sx={{
+                  mt: 2,
+                  p: 1.5,
+                  bgcolor: ['MESSE', 'TELEFON'].includes(formData.source) ? '#FFF3E0' : '#E3F2FD',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: ['MESSE', 'TELEFON'].includes(formData.source)
+                    ? '#FF9800'
+                    : '#2196F3',
+                }}
+              >
+                <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>
+                  {['MESSE', 'TELEFON'].includes(formData.source)
+                    ? 'ℹ️ Vollschutz ab jetzt'
+                    : 'ℹ️ Pre-Claim für 10 Tage'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {['MESSE', 'TELEFON'].includes(formData.source)
+                    ? 'Erstkontakt muss jetzt dokumentiert werden. 6-Monate-Schutz startet sofort.'
+                    : 'Erstkontakt kann später dokumentiert werden. Sie haben 10 Tage Zeit für Pre-Claim.'}
+                </Typography>
+              </Box>
+            )}
+
             {/* Sprint 2.1.5: Zwei-Felder-Lösung - Feld 1: Notizen/Quelle (immer sichtbar) */}
             <TextField
               label="Notizen / Quelle (optional)"
@@ -467,7 +506,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
 
                 <TextField
                   label={t('wizard.stage0.firstContactDate')}
-                  type="datetime-local"
+                  type="date"
                   value={formData.firstContact?.performedAt || ''}
                   onChange={e => {
                     // Auto-derive channel from source
@@ -494,7 +533,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   fullWidth
                   margin="dense"
                   error={!!fieldErrors['firstContact.performedAt']}
-                  helperText={fieldErrors['firstContact.performedAt']?.[0] || ''}
+                  helperText={
+                    fieldErrors['firstContact.performedAt']?.[0] ||
+                    'Wann fand der Erstkontakt statt?'
+                  }
                   InputLabelProps={{ shrink: true }}
                 />
 
@@ -757,7 +799,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" fullScreen={false}>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="md"
+      fullScreen={false}
+      disableEnforceFocus
+    >
       <DialogTitle>
         {t('wizard.title')}
         <IconButton

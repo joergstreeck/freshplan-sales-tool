@@ -61,7 +61,8 @@ Lead Deduplication & Data Quality – Phase 1: Normalisierung, Soft-Deduplizieru
 **Finale Implementierung:** V10012__leads_unique_indexes_simple.sql
 
 **Begründung:**
-- **V10xxx Range = Test/Dev-only Migrations:** Werden in Production übersprungen via `flyway.ignoreMigrationPatterns=*:10*`
+- **V10000-V10003, V10012 = CI-only Migrations:** Werden in Production übersprungen via `flyway.ignoreMigrationPatterns=*:10000,*:10001,*:10003,*:10012` (+ V8001, V8002)
+- **WICHTIG:** Nicht alle V10xxx sind Test-only! V10002, V10008-V10011, V10013+ laufen in Production!
 - **CONCURRENTLY Problem:** UNIQUE Index-Creation ohne CONCURRENTLY sperrt Tabellen (akzeptabel in Test/CI, NICHT in Production)
 - **Production Strategy:** Manuelle Index-Creation mit CONCURRENTLY außerhalb Flyway (Zero-Downtime)
 

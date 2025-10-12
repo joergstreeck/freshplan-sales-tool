@@ -23,7 +23,7 @@ entry_points:
   - "features-neu/02_neukundengewinnung/backend/_index.md"
   - "features-neu/02_neukundengewinnung/shared/adr/ADR-003-rls-leads-row-level-security.md"
   - "features-neu/02_neukundengewinnung/SPRINT_MAP.md"
-  - "grundlagen/testing_guide.md"
+  - "planung/grundlagen/testing_guide.md"
 pr_refs: ["#133", "#134", "#135"]
 updated: "2025-10-08"
 prerequisites:
@@ -656,19 +656,22 @@ public class LeadDeduplicationService {
           private LeadStage stage = LeadStage.VORMERKUNG;
           private LeadStatus status = LeadStatus.REGISTERED;
           private String ownerUserId = "test-partner-1";
-          private LocalDateTime registeredAt = null; // null = Pre-Claim
+          private LocalDateTime registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
+          private LocalDateTime firstContactDocumentedAt = null; // null = Pre-Claim
           private List<LeadActivity> activities = new ArrayList<>();
 
-          // Lead-spezifische Presets
+          // Lead-spezifische Presets (Variante B)
           public Builder asPreClaimLead() {
               this.stage = LeadStage.VORMERKUNG;
-              this.registeredAt = null;
+              this.registeredAt = LocalDateTime.now();
+              this.firstContactDocumentedAt = null; // ← Pre-Claim!
               return this;
           }
 
           public Builder asRegisteredLead() {
               this.stage = LeadStage.REGISTRIERUNG;
               this.registeredAt = LocalDateTime.now().minusDays(10);
+              this.firstContactDocumentedAt = LocalDateTime.now().minusDays(10); // ← Vollschutz!
               this.activities = generateActivities(3, false); // nicht counts_as_progress
               return this;
           }

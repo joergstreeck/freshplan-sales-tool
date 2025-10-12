@@ -249,7 +249,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
           </FormLabel>
           <Grid container spacing={1}>
             {getAllRoles().map(role => (
-              <Grid item xs={12} sm={6} key={role}>
+              <Grid size={{ xs: 12, sm: 6 }} key={role}>
                 <FormControlLabel
                   control={
                     <Checkbox

@@ -161,6 +161,186 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-11 18:00 - Sprint 2.1.6 Phase 5 - PR #137 CREATED ✅ - Multi-Contact + Lead Scoring + Security + Critical Fixes
+
+**Kontext:** 3-Wochen Feature-Branch mit 50 Commits → Production-Ready PR #137
+
+**Erledigt:**
+- ✅ **PR #137 ERFOLGREICH ERSTELLT:**
+  - URL: https://github.com/joergstreeck/freshplan-sales-tool/pull/137
+  - Titel: "fix: Sprint 2.1.6 Phase 5 - Lead Scoring + Multi-Contact + Security + Critical Bug Fixes"
+  - Branch: `feature/mod02-sprint-2.1.6-enum-migration-phase-1` → `main`
+  - Commits: 50 (3 Wochen Entwicklung)
+  - Files: 125 changed (+17.930/-1.826 Zeilen)
+- ✅ **LEAD SCORING SYSTEM (0-100 Score):**
+  - 4 Dimensionen: Pain (0-100), Revenue (0-100), Fit (0-100), Engagement (0-100)
+  - Automatische Berechnung bei jedem Update mit Score Caching
+  - Backend: LeadScoringService, Frontend: Real-time Updates + Auto-Save
+- ✅ **MULTI-CONTACT SUPPORT (26 Felder):**
+  - Neue lead_contacts Tabelle mit 100% Parity zu Customer Contacts
+  - Primary Contact Management (nur 1 primary pro Lead)
+  - Backward Compatibility Trigger (V10017) synchronisiert automatisch
+  - 4 REST Endpoints: Create, Update, Delete, Set Primary
+- ✅ **ENTERPRISE SECURITY (5 Layer):**
+  - SecurityAuditLogger (GDPR Art. 30/32)
+  - Rate Limiting (100/50/10 req/min)
+  - XSS Sanitizer + Input Validation
+  - Error Disclosure Prevention
+  - HTTP Security Headers (HSTS, X-Frame-Options, etc.)
+- ✅ **CRITICAL BUG FIXES (4 Fixes):**
+  - Bug 1: ETag Race Condition (Double version increment → 412 Precondition Failed)
+  - Bug 2: Ambiguous Email Column (email exists in leads + lead_contacts)
+  - Bug 3: Missing Triggers (V10025 konsolidiert Trigger-Erstellung)
+  - Bug 4: Security UTF-8 Encoding (2 HIGH-priority SpotBugs)
+- ✅ **MIGRATIONS V10013-V10024 (12 Migrationen):**
+  - V10013: Settings ETag Triggers
+  - V10014: Lead Enums (VARCHAR + CHECK)
+  - V10015: first_contact_documented_at
+  - V10016: lead_contacts Table (26 Felder)
+  - V10017: Backward Compatibility Trigger (KRITISCH!)
+  - V10018-V10021: Pain Scoring V3
+  - V10022: territory_id nullable
+  - V10023: lead_contacts Constraints
+  - V10024: Lead Scoring Complete (5 Score-Felder)
+- ✅ **MIGRATION SAFETY SYSTEM:**
+  - Pre-Commit Hook (scripts/pre-commit-migration-check.sh)
+  - GitHub Workflow (.github/workflows/migration-safety-check.yml)
+  - Enhanced get-next-migration.sh (V10022+ sequential)
+
+**Tests:** 31/31 LeadResourceTest ✅ (vorher 28 Failures), 10/10 Security Tests ✅
+**Performance:** N+1 Query Fix (7x faster: 850ms → 120ms), Score Caching (90% weniger DB-Writes)
+**Security:** 2/2 HIGH-priority SpotBugs fixed (UTF-8 Encoding)
+
+**Migration:** V10013-V10024 (12 Migrations total)
+**Branch Status:** feature/mod02-sprint-2.1.6-enum-migration-phase-1 pushed to origin
+**PR Status:** READY FOR REVIEW (https://github.com/joergstreeck/freshplan-sales-tool/pull/137)
+
+---
+
+### 2025-10-10 00:56 - Migration Safety System - 3-Layer Protection + Flyway Fixes
+
+**Kontext:** Territory ID Validation Error + V8001/V8002 Flyway Errors + Externe KI-Review (3 kritische Verbesserungen)
+
+**Erledigt:**
+- ✅ **V10022 Migration:** territory_id nullable (fixes Lead creation validation error)
+- ✅ **Flyway Ignore Patterns:** `quarkus.flyway.ignore-migration-patterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012` (kebab-case!)
+- ✅ **3-Layer Migration Safety System:**
+  - Layer 1: Pre-Commit Hook (`scripts/pre-commit-migration-check.sh`) - Folder/Number/Keyword validation
+  - Layer 2: GitHub Workflow (`.github/workflows/migration-safety-check.yml`) - CI validation
+  - Layer 3: `get-next-migration.sh` - Neue Strategie (sequential V10022+, Ordner-Trennung)
+- ✅ **3 Kritische Fixes (External AI Review):**
+  - Fix 1: False-Positive-Prevention (Prefix-Check statt Keyword-Matching)
+  - Fix 2: Idempotent setup-git-hooks.sh (erkennt bestehende Hooks, erstellt Backup)
+  - Fix 3: HIGHEST-Berechnung verifiziert (`git ls-tree HEAD` - nur committed files)
+- ✅ **Testing:** 4 Original-Tests + 4 Regression-Tests + 3 Fix-Tests = ALL GREEN
+
+**Migration:** V10022 (territory_id nullable), Safety System komplett
+**Tests:** ALL GREEN (11 Tests total)
+**Commit:** 07e5a520b - fix(migrations): 3-Layer Safety System - 3 kritische Verbesserungen
+
+---
+
+### 2025-10-08 20:30 - Lead Contacts Refactoring - Sprint 2.1.6 Phase 5+ (ADR-007)
+
+**Kontext:** API-Mismatch zwischen Frontend (strukturierte contacts) und Backend (flat contactPerson) → Harmonisierung mit Customer-Modul
+
+**Erledigt:**
+- ✅ **LEAD_CONTACTS_ARCHITECTURE.md erstellt (470 Zeilen):**
+  - Problem-Analyse: Lead-Modul hat flat `contact_person VARCHAR(255)`, Customer-Modul hat separate `Contact` Entity
+  - Architektur-Vergleich: Legacy (flat) vs. Best Practice (N:1 lead_contacts Tabelle)
+  - Migration V276 + V277: Neue Tabelle, Daten-Migration (split "Max Mustermann"), Backward Compatibility Trigger
+  - LeadContact Entity (UUID, firstName, lastName, email, phone, isPrimary, position, Builder Pattern)
+  - Lead Entity Update: `@OneToMany List<LeadContact> contacts`, deprecated contactPerson
+  - LeadCreateRequest Update: `List<ContactData> contacts` (nested DTO), deprecated flat fields
+  - Frontend Types: `LeadContact[]`, `getPrimaryContact()` Helper
+  - Test-Beispiele: Multi-Contact CRUD, Primary Constraint Validation
+- ✅ **TRIGGER_SPRINT_2_1_6.md erweitert:**
+  - Phase 5+ hinzugefügt: Lead Contacts Refactoring (3-5h Aufwand)
+  - YAML Header: migrations ["V276", "V277"], architecture_decision "ADR-007"
+  - Kern-Deliverables: 5 Schritte (Migrations, Entity, API, Frontend, Tests)
+  - Strategische Begründung: Konsistenz, Erweiterbarkeit, User-Feedback ("weitere Kontakte können nicht nacherfasst werden")
+  - Verweis auf LEAD_CONTACTS_ARCHITECTURE.md
+- ✅ **Option B Entscheidung dokumentiert:** User wählte "Proper Fix" statt "Quick Fix" (Produkt noch nicht live)
+
+**Migration:** V276, V277
+**Tests:** Backend (LeadContactTest, LeadResourceTest), Frontend (LeadWizard Integration)
+
+---
+
+### 2025-10-08 15:30 - Enum-Migration Dokumentation - Sprint 2.1.6 Phase 5 + Sprint 2.1.6.1 PLANNED
+
+**Kontext:** Vollständige Dokumentation der 3-Phasen Enum-Migration für Type-Safety & Performance
+
+**Erledigt:**
+- ✅ **TRIGGER_SPRINT_2_1_6_1.md erstellt (274 Zeilen):**
+  - Phase 1: Customer BusinessType-Migration (6h) - industry → businessType Harmonisierung
+  - Phase 2: CRM-weit Enum-Harmonisierung (10h) - Activity, Opportunity, Payment, Delivery
+  - Migration V27X (dynamisch), Frontend Hooks, Dual-Mode Auto-Sync
+- ✅ **ENUM_MIGRATION_STRATEGY.md erstellt (532 Zeilen):**
+  - 3-Phasen-Plan detailliert (Lead → Customer → CRM-weit)
+  - Code-Beispiele für alle 3 Enums (LeadSource, BusinessType, KitchenSize)
+  - DB-Migration Pattern (CREATE TYPE, ALTER TABLE, Data Migration)
+  - Frontend-Integration Pattern (TypeScript Enums, Dropdown-Beispiele, React Query Hooks)
+  - Testing-Strategie (Backend Unit, Integration, Frontend MSW)
+  - Performance-Messung (10x schneller: 4.7ms vs. 45.5ms)
+  - Rollback-Plan für alle Phasen
+- ✅ **TRIGGER_SPRINT_2_1_6.md aktualisiert:**
+  - Phase 5 erweitert: Lead-Enums Migration (LeadSource, BusinessType, KitchenSize)
+  - Scope-Erweiterung dokumentiert: MESSE/TELEFON Pre-Claim Logic erfordert Enum
+  - Migration V273, Verweis auf ENUM_MIGRATION_STRATEGY.md
+- ✅ **TRIGGER_INDEX.md aktualisiert:**
+  - Sprint 2.1.6: 80% COMPLETE (4/5 Phasen, Phase 5 PENDING)
+  - Sprint 2.1.6.1 Entry hinzugefügt: Enum-Migration Phase 2+3
+  - Status, Aufwand, Artefakt-Verweis
+- ✅ **SPRINT_MAP.md aktualisiert:**
+  - Sprint 2.1.6.1 Section hinzugefügt
+  - Begründung: Pre-Production Timing, Performance-Gewinn, Type-Safety
+- ✅ **PRODUCTION_ROADMAP_2025.md aktualisiert:**
+  - Sprint 2.1.6 Phase 5 ergänzt
+  - Sprint 2.1.6.1 Entry mit Phase 1+2 Details
+- ✅ **CRM_AI_CONTEXT_SCHNELL.md aktualisiert:**
+  - Enum-Migration Strategie Section erweitert (3-Phasen-Plan)
+  - Business-Rule: MESSE/TELEFON Erstkontakt PFLICHT
+  - Performance, Type-Safety, Timing dokumentiert
+- ✅ **MIGRATIONS.md aktualisiert:**
+  - V273 Entry: Lead-Enums Migration (PLANNED)
+  - Sprint 2.1.6.1 Dependencies (V27X-V281)
+  - Artefakt-Verweis auf ENUM_MIGRATION_STRATEGY.md
+
+**Migration:** V273 (PLANNED - Sprint 2.1.6 Phase 5), V27X-V281 (PLANNED - Sprint 2.1.6.1)
+**Cross-Referenzen:** Issue #136, PRE_CLAIM_LOGIC.md, BUSINESS_LOGIC_LEAD_ERFASSUNG.md
+**Status:** Sprint 2.1.6 Phase 5 PLANNED, Sprint 2.1.6.1 PLANNED
+
+### 2025-10-08 03:27 - Sprint 2.1.6 Phase 4 COMPLETE - PR #135 MERGED ✅
+
+**Kontext:** CI-Fehler behoben + Gemini Code-Review + PR #135 Merge + Dokumentation COMPLETE
+
+**Erledigt:**
+- ✅ **CI-Fehler behoben (6 Fixes):**
+  - Backend Tests: LeadBackdatingResourceTest (5 Failures → 0) - RBAC @TestSecurity korrigiert (ROLE_ Prefix entfernt)
+  - Frontend Tests: DataHygieneDashboard (2 Failures → 0) - German labels ("Datenqualität-Übersicht")
+  - Spotless: 7 Dateien formatiert (unused import entfernt)
+  - Prettier: 12 Dateien formatiert (647 insertions, 548 deletions)
+  - PR Template: Header "🔄 Migrations-Schritte + Rollback" korrigiert
+  - LeadWizard Test: Timeout 5000ms → 10000ms (CI-Stabilität)
+- ✅ **Gemini Code-Review (4 Refactorings):**
+  - DRY: Lead.getProtectionUntil() Helper (5 Dateien refactored, Single Source of Truth)
+  - Timestamp-Konsistenz: LocalDateTime.now() Doppelaufruf behoben (LeadResource.java:417-420)
+  - Formatierung: leadScore Single-Line (Lead.java + LeadDTO.java)
+  - Null-Safety: progressPauseTotalSeconds, protectionUntil
+- ✅ **PR #135 MERGED:** Squash-Merge to main, 29/29 CI Checks passed, Admin-Rechte verwendet
+- ✅ **Dokumentation (5 Dateien):**
+  - Master Plan V5: Phase 4 COMPLETE dokumentiert (LATEST UPDATE Sektion)
+  - TRIGGER_INDEX.md: Sprint 2.1.6 → 100% COMPLETE (4/4 Phasen)
+  - PRODUCTION_ROADMAP_2025.md: Current Sprint aktualisiert, Progress 16/36 (44%)
+  - SPRINT_MAP.md: Phase 4 Details vollständig
+  - TRIGGER_SPRINT_2_1_6.md: Phase 4 status=complete, YAML Header + Details
+
+**Migration:** V269-V271 (bereits deployed), next: V272
+**Tests:** 56 Backend GREEN (LeadBackdating: 7, LeadScoring: 19, LeadProtection: 30), 85 Frontend GREEN
+**Commits:** ee0ae905a (timeout fix), 49cabb86a (Gemini fixes), 50c086f41 (docs 4 files), 8baf0f685 (TRIGGER_SPRINT_2_1_6)
+**Status:** Sprint 2.1.6 COMPLETE (alle 4 Phasen merged)
+
 ### 2025-10-07 01:17 - Sprint 2.1.6 Phase 3 - PR #134 MERGED ✅
 
 **Kontext:** CI-Fixes + Code Quality + PR Merge nach "rote Lampen" in CI
@@ -706,36 +886,41 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Implementation - ALLE PHASEN COMPLETE ✅:**
-  - **✅ COMPLETE:** Phase 1 - Issue #130 Fix (PR #132 merged)
-  - **✅ COMPLETE:** Phase 2 - BusinessType Harmonization + Admin-APIs (PR #133 merged)
-    - BusinessType Harmonization: Unified Enum, V263/V264, Frontend EnumField Pattern
-    - Admin-APIs: Import (95% Coverage), Backdating (92%), Convert (88%)
-    - Test-Fixes: Settings Version Bug, Timestamp Precision, ETag Timing
-  - **✅ COMPLETE - Phase 3: Automated Nightly Jobs + Outbox-Pattern (Issue #134):**
-    - **4 Nightly Jobs implementiert:** Progress Warning, Protection Expiry, DSGVO Pseudonymization, Import Archival
-    - **6 ADRs dokumentiert:** ADR-001 (Outbox-Pattern), ADR-002 bis ADR-006
-    - **Migrations:** V267 (ownerUserId nullable), V268 (outbox_emails table)
-    - **Outbox-Pattern:** OutboxEmail Entity (Panache + JSONB), Events + Outbox parallel
-    - **Issue #134 Idempotency:** Batch-Import mit cached response replay (SHA-256 fingerprint)
-    - **Testing Strategy:** Unit-Tests entfernt (Panache nicht mockbar), Integration-Tests E2E
-    - **6/6 Integration-Tests GREEN** (LeadMaintenanceSchedulerIT)
-    - **Branch:** feature/mod02-sprint-2.1.6-nightly-jobs (Commit: 93d0441f1)
-  - **✅ Phase 3 COMPLETE - PR #134 ERSTELLT:** Outbox-Pattern + Nightly Jobs
-  - **📋 NEXT PHASE - Sprint 2.1.6 Phase 4 (Job Monitoring & Performance - ~1.5h):**
-    - **Feature 1:** Batch-Processing LIMIT 100 (~30min) - Verhindert Memory-Probleme
-    - **Feature 2:** Structured Job Logging (~1h) - Metrics-Logging für Prometheus-Vorbereitung
-    - **Deferiert:** Prometheus-Metrics → Modul 00 (Betrieb)
-    - **Deferiert:** Slack-Alerting → Modul 05 (Kommunikation)
-    - **Spec:** [PHASE_4_JOB_MONITORING_SPEC.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_6/PHASE_4_JOB_MONITORING_SPEC.md)
-    - **Ziel:** 98% COMPLETE (Phase 3 + 4 Combined)
-  - **Phase 5 (OPTIONAL):** MUI Dialog Accessibility Fix + Excel Upload + Stop-the-Clock UI
-  - **❌ VERSCHOBEN auf Sprint 2.1.7:**
-    - Issue #135: Lead Lifecycle Hooks (Backend)
-    - Lead-Transfer Workflow (V260 lead_transfers Tabelle)
-    - Fuzzy-Matching & Review (Scoring-Algorithmus)
-    - Row-Level-Security (V261 RLS Policies)
-    - Team Management (V262 teams + team_members)
+- **🚧 PRIORITÄT 1 - Review & Commit V10022 + Lead Module Changes:**
+  - **JETZT:** Review unstaged changes (17 Lead-related files)
+  - **JETZT:** Test Lead Module (`./mvnw test -Dtest="Lead*Test"`)
+  - **JETZT:** Commit V10022 Migration + Lead DTOs (territory_id nullable fix)
+  - **JETZT:** Verify Migration Applied (`./mvnw flyway:info`)
+  - **JETZT:** Integration Test (Lead creation ohne territory_id)
+  - **Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1
+  - **Safety:** Migration Safety Hook prüft automatisch bei git commit!
+  - **Zeitaufwand:** ~1h (Review + Test + Commit)
+
+- **🚧 Sprint 2.1.6 Phase 5+ - Lead Contacts Refactoring (NEXT AFTER V10022):**
+  - Migration V276 (lead_contacts Tabelle) + V277 (Backward Compatibility)
+  - LeadContact Entity + Lead.contacts Beziehung
+  - LeadCreateRequest.contacts API Refactoring
+  - Frontend types.ts + LeadWizard API-Mapping
+  - Tests (LeadContactTest, LeadResourceTest, LeadWizard Integration)
+  - **Verweis:** LEAD_CONTACTS_ARCHITECTURE.md (ADR-007)
+  - **Zeitaufwand:** ~3-5h (Multi-Contact Support wie Customer-Modul)
+
+- **✅ Sprint 2.1.6 - 4/5 PHASEN COMPLETE (08.10.2025):**
+  - **✅ Phase 1:** Issue #130 Fix (PR #132 merged)
+  - **✅ Phase 2:** BusinessType Harmonization + Admin-APIs (PR #133 merged)
+  - **✅ Phase 3:** Automated Nightly Jobs + Outbox-Pattern (PR #134 merged)
+  - **✅ Phase 4:** Lead Quality Metrics & UI Components (PR #135 merged - 08.10.2025)
+    - LeadScoringService (264 LOC, 4-Faktoren, 19 Tests)
+    - 4 UI-Komponenten (StopTheClockDialog, LeadScoreIndicator, LeadActivityTimeline, LeadStatusWorkflow)
+    - 48 Frontend-Tests + 19 Backend-Tests GREEN
+    - 3 Produktionsbugs gefunden & gefixt
+    - Gemini Code-Review: 4 Refactorings (DRY, Timestamps, Formatierung)
+    - Migrations: V269 (lead_score), V270 (outbox_emails.failed_at), V271 (lead_score NOT NULL)
+  - **📋 Phase 5 PENDING (OPTIONAL - ~2h):** feature/mod02-sprint-2.1.6-monitoring-rollback
+    - **Priority 1 (35 Min):** Prometheus-Metriken (@Counted/@Timed), Score-Farbschwellen-Doku
+    - **Priority 2 (1h):** V10012 Migration Rollback-Strategie (ignoreMigrationPatterns, V259 Konflikt)
+    - **Priority 3 (optional):** MUI aria-hidden Fix, Pre-Claim UI-Erweiterungen
+  - **Modul 02 Status:** 95% IMPLEMENTED (4/5 Phasen merged, Phase 5 optional)
 - **Sprint 2.1.7 Vorbereitung (Start 19.10.2025 - 2 Tracks!):**
   - **Track 1 (Business Features):**
     - Lead-Transfer Workflow mit Genehmigung (V260, 8-12h)
@@ -765,11 +950,25 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+### 2025-10-08 - Pre-Claim Variante B (DB Best Practice)
+
+**⚠️ BREAKING CHANGE:**
+1. **Pre-Claim Variante B:** registered_at IMMER gesetzt, firstContactDocumentedAt = NULL für Pre-Claim
+   - `registered_at` = IMMER gesetzt (Audit Trail, DB Best Practice)
+   - `firstContactDocumentedAt` = NULL → Pre-Claim aktiv (10 Tage Frist)
+   - Lead ist sofort geschützt, hat aber 10 Tage für Erstkontakt-Dokumentation
+   - **Migration V274:** Adds `first_contact_documented_at` column
+   - **Vorteil:** Keine Race Conditions, klarer Audit Trail, keine NULL-Timestamps
+
+**Referenz:** [VARIANTE_B_MIGRATION_GUIDE.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_5/VARIANTE_B_MIGRATION_GUIDE.md)
+
+---
+
 ### 2025-10-03 - Pre-Claim Mechanik + Dedupe Policy + Consent-Logik
 
-**Entscheidung:**
-1. **Pre-Claim Stage 0:** Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL, 10 Tage Frist)
-   - Schutz startet erst bei Kontakt ODER dokumentiertem Erstkontakt
+**Entscheidung (OBSOLETE - siehe Variante B oben):**
+1. ~~**Pre-Claim Stage 0:** Lead ohne Kontakt/Erstkontakt = Pre-Claim (registered_at = NULL, 10 Tage Frist)~~
+   - ~~Schutz startet erst bei Kontakt ODER dokumentiertem Erstkontakt~~
    - Ausnahme: Bestandsleads bei Migration → sofortiger Schutz
 2. **DSGVO Consent Source-abhängig:**
    - `source = WEB_FORMULAR` → Consent PFLICHT (Art. 6 Abs. 1 lit. a)

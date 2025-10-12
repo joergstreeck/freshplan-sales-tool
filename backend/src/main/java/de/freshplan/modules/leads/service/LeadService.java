@@ -4,11 +4,14 @@ import de.freshplan.infrastructure.security.RlsContext;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadActivity;
+import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import jakarta.ws.rs.WebApplicationException;
+import jakarta.ws.rs.core.Response;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.jboss.logging.Logger;
@@ -248,6 +251,94 @@ public class LeadService {
     activity.activityType = type;
     activity.description = description;
     activity.persist();
+  }
+
+  /**
+   * Add first contact to a Pre-Claim lead (Sprint 2.1.6 Phase 5).
+   *
+   * <p>Transitions lead from VORMERKUNG (Stage 0) to REGISTRIERUNG (Stage 1) by:
+   *
+   * <ul>
+   *   <li>Setting contact person details
+   *   <li>Creating FIRST_CONTACT_DOCUMENTED activity
+   *   <li>Activating lead protection (registeredAt = NOW())
+   *   <li>Updating stage: VORMERKUNG → REGISTRIERUNG
+   * </ul>
+   *
+   * @param leadId Lead ID
+   * @param contactPerson Contact person name
+   * @param email Contact email (optional)
+   * @param phone Contact phone (optional)
+   * @param contactDate Date of first contact (defaults to NOW if null)
+   * @param notes Notes about the contact (optional)
+   * @param userId User who documented the contact
+   * @return Updated lead
+   * @throws WebApplicationException 404 if lead not found, 400 if invalid state
+   */
+  @RlsContext
+  @Transactional
+  public Lead addFirstContact(
+      Long leadId,
+      String contactPerson,
+      String email,
+      String phone,
+      LocalDateTime contactDate,
+      String notes,
+      String userId) {
+
+    // Load lead
+    Lead lead = Lead.findById(leadId);
+    if (lead == null) {
+      throw new WebApplicationException("Lead not found", Response.Status.NOT_FOUND);
+    }
+
+    // Validate: Must be in VORMERKUNG stage
+    if (lead.stage != LeadStage.VORMERKUNG) {
+      throw new WebApplicationException(
+          "Lead must be in VORMERKUNG stage to add first contact. Current stage: "
+              + lead.stage.getDisplayName(),
+          Response.Status.BAD_REQUEST);
+    }
+
+    // Update contact details
+    lead.contactPerson = contactPerson;
+    if (email != null && !email.isBlank()) {
+      lead.email = email;
+      // TODO: Normalize email (lead.emailNormalized = normalizeEmail(email))
+    }
+    if (phone != null && !phone.isBlank()) {
+      lead.phone = phone;
+      // TODO: Normalize phone (lead.phoneE164 = normalizePhone(phone))
+    }
+
+    // Activate protection (registeredAt = NOW)
+    if (lead.registeredAt == null) {
+      lead.registeredAt = LocalDateTime.now();
+    }
+
+    // Transition stage: VORMERKUNG → REGISTRIERUNG
+    lead.stage = LeadStage.REGISTRIERUNG;
+
+    // Update activity timestamp
+    lead.lastActivityAt = contactDate != null ? contactDate : LocalDateTime.now();
+    lead.updatedAt = LocalDateTime.now();
+    lead.updatedBy = userId;
+
+    lead.persist();
+
+    // Create FIRST_CONTACT_DOCUMENTED activity
+    String activityDescription =
+        String.format(
+            "First contact documented with %s%s",
+            contactPerson, notes != null && !notes.isBlank() ? ". Notes: " + notes : "");
+
+    createActivity(lead, userId, ActivityType.FIRST_CONTACT_DOCUMENTED, activityDescription);
+
+    LOG.infof(
+        "Added first contact to lead %s (stage: VORMERKUNG → REGISTRIERUNG, contact: %s)",
+        leadId, contactPerson);
+
+    return lead;
   }
 
   /** Statistics DTO for lead dashboard. */

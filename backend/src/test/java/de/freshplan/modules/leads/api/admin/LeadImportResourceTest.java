@@ -5,11 +5,12 @@ import static org.hamcrest.Matchers.*;
 
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest;
 import de.freshplan.modules.leads.api.admin.dto.LeadImportRequest.LeadImportData;
-import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -24,10 +25,15 @@ import org.junit.jupiter.api.Test;
 @QuarkusTest
 class LeadImportResourceTest {
 
+  @Inject EntityManager em;
+
   @BeforeEach
   @Transactional
   void setup() {
-    Lead.deleteAll();
+    // IMPORTANT: Delete in correct order (FK constraints!)
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
 
     // Ensure territory exists
     if (Territory.count() == 0) {

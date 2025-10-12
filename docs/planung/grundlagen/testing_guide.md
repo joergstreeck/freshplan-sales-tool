@@ -2,6 +2,9 @@
 
 **Stand:** 2025-10-08
 **Sprint:** 2.1.6 Phase 4
+**Speicherort:** `docs/planung/grundlagen/testing_guide.md`
+
+> **💡 Hinweis:** Für Coverage-Tools, CI/CD Setup & Monitoring siehe: `TESTING_INFRASTRUCTURE.md`
 
 ---
 

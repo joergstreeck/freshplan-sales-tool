@@ -25,33 +25,62 @@ public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleMa
     LOG.info("Ensuring single database container for all tests");
     LOG.info("=".repeat(80));
 
-    Map<String, String> config = new HashMap<>();
-
-    // Detect if we're in CI
+    // Determine DB connection details
     String ciProfile = System.getenv("QUARKUS_PROFILE");
     boolean isCI = "ci".equals(ciProfile) || "true".equals(System.getenv("CI"));
 
+    String jdbcUrl;
+    String username;
+    String password;
+
     if (isCI) {
       LOG.info("CI environment detected - using GitHub Services PostgreSQL");
-      // In CI, use the GitHub Services PostgreSQL
-      config.put("quarkus.datasource.devservices.enabled", "false");
-      config.put("quarkus.devservices.enabled", "false");
-      config.put("quarkus.datasource.jdbc.url", "jdbc:postgresql://localhost:5432/freshplan");
-      config.put("quarkus.datasource.username", "freshplan");
-      config.put("quarkus.datasource.password", "freshplan");
+      jdbcUrl = "jdbc:postgresql://localhost:5432/freshplan";
+      username = "freshplan";
+      password = "freshplan";
     } else {
-      LOG.info("Local environment - allowing DevServices if not already configured");
-      // Local development can use DevServices or manual config
+      LOG.info("Local environment - using existing PostgreSQL database");
+      jdbcUrl = "jdbc:postgresql://localhost:5432/freshplan";
+      username = "freshplan";
+      password = "freshplan";
     }
 
-    // Ensure Flyway runs migrations ONCE at start
-    config.put("quarkus.flyway.migrate-at-start", "true");
+    // Execute Flyway clean + migrate programmatically BEFORE Quarkus starts
+    // This ensures fresh DB with all constraints/triggers for EVERY test run
+    try {
+      LOG.info("Executing programmatic Flyway clean + migrate...");
+      org.flywaydb.core.Flyway flyway =
+          org.flywaydb.core.Flyway.configure()
+              .dataSource(jdbcUrl, username, password)
+              .locations("classpath:db/migration", "classpath:db/dev-migration")
+              .baselineOnMigrate(true)
+              .outOfOrder(true)
+              .cleanDisabled(false) // Override global cleanDisabled=true
+              .load();
+
+      flyway.clean();
+      LOG.info("✅ Flyway clean completed");
+
+      flyway.migrate();
+      LOG.info("✅ Flyway migrate completed - all constraints/triggers created");
+    } catch (Exception e) {
+      LOG.error("❌ Failed to clean/migrate database", e);
+      throw new RuntimeException("Failed to prepare test database", e);
+    }
+
+    // Configure Quarkus to use the same DB but NOT run Flyway again
+    Map<String, String> config = new HashMap<>();
+
+    config.put("quarkus.datasource.devservices.enabled", "false");
+    config.put("quarkus.devservices.enabled", "false");
+    config.put("quarkus.datasource.jdbc.url", jdbcUrl);
+    config.put("quarkus.datasource.username", username);
+    config.put("quarkus.datasource.password", password);
+
+    // CRITICAL: Disable Flyway in Quarkus - we already did it above
+    config.put("quarkus.flyway.migrate-at-start", "false");
     config.put("quarkus.flyway.clean-at-start", "false");
     config.put("quarkus.flyway.repair-at-start", "false");
-    config.put("quarkus.flyway.out-of-order", "true");
-
-    // Only use standard migrations - no SEED data
-    config.put("quarkus.flyway.locations", "classpath:db/migration");
 
     // Ensure DevServices are completely disabled
     config.put("%test.quarkus.datasource.devservices.enabled", "false");
@@ -59,8 +88,6 @@ public class GlobalTestResourceManager implements QuarkusTestResourceLifecycleMa
 
     LOG.info("Configuration applied:");
     config.forEach((k, v) -> LOG.infof("  %s = %s", k, v));
-
-    // No more SEED data needed
 
     return config;
   }

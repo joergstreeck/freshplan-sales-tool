@@ -18,7 +18,17 @@
 | **V20000+** | Reserved (Future) | ⏸️ TBD | Noch nicht genutzt |
 | **R__*** | Repeatable Migrations | ✅ Ja | R__normalize_functions.sql |
 
-**Production Skip Pattern:** `flyway.ignoreMigrationPatterns=*:10*,*:11*,*:12*,*:13*,*:14*,*:15*,*:16*,*:17*,*:18*,*:19*`
+**Production Skip Pattern:** `flyway.ignoreMigrationPatterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012`
+
+**Ignoriert:**
+- V8001-V8002: Dev-only (CQRS events, RLS demo) in `db/dev-migration/`
+- V10000-V10001, V10003: CI-only (test data cleanup/monitoring)
+- V10012: Test-only (conflicts with V259 business logic)
+
+**NICHT ignoriert (Production-kritisch):**
+- V10002: opportunities/audit_trail.is_test_data (TestDataService Infrastructure!)
+- V10008-V10011: Production fixes (SEED cleanup, users.is_test_data mit 33 Code-Refs!, settings fixes)
+- V10013-V10022: Production migrations (renamed from V272-V280)
 
 ---
 
@@ -192,24 +202,86 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V269** | Add lead_score column | 2.1.6 Phase 4 | ⚠️ Conflict | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Out of Order conflict, applied via V271 |
 | **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
 | **V271** | Fix add lead_score column (V269 Hotfix) | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring (Idempotent) |
+| **V272** | *(Reserved - Next available)* | - | 📋 Available | - | - | - | - | - | Use `./scripts/get-next-migration.sh` |
+
+---
+
+### V10013-V10024: Sprint 2.1.6 Phase 5 Migrations (PR #137)
+
+⚠️ **WICHTIG:** Diese Migrationen sind **PRODUCTION-RELEVANT** und werden NICHT ignoriert!
+
+| Version | Beschreibung | Sprint | Owner | PR | Rollback | Risk | Downtime | Notes |
+|---------|--------------|--------|-------|-----|----------|------|----------|-------|
+| **V10013** | Settings ETag Triggers | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | ETag-Trigger für settings Tabelle (45 Zeilen SQL) |
+| **V10014** | Lead Enums (VARCHAR + CHECK) | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | lead_source, business_type, kitchen_size mit CHECK Constraints (312 Zeilen) |
+| **V10015** | Add first_contact_documented_at | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | MESSE/TELEFON Pre-Claim Logic (28 Zeilen) |
+| **V10016** | Create lead_contacts Table | 2.1.6 Phase 5 | @joergstreeck | #137 | ⚠️ Manual | 🔴 HIGH | None | 26 Felder, 100% Customer Parity, **Daten gehen bei Rollback verloren!** |
+| **V10017** | Backward Compatibility Trigger | 2.1.6 Phase 5 | @joergstreeck | #137 | ❌ No | 🔴 HIGH | None | **KRITISCH!** Synchronisiert primary contact → legacy fields. **NIEMALS löschen!** |
+| **V10018** | Pain Score Base | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | pain_score INT, urgency_level VARCHAR(20) |
+| **V10019** | Pain Fields Part 1 | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | 4 Pain-Felder (quality_issues, cost_pressure, time_pressure, compliance_gaps) |
+| **V10020** | Pain Fields Part 2 | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | 4 Pain-Felder (scalability_limits, staff_turnover, system_integration, market_competition) |
+| **V10021** | Estimated Volume | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | estimated_volume INT |
+| **V10022** | Make territory_id Nullable | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | Fixes Lead creation validation error, ermöglicht unassigned Leads |
+| **V10023** | Lead Contacts Constraints | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | Unique constraint für is_primary per lead_id |
+| **V10024** | Lead Scoring Complete | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | 5 Score-Felder (pain_score, revenue_score, fit_score, engagement_score, lead_score) |
+
+**Rollback Scripts:**
+
+**Phase 1 (V10013-V10015) - Einfach:**
+```sql
+ALTER TABLE leads DROP COLUMN IF EXISTS first_contact_documented_at;
+-- V10014: Enums bleiben (Breaking Change vermeiden)
+-- V10013: Triggers bleiben (harmlos)
+```
+
+**Phase 2 (V10016-V10017) - KRITISCH! ⚠️**
+```sql
+-- ⚠️ WARNUNG: DATEN GEHEN VERLOREN!
+DROP TRIGGER IF EXISTS sync_primary_contact_to_lead_trigger ON lead_contacts;
+DROP FUNCTION IF EXISTS sync_primary_contact_to_lead();
+DROP TABLE IF EXISTS lead_contacts CASCADE;
+
+-- Legacy contact_person bleibt erhalten (aus Backup)
+```
+
+**Alternative (Daten erhalten):**
+- ❌ Keine Migration zurückrollen
+- ✅ Frontend-Feature-Flag deaktivieren
+- ✅ Trigger läuft weiter (keine Breaking Changes)
+
+**Phase 3 (V10018-V10024) - Einfach:**
+```sql
+ALTER TABLE leads ALTER COLUMN territory_id SET NOT NULL;
+
+UPDATE leads SET
+  pain_score = NULL,
+  revenue_score = NULL,
+  fit_score = NULL,
+  engagement_score = NULL,
+  lead_score = NULL;
+```
 
 ---
 
 ### V10000-V10012: Test/Dev-Only Migrations (SKIPPED in Production)
 
-⚠️ **Production:** Diese Migrations werden übersprungen via `flyway.ignoreMigrationPatterns=*:10*`
+⚠️ **Production:** Folgende CI-only Migrations werden übersprungen: V10000, V10001, V10003, V10012
+
+**Pattern:** `ignoreMigrationPatterns=*:10000,*:10001,*:10003,*:10012` (+ V8001, V8002 in dev-migration/)
+
+**WICHTIG:** V10002, V10008-V10011, V10013-V10022 sind **Production-relevant** und werden NICHT ignoriert!
 
 | Version | Beschreibung | Sprint | Notes |
 |---------|--------------|--------|-------|
 | **V10000** | Cleanup Test Data in CI | 2.1 | CI-only: DELETE WHERE test_data = true |
 | **V10001** | Test Data Contract Guard | 2.1 | CI-only: CONSTRAINT CHECK für test_data |
-| **V10002** | Ensure Unique Constraints | 2.1 | CI-only: Test-Validierung |
+| **V10002** | Ensure Unique Constraints (opportunities/audit_trail.is_test_data) | 2.1.6 | ✅ Production-KRITISCH: TestDataService Infrastructure |
 | **V10003** | Test Data Dashboard | 2.1 | CI-only: Statistik-View für Tests |
-| **V10005** | Seed Sample Customers | 2.1 | DISABLED (.disabled Extension) |
-| **V10008** | Remove Seed Protection | 2.1 | CI-only: Cleanup |
-| **V10009** | Add test_data Flag to Users | 2.1 | CI-only: users.test_data Column |
-| **V10010** | Fix Settings scope_type | 2.1 | CI-only: Enum Constraint Fix |
-| **V10011** | Fix Settings ETag Functions | 2.1 | CI-only: Function Signature Fix |
+| **V10005** | Seed Sample Customers | 2.1 | ❌ DELETED (2025-09-28, commit 753c9272c - caused CI failures) |
+| **V10008** | Remove Seed Protection | 2.1.6 | ✅ Production: Cleanup (Konsistenz) |
+| **V10009** | Add test_data Flag to Users | 2.1.6 | ✅ Production-KRITISCH: 33 Code-Referenzen! |
+| **V10010** | Fix Settings scope_type | 2.1.6 | ✅ Production: Enum Constraint Fix |
+| **V10011** | Fix Settings ETag Functions | 2.1.6 | ✅ Production: Function Signature Fix |
 | **V10012** | Leads UNIQUE Indexes (Simple) | 2.1.4 | **CI-only:** UNIQUE Indizes OHNE CONCURRENTLY |
 
 #### V10012 Details (ehem. V248)
@@ -271,7 +343,7 @@ V256 (Lead Activities Augmentation)
 V257 (DB Functions + Triggers)
 ```
 
-### Sprint 2.1.6 (Admin APIs & BusinessType Harmonization)
+### Sprint 2.1.6 Phase 1-4 (Admin APIs & BusinessType Harmonization)
 ```
 V261 (Customer.originalLeadId)
   - Lead → Customer conversion tracking
@@ -281,11 +353,81 @@ V262 (Stop-the-Clock Cumulative Pause + Idempotency Infrastructure)
   - progress_pause_total_seconds (BIGINT)
   - import_jobs table (Idempotency-Key Tracking)
   ↓
-V263 (BusinessType Harmonization)
+V263 (BusinessType Harmonization - Lead)
   - Migrate lowercase → uppercase (restaurant → RESTAURANT, etc.)
   - CHECK constraint: 9 unified values
   - EnumResource.java: GET /api/enums/business-types
+  ↓
+V264 (BusinessType Harmonization - Customer)
+  - Customer.industry → Customer.businessType Migration
+  - Data Migration + Auto-Sync Setter
+  ↓
+V265-V271 (Lead Scoring Phase 4)
+  - V265: pseudonymized_at
+  - V266: Idempotent fixes
+  - V267: owner_user_id nullable
+  - V268: outbox_emails
+  - V269-V271: lead_score (mit V269 conflict fix)
 ```
+
+### Sprint 2.1.6 Phase 5 (Multi-Contact + Lead Scoring + Security) ✅ PR #137
+```
+V10013 (Settings ETag Triggers)
+  ↓
+V10014 (Lead Enums - VARCHAR + CHECK)
+  - lead_source, business_type, kitchen_size
+  - CHECK Constraints (nicht PostgreSQL ENUM Type!)
+  ↓
+V10015 (first_contact_documented_at)
+  - MESSE/TELEFON Pre-Claim Logic
+  ↓
+V10016 (lead_contacts Table) 🔴 KRITISCH
+  - 26 Felder, 100% Customer Parity
+  - Primary Contact Management
+  ↓
+V10017 (Backward Compatibility Trigger) 🔴 KRITISCH - NIEMALS LÖSCHEN!
+  - Synchronisiert primary contact → legacy fields
+  - Breaking Change wenn gelöscht!
+  ↓
+V10018-V10021 (Pain Scoring V3)
+  - V10018: pain_score + urgency_level
+  - V10019: 4 Pain-Felder (quality_issues, cost_pressure, ...)
+  - V10020: 4 Pain-Felder (scalability_limits, staff_turnover, ...)
+  - V10021: estimated_volume
+  ↓
+V10022 (territory_id nullable)
+  - Fixes Lead creation validation error
+  ↓
+V10023 (lead_contacts Constraints)
+  - Unique is_primary per lead_id
+  ↓
+V10024 (Lead Scoring Complete)
+  - 5 Score-Felder (pain, revenue, fit, engagement, lead_score)
+```
+
+**PR #137 Details:**
+- 50 Commits, 3 Wochen Entwicklung
+- 125 Files changed (+17.930/-1.826 LOC)
+- Tests: 31/31 LeadResourceTest + 10/10 Security Tests GREEN
+- Performance: N+1 Query Fix (7x faster), Score Caching (90% weniger DB-Writes)
+- Security: 5 Layer (Rate Limiting, Audit Logs, XSS, Error Disclosure, HTTP Headers)
+
+### Sprint 2.1.6.1 (Enum-Migration Phase 2+3)
+```
+V27X (Customer BusinessType Migration) [PLANNED]
+  - Customer.industry → Customer.businessType (9 Werte harmonisiert)
+  - Dual-Mode: Auto-Sync Setter (industry ↔ businessType)
+  - Data Migration: Industry → BusinessType Mapping
+  - Frontend: CustomerEditDialog nutzt useBusinessTypes()
+  ↓
+V27Y-V281 (CRM-weit Enum-Harmonisierung) [PLANNED]
+  - V27Y: ActivityType erweitern (SAMPLE_REQUEST, CONTRACT_SIGNED, etc.)
+  - V27Z: OpportunityStatus Enum (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST)
+  - V280: PaymentMethod Enum (SEPA_LASTSCHRIFT, KREDITKARTE, RECHNUNG)
+  - V281: DeliveryMethod Enum (STANDARD, EXPRESS, SAMEDAY, PICKUP)
+```
+
+**Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
 
 ---
 
@@ -353,14 +495,61 @@ Beispiele:
 - ⚠️ Wenn CONCURRENTLY nicht möglich → V10xxx + Manuelle Production Creation
 
 ### 4. Test-Only Migrations
-- **Range:** V10000-V19999
-- **Production Skip:** `flyway.ignoreMigrationPatterns=*:10*,...`
+- **Range:** V8000-V8999 (dev-migration/), V10000-V10099 (migration/, CI-only)
+- **Production Skip:** `flyway.ignoreMigrationPatterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012`
+- **WICHTIG:** Nicht alle V10xxx sind Test-only! V10002, V10008-V10011, V10013+ sind Production!
 - **Use Cases:** Test Data Cleanup, CI-Performance Indices, Dev Debugging Views
+- **Prozess:** Siehe Section "Test-Migrationen erstellen" unten
 
 ### 5. Repeatable Migrations
 - **Naming:** `R__{DESCRIPTION}.sql`
 - **Idempotenz:** MUSS idempotent sein (CREATE OR REPLACE FUNCTION, etc.)
 - **Versionierung:** Flyway nutzt Checksum für Änderungserkennung
+
+### 6. Test-Migrationen erstellen
+
+**Wann Test-Only Migrationen verwenden:**
+- **Dev-only:** Debugging, Demo-Daten, RLS-Tests → V8000-V8999 in `db/dev-migration/`
+- **CI-only:** Test Data Cleanup, Performance-Checks → V10000-V10099 in `db/migration/`
+
+**⚠️ WICHTIG:** Nicht jede V10xxx Migration ist Test-only! V10002, V10008-V10011, V10013+ sind Production!
+
+**Prozess:**
+
+1. **Lege Migration in korrekten Ordner:**
+   ```bash
+   # Dev-only (V8xxx)
+   touch backend/src/main/resources/db/dev-migration/V8003__your_debug_feature.sql
+
+   # CI-only (V100xx) - nur wenn wirklich Test-only!
+   MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+   touch backend/src/main/resources/db/migration/${MIGRATION}__your_ci_test.sql
+   ```
+
+2. **Füge zu ignoreMigrationPatterns hinzu:**
+   ```properties
+   # backend/src/main/resources/application.properties (Zeile 64)
+   quarkus.flyway.ignoreMigrationPatterns=...,*:NEUE_NUMMER
+   ```
+
+3. **Teste lokal:**
+   ```bash
+   ./mvnw flyway:info  # Prüfe: Migration hat Status "Ignored"
+   ./mvnw test         # Prüfe: Tests sind grün
+   ```
+
+4. **Dokumentiere in diesem File:**
+   - Trage Migration in Section "V10000-V10012: Test/Dev-Only Migrations" ein
+   - Begründe, warum Test-only (z.B. "CI-only: Cleanup logic")
+
+**Beispiel:**
+```sql
+-- V10050__cleanup_old_test_data.sql
+-- CI-only: Delete test data older than 30 days
+-- ⚠️  WICHTIG: Muss zu application.properties ignoreMigrationPatterns hinzugefügt werden!
+
+DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVAL '30 days';
+```
 
 ---
 
@@ -373,6 +562,9 @@ Beispiele:
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-07 (V271, Sprint 2.1.6 Phase 4 - Lead Scoring + Schema Hotfixes)
+**Letzte Aktualisierung:** 2025-10-11 (V10013-V10024 dokumentiert, PR #137 erstellt)
 
-**Nächste Migration:** V272 (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V272 oder V10025+ (ermitteln via `./scripts/get-next-migration.sh`)
+
+**Aktuelle PR:** #137 - Sprint 2.1.6 Phase 5 (READY FOR REVIEW)
+**Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1
