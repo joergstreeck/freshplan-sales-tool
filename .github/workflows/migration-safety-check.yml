@@ -1,4 +1,5 @@
 name: Migration Safety Check
+# Update: 2025-10-12 - DEV-SEED Support (3-Ordner-Struktur)
 
 on:
   push:
@@ -6,11 +7,13 @@ on:
     paths:
       - 'backend/src/main/resources/db/migration/V*.sql'
       - 'backend/src/main/resources/db/dev-migration/V*.sql'
+      - 'backend/src/main/resources/db/dev-seed/V*.sql'
   pull_request:
     branches: ['**']
     paths:
       - 'backend/src/main/resources/db/migration/V*.sql'
       - 'backend/src/main/resources/db/dev-migration/V*.sql'
+      - 'backend/src/main/resources/db/dev-seed/V*.sql'
 
 jobs:
   check-migrations:
@@ -25,11 +28,12 @@ jobs:
 
       - name: Check Migration Folders
         run: |
-          echo "🔍 Prüfe Migration-Ordner..."
+          echo "🔍 Prüfe Migration-Ordner (3-Ordner-Struktur)..."
 
-          # Sammle alle Migrations-Dateien
+          # Sammle alle Migrations-Dateien (ALLE 3 Ordner!)
           MIGRATION_FILES=$(find backend/src/main/resources/db/migration -name "V*.sql" 2>/dev/null || echo "")
           DEV_FILES=$(find backend/src/main/resources/db/dev-migration -name "V*.sql" 2>/dev/null || echo "")
+          SEED_FILES=$(find backend/src/main/resources/db/dev-seed -name "V*.sql" 2>/dev/null || echo "")
 
           ERROR=0
 
@@ -62,10 +66,34 @@ jobs:
 
           # Prüfe dev-migration/ (Test/Dev)
           if [ ! -z "$DEV_FILES" ]; then
-            echo "📁 Prüfe dev-migration/ (Test/Dev)..."
+            echo "📁 Prüfe dev-migration/ (Test-Migrations)..."
             for FILE in $DEV_FILES; do
               FILENAME=$(basename "$FILE")
               echo "   ✓ $FILENAME (Test-Migration)"
+            done
+          fi
+
+          # Prüfe dev-seed/ (DEV-SEED)
+          if [ ! -z "$SEED_FILES" ]; then
+            echo "📁 Prüfe dev-seed/ (DEV-SEED)..."
+            for FILE in $SEED_FILES; do
+              FILENAME=$(basename "$FILE")
+              VERSION=$(echo "$FILENAME" | sed 's/.*V\([0-9]*\)__.*/\1/')
+
+              # CHECK 1: V90001+ Range
+              if [ "$VERSION" -lt 90001 ]; then
+                echo "❌ FEHLER: $FILENAME ist < V90001!"
+                echo "   DEV-SEED muss >= V90001 sein (Range V90001+)"
+                ERROR=1
+              else
+                echo "   ✓ $FILENAME (V${VERSION} >= V90001)"
+              fi
+
+              # CHECK 2: 'seed_' Prefix empfohlen
+              DESCRIPTION=$(echo "$FILENAME" | sed 's/^V[0-9]*__//' | sed 's/\.sql$//')
+              if ! echo "$DESCRIPTION" | grep -q "^seed_"; then
+                echo "   ⚠️  WARNUNG: $FILENAME sollte mit 'seed_' beginnen"
+              fi
             done
           fi
 
@@ -81,8 +109,10 @@ jobs:
         run: |
           echo "🔢 Prüfe Migration-Nummern..."
 
-          # Sammle alle Nummern (aus BEIDEN Ordnern)
-          ALL_VERSIONS=$(find backend/src/main/resources/db/migration backend/src/main/resources/db/dev-migration \
+          # Sammle alle Nummern (aus ALLEN 3 Ordnern)
+          ALL_VERSIONS=$(find backend/src/main/resources/db/migration \
+            backend/src/main/resources/db/dev-migration \
+            backend/src/main/resources/db/dev-seed \
             -name "V*.sql" 2>/dev/null | \
             sed 's/.*V\([0-9]*\)__.*/\1/' | sort -n | uniq)
 
@@ -116,7 +146,8 @@ jobs:
         run: |
           echo "🎉 Migration Safety Check BESTANDEN!"
           echo ""
-          echo "Alle Prüfungen erfolgreich:"
-          echo "  ✅ Ordner-Struktur korrekt"
+          echo "Alle Prüfungen erfolgreich (3-Ordner-Struktur):"
+          echo "  ✅ Ordner-Struktur korrekt (migration/, dev-migration/, dev-seed/)"
           echo "  ✅ Keine Test-Keywords in migration/"
+          echo "  ✅ DEV-SEED Range validiert (V90001+)"
           echo "  ✅ Migration-Nummern aufsteigend"
