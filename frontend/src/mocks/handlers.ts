@@ -135,7 +135,7 @@ export const handlers = [
   // No mock handlers needed - MSW configured with 'bypass' for unhandled requests
 
   // Sprint 2.1.6.1 Phase 1: BusinessType Enum Endpoint
-  http.get('http://localhost:8080/api/enums/business-types', () => {
+  http.get('/api/enums/business-types', () => {
     return HttpResponse.json([
       { value: 'RESTAURANT', label: 'Restaurant' },
       { value: 'HOTEL', label: 'Hotel' },

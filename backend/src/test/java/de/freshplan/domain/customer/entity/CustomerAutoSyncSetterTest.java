@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
  * synchronization between legacy industry field and new businessType field during migration phase.
  *
  * <p>Background: - Sprint 2.1.6 Phase 5: businessType field added to Customer entity - Sprint 2.1.6
- * Phase 5: Auto-Sync Setters implemented for backward compatibility - Sprint 2.1.6.1 Phase 1:
- * Database migration V10026 (adds business_type column) - Sprint 2.1.6.1 Phase 1: These tests
+ * Phase 5: Auto-Sync Setters implemented for backward compatibility - Sprint 2.1.6 Phase 5:
+ * Database migration V264 (adds business_type column) - Sprint 2.1.6.1 Phase 1: These tests
  * validate Auto-Sync Setter behavior
  *
  * <p>Test Coverage: 1. setBusinessType() → industry auto-sync (NEW → LEGACY) 2. setIndustry() →
