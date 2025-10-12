@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../i18n/hooks';
+import { useBusinessTypes } from '../../features/leads/hooks/useBusinessTypes';
 import {
   isValidEmail,
   isValidGermanPostalCode,
@@ -48,6 +49,9 @@ export function CustomerForm({ formData, onFormDataChange }: CustomerFormProps) 
   const { t } = useTranslation('customers');
   const { currentLanguage } = useLanguage();
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // Sprint 2.1.6.1 Phase 1: Load BusinessType enum from backend
+  const { data: businessTypes, isLoading: isLoadingBusinessTypes } = useBusinessTypes();
 
   const validateField = (name: string, value: string) => {
     const newErrors = { ...errors };
@@ -174,15 +178,16 @@ export function CustomerForm({ formData, onFormDataChange }: CustomerFormProps) 
                 value={formData.industry}
                 onChange={handleInputChange}
                 required
+                disabled={isLoadingBusinessTypes}
               >
-                <option value="">{t('options.pleaseSelect')}</option>
-                <option value="hotel">{t('options.industries.hotel')}</option>
-                <option value="krankenhaus">{t('options.industries.krankenhaus')}</option>
-                <option value="seniorenresidenz">{t('options.industries.seniorenresidenz')}</option>
-                <option value="betriebsrestaurant">
-                  {t('options.industries.betriebsrestaurant')}
+                <option value="">
+                  {isLoadingBusinessTypes ? t('options.loading') : t('options.pleaseSelect')}
                 </option>
-                <option value="restaurant">{t('options.industries.restaurant')}</option>
+                {businessTypes?.map(type => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
               </select>
             </div>
           </div>
