@@ -165,19 +165,23 @@ Sprint 2.1.6: Lead Completion         ✅ 100% COMPLETE (05-11.10.2025) - PR #13
                                       → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
-Sprint 2.1.6.1: Enum-Migration P2+3   ✅ PHASE 1 COMPLETE (12.10.2025) - Phase 2+3 SKIPPED
+Sprint 2.1.6.1: Enum-Migration P2+3   ✅ PHASE 1 COMPLETE (12.10.2025) - PR #138 MERGED - Phase 2+3 SKIPPED
                                       → **Phase 1 (4h):** Customer-Modul BusinessType-Migration ✅ COMPLETE
+                                        - ✅ **PR #138 MERGED TO MAIN:** Commit 3222312cf (12.10.2025, 17:46 CEST)
                                         - ✅ DISCOVERY: Migration V264 bereits vorhanden aus Sprint 2.1.6 Phase 5
-                                        - ✅ Backend: Auto-Sync Setter Tests (27 unit tests GREEN)
-                                        - ✅ Frontend: CustomerForm refactored (useBusinessTypes() hook)
-                                        - ✅ Frontend: MSW Mock Tests (18 tests GREEN)
-                                        - ✅ Tests: 27 Backend + 18 Frontend = 45 Tests GREEN
-                                        - ✅ Dokumentation: ENUM_MIGRATION_STRATEGY.md + Master Plan V5
+                                        - ✅ Backend: Auto-Sync Setter Tests (27 unit tests GREEN) - CustomerAutoSyncSetterTest.java (413 LOC)
+                                        - ✅ Frontend: CustomerForm refactored (useBusinessTypes() hook) - 5 hardcoded → 9 dynamic values
+                                        - ✅ Frontend: MSW Mock Tests (18 tests GREEN) - mockServer.ts + CustomerForm.test.tsx
+                                        - ✅ Code Reviews: Copilot + Gemini komplett adressiert (Commit 1c699d341)
+                                        - ✅ CI-Fixes: Mock Guard `/tests/` Path Exception + Spotless Format (Commit bd3136e36)
+                                        - ✅ Tests: 45 GREEN (27 Backend + 18 Frontend), CI: 31/31 Checks PASSED
+                                        - ✅ Dokumentation: ENUM_MIGRATION_STRATEGY.md + Master Plan V5 + Roadmap + Trigger Index
                                       → **Phase 2+3:** ⚠️ SKIPPED (Tables do not exist yet)
                                         - ActivityType, OpportunityStatus, PaymentMethod, DeliveryMethod
                                         - Reason: orders, opportunities, customer_activities tables nicht vorhanden
                                         - Decision: Implement when business need arises
                                       → **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
+                                      → **PR #138:** https://github.com/joergstreeck/freshplan-sales-tool/pull/138
 
 Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2025
                                       → **Track 1 - Business (verschoben aus 2.1.6):**
