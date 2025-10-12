@@ -51,10 +51,7 @@ jobs:
       - name: Frontend Critical Tests
         run: |
           cd frontend
-          npm run test -- --run --reporter=verbose \
-            src/lib/settings/*.test.ts \
-            src/__tests__/msw-security.test.ts \
-            src/__tests__/msw-token-security.test.ts
+          npm run test:critical
 
       # Performance Smoke Test - TEMPORARILY DISABLED
       # Backend cannot start in CI without database

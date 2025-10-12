@@ -15,6 +15,7 @@
     "format:check": "prettier --check 'src/**/*.{ts,tsx,css,md}'",
     "test": "vitest",
     "test:ci": "vitest run",
+    "test:critical": "vitest run --reporter=verbose src/lib/settings/api.test.ts src/__tests__/msw-security.test.ts src/__tests__/msw-token-security.test.ts",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage || true",
     "test:watch": "vitest --coverage",
