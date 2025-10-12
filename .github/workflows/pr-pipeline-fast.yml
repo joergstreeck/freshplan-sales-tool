@@ -53,7 +53,8 @@ jobs:
           cd frontend
           npm run test -- --run --reporter=verbose \
             src/lib/settings/*.test.ts \
-            src/security/*.test.ts
+            src/__tests__/msw-security.test.ts \
+            src/__tests__/msw-token-security.test.ts
 
       # Performance Smoke Test - TEMPORARILY DISABLED
       # Backend cannot start in CI without database
