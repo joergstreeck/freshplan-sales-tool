@@ -140,21 +140,20 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #137:** https://github.com/joergstreeck/freshplan-sales-tool/pull/137
    - Status: ✅ 100% COMPLETE - PR #137 READY FOR REVIEW
 
-📋 TRIGGER_SPRINT_2_1_6_1.md - Enum-Migration Phase 2+3 (NEU 08.10.2025)
-   - **Phase 1:** Customer-Modul BusinessType-Migration (6h)
-     - Customer.industry → Customer.businessType Migration
-     - Harmonisierung mit Lead.businessType (9 gemeinsame Werte)
-     - Dual-Mode: Legacy-Support für 1 Sprint (Auto-Sync Setter)
-     - Migration V27X (dynamisch ermittelt)
-   - **Phase 2:** Restliches CRM Enum-Harmonisierung (10h)
-     - ActivityType erweitern (SAMPLE_REQUEST, CONTRACT_SIGNED, etc.)
-     - OpportunityStatus Enum (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON, LOST)
-     - PaymentMethod Enum (SEPA_LASTSCHRIFT, KREDITKARTE, RECHNUNG)
-     - DeliveryMethod Enum (STANDARD, EXPRESS, SAMEDAY, PICKUP)
-   - **Strategisches Refactoring:** Technische Schulden vermeiden
-   - **Pre-Production Timing:** Optimales Zeitfenster (keine Daten-Migration)
+✅ TRIGGER_SPRINT_2_1_6_1.md - Enum-Migration Phase 2+3 (✅ PHASE 1 COMPLETE - 12.10.2025)
+   - **Phase 1:** Customer-Modul BusinessType-Migration (4h) ✅ COMPLETE
+     - ✅ DISCOVERY: Migration V264 bereits vorhanden aus Sprint 2.1.6 Phase 5
+     - ✅ Backend: Auto-Sync Setter Tests (27 unit tests GREEN)
+     - ✅ Frontend: CustomerForm refactored (useBusinessTypes() hook)
+     - ✅ Frontend: MSW Mock Tests (18 tests GREEN)
+     - ✅ Tests: 27 Backend + 18 Frontend = 45 Tests GREEN
+     - ✅ Dokumentation: ENUM_MIGRATION_STRATEGY.md + Master Plan V5
+   - **Phase 2+3:** ⚠️ SKIPPED (Tables do not exist yet)
+     - ActivityType, OpportunityStatus, PaymentMethod, DeliveryMethod
+     - Reason: orders, opportunities, customer_activities tables nicht vorhanden
+     - Decision: Implement when business need arises
    - **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
-   - Status: 📋 PLANNED (Start: 09.10.2025)
+   - Status: ✅ PHASE 1 COMPLETE (12.10.2025) - Phase 2+3 SKIPPED
 
 📋 TRIGGER_SPRINT_2_1_7.md - Team Management & Test Infrastructure (NEU 05.10.2025)
    - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching

@@ -6,6 +6,7 @@
  * - Input change handling
  * - Currency formatting
  * - Error state management
+ * - BusinessType integration (Sprint 2.1.6.1 Phase 1)
  *
  * Note: Full UI/integration tests would be much larger.
  * This focuses on the core business logic functions.
@@ -14,6 +15,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { CustomerForm, type CustomerFormData } from '../CustomerForm';
 
 // Mock i18n
@@ -30,6 +32,7 @@ vi.mock('react-i18next', () => ({
         'sections.addressData': 'Adressdaten',
         'sections.contactData': 'Kontaktdaten',
         'sections.businessData': 'Geschäftsdaten',
+        'sections.additionalData': 'Zusatzinformationen',
         'fields.companyName': 'Firmenname',
         'fields.legalForm': 'Rechtsform',
         'fields.customerType': 'Kundentyp',
@@ -46,7 +49,10 @@ vi.mock('react-i18next', () => ({
         'fields.expectedVolume': 'Erwartetes Jahresvolumen',
         'fields.paymentMethod': 'Zahlungsart',
         'fields.notes': 'Notizen',
+        'fields.customField1': 'Benutzerdefiniertes Feld 1',
+        'fields.customField2': 'Benutzerdefiniertes Feld 2',
         'options.pleaseSelect': 'Bitte wählen',
+        'options.loading': 'Lädt...',
         'options.legalForms.gmbh': 'GmbH',
         'options.legalForms.ag': 'AG',
         'options.legalForms.gbr': 'GbR',
@@ -56,21 +62,30 @@ vi.mock('react-i18next', () => ({
         'options.legalForms.ug': 'UG',
         'options.customerTypes.neukunde': 'Neukunde',
         'options.customerTypes.bestandskunde': 'Bestandskunde',
-        'options.industries.hotel': 'Hotel',
-        'options.industries.krankenhaus': 'Krankenhaus',
-        'options.industries.seniorenresidenz': 'Seniorenresidenz',
-        'options.industries.betriebsrestaurant': 'Betriebsrestaurant',
-        'options.industries.restaurant': 'Restaurant',
         'options.yes': 'Ja',
         'options.no': 'Nein',
         'options.paymentMethods.invoice': 'Rechnung',
         'options.paymentMethods.prepayment': 'Vorkasse',
-        'options.paymentMethods.directDebit': 'Lastschrift',
+        'options.paymentMethods.cash': 'Barzahlung',
+        'placeholders.expectedVolume': 'z.B. 100.000',
+        'placeholders.notes': 'Zusätzliche Informationen...',
       };
       return translations[key] || key;
     },
   }),
 }));
+
+// Test helper: Render with QueryClient
+function renderWithQueryClient(ui: React.ReactElement) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false, // Disable retries in tests
+      },
+    },
+  });
+  return render(<QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>);
+}
 
 describe('CustomerForm', () => {
   const defaultFormData: CustomerFormData = {
@@ -97,7 +112,9 @@ describe('CustomerForm', () => {
   describe('Rendering', () => {
     it('should render form sections', () => {
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       expect(screen.getByText('Kundenformular')).toBeInTheDocument();
       expect(screen.getByText('Grunddaten')).toBeInTheDocument();
@@ -107,7 +124,9 @@ describe('CustomerForm', () => {
 
     it('should render all form fields', () => {
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       expect(screen.getByLabelText('Firmenname')).toBeInTheDocument();
       expect(screen.getByLabelText('Rechtsform')).toBeInTheDocument();
@@ -120,7 +139,9 @@ describe('CustomerForm', () => {
     it('should call onFormDataChange when text input changes', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const companyInput = screen.getByLabelText('Firmenname');
 
@@ -142,7 +163,9 @@ describe('CustomerForm', () => {
     it('should update form data when select changes', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const legalFormSelect = screen.getByLabelText('Rechtsform');
       await user.selectOptions(legalFormSelect, 'gmbh');
@@ -161,7 +184,9 @@ describe('CustomerForm', () => {
     it('should not show error for valid email', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const emailInput = screen.getByLabelText(/E-Mail/);
       await user.type(emailInput, 'test@example.com');
@@ -176,7 +201,9 @@ describe('CustomerForm', () => {
     it('should show error for invalid email', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const emailInput = screen.getByLabelText(/E-Mail/);
       await user.type(emailInput, 'invalid-email');
@@ -192,7 +219,9 @@ describe('CustomerForm', () => {
     it('should accept valid 5-digit postal code', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const plzInput = screen.getByLabelText(/PLZ/);
 
@@ -213,7 +242,9 @@ describe('CustomerForm', () => {
 
     it('should enforce maxLength of 5 for postal code', () => {
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const plzInput = screen.getByLabelText(/PLZ/) as HTMLInputElement;
       expect(plzInput.maxLength).toBe(5);
@@ -224,7 +255,9 @@ describe('CustomerForm', () => {
     it('should call onFormDataChange when phone number is entered', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const phoneInput = screen.getByLabelText(/Telefon/);
 
@@ -248,7 +281,9 @@ describe('CustomerForm', () => {
     it('should format volume input with thousand separators', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const volumeInput = screen.getByLabelText(/Erwartetes Jahresvolumen/);
 
@@ -270,7 +305,9 @@ describe('CustomerForm', () => {
     it('should strip non-digits from volume input', async () => {
       const user = userEvent.setup();
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const volumeInput = screen.getByLabelText(/Erwartetes Jahresvolumen/);
       await user.type(volumeInput, 'abc123def456');
@@ -295,7 +332,9 @@ describe('CustomerForm', () => {
         postalCode: '10115',
       };
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={filledData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={filledData} onFormDataChange={onFormDataChange} />
+      );
 
       expect(screen.getByDisplayValue('ACME Corp')).toBeInTheDocument();
       expect(screen.getByDisplayValue('contact@acme.com')).toBeInTheDocument();
@@ -310,7 +349,9 @@ describe('CustomerForm', () => {
         contactEmail: 'existing@email.com',
       };
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={filledData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={filledData} onFormDataChange={onFormDataChange} />
+      );
 
       const cityInput = screen.getByLabelText(/Stadt/);
 
@@ -335,7 +376,9 @@ describe('CustomerForm', () => {
   describe('Required Fields', () => {
     it('should mark required fields with required attribute', () => {
       const onFormDataChange = vi.fn();
-      render(<CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />);
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
 
       const companyInput = screen.getByLabelText('Firmenname');
       const streetInput = screen.getByLabelText(/Straße/);
@@ -352,6 +395,97 @@ describe('CustomerForm', () => {
       expect(contactNameInput).toBeRequired();
       expect(phoneInput).toBeRequired();
       expect(emailInput).toBeRequired();
+    });
+  });
+
+  describe('BusinessType Integration (Sprint 2.1.6.1 Phase 1)', () => {
+    it('should show loading state while fetching business types', () => {
+      const onFormDataChange = vi.fn();
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
+
+      const industrySelect = screen.getByLabelText(/Branche/);
+      expect(industrySelect).toBeDisabled();
+      expect(screen.getByText('Lädt...')).toBeInTheDocument();
+    });
+
+    it('should load and display 9 business types from MSW mock', async () => {
+      const onFormDataChange = vi.fn();
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
+
+      // Wait for business types to load from MSW mock
+      await waitFor(
+        () => {
+          const industrySelect = screen.getByLabelText(/Branche/);
+          expect(industrySelect).not.toBeDisabled();
+        },
+        { timeout: 3000 }
+      );
+
+      // Verify all 9 BusinessType values are present
+      expect(screen.getByRole('option', { name: 'Restaurant' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Hotel' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Catering' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Kantine' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Großhandel' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'LEH' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Bildung' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Gesundheit' })).toBeInTheDocument();
+      expect(screen.getByRole('option', { name: 'Sonstiges' })).toBeInTheDocument();
+    });
+
+    it('should allow selecting a business type value', async () => {
+      const user = userEvent.setup();
+      const onFormDataChange = vi.fn();
+      renderWithQueryClient(
+        <CustomerForm formData={defaultFormData} onFormDataChange={onFormDataChange} />
+      );
+
+      // Wait for business types to load
+      await waitFor(
+        () => {
+          const industrySelect = screen.getByLabelText(/Branche/);
+          expect(industrySelect).not.toBeDisabled();
+        },
+        { timeout: 3000 }
+      );
+
+      const industrySelect = screen.getByLabelText(/Branche/);
+      await user.selectOptions(industrySelect, 'HOTEL');
+
+      await waitFor(() => {
+        expect(onFormDataChange).toHaveBeenCalledWith(
+          expect.objectContaining({
+            industry: 'HOTEL',
+          })
+        );
+      });
+    });
+
+    it('should preserve selected business type when form data is updated', async () => {
+      const filledData: CustomerFormData = {
+        ...defaultFormData,
+        industry: 'RESTAURANT',
+      };
+      const onFormDataChange = vi.fn();
+      renderWithQueryClient(
+        <CustomerForm formData={filledData} onFormDataChange={onFormDataChange} />
+      );
+
+      // Wait for business types to load
+      await waitFor(
+        () => {
+          const industrySelect = screen.getByLabelText(/Branche/) as HTMLSelectElement;
+          expect(industrySelect).not.toBeDisabled();
+        },
+        { timeout: 3000 }
+      );
+
+      const industrySelect = screen.getByLabelText(/Branche/) as HTMLSelectElement;
+      expect(industrySelect.value).toBe('RESTAURANT');
     });
   });
 });

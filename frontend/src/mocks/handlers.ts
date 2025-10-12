@@ -133,4 +133,19 @@ export const handlers = [
 
   // Sprint 2.1.6: Lead API endpoints use real backend
   // No mock handlers needed - MSW configured with 'bypass' for unhandled requests
+
+  // Sprint 2.1.6.1 Phase 1: BusinessType Enum Endpoint
+  http.get('/api/enums/business-types', () => {
+    return HttpResponse.json([
+      { value: 'RESTAURANT', label: 'Restaurant' },
+      { value: 'HOTEL', label: 'Hotel' },
+      { value: 'CATERING', label: 'Catering' },
+      { value: 'KANTINE', label: 'Kantine' },
+      { value: 'GROSSHANDEL', label: 'Großhandel' },
+      { value: 'LEH', label: 'LEH' },
+      { value: 'BILDUNG', label: 'Bildung' },
+      { value: 'GESUNDHEIT', label: 'Gesundheit' },
+      { value: 'SONSTIGES', label: 'Sonstiges' },
+    ]);
+  }),
 ];

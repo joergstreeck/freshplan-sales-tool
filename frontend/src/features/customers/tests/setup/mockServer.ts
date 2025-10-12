@@ -270,6 +270,28 @@ export const handlers = [
 
     return res(ctx.status(200), ctx.json(categories[industry as keyof typeof categories] || []));
   }),
+
+  // =========================================================================
+  // Enums (Sprint 2.1.6.1 Phase 1: BusinessType)
+  // =========================================================================
+
+  rest.get('/api/enums/business-types', (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json([
+        { value: 'RESTAURANT', label: 'Restaurant' },
+        { value: 'HOTEL', label: 'Hotel' },
+        { value: 'CATERING', label: 'Catering' },
+        { value: 'KANTINE', label: 'Kantine' },
+        { value: 'GROSSHANDEL', label: 'Großhandel' },
+        { value: 'LEH', label: 'LEH' },
+        { value: 'BILDUNG', label: 'Bildung' },
+        { value: 'GESUNDHEIT', label: 'Gesundheit' },
+        { value: 'SONSTIGES', label: 'Sonstiges' },
+      ]),
+      ctx.delay(50)
+    );
+  }),
 ];
 
 // =============================================================================
