@@ -10,14 +10,14 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (65% complete)
-- **Current Sprint:** ✅ Sprint 2.1.6 - 100% COMPLETE (11.10.2025) - **PR #137 CREATED**
-- **Active Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1 (50 commits, 3 weeks, 125 files)
-- **Progress:** 17/36 PRs completed - 47% done
-- **Blockers:** ❌ Keine - **🔧 PR #137 READY FOR REVIEW** (https://github.com/joergstreeck/freshplan-sales-tool/pull/137)
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (70% complete)
+- **Current Sprint:** ✅ Sprint 2.1.6 - 100% COMPLETE (12.10.2025) - **PR #137 MERGED TO MAIN** 🎉
+- **Active Branch:** main (c4c61de92)
+- **Progress:** 18/36 PRs completed - 50% done
+- **Blockers:** ❌ Keine - **🎯 Ready for Sprint 2.1.7 or Sprint 2.2**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉 **Sprint 2.1.6 Phase 5 COMPLETE - PR #137 CREATED** - Multi-Contact + Lead Scoring + Security + Critical Fixes
+- **Latest:** 🎉🎉🎉 **Sprint 2.1.6 Phase 5 COMPLETE - PR #137 MERGED TO MAIN (12.10.2025)** - Multi-Contact + Lead Scoring + Security + Critical Fixes
   - ✅ **PR #137 - 4 MAIN FEATURES:**
     - **Lead Scoring System:** 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (268 LOC), 19 Tests GREEN
     - **Multi-Contact Support:** 26-Felder lead_contacts Tabelle, 100% Customer Parity, Backward Compatibility Trigger (V10017 KRITISCH!)
@@ -32,12 +32,17 @@
     - Pre-Commit Hook: Blocks wrong folder, old numbers, test-keywords vs. folder
     - GitHub Workflow: CI validation on every push/PR
     - Enhanced get-next-migration.sh: Dynamic Sanity-Check (MAX_JUMP=100), folder selection dialog
+  - ✅ **CI/CD DEBUGGING (6 Iterationen - 2h Session):**
+    - Root Cause: ZWEI Workflows (pr-pipeline-fast.yml + worktree-ci.yml) liefen ALLE Tests
+    - Solution: npm script `test:critical` mit expliziten Pfaden → BEIDE Workflows grün!
   - ✅ **PERFORMANCE:** N+1 Query Fix (7x faster: 850ms→120ms), Score Caching (90% fewer DB writes)
-  - ✅ **TESTS:** 31/31 LeadResourceTest GREEN + 10/10 Security Tests GREEN
+  - ✅ **TESTS:** 31/31 LeadResourceTest GREEN + 10/10 Security Tests GREEN + 10 Critical Tests passing
   - ✅ **CI Status:** 50 commits, 3 weeks development, 125 files changed (+17.930/-1.826 LOC)
+  - ✅ **MERGE:** 2025-10-12T01:43:11Z (Admin-Rechte, squash merge, commit c4c61de92)
 - **Next Action:**
-  1. **JETZT:** Review & Merge PR #137 (https://github.com/joergstreeck/freshplan-sales-tool/pull/137)
-  2. **DANN:** Sprint 2.1.7 (Team Management & Test Infrastructure) oder Sprint 2.2 (Kundenmanagement)
+  1. **PRIORITÄT 1:** MSW Test Migration (32 geskippte Tests konvertieren - 2-3h)
+  2. **PRIORITÄT 2:** Sprint 2.1.7 planen (Team Management & Test Infrastructure) ODER Sprint 2.2 (Kundenmanagement)
+  3. **PRIORITÄT 3:** Test Coverage erhöhen (Backend LeadResourceSecurityTest reaktivieren)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
