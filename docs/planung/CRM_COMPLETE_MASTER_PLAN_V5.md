@@ -161,6 +161,36 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-12 16:50 - Sprint 2.1.6.1 Phase 1 - Customer BusinessType Migration COMPLETE ✅
+
+**Kontext:** Enum-Migration Phase 2 (Customer-Modul) - BusinessType-Harmonisierung mit Lead-Modul (9 gemeinsame Werte).
+
+**Erledigt:**
+- ✅ **DISCOVERY: Migration V264 existierte BEREITS aus Sprint 2.1.6 Phase 5!**
+  - V10026 erstellt, aber als redundant erkannt und entfernt
+  - V264__add_customer_business_type.sql enthält vollständige Migration
+- ✅ **BACKEND AUTO-SYNC SETTER TESTS (27 Unit-Tests GREEN):**
+  - `CustomerAutoSyncSetterTest.java` (413 LOC)
+  - Testet bidirektionale Synchronisation: businessType ↔ industry
+  - Validiert BusinessType.fromLegacyIndustry() Mappings
+  - Edge Cases: NULL-Handling, GROSSHANDEL → EINZELHANDEL
+- ✅ **FRONTEND CUSTOMERFORM REFACTORED:**
+  - `CustomerForm.tsx`: useBusinessTypes() Hook integriert
+  - 5 hardcoded Werte → 9 dynamische Werte von Backend
+  - Loading State + Disabled während Fetch
+- ✅ **FRONTEND MSW MOCK TESTS (18 Tests GREEN):**
+  - `mockServer.ts` (Customers): /api/enums/business-types endpoint
+  - `handlers.ts` (Global): businessTypes Mock für alle Tests
+  - `CustomerForm.test.tsx`: 4 neue BusinessType Integration Tests
+  - Alle existierenden Tests auf QueryClientProvider umgestellt
+- ✅ **DOKUMENTATION UPDATED:**
+  - `ENUM_MIGRATION_STRATEGY.md`: Phase 2 Status ✅ COMPLETE
+  - V264 Discovery dokumentiert, Phase 3 als SKIPPED markiert
+  - Master Plan V5 SESSION LOG aktualisiert
+
+**Tests:** 27 Backend Unit-Tests GREEN, 18 Frontend Tests GREEN
+**Migration:** V264 (already exists), V10026 (redundant, removed)
+
 ### 2025-10-12 15:00 - Sprint 2.1.6 Phase 5 - PR #137 MERGED TO MAIN ✅ - 6-Iteration CI Debugging Session
 
 **Kontext:** PR #137 hatte mehrfach rote CI-Pipelines trotz vorheriger Fixes. Intensive Debugging-Session (6 Iterationen) um Root Cause zu finden.
