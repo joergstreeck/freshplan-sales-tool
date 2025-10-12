@@ -4,13 +4,13 @@ import {
   AccordionDetails,
   Typography,
   Box,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
   ExpandMore as ExpandMoreIcon,
   Edit as EditIcon,
-  Business as BusinessIcon
+  Business as BusinessIcon,
 } from '@mui/icons-material';
 import type { Lead } from '../types';
 
@@ -21,12 +21,17 @@ interface LeadBasicDataAccordionProps {
   onEdit?: () => void;
 }
 
-export function LeadBasicDataAccordion({ lead, expanded, onChange, onEdit }: LeadBasicDataAccordionProps) {
+export function LeadBasicDataAccordion({
+  lead,
+  expanded,
+  onChange,
+  onEdit,
+}: LeadBasicDataAccordionProps) {
   // Preview Info für Header
   const previewParts = [
     lead.companyName || 'Kein Name',
     lead.city || 'Kein Ort',
-    lead.source || ''
+    lead.source || '',
   ].filter(Boolean);
 
   const previewText = previewParts.join(' • ');
@@ -52,7 +57,7 @@ export function LeadBasicDataAccordion({ lead, expanded, onChange, onEdit }: Lea
             <IconButton
               size="small"
               component="div"
-              onClick={(e) => {
+              onClick={e => {
                 e.stopPropagation();
                 onEdit();
               }}
@@ -119,9 +124,7 @@ export function LeadBasicDataAccordion({ lead, expanded, onChange, onEdit }: Lea
             <Typography variant="caption" color="text.secondary">
               Erstellt von
             </Typography>
-            <Typography variant="body1">
-              {lead.createdBy || '—'}
-            </Typography>
+            <Typography variant="body1">{lead.createdBy || '—'}</Typography>
           </Grid>
 
           {/* Erstellt am */}

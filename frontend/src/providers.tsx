@@ -260,7 +260,10 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           />
                           {/* Lead Detail Page */}
                           {FEAT_LEADGEN && (
-                            <Route path="/lead-generation/leads/:slug" element={<LeadDetailPage />} />
+                            <Route
+                              path="/lead-generation/leads/:slug"
+                              element={<LeadDetailPage />}
+                            />
                           )}
                           <Route
                             path="/lead-generation/campaigns"

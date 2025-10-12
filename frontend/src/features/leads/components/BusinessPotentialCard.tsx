@@ -37,12 +37,17 @@ interface BusinessPotentialCardProps {
   onEdit: () => void;
 }
 
-const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, expanded, onChange, onEdit }) => {
+const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({
+  lead,
+  expanded,
+  onChange,
+  onEdit,
+}) => {
   // Preview Info für Header
   const previewParts = [
     lead.businessType || '—',
     lead.city || '—',
-    `${lead.branchCount || 1} Standort${(lead.branchCount || 1) > 1 ? 'e' : ''}`
+    `${lead.branchCount || 1} Standort${(lead.branchCount || 1) > 1 ? 'e' : ''}`,
   ].filter(part => part !== '—');
 
   const previewText = previewParts.join(' • ');
@@ -67,7 +72,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, exp
           <IconButton
             size="small"
             component="div"
-            onClick={(e) => {
+            onClick={e => {
               e.stopPropagation();
               onEdit();
             }}
@@ -88,9 +93,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, exp
                 Geschäftstyp
               </Typography>
             </Box>
-            <Typography variant="body1">
-              {lead.businessType || '—'}
-            </Typography>
+            <Typography variant="body1">{lead.businessType || '—'}</Typography>
           </Grid>
 
           {/* Kitchen Size */}
@@ -106,8 +109,8 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, exp
                 ? lead.kitchenSize === 'small'
                   ? 'Klein'
                   : lead.kitchenSize === 'medium'
-                  ? 'Mittel'
-                  : 'Groß'
+                    ? 'Mittel'
+                    : 'Groß'
                 : '—'}
             </Typography>
           </Grid>
@@ -137,24 +140,18 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({ lead, exp
               <Typography variant="body1">
                 {lead.branchCount || 1} {lead.branchCount === 1 ? 'Standort' : 'Standorte'}
               </Typography>
-              {lead.isChain && (
-                <Chip label="Kettenbetrieb" size="small" color="primary" />
-              )}
+              {lead.isChain && <Chip label="Kettenbetrieb" size="small" color="primary" />}
             </Box>
           </Grid>
 
-
           {/* Empty State */}
-          {!lead.businessType &&
-            !lead.kitchenSize &&
-            !lead.employeeCount &&
-            !lead.branchCount && (
-              <Grid size={{ xs: 12 }}>
-                <Typography variant="body2" color="text.secondary" textAlign="center">
-                  Noch keine Geschäftsdaten erfasst
-                </Typography>
-              </Grid>
-            )}
+          {!lead.businessType && !lead.kitchenSize && !lead.employeeCount && !lead.branchCount && (
+            <Grid size={{ xs: 12 }}>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                Noch keine Geschäftsdaten erfasst
+              </Typography>
+            </Grid>
+          )}
         </Grid>
       </AccordionDetails>
     </Accordion>

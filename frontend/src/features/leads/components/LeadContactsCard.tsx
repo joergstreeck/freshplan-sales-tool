@@ -53,7 +53,6 @@ export function LeadContactsCard({
   onSetPrimary,
   readonly = false,
 }: LeadContactsCardProps) {
-
   const primaryContact = contacts.find(c => c.primary);
   const secondaryContacts = contacts.filter(c => !c.primary);
 
@@ -79,7 +78,9 @@ export function LeadContactsCard({
         primary={
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="subtitle1" fontWeight={isPrimary ? 600 : 400}>
-              {contact.displayName || contact.fullName || `${contact.firstName} ${contact.lastName}`}
+              {contact.displayName ||
+                contact.fullName ||
+                `${contact.firstName} ${contact.lastName}`}
             </Typography>
             {isPrimary && (
               <Chip

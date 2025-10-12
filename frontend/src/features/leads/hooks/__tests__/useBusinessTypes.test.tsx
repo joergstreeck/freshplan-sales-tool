@@ -79,7 +79,7 @@ describe('useBusinessTypes', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toHaveLength(9);
-    expect(result.current.data?.map((item) => item.value)).toEqual([
+    expect(result.current.data?.map(item => item.value)).toEqual([
       'RESTAURANT',
       'HOTEL',
       'CATERING',
@@ -129,9 +129,7 @@ describe('useBusinessTypes', () => {
   });
 
   it('should handle network errors', async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
-      new Error('Network error')
-    );
+    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
 
     const { result } = renderHook(() => useBusinessTypes(), { wrapper });
 

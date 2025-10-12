@@ -359,7 +359,10 @@ export function LeadDetailPage() {
                     {expandedSection !== 'contacts' && (
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         {contacts.length > 0
-                          ? contacts.slice(0, 2).map(c => `${c.firstName} ${c.lastName}`).join(' • ')
+                          ? contacts
+                              .slice(0, 2)
+                              .map(c => `${c.firstName} ${c.lastName}`)
+                              .join(' • ')
                           : 'Noch keine Kontakte erfasst'}
                       </Typography>
                     )}
@@ -367,7 +370,7 @@ export function LeadDetailPage() {
                   <IconButton
                     size="small"
                     component="div"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation();
                       setEditingContact(null);
                       setContactDialogOpen(true);

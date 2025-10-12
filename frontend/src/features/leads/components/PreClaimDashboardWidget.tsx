@@ -76,7 +76,9 @@ const PreClaimDashboardWidget: React.FC = () => {
           const deadline = new Date(registeredDate);
           deadline.setDate(deadline.getDate() + 10); // 10 Tage Frist
 
-          const daysRemaining = Math.ceil((deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          const daysRemaining = Math.ceil(
+            (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+          );
 
           if (daysRemaining < 0) {
             // Überfällig

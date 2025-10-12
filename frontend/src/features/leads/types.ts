@@ -429,7 +429,12 @@ export const relationshipStatusPoints: Record<RelationshipStatus, number> = {
  * Decision Maker Access (Sprint 2.1.6 Phase 5+ - V280)
  * Zugang zum Entscheider (60% Gewicht im Engagement-Score)
  */
-export type DecisionMakerAccess = 'UNKNOWN' | 'BLOCKED' | 'INDIRECT' | 'DIRECT' | 'IS_DECISION_MAKER';
+export type DecisionMakerAccess =
+  | 'UNKNOWN'
+  | 'BLOCKED'
+  | 'INDIRECT'
+  | 'DIRECT'
+  | 'IS_DECISION_MAKER';
 
 export const decisionMakerAccessLabels: Record<DecisionMakerAccess, string> = {
   UNKNOWN: 'Noch nicht identifiziert',

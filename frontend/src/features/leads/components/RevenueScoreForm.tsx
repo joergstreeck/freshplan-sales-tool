@@ -43,40 +43,43 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
   const isSavingRef = useRef(false);
 
   // Auto-Save Handler
-  const autoSave = useCallback(async (immediate = false) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    if (isSavingRef.current) {
-      return;
-    }
-
-    const saveFunction = async () => {
-      isSavingRef.current = true;
-      setSaveStatus('saving');
-      try {
-        await onUpdate({
-          estimatedVolume: formData.estimatedVolume,
-          budgetConfirmed: formData.budgetConfirmed,
-          dealSize: formData.dealSize || undefined,
-        });
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } catch (error) {
-        setSaveStatus('idle');
-        console.error('Auto-save failed:', error);
-      } finally {
-        isSavingRef.current = false;
+  const autoSave = useCallback(
+    async (immediate = false) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
-    };
 
-    if (immediate) {
-      await saveFunction();
-    } else {
-      debounceTimerRef.current = setTimeout(saveFunction, 1000);
-    }
-  }, [formData, onUpdate]);
+      if (isSavingRef.current) {
+        return;
+      }
+
+      const saveFunction = async () => {
+        isSavingRef.current = true;
+        setSaveStatus('saving');
+        try {
+          await onUpdate({
+            estimatedVolume: formData.estimatedVolume,
+            budgetConfirmed: formData.budgetConfirmed,
+            dealSize: formData.dealSize || undefined,
+          });
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } catch (error) {
+          setSaveStatus('idle');
+          console.error('Auto-save failed:', error);
+        } finally {
+          isSavingRef.current = false;
+        }
+      };
+
+      if (immediate) {
+        await saveFunction();
+      } else {
+        debounceTimerRef.current = setTimeout(saveFunction, 1000);
+      }
+    },
+    [formData, onUpdate]
+  );
 
   // Auto-save on formData changes
   useEffect(() => {
@@ -115,12 +118,8 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
               ? '⚠️'
               : '❌'}
         </Alert>
-        {saveStatus === 'saving' && (
-          <Chip label="Speichert..." size="small" color="default" />
-        )}
-        {saveStatus === 'saved' && (
-          <Chip label="Gespeichert ✓" size="small" color="success" />
-        )}
+        {saveStatus === 'saving' && <Chip label="Speichert..." size="small" color="default" />}
+        {saveStatus === 'saved' && <Chip label="Gespeichert ✓" size="small" color="success" />}
       </Box>
 
       <Grid container spacing={2}>

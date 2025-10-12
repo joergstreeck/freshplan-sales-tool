@@ -46,39 +46,42 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
   const isSavingRef = useRef(false);
 
   // Auto-Save Handler with debounce for text fields
-  const autoSave = useCallback(async (immediate = false) => {
-    // Cancel pending debounce
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    // Prevent concurrent saves
-    if (isSavingRef.current) {
-      return;
-    }
-
-    const saveFunction = async () => {
-      isSavingRef.current = true;
-      setSaveStatus('saving');
-      try {
-        await onUpdate(formData);
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } catch (error) {
-        setSaveStatus('idle');
-        console.error('Auto-save failed:', error);
-      } finally {
-        isSavingRef.current = false;
+  const autoSave = useCallback(
+    async (immediate = false) => {
+      // Cancel pending debounce
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
-    };
 
-    if (immediate) {
-      await saveFunction();
-    } else {
-      // 2s debounce for text fields (good balance between responsiveness and API load)
-      debounceTimerRef.current = setTimeout(saveFunction, 2000);
-    }
-  }, [formData, onUpdate]);
+      // Prevent concurrent saves
+      if (isSavingRef.current) {
+        return;
+      }
+
+      const saveFunction = async () => {
+        isSavingRef.current = true;
+        setSaveStatus('saving');
+        try {
+          await onUpdate(formData);
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } catch (error) {
+          setSaveStatus('idle');
+          console.error('Auto-save failed:', error);
+        } finally {
+          isSavingRef.current = false;
+        }
+      };
+
+      if (immediate) {
+        await saveFunction();
+      } else {
+        // 2s debounce for text fields (good balance between responsiveness and API load)
+        debounceTimerRef.current = setTimeout(saveFunction, 2000);
+      }
+    },
+    [formData, onUpdate]
+  );
 
   // Auto-save on formData changes (skip first render)
   useEffect(() => {
@@ -120,12 +123,8 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
               ? '⚠️'
               : '❌'}
         </Alert>
-        {saveStatus === 'saving' && (
-          <Chip label="Speichert..." size="small" color="default" />
-        )}
-        {saveStatus === 'saved' && (
-          <Chip label="Gespeichert ✓" size="small" color="success" />
-        )}
+        {saveStatus === 'saving' && <Chip label="Speichert..." size="small" color="default" />}
+        {saveStatus === 'saved' && <Chip label="Gespeichert ✓" size="small" color="success" />}
       </Box>
 
       <Grid container spacing={3}>

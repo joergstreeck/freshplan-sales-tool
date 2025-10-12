@@ -46,7 +46,11 @@ export function ScoreAccordion({
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             {icon} {title}
             {weight && (
-              <Typography component="span" variant="caption" sx={{ ml: 1, color: 'text.secondary' }}>
+              <Typography
+                component="span"
+                variant="caption"
+                sx={{ ml: 1, color: 'text.secondary' }}
+              >
                 ({weight}%)
               </Typography>
             )}

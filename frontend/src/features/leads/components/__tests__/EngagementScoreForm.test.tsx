@@ -121,7 +121,7 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
 
     // Mock onUpdate that returns updated lead with new score
-    const mockUpdateWithScore = vi.fn((updates) => {
+    const mockUpdateWithScore = vi.fn(updates => {
       // Simulate backend returning updated scores
       return Promise.resolve({
         ...mockLead,

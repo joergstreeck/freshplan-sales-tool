@@ -29,7 +29,11 @@ interface PreClaimBadgeProps {
   size?: 'small' | 'medium';
 }
 
-const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default', size = 'small' }) => {
+const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({
+  lead,
+  variant = 'default',
+  size = 'small',
+}) => {
   // Variante B: Pre-Claim Detection
   const hasFullProtection = !!lead.firstContactDocumentedAt;
 
@@ -42,7 +46,9 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
     let isExpiringSoon = false;
 
     if (protectionEnd) {
-      const daysRemaining = Math.ceil((protectionEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+      const daysRemaining = Math.ceil(
+        (protectionEnd.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      );
       const monthsRemaining = Math.floor(daysRemaining / 30);
 
       // Warnung bei < 30 Tagen
@@ -86,14 +92,13 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
           size={size}
           variant={variant}
           sx={{
-            backgroundColor: variant === 'default'
-              ? (isExpiringSoon ? '#FF9800' : '#94C456')
-              : undefined,
+            backgroundColor:
+              variant === 'default' ? (isExpiringSoon ? '#FF9800' : '#94C456') : undefined,
             borderColor: isExpiringSoon ? '#FF9800' : '#94C456',
-            color: variant === 'default' ? '#fff' : (isExpiringSoon ? '#FF9800' : '#94C456'),
+            color: variant === 'default' ? '#fff' : isExpiringSoon ? '#FF9800' : '#94C456',
             fontWeight: 600,
             '& .MuiChip-icon': {
-              color: variant === 'default' ? '#fff' : (isExpiringSoon ? '#FF9800' : '#94C456'),
+              color: variant === 'default' ? '#fff' : isExpiringSoon ? '#FF9800' : '#94C456',
             },
           }}
         />
@@ -159,7 +164,8 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({ lead, variant = 'default'
           <br />
           <br />
           <em>
-            Noch {daysRemaining} Tag{daysRemaining !== 1 ? 'e' : ''} Zeit für Erstkontakt-Dokumentation
+            Noch {daysRemaining} Tag{daysRemaining !== 1 ? 'e' : ''} Zeit für
+            Erstkontakt-Dokumentation
           </em>
         </Box>
       }

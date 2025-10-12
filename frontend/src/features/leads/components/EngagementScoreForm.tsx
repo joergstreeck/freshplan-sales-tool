@@ -33,36 +33,39 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
   const isSavingRef = useRef(false);
 
   // Auto-Save Handler
-  const autoSave = useCallback(async (immediate = false) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-
-    if (isSavingRef.current) {
-      return;
-    }
-
-    const saveFunction = async () => {
-      isSavingRef.current = true;
-      setSaveStatus('saving');
-      try {
-        await onUpdate(formData);
-        setSaveStatus('saved');
-        setTimeout(() => setSaveStatus('idle'), 2000);
-      } catch (error) {
-        setSaveStatus('idle');
-        console.error('Auto-save failed:', error);
-      } finally {
-        isSavingRef.current = false;
+  const autoSave = useCallback(
+    async (immediate = false) => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
       }
-    };
 
-    if (immediate) {
-      await saveFunction();
-    } else {
-      debounceTimerRef.current = setTimeout(saveFunction, 1000);
-    }
-  }, [formData, onUpdate]);
+      if (isSavingRef.current) {
+        return;
+      }
+
+      const saveFunction = async () => {
+        isSavingRef.current = true;
+        setSaveStatus('saving');
+        try {
+          await onUpdate(formData);
+          setSaveStatus('saved');
+          setTimeout(() => setSaveStatus('idle'), 2000);
+        } catch (error) {
+          setSaveStatus('idle');
+          console.error('Auto-save failed:', error);
+        } finally {
+          isSavingRef.current = false;
+        }
+      };
+
+      if (immediate) {
+        await saveFunction();
+      } else {
+        debounceTimerRef.current = setTimeout(saveFunction, 1000);
+      }
+    },
+    [formData, onUpdate]
+  );
 
   // Auto-save on formData changes
   useEffect(() => {
@@ -92,19 +95,15 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
     <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Alert severity="info" sx={{ flex: 1, mr: 2 }}>
-        Score: {lead.engagementScore || 0}/100{' '}
-        {lead.engagementScore && lead.engagementScore >= 70
-          ? '✅'
-          : lead.engagementScore && lead.engagementScore >= 40
-            ? '⚠️'
-            : '❌'}
+          Score: {lead.engagementScore || 0}/100{' '}
+          {lead.engagementScore && lead.engagementScore >= 70
+            ? '✅'
+            : lead.engagementScore && lead.engagementScore >= 40
+              ? '⚠️'
+              : '❌'}
         </Alert>
-        {saveStatus === 'saving' && (
-          <Chip label="Speichert..." size="small" color="default" />
-        )}
-        {saveStatus === 'saved' && (
-          <Chip label="Gespeichert ✓" size="small" color="success" />
-        )}
+        {saveStatus === 'saving' && <Chip label="Speichert..." size="small" color="default" />}
+        {saveStatus === 'saved' && <Chip label="Gespeichert ✓" size="small" color="success" />}
       </Box>
 
       <Grid container spacing={3}>
@@ -126,12 +125,8 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
             >
               <MenuItem value="COLD">❄️ Kein Kontakt (0 Punkte)</MenuItem>
               <MenuItem value="CONTACTED">📞 Erstkontakt erfolgt (5 Punkte)</MenuItem>
-              <MenuItem value="ENGAGED_SKEPTICAL">
-                🤔 Im Gespräch - skeptisch (8 Punkte)
-              </MenuItem>
-              <MenuItem value="ENGAGED_POSITIVE">
-                😊 Im Gespräch - positiv (12 Punkte)
-              </MenuItem>
+              <MenuItem value="ENGAGED_SKEPTICAL">🤔 Im Gespräch - skeptisch (8 Punkte)</MenuItem>
+              <MenuItem value="ENGAGED_POSITIVE">😊 Im Gespräch - positiv (12 Punkte)</MenuItem>
               <MenuItem value="TRUSTED">🤝 Vertrauensbasis aufgebaut (17 Punkte)</MenuItem>
               <MenuItem value="ADVOCATE">⭐ Fürsprecher / Befürworter (25 Punkte)</MenuItem>
             </Select>

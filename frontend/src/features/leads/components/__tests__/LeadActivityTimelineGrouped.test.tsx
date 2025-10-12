@@ -142,10 +142,7 @@ describe('LeadActivityTimelineGrouped', () => {
     // Mock API error
     server.use(
       http.get('/api/leads/:id/activities', () => {
-        return HttpResponse.json(
-          { message: 'Internal Server Error' },
-          { status: 500 }
-        );
+        return HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 });
       })
     );
 
@@ -216,7 +213,8 @@ describe('LeadActivityTimelineGrouped', () => {
               id: 1,
               activityType: 'CALL',
               activityDate: fifteenDaysAgo.toISOString(),
-              description: 'This is a very long activity description that should be truncated in the preview',
+              description:
+                'This is a very long activity description that should be truncated in the preview',
               userId: 'user1',
             },
           ],
@@ -234,7 +232,9 @@ describe('LeadActivityTimelineGrouped', () => {
     });
 
     // Should show preview text (first 40 chars + "...")
-    expect(screen.getByText(/Letzte: This is a very long activity descrip.../i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Letzte: This is a very long activity descrip.../i)
+    ).toBeInTheDocument();
   });
 
   // ================================================================================

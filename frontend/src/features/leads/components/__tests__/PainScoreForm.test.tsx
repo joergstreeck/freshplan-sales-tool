@@ -45,9 +45,7 @@ describe('PainScoreForm Auto-Save', () => {
     // Wait for auto-save to trigger (immediate mode)
     await waitFor(
       () => {
-        expect(onUpdate).toHaveBeenCalledWith(
-          expect.objectContaining({ painStaffShortage: true })
-        );
+        expect(onUpdate).toHaveBeenCalledWith(expect.objectContaining({ painStaffShortage: true }));
       },
       { timeout: 3000 }
     );
@@ -82,9 +80,7 @@ describe('PainScoreForm Auto-Save', () => {
     const mockLeadWithScore = { ...mockLead, painScore: 0 };
     const onUpdate = vi.fn().mockResolvedValue({ painScore: 35 });
 
-    const { rerender } = render(
-      <PainScoreForm lead={mockLeadWithScore} onUpdate={onUpdate} />
-    );
+    const { rerender } = render(<PainScoreForm lead={mockLeadWithScore} onUpdate={onUpdate} />);
 
     // Initial score display
     expect(screen.getByText(/Score: 0\/100/)).toBeInTheDocument();
@@ -150,9 +146,7 @@ describe('PainScoreForm Auto-Save', () => {
 
     // Should trigger auto-save with HIGH urgency
     await waitFor(() => {
-      expect(onUpdate).toHaveBeenCalledWith(
-        expect.objectContaining({ urgencyLevel: 'HIGH' })
-      );
+      expect(onUpdate).toHaveBeenCalledWith(expect.objectContaining({ urgencyLevel: 'HIGH' }));
     });
 
     expect(onUpdate).toHaveBeenCalledTimes(1);

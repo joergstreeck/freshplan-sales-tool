@@ -114,9 +114,10 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     return groupActivitiesByTimeRange(activities);
   }, [activities]);
 
-  const handleGroupChange = (group: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
-    setExpandedGroup(isExpanded ? group : '');
-  };
+  const handleGroupChange =
+    (group: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
+      setExpandedGroup(isExpanded ? group : '');
+    };
 
   // Render Activity Item
   const renderActivity = (activity: Activity) => {
@@ -125,9 +126,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     return (
       <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start' }}>
         <ListItemAvatar>
-          <Avatar sx={{ bgcolor: color, width: 32, height: 32, fontSize: '1rem' }}>
-            {icon}
-          </Avatar>
+          <Avatar sx={{ bgcolor: color, width: 32, height: 32, fontSize: '1rem' }}>{icon}</Avatar>
         </ListItemAvatar>
         <ListItemText
           primary={
@@ -147,7 +146,9 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
               </Typography>
               {activity.userId && (
                 <>
-                  <Typography variant="caption" color="text.secondary">•</Typography>
+                  <Typography variant="caption" color="text.secondary">
+                    •
+                  </Typography>
                   <Typography variant="caption" color="text.secondary">
                     {activity.userId}
                   </Typography>
@@ -161,11 +162,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
   };
 
   // Render Group Accordion
-  const renderGroup = (
-    key: string,
-    title: string,
-    activities: Activity[]
-  ) => {
+  const renderGroup = (key: string, title: string, activities: Activity[]) => {
     if (activities.length === 0) return null;
 
     // Preview: Letzte Aktivität
@@ -188,7 +185,11 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
               <Chip label={activities.length} size="small" sx={{ height: 20 }} />
             </Box>
             {expandedGroup !== key && (
-              <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ mt: 0.5, display: 'block' }}
+              >
                 {previewText}
               </Typography>
             )}
@@ -196,9 +197,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
         </AccordionSummary>
 
         <AccordionDetails sx={{ pt: 0 }}>
-          <List sx={{ width: '100%', p: 0 }}>
-            {activities.map(renderActivity)}
-          </List>
+          <List sx={{ width: '100%', p: 0 }}>{activities.map(renderActivity)}</List>
         </AccordionDetails>
       </Accordion>
     );

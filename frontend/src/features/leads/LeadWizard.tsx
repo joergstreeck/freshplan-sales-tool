@@ -533,7 +533,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   fullWidth
                   margin="dense"
                   error={!!fieldErrors['firstContact.performedAt']}
-                  helperText={fieldErrors['firstContact.performedAt']?.[0] || 'Wann fand der Erstkontakt statt?'}
+                  helperText={
+                    fieldErrors['firstContact.performedAt']?.[0] ||
+                    'Wann fand der Erstkontakt statt?'
+                  }
                   InputLabelProps={{ shrink: true }}
                 />
 

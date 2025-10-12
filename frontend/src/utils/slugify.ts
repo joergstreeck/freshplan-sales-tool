@@ -7,21 +7,23 @@
  * - "123 Test Inc." → "123-test-inc"
  */
 export function slugify(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    // Umlaute ersetzen
-    .replace(/ä/g, 'ae')
-    .replace(/ö/g, 'oe')
-    .replace(/ü/g, 'ue')
-    .replace(/ß/g, 'ss')
-    // Sonderzeichen entfernen/ersetzen
-    .replace(/[^\w\s-]/g, '') // Alles außer Buchstaben, Zahlen, Leerzeichen, Bindestriche
-    .replace(/\s+/g, '-') // Leerzeichen → Bindestrich
-    .replace(/--+/g, '-') // Mehrfache Bindestriche → einzelner Bindestrich
-    .replace(/^-+/, '') // Führende Bindestriche entfernen
-    .replace(/-+$/, ''); // Trailing Bindestriche entfernen
+  return (
+    text
+      .toString()
+      .toLowerCase()
+      .trim()
+      // Umlaute ersetzen
+      .replace(/ä/g, 'ae')
+      .replace(/ö/g, 'oe')
+      .replace(/ü/g, 'ue')
+      .replace(/ß/g, 'ss')
+      // Sonderzeichen entfernen/ersetzen
+      .replace(/[^\w\s-]/g, '') // Alles außer Buchstaben, Zahlen, Leerzeichen, Bindestriche
+      .replace(/\s+/g, '-') // Leerzeichen → Bindestrich
+      .replace(/--+/g, '-') // Mehrfache Bindestriche → einzelner Bindestrich
+      .replace(/^-+/, '') // Führende Bindestriche entfernen
+      .replace(/-+$/, '')
+  ); // Trailing Bindestriche entfernen
 }
 
 /**

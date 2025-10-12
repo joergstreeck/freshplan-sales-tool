@@ -31,7 +31,13 @@ interface ContactDialogProps {
  *
  * TODO: Backend API implementieren
  */
-export function ContactDialog({ open, onClose, leadId: _leadId, contact, onSave }: ContactDialogProps) {
+export function ContactDialog({
+  open,
+  onClose,
+  leadId: _leadId,
+  contact,
+  onSave,
+}: ContactDialogProps) {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
     salutation: '',
@@ -122,7 +128,6 @@ export function ContactDialog({ open, onClose, leadId: _leadId, contact, onSave 
       </DialogTitle>
 
       <DialogContent dividers>
-
         <Box
           sx={{
             display: 'grid',
@@ -153,7 +158,14 @@ export function ContactDialog({ open, onClose, leadId: _leadId, contact, onSave 
             placeholder="Dr., Prof., ..."
           />
 
-          <Box sx={{ gridColumn: { xs: '1', sm: 'span 2' }, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2 }}>
+          <Box
+            sx={{
+              gridColumn: { xs: '1', sm: 'span 2' },
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 2,
+            }}
+          >
             <TextField
               label="Vorname"
               value={formData.firstName}
