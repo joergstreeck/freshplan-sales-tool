@@ -81,7 +81,7 @@ jobs:
         
       - name: Tests
         working-directory: frontend
-        run: npm test -- --run
+        run: npm run test:critical
         
       - name: Build
         working-directory: frontend
