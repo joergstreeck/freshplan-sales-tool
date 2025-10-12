@@ -165,17 +165,18 @@ Sprint 2.1.6: Lead Completion         ✅ 100% COMPLETE (05-11.10.2025) - PR #13
                                       → **VERSCHOBEN AUF 2.1.7:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
                                       → [Modul 02 Sprint-Map](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
 
-Sprint 2.1.6.1: Enum-Migration P2+3   📅 PLANNED (09-11.10.2025) - NEU 08.10.2025
-                                      → **Phase 1 (6h):** Customer-Modul BusinessType-Migration
-                                        - Customer.industry → Customer.businessType (9 Werte harmonisiert)
-                                        - Dual-Mode: Auto-Sync Setter für Rückwärtskompatibilität
-                                        - Migration V27X (dynamisch), Frontend useBusinessTypes()
-                                      → **Phase 2 (10h):** CRM-weit Enum-Harmonisierung
-                                        - ActivityType erweitern, OpportunityStatus Enum
-                                        - PaymentMethod Enum, DeliveryMethod Enum
-                                        - EnumResource API erweitert: 4 neue Endpoints
-                                        - Frontend Hooks: useActivityTypes, useOpportunityStatuses, usePaymentMethods, useDeliveryMethods
-                                      → **Begründung:** Pre-Production = goldene Zeit (keine Daten-Migration)
+Sprint 2.1.6.1: Enum-Migration P2+3   ✅ PHASE 1 COMPLETE (12.10.2025) - Phase 2+3 SKIPPED
+                                      → **Phase 1 (4h):** Customer-Modul BusinessType-Migration ✅ COMPLETE
+                                        - ✅ DISCOVERY: Migration V264 bereits vorhanden aus Sprint 2.1.6 Phase 5
+                                        - ✅ Backend: Auto-Sync Setter Tests (27 unit tests GREEN)
+                                        - ✅ Frontend: CustomerForm refactored (useBusinessTypes() hook)
+                                        - ✅ Frontend: MSW Mock Tests (18 tests GREEN)
+                                        - ✅ Tests: 27 Backend + 18 Frontend = 45 Tests GREEN
+                                        - ✅ Dokumentation: ENUM_MIGRATION_STRATEGY.md + Master Plan V5
+                                      → **Phase 2+3:** ⚠️ SKIPPED (Tables do not exist yet)
+                                        - ActivityType, OpportunityStatus, PaymentMethod, DeliveryMethod
+                                        - Reason: orders, opportunities, customer_activities tables nicht vorhanden
+                                        - Decision: Implement when business need arises
                                       → **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
 
 Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2025
