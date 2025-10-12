@@ -48,8 +48,13 @@ jobs:
           # Check for mock patterns
           violations=""
           for file in $files; do
-            # Skip test files
+            # Skip test files (by filename pattern)
             if [[ "$file" == *".test."* ]] || [[ "$file" == *".spec."* ]] || [[ "$file" == *".stories."* ]]; then
+              continue
+            fi
+
+            # Skip test directories (by path pattern)
+            if [[ "$file" == *"/__tests__/"* ]] || [[ "$file" == *"/tests/"* ]] || [[ "$file" == *"/__mocks__/"* ]] || [[ "$file" == *"/fixtures/"* ]] || [[ "$file" == *"/.storybook/"* ]] || [[ "$file" == *"/storybook/"* ]]; then
               continue
             fi
 

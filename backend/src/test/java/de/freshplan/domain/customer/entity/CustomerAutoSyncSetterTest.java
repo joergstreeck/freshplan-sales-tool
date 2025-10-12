@@ -325,17 +325,14 @@ class CustomerAutoSyncSetterTest {
     assertThat(BusinessType.fromLegacyIndustry(Industry.HOTEL)).isEqualTo(BusinessType.HOTEL);
     assertThat(BusinessType.fromLegacyIndustry(Industry.RESTAURANT))
         .isEqualTo(BusinessType.RESTAURANT);
-    assertThat(BusinessType.fromLegacyIndustry(Industry.CATERING))
-        .isEqualTo(BusinessType.CATERING);
-    assertThat(BusinessType.fromLegacyIndustry(Industry.KANTINE))
-        .isEqualTo(BusinessType.KANTINE);
+    assertThat(BusinessType.fromLegacyIndustry(Industry.CATERING)).isEqualTo(BusinessType.CATERING);
+    assertThat(BusinessType.fromLegacyIndustry(Industry.KANTINE)).isEqualTo(BusinessType.KANTINE);
 
     // Semantic mappings
     assertThat(BusinessType.fromLegacyIndustry(Industry.GESUNDHEITSWESEN))
         .isEqualTo(BusinessType.GESUNDHEIT);
     assertThat(BusinessType.fromLegacyIndustry(Industry.BILDUNG)).isEqualTo(BusinessType.BILDUNG);
-    assertThat(BusinessType.fromLegacyIndustry(Industry.EINZELHANDEL))
-        .isEqualTo(BusinessType.LEH);
+    assertThat(BusinessType.fromLegacyIndustry(Industry.EINZELHANDEL)).isEqualTo(BusinessType.LEH);
 
     // Catch-all mappings
     assertThat(BusinessType.fromLegacyIndustry(Industry.VERANSTALTUNG))
@@ -347,7 +344,8 @@ class CustomerAutoSyncSetterTest {
   // ========== TEST 4: Bidirectional sync consistency ==========
 
   @Test
-  @DisplayName("Setting businessType then industry should result in industry value (last write wins)")
+  @DisplayName(
+      "Setting businessType then industry should result in industry value (last write wins)")
   void bidirectionalSync_lastWriteWins() {
     // Given
     Customer customer = new Customer();
@@ -389,7 +387,8 @@ class CustomerAutoSyncSetterTest {
     // When
     customer.setBusinessType(BusinessType.GROSSHANDEL);
 
-    // Then - GROSSHANDEL maps to EINZELHANDEL in legacy Industry enum (see BusinessType.toLegacyIndustry())
+    // Then - GROSSHANDEL maps to EINZELHANDEL in legacy Industry enum (see
+    // BusinessType.toLegacyIndustry())
     assertThat(customer.getBusinessType()).isEqualTo(BusinessType.GROSSHANDEL);
     assertThat(customer.getIndustry()).isEqualTo(Industry.EINZELHANDEL);
   }
