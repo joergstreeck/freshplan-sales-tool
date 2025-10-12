@@ -35,7 +35,7 @@ public class ValidationExceptionMapper implements ExceptionMapper<ConstraintViol
             new ErrorResponse(
                 Response.Status.BAD_REQUEST.getStatusCode(),
                 "Bad Request",
-                "Validation failed. Please check your input.",
+                "Validation failed",
                 null,
                 null))
         .build();
