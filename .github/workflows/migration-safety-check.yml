@@ -45,6 +45,12 @@ jobs:
                 continue
               fi
 
+              # Exception: V10009 enthält test_data im Namen, aber ist strukturell notwendig
+              if [ "$FILENAME" = "V10009__add_test_data_flag_to_users.sql" ]; then
+                echo "   ⚠️  $FILENAME (Exception: strukturelle Spalte für Hibernate)"
+                continue
+              fi
+
               # Prüfe auf Test-Keywords
               if echo "$FILENAME" | grep -qiE "(test|demo|seed|sample|debug)"; then
                 echo "❌ FEHLER: $FILENAME enthält Test-Keywords!"
