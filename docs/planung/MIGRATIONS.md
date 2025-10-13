@@ -15,7 +15,8 @@
 | **V1-V199** | Legacy/Initial Schema | ✅ Ja | V1-V37, V102-V109, V121 |
 | **V200-V9999** | Feature Migrations | ✅ Ja | V200+, Sprint 1.x-2.x |
 | **V10000-V19999** | Test/Dev-Only | ❌ Nein | V10000-V10012 (CI-only) |
-| **V20000+** | Reserved (Future) | ⏸️ TBD | Noch nicht genutzt |
+| **V20000-V89999** | Reserved (Future) | ⏸️ TBD | Noch nicht genutzt |
+| **V90000-V99999** | DEV-SEED (Development Data) | ❌ Nein | V90001-V90002 (in db/dev-seed/) |
 | **R__*** | Repeatable Migrations | ✅ Ja | R__normalize_functions.sql |
 
 **Production Skip Pattern:** `flyway.ignoreMigrationPatterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012`
@@ -314,6 +315,51 @@ CREATE UNIQUE INDEX CONCURRENTLY ui_leads_company_city ON leads(company_name_nor
 ```
 
 **Referenz:** [Sprint 2.1.4 SUMMARY.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md#-migration-notes)
+
+---
+
+### V90000-V99999: DEV-SEED Migrations (Development Data)
+
+⚠️ **Zweck:** Realistische Testdaten für lokale Entwicklung (NICHT für CI-Tests, NICHT für Production!)
+
+**Folder:** `backend/src/main/resources/db/dev-seed/`
+
+**Strategie:** Separate Migrations für production-ähnliche Entwicklungsdaten, die beim lokalen `./mvnw quarkus:dev` automatisch geladen werden.
+
+**Im Gegensatz zu:**
+- **V10xxx (CI-Tests):** TestDataBuilder-Pattern in @QuarkusTest (programmatisch)
+- **V90xxx (DEV-SEED):** SQL-Migrations für manuelles Testen im Browser
+
+| Version | Beschreibung | Sprint | Notes |
+|---------|--------------|--------|-------|
+| **V90001** | Seed DEV Customers Complete | 2.1.6.2 | 5 realistische Customers (IDs 90001-90005): Hotel, Catering, Betriebskantine, Restaurant, Bäckerei |
+| **V90002** | Seed DEV Leads Complete | 2.1.6.2 | 10 Leads (IDs 90001-90010) + 21 Contacts + 21 Activities, Score-Range 21-59, Edge Cases: PreClaim, Grace Period, LOST |
+
+**Details:**
+- **V90001:** 5 Customers mit vollständigen Daten (Adressen, Kontakte, Notes, BusinessTypes: GASTRONOMIE, CATERING, etc.)
+- **V90002:** 10 Lead-Szenarien mit verschiedenen Stati (REGISTERED, LEAD, LOST), Hot Leads: 90003 (Score 59), 90007 (Score 57)
+
+**Verwendung:**
+```bash
+# Automatisch geladen bei lokalem Dev-Server
+./mvnw quarkus:dev
+
+# Datenbank neu aufsetzen (DEV-SEED wird automatisch ausgeführt)
+PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+./mvnw flyway:migrate
+```
+
+**Production Deployment:**
+- ✅ DEV-SEED Migrations werden in Production **automatisch übersprungen** (Flyway prüft Folder)
+- ✅ Oder explizit via `flyway.locations=classpath:db/migration` (ohne db/dev-seed)
+
+**Dokumentation:**
+- [DEV-SEED README](../../backend/src/main/resources/db/dev-seed/README.md) - Vollständige Strategie-Dokumentation
+- [DEV_SEED_INFRASTRUCTURE_SUMMARY.md](features-neu/00_infrastruktur/migrationen/artefakte/DEV_SEED_INFRASTRUCTURE_SUMMARY.md) - Session-Details (2025-10-13)
+
+**Geschichte:**
+- **V10005 (OBSOLETE):** "Seed Sample Customers" wurde gelöscht (2025-09-28, commit 753c9272c - caused CI failures)
+- **V90001-V90002 (AKTUELL):** Neue DEV-SEED Strategie (2025-10-13), separate Folder, bessere Organisation
 
 ---
 

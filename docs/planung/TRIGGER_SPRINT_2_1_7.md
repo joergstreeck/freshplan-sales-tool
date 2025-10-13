@@ -86,6 +86,21 @@ prerequisites:
 
 ## Sprint-Ziel
 
+### **Track 0: Sprint Warm-Up (Refactorings aus 2.1.6.1 - OPTIONAL)**
+Kleine Refactorings vor Sprint-Start, um technische Schuld zu reduzieren.
+
+**Kern-Deliverables:**
+1. **useBusinessTypes Hook verschieben** - Shared Location für Wiederverwendbarkeit (15-30min) ✅ **JETZT**
+2. **Parametrized Tests Refactoring** - Gemini-Vorschlag (1-2h) ⏸️ **VERSCHOBEN auf Tech Debt Sprint**
+
+**Gesamt-Effort Track 0:** ~0.5h (nur useBusinessTypes Hook)
+
+**Begründung Track 0:**
+- ✅ **useBusinessTypes:** Sehr geringer Aufwand (30min), Sprint 2.1.7 profitiert (Track 2 Test-Komponenten)
+- ⏸️ **Parametrized Tests:** Kein Business-Value, Sprint bereits voll → verschieben auf späteren Tech Debt Sprint
+
+---
+
 ### **Track 1: Lead Team Management (Business Features)**
 Implementierung von Team-basierter Lead-Sichtbarkeit mit Row-Level-Security, Lead-Transfer-Workflow zwischen Partnern, und intelligenter Duplikat-Erkennung mit Fuzzy-Matching.
 
@@ -118,6 +133,95 @@ Aufbau einer professionellen Testdaten-Architektur für komplexes CRM-System, di
 - Lead-Transfer (User Story 1 → zu komplex für 2.1.6)
 - Fuzzy-Matching (User Story 4 → verdient eigenen Sprint)
 - RLS + Team Management (User Story 5 & 6 → komplex, gehören zusammen)
+
+---
+
+## User Stories - Track 0: Sprint Warm-Up (Refactorings)
+
+### 0.1 useBusinessTypes Hook zu Shared Location verschieben ✅ JETZT
+**Quelle:** Sprint 2.1.6.1 Übergabe (optionales Refactoring)
+**Begründung:** Wiederverwendbarkeit für Track 2 Test-Komponenten
+
+**Akzeptanzkriterien:**
+- [ ] **Hook verschieben:**
+  ```bash
+  # Neue Datei erstellen
+  frontend/src/hooks/useBusinessTypes.ts
+
+  # Hook-Code aus CustomerForm.tsx extrahieren
+  # Import in CustomerForm.tsx anpassen
+  ```
+- [ ] **Hook-Code:**
+  ```typescript
+  // frontend/src/hooks/useBusinessTypes.ts
+  import { useEffect, useState } from 'react';
+
+  export interface BusinessType {
+    value: string;
+    label: string;
+  }
+
+  export function useBusinessTypes() {
+    const [businessTypes, setBusinessTypes] = useState<BusinessType[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<Error | null>(null);
+
+    useEffect(() => {
+      fetch('/api/enums/business-types', { credentials: 'include' })
+        .then(res => res.json())
+        .then(data => {
+          setBusinessTypes(data);
+          setLoading(false);
+        })
+        .catch(err => {
+          setError(err);
+          setLoading(false);
+        });
+    }, []);
+
+    return { businessTypes, loading, error };
+  }
+  ```
+- [ ] **CustomerForm.tsx anpassen:**
+  ```typescript
+  import { useBusinessTypes } from '../../hooks/useBusinessTypes';
+
+  export function CustomerForm() {
+    const { businessTypes, loading, error } = useBusinessTypes();
+    // ... rest bleibt gleich
+  }
+  ```
+- [ ] **Tests aktualisieren:**
+  - CustomerForm.test.tsx: MSW Mock funktioniert weiterhin (relative URL bereits korrekt)
+  - Keine neuen Tests nötig (Hook-Logik unverändert)
+- [ ] **Alle Frontend-Tests grün** (18 Tests aus Sprint 2.1.6.1)
+
+**Aufwand:** 15-30min (File move + Import ändern)
+
+**Referenzen:**
+- Sprint 2.1.6.1 Übergabe: useBusinessTypes Hook Refactoring (optional)
+- CustomerForm.tsx: Aktueller Hook-Code
+- ENUM_MIGRATION_STRATEGY.md: BusinessType-Migration Kontext
+
+**Vorteile:**
+- ✅ Track 2 kann Hook in Test-Komponenten nutzen
+- ✅ Konsistent mit Best Practices (Shared Hooks in /hooks/)
+- ✅ Sehr geringer Aufwand (30min)
+
+---
+
+### 0.2 Parametrized Tests Refactoring ⏸️ VERSCHOBEN
+**Quelle:** Sprint 2.1.6.1 Gemini Code Review Feedback
+**Begründung:** Kein Business-Value, Sprint 2.1.7 bereits voll
+
+**Entscheidung:**
+- ⏸️ **VERSCHIEBEN** auf zukünftigen Tech Debt Sprint (nach Sprint 2.2)
+- **Grund:** Tests funktionieren (alle grün), Optimierung bringt keinen direkten Nutzen
+- **Aufwand gespart:** 1-2h (können in Sprint 2.1.7 Track 2 investiert werden)
+
+**Referenzen:**
+- CustomerAutoSyncSetterTest.java: 27 Tests (funktionieren perfekt)
+- Gemini Review: Parametrized Tests Vorschlag (NICE-TO-HAVE)
 
 ---
 
@@ -1057,6 +1161,8 @@ public class LeadDeduplicationService {
 - [TESTING_GUIDE.md](grundlagen/TESTING_GUIDE.md) - Zeile 106-152 (Builder Pattern)
 - [Issue #130](https://github.com/joergstreeck/freshplan-sales-tool/issues/130) - TestDataBuilder Refactoring (Basis-Problem)
 - TestDataBuilder.java: `scenario()` Methode (Vorbild)
+- [DEV_SEED_INFRASTRUCTURE_SUMMARY.md](features-neu/00_infrastruktur/migrationen/artefakte/DEV_SEED_INFRASTRUCTURE_SUMMARY.md) - DEV-SEED Strategy (V90001+)
+- [DEV-SEED README](../../backend/src/main/resources/db/dev-seed/README.md) - Migration Strategy Documentation
 
 **Track 3 - Code Quality:**
 - [PR #133](https://github.com/joergstreeck/freshplan-sales-tool/pull/133) - BusinessType Harmonization & Admin-APIs
