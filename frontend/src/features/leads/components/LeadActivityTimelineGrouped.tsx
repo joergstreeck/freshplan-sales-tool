@@ -24,6 +24,7 @@ interface Activity {
   description?: string;
   userId: string;
   isMeaningfulContact?: boolean;
+  outcome?: string; // Sprint 2.1.7 Issue #126: ActivityOutcome
 }
 
 interface LeadActivityTimelineGroupedProps {
@@ -70,6 +71,23 @@ function getActivityTypeInfo(type: string): { icon: string; color: string } {
   };
 
   return typeMap[type] || { icon: '📌', color: '#9E9E9E' };
+}
+
+// Sprint 2.1.7 Issue #126: ActivityOutcome Badge Info
+function getOutcomeInfo(outcome: string): { label: string; color: string; icon: string } {
+  const outcomeMap: Record<string, { label: string; color: string; icon: string }> = {
+    SUCCESSFUL: { label: 'Erfolgreich', color: '#4CAF50', icon: '✅' },
+    UNSUCCESSFUL: { label: 'Nicht erfolgreich', color: '#F44336', icon: '❌' },
+    NO_ANSWER: { label: 'Keine Antwort', color: '#FF9800', icon: '📵' },
+    CALLBACK_REQUESTED: { label: 'Rückruf gewünscht', color: '#2196F3', icon: '🔄' },
+    INFO_SENT: { label: 'Info versendet', color: '#00BCD4', icon: '📧' },
+    QUALIFIED: { label: 'Qualifiziert', color: '#94C456', icon: '⭐' },
+    DISQUALIFIED: { label: 'Disqualifiziert', color: '#9E9E9E', icon: '⛔' },
+  };
+
+  return (
+    outcomeMap[outcome] || { label: outcome, color: '#757575', icon: '❓' }
+  );
 }
 
 export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGroupedProps) {
@@ -132,7 +150,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
               {activity.description}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
               <Typography variant="caption" color="text.secondary">
                 {formatDistanceToNow(new Date(activity.activityDate), {
                   addSuffix: true,
@@ -147,6 +165,29 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
                   <Typography variant="caption" color="text.secondary">
                     {activity.userId}
                   </Typography>
+                </>
+              )}
+              {/* Sprint 2.1.7 Issue #126: Display ActivityOutcome Badge */}
+              {activity.outcome && (
+                <>
+                  <Typography variant="caption" color="text.secondary">
+                    •
+                  </Typography>
+                  <Chip
+                    label={`${getOutcomeInfo(activity.outcome).icon} ${getOutcomeInfo(activity.outcome).label}`}
+                    size="small"
+                    sx={{
+                      height: 22,
+                      fontSize: '0.75rem',
+                      bgcolor: getOutcomeInfo(activity.outcome).color,
+                      color: 'white',
+                      fontWeight: 600,
+                      px: 1,
+                      '& .MuiChip-label': {
+                        px: 1,
+                      },
+                    }}
+                  />
                 </>
               )}
             </Box>
