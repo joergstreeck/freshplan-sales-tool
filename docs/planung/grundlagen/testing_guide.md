@@ -329,6 +329,108 @@ npm test -- StopTheClockDialog.test.tsx --reporter=verbose
 
 ---
 
+## 🌱 **DEV-SEED: Testdaten für lokale Entwicklung**
+
+### **Was ist DEV-SEED?**
+
+DEV-SEED ist eine **separate Migration-Strategie** für realistische Testdaten in der lokalen Entwicklungsumgebung.
+
+**Zweck:** Production-ähnliche Daten zum manuellen Testen im Browser (NICHT für automatisierte Tests!).
+
+### **Wann was verwenden?**
+
+| Use Case | Tool | Beispiel |
+|----------|------|----------|
+| **Automatisierte Tests (CI)** | TestDataBuilder | `@QuarkusTest` mit `CustomerTestDataFactory.builder()` |
+| **Lokale Entwicklung (Browser)** | DEV-SEED Migrations | V90001 (5 Customers), V90002 (10 Leads) |
+| **Production** | Echte Daten | - |
+
+### **TestDataBuilder vs. DEV-SEED**
+
+**TestDataBuilder (für @QuarkusTest):**
+```java
+@QuarkusTest
+class LeadScoringServiceTest {
+
+  @Test
+  @Transactional
+  void testHighValueLead() {
+    // Programmatisch erstellen
+    Lead lead = LeadTestDataFactory.builder()
+      .asQualifiedLead()
+      .withScore(75)
+      .buildAndPersist(leadRepository);
+
+    // Test durchführen
+    int score = leadScoringService.calculateScore(lead);
+    assertTrue(score >= 70);
+  }
+}
+```
+
+**DEV-SEED (für lokale Entwicklung):**
+```sql
+-- V90001__seed_dev_customers_complete.sql
+-- 5 realistische Customers für manuelles Testen
+
+INSERT INTO customers (id, company_name, business_type, ...)
+VALUES
+  (90001, 'Fresh Hotel GmbH', 'HOTEL', ...),
+  (90002, 'Catering Excellence AG', 'CATERING', ...),
+  ...
+```
+
+### **DEV-SEED Daten verwenden**
+
+```bash
+# 1. Automatisch geladen bei lokalem Dev-Server
+cd backend
+./mvnw quarkus:dev
+
+# 2. Im Browser: http://localhost:5173
+# → Customers: 90001-90005 sichtbar
+# → Leads: 90001-90010 sichtbar
+
+# 3. Datenbank neu aufsetzen (inklusive DEV-SEED)
+PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
+  -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+./mvnw flyway:migrate
+```
+
+### **Vorhandene DEV-SEED Daten**
+
+**V90001 - 5 Customers:**
+- 90001: Fresh Hotel GmbH (Berlin, Hotel, 200 MA)
+- 90002: Catering Excellence AG (München, Catering, 150 MA)
+- 90003: Campus Gastro Service (Freiburg, Betriebskantine, 500 MA)
+- 90004: Restaurant Bella Vista (Hamburg, Restaurant, 50 MA)
+- 90005: Bäckerei Müller KG (Dresden, Bäckerei, 80 MA)
+
+**V90002 - 10 Leads:**
+- IDs 90001-90010 (verschiedene Stati, Score-Range 21-59)
+- Hot Leads: 90003 (Score 59), 90007 (Score 57)
+- Edge Cases: PreClaim (90006), Grace Period (90005), LOST (90004)
+
+### **Dokumentation & Referenzen**
+
+- [DEV-SEED README](../../backend/src/main/resources/db/dev-seed/README.md) - Vollständige Dokumentation
+- [MIGRATIONS.md](../MIGRATIONS.md) - V90000-V99999 Range
+- [DEV_SEED_INFRASTRUCTURE_SUMMARY.md](../features-neu/00_infrastruktur/migrationen/artefakte/DEV_SEED_INFRASTRUCTURE_SUMMARY.md) - Implementation Details
+
+### **Best Practices**
+
+✅ **DO:**
+- DEV-SEED für manuelles Testing im Browser verwenden
+- TestDataBuilder für automatisierte Tests verwenden
+- IDs 90000+ für DEV-SEED Entities reservieren
+
+❌ **DON'T:**
+- DEV-SEED Daten in @QuarkusTest referenzieren (flaky tests!)
+- Production-IDs in DEV-SEED verwenden
+- DEV-SEED Migrations in Production deployen (wird automatisch übersprungen)
+
+---
+
 ## 📚 **Weitere Ressourcen**
 
 - **Backend:** [Quarkus Testing Guide](https://quarkus.io/guides/getting-started-testing)
@@ -338,6 +440,7 @@ npm test -- StopTheClockDialog.test.tsx --reporter=verbose
 
 ---
 
-**Letztes Update:** Sprint 2.1.6 Phase 4 (2025-10-08)
+**Letztes Update:** Sprint 2.1.6.2 - DEV-SEED Infrastructure (2025-10-13)
 **Test-Count:** 103 Tests (43 Backend + 60 Frontend)
 **Coverage:** Backend 85%, Frontend 82%
+**DEV-SEED:** V90001 (5 Customers), V90002 (10 Leads + 21 Contacts + 21 Activities)

@@ -10,14 +10,15 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (70% complete)
-- **Current Sprint:** ✅ Sprint 2.1.6 - 100% COMPLETE (12.10.2025) - **PR #137 MERGED TO MAIN** 🎉
-- **Active Branch:** main (c4c61de92)
-- **Progress:** 18/36 PRs completed - 50% done
-- **Blockers:** ❌ Keine - **🎯 Ready for Sprint 2.1.7 or Sprint 2.2**
-- **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (75% complete)
+- **Current Sprint:** ✅ Sprint 2.1.7 - 100% COMPLETE (13.10.2025) - **Opportunity Backend Integration** 🎉
+- **Next Sprint:** 📋 Sprint 2.1.7.1 - PLANNING (Start: 14.10.2025) - **Opportunities UI Integration**
+- **Active Branch:** main (8884e2cb7)
+- **Progress:** 20/36 PRs completed - 56% done
+- **Blockers:** ❌ Keine - **🎯 Ready for Sprint 2.1.7.1 (Frontend UI)**
+- **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉🎉🎉 **Sprint 2.1.6 Phase 5 COMPLETE - PR #137 MERGED TO MAIN (12.10.2025)** - Multi-Contact + Lead Scoring + Security + Critical Fixes
+- **Latest:** 🎉🎉🎉 **Opportunity Backend Integration COMPLETE (13.10.2025)** - V10026 + OpportunityService + 3 REST APIs + V90003 DEV-SEED (10 Opportunities)
   - ✅ **PR #137 - 4 MAIN FEATURES:**
     - **Lead Scoring System:** 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (268 LOC), 19 Tests GREEN
     - **Multi-Contact Support:** 26-Felder lead_contacts Tabelle, 100% Customer Parity, Backward Compatibility Trigger (V10017 KRITISCH!)
@@ -40,9 +41,9 @@
   - ✅ **CI Status:** 50 commits, 3 weeks development, 125 files changed (+17.930/-1.826 LOC)
   - ✅ **MERGE:** 2025-10-12T01:43:11Z (Admin-Rechte, squash merge, commit c4c61de92)
 - **Next Action:**
-  1. **PRIORITÄT 1:** MSW Test Migration (32 geskippte Tests konvertieren - 2-3h)
-  2. **PRIORITÄT 2:** Sprint 2.1.7 planen (Team Management & Test Infrastructure) ODER Sprint 2.2 (Kundenmanagement)
-  3. **PRIORITÄT 3:** Test Coverage erhöhen (Backend LeadResourceSecurityTest reaktivieren)
+  1. **PRIORITÄT 1:** Sprint 2.1.7.1 starten (Opportunities UI Integration - 16-24h)
+  2. **PRIORITÄT 2:** MSW Test Migration (32 geskippte Tests konvertieren - 2-3h)
+  3. **PRIORITÄT 3:** Sprint 2.1.8 planen (Team Management & Test Infrastructure) ODER Sprint 2.2 (Kundenmanagement)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -112,7 +113,7 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: ████▓░░░░░ 50% (2.5/5 Sprints + 5 Sub-Sprints COMPLETE)
+Progress: █████░░░░░ 55% (2.5/5 Sprints + 6 Sub-Sprints COMPLETE)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
@@ -183,7 +184,49 @@ Sprint 2.1.6.1: Enum-Migration P2+3   ✅ PHASE 1 COMPLETE (12.10.2025) - PR #13
                                       → **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
                                       → **PR #138:** https://github.com/joergstreeck/freshplan-sales-tool/pull/138
 
-Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2025
+Sprint 2.1.6.2: DEV-SEED + Bugfixes ✅ COMPLETE (13.10.2025) - Commit 8884e2cb7
+                                      → **DEV-SEED Infrastructure (Production-Ready):**
+                                        - ✅ V90001: 5 realistische Customer-Szenarien (IDs 90001-90005)
+                                        - ✅ V90002: 10 Lead-Szenarien + 21 Contacts + 21 Activities (IDs 90001-90010)
+                                        - ✅ Score-Range validiert: 21-59 (System Ceiling confirmed)
+                                        - ✅ Hot Leads: 90003 (Score 59), 90007 (Score 57)
+                                        - ✅ Edge Cases: PreClaim (90006), Grace Period (90005), LOST (90004)
+                                        - ✅ **Neue Migration-Strategie:** db/dev-seed/ Folder für DEV-only Daten
+                                      → **Frontend Bugfixes (3 kritische Bugs):**
+                                        - ✅ Auto-Save Race Condition (409 Conflict bei Component Mount)
+                                        - ✅ Auth Bypass Permission Failure (Stop-the-Clock "Keine Berechtigung")
+                                        - ✅ GRACE_PERIOD Translation (fehlende deutsche Übersetzung)
+                                      → **Backend Error Handling:**
+                                        - ✅ OptimisticLockException → 409 Conflict (proper HTTP status)
+                                        - ✅ RlsConnectionAffinityGuard: SUPERUSER detection verbessert
+                                        - ✅ application.properties: RLS fallback user für DEV-SEED
+                                      → **Frontend .ENV Configuration:**
+                                        - ✅ .env.development: Auth Bypass aktiviert
+                                        - ✅ VITE_USE_KEYCLOAK_IN_DEV=false für Mock-User
+                                      → **Commit:** 8884e2cb7 "fix: Frontend Bugfixes - Auto-Save Race Condition + Auth Bypass + UI Fixes"
+
+Sprint 2.1.7: Opportunity Backend    ✅ COMPLETE (13.10.2025) - 4h Entwicklung
+                                      → **Backend Integration (V10026 + V90003):**
+                                        - ✅ **V10026 Migration:** lead_id + customer_id FKs, Check Constraint (lead_id OR customer_id OR stage='NEW_LEAD')
+                                        - ✅ **OpportunityService:** 3 Service-Methoden (createFromLead, convertToCustomer, createForCustomer)
+                                        - ✅ **REST APIs:** POST /api/opportunities/from-lead/{leadId}, POST /api/opportunities/{id}/convert-to-customer, POST /api/opportunities/for-customer/{customerId}
+                                        - ✅ **Lead Status Auto-Update:** CONVERTED Status bei Opportunity-Erstellung (Industry Standard: ONE-WAY)
+                                        - ✅ **V90003 DEV-SEED:** 10 realistische Opportunities (4 from Leads, 6 from Customers), Total Value €163,000
+                                        - ✅ **Full Traceability:** Lead → Opportunity → Customer mit originalLeadId (V261)
+                                      → **Tests:** Service methods via Integration Tests, REST endpoints via REST-assured
+                                      → **Performance:** Backend startet in 4.6s, Flyway 161 migrations validated
+                                      → **Metrics:** 800 LOC (Migration + Service + REST), 150% Effizienz (4h actual vs 6-8h estimated)
+                                      → **Completion:** [SPRINT_2_1_7_1_SUMMARY.md](SPRINT_2_1_7_1_SUMMARY.md)
+
+Sprint 2.1.7.1: Opportunities UI     📋 PLANNING (14.10.2025) - Aufwand: 16-24h (2-3 Tage)
+                                      → **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog, Lead Detail Integration, LeadOpportunitiesList)
+                                      → **Phase 2:** Kanban Board Enhancements (Filter: Nur offene/Alle/Archiv, Backend Endpoint /api/opportunities?status=active)
+                                      → **Phase 3:** Customer → Opportunity UI (Customer Detail Integration, CustomerOpportunitiesList, Conversion Button)
+                                      → **Phase 4:** Testing & Polish (Unit Tests, E2E Tests mit Playwright, UI/UX Polish)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7 Backend complete, ✅ V10026 + V90003 deployed
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_1.md](TRIGGER_SPRINT_2_1_7_1.md)
+
+Sprint 2.1.8: Team Mgmt & Test Infra 📅 VERSCHOBEN (19-25.10.2025) - VORMALS Sprint 2.1.7
                                       → **Track 1 - Business (verschoben aus 2.1.6):**
                                         - Lead-Transfer Workflow (V260: lead_transfers, POST /api/leads/{id}/transfer, 48h SLA)
                                         - Fuzzy-Matching & Review (Scoring-Algorithmus: Email 40%, Phone 30%, Company 20%, Address 10%)
@@ -200,7 +243,6 @@ Sprint 2.1.7: Team Mgmt & Test Infra  📅 PLANNED (19-25.10.2025) - NEU 05.10.2
                                         - Backend DTOs: Kapselung (private fields + getters statt public fields)
                                       → **Begründung Track 2:** Quality Investment für Sprint 2.2+ Velocity, Test-Szenarien für Onboarding
                                       → **Begründung Track 3:** Gemini Code Review Feedback (Medium Priority - verbessert Datenqualität)
-                                      → [TRIGGER_SPRINT_2_1_7.md](TRIGGER_SPRINT_2_1_7.md)
 Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit                🟡 Planning → CQRS-optimiert

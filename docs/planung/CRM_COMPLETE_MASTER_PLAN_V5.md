@@ -161,6 +161,65 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-13 21:30 - Sprint 2.1.7 COMPLETE + Sprint 2.1.7.1 Planning - Opportunity Backend Integration + UI Planning
+
+**Kontext:** Sprint 2.1.7 Backend Integration für Lead→Opportunity→Customer Workflow abgeschlossen (4h). Sprint 2.1.7.1 Frontend UI vollständig geplant (16-24h).
+
+**Erledigt:**
+- ✅ **SPRINT 2.1.7 - OPPORTUNITY BACKEND INTEGRATION (COMPLETE):**
+  - **V10026 Migration:** lead_id + customer_id FKs in opportunities table
+  - **Check Constraint:** lead_id OR customer_id OR stage='NEW_LEAD' (data integrity)
+  - **OpportunityService:** 3 Service-Methoden implementiert (createFromLead, convertToCustomer, createForCustomer)
+  - **REST APIs:** POST /api/opportunities/from-lead/{leadId}, POST /api/opportunities/{id}/convert-to-customer, POST /api/opportunities/for-customer/{customerId}
+  - **Lead Status Auto-Update:** CONVERTED Status bei Opportunity-Erstellung (Industry Standard: ONE-WAY)
+  - **Full Traceability:** Lead → Opportunity → Customer mit originalLeadId (V261)
+  - **V90003 DEV-SEED:** 10 realistische Opportunities (4 from Leads, 6 from Customers), Total Value €163,000
+- ✅ **SPRINT 2.1.7.1 - OPPORTUNITIES UI INTEGRATION (PLANNING):**
+  - **TRIGGER_SPRINT_2_1_7_1.md erstellt:** 4 Phasen (Lead→Opportunity UI, Kanban Enhancements, Customer→Opportunity UI, Testing)
+  - **SPRINT_2_1_7_1_SUMMARY.md erstellt:** Completion Report mit Metrics (4h actual vs 6-8h estimated = 150% Effizienz)
+  - **TRIGGER_INDEX.md updated:** Sprint 2.1.7 als ✅ COMPLETE, Sprint 2.1.7.1 als 📋 PLANNING, Sprints 2.1.7→2.1.8, 2.1.8→2.1.9, 2.1.9→2.1.10 renummeriert
+  - **PRODUCTION_ROADMAP_2025.md updated:** Status Sprint 2.1.7 ✅ COMPLETE, Progress 20/36 PRs (56%), Next Action: Sprint 2.1.7.1
+
+**Tests:** Service methods via Integration Tests, REST endpoints via REST-assured, 10 Opportunities im Kanban sichtbar ✅
+**Migration:** V10026 (production), V90003 (DEV-SEED)
+**Performance:** Backend startet in 4.6s, Flyway 161 migrations validated, API returns 7+ opportunities
+**Dokumentation:** 3 neue Planungsdokumente (TRIGGER_SPRINT_2_1_7_1.md, SPRINT_2_1_7_1_SUMMARY.md, TRIGGER_INDEX.md + Roadmap updated)
+
+### 2025-10-13 02:00 - DEV-SEED Infrastructure + Frontend Bugfixes - V90001/V90002 + Auto-Save Race Condition
+
+**Kontext:** DEV-SEED Infrastruktur für realistische Testdaten (5 Customers, 10 Leads) + kritische Frontend-Bugfixes (Auto-Save Race Condition, Auth Bypass)
+
+**Erledigt:**
+- ✅ **DEV-SEED MIGRATIONS (V90001 + V90002 - Production-Ready):**
+  - V90001: 5 realistische Customer-Szenarien (IDs 90001-90005)
+  - V90002: 10 Lead-Szenarien (IDs 90001-90010) + 21 Contacts + 21 Activities
+  - Score-Range validiert: 21-59 (System Ceiling confirmed)
+  - Hot Leads: 90003 (Score 59), 90007 (Score 57)
+  - Edge Cases: PreClaim (90006), Grace Period (90005), LOST (90004)
+  - **Neue Migration-Strategie:** db/dev-seed/ Folder für DEV-only Daten
+- ✅ **FRONTEND BUGFIXES (3 kritische Bugs):**
+  - **Bug 1: Auto-Save Race Condition** (409 Conflict bei Component Mount)
+    - Root Cause: React StrictMode mounted Components twice → beide Mounts triggerten Auto-Save
+    - Fix: Explizite Change-Detection in 3 Score-Forms (Revenue, Pain, Engagement)
+    - Betroffen: RevenueScoreForm.tsx, PainScoreForm.tsx, EngagementScoreForm.tsx
+  - **Bug 2: Auth Bypass Permission Failure** (Stop-the-Clock "Keine Berechtigung")
+    - Root Cause: Mock-User hatte lowercase Rollen ['admin'] aber Check prüfte 'ADMIN'
+    - Fix: Rollen auf UPPERCASE + case-insensitive hasRole() mit .toUpperCase()
+    - ENV: VITE_USE_KEYCLOAK_IN_DEV=false + VITE_AUTH_BYPASS=true
+  - **Bug 3: GRACE_PERIOD Translation** (fehlende deutsche Übersetzung)
+    - Fix: types.ts LeadStage Mapping erweitert
+- ✅ **BACKEND ERROR HANDLING:**
+  - GlobalExceptionMapper: OptimisticLockException → 409 Conflict (proper HTTP status)
+  - RlsConnectionAffinityGuard: SUPERUSER detection verbessert
+  - application.properties: RLS fallback user für DEV-SEED
+- ✅ **FRONTEND .ENV CONFIGURATION:**
+  - .env.development: Auth Bypass aktiviert (VITE_AUTH_BYPASS=true)
+  - VITE_USE_KEYCLOAK_IN_DEV=false für Mock-User in DEV-Mode
+
+**Tests:** Keine Console-Errors mehr, Stop-the-Clock funktioniert im DEV-Mode ✅
+**Migration:** V90001 (5 Customers), V90002 (10 Leads + 21 Contacts + 21 Activities)
+**Commit:** 8884e2cb7 "fix: Frontend Bugfixes - Auto-Save Race Condition + Auth Bypass + UI Fixes"
+
 ### 2025-10-12 17:52 - Sprint 2.1.6.1 Phase 1 - PR #138 MERGED TO MAIN ✅ - Customer BusinessType Migration + CI-Fixes
 
 **Kontext:** Enum-Migration Phase 2 (Customer-Modul) - BusinessType-Harmonisierung mit Lead-Modul (9 gemeinsame Werte). PR #138 erfolgreich gemerged nach 2 CI-Fix-Commits.
@@ -962,6 +1021,14 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
+- **✅ DEV-SEED Infrastructure COMPLETE (13.10.2025) - Commit 8884e2cb7:**
+  - V90001: 5 realistische Customer-Szenarien (IDs 90001-90005)
+  - V90002: 10 Lead-Szenarien + 21 Contacts + 21 Activities (IDs 90001-90010)
+  - Hot Leads: 90003 (Score 59), 90007 (Score 57)
+  - 3 Frontend Bugfixes (Auto-Save Race Condition, Auth Bypass, GRACE_PERIOD Translation)
+  - Backend Error Handling: OptimisticLockException → 409 Conflict
+  - **Neue Migration-Strategie:** db/dev-seed/ Folder für DEV-only Daten
+
 - **✅ Sprint 2.1.6.1 Phase 1 COMPLETE (12.10.2025) - PR #138 MERGED:**
   - Customer BusinessType Migration mit V264 (bereits existierte aus Sprint 2.1.6 Phase 5)
   - Backend: 27 Auto-Sync Setter Tests GREEN (CustomerAutoSyncSetterTest.java)
@@ -969,6 +1036,10 @@
   - CI-Fixes: Mock Guard `/tests/` Path Exception + Spotless Format
   - Code Reviews: Copilot + Gemini komplett adressiert
   - **Phase 2+3 SKIPPED:** Orders/Opportunities/Activities Tables nicht vorhanden
+
+- **🎯 EMPFOHLEN: Sprint 2.1.7 Track 0 - Warm-Up Refactorings (optional, ~30min):**
+  - useBusinessTypes Hook zu /hooks/ verschieben (15-30min, Track 2 profitiert)
+  - Parametrized Tests Refactoring ⏸️ VERSCHOBEN (kein Business-Value)
 
 - **🎯 EMPFOHLEN: Sprint 2.1.7 - Team Management & Test Infrastructure (Start 19.10.2025):**
   - **Track 1 (Business Features - verschoben aus Sprint 2.1.6):**
