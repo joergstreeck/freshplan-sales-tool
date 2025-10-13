@@ -42,6 +42,16 @@ public class Opportunity {
   @JoinColumn(name = "customer_id")
   private Customer customer;
 
+  /**
+   * Reference to originating lead (if opportunity was created from lead).
+   * NULL for opportunities created directly for customers.
+   *
+   * @since Sprint 2.1.6.2 Phase 2 (V10026)
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "lead_id")
+  private de.freshplan.modules.leads.domain.Lead lead;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "assigned_to")
   private User assignedTo;
@@ -174,6 +184,15 @@ public class Opportunity {
 
   public void setCustomer(Customer customer) {
     this.customer = customer;
+    this.updatedAt = LocalDateTime.now();
+  }
+
+  public de.freshplan.modules.leads.domain.Lead getLead() {
+    return lead;
+  }
+
+  public void setLead(de.freshplan.modules.leads.domain.Lead lead) {
+    this.lead = lead;
     this.updatedAt = LocalDateTime.now();
   }
 

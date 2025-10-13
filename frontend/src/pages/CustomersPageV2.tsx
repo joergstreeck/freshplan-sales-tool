@@ -545,9 +545,12 @@ export function CustomersPageV2({
                     customers={filteredCustomers}
                     columns={columnConfig}
                     onRowClick={customer => {
-                      // Context-based navigation: Leads haben keine Detail-Seite
+                      // Context-based navigation
                       if (context === 'customers') {
                         navigate(`/customers/${customer.id}`);
+                      } else if (context === 'leads') {
+                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                       }
                     }}
                     height={600}
@@ -557,9 +560,12 @@ export function CustomersPageV2({
                   <CustomerTable
                     customers={filteredCustomers}
                     onRowClick={customer => {
-                      // Context-based navigation: Leads haben keine Detail-Seite
+                      // Context-based navigation
                       if (context === 'customers') {
                         navigate(`/customers/${customer.id}`);
+                      } else if (context === 'leads') {
+                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                       }
                     }}
                     highlightNew

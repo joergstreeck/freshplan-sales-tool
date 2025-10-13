@@ -10,6 +10,9 @@ import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.command.OpportunityCommandService;
+import de.freshplan.domain.opportunity.service.dto.ConvertToCustomerRequest;
+import de.freshplan.domain.opportunity.service.dto.CreateOpportunityForCustomerRequest;
+import de.freshplan.domain.opportunity.service.dto.CreateOpportunityFromLeadRequest;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.domain.opportunity.service.dto.PipelineOverviewResponse;
@@ -241,6 +244,555 @@ public class OpportunityService {
 
     logger.info("Updated opportunity: {}", id);
     return opportunityMapper.toResponse(opportunity);
+  }
+
+  // =====================================
+  // LEAD → OPPORTUNITY CONVERSION
+  // =====================================
+
+  /**
+   * Creates an Opportunity from a qualified Lead.
+   *
+   * <p>Business Rules:
+   *
+   * <ul>
+   *   <li>Lead must be QUALIFIED or ACTIVE status
+   *   <li>Opportunity starts in NEW_LEAD stage (10% probability)
+   *   <li>lead_id FK is set (enables Lead → Opportunity traceability)
+   *   <li>Name auto-generated if not provided: "Vertragschance - {companyName} ({dealType})"
+   *   <li>Owner transferred from Lead to Opportunity
+   * </ul>
+   *
+   * @param leadId the lead ID to convert
+   * @param request the opportunity creation parameters
+   * @return the created opportunity response
+   * @throws IllegalArgumentException if lead not found or not qualified
+   * @since Sprint 2.1.6.2 Phase 2 (V10026)
+   */
+  @Transactional
+  public OpportunityResponse createFromLead(Long leadId, CreateOpportunityFromLeadRequest request) {
+    logger.info("Creating opportunity from lead ID: {}", leadId);
+
+    // 1. Load Lead (using Panache Active Record pattern)
+    de.freshplan.modules.leads.domain.Lead lead =
+        de.freshplan.modules.leads.domain.Lead.<de.freshplan.modules.leads.domain.Lead>findByIdOptional(leadId)
+            .orElseThrow(
+                () -> new IllegalArgumentException("Lead not found with ID: " + leadId));
+
+    // 2. Validate Lead Status (must be QUALIFIED or ACTIVE)
+    if (lead.status != de.freshplan.modules.leads.domain.LeadStatus.QUALIFIED
+        && lead.status != de.freshplan.modules.leads.domain.LeadStatus.ACTIVE) {
+      throw new IllegalArgumentException(
+          String.format(
+              "Lead must be QUALIFIED or ACTIVE to create opportunity. Current status: %s",
+              lead.status));
+    }
+
+    // 3. Determine opportunity name
+    String opportunityName = request.getName();
+    if (opportunityName == null || opportunityName.isBlank()) {
+      opportunityName = generateOpportunityName(lead, request);
+    }
+
+    // 4. Determine assigned user (from request or lead owner)
+    User assignedUser = null;
+    if (request.getAssignedTo() != null) {
+      assignedUser =
+          userRepository
+              .findByIdOptional(request.getAssignedTo())
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "User not found with ID: " + request.getAssignedTo()));
+    } else if (lead.ownerUserId != null) {
+      // Try to find user by lead's ownerUserId (String)
+      assignedUser = userRepository.findByUsername(lead.ownerUserId).orElse(null);
+    }
+
+    // Fallback to current user if no assignee found
+    if (assignedUser == null) {
+      assignedUser = getCurrentUser();
+    }
+
+    // 5. Create Opportunity entity
+    Opportunity opportunity = new Opportunity(opportunityName, OpportunityStage.NEW_LEAD, assignedUser);
+
+    // 6. Set lead FK (enables Lead → Opportunity → Customer workflow)
+    opportunity.setLead(lead);
+
+    // 7. Set business fields from request
+    if (request.getDescription() != null) {
+      opportunity.setDescription(request.getDescription());
+    }
+    if (request.getExpectedValue() != null) {
+      opportunity.setExpectedValue(request.getExpectedValue());
+    }
+    if (request.getExpectedCloseDate() != null) {
+      opportunity.setExpectedCloseDate(request.getExpectedCloseDate());
+    }
+
+    // 8. Save to DB
+    opportunityRepository.persist(opportunity);
+
+    // 8b. Set Lead to CONVERTED (Industry Standard: ONE-WAY conversion)
+    lead.status = de.freshplan.modules.leads.domain.LeadStatus.CONVERTED;
+    lead.updatedAt = java.time.LocalDateTime.now();
+    lead.persist();
+    logger.info("Lead {} marked as CONVERTED (converted to Opportunity {})", leadId, opportunity.getId());
+
+    // 9. Create initial activity
+    User currentUser = getCurrentUser();
+    OpportunityActivity activity =
+        new OpportunityActivity(
+            opportunity,
+            currentUser,
+            OpportunityActivity.ActivityType.NOTE,
+            "Opportunity erstellt aus Lead",
+            String.format(
+                "Opportunity wurde aus Lead '%s' erstellt. %s",
+                lead.companyName,
+                request.getDealType() != null ? "Deal-Typ: " + request.getDealType() : ""));
+    opportunity.addActivity(activity);
+
+    // 10. Audit Log
+    try {
+      auditService.logAsync(
+          AuditContext.builder()
+              .eventType(AuditEventType.OPPORTUNITY_CREATED)
+              .entityType("opportunity")
+              .entityId(opportunity.getId())
+              .newValue(
+                  String.format(
+                      "Created from Lead ID %d: %s", leadId, opportunity.getName()))
+              .changeReason("Lead → Opportunity conversion")
+              .build());
+    } catch (Exception e) {
+      logger.warn("Failed to log audit event for opportunity creation from lead", e);
+    }
+
+    logger.info(
+        "Created opportunity '{}' (ID: {}) from lead ID: {}",
+        opportunityName,
+        opportunity.getId(),
+        leadId);
+
+    return opportunityMapper.toResponse(opportunity);
+  }
+
+  /**
+   * Generates a default opportunity name from lead data.
+   *
+   * <p>Pattern: "Vertragschance - {companyName} ({dealType})"
+   *
+   * <p>Examples:
+   *
+   * <ul>
+   *   <li>"Vertragschance - ABC Catering GmbH (Liefervertrag)"
+   *   <li>"Vertragschance - XYZ Restaurant (Rahmenvertrag)"
+   * </ul>
+   *
+   * @param lead the source lead
+   * @param request the opportunity request (for dealType)
+   * @return generated opportunity name
+   */
+  private String generateOpportunityName(
+      de.freshplan.modules.leads.domain.Lead lead, CreateOpportunityFromLeadRequest request) {
+    String companyName = lead.companyName;
+    String dealType = request.getDealType();
+
+    if (dealType != null && !dealType.isBlank()) {
+      return String.format("Vertragschance - %s (%s)", companyName, dealType);
+    } else {
+      return String.format("Vertragschance - %s", companyName);
+    }
+  }
+
+  /**
+   * Converts a won Opportunity to a Customer.
+   *
+   * <p>Business Rules:
+   *
+   * <ul>
+   *   <li>Opportunity must be CLOSED_WON stage
+   *   <li>Creates Customer with data from Opportunity and Lead
+   *   <li>Sets opportunity.customer_id to link back
+   *   <li>Sets customer.originalLeadId if opportunity came from lead (V261 field)
+   *   <li>Copies pain points and business data from lead
+   *   <li>Can optionally create initial Location and Contact
+   * </ul>
+   *
+   * @param opportunityId ID of the opportunity to convert
+   * @param request Additional customer data (address, contact options)
+   * @return Created customer entity
+   * @throws OpportunityNotFoundException if opportunity not found
+   * @throws IllegalStateException if opportunity not CLOSED_WON or already has customer
+   * @since Sprint 2.1.6.2 Phase 2 (V10026)
+   */
+  @Transactional
+  public Customer convertToCustomer(UUID opportunityId, ConvertToCustomerRequest request) {
+    logger.info("Converting opportunity {} to customer", opportunityId);
+
+    // 1. Load Opportunity
+    Opportunity opportunity =
+        opportunityRepository
+            .findByIdOptional(opportunityId)
+            .orElseThrow(() -> new OpportunityNotFoundException(opportunityId));
+
+    // 2. Validate Stage (must be CLOSED_WON)
+    if (opportunity.getStage() != OpportunityStage.CLOSED_WON) {
+      throw new IllegalStateException(
+          String.format(
+              "Only won opportunities can be converted to customers. Current stage: %s",
+              opportunity.getStage()));
+    }
+
+    // 3. Check if already has customer
+    if (opportunity.getCustomer() != null) {
+      throw new IllegalStateException(
+          String.format(
+              "Opportunity already linked to customer ID: %s",
+              opportunity.getCustomer().getId()));
+    }
+
+    // 4. Create Customer entity
+    Customer customer = new Customer();
+
+    // 5. Set company data (from request, opportunity, or lead)
+    String companyName =
+        request.getCompanyName() != null ? request.getCompanyName() : opportunity.getName();
+    customer.setCompanyName(companyName);
+
+    // 6. Generate customer number
+    customer.setCustomerNumber(generateCustomerNumber());
+
+    // 7. Set initial status and lifecycle
+    customer.setStatus(de.freshplan.domain.customer.entity.CustomerStatus.AKTIV);
+    customer.setLifecycleStage(
+        de.freshplan.domain.customer.entity.CustomerLifecycleStage.ONBOARDING);
+
+    // 8. Copy data from Lead (if opportunity came from lead)
+    if (opportunity.getLead() != null) {
+      de.freshplan.modules.leads.domain.Lead lead = opportunity.getLead();
+
+      // Set originalLeadId (V261 field - enables Lead → Customer traceability)
+      customer.setOriginalLeadId(lead.id);
+      logger.debug("Linked customer to original lead ID: {}", lead.id);
+
+      // Copy business data
+      if (lead.businessType != null) {
+        customer.setBusinessType(
+            de.freshplan.domain.shared.BusinessType.valueOf(lead.businessType.name()));
+      }
+      if (lead.estimatedVolume != null) {
+        customer.setExpectedAnnualVolume(lead.estimatedVolume);
+      }
+
+      // Copy pain points (8 boolean flags + notes)
+      if (lead.painStaffShortage != null) {
+        customer.setPainStaffShortage(lead.painStaffShortage);
+      }
+      if (lead.painHighCosts != null) {
+        customer.setPainHighCosts(lead.painHighCosts);
+      }
+      if (lead.painFoodWaste != null) {
+        customer.setPainFoodWaste(lead.painFoodWaste);
+      }
+      if (lead.painQualityInconsistency != null) {
+        customer.setPainQualityInconsistency(lead.painQualityInconsistency);
+      }
+      if (lead.painTimePressure != null) {
+        customer.setPainTimePressure(lead.painTimePressure);
+      }
+      if (lead.painSupplierQuality != null) {
+        customer.setPainSupplierQuality(lead.painSupplierQuality);
+      }
+      if (lead.painUnreliableDelivery != null) {
+        customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
+      }
+      if (lead.painPoorService != null) {
+        customer.setPainPoorService(lead.painPoorService);
+      }
+      if (lead.painNotes != null) {
+        customer.setPainNotes(lead.painNotes);
+      }
+
+      logger.debug("Copied pain points and business data from lead {}", lead.id);
+    }
+
+    // 9. Override expected volume from opportunity if set
+    if (opportunity.getExpectedValue() != null) {
+      customer.setExpectedAnnualVolume(opportunity.getExpectedValue());
+    }
+
+    // 10. Set audit fields
+    User currentUser = getCurrentUser();
+    customer.setCreatedBy(currentUser.getUsername());
+    customer.setUpdatedBy(currentUser.getUsername());
+
+    // 11. Persist customer
+    customerRepository.persist(customer);
+    logger.info("Created customer {} with number {}", customer.getId(), customer.getCustomerNumber());
+
+    // 12. Link opportunity to customer
+    opportunity.setCustomer(customer);
+    opportunityRepository.persist(opportunity);
+
+    // 13. Create activity log
+    OpportunityActivity activity =
+        new OpportunityActivity(
+            opportunity,
+            currentUser,
+            OpportunityActivity.ActivityType.NOTE,
+            "Opportunity zu Kunde konvertiert",
+            String.format(
+                "Kunde '%s' (Kundennummer: %s) wurde aus dieser Opportunity erstellt. %s",
+                customer.getCompanyName(),
+                customer.getCustomerNumber(),
+                opportunity.getLead() != null
+                    ? "Lead-Daten wurden übernommen (Lead ID: " + opportunity.getLead().id + ")"
+                    : ""));
+    opportunity.addActivity(activity);
+
+    // 14. Audit Log
+    try {
+      auditService.logAsync(
+          AuditContext.builder()
+              .eventType(AuditEventType.CUSTOMER_CREATED) // Use CUSTOMER_CREATED for conversion
+              .entityType("customer")
+              .entityId(customer.getId())
+              .newValue(
+                  String.format(
+                      "Customer created from Opportunity %s (Lead ID: %s)",
+                      opportunityId,
+                      opportunity.getLead() != null ? opportunity.getLead().id : "none"))
+              .changeReason("Opportunity → Customer conversion")
+              .build());
+    } catch (Exception e) {
+      logger.warn("Failed to log audit event for customer creation from opportunity", e);
+    }
+
+    logger.info(
+        "Converted opportunity {} to customer {} (from lead {})",
+        opportunityId,
+        customer.getId(),
+        opportunity.getLead() != null ? opportunity.getLead().id : "none");
+
+    return customer;
+  }
+
+  /**
+   * Generates next customer number in format KD-XXXXX.
+   *
+   * <p>Simple sequential implementation. Can be enhanced with more sophisticated numbering schemes
+   * if needed.
+   *
+   * @return generated customer number (e.g., "KD-00001")
+   */
+  private String generateCustomerNumber() {
+    long count = customerRepository.count();
+    return String.format("KD-%05d", count + 1);
+  }
+
+  /**
+   * Creates an Opportunity for an existing Customer (Upsell/Cross-sell/Renewal).
+   *
+   * <p>Business Rules:
+   *
+   * <ul>
+   *   <li>Customer must exist and be AKTIV status
+   *   <li>customer_id is set, lead_id remains NULL
+   *   <li>Stage starts at NEEDS_ANALYSIS (not NEW_LEAD - customer is already qualified)
+   *   <li>Owner can be assigned or left unassigned
+   * </ul>
+   *
+   * <p>Use Cases:
+   *
+   * <ul>
+   *   <li>Upsell: Existing product line expansion
+   *   <li>Cross-sell: New product categories
+   *   <li>Renewal: Contract renewal/extension
+   * </ul>
+   *
+   * @param customerId ID of the customer
+   * @param request Opportunity data (type, value, timeline)
+   * @return Created opportunity entity
+   * @throws IllegalArgumentException if customer not found
+   * @throws IllegalStateException if customer not AKTIV
+   * @since Sprint 2.1.6.2 Phase 2 (V10026)
+   */
+  @Transactional
+  public Opportunity createForCustomer(
+      UUID customerId, CreateOpportunityForCustomerRequest request) {
+    logger.info("Creating opportunity for customer {}", customerId);
+
+    // 1. Load Customer
+    Customer customer =
+        customerRepository
+            .findByIdOptional(customerId)
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException("Customer not found with ID: " + customerId));
+
+    // 2. Validate Customer Status (must be AKTIV)
+    if (customer.getStatus() != de.freshplan.domain.customer.entity.CustomerStatus.AKTIV) {
+      throw new IllegalStateException(
+          String.format(
+              "Customer must be active to create opportunity. Current status: %s",
+              customer.getStatus()));
+    }
+
+    // 3. Determine opportunity name
+    String opportunityName =
+        request.getName() != null
+            ? request.getName()
+            : generateCustomerOpportunityName(customer, request);
+
+    // 4. Determine opportunity description
+    String opportunityDescription =
+        request.getDescription() != null
+            ? request.getDescription()
+            : generateCustomerOpportunityDescription(customer, request);
+
+    // 5. Determine initial stage (customer opportunities start at NEEDS_ANALYSIS)
+    OpportunityStage initialStage =
+        request.getStage() != null ? request.getStage() : OpportunityStage.NEEDS_ANALYSIS;
+
+    // 6. Determine assigned user
+    User assignedUser = null;
+    if (request.getAssignedTo() != null) {
+      assignedUser =
+          userRepository
+              .findByIdOptional(request.getAssignedTo())
+              .orElseThrow(
+                  () ->
+                      new IllegalArgumentException(
+                          "User not found with ID: " + request.getAssignedTo()));
+    } else {
+      // Use current user as fallback
+      assignedUser = getCurrentUser();
+    }
+
+    // 7. Create Opportunity entity
+    Opportunity opportunity = new Opportunity(opportunityName, initialStage, assignedUser);
+
+    // 8. Set customer FK
+    opportunity.setCustomer(customer);
+
+    // 9. Set description (with opportunity type prefix if provided)
+    if (request.getOpportunityType() != null) {
+      opportunityDescription =
+          String.format("[%s] %s", request.getOpportunityType(), opportunityDescription);
+    }
+    opportunity.setDescription(opportunityDescription);
+
+    // 10. Set business fields
+    if (request.getExpectedValue() != null) {
+      opportunity.setExpectedValue(request.getExpectedValue());
+    }
+    if (request.getExpectedCloseDate() != null) {
+      opportunity.setExpectedCloseDate(request.getExpectedCloseDate());
+    }
+    // Probability is automatically set by stage in Opportunity constructor
+
+    // 11. Persist opportunity
+    opportunityRepository.persist(opportunity);
+
+    // 12. Create initial activity
+    User currentUser = getCurrentUser();
+    String activityDescription =
+        String.format(
+            "Opportunity erstellt für Kunde %s (Kundennummer: %s). Typ: %s",
+            customer.getCompanyName(),
+            customer.getCustomerNumber(),
+            request.getOpportunityType() != null ? request.getOpportunityType() : "Standard");
+    OpportunityActivity activity =
+        new OpportunityActivity(
+            opportunity,
+            currentUser,
+            OpportunityActivity.ActivityType.NOTE,
+            "Opportunity erstellt für bestehenden Kunden",
+            activityDescription);
+    opportunity.addActivity(activity);
+
+    // 13. Audit Log
+    try {
+      auditService.logAsync(
+          AuditContext.builder()
+              .eventType(AuditEventType.OPPORTUNITY_CREATED)
+              .entityType("opportunity")
+              .entityId(opportunity.getId())
+              .newValue(
+                  String.format(
+                      "Created for Customer %s (%s): %s",
+                      customerId, customer.getCustomerNumber(), opportunityName))
+              .changeReason(
+                  String.format(
+                      "Customer → Opportunity (%s)",
+                      request.getOpportunityType() != null
+                          ? request.getOpportunityType()
+                          : "Standard"))
+              .build());
+    } catch (Exception e) {
+      logger.warn("Failed to log audit event for customer opportunity creation", e);
+    }
+
+    logger.info(
+        "Created opportunity '{}' (ID: {}) for customer {} (Type: {})",
+        opportunityName,
+        opportunity.getId(),
+        customerId,
+        request.getOpportunityType());
+
+    return opportunity;
+  }
+
+  /**
+   * Generates opportunity name for customer-initiated opportunities.
+   *
+   * <p>Pattern: "{companyName} - {type} {timeframe}"
+   *
+   * <p>Examples:
+   *
+   * <ul>
+   *   <li>"ABC Catering GmbH - Upsell Q3 2025"
+   *   <li>"XYZ Restaurant - Cross-sell"
+   *   <li>"DEF Hotel - Renewal 2026"
+   * </ul>
+   *
+   * @param customer the customer entity
+   * @param request the opportunity request
+   * @return generated opportunity name
+   */
+  private String generateCustomerOpportunityName(
+      Customer customer, CreateOpportunityForCustomerRequest request) {
+    String type = request.getOpportunityType() != null ? request.getOpportunityType() : "Erweiterung";
+    String timeframe = request.getTimeframe() != null ? request.getTimeframe() : "";
+
+    return String.format("%s - %s %s", customer.getCompanyName(), type, timeframe).trim();
+  }
+
+  /**
+   * Generates opportunity description for customer-initiated opportunities.
+   *
+   * <p>Includes customer context and current annual volume for reference.
+   *
+   * @param customer the customer entity
+   * @param request the opportunity request
+   * @return generated opportunity description
+   */
+  private String generateCustomerOpportunityDescription(
+      Customer customer, CreateOpportunityForCustomerRequest request) {
+    String type = request.getOpportunityType() != null ? request.getOpportunityType() : "Upsell";
+
+    return String.format(
+        "%s-Opportunity für bestehenden Kunden %s (Kundennummer: %s). "
+            + "Aktuelles Jahresvolumen: %s EUR",
+        type,
+        customer.getCompanyName(),
+        customer.getCustomerNumber(),
+        customer.getExpectedAnnualVolume() != null
+            ? customer.getExpectedAnnualVolume()
+            : "N/A");
   }
 
   // =====================================
