@@ -62,9 +62,10 @@ public class LeadActivity extends PanacheEntityBase {
   @Column(name = "summary")
   public String summary;
 
-  @Size(max = 50)
-  @Column(name = "outcome")
-  public String outcome;
+  // Sprint 2.1.7 Issue #126: ActivityOutcome Enum
+  @Enumerated(EnumType.STRING)
+  @Column(name = "outcome", length = 50)
+  public ActivityOutcome outcome;
 
   @Size(max = 200)
   @Column(name = "next_action")

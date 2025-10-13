@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import de.freshplan.modules.leads.domain.ActivityOutcome;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
@@ -320,6 +321,58 @@ class LeadProtectionServiceTest {
 
       // Then
       assertThat(needsWarning).isFalse();
+    }
+  }
+
+  // ========== Sprint 2.1.7: ActivityOutcome Enum Tests (Issue #126) ==========
+
+  @Nested
+  @DisplayName("ActivityOutcome Enum Business Logic (Sprint 2.1.7)")
+  class ActivityOutcomeEnumTests {
+
+    @Test
+    @DisplayName("ActivityOutcome.isPositive() should identify positive outcomes")
+    void activityOutcomeShouldIdentifyPositiveOutcomes() {
+      // Positive outcomes
+      assertThat(ActivityOutcome.SUCCESSFUL.isPositive()).isTrue();
+      assertThat(ActivityOutcome.QUALIFIED.isPositive()).isTrue();
+
+      // Non-positive outcomes
+      assertThat(ActivityOutcome.UNSUCCESSFUL.isPositive()).isFalse();
+      assertThat(ActivityOutcome.NO_ANSWER.isPositive()).isFalse();
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.isPositive()).isFalse();
+      assertThat(ActivityOutcome.INFO_SENT.isPositive()).isFalse();
+      assertThat(ActivityOutcome.DISQUALIFIED.isPositive()).isFalse();
+    }
+
+    @Test
+    @DisplayName("ActivityOutcome.requiresFollowUp() should identify follow-up needs")
+    void activityOutcomeShouldIdentifyFollowUpNeeds() {
+      // Requires follow-up
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.requiresFollowUp()).isTrue();
+      assertThat(ActivityOutcome.NO_ANSWER.requiresFollowUp()).isTrue();
+
+      // No follow-up needed
+      assertThat(ActivityOutcome.SUCCESSFUL.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.UNSUCCESSFUL.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.INFO_SENT.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.QUALIFIED.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.DISQUALIFIED.requiresFollowUp()).isFalse();
+    }
+
+    @Test
+    @DisplayName("ActivityOutcome.isTerminal() should identify terminal outcomes")
+    void activityOutcomeShouldIdentifyTerminalOutcomes() {
+      // Terminal outcomes
+      assertThat(ActivityOutcome.DISQUALIFIED.isTerminal()).isTrue();
+      assertThat(ActivityOutcome.UNSUCCESSFUL.isTerminal()).isTrue();
+
+      // Non-terminal outcomes
+      assertThat(ActivityOutcome.SUCCESSFUL.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.NO_ANSWER.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.INFO_SENT.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.QUALIFIED.isTerminal()).isFalse();
     }
   }
 
