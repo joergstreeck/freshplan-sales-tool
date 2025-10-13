@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { BASE_URL, getAuthHeaders, type EnumValue } from './shared';
+import { BASE_URL, getAuthHeaders, type EnumValue } from '../features/leads/hooks/shared';
 
 /**
  * Fetch business types from backend API
