@@ -12,6 +12,7 @@ import {
   Chip,
   CircularProgress,
   Alert,
+  Tooltip,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -31,7 +32,7 @@ import {
   Handshake as HandshakeIcon,
   PushPin as PushPinIcon,
 } from '@mui/icons-material';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 interface Activity {
@@ -178,6 +179,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
   // Render Activity Item
   const renderActivity = (activity: Activity) => {
     const { icon, color } = getActivityTypeInfo(activity.activityType);
+    const activityDate = new Date(activity.activityDate);
 
     return (
       <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start', flexDirection: 'column' }}>
@@ -192,12 +194,22 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
               {activity.description}
             </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
-              <Typography variant="caption" color="text.secondary">
-                {formatDistanceToNow(new Date(activity.activityDate), {
-                  addSuffix: true,
-                  locale: de,
-                })}
-              </Typography>
+              <Tooltip
+                title={format(activityDate, 'dd.MM.yyyy HH:mm', { locale: de })}
+                arrow
+                placement="top"
+              >
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ cursor: 'help', textDecoration: 'underline dotted' }}
+                >
+                  {formatDistanceToNow(activityDate, {
+                    addSuffix: true,
+                    locale: de,
+                  })}
+                </Typography>
+              </Tooltip>
               {activity.userId && (
                 <>
                   <Typography variant="caption" color="text.secondary">
