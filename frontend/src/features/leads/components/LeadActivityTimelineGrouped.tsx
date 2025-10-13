@@ -8,7 +8,6 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   Avatar,
   Chip,
   CircularProgress,
@@ -124,19 +123,15 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     const { icon, color } = getActivityTypeInfo(activity.activityType);
 
     return (
-      <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start' }}>
-        <ListItemAvatar>
-          <Avatar sx={{ bgcolor: color, width: 32, height: 32, fontSize: '1rem' }}>{icon}</Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {activity.description}
-              </Typography>
-            </Box>
-          }
-          secondary={
+      <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start', flexDirection: 'column' }}>
+        <Box sx={{ display: 'flex', width: '100%', alignItems: 'flex-start' }}>
+          <ListItemAvatar>
+            <Avatar sx={{ bgcolor: color, width: 32, height: 32, fontSize: '1rem' }}>{icon}</Avatar>
+          </ListItemAvatar>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {activity.description}
+            </Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
               <Typography variant="caption" color="text.secondary">
                 {formatDistanceToNow(new Date(activity.activityDate), {
@@ -155,8 +150,8 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
                 </>
               )}
             </Box>
-          }
-        />
+          </Box>
+        </Box>
       </ListItem>
     );
   };

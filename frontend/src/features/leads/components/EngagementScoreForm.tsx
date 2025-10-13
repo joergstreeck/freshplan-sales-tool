@@ -78,7 +78,17 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
       return;
     }
 
-    autoSave(true); // Always immediate
+    // Check if data actually changed from lead props (prevent save on mount)
+    const hasChanges =
+      formData.relationshipStatus !== (lead.relationshipStatus || 'COLD') ||
+      formData.decisionMakerAccess !== (lead.decisionMakerAccess || 'UNKNOWN') ||
+      formData.competitorInUse !== (lead.competitorInUse || '') ||
+      formData.internalChampionName !== (lead.internalChampionName || '');
+
+    // Only save if there are actual changes
+    if (hasChanges) {
+      autoSave(true); // Always immediate
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]); // ONLY formData - autoSave causes infinite loop!
 

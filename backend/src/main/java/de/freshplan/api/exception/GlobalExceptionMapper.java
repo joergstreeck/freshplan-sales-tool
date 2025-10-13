@@ -75,6 +75,11 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
       return handleWebApplication((jakarta.ws.rs.WebApplicationException) exception);
     }
 
+    // Handle OptimisticLockException (concurrent updates)
+    if (exception instanceof jakarta.persistence.OptimisticLockException) {
+      return handleOptimisticLock((jakarta.persistence.OptimisticLockException) exception);
+    }
+
     // Default to internal server error
     return handleGeneric(exception, traceId);
   }
@@ -274,6 +279,29 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
             .timestamp(java.time.LocalDateTime.now())
             .build();
     return Response.status(status).entity(error).build();
+  }
+
+  private Response handleOptimisticLock(jakarta.persistence.OptimisticLockException e) {
+    // Extract entity info if available
+    String entityInfo = "unknown";
+    if (e.getEntity() != null) {
+      entityInfo = e.getEntity().getClass().getSimpleName();
+    }
+
+    ErrorResponse error =
+        ErrorResponse.builder()
+            .type("/errors/concurrent-modification")
+            .title("Concurrent Modification")
+            .status(409)
+            .detail(
+                String.format(
+                    "The %s was modified by another user. Please refresh and try again.",
+                    entityInfo))
+            .instance(uriInfo != null ? uriInfo.getPath() : null)
+            .timestamp(java.time.LocalDateTime.now())
+            .build();
+
+    return Response.status(Response.Status.CONFLICT).entity(error).build();
   }
 
   private Response handleGeneric(Exception e, String traceId) {
