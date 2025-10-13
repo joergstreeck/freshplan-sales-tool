@@ -111,7 +111,7 @@ INSERT INTO customers (
     'Personalmangel besonders in Stoßzeiten, Suche nach zuverlässigen Lieferanten für Frischware',
     'PRIVATE',
     FALSE,
-    TRUE,  -- is_test_data
+    FALSE,  -- is_test_data
     NOW() - INTERVAL '18 months',
     'DEV-SEED-SYSTEM',
     NOW() - INTERVAL '7 days',
@@ -159,7 +159,7 @@ INSERT INTO customers (
     'Frühstücksbuffet: hoher Food Waste, inkonsistente Qualität bei Backwaren',
     'MIXED',
     FALSE,
-    TRUE,  -- is_test_data
+    FALSE,  -- is_test_data
     NOW() - INTERVAL '3 weeks',
     'DEV-SEED-SYSTEM',
     NOW() - INTERVAL '14 days',
@@ -207,7 +207,7 @@ INSERT INTO customers (
     'Event-Catering mit engen Zeitfenstern, Cross-Border Logistik CH kritisch',
     'PRIVATE',
     FALSE,
-    TRUE,  -- is_test_data
+    FALSE,  -- is_test_data
     NOW() - INTERVAL '2 years',
     'DEV-SEED-SYSTEM',
     NOW() - INTERVAL '5 days',
@@ -255,7 +255,7 @@ INSERT INTO customers (
     NULL,
     'PUBLIC',
     FALSE,
-    TRUE,  -- is_test_data
+    FALSE,  -- is_test_data
     NOW() - INTERVAL '1 week',
     'DEV-SEED-SYSTEM',
     NOW() - INTERVAL '3 days',
@@ -303,7 +303,7 @@ INSERT INTO customers (
     'Wechsel zu Wettbewerber aufgrund Lieferqualität, Re-Aktivierung möglich',
     'PRIVATE',
     FALSE,
-    TRUE,  -- is_test_data
+    FALSE,  -- is_test_data
     NOW() - INTERVAL '3 years',
     'DEV-SEED-SYSTEM',
     NOW() - INTERVAL '6 months',

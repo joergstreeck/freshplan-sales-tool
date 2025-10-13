@@ -27,7 +27,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useTranslation } from 'react-i18next';
 import type { LeadFormStage2, Problem, BusinessType, LeadSource, FirstContact } from './types';
 import { createLead, createLeadContact } from './api';
-import { useBusinessTypes } from './hooks/useBusinessTypes';
+import { useBusinessTypes } from '../../hooks/useBusinessTypes';
 import { useLeadSources } from './hooks/useLeadSources';
 import { useKitchenSizes } from './hooks/useKitchenSizes';
 
