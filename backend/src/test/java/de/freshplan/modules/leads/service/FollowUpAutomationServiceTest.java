@@ -38,6 +38,8 @@ class FollowUpAutomationServiceTest {
 
   @InjectMock EmailNotificationService emailService;
 
+  @InjectMock Clock clock;
+
   private Lead testLead;
   private Territory testTerritory;
   private CampaignTemplate sampleTemplate;
@@ -286,11 +288,9 @@ class FollowUpAutomationServiceTest {
   @Test
   void testSeasonalSampleRecommendations() {
     // Given: Mock Clock auf März (Spargel-Saison) setzen
-    Clock fixedClock =
-        Clock.fixed(
-            LocalDateTime.of(2025, 3, 18, 10, 0).toInstant(java.time.ZoneOffset.UTC),
-            java.time.ZoneOffset.UTC);
-    followUpService.setClock(fixedClock);
+    LocalDateTime marchTime = LocalDateTime.of(2025, 3, 18, 10, 0);
+    when(clock.instant()).thenReturn(marchTime.toInstant(java.time.ZoneOffset.UTC));
+    when(clock.getZone()).thenReturn(java.time.ZoneOffset.UTC);
 
     // Lead ist 3+ Tage alt (relativ zur gemockten Zeit) - committed
     Long leadId =
@@ -320,9 +320,6 @@ class FollowUpAutomationServiceTest {
     Map<String, String> capturedData = dataCaptor.getValue();
     String samples = capturedData.get("sample.products");
     assertTrue(samples.contains("Spargel-Saison-Special"));
-
-    // Reset Clock
-    followUpService.setClock(Clock.systemDefaultZone());
   }
 
   @Test

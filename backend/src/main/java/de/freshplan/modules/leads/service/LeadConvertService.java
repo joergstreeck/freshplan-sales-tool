@@ -12,6 +12,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Locale;
 
@@ -29,6 +30,10 @@ public class LeadConvertService {
   @Inject CustomerRepository customerRepository;
 
   @Inject CustomerNumberGeneratorService numberGenerator;
+
+  // Sprint 2.1.7 Issue #127: Clock Injection Standard
+  // Clock für testbare Zeit-Logik (injected via ClockProvider)
+  @Inject Clock clock;
 
   /**
    * Convert a Lead to a Customer.
@@ -76,9 +81,9 @@ public class LeadConvertService {
     customer.setStatus(CustomerStatus.AKTIV); // New customer starts as AKTIV
     customer.setOriginalLeadId(leadId); // Track Lead → Customer conversion (V261)
     customer.setCreatedBy(currentUserId);
-    customer.setCreatedAt(LocalDateTime.now());
+    customer.setCreatedAt(LocalDateTime.now(clock));
     customer.setUpdatedBy(currentUserId);
-    customer.setUpdatedAt(LocalDateTime.now());
+    customer.setUpdatedAt(LocalDateTime.now(clock));
 
     // 6. Persist Customer (required before creating related entities)
     customerRepository.persist(customer);
@@ -97,9 +102,9 @@ public class LeadConvertService {
       }
 
       mainLocation.setCreatedBy(currentUserId);
-      mainLocation.setCreatedAt(LocalDateTime.now());
+      mainLocation.setCreatedAt(LocalDateTime.now(clock));
       mainLocation.setUpdatedBy(currentUserId);
-      mainLocation.setUpdatedAt(LocalDateTime.now());
+      mainLocation.setUpdatedAt(LocalDateTime.now(clock));
       mainLocation.persist();
 
       // 8. Create CustomerAddress (from Lead address data)
@@ -113,9 +118,9 @@ public class LeadConvertService {
         address.setCountry(mapCountryCode(lead.countryCode)); // ISO-3166-1 alpha-3
         address.setIsPrimaryForType(true);
         address.setCreatedBy(currentUserId);
-        address.setCreatedAt(LocalDateTime.now());
+        address.setCreatedAt(LocalDateTime.now(clock));
         address.setUpdatedBy(currentUserId);
-        address.setUpdatedAt(LocalDateTime.now());
+        address.setUpdatedAt(LocalDateTime.now(clock));
         address.persist();
       }
     }
@@ -148,9 +153,9 @@ public class LeadConvertService {
       contact.setPhone(lead.phone);
       contact.setIsPrimary(true);
       contact.setCreatedBy(currentUserId);
-      contact.setCreatedAt(LocalDateTime.now());
+      contact.setCreatedAt(LocalDateTime.now(clock));
       contact.setUpdatedBy(currentUserId);
-      contact.setUpdatedAt(LocalDateTime.now());
+      contact.setUpdatedAt(LocalDateTime.now(clock));
       contact.persist();
     }
 
@@ -158,7 +163,7 @@ public class LeadConvertService {
     // Fix Sprint 2.1.6 Phase 2: Never hard-delete, always archive with status=CONVERTED
     // Hard deletion only for DSGVO compliance (separate Pseudonymization Job in Phase 3)
     lead.status = LeadStatus.CONVERTED;
-    lead.updatedAt = LocalDateTime.now();
+    lead.updatedAt = LocalDateTime.now(clock);
     lead.updatedBy = currentUserId;
     lead.persist();
 
@@ -177,7 +182,7 @@ public class LeadConvertService {
 
     // 12. Return response
     return LeadConvertResponse.success(
-        leadId, customer.getId(), customerNumber, LocalDateTime.now());
+        leadId, customer.getId(), customerNumber, LocalDateTime.now(clock));
   }
 
   /**

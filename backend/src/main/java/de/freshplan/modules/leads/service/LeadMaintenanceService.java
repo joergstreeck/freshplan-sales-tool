@@ -65,13 +65,9 @@ public class LeadMaintenanceService {
 
   @Inject Event<ImportJobsArchivedEvent> importArchivedEvent;
 
-  // Clock für testbare Zeit-Logik
-  private Clock clock = Clock.systemDefaultZone();
-
-  /** Setzt Clock für Tests (package-private für Test-Zugriff) */
-  void setClock(Clock clock) {
-    this.clock = clock;
-  }
+  // Sprint 2.1.7 Issue #127: Clock Injection Standard
+  // Clock für testbare Zeit-Logik (injected via ClockProvider)
+  @Inject Clock clock;
 
   /**
    * Job 1: Progress Warning Check (60-Day Activity Rule)
