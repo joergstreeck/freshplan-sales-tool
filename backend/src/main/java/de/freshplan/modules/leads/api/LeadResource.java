@@ -869,9 +869,28 @@ public class LeadResource {
           .build();
     }
 
+    // Sprint 2.1.7 Issue #126: Validate and convert outcome if provided
+    de.freshplan.modules.leads.domain.ActivityOutcome activityOutcome = null;
+    if (request.outcome != null && !request.outcome.isBlank()) {
+      try {
+        activityOutcome =
+            de.freshplan.modules.leads.domain.ActivityOutcome.valueOf(request.outcome.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(Map.of("error", "Invalid activity outcome: " + request.outcome))
+            .build();
+      }
+    }
+
     // Create activity using helper method
     LeadActivity activity =
         createAndPersistActivity(lead, currentUserId, activityType, request.description);
+
+    // Set outcome if provided (Sprint 2.1.7 Issue #126)
+    if (activityOutcome != null) {
+      activity.outcome = activityOutcome;
+      activity.persist();
+    }
 
     // Update lead's last activity timestamp (important for protection system)
     lead.lastActivityAt = LocalDateTime.now();
