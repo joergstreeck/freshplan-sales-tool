@@ -13,6 +13,11 @@ import {
   CircularProgress,
   Alert,
   Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
 } from '@mui/material';
 import {
   ExpandMore as ExpandMoreIcon,
@@ -139,6 +144,10 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
   // State: Welche Gruppe ist ausgeklappt (default: last7Days)
   const [expandedGroup, setExpandedGroup] = useState<string>('last7Days');
 
+  // State: Filter
+  const [typeFilter, setTypeFilter] = useState<string>('ALL');
+  const [outcomeFilter, setOutcomeFilter] = useState<string>('ALL');
+
   // Fetch Activities from API
   useEffect(() => {
     const fetchActivities = async () => {
@@ -166,10 +175,25 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     fetchActivities();
   }, [leadId]);
 
-  // Gruppierte Aktivitäten
+  // Gefilterte Aktivitäten
+  const filteredActivities = useMemo(() => {
+    return activities.filter(activity => {
+      // Filter nach Activity Type
+      if (typeFilter !== 'ALL' && activity.activityType !== typeFilter) {
+        return false;
+      }
+      // Filter nach Outcome
+      if (outcomeFilter !== 'ALL' && activity.outcome !== outcomeFilter) {
+        return false;
+      }
+      return true;
+    });
+  }, [activities, typeFilter, outcomeFilter]);
+
+  // Gruppierte Aktivitäten (auf Basis der gefilterten Liste)
   const groupedActivities = useMemo(() => {
-    return groupActivitiesByTimeRange(activities);
-  }, [activities]);
+    return groupActivitiesByTimeRange(filteredActivities);
+  }, [filteredActivities]);
 
   const handleGroupChange =
     (group: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -327,8 +351,76 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     );
   }
 
+  // Handler: Filter zurücksetzen
+  const handleResetFilters = () => {
+    setTypeFilter('ALL');
+    setOutcomeFilter('ALL');
+  };
+
   return (
     <Box>
+      {/* Filter-UI */}
+      <Box sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Activity Type Filter */}
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Aktivitätstyp</InputLabel>
+          <Select
+            value={typeFilter}
+            label="Aktivitätstyp"
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <MenuItem value="ALL">Alle anzeigen</MenuItem>
+            <MenuItem value="CALL">📞 Anrufe</MenuItem>
+            <MenuItem value="EMAIL">📧 E-Mails</MenuItem>
+            <MenuItem value="MEETING">📅 Meetings</MenuItem>
+            <MenuItem value="NOTE">📝 Notizen</MenuItem>
+            <MenuItem value="FIRST_CONTACT_DOCUMENTED">🤝 Erstkontakt</MenuItem>
+            <MenuItem value="SAMPLE_SENT">📦 Muster versendet</MenuItem>
+            <MenuItem value="PROPOSAL_SENT">📋 Angebot versendet</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Outcome Filter */}
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Ergebnis</InputLabel>
+          <Select
+            value={outcomeFilter}
+            label="Ergebnis"
+            onChange={(e) => setOutcomeFilter(e.target.value)}
+          >
+            <MenuItem value="ALL">Alle anzeigen</MenuItem>
+            <MenuItem value="SUCCESSFUL">✅ Erfolgreich</MenuItem>
+            <MenuItem value="UNSUCCESSFUL">❌ Nicht erfolgreich</MenuItem>
+            <MenuItem value="NO_ANSWER">📵 Keine Antwort</MenuItem>
+            <MenuItem value="CALLBACK_REQUESTED">🔄 Rückruf gewünscht</MenuItem>
+            <MenuItem value="INFO_SENT">📧 Info versendet</MenuItem>
+            <MenuItem value="QUALIFIED">⭐ Qualifiziert</MenuItem>
+            <MenuItem value="DISQUALIFIED">⛔ Disqualifiziert</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Reset Button (conditional) */}
+        {(typeFilter !== 'ALL' || outcomeFilter !== 'ALL') && (
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={handleResetFilters}
+            sx={{ height: 40 }}
+          >
+            Filter zurücksetzen
+          </Button>
+        )}
+
+        {/* Count Badge */}
+        <Chip
+          label={`${filteredActivities.length} von ${activities.length}`}
+          size="small"
+          color={filteredActivities.length < activities.length ? 'primary' : 'default'}
+          sx={{ ml: 'auto' }}
+        />
+      </Box>
+
+      {/* Timeline Groups */}
       {renderGroup('last7Days', 'Letzte 7 Tage', groupedActivities.last7Days)}
       {renderGroup('last30Days', 'Letzte 30 Tage', groupedActivities.last30Days)}
       {renderGroup('older', 'Älter', groupedActivities.older)}
