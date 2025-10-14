@@ -11,11 +11,11 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (80% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7 - 100% COMPLETE (14.10.2025) - **ActivityOutcome + Code Review Fixes + 100% Tests GREEN** 🎉
-- **Next Sprint:** 📋 Sprint 2.1.7.1 - PLANNING (Start: 15.10.2025) - **Opportunities UI Integration**
-- **Active Branch:** main (PR #139 READY FOR MERGE)
+- **Current Sprint:** 📋 Sprint 2.1.7.0 - IN PROGRESS (15.10.2025) - **Design System Migration (MainLayoutV2 → SmartLayout)**
+- **Next Sprint:** 📋 Sprint 2.1.7.1 - PLANNED (Start: TBD) - **Opportunities UI Integration**
+- **Active Branch:** feature/sprint-2-1-7-0-design-system-migration
 - **Progress:** 21/36 PRs completed - 58% done
-- **Blockers:** ❌ Keine - **🎯 Ready for Sprint 2.1.7.1 (Frontend UI)**
+- **Blockers:** ❌ Keine - **🎯 Ready for Phase 1 (SmartLayout Review + Seiten-Inventar)**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Opportunity Backend Integration COMPLETE (13.10.2025)** - V10026 + OpportunityService + 3 REST APIs + V90003 DEV-SEED (10 Opportunities)

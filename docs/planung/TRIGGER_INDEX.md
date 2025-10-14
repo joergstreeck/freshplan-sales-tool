@@ -172,7 +172,20 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Migrations:** V10026 (Opportunity FKs), V10027 (ActivityOutcome), V10028 (customer_number_seq), V90003 (DEV-SEED)
    - **Tests:** 60/60 Backend GREEN (100%) + Frontend ESLint GREEN ✅
    - **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
-   - Status: ✅ COMPLETE - PR #139 READY FOR MERGE (14.10.2025)
+   - Status: ✅ COMPLETE - PR #139 MERGED (14.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (NEU 14.10.2025)
+   - **Migration:** MainLayoutV2 → SmartLayout (23 Seiten)
+   - **Problem:** Zwei parallele Layout-Systeme, 1536px Limit verschwendet Platz
+   - **Lösung:** Intelligente Breiten-Anpassung (Tabellen=100%, Formulare=800px, Dashboards=100%)
+   - **Phase 1:** Vorbereitung (0.5 Tage) - SmartLayout Review, Test-Strategie, Seiten-Inventar
+   - **Phase 2:** Migration (2 Tage) - 4 Batches (Tabellen, Formulare, Dashboards, Sonstige)
+   - **Phase 3:** Testing (1 Tag) - Visual Regression, Responsive, UAT, Performance
+   - **Phase 4:** Cleanup (0.5 Tage) - MainLayoutV2 deprecaten, Dokumentation
+   - **Business Impact:** +30-50% mehr Spalten sichtbar, bessere Lesbarkeit, 4K-Monitore optimal genutzt
+   - **Risiko:** LOW (SmartLayout existiert, getestet, keine Breaking Changes)
+   - **Aufwand:** 2-4 Tage (69 Zeilen Code-Änderungen)
+   - Status: 📋 PLANNING (Start: 15.10.2025)
 
 📋 TRIGGER_SPRINT_2_1_7_1.md - Opportunities UI Integration (NEU 13.10.2025)
    - **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog + Button)

@@ -1079,10 +1079,64 @@
 - ✅ **Single Source of Truth**: BusinessType Enum → GET /api/enums/business-types → Lead + Customer Forms (identisches Pattern)
 - ✅ **Best Practice 100%**: Keine hardcoded Enum-Values mehr, Lead + Customer verwenden denselben Hook
 - **Docs**: HARMONIZATION_COMPLETE.md, MIGRATIONS.md aktualisiert
+### 2025-10-14 18:30 - Sprint 2.1.7.0 Planung Complete - Design System Migration (SmartLayout)
+
+**Kontext:** Sprint 2.1.7 erfolgreich merged (PR #139), CI-Fehler behoben (Prettier + Race Condition), CRM_AI_CONTEXT_SCHNELL.md umstrukturiert (thematisch statt chronologisch), Sprint 2.1.7.0 vollständig geplant (Design System Migration).
+
+**Erledigt:**
+- ✅ **PR #139 MERGE (Sprint 2.1.7):**
+  - 78 files geändert: +13,302/-1,098 LOC
+  - Squash-Merge mit Admin-Rechten
+  - Branch gelöscht nach Merge
+- ✅ **CI-FEHLER BEHOBEN (2 Fixes):**
+  - **Fix #1 - Prettier:** ActivityDialog.test.tsx + LeadActivityTimelineGrouped.tsx formatiert
+  - **Fix #2 - Timing Race Condition:** RealisticDataGeneratorTest.java - LocalDateTime.now() NACH pastDateTime() Call (25/25 tests GREEN)
+  - Commit: a2c57eb0a
+- ✅ **CRM_AI_CONTEXT_SCHNELL.md UMSTRUKTURIERT:**
+  - ALT-Datei: CRM_AI_CONTEXT_SCHNELL_ALT.md erstellt (783 Zeilen Backup)
+  - NEU-Datei: ~1000 Zeilen, thematische Struktur (System-Status → Strategischer Kontext → System-Architektur → Technical Implementation → Frontend & Design → Development-Standards → Codebase-Reality)
+  - **Migrations konsolidiert:** Nach Theme gruppiert (Lead Management, Customer, Opportunities) statt chronologisch
+  - Commit: 0eaadcf87
+- ✅ **SPRINT 2.1.7.0 PLANUNG COMPLETE:**
+  - TRIGGER_SPRINT_2_1_7_0.md erstellt (13.345 Zeilen)
+  - Sprint-Typ: Refactoring & UI Consistency
+  - Ziel: Migration 23 Seiten MainLayoutV2 → SmartLayout
+  - Problem: 1536px Limit verschwendet Platz, 0/23 Seiten nutzen SmartLayout
+  - Lösung: Intelligente Breiten-Anpassung (Tabellen=100%, Formulare=800px, Dashboards=100%)
+  - Business Impact: +30-50% mehr Spalten sichtbar
+  - Aufwand: 2-4 Tage (69 Zeilen Code-Änderungen)
+- ✅ **PLANUNGSDOKUMENTE AKTUALISIERT:**
+  - TRIGGER_INDEX.md: Sprint 2.1.7.0 registriert
+  - PRODUCTION_ROADMAP_2025.md: Current Sprint → Sprint 2.1.7.0 IN PROGRESS
+  - Feature-Branch: feature/sprint-2-1-7-0-design-system-migration angelegt
+  - Handover: 2025-10-14_HANDOVER_13-25.md erstellt
+
+**Tests:** 60/60 Backend GREEN, Frontend ESLint GREEN, RealisticDataGeneratorTest 25/25 GREEN ✅
+**Migration:** Keine (Sprint 2.1.7.0 ist UI-only)
+**Nächste Migration:** V10029 (fortlaufend)
+
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
+- **🎯 SOFORT (Aktuelle Session):**
+  - Sprint 2.1.7.0 Phase 1 - Vorbereitung starten
+  - SmartLayout.tsx Review (frontend/src/layouts/SmartLayout.tsx)
+  - Seiten-Inventar erstellen (23 Seiten kategorisieren: Tabellen, Formulare, Dashboards, Sonstige)
+  - Test-Strategie finalisieren (Visual Regression Tools auswählen)
+  - DESIGN_SYSTEM_V2.md archivieren (→ DESIGN_SYSTEM_V2_ALT.md)
+
+- **📋 SPRINT 2.1.7.0 - DESIGN SYSTEM MIGRATION (IN PROGRESS - Start 15.10.2025):**
+  - **Phase 1:** Vorbereitung (0.5 Tage)
+  - **Phase 2:** Migration (2 Tage, 4 Batches)
+    - Batch 1: Tabellen (LeadListPage, CustomerListPage)
+    - Batch 2: Formulare (LeadDetailPage, LeadWizard)
+    - Batch 3: Dashboards (DashboardPage)
+    - Batch 4: Sonstige (LoginPage, SettingsPage, etc.)
+  - **Phase 3:** Testing (1 Tag - Visual Regression, UAT)
+  - **Phase 4:** Cleanup (0.5 Tage - MainLayoutV2 deprecaten)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_0.md`
+
 - **✅ Sprint 2.1.7 COMPLETE (14.10.2025) - PR #139 MERGED:**
   - ActivityOutcome Enum (V10027: 7 Enum-Werte, Lead Activities Tracking)
   - Opportunity Backend Integration (V10026: FKs lead_id + customer_id, V90003: DEV-SEED)
@@ -1092,23 +1146,11 @@
   - Tests: 60/60 Backend GREEN (100%) + Frontend ESLint GREEN ✅
   - **Modul 02 Status:** ✅ COMPLETE (5/5 Phasen + Code Quality + Testability)
 
-- **🎯 NÄCHSTER SPRINT: Sprint 2.1.7.1 - Opportunities UI Integration (Start 15.10.2025):**
+- **📋 SPRINT 2.1.7.1 - OPPORTUNITIES UI INTEGRATION (NACH Sprint 2.1.7.0):**
   - **Phase 1:** Lead→Opportunity Wizard UI (8-12h)
-    - Opportunity-Creation Modal von Lead-Details-Page
-    - Form-Validierung + Opportunity Stage Selection
-    - Success-Konfirmation + Navigation zu Kanban
   - **Phase 2:** Kanban Board Enhancements (4-6h)
-    - Opportunity-Details Panel erweitern (originalLeadId Link)
-    - Stage-Transition Drag & Drop
-    - Filter + Search für Opportunities
   - **Phase 3:** Customer→Opportunity UI (4-6h)
-    - "Neue Opportunity" Button in Customer-Details
-    - Opportunity-Creation Modal (simplified, no Lead context)
-    - Customer-Opportunities Table/List View
   - **Phase 4:** Integration Testing + Bugfixes (4-6h)
-    - Frontend Integration Tests (React Testing Library + MSW)
-    - E2E Tests (Lead→Opportunity→Customer Flow)
-    - Bug Hunting + Code Review
   - **Gesamtaufwand:** 16-24h (2-3 Tage)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md`
 
