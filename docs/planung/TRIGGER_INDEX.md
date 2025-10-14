@@ -155,13 +155,41 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
    - Status: ✅ PHASE 1 COMPLETE (12.10.2025) - Phase 2+3 SKIPPED
 
-📋 TRIGGER_SPRINT_2_1_7.md - Team Management & Test Infrastructure (NEU 05.10.2025)
+✅ TRIGGER_SPRINT_2_1_7.md - ActivityOutcome + Opportunity Backend + Code Review Fixes (✅ COMPLETE - 14.10.2025)
+   - **Lead → Opportunity → Customer Workflow** (V10026 Migration)
+   - **OpportunityService:** 3 Service-Methoden (createFromLead, convertToCustomer, createForCustomer)
+   - **REST APIs:** 3 Endpoints für vollständigen Lifecycle
+   - **DEV-SEED:** V90003 mit 10 realistischen Opportunities
+   - **Lead Status Fix:** Automatisches CONVERTED setzen bei Opportunity-Erstellung
+   - **ActivityOutcome Enum:** V10027 (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED)
+   - **Customer Number Sequence:** V10028 (Race Condition Fix - production-ready)
+   - **Code Review Fixes:** 10 Issues (6 Code Review + 3 Pre-existing Tests + 1 CI ESLint)
+     - ✅ Fix #1 - CRITICAL: Race Condition in generateCustomerNumber() (V10028 sequence)
+     - ✅ Fix #2-3 - Clock Injection Pattern (Issue #127: 12 replacements in GlobalExceptionMapper + LeadResource)
+     - ✅ Fix #4-6 - Code Quality (Redundant persist(), Return Type Consistency, Cascading Fixes)
+     - ✅ Fix #7-9 - Pre-existing Tests (FollowUpAutomationServiceTest, CustomerRepositoryTest, DEV-SEED Auto-Recovery)
+     - ✅ Fix #10 - CI ESLint (ActivityDialog.test.tsx)
+   - **Migrations:** V10026 (Opportunity FKs), V10027 (ActivityOutcome), V10028 (customer_number_seq), V90003 (DEV-SEED)
+   - **Tests:** 60/60 Backend GREEN (100%) + Frontend ESLint GREEN ✅
+   - **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
+   - Status: ✅ COMPLETE - PR #139 READY FOR MERGE (14.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_7_1.md - Opportunities UI Integration (NEU 13.10.2025)
+   - **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog + Button)
+   - **Phase 2:** Kanban Enhancements (Filter: Nur offene/Alle/Archiv)
+   - **Phase 3:** Customer → Opportunity UI + Conversion Button
+   - **Phase 4:** Testing & Polish (E2E Tests + Unit Tests)
+   - **Aufwand:** 16-24h (2-3 Tage)
+   - **Prerequisites:** ✅ Backend complete (Sprint 2.1.7.0)
+   - Status: 📋 PLANNING (Start: 14.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_8.md - Team Management & Test Infrastructure (VERSCHOBEN)
    - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
    - **Track 2 - Test Infra:** CRM Szenario-Builder, Faker-Integration, Test-Patterns
    - Strategisches Investment: Test-Qualität für Sprint 2.2+ Velocity
-   - Status: 📋 PLANNED (Start: 19.10.2025)
+   - Status: 📋 PLANNED (Start: TBD)
 
-📋 TRIGGER_SPRINT_2_1_8.md - DSGVO Compliance & Lead-Import (NEU 05.10.2025)
+📋 TRIGGER_SPRINT_2_1_9.md - DSGVO Compliance & Lead-Import (VERSCHOBEN)
    - **🔴 GESETZLICH PFLICHT:** DSGVO-Auskunfts-Recht (Art. 15), DSGVO-Lösch-Recht (Art. 17)
    - **🔴 B2B-STANDARD:** Lead-Import via CSV/Excel (Self-Service Bulk-Import)
    - DSGVO-Einwilligungs-Widerruf (Art. 7 Abs. 3)
@@ -169,15 +197,15 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - BANT-Qualifizierungs-Wizard (Budget, Authority, Need, Timeline)
    - **Migrations:** 5 DB-Änderungen (Nummern: siehe `get-next-migration.sh` - DSGVO, Import, Search, BANT)
    - **Aufwand:** 40-56h (~1 Woche)
-   - Status: 📋 PLANNED (Start: 26.10.2025)
+   - Status: 📋 PLANNED (Start: TBD)
 
-📋 TRIGGER_SPRINT_2_1_9.md - Lead-Kollaboration & Tracking (NEU 05.10.2025)
+📋 TRIGGER_SPRINT_2_1_10.md - Lead-Kollaboration & Tracking (VERSCHOBEN)
    - Lead-Notizen & Kommentare (Team-Kollaboration)
    - Lead-Status-Änderungs-Historie (Audit-Trail für Status-Änderungen)
    - Lead-Temperatur (Hot/Warm/Cold - Visuelle Priorisierung)
    - **Migrations:** 3 DB-Änderungen (Nummern: siehe `get-next-migration.sh` - Notizen, Historie, Temperatur)
    - **Aufwand:** 12-17h (~2-3 Tage)
-   - Status: 📋 PLANNED (Start: 02.11.2025)
+   - Status: 📋 PLANNED (Start: TBD)
 
 ✅ TRIGGER_SPRINT_2_2.md - Kundenmanagement
    - Field-based Customer Architecture

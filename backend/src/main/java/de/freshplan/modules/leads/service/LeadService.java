@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.jboss.logging.Logger;
@@ -29,6 +30,10 @@ public class LeadService {
 
   @Inject UserLeadSettingsService settingsService;
 
+  // Sprint 2.1.7 Issue #127: Clock Injection Standard
+  // Clock für testbare Zeit-Logik (injected via ClockProvider)
+  @Inject Clock clock;
+
   /**
    * Process leads that need reminders (60-day rule). Transitions leads from ACTIVE to REMINDER
    * status.
@@ -36,7 +41,7 @@ public class LeadService {
   @RlsContext
   @Transactional
   public int processReminders() {
-    LocalDateTime cutoffDate = LocalDateTime.now().minusDays(60);
+    LocalDateTime cutoffDate = LocalDateTime.now(clock).minusDays(60);
 
     List<Lead> leadsNeedingReminder =
         Lead.find(
@@ -51,7 +56,7 @@ public class LeadService {
     for (Lead lead : leadsNeedingReminder) {
       // Transition to REMINDER status
       lead.status = LeadStatus.REMINDER;
-      lead.reminderSentAt = LocalDateTime.now();
+      lead.reminderSentAt = LocalDateTime.now(clock);
       lead.persist();
 
       // Create activity
@@ -75,7 +80,7 @@ public class LeadService {
   @RlsContext
   @Transactional
   public int processGracePeriod() {
-    LocalDateTime cutoffDate = LocalDateTime.now().minusDays(10);
+    LocalDateTime cutoffDate = LocalDateTime.now(clock).minusDays(10);
 
     List<Lead> leadsEnteringGrace =
         Lead.find(
@@ -89,7 +94,7 @@ public class LeadService {
     for (Lead lead : leadsEnteringGrace) {
       // Transition to GRACE_PERIOD
       lead.status = LeadStatus.GRACE_PERIOD;
-      lead.gracePeriodStartAt = LocalDateTime.now();
+      lead.gracePeriodStartAt = LocalDateTime.now(clock);
       lead.persist();
 
       // Create activity
@@ -110,7 +115,7 @@ public class LeadService {
     int count = 0;
 
     // 1. Expire leads after 6 months of protection
-    LocalDateTime sixMonthsCutoff = LocalDateTime.now().minusMonths(6);
+    LocalDateTime sixMonthsCutoff = LocalDateTime.now(clock).minusMonths(6);
     List<Lead> sixMonthExpired =
         Lead.find(
                 "status in ?1 and protectionStartAt < ?2 and expiredAt is null "
@@ -121,7 +126,7 @@ public class LeadService {
 
     for (Lead lead : sixMonthExpired) {
       lead.status = LeadStatus.EXPIRED;
-      lead.expiredAt = LocalDateTime.now();
+      lead.expiredAt = LocalDateTime.now(clock);
       lead.persist();
 
       createActivity(
@@ -132,7 +137,7 @@ public class LeadService {
     }
 
     // 2. Expire leads after grace period ends (10 days)
-    LocalDateTime gracePeriodCutoff = LocalDateTime.now().minusDays(10);
+    LocalDateTime gracePeriodCutoff = LocalDateTime.now(clock).minusDays(10);
     List<Lead> gracePeriodExpired =
         Lead.find(
                 "status = ?1 and gracePeriodStartAt < ?2 and expiredAt is null "
@@ -143,7 +148,7 @@ public class LeadService {
 
     for (Lead lead : gracePeriodExpired) {
       lead.status = LeadStatus.EXPIRED;
-      lead.expiredAt = LocalDateTime.now();
+      lead.expiredAt = LocalDateTime.now(clock);
       lead.persist();
 
       createActivity(lead, "SYSTEM", ActivityType.EXPIRED, "Lead expired after grace period ended");
@@ -163,7 +168,7 @@ public class LeadService {
       lead.status = LeadStatus.ACTIVE;
       lead.reminderSentAt = null;
       lead.gracePeriodStartAt = null;
-      lead.lastActivityAt = LocalDateTime.now();
+      lead.lastActivityAt = LocalDateTime.now(clock);
       lead.persist();
 
       createActivity(
@@ -177,8 +182,8 @@ public class LeadService {
    * Check if lead protection is about to expire and send warning. Used for dashboard notifications.
    */
   public List<Lead> getExpiringLeads(String userId, int daysBeforeExpiry) {
-    LocalDateTime expiryWarningDate = LocalDateTime.now().plusDays(daysBeforeExpiry);
-    LocalDateTime sixMonthsFromNow = LocalDateTime.now().plusMonths(6);
+    LocalDateTime expiryWarningDate = LocalDateTime.now(clock).plusDays(daysBeforeExpiry);
+    LocalDateTime sixMonthsFromNow = LocalDateTime.now(clock).plusMonths(6);
 
     return Lead.find(
             "ownerUserId = ?1 and status in ?2 and clockStoppedAt is null "
@@ -313,15 +318,15 @@ public class LeadService {
 
     // Activate protection (registeredAt = NOW)
     if (lead.registeredAt == null) {
-      lead.registeredAt = LocalDateTime.now();
+      lead.registeredAt = LocalDateTime.now(clock);
     }
 
     // Transition stage: VORMERKUNG → REGISTRIERUNG
     lead.stage = LeadStage.REGISTRIERUNG;
 
     // Update activity timestamp
-    lead.lastActivityAt = contactDate != null ? contactDate : LocalDateTime.now();
-    lead.updatedAt = LocalDateTime.now();
+    lead.lastActivityAt = contactDate != null ? contactDate : LocalDateTime.now(clock);
+    lead.updatedAt = LocalDateTime.now(clock);
     lead.updatedBy = userId;
 
     lead.persist();

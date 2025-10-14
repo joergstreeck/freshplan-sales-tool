@@ -38,6 +38,8 @@ class FollowUpAutomationServiceTest {
 
   @InjectMock EmailNotificationService emailService;
 
+  @InjectMock Clock clock;
+
   private Lead testLead;
   private Territory testTerritory;
   private CampaignTemplate sampleTemplate;
@@ -45,6 +47,11 @@ class FollowUpAutomationServiceTest {
 
   @BeforeEach
   void setUp() {
+    // Sprint 2.1.7 Fix: Mock Clock with proper ZoneId to prevent NullPointerException
+    java.time.ZoneId defaultZone = java.time.ZoneId.systemDefault();
+    when(clock.getZone()).thenReturn(defaultZone);
+    when(clock.instant()).thenReturn(java.time.Instant.now());
+
     TestTx.committed(
         () -> {
           // Clean up - IMPORTANT: Delete in correct order (FK constraints!)
@@ -286,11 +293,10 @@ class FollowUpAutomationServiceTest {
   @Test
   void testSeasonalSampleRecommendations() {
     // Given: Mock Clock auf März (Spargel-Saison) setzen
-    Clock fixedClock =
-        Clock.fixed(
-            LocalDateTime.of(2025, 3, 18, 10, 0).toInstant(java.time.ZoneOffset.UTC),
-            java.time.ZoneOffset.UTC);
-    followUpService.setClock(fixedClock);
+    LocalDateTime marchTime = LocalDateTime.of(2025, 3, 18, 10, 0);
+    java.time.ZoneId zoneId = java.time.ZoneId.of("UTC");
+    when(clock.instant()).thenReturn(marchTime.toInstant(java.time.ZoneOffset.UTC));
+    when(clock.getZone()).thenReturn(zoneId);
 
     // Lead ist 3+ Tage alt (relativ zur gemockten Zeit) - committed
     Long leadId =
@@ -320,9 +326,6 @@ class FollowUpAutomationServiceTest {
     Map<String, String> capturedData = dataCaptor.getValue();
     String samples = capturedData.get("sample.products");
     assertTrue(samples.contains("Spargel-Saison-Special"));
-
-    // Reset Clock
-    followUpService.setClock(Clock.systemDefaultZone());
   }
 
   @Test

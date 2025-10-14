@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLanguage } from '../../i18n/hooks';
-import { useBusinessTypes } from '../../features/leads/hooks/useBusinessTypes';
+import { useBusinessTypes } from '../../hooks/useBusinessTypes';
 import {
   isValidEmail,
   isValidGermanPostalCode,

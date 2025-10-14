@@ -8,7 +8,7 @@
 import React from 'react';
 import { FormControl, Select, MenuItem, FormHelperText, CircularProgress } from '@mui/material';
 import type { FieldDefinition } from '../../../types/field.types';
-import { useBusinessTypes } from '../../../../leads/hooks/useBusinessTypes';
+import { useBusinessTypes } from '../../../../../hooks/useBusinessTypes';
 import { useLeadSources } from '../../../../leads/hooks/useLeadSources';
 import { useKitchenSizes } from '../../../../leads/hooks/useKitchenSizes';
 

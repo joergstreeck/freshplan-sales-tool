@@ -15,7 +15,8 @@
 | **V1-V199** | Legacy/Initial Schema | ✅ Ja | V1-V37, V102-V109, V121 |
 | **V200-V9999** | Feature Migrations | ✅ Ja | V200+, Sprint 1.x-2.x |
 | **V10000-V19999** | Test/Dev-Only | ❌ Nein | V10000-V10012 (CI-only) |
-| **V20000+** | Reserved (Future) | ⏸️ TBD | Noch nicht genutzt |
+| **V20000-V89999** | Reserved (Future) | ⏸️ TBD | Noch nicht genutzt |
+| **V90000-V99999** | DEV-SEED (Development Data) | ❌ Nein | V90001-V90002 (in db/dev-seed/) |
 | **R__*** | Repeatable Migrations | ✅ Ja | R__normalize_functions.sql |
 
 **Production Skip Pattern:** `flyway.ignoreMigrationPatterns=*:8001,*:8002,*:10000,*:10001,*:10003,*:10012`
@@ -224,6 +225,9 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V10022** | Make territory_id Nullable | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | Fixes Lead creation validation error, ermöglicht unassigned Leads |
 | **V10023** | Lead Contacts Constraints | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | Unique constraint für is_primary per lead_id |
 | **V10024** | Lead Scoring Complete | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | 5 Score-Felder (pain_score, revenue_score, fit_score, engagement_score, lead_score) |
+| **V10026** | Opportunity Lead/Customer FKs | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟠 MEDIUM | None | lead_id + customer_id FKs in opportunities, CHECK Constraint (lead_id OR customer_id OR stage='NEW_LEAD') |
+| **V10027** | Activity Outcome Enum | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟢 Low | None | activity_outcome VARCHAR(30) mit CHECK Constraint (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED) |
+| **V10028** | Customer Number Sequence | 2.1.7 | @joergstreeck | #139 | ❌ No | 🔴 HIGH | None | **PRODUCTION-KRITISCH!** PostgreSQL Sequence für race-condition-safe customer_number Generation. Format: KD-00001, KD-00002... **NIEMALS löschen!** |
 
 **Rollback Scripts:**
 
@@ -314,6 +318,52 @@ CREATE UNIQUE INDEX CONCURRENTLY ui_leads_company_city ON leads(company_name_nor
 ```
 
 **Referenz:** [Sprint 2.1.4 SUMMARY.md](features-neu/02_neukundengewinnung/artefakte/SPRINT_2_1_4/SUMMARY.md#-migration-notes)
+
+---
+
+### V90000-V99999: DEV-SEED Migrations (Development Data)
+
+⚠️ **Zweck:** Realistische Testdaten für lokale Entwicklung (NICHT für CI-Tests, NICHT für Production!)
+
+**Folder:** `backend/src/main/resources/db/dev-seed/`
+
+**Strategie:** Separate Migrations für production-ähnliche Entwicklungsdaten, die beim lokalen `./mvnw quarkus:dev` automatisch geladen werden.
+
+**Im Gegensatz zu:**
+- **V10xxx (CI-Tests):** TestDataBuilder-Pattern in @QuarkusTest (programmatisch)
+- **V90xxx (DEV-SEED):** SQL-Migrations für manuelles Testen im Browser
+
+| Version | Beschreibung | Sprint | Notes |
+|---------|--------------|--------|-------|
+| **V90001** | Seed DEV Customers Complete | 2.1.6.2 | 5 realistische Customers (IDs 90001-90005): Hotel, Catering, Betriebskantine, Restaurant, Bäckerei |
+| **V90002** | Seed DEV Leads Complete | 2.1.6.2 | 10 Leads (IDs 90001-90010) + 21 Contacts + 21 Activities, Score-Range 21-59, Edge Cases: PreClaim, Grace Period, LOST |
+| **V90003** | Seed DEV Opportunities Complete | 2.1.7 | 10 realistische Opportunities (IDs 90001-90010), Total Value €163,000, 4 from Leads + 6 from Customers, verschiedene Stages (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON) |
+
+**Details:**
+- **V90001:** 5 Customers mit vollständigen Daten (Adressen, Kontakte, Notes, BusinessTypes: GASTRONOMIE, CATERING, etc.)
+- **V90002:** 10 Lead-Szenarien mit verschiedenen Stati (REGISTERED, LEAD, LOST), Hot Leads: 90003 (Score 59), 90007 (Score 57)
+
+**Verwendung:**
+```bash
+# Automatisch geladen bei lokalem Dev-Server
+./mvnw quarkus:dev
+
+# Datenbank neu aufsetzen (DEV-SEED wird automatisch ausgeführt)
+PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+./mvnw flyway:migrate
+```
+
+**Production Deployment:**
+- ✅ DEV-SEED Migrations werden in Production **automatisch übersprungen** (Flyway prüft Folder)
+- ✅ Oder explizit via `flyway.locations=classpath:db/migration` (ohne db/dev-seed)
+
+**Dokumentation:**
+- [DEV-SEED README](../../backend/src/main/resources/db/dev-seed/README.md) - Vollständige Strategie-Dokumentation
+- [DEV_SEED_INFRASTRUCTURE_SUMMARY.md](features-neu/00_infrastruktur/migrationen/artefakte/DEV_SEED_INFRASTRUCTURE_SUMMARY.md) - Session-Details (2025-10-13)
+
+**Geschichte:**
+- **V10005 (OBSOLETE):** "Seed Sample Customers" wurde gelöscht (2025-09-28, commit 753c9272c - caused CI failures)
+- **V90001-V90002 (AKTUELL):** Neue DEV-SEED Strategie (2025-10-13), separate Folder, bessere Organisation
 
 ---
 
@@ -562,9 +612,9 @@ DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVA
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-11 (V10013-V10024 dokumentiert, PR #137 erstellt)
+**Letzte Aktualisierung:** 2025-10-14 (V10026-V10028 + V90003 dokumentiert, PR #139 READY FOR MERGE)
 
-**Nächste Migration:** V272 oder V10025+ (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V272 oder V10029+ (ermitteln via `./scripts/get-next-migration.sh`)
 
-**Aktuelle PR:** #137 - Sprint 2.1.6 Phase 5 (READY FOR REVIEW)
-**Branch:** feature/mod02-sprint-2.1.6-enum-migration-phase-1
+**Aktuelle PR:** #139 - Sprint 2.1.7 ActivityOutcome + Code Review Fixes (READY FOR MERGE)
+**Branch:** main (PR #139)

@@ -3,15 +3,28 @@
 
 export type LeadStage = 0 | 1 | 2;
 
-export type LeadStatus = 'REGISTERED' | 'ACTIVE' | 'QUALIFIED' | 'CONVERTED' | 'LOST' | 'DELETED';
+export type LeadStatus =
+  | 'REGISTERED'
+  | 'ACTIVE'
+  | 'REMINDER'
+  | 'GRACE_PERIOD'
+  | 'QUALIFIED'
+  | 'CONVERTED'
+  | 'LOST'
+  | 'EXPIRED'
+  | 'DELETED';
 
 // Sprint 2.1.6 Phase 4: Lead Status Labels (German)
+// Sprint 2.1.5: REMINDER/GRACE_PERIOD/EXPIRED hinzugefügt (Handelsvertreter-Schutz)
 export const leadStatusLabels: Record<LeadStatus, string> = {
   REGISTERED: 'Vormerkung',
   ACTIVE: 'Aktiv',
+  REMINDER: 'Erinnerung versendet',
+  GRACE_PERIOD: 'Nachfrist',
   QUALIFIED: 'Qualifiziert',
   CONVERTED: 'Konvertiert',
   LOST: 'Verloren',
+  EXPIRED: 'Schutz abgelaufen',
   DELETED: 'Gelöscht',
 };
 
@@ -19,9 +32,12 @@ export const leadStatusLabels: Record<LeadStatus, string> = {
 export const leadStatusColors: Record<LeadStatus, string> = {
   REGISTERED: '#2196F3', // Blue
   ACTIVE: '#4CAF50', // Green
-  QUALIFIED: '#FF9800', // Orange
+  REMINDER: '#FFC107', // Amber (Warning)
+  GRACE_PERIOD: '#FF9800', // Orange (Urgent Warning)
+  QUALIFIED: '#00BCD4', // Cyan
   CONVERTED: '#9C27B0', // Purple
   LOST: '#F44336', // Red
+  EXPIRED: '#795548', // Brown (Inactive)
   DELETED: '#9E9E9E', // Gray
 };
 

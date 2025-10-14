@@ -95,11 +95,27 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
       return;
     }
 
-    // Trigger auto-save with smart debouncing:
-    // - Checkboxes/Selects: immediate (better UX)
-    // - TextField (painNotes): 2s debounce (prevent spam while typing)
-    const isTextFieldChange = formData.painNotes !== lead.painNotes;
-    autoSave(!isTextFieldChange); // Immediate if NOT text field
+    // Check if data actually changed from lead props (prevent save on mount)
+    const hasChanges =
+      formData.painStaffShortage !== (lead.painStaffShortage || false) ||
+      formData.painHighCosts !== (lead.painHighCosts || false) ||
+      formData.painFoodWaste !== (lead.painFoodWaste || false) ||
+      formData.painQualityInconsistency !== (lead.painQualityInconsistency || false) ||
+      formData.painUnreliableDelivery !== (lead.painUnreliableDelivery || false) ||
+      formData.painPoorService !== (lead.painPoorService || false) ||
+      formData.painSupplierQuality !== (lead.painSupplierQuality || false) ||
+      formData.painTimePressure !== (lead.painTimePressure || false) ||
+      formData.urgencyLevel !== (lead.urgencyLevel || 'NORMAL') ||
+      formData.painNotes !== (lead.painNotes || '');
+
+    // Only save if there are actual changes
+    if (hasChanges) {
+      // Trigger auto-save with smart debouncing:
+      // - Checkboxes/Selects: immediate (better UX)
+      // - TextField (painNotes): 2s debounce (prevent spam while typing)
+      const isTextFieldChange = formData.painNotes !== lead.painNotes;
+      autoSave(!isTextFieldChange); // Immediate if NOT text field
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]); // ONLY formData - autoSave causes infinite loop!
 

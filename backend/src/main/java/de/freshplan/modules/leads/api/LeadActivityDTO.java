@@ -1,5 +1,6 @@
 package de.freshplan.modules.leads.api;
 
+import de.freshplan.modules.leads.domain.ActivityOutcome;
 import de.freshplan.modules.leads.domain.ActivityType;
 import de.freshplan.modules.leads.domain.LeadActivity;
 import java.time.LocalDateTime;
@@ -7,6 +8,8 @@ import java.time.LocalDateTime;
 /**
  * DTO for LeadActivity to avoid lazy loading issues. Sprint 2.1: Safe serialization without
  * lazy-loaded entities.
+ *
+ * <p>Sprint 2.1.7 - Issue #126: Added ActivityOutcome field for outcome tracking
  */
 public class LeadActivityDTO {
   public Long id;
@@ -19,6 +22,9 @@ public class LeadActivityDTO {
   public boolean resetsTimer;
   public LocalDateTime createdAt;
 
+  /** Activity outcome (optional) - Sprint 2.1.7 Issue #126 */
+  public ActivityOutcome outcome;
+
   public static LeadActivityDTO from(LeadActivity activity) {
     LeadActivityDTO dto = new LeadActivityDTO();
     dto.id = activity.id;
@@ -30,6 +36,7 @@ public class LeadActivityDTO {
     dto.isMeaningfulContact = activity.isMeaningfulContact;
     dto.resetsTimer = activity.resetsTimer;
     dto.createdAt = activity.createdAt;
+    dto.outcome = activity.outcome; // Sprint 2.1.7 Issue #126
     return dto;
   }
 }

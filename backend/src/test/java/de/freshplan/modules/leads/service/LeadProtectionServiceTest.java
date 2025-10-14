@@ -3,6 +3,7 @@ package de.freshplan.modules.leads.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import de.freshplan.modules.leads.domain.ActivityOutcome;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
@@ -31,6 +32,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class LeadProtectionServiceTest {
 
   @Mock private UserLeadSettingsService settingsService;
+
+  @Mock private java.time.Clock clock;
 
   @InjectMocks private LeadProtectionService protectionService;
 
@@ -255,8 +258,12 @@ class LeadProtectionServiceTest {
     @DisplayName("Should detect progress warning needed (deadline < 7 days)")
     void shouldDetectProgressWarningNeeded() {
       // Given - Warning threshold: 7 days before deadline
+      LocalDateTime now = LocalDateTime.of(2025, 10, 13, 12, 0);
+      when(clock.instant()).thenReturn(now.toInstant(java.time.ZoneOffset.UTC));
+      when(clock.getZone()).thenReturn(java.time.ZoneOffset.UTC);
+
       Lead lead = new Lead();
-      lead.progressDeadline = LocalDateTime.now().plusDays(5); // 5 days until deadline
+      lead.progressDeadline = now.plusDays(5); // 5 days until deadline
       lead.progressWarningSentAt = null; // No warning sent yet
 
       // When
@@ -269,10 +276,12 @@ class LeadProtectionServiceTest {
     @Test
     @DisplayName("Should not send warning if already sent")
     void shouldNotSendWarningIfAlreadySent() {
-      // Given
+      // Given - No clock mocking needed (early return path)
+      LocalDateTime now = LocalDateTime.of(2025, 10, 13, 12, 0);
+
       Lead lead = new Lead();
-      lead.progressDeadline = LocalDateTime.now().plusDays(5);
-      lead.progressWarningSentAt = LocalDateTime.now().minusDays(1); // Already sent
+      lead.progressDeadline = now.plusDays(5);
+      lead.progressWarningSentAt = now.minusDays(1); // Already sent
 
       // When
       boolean needsWarning = protectionService.needsProgressWarning(lead);
@@ -285,8 +294,12 @@ class LeadProtectionServiceTest {
     @DisplayName("Should not send warning if deadline far away")
     void shouldNotSendWarningIfDeadlineFarAway() {
       // Given - 10 days until deadline (> 7 days threshold)
+      LocalDateTime now = LocalDateTime.of(2025, 10, 13, 12, 0);
+      when(clock.instant()).thenReturn(now.toInstant(java.time.ZoneOffset.UTC));
+      when(clock.getZone()).thenReturn(java.time.ZoneOffset.UTC);
+
       Lead lead = new Lead();
-      lead.progressDeadline = LocalDateTime.now().plusDays(10);
+      lead.progressDeadline = now.plusDays(10);
       lead.progressWarningSentAt = null;
 
       // When
@@ -311,6 +324,58 @@ class LeadProtectionServiceTest {
     }
   }
 
+  // ========== Sprint 2.1.7: ActivityOutcome Enum Tests (Issue #126) ==========
+
+  @Nested
+  @DisplayName("ActivityOutcome Enum Business Logic (Sprint 2.1.7)")
+  class ActivityOutcomeEnumTests {
+
+    @Test
+    @DisplayName("ActivityOutcome.isPositive() should identify positive outcomes")
+    void activityOutcomeShouldIdentifyPositiveOutcomes() {
+      // Positive outcomes
+      assertThat(ActivityOutcome.SUCCESSFUL.isPositive()).isTrue();
+      assertThat(ActivityOutcome.QUALIFIED.isPositive()).isTrue();
+
+      // Non-positive outcomes
+      assertThat(ActivityOutcome.UNSUCCESSFUL.isPositive()).isFalse();
+      assertThat(ActivityOutcome.NO_ANSWER.isPositive()).isFalse();
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.isPositive()).isFalse();
+      assertThat(ActivityOutcome.INFO_SENT.isPositive()).isFalse();
+      assertThat(ActivityOutcome.DISQUALIFIED.isPositive()).isFalse();
+    }
+
+    @Test
+    @DisplayName("ActivityOutcome.requiresFollowUp() should identify follow-up needs")
+    void activityOutcomeShouldIdentifyFollowUpNeeds() {
+      // Requires follow-up
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.requiresFollowUp()).isTrue();
+      assertThat(ActivityOutcome.NO_ANSWER.requiresFollowUp()).isTrue();
+
+      // No follow-up needed
+      assertThat(ActivityOutcome.SUCCESSFUL.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.UNSUCCESSFUL.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.INFO_SENT.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.QUALIFIED.requiresFollowUp()).isFalse();
+      assertThat(ActivityOutcome.DISQUALIFIED.requiresFollowUp()).isFalse();
+    }
+
+    @Test
+    @DisplayName("ActivityOutcome.isTerminal() should identify terminal outcomes")
+    void activityOutcomeShouldIdentifyTerminalOutcomes() {
+      // Terminal outcomes
+      assertThat(ActivityOutcome.DISQUALIFIED.isTerminal()).isTrue();
+      assertThat(ActivityOutcome.UNSUCCESSFUL.isTerminal()).isTrue();
+
+      // Non-terminal outcomes
+      assertThat(ActivityOutcome.SUCCESSFUL.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.NO_ANSWER.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.INFO_SENT.isTerminal()).isFalse();
+      assertThat(ActivityOutcome.QUALIFIED.isTerminal()).isFalse();
+    }
+  }
+
   // ========== Existing Protection Tests (Regression) ==========
 
   @Nested
@@ -321,8 +386,12 @@ class LeadProtectionServiceTest {
     @DisplayName("Should calculate remaining protection days correctly")
     void shouldCalculateRemainingProtectionDays() {
       // Given
+      LocalDateTime now = LocalDateTime.of(2025, 10, 13, 12, 0);
+      when(clock.instant()).thenReturn(now.toInstant(java.time.ZoneOffset.UTC));
+      when(clock.getZone()).thenReturn(java.time.ZoneOffset.UTC);
+
       Lead lead = new Lead();
-      lead.registeredAt = LocalDateTime.now();
+      lead.registeredAt = now;
       lead.protectionMonths = 6;
       lead.status = LeadStatus.ACTIVE;
       lead.clockStoppedAt = null;
@@ -337,11 +406,13 @@ class LeadProtectionServiceTest {
     @Test
     @DisplayName("Should return infinite protection when clock stopped")
     void shouldReturnInfiniteProtectionWhenClockStopped() {
-      // Given
+      // Given - No clock mocking needed (early return path: clockStoppedAt != null)
+      LocalDateTime now = LocalDateTime.of(2025, 10, 13, 12, 0);
+
       Lead lead = new Lead();
-      lead.registeredAt = LocalDateTime.now().minusMonths(7); // Expired
+      lead.registeredAt = now.minusMonths(7); // Expired
       lead.protectionMonths = 6;
-      lead.clockStoppedAt = LocalDateTime.now(); // Clock stopped
+      lead.clockStoppedAt = now; // Clock stopped
 
       // When
       int remainingDays = protectionService.getRemainingProtectionDays(lead);

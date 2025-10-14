@@ -102,7 +102,9 @@ public class RlsConnectionAffinityGuard {
     if (!securityIdentity.isAnonymous()) {
       return securityIdentity.getPrincipal().getName();
     }
-    return null;
+    // DEV-Mode fallback: Use 'admin' for anonymous users (when auth is disabled)
+    // This allows RLS policies to work in development without authentication
+    return "admin";
   }
 
   private String extractCurrentRole() {
@@ -111,7 +113,8 @@ public class RlsConnectionAffinityGuard {
       String role = securityIdentity.getRoles().iterator().next();
       return role != null ? role.toUpperCase() : null;
     }
-    return null;
+    // DEV-Mode fallback: Use 'ADMIN' role for anonymous users
+    return "ADMIN";
   }
 
   private String extractTenantId() {

@@ -60,13 +60,9 @@ public class FollowUpAutomationService {
   @ConfigProperty(name = "freshplan.followup.batchSize", defaultValue = "200")
   int batchSize;
 
-  // Clock für testbare Zeit-Logik
-  private Clock clock = Clock.systemDefaultZone();
-
-  /** Setzt Clock für Tests (package-private für Test-Zugriff) */
-  void setClock(Clock clock) {
-    this.clock = clock;
-  }
+  // Sprint 2.1.7 Issue #127: Clock Injection Standard
+  // Clock für testbare Zeit-Logik (injected via ClockProvider)
+  @Inject Clock clock;
 
   /**
    * Scheduled Check für fällige Follow-ups Läuft täglich um 9 Uhr morgens (konfigurierbar über

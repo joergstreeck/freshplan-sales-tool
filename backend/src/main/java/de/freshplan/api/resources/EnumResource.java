@@ -3,6 +3,7 @@ package de.freshplan.api.resources;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
+import de.freshplan.modules.leads.domain.ActivityOutcome;
 import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -101,6 +102,29 @@ public class EnumResource {
   public List<EnumValue> getKitchenSizes() {
     return Arrays.stream(KitchenSize.values())
         .map(size -> new EnumValue(size.name(), size.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all ActivityOutcome enum values.
+   *
+   * <p>Used for: ActivityDialog, LeadActivityForm
+   *
+   * <p>Sprint 2.1.7 Issue #126: Standardized outcomes for lead activities
+   *
+   * @return List of ActivityOutcome values with display names
+   */
+  @GET
+  @Path("/activity-outcomes")
+  @PermitAll
+  @Operation(summary = "Get all Activity Outcome enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Activity Outcome values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getActivityOutcomes() {
+    return Arrays.stream(ActivityOutcome.values())
+        .map(outcome -> new EnumValue(outcome.name(), outcome.getDisplayName()))
         .toList();
   }
 

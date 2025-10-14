@@ -83,16 +83,27 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
 
   // Auto-save on formData changes
   useEffect(() => {
+    // Skip on first render to avoid save on mount
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
       return;
     }
 
+    // Skip if currently saving
     if (isSavingRef.current) {
       return;
     }
 
-    autoSave(true); // Always immediate
+    // Check if data actually changed from lead props
+    const hasChanges =
+      formData.estimatedVolume !== (lead.estimatedVolume || null) ||
+      formData.budgetConfirmed !== (lead.budgetConfirmed || false) ||
+      formData.dealSize !== (lead.dealSize || '');
+
+    // Only save if there are actual changes
+    if (hasChanges) {
+      autoSave(true); // Always immediate
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]); // ONLY formData - autoSave causes infinite loop!
 

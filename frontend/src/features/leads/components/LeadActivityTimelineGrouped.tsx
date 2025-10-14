@@ -8,14 +8,36 @@ import {
   List,
   ListItem,
   ListItemAvatar,
-  ListItemText,
   Avatar,
   Chip,
   CircularProgress,
   Alert,
+  Tooltip,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Button,
 } from '@mui/material';
-import { ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
-import { formatDistanceToNow } from 'date-fns';
+import {
+  ExpandMore as ExpandMoreIcon,
+  Phone as PhoneIcon,
+  Email as EmailIcon,
+  Event as EventIcon,
+  Description as DescriptionIcon,
+  PersonAdd as PersonAddIcon,
+  LocalShipping as LocalShippingIcon,
+  Assignment as AssignmentIcon,
+  CheckCircle as CheckCircleIcon,
+  Cancel as CancelIcon,
+  Pause as PauseIcon,
+  PlayArrow as PlayArrowIcon,
+  Star as StarIcon,
+  Sync as SyncIcon,
+  Handshake as HandshakeIcon,
+  PushPin as PushPinIcon,
+} from '@mui/icons-material';
+import { formatDistanceToNow, format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 interface Activity {
@@ -25,6 +47,7 @@ interface Activity {
   description?: string;
   userId: string;
   isMeaningfulContact?: boolean;
+  outcome?: string; // Sprint 2.1.7 Issue #126: ActivityOutcome
 }
 
 interface LeadActivityTimelineGroupedProps {
@@ -58,19 +81,56 @@ function groupActivitiesByTimeRange(activities: Activity[]) {
   return groups;
 }
 
-// Activity Type Icons & Colors
-function getActivityTypeInfo(type: string): { icon: string; color: string } {
-  const typeMap: Record<string, { icon: string; color: string }> = {
-    LEAD_CREATED: { icon: '✨', color: '#94C456' },
-    FIRST_CONTACT_DOCUMENTED: { icon: '📞', color: '#2196F3' },
-    STATUS_CHANGED: { icon: '🔄', color: '#FF9800' },
-    QUALIFIED: { icon: '✅', color: '#4CAF50' },
-    MEETING_SCHEDULED: { icon: '📅', color: '#9C27B0' },
-    CONTACT_ADDED: { icon: '👤', color: '#00BCD4' },
-    NOTE_ADDED: { icon: '📝', color: '#607D8B' },
+// Activity Type Icons & Colors (Material-UI Icons)
+function getActivityTypeInfo(type: string): { icon: React.ReactElement; color: string } {
+  const typeMap: Record<string, { icon: React.ReactElement; color: string }> = {
+    // Lead lifecycle events
+    LEAD_CREATED: { icon: <StarIcon />, color: '#94C456' },
+    CREATED: { icon: <StarIcon />, color: '#94C456' },
+    LEAD_ASSIGNED: { icon: <PersonAddIcon />, color: '#2196F3' },
+
+    // Communication activities
+    CALL: { icon: <PhoneIcon />, color: '#2196F3' },
+    EMAIL: { icon: <EmailIcon />, color: '#00BCD4' },
+    MEETING: { icon: <EventIcon />, color: '#9C27B0' },
+    MEETING_SCHEDULED: { icon: <EventIcon />, color: '#9C27B0' },
+
+    // Contact & Documentation
+    FIRST_CONTACT_DOCUMENTED: { icon: <HandshakeIcon />, color: '#4CAF50' },
+    CONTACT_ADDED: { icon: <PersonAddIcon />, color: '#00BCD4' },
+    NOTE: { icon: <DescriptionIcon />, color: '#607D8B' },
+    NOTE_ADDED: { icon: <DescriptionIcon />, color: '#607D8B' },
+
+    // Sales activities
+    SAMPLE_SENT: { icon: <LocalShippingIcon />, color: '#FF9800' },
+    PROPOSAL_SENT: { icon: <AssignmentIcon />, color: '#9C27B0' },
+
+    // Status changes
+    STATUS_CHANGED: { icon: <SyncIcon />, color: '#FF9800' },
+    QUALIFIED: { icon: <CheckCircleIcon />, color: '#4CAF50' },
+    DISQUALIFIED: { icon: <CancelIcon />, color: '#F44336' },
+
+    // Clock management
+    CLOCK_STOPPED: { icon: <PauseIcon />, color: '#FF9800' },
+    CLOCK_RESUMED: { icon: <PlayArrowIcon />, color: '#4CAF50' },
   };
 
-  return typeMap[type] || { icon: '📌', color: '#9E9E9E' };
+  return typeMap[type] || { icon: <PushPinIcon />, color: '#9E9E9E' };
+}
+
+// Sprint 2.1.7 Issue #126: ActivityOutcome Badge Info
+function getOutcomeInfo(outcome: string): { label: string; color: string; icon: string } {
+  const outcomeMap: Record<string, { label: string; color: string; icon: string }> = {
+    SUCCESSFUL: { label: 'Erfolgreich', color: '#4CAF50', icon: '✅' },
+    UNSUCCESSFUL: { label: 'Nicht erfolgreich', color: '#F44336', icon: '❌' },
+    NO_ANSWER: { label: 'Keine Antwort', color: '#FF9800', icon: '📵' },
+    CALLBACK_REQUESTED: { label: 'Rückruf gewünscht', color: '#2196F3', icon: '🔄' },
+    INFO_SENT: { label: 'Info versendet', color: '#00BCD4', icon: '📧' },
+    QUALIFIED: { label: 'Qualifiziert', color: '#94C456', icon: '⭐' },
+    DISQUALIFIED: { label: 'Disqualifiziert', color: '#9E9E9E', icon: '⛔' },
+  };
+
+  return outcomeMap[outcome] || { label: outcome, color: '#757575', icon: '❓' };
 }
 
 export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGroupedProps) {
@@ -81,6 +141,10 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
 
   // State: Welche Gruppe ist ausgeklappt (default: last7Days)
   const [expandedGroup, setExpandedGroup] = useState<string>('last7Days');
+
+  // State: Filter
+  const [typeFilter, setTypeFilter] = useState<string>('ALL');
+  const [outcomeFilter, setOutcomeFilter] = useState<string>('ALL');
 
   // Fetch Activities from API
   useEffect(() => {
@@ -109,10 +173,25 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     fetchActivities();
   }, [leadId]);
 
-  // Gruppierte Aktivitäten
+  // Gefilterte Aktivitäten
+  const filteredActivities = useMemo(() => {
+    return activities.filter(activity => {
+      // Filter nach Activity Type
+      if (typeFilter !== 'ALL' && activity.activityType !== typeFilter) {
+        return false;
+      }
+      // Filter nach Outcome
+      if (outcomeFilter !== 'ALL' && activity.outcome !== outcomeFilter) {
+        return false;
+      }
+      return true;
+    });
+  }, [activities, typeFilter, outcomeFilter]);
+
+  // Gruppierte Aktivitäten (auf Basis der gefilterten Liste)
   const groupedActivities = useMemo(() => {
-    return groupActivitiesByTimeRange(activities);
-  }, [activities]);
+    return groupActivitiesByTimeRange(filteredActivities);
+  }, [filteredActivities]);
 
   const handleGroupChange =
     (group: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
@@ -122,28 +201,38 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
   // Render Activity Item
   const renderActivity = (activity: Activity) => {
     const { icon, color } = getActivityTypeInfo(activity.activityType);
+    const activityDate = new Date(activity.activityDate);
 
     return (
-      <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start' }}>
-        <ListItemAvatar>
-          <Avatar sx={{ bgcolor: color, width: 32, height: 32, fontSize: '1rem' }}>{icon}</Avatar>
-        </ListItemAvatar>
-        <ListItemText
-          primary={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                {activity.description}
-              </Typography>
-            </Box>
-          }
-          secondary={
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
-              <Typography variant="caption" color="text.secondary">
-                {formatDistanceToNow(new Date(activity.activityDate), {
-                  addSuffix: true,
-                  locale: de,
-                })}
-              </Typography>
+      <ListItem
+        key={activity.id}
+        sx={{ py: 1.5, alignItems: 'flex-start', flexDirection: 'column' }}
+      >
+        <Box sx={{ display: 'flex', width: '100%', alignItems: 'flex-start' }}>
+          <ListItemAvatar>
+            <Avatar sx={{ bgcolor: color, width: 32, height: 32 }}>{icon}</Avatar>
+          </ListItemAvatar>
+          <Box sx={{ flexGrow: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {activity.description}
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
+              <Tooltip
+                title={format(activityDate, 'dd.MM.yyyy HH:mm', { locale: de })}
+                arrow
+                placement="top"
+              >
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ cursor: 'help', textDecoration: 'underline dotted' }}
+                >
+                  {formatDistanceToNow(activityDate, {
+                    addSuffix: true,
+                    locale: de,
+                  })}
+                </Typography>
+              </Tooltip>
               {activity.userId && (
                 <>
                   <Typography variant="caption" color="text.secondary">
@@ -154,9 +243,40 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
                   </Typography>
                 </>
               )}
+              {/* Sprint 2.1.7 Issue #126: Display ActivityOutcome Badge */}
+              {activity.outcome && (
+                <>
+                  <Typography variant="caption" color="text.secondary">
+                    •
+                  </Typography>
+                  <Chip
+                    icon={
+                      <Box component="span" sx={{ fontSize: '1rem', ml: 0.5 }}>
+                        {getOutcomeInfo(activity.outcome).icon}
+                      </Box>
+                    }
+                    label={getOutcomeInfo(activity.outcome).label}
+                    size="small"
+                    sx={{
+                      height: 24,
+                      fontSize: '0.75rem',
+                      bgcolor: getOutcomeInfo(activity.outcome).color,
+                      color: 'white',
+                      fontWeight: 600,
+                      '& .MuiChip-label': {
+                        px: 1,
+                      },
+                      '& .MuiChip-icon': {
+                        color: 'white',
+                        fontSize: '1rem',
+                      },
+                    }}
+                  />
+                </>
+              )}
             </Box>
-          }
-        />
+          </Box>
+        </Box>
       </ListItem>
     );
   };
@@ -230,11 +350,74 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     );
   }
 
+  // Handler: Filter zurücksetzen
+  const handleResetFilters = () => {
+    setTypeFilter('ALL');
+    setOutcomeFilter('ALL');
+  };
+
   return (
     <Box>
-      {renderGroup('last7Days', 'Letzte 7 Tage', groupedActivities.last7Days, true)}
-      {renderGroup('last30Days', 'Letzte 30 Tage', groupedActivities.last30Days, false)}
-      {renderGroup('older', 'Älter', groupedActivities.older, false)}
+      {/* Filter-UI */}
+      <Box sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        {/* Activity Type Filter */}
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Aktivitätstyp</InputLabel>
+          <Select
+            value={typeFilter}
+            label="Aktivitätstyp"
+            onChange={e => setTypeFilter(e.target.value)}
+          >
+            <MenuItem value="ALL">Alle anzeigen</MenuItem>
+            <MenuItem value="CALL">📞 Anrufe</MenuItem>
+            <MenuItem value="EMAIL">📧 E-Mails</MenuItem>
+            <MenuItem value="MEETING">📅 Meetings</MenuItem>
+            <MenuItem value="NOTE">📝 Notizen</MenuItem>
+            <MenuItem value="FIRST_CONTACT_DOCUMENTED">🤝 Erstkontakt</MenuItem>
+            <MenuItem value="SAMPLE_SENT">📦 Muster versendet</MenuItem>
+            <MenuItem value="PROPOSAL_SENT">📋 Angebot versendet</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Outcome Filter */}
+        <FormControl sx={{ minWidth: 200 }} size="small">
+          <InputLabel>Ergebnis</InputLabel>
+          <Select
+            value={outcomeFilter}
+            label="Ergebnis"
+            onChange={e => setOutcomeFilter(e.target.value)}
+          >
+            <MenuItem value="ALL">Alle anzeigen</MenuItem>
+            <MenuItem value="SUCCESSFUL">✅ Erfolgreich</MenuItem>
+            <MenuItem value="UNSUCCESSFUL">❌ Nicht erfolgreich</MenuItem>
+            <MenuItem value="NO_ANSWER">📵 Keine Antwort</MenuItem>
+            <MenuItem value="CALLBACK_REQUESTED">🔄 Rückruf gewünscht</MenuItem>
+            <MenuItem value="INFO_SENT">📧 Info versendet</MenuItem>
+            <MenuItem value="QUALIFIED">⭐ Qualifiziert</MenuItem>
+            <MenuItem value="DISQUALIFIED">⛔ Disqualifiziert</MenuItem>
+          </Select>
+        </FormControl>
+
+        {/* Reset Button (conditional) */}
+        {(typeFilter !== 'ALL' || outcomeFilter !== 'ALL') && (
+          <Button variant="outlined" size="small" onClick={handleResetFilters} sx={{ height: 40 }}>
+            Filter zurücksetzen
+          </Button>
+        )}
+
+        {/* Count Badge */}
+        <Chip
+          label={`${filteredActivities.length} von ${activities.length}`}
+          size="small"
+          color={filteredActivities.length < activities.length ? 'primary' : 'default'}
+          sx={{ ml: 'auto' }}
+        />
+      </Box>
+
+      {/* Timeline Groups */}
+      {renderGroup('last7Days', 'Letzte 7 Tage', groupedActivities.last7Days)}
+      {renderGroup('last30Days', 'Letzte 30 Tage', groupedActivities.last30Days)}
+      {renderGroup('older', 'Älter', groupedActivities.older)}
     </Box>
   );
 }

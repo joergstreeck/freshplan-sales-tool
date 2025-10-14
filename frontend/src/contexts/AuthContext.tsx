@@ -35,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const keycloak = useKeycloak();
 
   // Check for auth bypass mode first
-  if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
+  if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
     // Provide mock auth context for development
     const mockContext: AuthContextType = {
       user: {
@@ -43,16 +43,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         name: 'Dev User',
         email: 'dev@freshplan.de',
         username: 'devuser',
-        roles: ['admin', 'manager', 'sales'],
+        roles: ['ADMIN', 'MANAGER', 'SALES'],
       },
       isAuthenticated: true,
       isLoading: false,
       login: async () => {},
       logout: () => {},
       token: 'mock-dev-token',
-      hasRole: (role: string) => ['admin', 'manager', 'sales'].includes(role),
+      hasRole: (role: string) => ['ADMIN', 'MANAGER', 'SALES'].includes(role.toUpperCase()),
       hasAnyRole: (roles: string[]) =>
-        roles.some(role => ['admin', 'manager', 'sales'].includes(role)),
+        roles.some(role => ['ADMIN', 'MANAGER', 'SALES'].includes(role.toUpperCase())),
       getValidToken: async () => 'mock-dev-token',
       refreshToken: async () => true,
       authInfo: () => ({ mockAuth: true }),

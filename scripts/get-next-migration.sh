@@ -7,6 +7,7 @@
 # Update: 2025-08-08 - Robuster gemacht, funktioniert aus jedem Verzeichnis
 # Update: 2025-08-09 - KRITISCH: Konsistente Berechnung sichergestellt
 # Update: 2025-10-10 - NEUE STRATEGIE: Fortlaufende Nummerierung, Trennung durch Ordner
+# Update: 2025-10-12 - DEV-SEED Support (3-Ordner-Struktur)
 
 set -e
 
@@ -22,12 +23,13 @@ NC='\033[0m' # No Color
 
 echo ""
 echo -e "${GREEN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
-echo -e "${GREEN}┃  📋 NEUE MIGRATIONS-STRATEGIE (ab Oktober 2025)              ┃${NC}"
+echo -e "${GREEN}┃  📋 MIGRATIONS-STRATEGIE (Oktober 2025 + DEV-SEED)            ┃${NC}"
 echo -e "${GREEN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
-echo -e "${GREEN}┃  • Alle Migrationen fortlaufend: V10022, V10023, V10024...   ┃${NC}"
+echo -e "${GREEN}┃  • Alle Migrationen fortlaufend: V10025, V10026, V10027...   ┃${NC}"
 echo -e "${GREEN}┃  • Trennung durch ORDNER (nicht durch Nummern):              ┃${NC}"
-echo -e "${GREEN}┃    - Production: db/migration/                               ┃${NC}"
-echo -e "${GREEN}┃    - Test/Dev: db/dev-migration/                             ┃${NC}"
+echo -e "${GREEN}┃    - Production:  db/migration/      (Schema, V1-V89999)     ┃${NC}"
+echo -e "${GREEN}┃    - Test-Migs:   db/dev-migration/  (Test-Only, V1-V89999)  ┃${NC}"
+echo -e "${GREEN}┃    - DEV-SEED:    db/dev-seed/       (Dev-Only, V90001+)     ┃${NC}"
 echo -e "${GREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
 echo ""
 
@@ -54,35 +56,41 @@ fi
 # Bestimme Migration-Verzeichnisse relativ zum Projekt-Root
 MIGRATION_DIR="$PROJECT_ROOT/backend/src/main/resources/db/migration"
 DEV_MIGRATION_DIR="$PROJECT_ROOT/backend/src/main/resources/db/dev-migration"
+DEV_SEED_DIR="$PROJECT_ROOT/backend/src/main/resources/db/dev-seed"
 
 # Alternative Pfade falls wir bereits im backend-Ordner sind
 if [ ! -d "$MIGRATION_DIR" ] && [ -d "src/main/resources/db/migration" ]; then
     MIGRATION_DIR="src/main/resources/db/migration"
     DEV_MIGRATION_DIR="src/main/resources/db/dev-migration"
-elif [ ! -d "$MIGRATION_DIR" ] && [ -d "../backend/src/main/resources/db/migration" ]; then
-    MIGRATION_DIR="../backend/src/main/resources/db/migration"
-    DEV_MIGRATION_DIR="../backend/src/main/resources/db/dev-migration"
+    DEV_SEED_DIR="src/main/resources/db/dev-seed"
 fi
 
 # Prüfe ob Verzeichnisse existieren
 if [ ! -d "$MIGRATION_DIR" ]; then
     echo -e "${RED}❌ Migration-Verzeichnis nicht gefunden${NC}"
     echo -e "${YELLOW}   Gesucht in: $MIGRATION_DIR${NC}"
-    echo -e "${YELLOW}   Aktuelles Verzeichnis: $PWD${NC}"
     exit 1
 fi
 
+# Erstelle dev-seed/ falls nicht vorhanden
+if [ ! -d "$DEV_SEED_DIR" ]; then
+    echo -e "${YELLOW}⚠️  dev-seed/ existiert nicht, wird erstellt...${NC}"
+    mkdir -p "$DEV_SEED_DIR"
+    echo -e "${GREEN}✅ Verzeichnis erstellt: $DEV_SEED_DIR${NC}"
+fi
+
 echo -e "${BLUE}📁 Migration-Verzeichnisse:${NC}"
-echo -e "${BLUE}   Production: $MIGRATION_DIR${NC}"
-echo -e "${BLUE}   Test/Dev:   $DEV_MIGRATION_DIR${NC}"
+echo -e "${BLUE}   Production:  $MIGRATION_DIR${NC}"
+echo -e "${BLUE}   Test-Migs:   $DEV_MIGRATION_DIR${NC}"
+echo -e "${BLUE}   DEV-SEED:    $DEV_SEED_DIR${NC}"
 echo ""
 
-# Zeige die letzten 5 Migrationen (aus BEIDEN Ordnern)
+# Zeige die letzten 5 Migrationen (aus ALLEN Ordnern)
 echo -e "${YELLOW}📋 Letzte 5 Migrationen (alle Ordner):${NC}"
 
-# Sammle aus beiden Ordnern
+# Sammle aus allen Ordnern
 ALL_FILES=""
-for file in "$MIGRATION_DIR"/V*.sql "$DEV_MIGRATION_DIR"/V*.sql; do
+for file in "$MIGRATION_DIR"/V*.sql "$DEV_MIGRATION_DIR"/V*.sql "$DEV_SEED_DIR"/V*.sql; do
     if [ -f "$file" ]; then
         basename "$file"
     fi
@@ -97,72 +105,128 @@ done
 
 echo ""
 
-# Ermittle höchste Nummer (aus BEIDEN Ordnern)
-HIGHEST=$(find "$MIGRATION_DIR" "$DEV_MIGRATION_DIR" -name "V*.sql" 2>/dev/null | \
+# Ermittle höchste Nummer PRO Ordner (getrennt!)
+HIGHEST_PROD=$(find "$MIGRATION_DIR" -name "V*.sql" 2>/dev/null | \
   sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
 
-if [ -z "$HIGHEST" ]; then
-    echo -e "${YELLOW}⚠️  Keine Migrationen gefunden. Starte mit V1${NC}"
-    NEXT=1
-else
-    NEXT=$((HIGHEST + 1))
-    echo -e "${GREEN}✅ Höchste Migration: V${HIGHEST}${NC}"
-    
-    # Zeige auch die aktuelle höchste Migration-Datei
-    HIGHEST_FILE=$(find "$MIGRATION_DIR" "$DEV_MIGRATION_DIR" -name "V${HIGHEST}*.sql" 2>/dev/null | head -1 | xargs basename 2>/dev/null)
-    if [ -n "$HIGHEST_FILE" ]; then
-        echo -e "${BLUE}   Datei: $HIGHEST_FILE${NC}"
-    fi
-fi
+HIGHEST_TEST=$(find "$DEV_MIGRATION_DIR" -name "V*.sql" 2>/dev/null | \
+  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
 
-# Sanity-Check: Verhindert Tippfehler (z.B. V100023 statt V10023)
-MAX_JUMP=100
-if [ "$NEXT" -gt $((HIGHEST + MAX_JUMP)) ]; then
-    echo ""
-    echo -e "${RED}❌ FEHLER: Berechnete Nummer V$NEXT erscheint unrealistisch!${NC}"
-    echo -e "${RED}   Maximal erwarteter Sprung: $MAX_JUMP${NC}"
-    echo -e "${RED}   Aktuell höchste Nummer: V$HIGHEST${NC}"
-    echo ""
-    echo -e "${YELLOW}Mögliche Ursachen:${NC}"
-    echo -e "${YELLOW}  1. Falsche Migration-Dateien im Verzeichnis${NC}"
-    echo -e "${YELLOW}  2. Tippfehler in Dateinamen (z.B. V100023 statt V10023)${NC}"
-    echo ""
-    echo -e "${YELLOW}Bitte prüfen:${NC}"
-    echo -e "${YELLOW}  ls backend/src/main/resources/db/migration/V*.sql | tail -5${NC}"
-    echo -e "${YELLOW}  ls backend/src/main/resources/db/dev-migration/V*.sql | tail -5${NC}"
-    exit 1
-fi
+HIGHEST_SEED=$(find "$DEV_SEED_DIR" -name "V*.sql" 2>/dev/null | \
+  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
 
-# Ausgabe der nächsten Nummer
-echo ""
-echo -e "${RED}🚨 NÄCHSTE FREIE MIGRATION: V${NEXT}${NC}"
+# Defaults für leere Ordner
+if [ -z "$HIGHEST_PROD" ]; then HIGHEST_PROD=0; fi
+if [ -z "$HIGHEST_TEST" ]; then HIGHEST_TEST=0; fi
+if [ -z "$HIGHEST_SEED" ]; then HIGHEST_SEED=0; fi
+
+# Zeige höchste Nummern PRO Ordner
+echo -e "${GREEN}📊 Höchste Nummern (pro Ordner):${NC}"
+echo -e "${BLUE}   Production:  V$HIGHEST_PROD (migration/)${NC}"
+echo -e "${BLUE}   Test-Migs:   V$HIGHEST_TEST (dev-migration/)${NC}"
+echo -e "${BLUE}   DEV-SEED:    V$HIGHEST_SEED (dev-seed/)${NC}"
 echo ""
 
-# Frage nach Ordner-Auswahl
+# Frage nach Ordner-Auswahl (JETZT 3 OPTIONEN!)
 echo -e "${YELLOW}In welchem Ordner soll die Migration erstellt werden?${NC}"
 echo ""
 echo -e "  ${GREEN}1)${NC} 🏭 Production (db/migration/)"
-echo -e "     → Läuft in ALLEN Umgebungen (Dev, Test, Production)"
+echo -e "     → Läuft in ALLEN Umgebungen (Dev, Test, CI, Production)"
 echo -e "     → Für: Schema-Änderungen, Production-Features"
+echo -e "     → Nummernbereich: V1-V89999"
 echo ""
-echo -e "  ${GREEN}2)${NC} 🧪 Test/Dev (db/dev-migration/)"
-echo -e "     → Läuft NUR in Dev/Test (NICHT in Production)"
-echo -e "     → Für: Test-Daten, Demo-Features, Debug-Views"
+echo -e "  ${GREEN}2)${NC} 🧪 Test-Migrations (db/dev-migration/)"
+echo -e "     → Läuft NUR in %test (CI-Tests)"
+echo -e "     → Für: Test-spezifische Schemas, Debug-Views"
+echo -e "     → Nummernbereich: V1-V89999"
+echo -e "     ${CYAN}💡 Selten nötig! Meist ist Option 1 richtig.${NC}"
 echo ""
-echo -e "  ${BLUE}💡 Tipp: Im Zweifel → Option 1 (Production)${NC}"
-echo -e "  ${BLUE}   Test-Migrationen sind selten nötig!${NC}"
+echo -e "  ${GREEN}3)${NC} 🌱 DEV-SEED (db/dev-seed/)"
+echo -e "     → Läuft NUR in %dev (manuelle Entwicklung)"
+echo -e "     → Für: Realistische SEED-Daten für UI-Testing"
+echo -e "     → Nummernbereich: V90001+"
+echo -e "     ${CYAN}⚠️  NIEMALS in automatisierten Tests verwenden!${NC}"
+echo ""
+echo -e "  ${BLUE}💡 Im Zweifel → Option 1 (Production)${NC}"
 echo ""
 
-read -p "Deine Wahl (1 oder 2): " CHOICE
+read -p "Deine Wahl (1, 2 oder 3): " CHOICE
 
 if [ "$CHOICE" = "1" ]; then
     TARGET_DIR="$MIGRATION_DIR"
     TARGET_TYPE="Production"
+    RECOMMENDED_RANGE="V1-V89999"
+
+    # Berechne NEXT aus Production-Ordner
+    NEXT=$((HIGHEST_PROD + 1))
+
     echo -e "${GREEN}✅ Production-Migration in db/migration/${NC}"
+    echo -e "${GREEN}   Nächste Nummer: V${NEXT} (basierend auf V${HIGHEST_PROD})${NC}"
+
+    # Warnung wenn Nummer > 89999
+    if [ "$NEXT" -ge 90000 ]; then
+        echo -e "${YELLOW}⚠️  WARNUNG: V${NEXT} ist >= V90000 (SEED-Range!)${NC}"
+        echo -e "${YELLOW}   Production sollte < V90000 sein.${NC}"
+        read -p "Trotzdem fortfahren? (y/n): " CONFIRM
+        if [ "$CONFIRM" != "y" ]; then
+            echo -e "${RED}❌ Abgebrochen${NC}"
+            exit 1
+        fi
+    fi
+
 elif [ "$CHOICE" = "2" ]; then
     TARGET_DIR="$DEV_MIGRATION_DIR"
-    TARGET_TYPE="Test/Dev"
-    echo -e "${YELLOW}✅ Test/Dev-Migration in db/dev-migration/${NC}"
+    TARGET_TYPE="Test-Migration"
+    RECOMMENDED_RANGE="V1-V89999"
+
+    # Berechne NEXT aus Test-Ordner
+    NEXT=$((HIGHEST_TEST + 1))
+
+    echo -e "${YELLOW}✅ Test-Migration in db/dev-migration/${NC}"
+    echo -e "${YELLOW}   Nächste Nummer: V${NEXT} (basierend auf V${HIGHEST_TEST})${NC}"
+
+    # Warnung wenn Nummer > 89999
+    if [ "$NEXT" -ge 90000 ]; then
+        echo -e "${YELLOW}⚠️  WARNUNG: V${NEXT} ist >= V90000 (SEED-Range!)${NC}"
+        echo -e "${YELLOW}   Test-Migrations sollten < V90000 sein.${NC}"
+        read -p "Trotzdem fortfahren? (y/n): " CONFIRM
+        if [ "$CONFIRM" != "y" ]; then
+            echo -e "${RED}❌ Abgebrochen${NC}"
+            exit 1
+        fi
+    fi
+
+elif [ "$CHOICE" = "3" ]; then
+    TARGET_DIR="$DEV_SEED_DIR"
+    TARGET_TYPE="DEV-SEED"
+    RECOMMENDED_RANGE="V90001+"
+
+    # Berechne NEXT aus SEED-Ordner
+    NEXT=$((HIGHEST_SEED + 1))
+
+    # Erzwinge V90001+ für SEED-Daten
+    if [ "$NEXT" -lt 90001 ]; then
+        echo -e "${CYAN}✅ DEV-SEED-Migration in db/dev-seed/${NC}"
+        echo -e "${YELLOW}⚠️  SEED-Daten sollten >= V90001 sein (klare Trennung)${NC}"
+        NEXT=90001
+        echo -e "${CYAN}✅ Nummer angepasst auf V${NEXT}${NC}"
+    else
+        echo -e "${CYAN}✅ DEV-SEED-Migration in db/dev-seed/${NC}"
+        echo -e "${CYAN}   Nächste Nummer: V${NEXT} (basierend auf V${HIGHEST_SEED})${NC}"
+    fi
+
+    echo ""
+    echo -e "${CYAN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
+    echo -e "${CYAN}┃  ⚠️  WICHTIG: DEV-SEED Regeln                     ┃${NC}"
+    echo -e "${CYAN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
+    echo -e "${CYAN}┃  • NUR für manuelle Entwicklung (UI-Testing)      ┃${NC}"
+    echo -e "${CYAN}┃  • NIEMALS in automatisierten Tests verwenden!    ┃${NC}"
+    echo -e "${CYAN}┃  • Naming: 'seed_dev_customers', 'seed_dev_leads' ┃${NC}"
+    echo -e "${CYAN}┃  • Prefix: '[DEV-SEED]' in company_name           ┃${NC}"
+    echo -e "${CYAN}┃  • IDs: 'KD-DEV-001', Lead-IDs 90001-90999        ┃${NC}"
+    echo -e "${CYAN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
+    echo ""
+
 else
     echo -e "${RED}❌ Ungültige Auswahl. Abbruch.${NC}"
     exit 1
@@ -176,6 +240,16 @@ read -p "Migration-Beschreibung (snake_case, z.B. 'add_user_role'): " DESC
 if [ -z "$DESC" ]; then
     echo -e "${RED}❌ Beschreibung erforderlich. Abbruch.${NC}"
     exit 1
+fi
+
+# Für DEV-SEED: Empfehle 'seed_' Prefix
+if [ "$CHOICE" = "3" ] && ! echo "$DESC" | grep -q "^seed_"; then
+    echo -e "${YELLOW}⚠️  Empfehlung: DEV-SEED sollte mit 'seed_' beginnen${NC}"
+    read -p "Mit 'seed_' prefixen? (y/n): " PREFIX
+    if [ "$PREFIX" = "y" ]; then
+        DESC="seed_${DESC}"
+        echo -e "${GREEN}✅ Neue Beschreibung: $DESC${NC}"
+    fi
 fi
 
 # Konstruiere Dateinamen
@@ -194,8 +268,16 @@ echo "========================================="
 echo -e "${YELLOW}🤖 ANWEISUNG FÜR CLAUDE:${NC}"
 echo "========================================="
 echo ""
-echo "  'Schreibe SQL-Code für $DESC."
-echo "   WICHTIG: KEINE Datei erstellen, nur SQL-Code!'"
+if [ "$CHOICE" = "3" ]; then
+    echo "  'Schreibe DEV-SEED SQL für $DESC."
+    echo "   WICHTIG: KEINE Datei erstellen, nur SQL-Code!"
+    echo "   Format: INSERT INTO ... ON CONFLICT DO NOTHING"
+    echo "   IDs: Fixed UUIDs/IDs (z.B. c0000000-dev1-...)"
+    echo "   Naming: [DEV-SEED] Prefix, KD-DEV-001 etc.'"
+else
+    echo "  'Schreibe SQL-Code für $DESC."
+    echo "   WICHTIG: KEINE Datei erstellen, nur SQL-Code!'"
+fi
 echo ""
 echo "========================================="
 echo -e "${YELLOW}⚠️  MIGRATION SAFETY:${NC}"
@@ -207,15 +289,14 @@ echo "  2. git add $FILEPATH"
 echo "  3. git commit"
 echo "  4. → Pre-Commit Hook prüft automatisch!"
 echo ""
-echo "  Falls Hook blockt:"
-echo "  → Datei im falschen Ordner oder Nummer falsch"
-echo "  → Siehe Fehler-Message für Details"
-echo ""
 echo "========================================="
 echo -e "${GREEN}📁 ZIEL-DATEI:${NC}"
 echo "========================================="
 echo ""
 echo "  $FILEPATH"
+echo ""
+echo "  Typ: $TARGET_TYPE"
+echo "  Empfohlener Range: $RECOMMENDED_RANGE"
 echo ""
 
 # Return nur die Nummer für Scripting

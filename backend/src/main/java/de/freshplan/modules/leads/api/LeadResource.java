@@ -24,6 +24,7 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import java.net.URI;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +70,9 @@ public class LeadResource {
   @Inject de.freshplan.infrastructure.security.XssSanitizer xssSanitizer;
 
   @Inject de.freshplan.infrastructure.security.SecurityAuditLogger securityAuditLogger;
+
+  // Sprint 2.1.7 Code Review Fix: Clock injection (Issue #127)
+  @Inject Clock clock;
 
   @Context UriInfo uriInfo;
 
@@ -356,7 +360,8 @@ public class LeadResource {
     // ================================================================================
 
     // Variante B: registered_at IMMER setzen (Audit Trail)
-    lead.registeredAt = LocalDateTime.now();
+    // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+    lead.registeredAt = LocalDateTime.now(clock);
 
     if (lead.source != null && lead.source.requiresFirstContact()) {
       // MESSE/TELEFON: Erstkontakt-EVENT muss bei Erstellung dokumentiert werden
@@ -383,7 +388,8 @@ public class LeadResource {
           request.stage != null
               ? LeadStage.fromValue(request.stage)
               : LeadStage.REGISTRIERUNG; // MESSE/TELEFON → REGISTRIERUNG
-      lead.firstContactDocumentedAt = LocalDateTime.now(); // ← Vollschutz!
+      // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+      lead.firstContactDocumentedAt = LocalDateTime.now(clock); // ← Vollschutz!
 
       LOG.infof(
           "Lead %s (%s source): Direct REGISTRIERUNG (first contact documented via activities)",
@@ -640,7 +646,8 @@ public class LeadResource {
 
       LeadStatus oldStatus = lead.status;
       lead.status = updateRequest.status;
-      lead.lastActivityAt = LocalDateTime.now();
+      // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+      lead.lastActivityAt = LocalDateTime.now(clock);
 
       // Log status change activity
       createAndPersistActivity(
@@ -651,9 +658,11 @@ public class LeadResource {
 
       // Handle special status transitions
       if (updateRequest.status == LeadStatus.GRACE_PERIOD) {
-        lead.gracePeriodStartAt = LocalDateTime.now();
+        // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+        lead.gracePeriodStartAt = LocalDateTime.now(clock);
       } else if (updateRequest.status == LeadStatus.EXPIRED) {
-        lead.expiredAt = LocalDateTime.now();
+        // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+        lead.expiredAt = LocalDateTime.now(clock);
       }
     }
 
@@ -661,7 +670,8 @@ public class LeadResource {
     if (updateRequest.stopClock != null) {
       var settings = settingsService.getOrCreateForUser(currentUserId);
       if (updateRequest.stopClock && (settings.canStopClock || isAdmin)) {
-        LocalDateTime now = LocalDateTime.now();
+        // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+        LocalDateTime now = LocalDateTime.now(clock);
         lead.clockStoppedAt = now;
         lead.stopReason = updateRequest.stopReason;
         lead.stopApprovedBy = currentUserId;
@@ -674,7 +684,8 @@ public class LeadResource {
             "Clock stopped: " + updateRequest.stopReason);
       } else if (!updateRequest.stopClock && lead.clockStoppedAt != null) {
         // Resume clock: Calculate cumulative pause duration (Sprint 2.1.6 Phase 3 - V262)
-        var now = LocalDateTime.now();
+        // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+        var now = LocalDateTime.now(clock);
         var pauseDuration = java.time.Duration.between(lead.clockStoppedAt, now);
         if (lead.progressPauseTotalSeconds == null) lead.progressPauseTotalSeconds = 0L;
         lead.progressPauseTotalSeconds += pauseDuration.toSeconds();
@@ -869,12 +880,34 @@ public class LeadResource {
           .build();
     }
 
+    // Sprint 2.1.7 Issue #126: Validate and convert outcome if provided
+    de.freshplan.modules.leads.domain.ActivityOutcome activityOutcome = null;
+    if (request.outcome != null && !request.outcome.isBlank()) {
+      try {
+        activityOutcome =
+            de.freshplan.modules.leads.domain.ActivityOutcome.valueOf(
+                request.outcome.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        return Response.status(Response.Status.BAD_REQUEST)
+            .entity(Map.of("error", "Invalid activity outcome: " + request.outcome))
+            .build();
+      }
+    }
+
     // Create activity using helper method
     LeadActivity activity =
         createAndPersistActivity(lead, currentUserId, activityType, request.description);
 
+    // Set outcome if provided (Sprint 2.1.7 Issue #126)
+    if (activityOutcome != null) {
+      activity.outcome = activityOutcome;
+      // Sprint 2.1.7 Code Review Fix: Remove redundant persist()
+      // activity.persist(); // REMOVED: Activity already persisted by createAndPersistActivity()
+    }
+
     // Update lead's last activity timestamp (important for protection system)
-    lead.lastActivityAt = LocalDateTime.now();
+    // Sprint 2.1.7 Code Review Fix: Use Clock injection (Issue #127)
+    lead.lastActivityAt = LocalDateTime.now(clock);
     lead.persist();
 
     LOG.infof("Added activity to lead %s by user %s", id, currentUserId);

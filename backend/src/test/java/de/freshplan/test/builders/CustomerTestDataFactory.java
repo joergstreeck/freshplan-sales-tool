@@ -13,11 +13,18 @@ import java.util.concurrent.atomic.AtomicLong;
  * Test data factory for Customer entities. Provides builder pattern for creating test customers
  * without CDI.
  *
+ * <p>Track 2C - Enhanced with RealisticDataGenerator for German test data
+ *
  * @author Claude
  * @since Migration Phase 4 - Quick Wins
  * @since Phase 2A - Enhanced with collision-free ID generation
+ * @since Track 2C - Integrated with RealisticDataGenerator
  */
 public class CustomerTestDataFactory {
+
+  // Thread-local RealisticDataGenerator for realistic defaults
+  private static final ThreadLocal<RealisticDataGenerator> GENERATOR =
+      ThreadLocal.withInitial(() -> new RealisticDataGenerator());
 
   // KOLLISIONSFREIE ID-GENERIERUNG - Thread-Safe & CI-kompatibel
   private static final AtomicLong SEQ = new AtomicLong();
@@ -43,26 +50,16 @@ public class CustomerTestDataFactory {
     return "TST-" + hashStr + "-" + String.format("%05d", SEQ.incrementAndGet());
   }
 
-  /** Realistische Firmennamen statt "Test Company". Präfix [TEST] für eindeutige Markierung. */
-  private static String generateCompanyName() {
-    String[] prefixes = {"[TEST]", "[TEST-DATA]"};
-    String[] companies = {
-      "Müller GmbH",
-      "Schmidt AG",
-      "Weber & Co",
-      "Fischer Solutions",
-      "Becker Industries",
-      "Koch Logistics",
-      "Richter Consulting",
-      "Hoffmann Group",
-      "Schulz Systems",
-      "Wagner Analytics"
-    };
-
-    // Pseudo-Random basierend auf nanoTime für Variety
-    String prefix = prefixes[(int) (System.nanoTime() % prefixes.length)];
-    String company = companies[(int) (System.nanoTime() % companies.length)];
-    return prefix + " " + company;
+  /**
+   * Create a seeded generator for deterministic tests.
+   *
+   * @param seed Seed value for repeatable randomization
+   * @return Builder with seeded generator
+   */
+  public static Builder builder(long seed) {
+    Builder builder = new Builder();
+    builder.generator = new RealisticDataGenerator(seed);
+    return builder;
   }
 
   /** Create a new builder instance. */
@@ -71,8 +68,12 @@ public class CustomerTestDataFactory {
   }
 
   public static class Builder {
-    // Default values - now with realistic defaults
-    private String companyName = generateCompanyName();
+    // RealisticDataGenerator instance (thread-local or seeded)
+    private RealisticDataGenerator generator = GENERATOR.get();
+
+    // Default values - now with realistic defaults from RealisticDataGenerator
+    // Note: companyName is lazy-initialized in build() to use correct generator instance
+    private String companyName;
     private String customerNumber; // wird automatisch generiert
     private CustomerStatus status = CustomerStatus.LEAD;
     private Industry industry = Industry.SONSTIGE;
@@ -80,8 +81,8 @@ public class CustomerTestDataFactory {
     private String phone;
     private String email;
     private String street;
-    private String city = "Berlin";
-    private String postalCode = "10115";
+    private String city; // wird durch generator befüllt falls null
+    private String postalCode; // wird durch generator befüllt falls null
     private String country = "Deutschland";
     private String taxId;
     private String commercialRegister;
@@ -91,7 +92,7 @@ public class CustomerTestDataFactory {
     private String notes;
     private LocalDateTime lastContactDate;
     private LocalDateTime nextContactDate;
-    private Integer riskScore = 50;
+    private Integer riskScore; // Default 2 in build() wenn null
     private BigDecimal expectedMonthlyVolume;
     private BigDecimal expectedAnnualVolume;
     private LocalDate contractStartDate;
@@ -288,12 +289,25 @@ public class CustomerTestDataFactory {
     /**
      * Build the customer entity without persisting.
      *
+     * <p>Track 2C - Enhanced with RealisticDataGenerator defaults
+     *
      * @return The built customer entity
      */
     public Customer build() {
       // Automatische customerNumber-Generierung falls nicht explizit gesetzt
       if (customerNumber == null) {
         customerNumber = nextNumber();
+      }
+
+      // Realistische Defaults aus RealisticDataGenerator
+      if (companyName == null) {
+        companyName = "[TEST] " + generator.germanCompanyName();
+      }
+      if (city == null) {
+        city = generator.germanCity();
+      }
+      if (postalCode == null) {
+        postalCode = generator.germanPostalCode();
       }
 
       Customer customer = new Customer();

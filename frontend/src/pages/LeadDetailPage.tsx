@@ -134,8 +134,8 @@ export function LeadDetailPage() {
     } catch (error: unknown) {
       console.error('Failed to update lead:', error);
 
-      // ETag Conflict (412 Precondition Failed): Data changed by someone else
-      if (error?.status === 412) {
+      // ETag Conflict (412 Precondition Failed) or Concurrent Modification (409 Conflict)
+      if (error?.status === 412 || error?.status === 409) {
         try {
           const refreshedLead = await getLeadById(lead.id);
           setLead(refreshedLead);
@@ -144,7 +144,7 @@ export function LeadDetailPage() {
             { duration: 5000 }
           );
         } catch (reloadError) {
-          console.error('Failed to reload lead after ETag conflict:', reloadError);
+          console.error('Failed to reload lead after conflict:', reloadError);
           toast.error('Fehler beim Neuladen der Daten');
         }
       } else {

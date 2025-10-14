@@ -1,10 +1,26 @@
 # Testing Guide - FreshPlan Sales Tool
 
-**Stand:** 2025-10-08
-**Sprint:** 2.1.6 Phase 4
+**Stand:** 2025-10-14
+**Sprint:** Track 2C - Advanced Test Infrastructure
 **Speicherort:** `docs/planung/grundlagen/testing_guide.md`
 
 > **💡 Hinweis:** Für Coverage-Tools, CI/CD Setup & Monitoring siehe: `TESTING_INFRASTRUCTURE.md`
+
+---
+
+## 📑 Inhaltsverzeichnis
+
+- [🎯 Wichtigster Grundsatz](#-wichtigster-grundsatz-tests-sind-kein-selbstzweck)
+- [📊 Test-Strategie](#-test-strategie-was-soll-getestet-werden)
+- [🔍 Test-Gap-Analyse](#-test-gap-analyse-warum-fanden-tests-bugs-nicht)
+- [🛠️ Test-Typen im Detail](#️-test-typen-im-detail)
+- [🏭 TestDataFactory Pattern](#-testdatafactory-pattern) ⭐ NEU!
+- [🌱 DEV-SEED](#-dev-seed-testdaten-für-lokale-entwicklung)
+- [📋 Test-Checklist](#-test-checklist-neue-features)
+- [🚀 Commands](#-commands)
+- [📈 Coverage-Ziele](#-coverage-ziele)
+- [🔬 Test-Debugging](#-test-debugging)
+- [📚 Weitere Ressourcen](#-weitere-ressourcen)
 
 ---
 
@@ -230,6 +246,421 @@ describe('StopTheClockDialog - RBAC', () => {
 
 ---
 
+## 🏭 **TestDataFactory Pattern**
+
+### **Übersicht: SEED vs Faker vs TestDataFactories**
+
+| Use Case | Tool | Wann verwenden? |
+|----------|------|-----------------|
+| **Automatisierte Tests (CI)** | TestDataFactory | Immer in `@QuarkusTest` - Thread-safe, isoliert, schnell |
+| **Deterministische Tests** | Seeded Builder | Tests die EXAKT gleiche Daten brauchen: `builder(42L)` |
+| **Lokale Entwicklung (Browser)** | DEV-SEED Migrations | Manuelles Testen im Browser (V90001, V90002) |
+| **Production** | Echte Daten | - |
+
+### **Warum TestDataFactory?**
+
+**Problem:** Hardcoded Test Arrays (altmodisch):
+```java
+// ❌ ALT: Hardcoded, unflexibel, nicht realistisch
+Customer customer = new Customer();
+customer.setCompanyName("Test Company GmbH");
+customer.setCustomerNumber("TST-12345");
+customer.setStatus(CustomerStatus.LEAD);
+```
+
+**Lösung:** TestDataFactory mit RealisticDataGenerator (Track 2C):
+```java
+// ✅ NEU: Builder Pattern + Faker Integration
+Customer customer = CustomerTestDataFactory.builder()
+  .build(); // Generiert realistische deutsche Firma!
+
+// Result: "[TEST] Müller Catering GmbH", "TST-8A3F2B1C-00001", Hamburg, 80331
+```
+
+---
+
+### **RealisticDataGenerator**
+
+**Zweck:** Realistische deutsche Testdaten mit Datafaker (net.datafaker:datafaker:2.0.2)
+
+**Features:**
+- 50+ Generator-Methoden für deutschen Markt
+- Email-Normalisierung (ä→ae, ö→oe, ü→ue, ß→ss)
+- Seeded Random für deterministische Tests
+- Thread-safe ThreadLocal Pattern
+
+#### **Beispiele:**
+
+```java
+// 1. Unseed (zufällig)
+RealisticDataGenerator gen = new RealisticDataGenerator();
+
+String company = gen.germanCateringCompanyName();
+// → "Frische Küche Müller GmbH"
+
+String person = gen.germanFullName();
+// → "Anna Schmidt"
+
+String email = gen.email("Max", "Müller", "example.com");
+// → "max.mueller@example.com" (Umlaute normalisiert!)
+
+String phone = gen.germanPhoneNumber();
+// → "+49 089 12345678"
+
+String city = gen.germanCity();
+// → "München"
+
+String plz = gen.germanPostalCode();
+// → "80331"
+```
+
+```java
+// 2. Seeded (deterministische Tests)
+RealisticDataGenerator gen1 = new RealisticDataGenerator(42L);
+RealisticDataGenerator gen2 = new RealisticDataGenerator(42L);
+
+assertThat(gen1.germanCompanyName())
+  .isEqualTo(gen2.germanCompanyName()); // ✅ Gleicher Seed = gleiche Daten
+```
+
+**Best Practices:**
+- ✅ Unseed für normale Tests (Variety)
+- ✅ Seeded für Assertions auf exakte Werte
+- ✅ ThreadLocal in Factories (Thread-Safety)
+
+---
+
+### **CustomerTestDataFactory**
+
+**Zweck:** Customer-Entity-Testdaten mit realistischen deutschen Firmennamen
+
+#### **Grundlegende Verwendung:**
+
+```java
+@QuarkusTest
+class CustomerServiceTest {
+
+  @Inject CustomerRepository customerRepository;
+
+  @Test
+  @Transactional
+  void testCreateCustomer() {
+    // Mit Defaults (realistische deutsche Firma)
+    Customer customer = CustomerTestDataFactory.builder().build();
+
+    // Result:
+    // - companyName: "[TEST] Müller Catering GmbH"
+    // - customerNumber: "TST-8A3F2B1C-00001"
+    // - city: "München"
+    // - postalCode: "80331"
+    // - riskScore: 2 (Low-Risk Default)
+    // - isTestData: true (IMMER true in Tests!)
+  }
+}
+```
+
+#### **Custom Values:**
+
+```java
+Customer customer = CustomerTestDataFactory.builder()
+  .withCompanyName("Custom Catering GmbH")
+  .withCity("Berlin")
+  .withPostalCode("10115")
+  .withRiskScore(5)
+  .build();
+```
+
+#### **Seeded Builder (deterministische Tests):**
+
+```java
+@Test
+void testWithSeededData() {
+  // Gleicher Seed = gleiche Daten
+  Customer c1 = CustomerTestDataFactory.builder(42L).build();
+  Customer c2 = CustomerTestDataFactory.builder(42L).build();
+
+  assertThat(c1.getCompanyName()).isEqualTo(c2.getCompanyName());
+}
+```
+
+#### **Convenience Methods:**
+
+```java
+// Minimal Customer (nur Required Fields)
+Customer minimal = CustomerTestDataFactory.builder().buildMinimal();
+// → "Test Company GmbH", CustomerStatus.LEAD
+```
+
+#### **Persistence (Integration Tests):**
+
+```java
+@QuarkusTest
+class CustomerRepositoryTest {
+
+  @Inject CustomerRepository customerRepository;
+
+  @Test
+  @Transactional
+  void testFindByName() {
+    // Build and persist in one step
+    Customer customer = CustomerTestDataFactory.builder()
+      .withCompanyName("Test Catering GmbH")
+      .buildAndPersist(customerRepository);
+
+    // Now searchable in DB
+    List<Customer> results = customerRepository.findByName("Test Catering");
+    assertThat(results).hasSize(1);
+  }
+}
+```
+
+---
+
+### **LeadTestDataFactory**
+
+**Zweck:** Lead-Entity-Testdaten mit realistischen deutschen Catering-Firmennamen
+
+#### **Grundlegende Verwendung:**
+
+```java
+@QuarkusTest
+class LeadServiceTest {
+
+  @Test
+  @Transactional
+  void testCreateLead() {
+    // Mit Defaults (realistische Catering-Firma)
+    Lead lead = LeadTestDataFactory.builder().build();
+
+    // Result:
+    // - companyName: "[TEST] Frische Küche Schmidt GmbH"
+    // - contactPerson: "Anna Müller"
+    // - email: "anna.mueller@example.com" (aus contactPerson generiert!)
+    // - phone: "+49 089 1234567"
+    // - city: "München"
+    // - postalCode: "80331"
+    // - employeeCount: 25 (realistisch aus Faker)
+    // - status: LeadStatus.REGISTERED
+    // - stage: LeadStage.REGISTRIERUNG
+  }
+}
+```
+
+#### **Convenience Methods (Presets):**
+
+```java
+// 1. Pre-Claim Lead (Vormerkung)
+Lead preClaimLead = LeadTestDataFactory.builder().buildMinimal();
+// → status = REGISTERED
+// → stage = VORMERKUNG
+// → firstContactDocumentedAt = NULL (10-day window!)
+
+// 2. Qualified Lead (Registrierung)
+Lead qualifiedLead = LeadTestDataFactory.builder().buildQualified();
+// → status = REGISTERED
+// → stage = REGISTRIERUNG
+// → firstContactDocumentedAt = now() - 5 days
+```
+
+#### **Business Fields:**
+
+```java
+Lead lead = LeadTestDataFactory.builder()
+  .withBusinessType(BusinessType.RESTAURANT)
+  .withKitchenSize(KitchenSize.GROSS)
+  .withEmployeeCount(50)
+  .withEstimatedVolume(BigDecimal.valueOf(100000))
+  .withDealSize(DealSize.LARGE)
+  .withBudgetConfirmed(true)
+  .build();
+```
+
+#### **Scoring & Pain Points:**
+
+```java
+Lead lead = LeadTestDataFactory.builder()
+  .withPainStaffShortage(true)
+  .withUrgencyLevel(UrgencyLevel.HIGH)
+  .withRelationshipStatus(RelationshipStatus.TRUSTED)
+  .build();
+```
+
+---
+
+### **LeadActivityTestDataFactory**
+
+**Zweck:** LeadActivity-Testdaten mit realistischen Notizen
+
+#### **Required Pattern (forLead):**
+
+```java
+@QuarkusTest
+class LeadActivityServiceTest {
+
+  @Test
+  @Transactional
+  void testCreateActivity() {
+    // Lead REQUIRED!
+    Lead lead = LeadTestDataFactory.builder().build();
+
+    // Activity erstellen
+    LeadActivity activity = LeadActivityTestDataFactory.builder()
+      .forLead(lead) // ❗ PFLICHT - wirft Exception wenn vergessen!
+      .withActivityType(ActivityType.CALL)
+      .withDescription("Telefonat mit Kunden")
+      .build();
+
+    // Auto-Set: isMeaningfulContact + resetsTimer basierend auf ActivityType
+    assertThat(activity.isMeaningfulContact).isTrue(); // CALL is meaningful
+    assertThat(activity.resetsTimer).isTrue();
+  }
+}
+```
+
+#### **Convenience Methods:**
+
+```java
+Lead lead = LeadTestDataFactory.builder().build();
+
+// 1. Phone Call (meaningful contact)
+LeadActivity call = LeadActivityTestDataFactory.builder()
+  .forLead(lead)
+  .buildCall();
+// → activityType = CALL
+// → isMeaningfulContact = true
+// → resetsTimer = true
+// → outcome = SUCCESSFUL
+// → description = "Telefonat mit [contactPerson]"
+
+// 2. Email
+LeadActivity email = LeadActivityTestDataFactory.builder()
+  .forLead(lead)
+  .buildEmail();
+// → activityType = EMAIL
+// → outcome = INFO_SENT
+// → description = "E-Mail versendet an [email]"
+
+// 3. Note (non-meaningful)
+LeadActivity note = LeadActivityTestDataFactory.builder()
+  .forLead(lead)
+  .buildNote();
+// → activityType = NOTE
+// → isMeaningfulContact = false
+// → description = [Realistische Notiz aus Faker]
+
+// 4. Meeting
+LeadActivity meeting = LeadActivityTestDataFactory.builder()
+  .forLead(lead)
+  .buildMeeting();
+// → activityType = MEETING
+// → isMeaningfulContact = true
+// → outcome = SUCCESSFUL
+
+// 5. First Contact (counts as progress!)
+LeadActivity firstContact = LeadActivityTestDataFactory.builder()
+  .forLead(lead)
+  .buildFirstContact();
+// → activityType = FIRST_CONTACT_DOCUMENTED
+// → isMeaningfulContact = true
+// → countsAsProgress = true ✅
+```
+
+#### **Activity Outcomes (Sprint 2.1.7 Issue #126):**
+
+```java
+LeadActivity activity = LeadActivityTestDataFactory.builder()
+  .forLead(lead)
+  .withActivityType(ActivityType.CALL)
+  .withOutcome(ActivityOutcome.NO_ANSWER)
+  .withNextAction("Rückruf in 2 Tagen")
+  .withNextActionDate(LocalDate.now().plusDays(2))
+  .build();
+```
+
+---
+
+### **Best Practices: TestDataFactory**
+
+#### ✅ **DO:**
+
+```java
+// 1. Immer TestDataFactory in @QuarkusTest verwenden
+@QuarkusTest
+class MyTest {
+  @Test
+  @Transactional
+  void testSomething() {
+    Customer c = CustomerTestDataFactory.builder().build();
+    Lead l = LeadTestDataFactory.builder().build();
+  }
+}
+
+// 2. Seeded Builder für deterministische Assertions
+@Test
+void testExactValue() {
+  RealisticDataGenerator gen = new RealisticDataGenerator(42L);
+  String expected = gen.germanCompanyName();
+
+  // Jetzt können wir exakten Wert asserten
+  assertThat(expected).isEqualTo("Müller Catering GmbH");
+}
+
+// 3. Convenience Methods nutzen für häufige Patterns
+Lead preClaimLead = LeadTestDataFactory.builder().buildMinimal();
+Lead qualifiedLead = LeadTestDataFactory.builder().buildQualified();
+```
+
+#### ❌ **DON'T:**
+
+```java
+// 1. NICHT DEV-SEED IDs in Tests referenzieren (flaky!)
+@Test
+void testBadPractice() {
+  Lead lead = Lead.findById(90001L); // ❌ DEV-SEED ID - NICHT IN TESTS!
+  // Problem: DEV-SEED nicht in CI verfügbar → Flaky Test!
+}
+
+// 2. NICHT hardcoded Test Arrays verwenden (altmodisch)
+Customer[] customers = {
+  new Customer("Test 1", "TST-001"),
+  new Customer("Test 2", "TST-002")
+}; // ❌ Unflexibel, nicht realistisch
+
+// 3. NICHT manuell IDs setzen (Kollisionsgefahr!)
+Customer c = new Customer();
+c.setId(123L); // ❌ Kann mit anderen Tests kollidieren!
+```
+
+---
+
+### **TestDataFactory Testing**
+
+**Track 2C - Test Coverage:**
+
+```bash
+# Alle TestDataFactory Tests ausführen
+cd backend
+./mvnw test -Dtest="RealisticDataGeneratorTest,CustomerTestDataFactoryTest,LeadTestDataFactoryTest,LeadActivityTestDataFactoryTest"
+
+# Result: 90/90 Tests GREEN
+# - 25 RealisticDataGeneratorTest
+# - 15 CustomerTestDataFactoryTest
+# - 28 LeadTestDataFactoryTest
+# - 22 LeadActivityTestDataFactoryTest
+```
+
+**Test-Dateien:**
+- `backend/src/test/java/de/freshplan/test/builders/RealisticDataGenerator.java`
+- `backend/src/test/java/de/freshplan/test/builders/RealisticDataGeneratorTest.java`
+- `backend/src/test/java/de/freshplan/test/builders/CustomerTestDataFactory.java`
+- `backend/src/test/java/de/freshplan/test/builders/CustomerTestDataFactoryTest.java`
+- `backend/src/test/java/de/freshplan/test/builders/LeadTestDataFactory.java`
+- `backend/src/test/java/de/freshplan/test/builders/LeadTestDataFactoryTest.java`
+- `backend/src/test/java/de/freshplan/test/builders/LeadActivityTestDataFactory.java`
+- `backend/src/test/java/de/freshplan/test/builders/LeadActivityTestDataFactoryTest.java`
+
+---
+
 ## 📋 **Test-Checklist: Neue Features**
 
 Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
@@ -329,6 +760,109 @@ npm test -- StopTheClockDialog.test.tsx --reporter=verbose
 
 ---
 
+## 🌱 **DEV-SEED: Testdaten für lokale Entwicklung**
+
+### **Was ist DEV-SEED?**
+
+DEV-SEED ist eine **separate Migration-Strategie** für realistische Testdaten in der lokalen Entwicklungsumgebung.
+
+**Zweck:** Production-ähnliche Daten zum manuellen Testen im Browser (NICHT für automatisierte Tests!).
+
+### **Wann was verwenden?**
+
+| Use Case | Tool | Wann verwenden? | Beispiel |
+|----------|------|-----------------|----------|
+| **Automatisierte Tests (CI)** | TestDataFactory | Immer in `@QuarkusTest` | `LeadTestDataFactory.builder().build()` |
+| **Deterministische Tests** | Seeded Builder | Exakte Wert-Assertions | `builder(42L).build()` |
+| **Lokale Entwicklung (Browser)** | DEV-SEED Migrations | Manuelles UI-Testing | V90001 (5 Customers), V90002 (10 Leads) |
+| **Production** | Echte Daten | - | - |
+
+### **TestDataBuilder vs. DEV-SEED**
+
+**TestDataBuilder (für @QuarkusTest):**
+```java
+@QuarkusTest
+class LeadScoringServiceTest {
+
+  @Test
+  @Transactional
+  void testHighValueLead() {
+    // Programmatisch erstellen
+    Lead lead = LeadTestDataFactory.builder()
+      .asQualifiedLead()
+      .withScore(75)
+      .buildAndPersist(leadRepository);
+
+    // Test durchführen
+    int score = leadScoringService.calculateScore(lead);
+    assertTrue(score >= 70);
+  }
+}
+```
+
+**DEV-SEED (für lokale Entwicklung):**
+```sql
+-- V90001__seed_dev_customers_complete.sql
+-- 5 realistische Customers für manuelles Testen
+
+INSERT INTO customers (id, company_name, business_type, ...)
+VALUES
+  (90001, 'Fresh Hotel GmbH', 'HOTEL', ...),
+  (90002, 'Catering Excellence AG', 'CATERING', ...),
+  ...
+```
+
+### **DEV-SEED Daten verwenden**
+
+```bash
+# 1. Automatisch geladen bei lokalem Dev-Server
+cd backend
+./mvnw quarkus:dev
+
+# 2. Im Browser: http://localhost:5173
+# → Customers: 90001-90005 sichtbar
+# → Leads: 90001-90010 sichtbar
+
+# 3. Datenbank neu aufsetzen (inklusive DEV-SEED)
+PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
+  -c "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"
+./mvnw flyway:migrate
+```
+
+### **Vorhandene DEV-SEED Daten**
+
+**V90001 - 5 Customers:**
+- 90001: Fresh Hotel GmbH (Berlin, Hotel, 200 MA)
+- 90002: Catering Excellence AG (München, Catering, 150 MA)
+- 90003: Campus Gastro Service (Freiburg, Betriebskantine, 500 MA)
+- 90004: Restaurant Bella Vista (Hamburg, Restaurant, 50 MA)
+- 90005: Bäckerei Müller KG (Dresden, Bäckerei, 80 MA)
+
+**V90002 - 10 Leads:**
+- IDs 90001-90010 (verschiedene Stati, Score-Range 21-59)
+- Hot Leads: 90003 (Score 59), 90007 (Score 57)
+- Edge Cases: PreClaim (90006), Grace Period (90005), LOST (90004)
+
+### **Dokumentation & Referenzen**
+
+- [DEV-SEED README](../../backend/src/main/resources/db/dev-seed/README.md) - Vollständige Dokumentation
+- [MIGRATIONS.md](../MIGRATIONS.md) - V90000-V99999 Range
+- [DEV_SEED_INFRASTRUCTURE_SUMMARY.md](../features-neu/00_infrastruktur/migrationen/artefakte/DEV_SEED_INFRASTRUCTURE_SUMMARY.md) - Implementation Details
+
+### **Best Practices**
+
+✅ **DO:**
+- DEV-SEED für manuelles Testing im Browser verwenden
+- TestDataBuilder für automatisierte Tests verwenden
+- IDs 90000+ für DEV-SEED Entities reservieren
+
+❌ **DON'T:**
+- DEV-SEED Daten in @QuarkusTest referenzieren (flaky tests!)
+- Production-IDs in DEV-SEED verwenden
+- DEV-SEED Migrations in Production deployen (wird automatisch übersprungen)
+
+---
+
 ## 📚 **Weitere Ressourcen**
 
 - **Backend:** [Quarkus Testing Guide](https://quarkus.io/guides/getting-started-testing)
@@ -338,6 +872,10 @@ npm test -- StopTheClockDialog.test.tsx --reporter=verbose
 
 ---
 
-**Letztes Update:** Sprint 2.1.6 Phase 4 (2025-10-08)
-**Test-Count:** 103 Tests (43 Backend + 60 Frontend)
-**Coverage:** Backend 85%, Frontend 82%
+**Letztes Update:** Track 2C - Advanced Test Infrastructure (2025-10-14)
+**Test-Count:** 193 Tests (133 Backend + 60 Frontend)
+  - **Backend:** 133 Tests (43 Domain + 90 TestDataFactories)
+  - **Frontend:** 60 Tests
+**Coverage:** Backend 87%, Frontend 82%
+**DEV-SEED:** V90001 (5 Customers), V90002 (10 Leads + 21 Contacts + 21 Activities)
+**TestDataFactories:** CustomerTestDataFactory, LeadTestDataFactory, LeadActivityTestDataFactory (Track 2C)

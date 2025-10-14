@@ -1086,4 +1086,149 @@ class LeadResourceTest {
         .body("painScore", greaterThanOrEqualTo(30)) // Should be high with 3 pains + emergency
         .body("leadScore", notNullValue()); // Total score should be recalculated
   }
+
+  // ================= Sprint 2.1.7: ActivityOutcome Integration Tests =================
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("Sprint 2.1.7: Should add activity with valid ActivityOutcome")
+  void testAddActivityWithValidOutcome() {
+    Long leadId = createTestLead("user1");
+
+    Map<String, Object> activityRequest = new HashMap<>();
+    activityRequest.put("activityType", "CALL");
+    activityRequest.put("description", "Follow-up call with decision maker");
+    activityRequest.put("outcome", "SUCCESSFUL"); // Sprint 2.1.7 Issue #126
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(activityRequest)
+        .when()
+        .post("/{id}/activities", leadId)
+        .then()
+        .statusCode(200)
+        .body("activityType", is("CALL"))
+        .body("description", is("Follow-up call with decision maker"))
+        .body("outcome", is("SUCCESSFUL")) // DTO should include outcome field
+        .body("userId", is("user1"))
+        .body("leadId", is(leadId.intValue()));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("Sprint 2.1.7: Should reject activity with invalid ActivityOutcome")
+  void testAddActivityWithInvalidOutcome() {
+    Long leadId = createTestLead("user1");
+
+    Map<String, Object> activityRequest = new HashMap<>();
+    activityRequest.put("activityType", "CALL");
+    activityRequest.put("description", "Call with invalid outcome");
+    activityRequest.put("outcome", "INVALID_OUTCOME_VALUE"); // Invalid enum value
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(activityRequest)
+        .when()
+        .post("/{id}/activities", leadId)
+        .then()
+        .statusCode(400) // Should return 400 Bad Request
+        .body(containsString("Invalid activity outcome")); // Actual backend error message
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("Sprint 2.1.7: Should add activity without outcome (backward compatibility)")
+  void testAddActivityWithoutOutcome() {
+    Long leadId = createTestLead("user1");
+
+    Map<String, Object> activityRequest = new HashMap<>();
+    activityRequest.put("activityType", "NOTE");
+    activityRequest.put("description", "Internal note without outcome");
+    // No outcome field provided
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(activityRequest)
+        .when()
+        .post("/{id}/activities", leadId)
+        .then()
+        .statusCode(200)
+        .body("activityType", is("NOTE"))
+        .body("description", is("Internal note without outcome"))
+        .body("outcome", nullValue()) // outcome should be null when not provided
+        .body("userId", is("user1"));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("Sprint 2.1.7: GET activities should return outcome field in DTO")
+  void testGetActivitiesReturnsOutcomeInDTO() {
+    Long leadId = createTestLead("user1");
+
+    // Add activity with outcome
+    Map<String, Object> activityRequest = new HashMap<>();
+    activityRequest.put("activityType", "EMAIL");
+    activityRequest.put("description", "Sent proposal email");
+    activityRequest.put("outcome", "INFO_SENT");
+
+    given()
+        .contentType(ContentType.JSON)
+        .body(activityRequest)
+        .when()
+        .post("/{id}/activities", leadId);
+
+    // GET activities and verify outcome is present
+    given()
+        .when()
+        .get("/{id}/activities", leadId)
+        .then()
+        .statusCode(200)
+        .body("data", hasSize(greaterThanOrEqualTo(1)))
+        .body("data[0].outcome", equalTo("INFO_SENT")) // Bugfix fb9fb72e5 verification
+        .body("data[0].activityType", equalTo("EMAIL"))
+        .body("data[0].description", equalTo("Sent proposal email"));
+  }
+
+  @Test
+  @TestSecurity(
+      user = "user1",
+      roles = {"USER"})
+  @DisplayName("Sprint 2.1.7: Should support all 7 ActivityOutcome enum values")
+  void testAllActivityOutcomeValues() {
+    Long leadId = createTestLead("user1");
+
+    String[] outcomeValues = {
+      "SUCCESSFUL",
+      "UNSUCCESSFUL",
+      "NO_ANSWER",
+      "CALLBACK_REQUESTED",
+      "INFO_SENT",
+      "QUALIFIED",
+      "DISQUALIFIED"
+    };
+
+    for (String outcome : outcomeValues) {
+      Map<String, Object> activityRequest = new HashMap<>();
+      activityRequest.put("activityType", "CALL");
+      activityRequest.put("description", "Test " + outcome);
+      activityRequest.put("outcome", outcome);
+
+      given()
+          .contentType(ContentType.JSON)
+          .body(activityRequest)
+          .when()
+          .post("/{id}/activities", leadId)
+          .then()
+          .statusCode(200)
+          .body("outcome", is(outcome));
+    }
+  }
 }

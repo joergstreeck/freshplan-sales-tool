@@ -5,22 +5,15 @@ import {
   DialogContent,
   DialogActions,
   Button,
+  TextField,
+  MenuItem,
   Box,
   IconButton,
-  Card,
-  CardContent,
-  Typography,
   Alert,
+  CircularProgress,
 } from '@mui/material';
-import {
-  Close as CloseIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  Event as EventIcon,
-  LocalShipping as LocalShippingIcon,
-  ShoppingCart as ShoppingCartIcon,
-  Note as NoteIcon,
-} from '@mui/icons-material';
+import { Close as CloseIcon } from '@mui/icons-material';
+import { useActivityOutcomes } from '../../../hooks/useActivityOutcomes';
 
 interface ActivityDialogProps {
   open: boolean;
@@ -30,67 +23,106 @@ interface ActivityDialogProps {
 }
 
 /**
- * ActivityDialog - Aktivitäten protokollieren
+ * ActivityDialog - Lead-Aktivitäten protokollieren
  *
- * Sprint 2.1.6 Phase 5+ (Platzhalter)
+ * Sprint 2.1.7 - Issue #126: ActivityOutcome Integration
  *
- * Geplante Aktivitätstypen:
- * - 📧 E-Mail
- * - 📞 Anruf
- * - 📅 Termin
- * - 📦 Muster versendet
- * - 🛒 Bestellung (wichtig: Lead → Kunde Conversion!)
- * - 📝 Notiz
+ * Features:
+ * - Activity Type selection (CALL, EMAIL, MEETING, NOTE, etc.)
+ * - Description field (required)
+ * - ActivityOutcome dropdown (optional) - tracks success/follow-up needs
+ * - Single Source of Truth: Outcome values from backend API
  */
-export function ActivityDialog({ open, onClose, leadId: _leadId }: ActivityDialogProps) {
-  const [_selectedType, _setSelectedType] = useState<string | null>(null);
+export function ActivityDialog({ open, onClose, leadId, onSave }: ActivityDialogProps) {
+  const [activityType, setActivityType] = useState<string>('CALL');
+  const [description, setDescription] = useState<string>('');
+  const [outcome, setOutcome] = useState<string>('');
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch activity outcomes from backend (Single Source of Truth)
+  const { data: outcomes, isLoading: outcomesLoading } = useActivityOutcomes();
 
   const activityTypes = [
-    {
-      type: 'email',
-      icon: <EmailIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
-      label: 'E-Mail',
-      description: 'E-Mail-Kontakt mit dem Lead',
-    },
-    {
-      type: 'call',
-      icon: <PhoneIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
-      label: 'Anruf',
-      description: 'Telefonischer Kontakt',
-    },
-    {
-      type: 'meeting',
-      icon: <EventIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
-      label: 'Termin',
-      description: 'Meeting / Besuch beim Kunden',
-    },
-    {
-      type: 'sample',
-      icon: <LocalShippingIcon sx={{ fontSize: 40, color: '#94C456' }} />,
-      label: 'Muster versendet',
-      description: 'Produktproben verschickt',
-    },
-    {
-      type: 'order',
-      icon: <ShoppingCartIcon sx={{ fontSize: 40, color: '#94C456' }} />,
-      label: 'Bestellung',
-      description: 'Lead hat bestellt! (→ Conversion)',
-    },
-    {
-      type: 'note',
-      icon: <NoteIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
-      label: 'Notiz',
-      description: 'Interne Notizen / Kommentare',
-    },
+    { value: 'CALL', label: 'Anruf' },
+    { value: 'EMAIL', label: 'E-Mail' },
+    { value: 'MEETING', label: 'Meeting/Termin' },
+    { value: 'NOTE', label: 'Notiz' },
+    { value: 'SAMPLE_SENT', label: 'Muster versendet' },
+    { value: 'PROPOSAL_SENT', label: 'Angebot versendet' },
   ];
 
+  const handleSubmit = async () => {
+    if (!description.trim()) {
+      setError('Beschreibung ist erforderlich');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Build request payload
+      const payload: {
+        activityType: string;
+        description: string;
+        outcome?: string;
+      } = {
+        activityType,
+        description: description.trim(),
+      };
+
+      // Add outcome if selected
+      if (outcome) {
+        payload.outcome = outcome;
+      }
+
+      // Call backend API
+      const response = await fetch(`http://localhost:8080/api/leads/${leadId}/activities`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+
+      // Success: Reset form and close dialog
+      setActivityType('CALL');
+      setDescription('');
+      setOutcome('');
+      onSave(); // Trigger parent refresh
+      onClose();
+    } catch (err) {
+      console.error('Failed to save activity:', err);
+      setError(err instanceof Error ? err.message : 'Fehler beim Speichern der Aktivität');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    if (!isSubmitting) {
+      setActivityType('CALL');
+      setDescription('');
+      setOutcome('');
+      setError(null);
+      onClose();
+    }
+  };
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        Neue Aktivität
+        Neue Aktivität erfassen
         <IconButton
           aria-label="close"
-          onClick={onClose}
+          onClick={handleClose}
+          disabled={isSubmitting}
           sx={{
             position: 'absolute',
             right: 8,
@@ -103,56 +135,85 @@ export function ActivityDialog({ open, onClose, leadId: _leadId }: ActivityDialo
       </DialogTitle>
 
       <DialogContent dividers>
-        <Alert severity="info" sx={{ mb: 3 }}>
-          <strong>Aktivitäten-Protokollierung:</strong> Die vollständige Implementierung mit
-          spezifischen Formularen für jeden Aktivitätstyp wird in der nächsten Phase entwickelt.
-        </Alert>
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
 
-        <Typography variant="h6" gutterBottom>
-          Wähle Aktivitätstyp:
-        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Activity Type */}
+          <TextField
+            select
+            label="Aktivitätstyp"
+            value={activityType}
+            onChange={e => setActivityType(e.target.value)}
+            disabled={isSubmitting}
+            required
+            fullWidth
+          >
+            {activityTypes.map(type => (
+              <MenuItem key={type.value} value={type.value}>
+                {type.label}
+              </MenuItem>
+            ))}
+          </TextField>
 
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
-            gap: 2,
-          }}
-        >
-          {activityTypes.map(activity => (
-            <Card
-              key={activity.type}
-              sx={{
-                cursor: 'pointer',
-                border: '2px solid',
-                borderColor: 'divider',
-                transition: 'all 0.2s',
-                '&:hover': {
-                  borderColor: '#94C456',
-                  bgcolor: 'rgba(148, 196, 86, 0.05)',
-                },
-              }}
-              onClick={() => {
-                // TODO: Öffne spezifisches Formular für Aktivitätstyp
-                onClose();
-              }}
-            >
-              <CardContent sx={{ textAlign: 'center' }}>
-                <Box sx={{ mb: 1 }}>{activity.icon}</Box>
-                <Typography variant="h6" gutterBottom>
-                  {activity.label}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {activity.description}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
+          {/* Description */}
+          <TextField
+            label="Beschreibung"
+            value={description}
+            onChange={e => setDescription(e.target.value)}
+            disabled={isSubmitting}
+            required
+            multiline
+            rows={4}
+            fullWidth
+            placeholder="Was wurde besprochen? Welche Ergebnisse wurden erzielt?"
+            helperText={`${description.length}/1000 Zeichen`}
+            inputProps={{ maxLength: 1000 }}
+          />
+
+          {/* Activity Outcome (Sprint 2.1.7 Issue #126) */}
+          <TextField
+            select
+            label="Ergebnis (optional)"
+            value={outcome}
+            onChange={e => setOutcome(e.target.value)}
+            disabled={isSubmitting || outcomesLoading}
+            fullWidth
+            helperText="Hilft beim Tracking von Erfolg und Follow-up-Bedarf"
+          >
+            <MenuItem value="">
+              <em>Kein Ergebnis ausgewählt</em>
+            </MenuItem>
+            {outcomesLoading ? (
+              <MenuItem disabled>
+                <CircularProgress size={20} sx={{ mr: 1 }} />
+                Lade...
+              </MenuItem>
+            ) : (
+              outcomes?.map(outcome => (
+                <MenuItem key={outcome.value} value={outcome.value}>
+                  {outcome.label}
+                </MenuItem>
+              ))
+            )}
+          </TextField>
         </Box>
       </DialogContent>
 
       <DialogActions>
-        <Button onClick={onClose}>Abbrechen</Button>
+        <Button onClick={handleClose} disabled={isSubmitting}>
+          Abbrechen
+        </Button>
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={isSubmitting || !description.trim()}
+        >
+          {isSubmitting ? <CircularProgress size={20} /> : 'Speichern'}
+        </Button>
       </DialogActions>
     </Dialog>
   );

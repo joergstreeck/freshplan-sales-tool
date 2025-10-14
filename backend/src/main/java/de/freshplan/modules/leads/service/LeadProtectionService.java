@@ -5,6 +5,7 @@ import de.freshplan.modules.leads.domain.LeadStage;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import org.jboss.logging.Logger;
 
@@ -18,6 +19,10 @@ public class LeadProtectionService {
   private static final Logger LOG = Logger.getLogger(LeadProtectionService.class);
 
   @Inject UserLeadSettingsService settingsService;
+
+  // Sprint 2.1.7 Issue #127: Clock Injection Standard
+  // Clock für testbare Zeit-Logik (injected via ClockProvider)
+  @Inject Clock clock;
 
   /**
    * Check if a status transition is valid according to the state machine.
@@ -103,7 +108,7 @@ public class LeadProtectionService {
       return -1;
     }
 
-    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now(clock);
     LocalDateTime protectionEnd = lead.getProtectionUntil();
 
     if (protectionEnd == null || now.isAfter(protectionEnd)) {
@@ -125,7 +130,7 @@ public class LeadProtectionService {
       return -1; // No transitions while clock is stopped
     }
 
-    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now(clock);
 
     switch (lead.status) {
       case ACTIVE:
@@ -392,7 +397,7 @@ public class LeadProtectionService {
       return false; // Warning already sent
     }
 
-    LocalDateTime now = LocalDateTime.now();
+    LocalDateTime now = LocalDateTime.now(clock);
     LocalDateTime warningThreshold =
         lead.progressDeadline.minusDays(PROGRESS_WARNING_DAYS_BEFORE_DEADLINE);
 

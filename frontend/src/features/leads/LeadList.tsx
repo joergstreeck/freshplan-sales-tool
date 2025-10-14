@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { listLeads } from './api';
 import type { Lead, Problem } from './types';
@@ -11,6 +12,7 @@ import StopTheClockDialog from './StopTheClockDialog';
 import LeadActivityTimeline from './LeadActivityTimeline';
 import PreClaimBadge from './components/PreClaimBadge';
 import { useAuth } from '../../hooks/useAuth';
+import { generateLeadUrl } from '../../utils/slugify';
 
 export default function LeadList() {
   const { t } = useTranslation('leads');
@@ -107,7 +109,22 @@ export default function LeadList() {
               {/* Header mit Name, Score und Actions */}
               <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                 <Box flex={1}>
-                  <Typography variant="h6">{lead.companyName || lead.name}</Typography>
+                  <Link
+                    to={generateLeadUrl(lead.companyName || lead.name || 'lead', Number(lead.id))}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        '&:hover': {
+                          color: 'primary.main',
+                          textDecoration: 'underline',
+                        },
+                      }}
+                    >
+                      {lead.companyName || lead.name}
+                    </Typography>
+                  </Link>
                   {lead.email && (
                     <Typography variant="body2" color="text.secondary">
                       {lead.email}
@@ -123,7 +140,10 @@ export default function LeadList() {
                 {/* Stop-the-Clock Button (Admin/Manager only) */}
                 {canStopClock && (
                   <IconButton
-                    onClick={() => handleStopClock(lead)}
+                    onClick={e => {
+                      e.stopPropagation();
+                      handleStopClock(lead);
+                    }}
                     color={lead.clockStoppedAt ? 'success' : 'warning'}
                     title={lead.clockStoppedAt ? 'Schutzfrist fortsetzen' : 'Schutzfrist pausieren'}
                   >
@@ -133,7 +153,10 @@ export default function LeadList() {
 
                 {/* Timeline Toggle */}
                 <IconButton
-                  onClick={() => setShowTimeline(showTimeline === lead.id ? null : lead.id)}
+                  onClick={e => {
+                    e.stopPropagation();
+                    setShowTimeline(showTimeline === lead.id ? null : lead.id);
+                  }}
                   color={showTimeline === lead.id ? 'primary' : 'default'}
                   title="Aktivitäten anzeigen"
                 >
