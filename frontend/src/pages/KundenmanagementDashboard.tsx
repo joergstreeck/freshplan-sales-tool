@@ -142,66 +142,55 @@ export function KundenmanagementDashboard() {
         {/* KPI Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, backgroundColor: theme.palette.secondary.main }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
                 1.247
               </Typography>
-              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
+              <Typography variant="body2" color="text.secondary">
                 Aktive Kunden
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.primary.main }} />
-                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
-                  +67 diesen Monat
-                </Typography>
-              </Box>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                +67 diesen Monat
+              </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, backgroundColor: theme.palette.primary.main }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
                 €2.3M
               </Typography>
-              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
+              <Typography variant="body2" color="text.secondary">
                 Pipeline Wert
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.secondary.main }} />
-                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
-                  42 Opportunities
-                </Typography>
-              </Box>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                42 Opportunities
+              </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, backgroundColor: theme.palette.secondary.main }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
                 89%
               </Typography>
-              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
+              <Typography variant="body2" color="text.secondary">
                 Kundenzufriedenheit
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
-                  NPS Score: 72
-                </Typography>
-              </Box>
+              <Typography variant="caption" color="text.secondary">
+                NPS Score: 72
+              </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, backgroundColor: theme.palette.primary.main }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
                 €145k
               </Typography>
-              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
+              <Typography variant="body2" color="text.secondary">
                 MRR
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.secondary.main }} />
-                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
-                  +12% zum Vormonat
-                </Typography>
-              </Box>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                +12% zum Vormonat
+              </Typography>
             </Paper>
           </Grid>
         </Grid>

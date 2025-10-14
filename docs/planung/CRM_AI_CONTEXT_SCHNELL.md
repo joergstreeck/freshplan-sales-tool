@@ -7,6 +7,83 @@
 
 ---
 
+## ⚡ QUICK FACTS (30 Sekunden KI-Onboarding)
+
+### Was ist dieses Projekt?
+**B2B-Food-CRM für Gastronomiebetriebe** (Restaurants, Hotels, Catering).
+**Fokus:** Multi-Contact-Workflows (CHEF/BUYER), Seasonal-Intelligence, Territory-Management.
+**Team-Größe:** 5-50 Nutzer (internes Tool, keine Microservices!)
+
+### Tech-Stack (Kern)
+- **Backend:** Quarkus 3.x (Java 21), PostgreSQL 15+
+- **Frontend:** React 18, TypeScript, MUI v7
+- **Events:** PostgreSQL LISTEN/NOTIFY (kein Kafka!)
+- **Security:** Keycloak OIDC + RLS + ABAC
+
+### Besonderheiten (wichtig für neue KIs!)
+- ❌ **KEIN Gebietsschutz!** (Territory = Datenraum, nicht Verkaufsgebiet)
+- ✅ **Multi-Contact-B2B** (CHEF + BUYER parallel)
+- ✅ **Seasonal-Autoscaling** (Spargel 2x, Oktoberfest 4x, Weihnachten 5x)
+- ✅ **Cost-Efficiency** (5-50 Nutzer, keine Over-Engineering!)
+
+### Migrations-Hygiene (KRITISCH!)
+- **V10xxx** = Production-Relevant (V10013-V10028)
+- **V90xxx** = DEV-SEED Data (V90001-V90005)
+- **NIEMALS Nummern hardcoden!** `./scripts/get-next-migration.sh` nutzen!
+
+### Latest Sprint
+- **Sprint 2.1.7.0 (14.10.2025):** Design System Migration + Layout System Cleanup ✅ IN PROGRESS
+- **Sprint 2.1.7 (14.10.2025):** ActivityOutcome Enum + Opportunity Backend + Customer Number Sequence ✅ COMPLETE
+
+---
+
+## 🚨 COMMON PITFALLS (Was neue KIs oft falsch machen)
+
+### ❌ Pitfall 1: "Territory = Gebietsschutz"
+**Falsch:** "User in Bayern darf nur Bayern-Leads sehen"
+**Richtig:** "Territory = Datenraum für RLS, aber Lead-Management deutschland-weit!"
+
+### ❌ Pitfall 2: "Microservices verwenden"
+**Falsch:** "Lass uns Lead-Service, Customer-Service, Opportunity-Service machen"
+**Richtig:** "Modular-Monolith! 5-50 Nutzer brauchen KEINE Microservices!"
+
+### ❌ Pitfall 3: "Migrations-Nummern selbst vergeben"
+**Falsch:** `V10029__my_new_migration.sql`
+**Richtig:** `MIGRATION=$(./scripts/get-next-migration.sh | tail -1)`
+
+### ❌ Pitfall 4: "PostgreSQL ENUM Type nutzen"
+**Falsch:** `CREATE TYPE business_type AS ENUM (...)`
+**Richtig:** `VARCHAR(30) + CHECK CONSTRAINT` (JPA-Standard, einfache Schema-Evolution)
+
+### ❌ Pitfall 5: "localStorage in Artifacts verwenden"
+**Falsch:** `localStorage.setItem('key', value)` in React Artifacts
+**Richtig:** `useState()` - localStorage funktioniert NICHT in Claude.ai Artifacts!
+
+---
+
+## 🚨 KNOWN GAPS (Stand: 2025-10-14)
+
+**Wichtige fehlende Features, die neue KIs kennen sollten:**
+
+### Frontend-UI Gaps
+- ❌ **Opportunities Frontend UI** - Backend V10026 ready (lead_id/customer_id FKs), UI fehlt komplett
+- ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant, nicht implementiert)
+
+### Layout & Design
+- ❌ **SmartLayout** - Component existiert (Auto-Detection), aber 0 Pages nutzen es (MainLayoutV2 ist Standard)
+
+### Business Features
+- ⏳ **Team Management** - Kollaboratoren + Lead-Transfer (in Planung, nicht implementiert)
+- ⏳ **Advanced Seasonal Rules** - Spargel/Oktoberfest/Weihnachten (Basic Rules vorhanden, Advanced Logic fehlt)
+
+### Infrastructure
+- ⏳ **KEDA Autoscaling** - Territory + Seasonal-aware (99% Planning, Deployment pending)
+- ⏳ **Production Monitoring** - Prometheus + Grafana Dashboards (Setup pending)
+
+**Hinweis:** Diese Gaps sind normal! Backend-First-Development ist unsere Strategie. Frontend-UIs folgen, wenn Backend stabil ist.
+
+---
+
 ## 📑 INHALTSVERZEICHNIS
 
 ### 🚀 QUICK START (für neue KI-Instanzen)
@@ -59,10 +136,20 @@
 - ✅ **Migration Safety System 3-Layer** - Pre-Commit Hook, GitHub Workflow, Enhanced get-next-migration.sh
 - ✅ **CI optimiert** - 24min → 7min (70% schneller) - JUnit parallel (Surefire gesteuert), ValidatorFactory @BeforeAll
 
+**FRONTEND & DESIGN SYSTEM:**
+- ✅ **FreshFoodz CI V2 100% Compliance** - Sprint 2.1.7.0 (14.10.2025)
+  - 97 Design Violations behoben (47 Font + 45 Color + 5 Language)
+  - MainLayoutV2 mit maxWidth prop auf allen 28 Pages produktiv
+  - Container-Cleanup: 22× doppelte Container entfernt (-110 LOC)
+- ✅ **MUI Theme V2** - Antonio Bold (h1-h6) + Poppins (body) automatisch
+- ✅ **Design Tokens zentral** - Nur #94C456 Primary + #004F7B Secondary via theme.palette.*
+- ✅ **Design-First Development** - 100% Deutsch, keine hardcoded Styles
+
 **CURRENT STATUS:**
 - 📊 **Tests:** 60/60 Backend GREEN (100%), Frontend GREEN
-- 📦 **Migrations:** V10013-V10028 deployed (Production-Relevant), V90001-V90003 (DEV-SEED)
-- 🚀 **Latest:** Sprint 2.1.7 COMPLETE (14.10.2025) - PR #139 READY FOR MERGE
+- 📦 **Migrations:** V10013-V10028 deployed (Production-Relevant), V90001-V90005 (DEV-SEED)
+- 🚀 **Latest:** Sprint 2.1.7.0 (Design System Migration) ✅ COMPLETE (14.10.2025)
+- 🚀 **Previous:** Sprint 2.1.7 (ActivityOutcome + Opportunity Backend) ✅ COMPLETE (14.10.2025)
 
 ---
 
@@ -148,28 +235,44 @@
 
 #### 🔍 MODUL 02 - NEUKUNDENGEWINNUNG (Lead-Management)
 **Purpose:** Lead-Capture + Multi-Contact-Workflows + Sample-Management
-**Status:** ✅ 100% IMPLEMENTED - Lead-Management Complete + Multi-Contact + Lead Scoring + Security
-**PRs:** #103, #105, #110, #111, #122, #123, #131, #132, #133, #134, #135, #137, #139
 
-**Delivered Features (OPERATIONAL):**
-- **Frontend MVP:** Lead List + Create Dialog, Feature-Flag VITE_FEATURE_LEADGEN
-- **Lead-Normalisierung:** email lowercase, phone E.164, company ohne Rechtsform-Suffixe
-- **Idempotenz:** 24h TTL, SHA-256 Hashing, atomic Upsert (ON CONFLICT)
-- **BusinessType Harmonization:** Lead + Customer unified, V263/V264 Migrations, Single Source of Truth Pattern
-- **Bestandsleads-Migration:** Batch-Import, Backdating, Lead→Customer Conversion
-- **Lead Scoring System:** 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (268 LOC)
-- **Multi-Contact Support:** lead_contacts Tabelle (26 Felder), 100% Customer Parity, Backward Compatibility Trigger V10017
-- **ActivityOutcome Enum:** V10027 (7 values), Frontend Integration (ActivityDialog.tsx)
-- **Opportunity Backend:** V10026 (lead_id/customer_id FKs), Lead→Opportunity→Customer workflows ready
-- **Enterprise Security:** 5 Layer (Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure Prevention, HTTP Headers)
-- **Migration Safety:** 3-Layer (Pre-Commit Hook, GitHub Workflow, Enhanced get-next-migration.sh)
+**Backend: ✅ 100% IMPLEMENTED**
+- Lead CRUD (Create, Read, Update, Delete) ✅
+- Multi-Contact Support (lead_contacts - 26 Felder) ✅
+- Lead Scoring System (0-100 Score, 4 Dimensionen) ✅
+- Opportunity Backend Integration (V10026 FKs) ✅
+- ActivityOutcome Enum (V10027 - 7 values) ✅
+- Customer Number Sequence (V10028 - race-condition-safe) ✅
+- Enterprise Security (5-Layer) ✅
+- Lead-Normalisierung (email/phone/company) ✅
+- Idempotency Service (24h TTL, SHA-256) ✅
+- Bestandsleads-Migration APIs ✅
+
+**Frontend: 🟡 85% IMPLEMENTED**
+- Lead List + Create Dialog ✅
+- ActivityDialog (14 Tests GREEN) ✅
+- Lead Scoring UI ✅
+- **Opportunities UI ❌ FEHLT!** (Backend V10026 ready, UI pending)
+- Progressive Profiling ⏳ (geplant)
+
+**Tests & Qualität:**
+- Backend: 60/60 Tests GREEN (100%) ✅
+  - 31/31 LeadResourceTest GREEN
+  - 10/10 Security Tests GREEN
+  - 9/9 FollowUpAutomationServiceTest GREEN
+- Frontend: ActivityDialog 14 Tests GREEN ✅
+- CI: 24min → 7min (70% schneller) ✅
 
 **Production Patterns:**
-- Security (23 Tests), Performance (P95 <7ms), Event (AFTER_COMMIT Pattern)
+- Security (23 Tests), Performance (P95 <7ms), Event (AFTER_COMMIT)
 - N+1 Query Fix (7x faster: 850ms→120ms)
 - Score Caching (90% fewer DB writes)
 
-**Tests:** 60/60 Backend GREEN (100%), 31/31 LeadResourceTest GREEN, 10/10 Security Tests GREEN
+**Gap-Status:** Backend complete, Frontend 85% (Opportunities UI fehlt)
+**Next:** Sprint 2.1.7.1 - Opportunities Frontend UI Integration
+
+**PRs:** #103, #105, #110, #111, #122, #123, #131, #132, #133, #134, #135, #137, #139
+**Migrations:** V10013-V10028 (Production), V90003-V90005 (DEV-SEED)
 **Key-Features:** KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B + Lead Scoring + Enterprise Security
 
 #### 👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations)
