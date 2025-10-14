@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor, fireEvent } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { ActivityDialog } from '../ActivityDialog';
@@ -98,7 +98,8 @@ describe('ActivityDialog', () => {
   });
 
   it('allows selecting activity type', async () => {
-    const user = userEvent.setup();
+    // Setup user interaction (prefixed with _ because not used in this specific test)
+    const _user = userEvent.setup();
     render(
       <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
     );
