@@ -43,7 +43,7 @@ export function CockpitPageV2() {
   return (
     <ThemeProvider theme={freshfoodzTheme}>
       <CssBaseline />
-      <MainLayoutV2>
+      <MainLayoutV2 maxWidth="full">
         <CockpitViewV2 />
       </MainLayoutV2>
     </ThemeProvider>

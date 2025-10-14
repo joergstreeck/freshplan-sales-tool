@@ -93,7 +93,7 @@ export const AuditAdminPage: React.FC = () => {
   };
 
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <Box>
         {/* Header */}
         <Paper sx={{ p: 2, mb: 3 }}>
