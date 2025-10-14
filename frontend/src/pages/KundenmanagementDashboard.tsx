@@ -58,10 +58,10 @@ export function KundenmanagementDashboard() {
     {
       title: 'Verkaufschancen',
       description: 'Verfolgen Sie aktive Opportunities',
-      icon: <TrendingUpIcon sx={{ fontSize: 48, color: theme.palette.warning.main }} />,
+      icon: <TrendingUpIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/kundenmanagement/opportunities',
       stats: '€2.3M Pipeline',
-      color: theme.palette.warning.main,
+      color: theme.palette.primary.main,
     },
     {
       title: 'Aktivitäten',
@@ -158,7 +158,7 @@ export function KundenmanagementDashboard() {
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, backgroundColor: theme.palette.warning.main }}>
+            <Paper sx={{ p: 3, backgroundColor: theme.palette.primary.main }}>
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
                 €2.3M
               </Typography>
@@ -166,7 +166,7 @@ export function KundenmanagementDashboard() {
                 Pipeline Wert
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.primary.main }} />
+                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.secondary.main }} />
                 <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
                   42 Opportunities
                 </Typography>
@@ -174,7 +174,7 @@ export function KundenmanagementDashboard() {
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, backgroundColor: theme.palette.info.main }}>
+            <Paper sx={{ p: 3, backgroundColor: theme.palette.secondary.main }}>
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
                 89%
               </Typography>
@@ -197,7 +197,7 @@ export function KundenmanagementDashboard() {
                 MRR
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.success.dark }} />
+                <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.secondary.main }} />
                 <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
                   +12% zum Vormonat
                 </Typography>
@@ -301,7 +301,7 @@ export function KundenmanagementDashboard() {
                           {index + 1}
                         </Typography>
                         <StarIcon
-                          sx={{ fontSize: 20, color: index === 0 ? theme.palette.warning.main : theme.palette.grey[300], ml: 1 }}
+                          sx={{ fontSize: 20, color: index === 0 ? theme.palette.primary.main : theme.palette.grey[300], ml: 1 }}
                         />
                       </Box>
                       <ListItemText
@@ -374,7 +374,7 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Typography variant="h5" sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}>
+                    <Typography variant="h5" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
                       18
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -384,7 +384,7 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Typography variant="h5" sx={{ color: theme.palette.info.main, fontWeight: 'bold' }}>
+                    <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
                       96%
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
