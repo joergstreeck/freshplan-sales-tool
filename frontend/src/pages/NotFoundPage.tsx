@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Container } from '@mui/material';
+import { Box, Typography, Button, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HomeIcon from '@mui/icons-material/Home';
@@ -6,10 +6,11 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 
 export function NotFoundPage() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="sm">
+    <MainLayoutV2 maxWidth="sm">
+      <Box sx={{ py: 4 }}>
         <Box
           sx={{
             display: 'flex',
@@ -21,14 +22,14 @@ export function NotFoundPage() {
             gap: 3,
           }}
         >
-          <ErrorOutlineIcon sx={{ fontSize: 100, color: '#94C456' }} />
+          <ErrorOutlineIcon sx={{ fontSize: 100, color: theme.palette.primary.main }} />
 
           <Typography
             variant="h1"
             sx={{
               fontSize: '6rem',
               fontFamily: 'Antonio, sans-serif',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
               fontWeight: 'bold',
             }}
           >
@@ -39,7 +40,7 @@ export function NotFoundPage() {
             variant="h4"
             sx={{
               fontFamily: 'Antonio, sans-serif',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
               mb: 2,
             }}
           >
@@ -57,8 +58,8 @@ export function NotFoundPage() {
               startIcon={<HomeIcon />}
               onClick={() => navigate('/')}
               sx={{
-                backgroundColor: '#94C456',
-                '&:hover': { backgroundColor: '#7BA347' },
+                backgroundColor: theme.palette.primary.main,
+                '&:hover': { backgroundColor: theme.palette.primary.dark },
               }}
             >
               Zur Startseite
@@ -68,10 +69,10 @@ export function NotFoundPage() {
               variant="outlined"
               onClick={() => navigate(-1)}
               sx={{
-                borderColor: '#004F7B',
-                color: '#004F7B',
+                borderColor: theme.palette.secondary.main,
+                color: theme.palette.secondary.main,
                 '&:hover': {
-                  borderColor: '#003A5C',
+                  borderColor: theme.palette.secondary.dark,
                   backgroundColor: 'rgba(0, 79, 123, 0.04)',
                 },
               }}
@@ -80,7 +81,7 @@ export function NotFoundPage() {
             </Button>
           </Box>
         </Box>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

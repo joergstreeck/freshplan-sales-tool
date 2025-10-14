@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -11,6 +10,7 @@ import {
   Link,
   Chip,
   LinearProgress,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -42,12 +42,13 @@ interface SystemToolCard {
 
 export function SystemDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const systemTools: SystemToolCard[] = [
     {
       title: 'API Status',
       description: 'Service-Health Monitoring und Endpoint-Überwachung in Echtzeit',
-      icon: <ApiIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <ApiIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/admin/system/api-test',
       status: 'online',
       metrics: [
@@ -60,7 +61,7 @@ export function SystemDashboard() {
     {
       title: 'System-Logs',
       description: 'Echtzeit-Überwachung aller Systemereignisse und Fehler',
-      icon: <StorageIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <StorageIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/system/logs',
       status: 'online',
       metrics: [
@@ -73,7 +74,7 @@ export function SystemDashboard() {
     {
       title: 'Performance',
       description: 'Detaillierte Performance-Metriken und Optimierungsvorschläge',
-      icon: <SpeedIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <SpeedIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/system/performance',
       status: 'warning',
       metrics: [
@@ -86,7 +87,7 @@ export function SystemDashboard() {
     {
       title: 'Backup & Recovery',
       description: 'Datensicherung, Snapshots und Disaster Recovery Management',
-      icon: <BackupIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <BackupIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/system/backup',
       status: 'online',
       metrics: [
@@ -101,9 +102,9 @@ export function SystemDashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'online':
-        return <CheckCircleIcon sx={{ fontSize: 20, color: '#94C456' }} />;
+        return <CheckCircleIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />;
       case 'warning':
-        return <WarningIcon sx={{ fontSize: 20, color: '#FFA726' }} />;
+        return <WarningIcon sx={{ fontSize: 20, color: theme.palette.warning.main }} />;
       default:
         return null;
     }
@@ -112,19 +113,19 @@ export function SystemDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'online':
-        return '#94C456';
+        return theme.palette.primary.main;
       case 'warning':
-        return '#FFA726';
+        return theme.palette.warning.main;
       case 'offline':
-        return '#EF5350';
+        return theme.palette.error.main;
       default:
-        return '#757575';
+        return theme.palette.grey[600];
     }
   };
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Breadcrumbs */}
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 3 }}>
           <Link
@@ -133,7 +134,7 @@ export function SystemDashboard() {
             onClick={() => navigate('/admin')}
             sx={{
               textDecoration: 'none',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
               '&:hover': { textDecoration: 'underline' },
             }}
           >
@@ -147,7 +148,7 @@ export function SystemDashboard() {
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate('/admin')}
-            sx={{ color: '#004F7B' }}
+            sx={{ color: theme.palette.secondary.main }}
           >
             Zurück
           </Button>
@@ -158,7 +159,7 @@ export function SystemDashboard() {
                 mb: 1,
                 fontFamily: 'Antonio, sans-serif',
                 fontWeight: 'bold',
-                color: '#004F7B',
+                color: theme.palette.secondary.main,
               }}
             >
               System Management
@@ -170,10 +171,10 @@ export function SystemDashboard() {
         </Box>
 
         {/* System Health Overview */}
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa' }}>
+        <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50] }}>
           <Typography
             variant="h6"
-            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
           >
             System Health Overview
           </Typography>
@@ -183,8 +184,8 @@ export function SystemDashboard() {
                 Overall Status
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CheckCircleIcon sx={{ color: '#94C456' }} />
-                <Typography variant="h6" sx={{ color: '#94C456' }}>
+                <CheckCircleIcon sx={{ color: theme.palette.primary.main }} />
+                <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>
                   Operational
                 </Typography>
               </Box>
@@ -216,9 +217,9 @@ export function SystemDashboard() {
                   sx={{
                     height: 6,
                     borderRadius: 1,
-                    backgroundColor: '#e0e0e0',
+                    backgroundColor: theme.palette.grey[300],
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#94C456',
+                      backgroundColor: theme.palette.primary.main,
                     },
                   }}
                 />
@@ -270,7 +271,7 @@ export function SystemDashboard() {
                     sx={{
                       mb: 1,
                       fontFamily: 'Antonio, sans-serif',
-                      color: '#004F7B',
+                      color: theme.palette.secondary.main,
                     }}
                   >
                     {tool.title}
@@ -294,9 +295,9 @@ export function SystemDashboard() {
                                 fontWeight: 'medium',
                                 color:
                                   metric.trend === 'up'
-                                    ? '#94C456'
+                                    ? theme.palette.primary.main
                                     : metric.trend === 'down'
-                                      ? '#EF5350'
+                                      ? theme.palette.error.main
                                       : 'inherit',
                               }}
                             >
@@ -318,8 +319,8 @@ export function SystemDashboard() {
                     fullWidth
                     variant="contained"
                     sx={{
-                      backgroundColor: '#94C456',
-                      '&:hover': { backgroundColor: '#7BA347' },
+                      backgroundColor: theme.palette.primary.main,
+                      '&:hover': { backgroundColor: theme.palette.primary.dark },
                     }}
                   >
                     Dashboard öffnen
@@ -329,7 +330,7 @@ export function SystemDashboard() {
             </Grid>
           ))}
         </Grid>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import {
   LinearProgress,
   Alert,
   Stack,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -51,13 +51,14 @@ interface IntegrationCard {
 
 export function IntegrationsDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const integrations: IntegrationCard[] = [
     {
       id: 'ki',
       title: 'KI-Anbindungen',
       description: 'ChatGPT, Claude und andere KI-Services für intelligente Automatisierung',
-      icon: <SmartToyIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <SmartToyIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/admin/integrationen/ki',
       status: 'connected',
       provider: 'OpenAI GPT-4',
@@ -71,7 +72,7 @@ export function IntegrationsDashboard() {
       id: 'xentral',
       title: 'Xentral ERP',
       description: 'Warenwirtschaft, Buchhaltung und Auftragsabwicklung',
-      icon: <InventoryIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <InventoryIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/integrationen/xentral',
       status: 'connected',
       provider: 'Xentral Cloud',
@@ -86,7 +87,7 @@ export function IntegrationsDashboard() {
       id: 'email',
       title: 'E-Mail Services',
       description: 'SMTP, Microsoft 365 und Gmail Integration für Benachrichtigungen',
-      icon: <EmailIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <EmailIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/integrationen/email',
       status: 'warning',
       provider: 'Microsoft 365',
@@ -99,7 +100,7 @@ export function IntegrationsDashboard() {
       id: 'payment',
       title: 'Payment Provider',
       description: 'Stripe, PayPal und andere Zahlungsdienstleister',
-      icon: <PaymentIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <PaymentIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/integrationen/payment',
       status: 'disconnected',
       provider: 'Nicht konfiguriert',
@@ -108,7 +109,7 @@ export function IntegrationsDashboard() {
       id: 'webhooks',
       title: 'Webhooks',
       description: 'Event-basierte Kommunikation mit externen Systemen',
-      icon: <WebhookIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <WebhookIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/integrationen/webhooks',
       status: 'syncing',
       provider: 'Webhook Manager',
@@ -119,7 +120,7 @@ export function IntegrationsDashboard() {
       id: 'new',
       title: 'Neue Integration',
       description: 'Weitere Services und APIs anbinden',
-      icon: <AddCircleIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <AddCircleIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/admin/integrationen/neu',
       status: 'disconnected',
     },
@@ -128,14 +129,14 @@ export function IntegrationsDashboard() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'connected':
-        return <CheckCircleIcon sx={{ fontSize: 20, color: '#94C456' }} />;
+        return <CheckCircleIcon sx={{ fontSize: 20, color: theme.palette.primary.main }} />;
       case 'warning':
-        return <WarningIcon sx={{ fontSize: 20, color: '#FFA726' }} />;
+        return <WarningIcon sx={{ fontSize: 20, color: theme.palette.warning.main }} />;
       case 'disconnected':
-        return <ErrorIcon sx={{ fontSize: 20, color: '#EF5350' }} />;
+        return <ErrorIcon sx={{ fontSize: 20, color: theme.palette.error.main }} />;
       case 'syncing':
         return (
-          <SyncIcon sx={{ fontSize: 20, color: '#29B6F6', animation: 'spin 2s linear infinite' }} />
+          <SyncIcon sx={{ fontSize: 20, color: theme.palette.info.main, animation: 'spin 2s linear infinite' }} />
         );
       default:
         return null;
@@ -145,15 +146,15 @@ export function IntegrationsDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'connected':
-        return '#94C456';
+        return theme.palette.primary.main;
       case 'warning':
-        return '#FFA726';
+        return theme.palette.warning.main;
       case 'disconnected':
-        return '#EF5350';
+        return theme.palette.error.main;
       case 'syncing':
-        return '#29B6F6';
+        return theme.palette.info.main;
       default:
-        return '#757575';
+        return theme.palette.grey[600];
     }
   };
 
@@ -177,7 +178,7 @@ export function IntegrationsDashboard() {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Breadcrumbs */}
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 3 }}>
           <Link
@@ -186,7 +187,7 @@ export function IntegrationsDashboard() {
             onClick={() => navigate('/admin')}
             sx={{
               textDecoration: 'none',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
               '&:hover': { textDecoration: 'underline' },
             }}
           >
@@ -200,7 +201,7 @@ export function IntegrationsDashboard() {
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate('/admin')}
-            sx={{ color: '#004F7B' }}
+            sx={{ color: theme.palette.secondary.main }}
           >
             Zurück
           </Button>
@@ -211,7 +212,7 @@ export function IntegrationsDashboard() {
                 mb: 1,
                 fontFamily: 'Antonio, sans-serif',
                 fontWeight: 'bold',
-                color: '#004F7B',
+                color: theme.palette.secondary.main,
               }}
             >
               Integrationen Management
@@ -223,10 +224,10 @@ export function IntegrationsDashboard() {
         </Box>
 
         {/* Status Overview */}
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa' }}>
+        <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50] }}>
           <Typography
             variant="h6"
-            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
           >
             Integrations-Status
           </Typography>
@@ -236,7 +237,7 @@ export function IntegrationsDashboard() {
                 Verbundene Services
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1 }}>
-                <Typography variant="h4" sx={{ color: '#94C456' }}>
+                <Typography variant="h4" sx={{ color: theme.palette.primary.main }}>
                   {connectedCount}
                 </Typography>
                 <Typography variant="body1" color="text.secondary">
@@ -255,9 +256,9 @@ export function IntegrationsDashboard() {
                   sx={{
                     height: 8,
                     borderRadius: 1,
-                    backgroundColor: '#e0e0e0',
+                    backgroundColor: theme.palette.grey[300],
                     '& .MuiLinearProgress-bar': {
-                      backgroundColor: '#94C456',
+                      backgroundColor: theme.palette.primary.main,
                     },
                   }}
                 />
@@ -299,7 +300,7 @@ export function IntegrationsDashboard() {
                   flexDirection: 'column',
                   transition: 'all 0.2s',
                   cursor: 'pointer',
-                  border: integration.id === 'new' ? '2px dashed #94C456' : 'none',
+                  border: integration.id === 'new' ? `2px dashed ${theme.palette.primary.main}` : 'none',
                   '&:hover': {
                     boxShadow: 4,
                     transform: 'translateY(-2px)',
@@ -332,7 +333,7 @@ export function IntegrationsDashboard() {
                     sx={{
                       mb: 1,
                       fontFamily: 'Antonio, sans-serif',
-                      color: '#004F7B',
+                      color: theme.palette.secondary.main,
                     }}
                   >
                     {integration.title}
@@ -396,12 +397,12 @@ export function IntegrationsDashboard() {
                     fullWidth
                     variant={integration.id === 'new' ? 'outlined' : 'contained'}
                     sx={{
-                      backgroundColor: integration.id === 'new' ? 'transparent' : '#94C456',
-                      borderColor: '#94C456',
-                      color: integration.id === 'new' ? '#94C456' : 'white',
+                      backgroundColor: integration.id === 'new' ? 'transparent' : theme.palette.primary.main,
+                      borderColor: theme.palette.primary.main,
+                      color: integration.id === 'new' ? theme.palette.primary.main : 'white',
                       '&:hover': {
                         backgroundColor:
-                          integration.id === 'new' ? 'rgba(148, 196, 86, 0.1)' : '#7BA347',
+                          integration.id === 'new' ? 'rgba(148, 196, 86, 0.1)' : theme.palette.primary.dark,
                       },
                     }}
                   >
@@ -420,7 +421,7 @@ export function IntegrationsDashboard() {
             to { transform: rotate(360deg); }
           }
         `}</style>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }
