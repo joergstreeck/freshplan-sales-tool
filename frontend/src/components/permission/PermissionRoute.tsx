@@ -4,6 +4,7 @@ import { Box, Typography, Paper, Button } from '@mui/material';
 import { Lock as LockIcon, ArrowBack as ArrowBackIcon } from '@mui/icons-material';
 import { usePermissions } from '../../contexts/PermissionContext';
 import { useAuth } from '../../contexts/AuthContext';
+import { MainLayoutV2 } from '../layout/MainLayoutV2';
 
 /**
  * Permission-aware routing components for FC-009.
@@ -121,51 +122,53 @@ interface AccessDeniedDefaultProps {
 
 const AccessDeniedDefault: React.FC<AccessDeniedDefaultProps> = ({ permission }) => {
   return (
-    <Box
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      minHeight="calc(100vh - 200px)"
-      p={3}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          textAlign: 'center',
-          maxWidth: 500,
-          width: '100%',
-        }}
+    <MainLayoutV2>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="calc(100vh - 200px)"
+        p={3}
       >
-        <LockIcon
+        <Paper
+          elevation={3}
           sx={{
-            fontSize: 64,
-            color: 'error.main',
-            mb: 2,
+            p: 4,
+            textAlign: 'center',
+            maxWidth: 500,
+            width: '100%',
           }}
-        />
-
-        <Typography variant="h5" gutterBottom color="error">
-          Zugriff verweigert
-        </Typography>
-
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Sie haben keine Berechtigung, auf diese Seite zuzugreifen.
-        </Typography>
-
-        <Typography variant="body2" color="text.secondary" paragraph>
-          Benötigte Berechtigung: <code>{permission}</code>
-        </Typography>
-
-        <Button
-          variant="contained"
-          startIcon={<ArrowBackIcon />}
-          onClick={() => window.history.back()}
-          sx={{ mt: 2 }}
         >
-          Zurück
-        </Button>
-      </Paper>
-    </Box>
+          <LockIcon
+            sx={{
+              fontSize: 64,
+              color: 'error.main',
+              mb: 2,
+            }}
+          />
+
+          <Typography variant="h5" gutterBottom color="error">
+            Zugriff verweigert
+          </Typography>
+
+          <Typography variant="body1" color="text.secondary" paragraph>
+            Sie haben keine Berechtigung, auf diese Seite zuzugreifen.
+          </Typography>
+
+          <Typography variant="body2" color="text.secondary" paragraph>
+            Benötigte Berechtigung: <code>{permission}</code>
+          </Typography>
+
+          <Button
+            variant="contained"
+            startIcon={<ArrowBackIcon />}
+            onClick={() => window.history.back()}
+            sx={{ mt: 2 }}
+          >
+            Zurück
+          </Button>
+        </Paper>
+      </Box>
+    </MainLayoutV2>
   );
 };
