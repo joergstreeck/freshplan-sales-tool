@@ -28,9 +28,7 @@ export function NotFoundPage() {
             variant="h1"
             sx={{
               fontSize: '6rem',
-              fontFamily: 'Antonio, sans-serif',
-              color: theme.palette.secondary.main,
-              fontWeight: 'bold',
+              color: 'secondary.main',
             }}
           >
             404
@@ -39,8 +37,7 @@ export function NotFoundPage() {
           <Typography
             variant="h4"
             sx={{
-              fontFamily: 'Antonio, sans-serif',
-              color: theme.palette.secondary.main,
+              color: 'secondary.main',
               mb: 2,
             }}
           >
@@ -67,15 +64,8 @@ export function NotFoundPage() {
 
             <Button
               variant="outlined"
+              color="secondary"
               onClick={() => navigate(-1)}
-              sx={{
-                borderColor: theme.palette.secondary.main,
-                color: theme.palette.secondary.main,
-                '&:hover': {
-                  borderColor: theme.palette.secondary.dark,
-                  backgroundColor: 'rgba(0, 79, 123, 0.04)',
-                },
-              }}
             >
               Zurück
             </Button>

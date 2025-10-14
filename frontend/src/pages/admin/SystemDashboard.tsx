@@ -157,8 +157,6 @@ export function SystemDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
                 color: theme.palette.secondary.main,
               }}
             >
@@ -174,7 +172,7 @@ export function SystemDashboard() {
         <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50] }}>
           <Typography
             variant="h6"
-            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mb: 2, color: theme.palette.secondary.main }}
           >
             System Health Overview
           </Typography>
@@ -254,7 +252,7 @@ export function SystemDashboard() {
                           tool.status === 'online'
                             ? 'Online'
                             : tool.status === 'warning'
-                              ? 'Warning'
+                              ? 'Warnung'
                               : 'Offline'
                         }
                         size="small"
@@ -270,7 +268,6 @@ export function SystemDashboard() {
                     variant="h5"
                     sx={{
                       mb: 1,
-                      fontFamily: 'Antonio, sans-serif',
                       color: theme.palette.secondary.main,
                     }}
                   >

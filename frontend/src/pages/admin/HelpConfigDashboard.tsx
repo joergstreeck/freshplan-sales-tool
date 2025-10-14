@@ -175,8 +175,6 @@ export function HelpConfigDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
                 color: theme.palette.secondary.main,
               }}
             >
@@ -237,7 +235,6 @@ export function HelpConfigDashboard() {
           variant="h5"
           sx={{
             mb: 2,
-            fontFamily: 'Antonio, sans-serif',
             color: theme.palette.secondary.main,
           }}
         >
@@ -282,7 +279,6 @@ export function HelpConfigDashboard() {
                     variant="h5"
                     sx={{
                       mb: 1,
-                      fontFamily: 'Antonio, sans-serif',
                       color: theme.palette.secondary.main,
                     }}
                   >
@@ -361,7 +357,6 @@ export function HelpConfigDashboard() {
           variant="h5"
           sx={{
             mb: 2,
-            fontFamily: 'Antonio, sans-serif',
             color: theme.palette.secondary.main,
           }}
         >

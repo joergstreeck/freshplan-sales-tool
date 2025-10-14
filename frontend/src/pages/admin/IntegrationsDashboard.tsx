@@ -210,8 +210,6 @@ export function IntegrationsDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
                 color: theme.palette.secondary.main,
               }}
             >
@@ -227,7 +225,7 @@ export function IntegrationsDashboard() {
         <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50] }}>
           <Typography
             variant="h6"
-            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mb: 2, color: theme.palette.secondary.main }}
           >
             Integrations-Status
           </Typography>
@@ -300,7 +298,9 @@ export function IntegrationsDashboard() {
                   flexDirection: 'column',
                   transition: 'all 0.2s',
                   cursor: 'pointer',
-                  border: integration.id === 'new' ? `2px dashed ${theme.palette.primary.main}` : 'none',
+                  border: integration.id === 'new' ? 2 : 'none',
+                  borderStyle: integration.id === 'new' ? 'dashed' : undefined,
+                  borderColor: integration.id === 'new' ? 'primary.main' : undefined,
                   '&:hover': {
                     boxShadow: 4,
                     transform: 'translateY(-2px)',
@@ -332,7 +332,6 @@ export function IntegrationsDashboard() {
                     variant="h5"
                     sx={{
                       mb: 1,
-                      fontFamily: 'Antonio, sans-serif',
                       color: theme.palette.secondary.main,
                     }}
                   >
@@ -396,15 +395,7 @@ export function IntegrationsDashboard() {
                   <Button
                     fullWidth
                     variant={integration.id === 'new' ? 'outlined' : 'contained'}
-                    sx={{
-                      backgroundColor: integration.id === 'new' ? 'transparent' : theme.palette.primary.main,
-                      borderColor: theme.palette.primary.main,
-                      color: integration.id === 'new' ? theme.palette.primary.main : 'white',
-                      '&:hover': {
-                        backgroundColor:
-                          integration.id === 'new' ? 'rgba(148, 196, 86, 0.1)' : theme.palette.primary.dark,
-                      },
-                    }}
+                    color="primary"
                   >
                     {integration.id === 'new' ? 'Integration hinzufügen' : 'Konfigurieren'}
                   </Button>

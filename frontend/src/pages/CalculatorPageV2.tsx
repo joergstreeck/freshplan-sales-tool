@@ -28,7 +28,7 @@ export function CalculatorPageV2() {
               Berechnen Sie Ihren individuellen Rabatt für Lebensmittel-Großhandelsbestellungen.
             </Typography>
             <Typography color="text.secondary">
-              Bis zu <strong style={{ color: theme.palette.primary.main }}>15% Gesamtrabatt</strong> möglich!
+              Bis zu <Typography component="strong" sx={{ color: 'primary.main' }}>15% Gesamtrabatt</Typography> möglich!
             </Typography>
           </Box>
 
