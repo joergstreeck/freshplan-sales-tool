@@ -310,7 +310,8 @@ class CustomerRepositoryTest {
     var result = repository.findByStatus(CustomerStatus.AKTIV, null);
 
     // Sprint 2.1.7 Fix: Use minimum count for test isolation
-    assertThat(result).hasSizeGreaterThanOrEqualTo(3); // testCustomer, parentCustomer, childCustomer
+    assertThat(result)
+        .hasSizeGreaterThanOrEqualTo(3); // testCustomer, parentCustomer, childCustomer
     assertThat(result).extracting(Customer::getId).contains(data.testCustomer.getId());
   }
 
@@ -490,7 +491,9 @@ class CustomerRepositoryTest {
             new BigDecimal("30000.00"), new BigDecimal("70000.00"), null);
 
     // Sprint 2.1.7 Fix: Use minimum count for test isolation
-    assertThat(result).hasSizeGreaterThanOrEqualTo(2); // testCustomer (50k) and parentCustomer (30k) both in range
+    assertThat(result)
+        .hasSizeGreaterThanOrEqualTo(
+            2); // testCustomer (50k) and parentCustomer (30k) both in range
     // Both testCustomer and parentCustomer should be in the range
     assertThat(result)
         .extracting(Customer::getId)

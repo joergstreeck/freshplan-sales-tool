@@ -11,7 +11,6 @@ import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.dto.ConvertToCustomerRequest;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
-import de.freshplan.test.builders.OpportunityTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
@@ -27,19 +26,19 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration Tests für OpportunityService.convertToCustomer()
  *
- * <p>Testet die Opportunity → Customer Conversion mit folgenden Szenarien:
- * - Happy Path: CLOSED_WON Opportunity → Customer (AKTIV Status)
- * - originalLeadId Traceability (V261): Wenn Opportunity from Lead → Customer.originalLeadId
- * wird gesetzt
- * - Validation: Nur CLOSED_WON Opportunities können konvertiert werden
- * - Duplicate Prevention: Keine doppelte Conversion
+ * <p>Testet die Opportunity → Customer Conversion mit folgenden Szenarien: - Happy Path: CLOSED_WON
+ * Opportunity → Customer (AKTIV Status) - originalLeadId Traceability (V261): Wenn Opportunity from
+ * Lead → Customer.originalLeadId wird gesetzt - Validation: Nur CLOSED_WON Opportunities können
+ * konvertiert werden - Duplicate Prevention: Keine doppelte Conversion
  *
  * @author FreshPlan Team
  * @since Sprint 2.1.7 (Opportunity Backend Integration)
  */
 @QuarkusTest
 @Tag("integration")
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService.convertToCustomer() Integration Tests")
 public class OpportunityServiceConvertToCustomerTest {
 
@@ -164,8 +163,7 @@ public class OpportunityServiceConvertToCustomerTest {
             .build();
 
     // Act & Assert
-    assertThatThrownBy(
-            () -> opportunityService.convertToCustomer(negotiationOpp.getId(), request))
+    assertThatThrownBy(() -> opportunityService.convertToCustomer(negotiationOpp.getId(), request))
         .isInstanceOf(IllegalStateException.class)
         .hasMessageContaining("Only won opportunities");
   }
@@ -187,7 +185,8 @@ public class OpportunityServiceConvertToCustomerTest {
 
     // Act & Assert
     assertThatThrownBy(() -> opportunityService.convertToCustomer(nonExistentId, request))
-        .isInstanceOf(de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundException.class);
+        .isInstanceOf(
+            de.freshplan.domain.opportunity.service.exception.OpportunityNotFoundException.class);
   }
 
   @Test
@@ -215,8 +214,10 @@ public class OpportunityServiceConvertToCustomerTest {
         .hasMessageContaining("already linked to customer");
   }
 
-  // NOTE: The test "convertToCustomer_fromCustomerOpportunity_shouldNotSetOriginalLeadId" was removed
-  // because it tested an invalid scenario: An Opportunity created FOR a Customer (Upsell/Cross-sell)
+  // NOTE: The test "convertToCustomer_fromCustomerOpportunity_shouldNotSetOriginalLeadId" was
+  // removed
+  // because it tested an invalid scenario: An Opportunity created FOR a Customer
+  // (Upsell/Cross-sell)
   // should NOT be converted BACK to Customer. The convertToCustomer() method is only for
   // Lead → Opportunity → Customer workflow, NOT for Customer → Opportunity → Customer.
   // The database constraint chk_opportunity_has_source enforces that opportunity must have

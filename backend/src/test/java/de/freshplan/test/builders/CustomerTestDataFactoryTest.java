@@ -202,8 +202,7 @@ class CustomerTestDataFactoryTest {
     Customer customer = CustomerTestDataFactory.builder().asTestData(false).build();
 
     // Then - Should be overridden to true
-    assertThat(customer.getIsTestData())
-        .isTrue(); // Force-overridden in build() for safety
+    assertThat(customer.getIsTestData()).isTrue(); // Force-overridden in build() for safety
   }
 
   @Test

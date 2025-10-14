@@ -885,7 +885,8 @@ public class LeadResource {
     if (request.outcome != null && !request.outcome.isBlank()) {
       try {
         activityOutcome =
-            de.freshplan.modules.leads.domain.ActivityOutcome.valueOf(request.outcome.toUpperCase());
+            de.freshplan.modules.leads.domain.ActivityOutcome.valueOf(
+                request.outcome.toUpperCase());
       } catch (IllegalArgumentException e) {
         return Response.status(Response.Status.BAD_REQUEST)
             .entity(Map.of("error", "Invalid activity outcome: " + request.outcome))

@@ -1,7 +1,6 @@
 package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.entity.Customer;
-import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.service.OpportunityService;
 import de.freshplan.domain.opportunity.service.dto.ConvertToCustomerRequest;
@@ -156,8 +155,7 @@ public class OpportunityResource {
     try {
       OpportunityResponse opportunity = opportunityService.createFromLead(leadId, request);
 
-      logger.info(
-          "Successfully created opportunity {} from lead {}", opportunity.getId(), leadId);
+      logger.info("Successfully created opportunity {} from lead {}", opportunity.getId(), leadId);
 
       return Response.status(Response.Status.CREATED).entity(opportunity).build();
 
@@ -181,8 +179,8 @@ public class OpportunityResource {
    *
    * <p>POST /api/opportunities/{id}/convert-to-customer
    *
-   * <p>Converts a CLOSED_WON opportunity into a customer. This sets the originalLeadId field
-   * (V261) if the opportunity originated from a lead, enabling full Lead → Opportunity → Customer
+   * <p>Converts a CLOSED_WON opportunity into a customer. This sets the originalLeadId field (V261)
+   * if the opportunity originated from a lead, enabling full Lead → Opportunity → Customer
    * traceability. All pain points and business data are transferred.
    *
    * @param opportunityId ID of the opportunity to convert
@@ -206,9 +204,7 @@ public class OpportunityResource {
           customer.getId(),
           customer.getCustomerNumber());
 
-      return Response.ok(customer)
-          .header("Location", "/api/customers/" + customer.getId())
-          .build();
+      return Response.ok(customer).header("Location", "/api/customers/" + customer.getId()).build();
 
     } catch (OpportunityNotFoundException e) {
       logger.warn("Opportunity not found: {}", opportunityId);
@@ -236,8 +232,8 @@ public class OpportunityResource {
    *
    * <p>POST /api/opportunities/for-customer/{customerId}
    *
-   * <p>Creates an opportunity for an existing AKTIV customer. Use cases include Upsell
-   * (expanding existing product lines), Cross-sell (new product categories), and Renewal (contract
+   * <p>Creates an opportunity for an existing AKTIV customer. Use cases include Upsell (expanding
+   * existing product lines), Cross-sell (new product categories), and Renewal (contract
    * extensions). Opportunities start at NEEDS_ANALYSIS stage (customer is already qualified).
    *
    * @param customerId ID of the customer

@@ -1143,8 +1143,7 @@ class LeadResourceTest {
   @TestSecurity(
       user = "user1",
       roles = {"USER"})
-  @DisplayName(
-      "Sprint 2.1.7: Should add activity without outcome (backward compatibility)")
+  @DisplayName("Sprint 2.1.7: Should add activity without outcome (backward compatibility)")
   void testAddActivityWithoutOutcome() {
     Long leadId = createTestLead("user1");
 

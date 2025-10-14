@@ -124,8 +124,7 @@ class ActivityOutcomeTest {
       assertThat(ActivityOutcome.UNSUCCESSFUL.getDescription())
           .isEqualTo("Activity did not achieve its goal");
       assertThat(ActivityOutcome.NO_ANSWER.getDescription()).isEqualTo("Contact attempt failed");
-      assertThat(ActivityOutcome.CALLBACK_REQUESTED.getDescription())
-          .isEqualTo("Follow-up needed");
+      assertThat(ActivityOutcome.CALLBACK_REQUESTED.getDescription()).isEqualTo("Follow-up needed");
       assertThat(ActivityOutcome.INFO_SENT.getDescription())
           .isEqualTo("Information materials provided");
       assertThat(ActivityOutcome.QUALIFIED.getDescription())

@@ -23,18 +23,18 @@ import org.junit.jupiter.api.Test;
 /**
  * Integration Tests für OpportunityService.createFromLead()
  *
- * <p>Testet die Lead → Opportunity Conversion mit folgenden Szenarien:
- * - Happy Path: QUALIFIED Lead → Opportunity (NEW_LEAD Stage)
- * - Lead Status Auto-Update → CONVERTED
- * - Validation: Lead muss QUALIFIED oder ACTIVE sein
- * - Traceability: lead_id FK wird korrekt gesetzt
+ * <p>Testet die Lead → Opportunity Conversion mit folgenden Szenarien: - Happy Path: QUALIFIED Lead
+ * → Opportunity (NEW_LEAD Stage) - Lead Status Auto-Update → CONVERTED - Validation: Lead muss
+ * QUALIFIED oder ACTIVE sein - Traceability: lead_id FK wird korrekt gesetzt
  *
  * @author FreshPlan Team
  * @since Sprint 2.1.7 (Opportunity Backend Integration)
  */
 @QuarkusTest
 @Tag("integration")
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService.createFromLead() Integration Tests")
 public class OpportunityServiceCreateFromLeadTest {
 

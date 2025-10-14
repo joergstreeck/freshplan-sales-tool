@@ -275,9 +275,9 @@ public class OpportunityService {
 
     // 1. Load Lead (using Panache Active Record pattern)
     de.freshplan.modules.leads.domain.Lead lead =
-        de.freshplan.modules.leads.domain.Lead.<de.freshplan.modules.leads.domain.Lead>findByIdOptional(leadId)
-            .orElseThrow(
-                () -> new IllegalArgumentException("Lead not found with ID: " + leadId));
+        de.freshplan.modules.leads.domain.Lead
+            .<de.freshplan.modules.leads.domain.Lead>findByIdOptional(leadId)
+            .orElseThrow(() -> new IllegalArgumentException("Lead not found with ID: " + leadId));
 
     // 2. Validate Lead Status (must be QUALIFIED or ACTIVE)
     if (lead.status != de.freshplan.modules.leads.domain.LeadStatus.QUALIFIED
@@ -315,7 +315,8 @@ public class OpportunityService {
     }
 
     // 5. Create Opportunity entity
-    Opportunity opportunity = new Opportunity(opportunityName, OpportunityStage.NEW_LEAD, assignedUser);
+    Opportunity opportunity =
+        new Opportunity(opportunityName, OpportunityStage.NEW_LEAD, assignedUser);
 
     // 6. Set lead FK (enables Lead → Opportunity → Customer workflow)
     opportunity.setLead(lead);
@@ -338,7 +339,8 @@ public class OpportunityService {
     lead.status = de.freshplan.modules.leads.domain.LeadStatus.CONVERTED;
     lead.updatedAt = java.time.LocalDateTime.now();
     lead.persist();
-    logger.info("Lead {} marked as CONVERTED (converted to Opportunity {})", leadId, opportunity.getId());
+    logger.info(
+        "Lead {} marked as CONVERTED (converted to Opportunity {})", leadId, opportunity.getId());
 
     // 9. Create initial activity
     User currentUser = getCurrentUser();
@@ -361,9 +363,7 @@ public class OpportunityService {
               .eventType(AuditEventType.OPPORTUNITY_CREATED)
               .entityType("opportunity")
               .entityId(opportunity.getId())
-              .newValue(
-                  String.format(
-                      "Created from Lead ID %d: %s", leadId, opportunity.getName()))
+              .newValue(String.format("Created from Lead ID %d: %s", leadId, opportunity.getName()))
               .changeReason("Lead → Opportunity conversion")
               .build());
     } catch (Exception e) {
@@ -450,8 +450,7 @@ public class OpportunityService {
     if (opportunity.getCustomer() != null) {
       throw new IllegalStateException(
           String.format(
-              "Opportunity already linked to customer ID: %s",
-              opportunity.getCustomer().getId()));
+              "Opportunity already linked to customer ID: %s", opportunity.getCustomer().getId()));
     }
 
     // 4. Create Customer entity
@@ -531,7 +530,8 @@ public class OpportunityService {
 
     // 11. Persist customer
     customerRepository.persist(customer);
-    logger.info("Created customer {} with number {}", customer.getId(), customer.getCustomerNumber());
+    logger.info(
+        "Created customer {} with number {}", customer.getId(), customer.getCustomerNumber());
 
     // 12. Link opportunity to customer
     opportunity.setCustomer(customer);
@@ -583,8 +583,8 @@ public class OpportunityService {
   /**
    * Generates next customer number in format KD-XXXXX.
    *
-   * <p>Uses PostgreSQL sequence for atomic, guaranteed-unique customer numbers.
-   * This prevents race conditions when multiple concurrent requests create customers.
+   * <p>Uses PostgreSQL sequence for atomic, guaranteed-unique customer numbers. This prevents race
+   * conditions when multiple concurrent requests create customers.
    *
    * <p>Migration V10028 creates the sequence and initializes it.
    *
@@ -639,8 +639,7 @@ public class OpportunityService {
         customerRepository
             .findByIdOptional(customerId)
             .orElseThrow(
-                () ->
-                    new IllegalArgumentException("Customer not found with ID: " + customerId));
+                () -> new IllegalArgumentException("Customer not found with ID: " + customerId));
 
     // 2. Validate Customer Status (must be AKTIV)
     if (customer.getStatus() != de.freshplan.domain.customer.entity.CustomerStatus.AKTIV) {
@@ -775,7 +774,8 @@ public class OpportunityService {
    */
   private String generateCustomerOpportunityName(
       Customer customer, CreateOpportunityForCustomerRequest request) {
-    String type = request.getOpportunityType() != null ? request.getOpportunityType() : "Erweiterung";
+    String type =
+        request.getOpportunityType() != null ? request.getOpportunityType() : "Erweiterung";
     String timeframe = request.getTimeframe() != null ? request.getTimeframe() : "";
 
     return String.format("%s - %s %s", customer.getCompanyName(), type, timeframe).trim();
@@ -800,9 +800,7 @@ public class OpportunityService {
         type,
         customer.getCompanyName(),
         customer.getCustomerNumber(),
-        customer.getExpectedAnnualVolume() != null
-            ? customer.getExpectedAnnualVolume()
-            : "N/A");
+        customer.getExpectedAnnualVolume() != null ? customer.getExpectedAnnualVolume() : "N/A");
   }
 
   // =====================================

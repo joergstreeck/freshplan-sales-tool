@@ -256,10 +256,7 @@ class LeadActivityTestDataFactoryTest {
   void testBuilder_withCountsAsProgress_shouldSetFlag() {
     // When
     LeadActivity activity =
-        LeadActivityTestDataFactory.builder()
-            .forLead(testLead)
-            .withCountsAsProgress(true)
-            .build();
+        LeadActivityTestDataFactory.builder().forLead(testLead).withCountsAsProgress(true).build();
 
     // Then
     assertThat(activity.countsAsProgress).isTrue();

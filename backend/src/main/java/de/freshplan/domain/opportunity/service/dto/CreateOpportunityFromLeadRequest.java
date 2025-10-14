@@ -7,8 +7,8 @@ import java.util.UUID;
 /**
  * DTO for creating an Opportunity from a Lead.
  *
- * <p>Used in Lead → Opportunity conversion workflow. All fields are optional except leadId
- * (passed separately). If name is null, it will be auto-generated from lead data.
+ * <p>Used in Lead → Opportunity conversion workflow. All fields are optional except leadId (passed
+ * separately). If name is null, it will be auto-generated from lead data.
  *
  * @author FreshPlan Team
  * @since Sprint 2.1.6.2 Phase 2

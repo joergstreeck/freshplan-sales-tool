@@ -44,8 +44,8 @@ public class RealisticDataGenerator {
   /**
    * Generate realistic German company name
    *
-   * <p>Examples: - "Müller Catering GmbH" - "Schmidt Gastronomie GmbH & Co. KG" - "Meyer
-   * Großhandel AG"
+   * <p>Examples: - "Müller Catering GmbH" - "Schmidt Gastronomie GmbH & Co. KG" - "Meyer Großhandel
+   * AG"
    */
   public String germanCompanyName() {
     String baseName = faker.company().name();

@@ -120,7 +120,8 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
             .title("Resource Not Found")
             .status(404)
             .detail(String.format("User with ID %s not found", userId))
-            .timestamp(LocalDateTime.now(clock)) // Sprint 2.1.7 Code Review Fix: Use Clock injection
+            .timestamp(
+                LocalDateTime.now(clock)) // Sprint 2.1.7 Code Review Fix: Use Clock injection
             .error("USER_NOT_FOUND") // Set the expected error code
             .message(
                 String.format(

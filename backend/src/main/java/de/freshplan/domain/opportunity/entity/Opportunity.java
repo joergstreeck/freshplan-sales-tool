@@ -43,8 +43,8 @@ public class Opportunity {
   private Customer customer;
 
   /**
-   * Reference to originating lead (if opportunity was created from lead).
-   * NULL for opportunities created directly for customers.
+   * Reference to originating lead (if opportunity was created from lead). NULL for opportunities
+   * created directly for customers.
    *
    * @since Sprint 2.1.6.2 Phase 2 (V10026)
    */

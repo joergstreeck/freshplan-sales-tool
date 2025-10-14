@@ -17,9 +17,9 @@ import org.junit.jupiter.api.Test;
  * <p>Track 2C - Advanced Test Infrastructure
  *
  * <p>Tests: - Realistic company names (German catering, with [TEST] prefix) - Contact person
- * generation (German names) - Email generation from contact person with Umlaut normalization - Phone
- * number generation (German format) - City/PostalCode generation from RealisticDataGenerator -
- * Employee count realistic range - Seeded builder for deterministic tests - Builder pattern
+ * generation (German names) - Email generation from contact person with Umlaut normalization -
+ * Phone number generation (German format) - City/PostalCode generation from RealisticDataGenerator
+ * - Employee count realistic range - Seeded builder for deterministic tests - Builder pattern
  * functionality - Pre-Claim (buildMinimal) vs Qualified (buildQualified) state
  */
 @Tag("unit")
@@ -169,9 +169,7 @@ class LeadTestDataFactoryTest {
   void testBuilder_withEstimatedVolume_shouldSetVolume() {
     // When
     Lead lead =
-        LeadTestDataFactory.builder()
-            .withEstimatedVolume(BigDecimal.valueOf(100000))
-            .build();
+        LeadTestDataFactory.builder().withEstimatedVolume(BigDecimal.valueOf(100000)).build();
 
     // Then
     assertThat(lead.estimatedVolume).isEqualByComparingTo(BigDecimal.valueOf(100000));
@@ -303,9 +301,7 @@ class LeadTestDataFactoryTest {
   void testBuilder_withAddress_shouldSetAllAddressFields() {
     // When
     Lead lead =
-        LeadTestDataFactory.builder()
-            .withAddress("Hauptstraße 1", "München", "80331")
-            .build();
+        LeadTestDataFactory.builder().withAddress("Hauptstraße 1", "München", "80331").build();
 
     // Then
     assertThat(lead.street).isEqualTo("Hauptstraße 1");

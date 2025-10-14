@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.*;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityForCustomerRequest;
@@ -26,18 +25,18 @@ import org.junit.jupiter.api.Test;
  * Integration Tests für OpportunityService.createForCustomer()
  *
  * <p>Testet die Customer → Opportunity Creation (Upsell/Cross-sell/Renewal) mit folgenden
- * Szenarien:
- * - Happy Path: AKTIV Customer → Opportunity (NEEDS_ANALYSIS Stage)
- * - Validation: Customer muss AKTIV sein (nicht INAKTIV/TEST/DELETED)
- * - Use Cases: Upsell, Cross-sell, Renewal
- * - Auto-Name-Generation: "{opportunityType} - {customer.name}"
+ * Szenarien: - Happy Path: AKTIV Customer → Opportunity (NEEDS_ANALYSIS Stage) - Validation:
+ * Customer muss AKTIV sein (nicht INAKTIV/TEST/DELETED) - Use Cases: Upsell, Cross-sell, Renewal -
+ * Auto-Name-Generation: "{opportunityType} - {customer.name}"
  *
  * @author FreshPlan Team
  * @since Sprint 2.1.7 (Opportunity Backend Integration)
  */
 @QuarkusTest
 @Tag("integration")
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService.createForCustomer() Integration Tests")
 public class OpportunityServiceCreateForCustomerTest {
 
@@ -85,7 +84,8 @@ public class OpportunityServiceCreateForCustomerTest {
 
     // Act
     // Sprint 2.1.7 Code Review Fix: Service now returns OpportunityResponse DTO
-    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result =
+        opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert
     assertThat(result).isNotNull();
@@ -117,7 +117,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result =
+        opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert
     assertThat(result).isNotNull();
@@ -140,7 +141,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result =
+        opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert
     assertThat(result).isNotNull();
@@ -213,7 +215,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result =
+        opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert: Opportunity created successfully
     assertThat(result).isNotNull();
@@ -236,7 +239,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result =
+        opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert: Name should be auto-generated: "{opportunityType} - {customer.name}"
     assertThat(result.getName())
@@ -260,7 +264,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act: Create first Opportunity
-    OpportunityResponse firstOpp = opportunityService.createForCustomer(activeCustomer.getId(), upsellRequest);
+    OpportunityResponse firstOpp =
+        opportunityService.createForCustomer(activeCustomer.getId(), upsellRequest);
     assertThat(firstOpp).isNotNull();
 
     // Arrange: Create second Opportunity (Cross-sell)
@@ -274,7 +279,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act: Create second Opportunity
-    OpportunityResponse secondOpp = opportunityService.createForCustomer(activeCustomer.getId(), crossSellRequest);
+    OpportunityResponse secondOpp =
+        opportunityService.createForCustomer(activeCustomer.getId(), crossSellRequest);
 
     // Assert: Both Opportunities should exist for same Customer
     assertThat(secondOpp).isNotNull();
