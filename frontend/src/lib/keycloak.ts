@@ -189,7 +189,9 @@ export const authUtils = {
 
   hasRole: (role: string) => {
     if (!keycloak.authenticated) return false;
-    return keycloak.hasRealmRole(role) || keycloak.hasResourceRole(role);
+    // Normalize role to lowercase for consistent comparison
+    const normalizedRole = role.toLowerCase();
+    return keycloak.hasRealmRole(normalizedRole) || keycloak.hasResourceRole(normalizedRole);
   },
 
   hasAnyRole: (roles: string[]) => {
@@ -203,7 +205,8 @@ export const authUtils = {
     const resourceRoles = Object.values(keycloak.tokenParsed.resource_access || {}).flatMap(
       (resource: { roles?: string[] }) => resource.roles || []
     );
-    return [...new Set([...realmRoles, ...resourceRoles])];
+    // Normalize all roles to lowercase for consistency
+    return [...new Set([...realmRoles, ...resourceRoles])].map(role => role.toLowerCase());
   },
 
   updateToken: async (minValidity: number = 30) => {

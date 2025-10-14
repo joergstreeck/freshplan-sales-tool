@@ -65,7 +65,7 @@ export interface PingResponse {
 }
 
 // Role Types (gemäß Team BACK)
-export type UserRole = 'admin' | 'manager' | 'sales';
+export type UserRole = 'admin' | 'manager' | 'sales' | 'auditor';
 
 // Pagination
 export interface PageRequest {

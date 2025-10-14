@@ -2,7 +2,7 @@
 import { z } from 'zod';
 
 // User roles enum
-export const UserRole = z.enum(['admin', 'manager', 'sales']);
+export const UserRole = z.enum(['admin', 'manager', 'sales', 'auditor']);
 
 // Base User schema matching backend API
 export const UserSchema = z.object({

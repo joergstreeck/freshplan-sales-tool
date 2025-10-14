@@ -21,7 +21,7 @@ export const UsersPage = () => {
   };
 
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <Box sx={{ p: 3 }}>
         {/* Main content - Always show table */}
         <UserTableMUI />

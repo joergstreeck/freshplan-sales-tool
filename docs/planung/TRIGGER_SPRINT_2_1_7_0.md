@@ -1,237 +1,360 @@
-# 🎯 TRIGGER SPRINT 2.1.7.0 - Design System Migration
+---
+sprint_id: "2.1.7.0"
+title: "Layout System Cleanup - MainLayoutV2 Modernisierung"
+doc_type: "konzept"
+status: "in_progress"
+owner: "team/leads"
+date_start: "2025-10-14"
+date_end: "2025-10-14"
+modules: ["frontend", "shared"]
+entry_points:
+  - "docs/planung/grundlagen/DESIGN_SYSTEM.md"
+  - "frontend/src/components/layout/MainLayoutV2.tsx"
+  - "docs/planung/features-neu/02_neukundengewinnung/_index.md"
+pr_refs: []
+updated: "2025-10-14"
+---
 
-**Sprint-Typ:** Refactoring & UI Consistency
-**Priorität:** HIGH (Auswirkung auf alle 23 Seiten)
-**Zeithorizont:** 2-4 Tage
+# 🎯 TRIGGER SPRINT 2.1.7.0 - Layout System Cleanup
+
+**📍 Navigation:** Home → Planung → Sprint 2.1.7.0
+
+**Sprint-Typ:** Refactoring & Code Cleanup
+**Priorität:** MEDIUM (Technische Schuld beseitigen)
+**Zeithorizont:** 5-6 Stunden
 **Abhängigkeiten:** Sprint 2.1.7 COMPLETE ✅
+
+---
+
+> **🎯 Arbeitsanweisung – Reihenfolge**
+> 1. **Dieses Dokument komplett lesen** (Ziel, Deliverables, Hinweise verstehen)
+> 2. **PLANUNGSMETHODIK.md** prüfen (Git Workflow Policy!)
+> 3. **Phase 1:** MainLayoutV2 Code erweitern (30 Min)
+> 4. **Phase 2:** Seiten-Inventar erstellen (30 Min)
+> 5. **Phase 3:** Cleanup in 4 Batches (2.5h)
+> 6. **Phase 4:** Dokumentation aktualisieren (30 Min)
+> 7. **Phase 5:** Tests & Validierung (45 Min)
+
+---
+
+## 🚫 GIT WORKFLOW POLICY (KRITISCH!)
+
+**NIEMALS `git push` ohne explizite User-Erlaubnis!**
+
+### Erlaubt (automatic):
+- ✅ `git add .` (Änderungen stagen)
+- ✅ `git commit -m "..."` (lokaler Commit mit Message)
+- ✅ `git status` (Status prüfen)
+- ✅ `git diff` (Änderungen anzeigen)
+
+### VERBOTEN (requires user permission):
+- ❌ `git push` (zu Remote pushen)
+- ❌ `git push --force` (Force-Push)
+- ❌ `gh pr create` (Pull Request erstellen)
+
+### Commit Message Template:
+```
+Sprint 2.1.7.0: Layout System Cleanup (Option A)
+
+- MainLayoutV2: Add maxWidth prop (default: 'xl')
+- Remove 22 double-container anti-patterns
+- Update DESIGN_SYSTEM.md (reflect reality)
+- Delete DESIGN_SYSTEM_V2.md (obsolete)
+
+Changes:
+- MainLayoutV2.tsx: +4 lines (interface + implementation)
+- 22 Pages: -110 lines (containers removed)
+- DESIGN_SYSTEM.md: updated (30 lines)
+- DESIGN_SYSTEM_V2.md: deleted
+
+Tests:
+- ✅ Visual Check: All 23 pages (Desktop, Laptop, Tablet)
+- ✅ ESLint: 0 new warnings
+- ✅ Build: SUCCESS
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
 
 ---
 
 ## 📋 EXECUTIVE SUMMARY
 
 **Problem:**
-Die Anwendung nutzt derzeit zwei verschiedene Layout-Systeme parallel, wobei **23/23 Seiten MainLayoutV2** verwenden, obwohl ein überlegenes **SmartLayout-System** bereits existiert aber **0/23 Seiten** nutzen. Dies führt zu:
-- Verschwendetem Bildschirmplatz (1536px Limit auf großen Monitoren)
-- Schlechter Lesbarkeit von Formularen (zu breit)
-- Inkonsistenter User Experience
-- Technischer Schuld (zwei parallel existierende Systeme)
+22 von 23 Seiten nutzen ein **Double-Container Anti-Pattern**: `MainLayoutV2` (maxWidth: 'xl') + MUI `Container` (maxWidth: 'xl'/'lg'/'md'). Dies führt zu:
+- Inkonsistenter Breitensteuerung (8× xl, 4× lg, 1× sm)
+- Unnötiger Code-Duplikation (2 Container statt 1)
+- Verwirrung für Entwickler (welcher Container steuert die Breite?)
+- Dokumentation widerspricht dem Code
 
 **Lösung:**
-Migration aller 23 Seiten von `MainLayoutV2` → `SmartLayout` mit automatischer intelligenter Breiten-Anpassung basierend auf Seitentyp (Tabellen=100%, Formulare=800px, Dashboards=100%).
+**Option A (Minimal)** - MainLayoutV2 um eine einzige Prop erweitern:
+```typescript
+interface MainLayoutV2Props {
+  children: React.ReactNode;
+  showHeader?: boolean;
+  hideHeader?: boolean;
+  maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm'; // NEU, default: 'xl'
+}
+```
+
+Dann 22 doppelte Container entfernen. **Fertig.**
 
 **Business Impact:**
-- ✅ **Vertriebsteam:** Mehr Kunden gleichzeitig in Tabellen sichtbar (volle Bildschirmbreite)
-- ✅ **Formulare:** Bessere Lesbarkeit (optimal 800px statt 1536px)
-- ✅ **4K-Monitore:** Optimale Nutzung statt verschwendeter Platz
-- ✅ **Wartbarkeit:** Ein System statt zwei, automatische Optimierung
+- ✅ **Wartbarkeit:** Ein Container statt zwei (weniger Code)
+- ✅ **Klarheit:** Breite explizit per Prop gesteuert
+- ✅ **Backward Compatibility:** Default 'xl' = keine Breaking Changes
+- ✅ **Zeit:** 5-6h statt 2-4 Tage (SmartLayout-Ansatz)
 
-**Risiko:** LOW (SmartLayout existiert, getestet, keine Breaking Changes)
+**Risiko:** VERY LOW (nur 1 Prop hinzufügen, default = aktuelles Verhalten)
 
 ---
 
 ## 🎯 STRATEGISCHE ZIELE
 
-### Business-Ziele
-1. **Verbesserte Produktivität:** Vertriebsmitarbeiter sehen mehr Daten gleichzeitig
-2. **Professionelles Erscheinungsbild:** Einheitliche, moderne UI
-3. **Skalierbarkeit:** System wächst automatisch mit neuen Monitoren
-4. **Zukunftssicherheit:** Neue Seiten automatisch optimal
-
 ### Technical-Ziele
-1. **Code Cleanup:** Ein Layout-System statt zwei
-2. **Automatisierung:** System entscheidet selbst über optimale Breite
-3. **Wartbarkeit:** Weniger Code, klare Verantwortlichkeiten
-4. **Performance:** Keine Änderung (gleiche Performance)
+1. **Code Cleanup:** Doppelte Container eliminieren (22 Seiten betroffen)
+2. **Explizite Breiten-Steuerung:** Prop statt impliziter Verschachtelung
+3. **Backward Compatibility:** Default-Wert 'xl' erhält aktuelles Verhalten
+4. **YAGNI:** Nur was JETZT gebraucht wird (keine Automation, keine Variants)
 
 ### UX-Ziele
-1. **Konsistenz:** Alle Seiten nutzen dasselbe System
-2. **Lesbarkeit:** Formulare optimal breit (nicht zu schmal, nicht zu breit)
-3. **Übersichtlichkeit:** Tabellen nutzen volle Bildschirmbreite
-4. **Responsiveness:** System passt sich automatisch an
+1. **Keine Änderung:** User sieht keinen Unterschied (reines Refactoring)
+2. **Konsistenz:** Alle Seiten folgen gleichem Muster
+3. **Lesbarkeit:** Code ist einfacher zu verstehen
 
 ---
 
 ## 📊 IST-ANALYSE
 
-### Aktueller Zustand (MainLayoutV2)
+### Aktueller Zustand (Codebase-Reality)
 
 **Code-Statistik:**
 ```bash
 # Verwendung MainLayoutV2
 grep -r "MainLayoutV2" frontend/src/pages/*.tsx | wc -l
-# → 23 Seiten
+# → 23 Seiten (23/23 = 100%)
 
 # Verwendung SmartLayout
 grep -r "SmartLayout" frontend/src/pages/*.tsx | wc -l
-# → 0 Seiten (existiert aber in frontend/src/layouts/)
+# → 0 Seiten (SmartLayout existiert, aber ungenutzt)
+
+# Double-Container Pattern
+grep -A5 "MainLayoutV2" frontend/src/pages/*.tsx | grep -c "Container maxWidth"
+# → 22 Seiten haben doppelte Container (22/23 = 96%)
 ```
 
-**Betroffene Seiten:**
-1. CustomersPageV2.tsx (Kundenliste - benötigt volle Breite)
-2. LeadDetailPage.tsx (Formular - benötigt 800px)
-3. LeadListPage.tsx (Tabelle - benötigt volle Breite)
-4. TerritoryListPage.tsx (Tabelle - benötigt volle Breite)
-5. DashboardPage.tsx (Dashboard - benötigt volle Breite)
-6. ... (18 weitere Seiten)
+**Betroffene Seiten (Double-Container):**
 
-**Technische Schuld:**
-- `DESIGN_SYSTEM.md` (aktuell, verbindlich) beschreibt SmartLayout
-- `DESIGN_SYSTEM_V2.md` (veraltet, Archiv) beschreibt MainLayoutV2
-- Code nutzt MainLayoutV2 (widerspricht aktuellem Design-System!)
-- Zwei parallele Systeme = Verwirrung + Wartungsaufwand
+| Seite | Container 1 | Container 2 | Status |
+|-------|-------------|-------------|--------|
+| LeadDetailPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| LeadListPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| LeadWizard.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| TerritoryListPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| LoginPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| RegisterPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| ForgotPasswordPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| ResetPasswordPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| NotFoundPage.tsx | MainLayoutV2 (xl) | Container (sm) | ❌ Doppelt |
+| UnauthorizedPage.tsx | MainLayoutV2 (xl) | Container (lg) | ❌ Doppelt |
+| ErrorBoundaryPage.tsx | MainLayoutV2 (xl) | Container (lg) | ❌ Doppelt |
+| MaintenancePage.tsx | MainLayoutV2 (xl) | Container (lg) | ❌ Doppelt |
+| ComingSoonPage.tsx | MainLayoutV2 (xl) | Container (lg) | ❌ Doppelt |
+| DashboardPage.tsx | MainLayoutV2 (xl) | Container (xl) | ❌ Doppelt |
+| ... (weitere 8 Seiten) | ... | ... | ❌ Doppelt |
+| CustomersPageV2.tsx | MainLayoutV2 (xl) | - | ✅ Korrekt |
+| SettingsPage.tsx | MainLayoutV2 (xl) | - | ✅ Korrekt |
 
-**Performance-Daten:**
-- MainLayoutV2: 1536px fixe Breite → Verschwendeter Platz auf 4K-Monitoren
-- SmartLayout: Automatische Anpassung → Optimale Nutzung
+**Inkonsistente Breiten:**
+- 8× Container maxWidth="xl" (1536px)
+- 4× Container maxWidth="lg" (1200px)
+- 1× Container maxWidth="sm" (600px)
+- 2× KEIN Container (korrekt!)
+
+**Dokumentations-Gap:**
+- `DESIGN_SYSTEM.md` beschreibt SmartLayout (theoretisch, nicht implementiert)
+- `DESIGN_SYSTEM_V2.md` existiert im Archiv (veraltet, sollte gelöscht werden)
+- Code nutzt MainLayoutV2 (reale Implementation widerspricht Doku)
 
 ---
 
-## 🏗️ SOLL-ZUSTAND (Nach Migration)
+## 🏗️ SOLL-ZUSTAND (Nach Cleanup)
 
-### SmartLayout-Verhalten
+### Option A: Minimal (GEWÄHLT)
 
-**Automatische Breiten-Logik:**
+**Änderung 1: MainLayoutV2 Interface erweitern**
 ```typescript
-// frontend/src/layouts/SmartLayout.tsx
-function SmartLayout({ children, pageType }: SmartLayoutProps) {
-  const maxWidth = {
-    'table': '100%',      // Kundenliste, Lead-Liste → volle Breite
-    'form': '800px',      // Lead-Erfassung, Settings → optimal lesbar
-    'dashboard': '100%',  // Dashboard, Analytics → volle Breite
-    'default': '1536px'   // Fallback (wie MainLayoutV2)
-  }[pageType || 'default'];
-
-  return (
-    <Box sx={{ maxWidth, margin: '0 auto', padding: '24px' }}>
-      {children}
-    </Box>
-  );
+// frontend/src/components/layout/MainLayoutV2.tsx
+interface MainLayoutV2Props {
+  children: React.ReactNode;
+  showHeader?: boolean;
+  hideHeader?: boolean;
+  maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm'; // NEU, default: 'xl'
 }
 ```
 
-**Beispiel-Migrationen:**
+**Änderung 2: MainLayoutV2 Implementation anpassen**
 ```typescript
-// VORHER (MainLayoutV2)
-<MainLayoutV2>
-  <CustomerList />
-</MainLayoutV2>
-
-// NACHHER (SmartLayout)
-<SmartLayout pageType="table">
-  <CustomerList />
-</SmartLayout>
+// frontend/src/components/layout/MainLayoutV2.tsx (Zeile ~112)
+<Box
+  sx={{
+    p: { xs: 2, sm: 3, md: 4 },
+    maxWidth: maxWidth === 'full' ? '100%' : maxWidth || 'xl', // GEÄNDERT
+    mx: 'auto',
+    minHeight: '100vh',
+    position: 'relative',
+    width: '100%',
+    contain: 'layout style',
+  }}
+>
+  {children}
+</Box>
 ```
 
-**Visuelle Unterschiede:**
+**Änderung 3: Seiten aufräumen (22× Beispiel)**
+```diff
+// VORHER (Double-Container)
+<MainLayoutV2>
+  <Container maxWidth="xl" sx={{ py: 4 }}>
+    <Typography>Inhalt</Typography>
+  </Container>
+</MainLayoutV2>
 
-| Seitentyp | MainLayoutV2 (IST) | SmartLayout (SOLL) | Verbesserung |
-|-----------|--------------------|--------------------|--------------|
-| Kundenliste (Tabelle) | 1536px (begrenzt) | 100% (volle Breite) | ✅ +30-50% mehr Spalten sichtbar |
-| Lead-Formular | 1536px (zu breit) | 800px (optimal) | ✅ Bessere Lesbarkeit |
-| Dashboard | 1536px (begrenzt) | 100% (volle Breite) | ✅ Mehr Widgets sichtbar |
-| Territory-Liste | 1536px (begrenzt) | 100% (volle Breite) | ✅ Alle Spalten sichtbar |
+// NACHHER (Single-Container mit expliziter Prop)
+<MainLayoutV2 maxWidth="xl">
+  <Typography sx={{ py: 4 }}>Inhalt</Typography>
+</MainLayoutV2>
+```
+
+**Geschätzte Änderungen:**
+- 1 Interface (3 Zeilen)
+- 1 Implementation (1 Zeile)
+- 22 Seiten × ~5 Zeilen = **110 Zeilen** entfernt
+- **Gesamt: +4 Zeilen, -110 Zeilen = -106 Zeilen Code** (cleaner!)
 
 ---
 
 ## 🎯 SCOPE & DELIVERABLES
 
-### Phase 1: Vorbereitung (0.5 Tage)
-- [ ] SmartLayout.tsx Review (bereits vorhanden)
-- [ ] DESIGN_SYSTEM_V2.md Archivierung (umbenennen → ALT)
-- [ ] Test-Strategie definieren (Snapshot-Tests, Visual Regression)
-- [ ] Seiten-Inventar erstellen (23 Seiten kategorisieren)
+### Phase 1: MainLayoutV2 erweitern (30 min)
+- [x] Entscheidung für Option A (Minimal)
+- [ ] Interface erweitern: `maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm'`
+- [ ] Implementation anpassen: `maxWidth || 'xl'` (default)
+- [ ] Backward Compatibility sicherstellen (default 'xl')
 
-### Phase 2: Migration (2 Tage)
-**Batch 1: Tabellen (HIGH Priority)**
-- [ ] CustomersPageV2.tsx → SmartLayout (pageType="table")
-- [ ] LeadListPage.tsx → SmartLayout (pageType="table")
-- [ ] TerritoryListPage.tsx → SmartLayout (pageType="table")
-- [ ] OpportunityListPage.tsx → SmartLayout (pageType="table") (falls vorhanden)
+### Phase 2: Seiten-Inventar (30 min)
+- [ ] Alle 23 Seiten analysieren
+- [ ] Kategorisieren: welche brauchen 'full', welche 'lg', welche 'md'?
+- [ ] Liste erstellen: Page → Target maxWidth
 
-**Batch 2: Formulare (MEDIUM Priority)**
-- [ ] LeadDetailPage.tsx → SmartLayout (pageType="form")
-- [ ] LeadWizard.tsx → SmartLayout (pageType="form")
-- [ ] CustomerFormPage.tsx → SmartLayout (pageType="form")
-- [ ] SettingsPage.tsx → SmartLayout (pageType="form")
+**Erwartetes Inventar:**
+```
+FULL (100% Breite):
+- CustomersPageV2.tsx (bereits korrekt, nur Prop hinzufügen)
+- DashboardPage.tsx (Container entfernen, maxWidth="full")
+- LeadListPage.tsx (Container entfernen, maxWidth="full")
+- TerritoryListPage.tsx (Container entfernen, maxWidth="full")
 
-**Batch 3: Dashboards (MEDIUM Priority)**
-- [ ] DashboardPage.tsx → SmartLayout (pageType="dashboard")
-- [ ] AnalyticsPage.tsx → SmartLayout (pageType="dashboard")
+XL (1536px - Default):
+- LeadDetailPage.tsx (Container entfernen, keine Prop nötig)
+- SettingsPage.tsx (bereits korrekt, keine Änderung)
+- (alle anderen Seiten falls nicht anders benötigt)
 
-**Batch 4: Sonstige (LOW Priority)**
-- [ ] ... (restliche 13 Seiten)
+LG (1200px):
+- UnauthorizedPage.tsx (Container entfernen, maxWidth="lg")
+- ErrorBoundaryPage.tsx (Container entfernen, maxWidth="lg")
+- MaintenancePage.tsx (Container entfernen, maxWidth="lg")
+- ComingSoonPage.tsx (Container entfernen, maxWidth="lg")
 
-### Phase 3: Testing (1 Tag)
-- [ ] Visual Regression Tests (alle 23 Seiten)
-- [ ] Responsive Testing (Desktop, Tablet, Mobile)
-- [ ] User Acceptance Testing (Vertriebsteam Feedback)
-- [ ] Performance Testing (keine Verschlechterung)
+SM (600px):
+- NotFoundPage.tsx (Container entfernen, maxWidth="sm")
+```
 
-### Phase 4: Cleanup (0.5 Tage)
-- [ ] MainLayoutV2.tsx deprecaten (mit Warnung)
-- [ ] DESIGN_SYSTEM.md als einzige Wahrheit etablieren
-- [ ] Dokumentation aktualisieren (README, Storybook)
-- [ ] Code-Kommentare entfernen (Migration complete)
+### Phase 3: Cleanup (2.5 Stunden)
+**Batch 1: Tabellen-Seiten (volle Breite)**
+- [ ] CustomersPageV2.tsx → `maxWidth="full"` Prop hinzufügen
+- [ ] LeadListPage.tsx → Container entfernen + `maxWidth="full"`
+- [ ] TerritoryListPage.tsx → Container entfernen + `maxWidth="full"`
+- [ ] DashboardPage.tsx → Container entfernen + `maxWidth="full"`
+
+**Batch 2: Formular-Seiten (xl = Default)**
+- [ ] LeadDetailPage.tsx → Container entfernen (kein Prop nötig, xl ist default)
+- [ ] LeadWizard.tsx → Container entfernen
+- [ ] LoginPage.tsx → Container entfernen
+- [ ] RegisterPage.tsx → Container entfernen
+- [ ] ForgotPasswordPage.tsx → Container entfernen
+- [ ] ResetPasswordPage.tsx → Container entfernen
+
+**Batch 3: Error/Info-Seiten (lg/sm)**
+- [ ] UnauthorizedPage.tsx → Container entfernen + `maxWidth="lg"`
+- [ ] ErrorBoundaryPage.tsx → Container entfernen + `maxWidth="lg"`
+- [ ] MaintenancePage.tsx → Container entfernen + `maxWidth="lg"`
+- [ ] ComingSoonPage.tsx → Container entfernen + `maxWidth="lg"`
+- [ ] NotFoundPage.tsx → Container entfernen + `maxWidth="sm"`
+
+**Batch 4: Restliche Seiten**
+- [ ] ... (alle übrigen Seiten analysieren + aufräumen)
+
+### Phase 4: Dokumentation (30 min)
+- [ ] DESIGN_SYSTEM_V2.md **LÖSCHEN** (nicht archivieren - "falsche Konzepte verdienen kein Archiv")
+- [ ] DESIGN_SYSTEM.md aktualisieren (MainLayoutV2 Realität beschreiben, 30 Zeilen)
+- [ ] Kein ausufernder Text, nur Facts: Interface, Props, Beispiele
+
+### Phase 5: Testing (45 min)
+- [ ] Visual Check: Alle 23 Seiten im Browser öffnen
+- [ ] Responsive Check: Desktop (1920px), Laptop (1440px), Tablet (768px)
+- [ ] ESLint: `npm run lint` (0 neue Warnings)
+- [ ] Build: `npm run build` (0 Errors)
 
 ---
 
 ## 🚨 RISIKEN & MITIGATION
 
-### Risk 1: Breaking Changes
-**Wahrscheinlichkeit:** LOW
+### Risk 1: Breaking Changes durch Default-Wert
+**Wahrscheinlichkeit:** VERY LOW
 **Impact:** MEDIUM
 **Mitigation:**
-- SmartLayout nutzt dieselben Props wie MainLayoutV2
-- Schrittweise Migration (Batch-weise, nicht alle 23 auf einmal)
-- Thorough Testing vor jedem Batch
-- Rollback-Plan (Git revert möglich)
+- Default `maxWidth || 'xl'` entspricht aktuellem Verhalten
+- Alle Seiten ohne Prop-Änderung funktionieren exakt wie vorher
+- Nur explizite Prop-Setzungen ändern Verhalten (bewusst!)
 
-### Risk 2: User Confusion
+### Risk 2: Padding/Spacing Unterschiede
 **Wahrscheinlichkeit:** LOW
 **Impact:** LOW
 **Mitigation:**
-- Sanfte Migration (nicht alle Seiten gleichzeitig)
-- User-Kommunikation ("Wir optimieren das Layout für große Monitore")
-- Feedback-Schleife (User Acceptance Testing)
-- Hotline-Briefing (Support-Team informieren)
+- User-Screenshot bestätigt: KEIN Padding-Problem im Cockpit
+- Kein `variant` Prop nötig (YAGNI!)
+- Falls doch Padding-Probleme: Einzelne Seiten mit `sx={{ py: 4 }}` anpassen
 
-### Risk 3: Hidden Dependencies
+### Risk 3: Übersehene Seiten
 **Wahrscheinlichkeit:** MEDIUM
 **Impact:** LOW
 **Mitigation:**
-- Code-Review vor Migration (Dependencies identifizieren)
-- Unit-Tests für jede Seite
-- Integration Tests (E2E)
-- Monitoring nach Deployment
-
-### Risk 4: Performance Degradation
-**Wahrscheinlichkeit:** VERY LOW
-**Impact:** LOW
-**Mitigation:**
-- SmartLayout genauso performant wie MainLayoutV2 (nur CSS-Änderung)
-- Performance Tests vor/nach Migration
-- Lighthouse Audits (keine Verschlechterung erlaubt)
+- Phase 2: Vollständiges Inventar aller 23 Seiten
+- Phase 5: Visual Check ALLER Seiten (nicht nur Stichproben)
+- Git Diff vor Commit reviewen
 
 ---
 
 ## 📏 SUCCESS METRICS
 
 ### Quantitative Metriken
-- ✅ **100% Migration:** Alle 23 Seiten nutzen SmartLayout
-- ✅ **0 Breaking Changes:** Keine neuen Bugs eingeführt
-- ✅ **Performance:** ≤100ms Unterschied (Lighthouse Score)
-- ✅ **Test Coverage:** ≥95% für SmartLayout
+- ✅ **MainLayoutV2 erweitert:** 1 Prop hinzugefügt
+- ✅ **22 Seiten bereinigt:** Container entfernt
+- ✅ **-106 Zeilen Code:** Weniger Code = cleaner
+- ✅ **0 Breaking Changes:** Alle Seiten funktionieren
 
 ### Qualitative Metriken
-- ✅ **User Satisfaction:** Positives Feedback von Vertriebsteam
-- ✅ **Code Quality:** Sonar/ESLint Warnings nicht gestiegen
-- ✅ **Consistency:** Ein Layout-System statt zwei
-- ✅ **Documentation:** DESIGN_SYSTEM.md als Single Source of Truth
+- ✅ **Code Clarity:** Ein Container statt zwei
+- ✅ **Consistency:** Alle Seiten folgen gleichem Muster
+- ✅ **YAGNI Applied:** Nur 1 Prop, keine Overengineering
 
 ### Business Metriken
-- ✅ **Productivity:** Vertriebsmitarbeiter sehen +30% mehr Kunden gleichzeitig
-- ✅ **Support Tickets:** Keine Zunahme (stabiles System)
-- ✅ **Onboarding:** Neue Seiten automatisch optimal (weniger Dev-Zeit)
+- ✅ **Zeit:** 5-6h statt 2-4 Tage (SmartLayout-Ansatz)
+- ✅ **Risiko:** VERY LOW (minimal changes)
+- ✅ **Wartbarkeit:** Einfacher für neue Entwickler
 
 ---
 
@@ -239,127 +362,147 @@ function SmartLayout({ children, pageType }: SmartLayoutProps) {
 
 ### Architektur-Änderungen
 
-**Component-Hierarchie:**
+**Component-Hierarchie (unverändert):**
 ```
 App
-├── SmartLayout (NEW - 23 Usages)
+├── MainLayoutV2 (ENHANCED - 1 neue Prop)
 │   ├── Header
 │   ├── Navigation
-│   └── Content (intelligente Breite)
-└── MainLayoutV2 (DEPRECATED - 0 Usages)
-    ├── Header
-    ├── Navigation
-    └── Content (fixe 1536px)
+│   └── Content (jetzt mit flexibler Breite via Prop)
+└── SmartLayout (EXISTS but UNUSED - 0 Usages)
 ```
 
-**Code-Änderungen pro Seite:**
-```diff
-// Beispiel: CustomersPageV2.tsx
-- import { MainLayoutV2 } from '../layouts/MainLayoutV2';
-+ import { SmartLayout } from '../layouts/SmartLayout';
+**Code-Änderungen:**
 
-function CustomersPageV2() {
-  return (
--   <MainLayoutV2>
-+   <SmartLayout pageType="table">
-      <CustomerList />
--   </MainLayoutV2>
-+   </SmartLayout>
-  );
+**1. MainLayoutV2.tsx Interface**
+```diff
+interface MainLayoutV2Props {
+  children: React.ReactNode;
+  showHeader?: boolean;
+  hideHeader?: boolean;
++ maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm'; // default: 'xl'
 }
 ```
 
-**Geschätzte Änderungen:**
-- 23 Seiten × 3 Zeilen = **69 Zeilen Code** (minimal!)
-- 1 neue Prop (`pageType`) pro Seite
-- 0 Breaking Changes (gleiche API)
+**2. MainLayoutV2.tsx Implementation**
+```diff
+<Box
+  sx={{
+    p: { xs: 2, sm: 3, md: 4 },
+-   maxWidth: 'xl',
++   maxWidth: maxWidth === 'full' ? '100%' : maxWidth || 'xl',
+    mx: 'auto',
+    minHeight: '100vh',
+    position: 'relative',
+    width: '100%',
+    contain: 'layout style',
+  }}
+>
+  {children}
+</Box>
+```
+
+**3. Beispiel-Migrationen**
+
+**Tabellen-Seite (volle Breite):**
+```diff
+// CustomersPageV2.tsx
+- <MainLayoutV2>
++ <MainLayoutV2 maxWidth="full">
+    <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <CustomerListHeader />
+    </Box>
+  </MainLayoutV2>
+```
+
+**Formular-Seite (default xl):**
+```diff
+// LeadDetailPage.tsx
+  <MainLayoutV2>
+-   <Container maxWidth="xl" sx={{ py: 4 }}>
+-     <Typography>Lädt...</Typography>
+-   </Container>
++   <Typography sx={{ py: 4 }}>Lädt...</Typography>
+  </MainLayoutV2>
+```
+
+**Error-Seite (lg):**
+```diff
+// UnauthorizedPage.tsx
+- <MainLayoutV2>
++ <MainLayoutV2 maxWidth="lg">
+-   <Container maxWidth="lg">
+      <Typography>Keine Berechtigung</Typography>
+-   </Container>
+  </MainLayoutV2>
+```
 
 ---
 
 ## 🧪 TESTING-STRATEGIE
 
-### Unit Tests
-```typescript
-// frontend/src/layouts/__tests__/SmartLayout.test.tsx
-describe('SmartLayout', () => {
-  it('should render table layout with 100% width', () => {
-    const { container } = render(
-      <SmartLayout pageType="table">
-        <div>Content</div>
-      </SmartLayout>
-    );
-    expect(container.firstChild).toHaveStyle({ maxWidth: '100%' });
-  });
-
-  it('should render form layout with 800px width', () => {
-    const { container } = render(
-      <SmartLayout pageType="form">
-        <div>Content</div>
-      </SmartLayout>
-    );
-    expect(container.firstChild).toHaveStyle({ maxWidth: '800px' });
-  });
-});
+### Manual Visual Testing (PRIMARY)
+```
+Phase 5 (45 min):
+1. Dev-Server starten: npm run dev
+2. Alle 23 Seiten öffnen + visuell prüfen
+3. Responsive Testing:
+   - Desktop: 1920px (volle Breite für Tabellen?)
+   - Laptop: 1440px (normale Ansicht)
+   - Tablet: 768px (mobile Layout)
+4. Kein Screenshot-Diff nötig (nur visueller Check)
 ```
 
-### Visual Regression Tests
+### Automated Testing (SECONDARY)
 ```bash
-# Playwright Visual Regression
-npx playwright test --update-snapshots  # Baseline erstellen
-npx playwright test                      # Nach Migration prüfen
+# ESLint (0 neue Warnings)
+npm run lint
+
+# Build (0 Errors)
+npm run build
+
+# Optional: Type-Check
+npm run type-check
 ```
 
-### E2E Tests
-```typescript
-// Beispiel: Kundenliste E2E
-test('CustomerList should display full width on large screens', async ({ page }) => {
-  await page.goto('/customers');
-  await page.setViewportSize({ width: 2560, height: 1440 }); // 4K
-  const table = await page.locator('.customer-table');
-  const { width } = await table.boundingBox();
-  expect(width).toBeGreaterThan(2000); // Volle Breite genutzt
-});
+### Git Diff Review (MANDATORY)
+```bash
+# Vor Commit: Review aller Änderungen
+git diff frontend/src/components/layout/MainLayoutV2.tsx
+git diff frontend/src/pages/*.tsx
+
+# Erwartung:
+# - MainLayoutV2.tsx: +4 Zeilen (Interface + Implementation)
+# - 22 Pages: jeweils -5 Zeilen (Container entfernt)
 ```
 
 ---
 
 ## 📅 TIMELINE & MILESTONES
 
-### Milestone 1: Sprint Start (Tag 1)
-- ✅ TRIGGER_SPRINT_2_1_7_0.md erstellt
-- ✅ Feature-Branch angelegt: `feature/sprint-2-1-7-0-design-system-migration`
-- ✅ Team-Briefing (Ziele, Risiken, Timeline)
+**Gesamtdauer: 5-6 Stunden**
 
-### Milestone 2: Vorbereitung Complete (Tag 1 EOD)
-- ✅ SmartLayout.tsx Review abgeschlossen
-- ✅ Test-Strategie definiert
-- ✅ Seiten-Inventar erstellt (23 Seiten kategorisiert)
-- ✅ DESIGN_SYSTEM_V2.md archiviert
+### Milestone 1: Vorbereitung (1 Stunde)
+- ✅ TRIGGER_SPRINT_2_1_7_0.md aktualisiert (Option A dokumentiert)
+- ✅ Feature-Branch angelegt: `feature/sprint-2-1-7-0-layout-cleanup`
+- [ ] Phase 1: MainLayoutV2 erweitern (30 min)
+- [ ] Phase 2: Seiten-Inventar erstellen (30 min)
 
-### Milestone 3: Batch 1 Complete (Tag 2)
-- ✅ 4 Tabellen-Seiten migriert (CustomersPageV2, LeadListPage, TerritoryListPage, OpportunityListPage)
-- ✅ Visual Regression Tests GREEN
-- ✅ E2E Tests GREEN
+### Milestone 2: Implementation (2.5 Stunden)
+- [ ] Batch 1: Tabellen-Seiten (4 Seiten, 45 min)
+- [ ] Batch 2: Formular-Seiten (6 Seiten, 60 min)
+- [ ] Batch 3: Error/Info-Seiten (5 Seiten, 30 min)
+- [ ] Batch 4: Restliche Seiten (7 Seiten, 15 min)
 
-### Milestone 4: Batch 2 Complete (Tag 2 EOD)
-- ✅ 4 Formular-Seiten migriert (LeadDetailPage, LeadWizard, CustomerFormPage, SettingsPage)
-- ✅ User Acceptance Testing mit Vertriebsteam
+### Milestone 3: Dokumentation & Testing (1.5 Stunden)
+- [ ] Phase 4: Dokumentation aktualisieren (30 min)
+- [ ] Phase 5: Testing + Visual Check (45 min)
+- [ ] Git Commit vorbereiten (15 min)
 
-### Milestone 5: Batch 3 + 4 Complete (Tag 3)
-- ✅ 2 Dashboard-Seiten migriert (DashboardPage, AnalyticsPage)
-- ✅ 13 sonstige Seiten migriert
-- ✅ Alle 23 Seiten nutzen SmartLayout
-
-### Milestone 6: Testing Complete (Tag 3 EOD)
-- ✅ Full Regression Testing (alle 23 Seiten)
-- ✅ Performance Testing (Lighthouse Audits)
-- ✅ User Acceptance Testing (Feedback positiv)
-
-### Milestone 7: Cleanup & Deployment (Tag 4)
-- ✅ MainLayoutV2.tsx deprecaten
-- ✅ Dokumentation aktualisiert
-- ✅ PR gemerged → main
-- ✅ Sprint 2.1.7.0 COMPLETE
+### Milestone 4: Review & Merge
+- [ ] User-Review (Stichproben im Browser)
+- [ ] Git Commit (siehe Commit Message Template oben in Git Workflow Policy)
+- [ ] **KEIN git push ohne User-Erlaubnis!** (siehe Git Workflow Policy oben)
 
 ---
 
@@ -367,8 +510,8 @@ test('CustomerList should display full width on large screens', async ({ page })
 
 ### Hard Dependencies (BLOCKING)
 - ✅ Sprint 2.1.7 COMPLETE (ActivityOutcome Feature gemerged)
-- ✅ SmartLayout.tsx existiert (frontend/src/layouts/SmartLayout.tsx)
-- ✅ DESIGN_SYSTEM.md aktuell (definiert SmartLayout als Standard)
+- ✅ MainLayoutV2.tsx existiert (frontend/src/components/layout/MainLayoutV2.tsx)
+- ✅ 23 Seiten nutzen MainLayoutV2 (grep bestätigt)
 
 ### Soft Dependencies (NICHT BLOCKING)
 - ⏳ Opportunities Frontend UI (kann parallel entwickelt werden)
@@ -376,96 +519,126 @@ test('CustomerList should display full width on large screens', async ({ page })
 
 ### Prerequisites
 - ✅ Node.js 18+ & npm 9+
-- ✅ Frontend Dev-Server läuft
-- ✅ Test-Infrastruktur funktioniert (Vitest, Playwright)
-- ✅ Design-Token-System etabliert (MUI Theme V2)
+- ✅ Frontend Dev-Server läuft (`npm run dev`)
+- ✅ Git-Branch angelegt
 
 ---
 
 ## 📚 RELATED DOCUMENTS
 
 ### Planungsdokumente
-- `/docs/planung/DESIGN_SYSTEM.md` - **Aktuelle Spezifikation** (SmartLayout)
-- `/docs/planung/DESIGN_SYSTEM_V2.md` - **Veraltet** (wird archiviert)
+- `/docs/planung/DESIGN_SYSTEM.md` - **Wird aktualisiert** (MainLayoutV2 Reality)
+- `/docs/planung/archiv/design-alt/design/DESIGN_SYSTEM_V2.md` - **Wird gelöscht**
 - `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md` - Master Plan
 - `/docs/planung/PRODUCTION_ROADMAP_2025.md` - Roadmap
 
 ### Technical Documentation
-- `/frontend/src/layouts/SmartLayout.tsx` - **Target Layout**
-- `/frontend/src/layouts/MainLayoutV2.tsx` - **Deprecated Layout**
+- `/frontend/src/components/layout/MainLayoutV2.tsx` - **Wird erweitert** (1 Prop)
+- `/frontend/src/pages/*.tsx` - **22 Seiten bereinigen**
 - `/frontend/README.md` - Frontend Setup
 
-### Testing Documentation
-- `/docs/planung/grundlagen/testing_guide.md` - Testing Standards
-- `/frontend/src/layouts/__tests__/` - Layout Tests
+### Alternative (NICHT gewählt):
+- `/docs/planung/alternatives/OPTION_B_CONVENTION_LAYER.md` - Convention over Configuration (verworfen wegen YAGNI)
+- `/docs/planung/alternatives/OPTION_C_SMART_LAYOUT.md` - SmartLayout Migration (verworfen wegen Overengineering)
 
 ---
 
 ## 🎯 ACCEPTANCE CRITERIA
 
 ### Functional Acceptance
-- [ ] Alle 23 Seiten nutzen SmartLayout
-- [ ] Tabellen nutzen 100% Breite (CustomersPageV2, LeadListPage, etc.)
-- [ ] Formulare nutzen 800px Breite (LeadDetailPage, LeadWizard, etc.)
-- [ ] Dashboards nutzen 100% Breite (DashboardPage, AnalyticsPage)
-- [ ] Keine visuelle Regression (alle Snapshots GREEN)
+- [ ] MainLayoutV2 hat `maxWidth` Prop (default: 'xl')
+- [ ] 22 Seiten haben keine doppelten Container mehr
+- [ ] Alle 23 Seiten funktionieren wie vorher (0 Breaking Changes)
+- [ ] Visual Check: Keine Layout-Unterschiede (außer explizite Prop-Änderungen)
 
 ### Technical Acceptance
-- [ ] MainLayoutV2.tsx deprecaten (mit Warnung)
-- [ ] DESIGN_SYSTEM.md als Single Source of Truth
-- [ ] Test Coverage ≥95% für SmartLayout
-- [ ] Performance: Lighthouse Score ≥95 (keine Verschlechterung)
-- [ ] ESLint/Sonar: 0 neue Warnings
+- [ ] ESLint: 0 neue Warnings
+- [ ] Build: SUCCESS (npm run build)
+- [ ] Type-Check: SUCCESS (TypeScript)
+- [ ] Git Diff: +4 Zeilen MainLayoutV2, -110 Zeilen Pages
 
-### Business Acceptance
-- [ ] User Acceptance Testing positiv (Vertriebsteam)
-- [ ] Support-Team gebrieft (keine neuen Tickets)
-- [ ] Produktivität messbar gestiegen (+30% mehr Kunden sichtbar)
-- [ ] Onboarding-Zeit für neue Seiten reduziert (automatische Optimierung)
+### Documentation Acceptance
+- [ ] DESIGN_SYSTEM.md aktualisiert (beschreibt MainLayoutV2 Reality, ~30 Zeilen)
+- [ ] DESIGN_SYSTEM_V2.md gelöscht (nicht archiviert)
+- [ ] TRIGGER_SPRINT_2_1_7_0.md finalisiert (Option A dokumentiert)
 
 ---
 
-## 📝 NOTES & OPEN QUESTIONS
+## 📝 NOTES & LEARNINGS
 
-### Open Questions
-1. **Rollout-Strategie:** Alle 23 Seiten gleichzeitig oder schrittweise?
-   - **Empfehlung:** Schrittweise (Batch 1-4), um Risiko zu minimieren
-2. **Backward Compatibility:** MainLayoutV2 komplett entfernen oder deprecaten?
-   - **Empfehlung:** Deprecaten (mit Warnung), entfernen in 2-3 Monaten
-3. **User Communication:** Wie informieren wir User über Layout-Änderungen?
-   - **Empfehlung:** Release Notes + In-App-Hinweis ("Wir haben das Layout für große Monitore optimiert")
+### Warum Option A (Minimal)?
 
-### Future Enhancements (Out of Scope)
-- Responsive Breakpoints (Mobile-Optimierung) → Sprint 2.1.8
-- Dark Mode Support → Sprint 2.1.9
-- Custom Themes (pro User) → Sprint 2.2.0
+**Verworfen: SmartLayout Migration (ursprünglicher Plan)**
+- ❌ SmartLayout existiert, aber ungenutzt (0/23 Seiten)
+- ❌ Auto-Detection fragil (pathname.includes('/list') = String-Matching)
+- ❌ Production Bugs (minification bricht element.type.name)
+- ❌ 2-4 Tage Aufwand für theoretisches System
+
+**Verworfen: Option B (Convention Layer)**
+- ❌ YAGNI: Wir brauchen JETZT keine Auto-Detection
+- ❌ String-Matching fragil (pathname.includes = false positives)
+- ❌ User hat keine Probleme mit aktuellem Layout (Screenshot bestätigt)
+
+**Gewählt: Option A (Minimal)**
+- ✅ 1 Prop = simpelste Lösung
+- ✅ Explizit statt implizit (klar, wartbar)
+- ✅ 5-6h statt 2-4 Tage
+- ✅ YAGNI Applied: Nur was JETZT gebraucht wird
+
+### External AI Feedback (berücksichtigt)
+> "4 Props sind Premature Optimization. [...] Das ist wieder Overengineering - aber diesmal in der Doku! [...] Convention over Configuration ist elegant, aber: YAGNI! [...] DESIGN_SYSTEM_V2.md sollte GELÖSCHT werden, nicht archiviert - falsche Konzepte verdienen kein Archiv."
+
+**Angewendet:**
+- ✅ Nur 1 Prop (maxWidth)
+- ✅ Dokumentation minimal (30 Zeilen DESIGN_SYSTEM.md)
+- ✅ Keine Convention Layer (YAGNI)
+- ✅ DESIGN_SYSTEM_V2.md LÖSCHEN statt archivieren
+
+### Open Questions (RESOLVED)
+1. **Brauchen wir `variant` Prop für Padding?**
+   → ❌ NEIN (User-Screenshot bestätigt: Cockpit hat kein Padding-Problem)
+
+2. **Brauchen wir Auto-Detection?**
+   → ❌ NEIN (YAGNI! User hat keine Probleme mit manuellem Prop-Setzen)
+
+3. **Sollen wir SmartLayout migrieren?**
+   → ❌ NEIN (existiert, aber ungenutzt - nicht production-ready)
 
 ---
 
-## 🚀 NEXT STEPS
+## 🚀 NEXT STEPS (für nächste Session)
 
-1. **Erstelle Feature-Branch:**
+### Sofort starten:
+1. **Feature-Branch anlegen:**
    ```bash
    git checkout main
    git pull
-   git checkout -b feature/sprint-2-1-7-0-design-system-migration
+   git checkout -b feature/sprint-2-1-7-0-layout-cleanup
    ```
 
-2. **Registriere Sprint in TRIGGER_INDEX.md**
+2. **Phase 1: MainLayoutV2 erweitern** (30 min)
+   - Interface: `maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm'`
+   - Implementation: `maxWidth || 'xl'` (default)
 
-3. **Aktualisiere PRODUCTION_ROADMAP_2025.md:**
-   - Sprint 2.1.7.0 Status: IN PROGRESS
-   - Next Action: Phase 1 - Vorbereitung
+3. **Phase 2: Seiten-Inventar** (30 min)
+   - Alle 23 Seiten analysieren
+   - Kategorisieren: full/xl/lg/md/sm
 
-4. **Starte Phase 1: Vorbereitung**
-   - SmartLayout.tsx Review
-   - Seiten-Inventar erstellen
-   - Test-Strategie finalisieren
+4. **Phase 3-5: Implementation + Testing** (4 Stunden)
+   - Batches 1-4 abarbeiten
+   - Visual Testing
+   - Dokumentation aktualisieren
+
+### Nach Implementierung:
+- **User-Review** (Stichproben im Browser)
+- **Git Commit** (mit Template-Message)
+- **WARTEN auf User-Erlaubnis für `git push`!**
 
 ---
 
-**Created:** 2025-10-14
+**Created:** 2025-10-14 13:25
+**Updated:** 2025-10-14 14:30 (Option A Dokumentation)
 **Author:** @joergstreeck + Claude
-**Sprint Type:** Refactoring & UI Consistency
-**Priority:** HIGH
-**Status:** ⏳ PENDING (wartet auf Genehmigung)
+**Sprint Type:** Refactoring & Code Cleanup
+**Priority:** MEDIUM (Technische Schuld)
+**Status:** 📝 DOKUMENTATION COMPLETE, READY FOR IMPLEMENTATION

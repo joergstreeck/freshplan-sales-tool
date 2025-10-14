@@ -37,22 +37,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Check for auth bypass mode first
   if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
     // Provide mock auth context for development
+    // NOTE: All roles are lowercase for consistency with frontend role checks
     const mockContext: AuthContextType = {
       user: {
         id: 'dev-user',
         name: 'Dev User',
         email: 'dev@freshplan.de',
         username: 'devuser',
-        roles: ['ADMIN', 'MANAGER', 'SALES'],
+        roles: ['admin', 'manager', 'sales', 'auditor'],
       },
       isAuthenticated: true,
       isLoading: false,
       login: async () => {},
       logout: () => {},
       token: 'mock-dev-token',
-      hasRole: (role: string) => ['ADMIN', 'MANAGER', 'SALES'].includes(role.toUpperCase()),
+      hasRole: (role: string) => ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase()),
       hasAnyRole: (roles: string[]) =>
-        roles.some(role => ['ADMIN', 'MANAGER', 'SALES'].includes(role.toUpperCase())),
+        roles.some(role => ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase())),
       getValidToken: async () => 'mock-dev-token',
       refreshToken: async () => true,
       authInfo: () => ({ mockAuth: true }),
@@ -86,8 +87,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout: keycloak.logout,
     token: keycloak.token || null,
-    hasRole: keycloak.hasRole,
-    hasAnyRole: (roles: string[]) => roles.some(role => keycloak.hasRole(role)),
+    hasRole: (role: string) => keycloak.hasRole(role.toLowerCase()),
+    hasAnyRole: (roles: string[]) => roles.some(role => keycloak.hasRole(role.toLowerCase())),
     getValidToken: async () => {
       if (!keycloak.isAuthenticated) return null;
 
