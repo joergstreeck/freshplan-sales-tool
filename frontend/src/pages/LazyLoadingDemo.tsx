@@ -9,7 +9,7 @@
  */
 
 import React from 'react';
-import { Box, Container, Typography, Paper, Stack, Chip, Alert, Grid } from '@mui/material';
+import { Box, Typography, Paper, Stack, Chip, Alert, Grid } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { LazyImage } from '../components/common/LazyImage';
 import { LazyComponent } from '../components/common/LazyComponent';
@@ -58,7 +58,7 @@ export function LazyLoadingDemo() {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom>
           Lazy Loading Demo
         </Typography>
@@ -241,7 +241,7 @@ export function LazyLoadingDemo() {
             </Stack>
           </Paper>
         </Stack>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Container,
   Typography,
   Grid,
   Card,
@@ -13,6 +12,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  useTheme,
 } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
@@ -23,71 +23,72 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 
-const helpSections = {
-  'erste-schritte': {
-    title: '🚀 Erste Schritte',
-    icon: <RocketLaunchIcon sx={{ fontSize: 40, color: '#94C456' }} />,
-    description: 'Schnelleinstieg in FreshPlan',
-    items: [
-      { title: 'Willkommen bei FreshPlan', content: 'Lernen Sie die Grundlagen kennen' },
-      { title: 'Erste Anmeldung', content: 'So melden Sie sich zum ersten Mal an' },
-      { title: 'Dashboard verstehen', content: 'Überblick über Ihr persönliches Cockpit' },
-      { title: 'Ersten Kunden anlegen', content: 'Schritt-für-Schritt Anleitung' },
-      { title: 'Angebot erstellen', content: 'Ihr erstes Angebot in 5 Minuten' },
-    ],
-  },
-  handbuecher: {
-    title: '📖 Handbücher',
-    icon: <MenuBookIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
-    description: 'Detaillierte Anleitungen',
-    items: [
-      { title: 'Kundenverwaltung', content: 'Alles über Kunden, Kontakte und Standorte' },
-      { title: 'Angebotserstellung', content: 'Professionelle Angebote erstellen' },
-      { title: 'Benutzerverwaltung', content: 'Benutzer und Rollen verwalten' },
-      { title: 'Berichte & Auswertungen', content: 'Daten analysieren und exportieren' },
-      { title: 'Systemeinstellungen', content: 'FreshPlan an Ihre Bedürfnisse anpassen' },
-    ],
-  },
-  videos: {
-    title: '🎥 Video-Tutorials',
-    icon: <VideoLibraryIcon sx={{ fontSize: 40, color: '#94C456' }} />,
-    description: 'Lernen mit Videos',
-    items: [
-      { title: 'FreshPlan in 10 Minuten', content: 'Kompakter Überblick', duration: '10:23' },
-      { title: 'Kundenwizard erklärt', content: 'Neuen Kunden optimal anlegen', duration: '8:45' },
-      { title: 'Tipps & Tricks', content: 'Effizienter arbeiten mit FreshPlan', duration: '12:15' },
-      { title: 'Reporting Masterclass', content: 'Berichte wie ein Profi', duration: '15:30' },
-    ],
-  },
-  faq: {
-    title: '❓ Häufige Fragen',
-    icon: <HelpOutlineIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
-    description: 'Antworten auf häufige Fragen',
-    items: [
-      { title: 'Wie importiere ich Kundendaten?', category: 'Datenimport' },
-      { title: 'Kann ich Angebote duplizieren?', category: 'Angebote' },
-      { title: 'Wie ändere ich mein Passwort?', category: 'Account' },
-      { title: 'Was bedeuten die Status-Farben?', category: 'System' },
-      { title: 'Wie exportiere ich Berichte?', category: 'Export' },
-    ],
-  },
-  support: {
-    title: '💬 Support kontaktieren',
-    icon: <SupportAgentIcon sx={{ fontSize: 40, color: '#94C456' }} />,
-    description: 'Wir helfen Ihnen gerne',
-    contactInfo: {
-      email: 'support@freshplan.de',
-      phone: '+49 (0) 123 456789',
-      hours: 'Mo-Fr 8:00 - 18:00 Uhr',
-    },
-  },
-};
-
 export const HelpCenterPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const theme = useTheme();
   const pathParts = location.pathname.split('/');
   const currentSection = pathParts[2] || '';
+
+  const helpSections = {
+    'erste-schritte': {
+      title: '🚀 Erste Schritte',
+      icon: <RocketLaunchIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
+      description: 'Schnelleinstieg in FreshPlan',
+      items: [
+        { title: 'Willkommen bei FreshPlan', content: 'Lernen Sie die Grundlagen kennen' },
+        { title: 'Erste Anmeldung', content: 'So melden Sie sich zum ersten Mal an' },
+        { title: 'Dashboard verstehen', content: 'Überblick über Ihr persönliches Cockpit' },
+        { title: 'Ersten Kunden anlegen', content: 'Schritt-für-Schritt Anleitung' },
+        { title: 'Angebot erstellen', content: 'Ihr erstes Angebot in 5 Minuten' },
+      ],
+    },
+    handbuecher: {
+      title: '📖 Handbücher',
+      icon: <MenuBookIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
+      description: 'Detaillierte Anleitungen',
+      items: [
+        { title: 'Kundenverwaltung', content: 'Alles über Kunden, Kontakte und Standorte' },
+        { title: 'Angebotserstellung', content: 'Professionelle Angebote erstellen' },
+        { title: 'Benutzerverwaltung', content: 'Benutzer und Rollen verwalten' },
+        { title: 'Berichte & Auswertungen', content: 'Daten analysieren und exportieren' },
+        { title: 'Systemeinstellungen', content: 'FreshPlan an Ihre Bedürfnisse anpassen' },
+      ],
+    },
+    videos: {
+      title: '🎥 Video-Tutorials',
+      icon: <VideoLibraryIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
+      description: 'Lernen mit Videos',
+      items: [
+        { title: 'FreshPlan in 10 Minuten', content: 'Kompakter Überblick', duration: '10:23' },
+        { title: 'Kundenwizard erklärt', content: 'Neuen Kunden optimal anlegen', duration: '8:45' },
+        { title: 'Tipps & Tricks', content: 'Effizienter arbeiten mit FreshPlan', duration: '12:15' },
+        { title: 'Reporting Masterclass', content: 'Berichte wie ein Profi', duration: '15:30' },
+      ],
+    },
+    faq: {
+      title: '❓ Häufige Fragen',
+      icon: <HelpOutlineIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
+      description: 'Antworten auf häufige Fragen',
+      items: [
+        { title: 'Wie importiere ich Kundendaten?', category: 'Datenimport' },
+        { title: 'Kann ich Angebote duplizieren?', category: 'Angebote' },
+        { title: 'Wie ändere ich mein Passwort?', category: 'Account' },
+        { title: 'Was bedeuten die Status-Farben?', category: 'System' },
+        { title: 'Wie exportiere ich Berichte?', category: 'Export' },
+      ],
+    },
+    support: {
+      title: '💬 Support kontaktieren',
+      icon: <SupportAgentIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
+      description: 'Wir helfen Ihnen gerne',
+      contactInfo: {
+        email: 'support@freshplan.de',
+        phone: '+49 (0) 123 456789',
+        hours: 'Mo-Fr 8:00 - 18:00 Uhr',
+      },
+    },
+  };
 
   const section = helpSections[currentSection as keyof typeof helpSections];
 
@@ -95,10 +96,10 @@ export const HelpCenterPage: React.FC = () => {
     // Hauptseite des Hilfe-Centers
     return (
       <MainLayoutV2>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ py: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
           >
             Hilfe-Center
           </Typography>
@@ -133,7 +134,7 @@ export const HelpCenterPage: React.FC = () => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: '#94C456' }}>
+                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: theme.palette.primary.main }}>
                       Öffnen
                     </Button>
                   </CardActions>
@@ -141,7 +142,7 @@ export const HelpCenterPage: React.FC = () => {
               </Grid>
             ))}
           </Grid>
-        </Container>
+        </Box>
       </MainLayoutV2>
     );
   }
@@ -150,7 +151,7 @@ export const HelpCenterPage: React.FC = () => {
     // Unterseite
     return (
       <MainLayoutV2>
-        <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ py: 4 }}>
           <Button onClick={() => navigate('/hilfe')} sx={{ mb: 2 }}>
             ← Zurück zur Übersicht
           </Button>
@@ -159,7 +160,7 @@ export const HelpCenterPage: React.FC = () => {
             {section.icon}
             <Typography
               variant="h3"
-              sx={{ ml: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+              sx={{ ml: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
             >
               {section.title}
             </Typography>
@@ -202,8 +203,8 @@ export const HelpCenterPage: React.FC = () => {
                     <Button
                       variant="contained"
                       sx={{
-                        backgroundColor: '#94C456',
-                        '&:hover': { backgroundColor: '#7BA347' },
+                        backgroundColor: theme.palette.primary.main,
+                        '&:hover': { backgroundColor: theme.palette.primary.dark },
                       }}
                     >
                       Support-Ticket erstellen
@@ -238,7 +239,7 @@ export const HelpCenterPage: React.FC = () => {
               ))}
             </List>
           )}
-        </Container>
+        </Box>
       </MainLayoutV2>
     );
   }
@@ -246,9 +247,9 @@ export const HelpCenterPage: React.FC = () => {
   // Fallback
   return (
     <MainLayoutV2>
-      <Container>
+      <Box sx={{ py: 4 }}>
         <Typography>Seite nicht gefunden</Typography>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 };
