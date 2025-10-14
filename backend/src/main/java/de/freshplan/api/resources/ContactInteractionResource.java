@@ -4,11 +4,13 @@ import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.service.ContactInteractionService;
 import de.freshplan.domain.customer.service.DataHygieneService;
+import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.dto.DataFreshnessLevel;
 import de.freshplan.domain.customer.service.dto.DataQualityMetricsDTO;
 import de.freshplan.domain.customer.service.dto.DataQualityScore;
 import de.freshplan.domain.customer.service.dto.WarmthScoreDTO;
+import de.freshplan.domain.customer.service.mapper.ContactMapper;
 import io.quarkus.panache.common.Page;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
@@ -41,6 +43,8 @@ public class ContactInteractionResource {
   @Inject DataHygieneService dataHygieneService;
 
   @Inject ContactRepository contactRepository;
+
+  @Inject ContactMapper contactMapper;
 
   @POST
   @Operation(summary = "Create a new contact interaction")
@@ -216,7 +220,13 @@ public class ContactInteractionResource {
     try {
       DataFreshnessLevel level = DataFreshnessLevel.valueOf(levelStr.toUpperCase());
       List<CustomerContact> contacts = dataHygieneService.findContactsByFreshnessLevel(level);
-      return Response.ok(contacts).build();
+
+      // Convert entities to DTOs to avoid LazyInitializationException
+      List<ContactDTO> contactDTOs = contacts.stream()
+          .map(contactMapper::toDTO)
+          .toList();
+
+      return Response.ok(contactDTOs).build();
     } catch (IllegalArgumentException e) {
       return Response.status(Response.Status.BAD_REQUEST)
           .entity("Invalid freshness level: " + levelStr)
