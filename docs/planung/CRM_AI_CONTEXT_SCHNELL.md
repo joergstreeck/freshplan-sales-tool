@@ -32,7 +32,7 @@
 - **NIEMALS Nummern hardcoden!** `./scripts/get-next-migration.sh` nutzen!
 
 ### Latest Sprint
-- **Sprint 2.1.7.0 (14.10.2025):** Design System Migration + Layout System Cleanup ✅ IN PROGRESS
+- **Sprint 2.1.7.0 (14.10.2025):** Design System Migration + CRM_AI_CONTEXT Restructure ✅ COMPLETE
 - **Sprint 2.1.7 (14.10.2025):** ActivityOutcome Enum + Opportunity Backend + Customer Number Sequence ✅ COMPLETE
 
 ---
