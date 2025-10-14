@@ -155,15 +155,24 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Artefakt:** [ENUM_MIGRATION_STRATEGY.md](features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md)
    - Status: ✅ PHASE 1 COMPLETE (12.10.2025) - Phase 2+3 SKIPPED
 
-✅ TRIGGER_SPRINT_2_1_7.md - Opportunity Backend Integration (✅ COMPLETE - 13.10.2025)
+✅ TRIGGER_SPRINT_2_1_7.md - ActivityOutcome + Opportunity Backend + Code Review Fixes (✅ COMPLETE - 14.10.2025)
    - **Lead → Opportunity → Customer Workflow** (V10026 Migration)
    - **OpportunityService:** 3 Service-Methoden (createFromLead, convertToCustomer, createForCustomer)
    - **REST APIs:** 3 Endpoints für vollständigen Lifecycle
    - **DEV-SEED:** V90003 mit 10 realistischen Opportunities
    - **Lead Status Fix:** Automatisches CONVERTED setzen bei Opportunity-Erstellung
-   - **Migrations:** V10026 (lead_id FK + customer_id FK)
-   - **Tests:** Backend komplett (OpportunityService + REST API)
-   - Status: ✅ COMPLETE (Backend fertig, Frontend in Sprint 2.1.7.1)
+   - **ActivityOutcome Enum:** V10027 (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED)
+   - **Customer Number Sequence:** V10028 (Race Condition Fix - production-ready)
+   - **Code Review Fixes:** 10 Issues (6 Code Review + 3 Pre-existing Tests + 1 CI ESLint)
+     - ✅ Fix #1 - CRITICAL: Race Condition in generateCustomerNumber() (V10028 sequence)
+     - ✅ Fix #2-3 - Clock Injection Pattern (Issue #127: 12 replacements in GlobalExceptionMapper + LeadResource)
+     - ✅ Fix #4-6 - Code Quality (Redundant persist(), Return Type Consistency, Cascading Fixes)
+     - ✅ Fix #7-9 - Pre-existing Tests (FollowUpAutomationServiceTest, CustomerRepositoryTest, DEV-SEED Auto-Recovery)
+     - ✅ Fix #10 - CI ESLint (ActivityDialog.test.tsx)
+   - **Migrations:** V10026 (Opportunity FKs), V10027 (ActivityOutcome), V10028 (customer_number_seq), V90003 (DEV-SEED)
+   - **Tests:** 60/60 Backend GREEN (100%) + Frontend ESLint GREEN ✅
+   - **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
+   - Status: ✅ COMPLETE - PR #139 READY FOR MERGE (14.10.2025)
 
 📋 TRIGGER_SPRINT_2_1_7_1.md - Opportunities UI Integration (NEU 13.10.2025)
    - **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog + Button)
