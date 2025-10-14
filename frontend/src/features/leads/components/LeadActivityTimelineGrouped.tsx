@@ -130,9 +130,7 @@ function getOutcomeInfo(outcome: string): { label: string; color: string; icon: 
     DISQUALIFIED: { label: 'Disqualifiziert', color: '#9E9E9E', icon: '⛔' },
   };
 
-  return (
-    outcomeMap[outcome] || { label: outcome, color: '#757575', icon: '❓' }
-  );
+  return outcomeMap[outcome] || { label: outcome, color: '#757575', icon: '❓' };
 }
 
 export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGroupedProps) {
@@ -206,12 +204,13 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
     const activityDate = new Date(activity.activityDate);
 
     return (
-      <ListItem key={activity.id} sx={{ py: 1.5, alignItems: 'flex-start', flexDirection: 'column' }}>
+      <ListItem
+        key={activity.id}
+        sx={{ py: 1.5, alignItems: 'flex-start', flexDirection: 'column' }}
+      >
         <Box sx={{ display: 'flex', width: '100%', alignItems: 'flex-start' }}>
           <ListItemAvatar>
-            <Avatar sx={{ bgcolor: color, width: 32, height: 32 }}>
-              {icon}
-            </Avatar>
+            <Avatar sx={{ bgcolor: color, width: 32, height: 32 }}>{icon}</Avatar>
           </ListItemAvatar>
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -367,7 +366,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
           <Select
             value={typeFilter}
             label="Aktivitätstyp"
-            onChange={(e) => setTypeFilter(e.target.value)}
+            onChange={e => setTypeFilter(e.target.value)}
           >
             <MenuItem value="ALL">Alle anzeigen</MenuItem>
             <MenuItem value="CALL">📞 Anrufe</MenuItem>
@@ -386,7 +385,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
           <Select
             value={outcomeFilter}
             label="Ergebnis"
-            onChange={(e) => setOutcomeFilter(e.target.value)}
+            onChange={e => setOutcomeFilter(e.target.value)}
           >
             <MenuItem value="ALL">Alle anzeigen</MenuItem>
             <MenuItem value="SUCCESSFUL">✅ Erfolgreich</MenuItem>
@@ -401,12 +400,7 @@ export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGrou
 
         {/* Reset Button (conditional) */}
         {(typeFilter !== 'ALL' || outcomeFilter !== 'ALL') && (
-          <Button
-            variant="outlined"
-            size="small"
-            onClick={handleResetFilters}
-            sx={{ height: 40 }}
-          >
+          <Button variant="outlined" size="small" onClick={handleResetFilters} sx={{ height: 40 }}>
             Filter zurücksetzen
           </Button>
         )}

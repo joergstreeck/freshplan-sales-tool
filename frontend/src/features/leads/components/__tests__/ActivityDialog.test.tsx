@@ -72,9 +72,7 @@ describe('ActivityDialog', () => {
   });
 
   it('renders dialog with all form fields when open', () => {
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Verify dialog title
     expect(screen.getByText('Neue Aktivität erfassen')).toBeInTheDocument();
@@ -90,9 +88,7 @@ describe('ActivityDialog', () => {
   });
 
   it('does not render when open prop is false', () => {
-    render(
-      <ActivityDialog open={false} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={false} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     expect(screen.queryByText('Neue Aktivität erfassen')).not.toBeInTheDocument();
   });
@@ -100,9 +96,7 @@ describe('ActivityDialog', () => {
   it('allows selecting activity type', async () => {
     // Setup user interaction (prefixed with _ because not used in this specific test)
     const _user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Verify activity type select exists with default value
     const activityTypeSelect = screen.getByLabelText(/Aktivitätstyp/i);
@@ -115,9 +109,7 @@ describe('ActivityDialog', () => {
 
   it('allows entering description text', async () => {
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
     await user.type(descriptionField, 'Test activity description');
@@ -128,9 +120,7 @@ describe('ActivityDialog', () => {
   });
 
   it('shows validation error when description is empty', async () => {
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Submit button should be disabled when description is empty
     const submitButton = screen.getByRole('button', { name: /Speichern/i });
@@ -142,9 +132,7 @@ describe('ActivityDialog', () => {
   });
 
   it('renders activity outcome dropdown', async () => {
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Verify outcome dropdown exists
     const outcomeSelect = screen.getByLabelText(/Ergebnis \(optional\)/i);
@@ -156,9 +144,7 @@ describe('ActivityDialog', () => {
 
   it('submits form successfully with description field filled', async () => {
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Fill form fields
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
@@ -177,9 +163,7 @@ describe('ActivityDialog', () => {
 
   it('submits form successfully without outcome (backward compatibility)', async () => {
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Fill only required fields
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
@@ -200,17 +184,12 @@ describe('ActivityDialog', () => {
     // Override MSW handler to return error
     server.use(
       http.post('http://localhost:8080/api/leads/:leadId/activities', () => {
-        return HttpResponse.json(
-          { error: 'Invalid activity outcome: XYZ' },
-          { status: 400 }
-        );
+        return HttpResponse.json({ error: 'Invalid activity outcome: XYZ' }, { status: 400 });
       })
     );
 
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Fill form
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
@@ -232,9 +211,7 @@ describe('ActivityDialog', () => {
 
   it('resets form on cancel', async () => {
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Fill form fields
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
@@ -249,9 +226,7 @@ describe('ActivityDialog', () => {
   });
 
   it('disables submit button when description is empty', () => {
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     const submitButton = screen.getByRole('button', { name: /Speichern/i });
     expect(submitButton).toBeDisabled();
@@ -259,9 +234,7 @@ describe('ActivityDialog', () => {
 
   it('enables submit button when description is filled', async () => {
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
     await user.type(descriptionField, 'Valid description');
@@ -280,9 +253,7 @@ describe('ActivityDialog', () => {
     );
 
     const user = userEvent.setup();
-    render(
-      <ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />
-    );
+    render(<ActivityDialog open={true} onClose={mockOnClose} leadId={123} onSave={mockOnSave} />);
 
     // Fill form
     const descriptionField = screen.getByLabelText(/Beschreibung/i);
