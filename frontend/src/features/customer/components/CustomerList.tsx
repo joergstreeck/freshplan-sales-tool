@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
+import { useTheme } from '@mui/material';
 import { useCustomers } from '../api/customerQueries';
 import type { CustomerResponse } from '../types/customer.types';
 import {
   customerTypeLabels,
   customerStatusLabels,
   industryLabels,
-  customerStatusColors,
+  getCustomerStatusColor,
 } from '../types/customer.types';
 import { LoadingSpinner } from '../../../components/ui/LoadingSpinner';
 import { UniversalExportButton } from '../../../components/export';
 import './CustomerList.css';
 
 export const CustomerList: React.FC = () => {
+  const theme = useTheme();
   const [currentPage, setCurrentPage] = useState(0);
   const [sortBy, setSortBy] = useState('companyName');
   const pageSize = 50; // Erhöht von 20 auf 50 für bessere Übersicht
@@ -147,7 +149,7 @@ export const CustomerList: React.FC = () => {
                 <td>
                   <span
                     className="status-badge"
-                    style={{ backgroundColor: customerStatusColors[customer.status] }}
+                    style={{ backgroundColor: getCustomerStatusColor(customer.status, theme) }}
                   >
                     {customerStatusLabels[customer.status]}
                   </span>
@@ -162,10 +164,10 @@ export const CustomerList: React.FC = () => {
                         width: `${customer.riskScore}%`,
                         backgroundColor:
                           customer.riskScore > 70
-                            ? '#F44336'
+                            ? theme.palette.error.main
                             : customer.riskScore > 40
-                              ? '#FF9800'
-                              : '#4CAF50',
+                              ? theme.palette.warning.main
+                              : theme.palette.success.main,
                       }}
                     />
                     <span className="risk-score">{customer.riskScore}%</span>

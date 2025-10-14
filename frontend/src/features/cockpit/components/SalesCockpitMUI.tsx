@@ -40,7 +40,7 @@ export function SalesCockpitMUI() {
         gutterBottom
         sx={{ color: 'primary.main', fontWeight: 'bold' }}
       >
-        FreshPlan Sales Command Center
+        FreshPlan Vertriebsübersicht
       </Typography>
 
       {/* Dashboard Stats */}
