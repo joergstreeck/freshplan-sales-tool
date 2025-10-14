@@ -94,14 +94,74 @@ start_postgres() {
     check_service "PostgreSQL" 5432
 }
 
+# DEV-SEED Check & Auto-Load
+check_and_load_dev_seed() {
+    echo -e "${BLUE}🌱 Prüfe DEV-SEED Daten...${NC}"
+
+    # Prüfe ob Backend läuft
+    if ! check_service "Backend" 8080 > /dev/null 2>&1; then
+        echo -e "${YELLOW}⚠️  Backend nicht aktiv - überspringe DEV-SEED Check${NC}"
+        return 0
+    fi
+
+    # Prüfe ob Lead 90001 existiert
+    local lead_check=$(curl -s http://localhost:8080/api/leads/90001 2>/dev/null)
+
+    if echo "$lead_check" | grep -q "Café Amadeus"; then
+        echo -e "${GREEN}✅ DEV-SEED Daten vorhanden (Lead 90001 gefunden)${NC}"
+        return 0
+    fi
+
+    echo -e "${YELLOW}⚠️  DEV-SEED Daten fehlen - lade sie jetzt...${NC}"
+
+    # Wechsel ins Backend-Verzeichnis
+    local backend_dir="$PROJECT_ROOT/backend"
+    if [[ ! -d "$backend_dir" ]]; then
+        echo -e "${RED}❌ Backend-Verzeichnis nicht gefunden!${NC}"
+        return 1
+    fi
+
+    cd "$backend_dir"
+
+    # Flyway Migrate mit DEV-SEED locations
+    echo -e "${CYAN}Führe Flyway Migrate mit DEV-SEED locations aus...${NC}"
+
+    if [[ -f "./mvnw" ]]; then
+        ./mvnw flyway:migrate \
+            -Dflyway.locations=classpath:db/migration,classpath:db/dev-migration,classpath:db/dev-seed \
+            -Dflyway.outOfOrder=true \
+            2>&1 | grep -E "Migrating|Successfully applied|V90"
+    else
+        echo -e "${RED}❌ Maven Wrapper nicht gefunden!${NC}"
+        return 1
+    fi
+
+    # Verifiziere dass Lead 90001 jetzt existiert
+    sleep 2
+    lead_check=$(curl -s http://localhost:8080/api/leads/90001 2>/dev/null)
+
+    if echo "$lead_check" | grep -q "Café Amadeus"; then
+        echo -e "${GREEN}✅ DEV-SEED Daten erfolgreich geladen!${NC}"
+        echo -e "${CYAN}   Lead 90001: Café Amadeus Berlin${NC}"
+        echo -e "${CYAN}   Lead 90006: Bäckerei Schmidt Nürnberg${NC}"
+        echo -e "${CYAN}   Insgesamt: 10 Leads (90001-90010)${NC}"
+        return 0
+    else
+        echo -e "${RED}❌ DEV-SEED Laden fehlgeschlagen${NC}"
+        return 1
+    fi
+}
+
 # Backend starten
 start_backend() {
     echo -e "${BLUE}☕ Prüfe Backend...${NC}"
-    
+
     if check_service "Quarkus Backend" 8080; then
+        # Backend läuft bereits - prüfe DEV-SEED
+        check_and_load_dev_seed
         return 0
     fi
-    
+
     local backend_dir="$PROJECT_ROOT/backend"
     if [[ ! -d "$backend_dir" ]]; then
         # Vielleicht sind wir schon im backend Ordner?
@@ -112,11 +172,11 @@ start_backend() {
             return 1
         fi
     fi
-    
+
     cd "$backend_dir"
-    
+
     echo -e "${CYAN}Starte Quarkus Backend...${NC}"
-    
+
     # Maven Wrapper verwenden wenn vorhanden
     if [[ -f "./mvnw" ]]; then
         echo "Verwende Maven Wrapper..."
@@ -128,19 +188,23 @@ start_backend() {
         echo -e "${RED}❌ Maven nicht gefunden! Installiere Maven oder verwende ./mvnw${NC}"
         return 1
     fi
-    
+
     echo -e "${YELLOW}⏳ Warte auf Backend-Start (max 30 Sekunden)...${NC}"
     local count=0
     while [[ $count -lt 30 ]]; do
         if curl -s http://localhost:8080/q/health >/dev/null 2>&1; then
             echo -e "${GREEN}✅ Backend erfolgreich gestartet!${NC}"
+
+            # Nach Backend-Start: DEV-SEED prüfen und laden
+            check_and_load_dev_seed
+
             return 0
         fi
         sleep 1
         count=$((count + 1))
         echo -n "."
     done
-    
+
     echo -e "${RED}❌ Backend Start fehlgeschlagen. Log: /tmp/quarkus.log${NC}"
     tail -20 /tmp/quarkus.log
     return 1

@@ -583,14 +583,23 @@ public class OpportunityService {
   /**
    * Generates next customer number in format KD-XXXXX.
    *
-   * <p>Simple sequential implementation. Can be enhanced with more sophisticated numbering schemes
-   * if needed.
+   * <p>Uses PostgreSQL sequence for atomic, guaranteed-unique customer numbers.
+   * This prevents race conditions when multiple concurrent requests create customers.
+   *
+   * <p>Migration V10028 creates the sequence and initializes it.
    *
    * @return generated customer number (e.g., "KD-00001")
+   * @since Sprint 2.1.7 Code Review Fix (Race Condition)
    */
   private String generateCustomerNumber() {
-    long count = customerRepository.count();
-    return String.format("KD-%05d", count + 1);
+    // Use PostgreSQL sequence for atomic number generation (race condition safe)
+    Long nextVal =
+        (Long)
+            customerRepository
+                .getEntityManager()
+                .createNativeQuery("SELECT nextval('customer_number_seq')")
+                .getSingleResult();
+    return String.format("KD-%05d", nextVal);
   }
 
   /**
@@ -615,13 +624,13 @@ public class OpportunityService {
    *
    * @param customerId ID of the customer
    * @param request Opportunity data (type, value, timeline)
-   * @return Created opportunity entity
+   * @return Created opportunity response DTO (Sprint 2.1.7 Code Review Fix: Consistency)
    * @throws IllegalArgumentException if customer not found
    * @throws IllegalStateException if customer not AKTIV
    * @since Sprint 2.1.6.2 Phase 2 (V10026)
    */
   @Transactional
-  public Opportunity createForCustomer(
+  public OpportunityResponse createForCustomer(
       UUID customerId, CreateOpportunityForCustomerRequest request) {
     logger.info("Creating opportunity for customer {}", customerId);
 
@@ -743,7 +752,8 @@ public class OpportunityService {
         customerId,
         request.getOpportunityType());
 
-    return opportunity;
+    // Sprint 2.1.7 Code Review Fix: Return DTO instead of entity for consistency
+    return opportunityMapper.toResponse(opportunity);
   }
 
   /**

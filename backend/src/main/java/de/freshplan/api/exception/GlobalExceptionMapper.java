@@ -6,6 +6,7 @@ import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsExcep
 import de.freshplan.domain.customer.service.exception.CustomerHasChildrenException;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.user.service.exception.UserNotFoundException;
+import jakarta.inject.Inject;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.core.Context;
@@ -13,6 +14,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.*;
 import org.jboss.logging.Logger;
@@ -29,6 +31,9 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
   private static final Logger LOG = Logger.getLogger(GlobalExceptionMapper.class);
 
   @Context UriInfo uriInfo;
+
+  // Sprint 2.1.7 Code Review Fix: Clock injection (Issue #127)
+  @Inject Clock clock;
 
   @Override
   public Response toResponse(Exception exception) {
@@ -115,7 +120,7 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
             .title("Resource Not Found")
             .status(404)
             .detail(String.format("User with ID %s not found", userId))
-            .timestamp(LocalDateTime.now())
+            .timestamp(LocalDateTime.now(clock)) // Sprint 2.1.7 Code Review Fix: Use Clock injection
             .error("USER_NOT_FOUND") // Set the expected error code
             .message(
                 String.format(
@@ -263,7 +268,7 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
               .status(415)
               .detail("The request media type is not supported. Expected: application/json")
               .instance(uriInfo != null ? uriInfo.getPath() : null)
-              .timestamp(java.time.LocalDateTime.now())
+              .timestamp(java.time.LocalDateTime.now(clock)) // Sprint 2.1.7 Code Review Fix
               .build();
       return Response.status(status).entity(error).build();
     }
@@ -276,7 +281,7 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
             .status(status.getStatusCode())
             .detail(e.getMessage())
             .instance(uriInfo != null ? uriInfo.getPath() : null)
-            .timestamp(java.time.LocalDateTime.now())
+            .timestamp(java.time.LocalDateTime.now(clock)) // Sprint 2.1.7 Code Review Fix
             .build();
     return Response.status(status).entity(error).build();
   }
@@ -298,7 +303,7 @@ public class GlobalExceptionMapper implements ExceptionMapper<Exception> {
                     "The %s was modified by another user. Please refresh and try again.",
                     entityInfo))
             .instance(uriInfo != null ? uriInfo.getPath() : null)
-            .timestamp(java.time.LocalDateTime.now())
+            .timestamp(java.time.LocalDateTime.now(clock)) // Sprint 2.1.7 Code Review Fix
             .build();
 
     return Response.status(Response.Status.CONFLICT).entity(error).build();

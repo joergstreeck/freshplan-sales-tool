@@ -254,7 +254,8 @@ public class OpportunityResource {
     logger.info("Creating opportunity for customer ID: {}", customerId);
 
     try {
-      Opportunity opportunity = opportunityService.createForCustomer(customerId, request);
+      // Sprint 2.1.7 Code Review Fix: Service now returns OpportunityResponse DTO
+      OpportunityResponse opportunity = opportunityService.createForCustomer(customerId, request);
 
       logger.info(
           "Successfully created opportunity {} for customer {} (Type: {})",
@@ -262,10 +263,8 @@ public class OpportunityResource {
           customerId,
           request.getOpportunityType());
 
-      // Map to OpportunityResponse for consistency with other endpoints
-      OpportunityResponse response = opportunityService.findById(opportunity.getId());
-
-      return Response.status(Response.Status.CREATED).entity(response).build();
+      // No need to fetch again - service already returns OpportunityResponse
+      return Response.status(Response.Status.CREATED).entity(opportunity).build();
 
     } catch (IllegalArgumentException e) {
       // Customer not found

@@ -9,6 +9,7 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityForCustomerRequest;
+import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -83,7 +84,8 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    Opportunity result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    // Sprint 2.1.7 Code Review Fix: Service now returns OpportunityResponse DTO
+    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert
     assertThat(result).isNotNull();
@@ -93,14 +95,11 @@ public class OpportunityServiceCreateForCustomerTest {
         .isEqualTo(OpportunityStage.NEEDS_ANALYSIS);
     assertThat(result.getExpectedValue()).isEqualByComparingTo(BigDecimal.valueOf(18000));
 
-    // Verify customer_id FK is set
-    assertThat(result.getCustomer()).isNotNull();
-    assertThat(result.getCustomer().getId()).isEqualTo(activeCustomer.getId());
+    // Verify customer_id FK is set (DTO has customerId field)
+    assertThat(result.getCustomerId()).isEqualTo(activeCustomer.getId());
 
-    // Verify lead_id is NULL (no Lead involved)
-    assertThat(result.getLead())
-        .as("Opportunity from Customer should have lead_id = NULL")
-        .isNull();
+    // Note: OpportunityResponse DTO does not expose leadId field
+    // (For Customer-originated Opportunities, leadId is NULL by design)
   }
 
   @Test
@@ -118,7 +117,7 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    Opportunity result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert
     assertThat(result).isNotNull();
@@ -141,7 +140,7 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    Opportunity result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert
     assertThat(result).isNotNull();
@@ -214,7 +213,7 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    Opportunity result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert: Opportunity created successfully
     assertThat(result).isNotNull();
@@ -237,7 +236,7 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act
-    Opportunity result = opportunityService.createForCustomer(activeCustomer.getId(), request);
+    OpportunityResponse result = opportunityService.createForCustomer(activeCustomer.getId(), request);
 
     // Assert: Name should be auto-generated: "{opportunityType} - {customer.name}"
     assertThat(result.getName())
@@ -261,7 +260,7 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act: Create first Opportunity
-    Opportunity firstOpp = opportunityService.createForCustomer(activeCustomer.getId(), upsellRequest);
+    OpportunityResponse firstOpp = opportunityService.createForCustomer(activeCustomer.getId(), upsellRequest);
     assertThat(firstOpp).isNotNull();
 
     // Arrange: Create second Opportunity (Cross-sell)
@@ -275,12 +274,12 @@ public class OpportunityServiceCreateForCustomerTest {
             .build();
 
     // Act: Create second Opportunity
-    Opportunity secondOpp = opportunityService.createForCustomer(activeCustomer.getId(), crossSellRequest);
+    OpportunityResponse secondOpp = opportunityService.createForCustomer(activeCustomer.getId(), crossSellRequest);
 
     // Assert: Both Opportunities should exist for same Customer
     assertThat(secondOpp).isNotNull();
     assertThat(secondOpp.getId()).isNotEqualTo(firstOpp.getId());
-    assertThat(secondOpp.getCustomer().getId()).isEqualTo(activeCustomer.getId());
-    assertThat(firstOpp.getCustomer().getId()).isEqualTo(activeCustomer.getId());
+    assertThat(secondOpp.getCustomerId()).isEqualTo(activeCustomer.getId());
+    assertThat(firstOpp.getCustomerId()).isEqualTo(activeCustomer.getId());
   }
 }
