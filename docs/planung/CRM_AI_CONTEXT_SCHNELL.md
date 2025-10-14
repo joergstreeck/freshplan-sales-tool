@@ -1,11 +1,39 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-11
+**📅 Letzte Aktualisierung:** 2025-10-14
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** 80% Planungsstand + 20% Codebase-Realität (Hybrid Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
-> **🏗️ Architecture Flags (Stand: 2025-10-11)**
+---
+
+## 📑 INHALTSVERZEICHNIS (Quick Navigation für KI)
+
+**QUICK START (für neue KI-Instanzen):**
+- [🏗️ Architecture Flags](#architecture-flags) - System-Status auf einen Blick
+- [🗺️ Modul-Overlays](#modul-overlays) - Schnellzugriff auf Module
+- [🤖 KI-Arbeitshinweise](#ki-arbeitshinweise) - Sofort produktiv werden
+
+**HAUPT-SEKTIONEN:**
+1. [📋 Business-Context (15%)](#sektion-1-business-context) - FreshFoodz Mission, B2B-Food-Komplexität, ROI-Fokus
+2. [🏗️ System-Architektur (35%)](#sektion-2-system-architektur-vision) - 8-Module-Ecosystem, Infrastructure, Security
+3. [⚙️ Technical Implementation (20%)](#sektion-3-technical-implementation-reality) - Tech-Stack, Event-Backbone, Codebase-Structure
+4. [🎯 Development-Patterns (30%)](#sektion-4-development-patterns) - Code-Standards, Testing, Performance
+
+**SPEZIAL-THEMEN:**
+- [🎨 Frontend Theme V2](#frontend-theme-v2) - FreshFoodz CI (#94C456, #004F7B)
+- [🎖️ Modul-Status-Matrix](#quick-reference-modul-status-matrix) - Implementierungs-Stand aller Module
+- [📚 Cross-References](#cross-references) - Wichtige Dokumente + Architektur-Leitlinien
+
+**SPRINT-RESULTS (Recent Deliverables):**
+- [Sprint 2.1.7 Results](#sprint-217---results) - ActivityOutcome Enum + Opportunities Backend + Code Review Fixes (PR #139)
+- [Sprint 2.1.6 Phase 2 Results](#sprint-216-phase-2---results) - Bestandsleads-Migration + BusinessType Harmonization
+- [Sprint 2.1.4 Results](#sprint-214---results) - Lead Deduplication + CI Performance (7min)
+
+---
+
+<a id="architecture-flags"></a>
+> **🏗️ Architecture Flags (Stand: 2025-10-14)**
 > - **CQRS Light aktiv** (`features.cqrs.enabled=true`), **eine Datenbank**, getrennte Command/Query-Services
 > - **Events:** **PostgreSQL LISTEN/NOTIFY mit Envelope v2** (siehe Event-Backbone unten)
 > - **Security:** Territory = **RLS-Datenraum** (DE/CH/AT), **Lead-Protection = userbasiertes Ownership**
@@ -19,10 +47,12 @@
 > - **Enterprise Security 5-Layer ACTIVE** (Sprint 2.1.6 Phase 5): Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure Prevention, HTTP Headers
 > - **Migration Safety System 3-Layer** (Sprint 2.1.6 Phase 5): Pre-Commit Hook, GitHub Workflow, Enhanced get-next-migration.sh
 > - **Bestandsleads-Migration operational** (Sprint 2.1.6 Phase 2): Batch-Import mit Idempotency, Backdating mit kumulativer Stop-the-Clock-Pause, Lead→Customer Conversion mit Archivierung (KEINE Hard-Deletes)
+> - **Sprint 2.1.7 COMPLETE (14.10.2025 - PR #139):** ActivityOutcome Enum (V10027 - 7 values), Opportunity Backend Integration (V10026 FKs), Customer Number Sequence (V10028 - race-condition-safe), DEV-SEED Opportunities (V90003 - 10 Opportunities), Code Review Fixes (10 issues), 60/60 Tests GREEN
 > - **Scale:** **5-50 Nutzer** mit saisonalen Peaks, **internes Tool**, kosteneffiziente Architektur
 
 ---
 
+<a id="modul-overlays"></a>
 ## 🗺️ **MODUL-OVERLAYS (Schnellzugriff)**
 
 **Hybrid-Struktur:** Zentrale Sprints + Modulare Overlays für detaillierte Navigation
@@ -33,6 +63,7 @@
 
 ---
 
+<a id="sektion-1-business-context"></a>
 ## 📋 **SEKTION 1: BUSINESS-CONTEXT** (15%)
 
 ### **🍃 FreshFoodz Mission & Vision**
@@ -87,6 +118,7 @@ COMPETITIVE-DIFFERENTIATORS:
 
 ---
 
+<a id="frontend-theme-v2"></a>
 ## 🎨 **FRONTEND THEME V2 – FRESHFOODZ CI**
 
 ```yaml
@@ -188,6 +220,7 @@ IMPLEMENTATION-REFERENCE:
 
 ---
 
+<a id="sektion-2-system-architektur-vision"></a>
 ## 🏗️ **SEKTION 2: SYSTEM-ARCHITEKTUR-VISION** (35%)
 
 ### **📊 8-Module CRM-Ecosystem Übersicht**
@@ -332,6 +365,7 @@ PERFORMANCE-TARGETS:
 
 ---
 
+<a id="sektion-3-technical-implementation-reality"></a>
 ## ⚙️ **SEKTION 3: TECHNICAL IMPLEMENTATION REALITY** (20%)
 
 ### **🛠️ Current Tech-Stack**
@@ -402,6 +436,49 @@ Implementation-Details:
 
 ---
 
+<a id="sprint-217---results"></a>
+## 🎯 **Sprint 2.1.7 - Results (ActivityOutcome Enum + Opportunity Backend Integration + Code Review Fixes)**
+
+**Status:** ✅ COMPLETE (14.10.2025 - PR #139 READY FOR MERGE)
+
+**Kernfeatures implementiert:**
+- **ActivityOutcome Enum (V10027):** 7 values (SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED) · VARCHAR + CHECK Constraint Pattern · Backend + Frontend Integration · 14 Tests GREEN (ActivityDialog.test.tsx)
+- **Opportunity Backend Integration (V10026):** lead_id + customer_id Foreign Keys · Opportunity → Lead/Customer relationships · Business-Logic für Lead→Opportunity→Customer workflows
+- **Customer Number Sequence (V10028 - PRODUCTION-KRITISCH):** PostgreSQL Sequence `customer_number_seq` · Race-condition-safe generation (nextval) · Format KD-00001, KD-00002, ... · Eliminates `count() + 1` race condition
+- **DEV-SEED Opportunities (V90003):** 10 realistische Opportunities (IDs 90001-90010) · Total Value €163,000 · 4 from Leads + 6 from Customers
+- **Code Review Fixes (10 Issues):**
+  - 6 Code Review Issues (Copilot AI + Gemini Code Assist): Race Condition fix, Clock Injection (Issue #127), Return Type Consistency (DTO pattern), Redundant persist() removal
+  - 3 Pre-existing Test Fixes: FollowUpAutomationServiceTest (9/9 GREEN), CustomerRepositoryTest (43/43 GREEN), DEV-SEED Auto-Recovery
+  - 1 CI ESLint Fix: ActivityDialog.test.tsx linting errors
+
+**Migrations deployed:**
+- **V10026:** Opportunity lead_id + customer_id Foreign Keys
+- **V10027:** activity_outcome VARCHAR(30) + CHECK Constraint (7 values)
+- **V10028:** customer_number_seq (PRODUCTION-KRITISCH - race-condition-safe)
+- **V90003:** DEV-SEED Opportunities (10 Opportunities, €163,000 total)
+
+**Tests & Qualität:**
+- **60/60 Backend Tests GREEN (100%):** All LeadResourceTest + Security Tests
+- **Frontend Tests GREEN:** ActivityDialog.test.tsx (14 Tests), CI ESLint passed
+- **CI Status:** 29/29 Checks passed
+
+**Business Value:**
+- **Race-Condition-Safe Customer Numbers:** Production-safe unter high concurrency
+- **Type-Safe Activity Outcomes:** No mehr ungültige Outcome-Strings
+- **Opportunity Backend Ready:** Lead → Opportunity → Customer workflows implementierbar
+- **Testability Improved:** Clock Injection Pattern (Issue #127) für deterministische Tests
+
+**Referenzen:**
+- [TRIGGER_SPRINT_2_1_7.md](TRIGGER_SPRINT_2_1_7.md) - Sprint-Trigger (UNTERSCHEIDET sich vom completed Sprint!)
+- [Sprint-Map Modul 02](features-neu/02_neukundengewinnung/SPRINT_MAP.md)
+- [PR #139](https://github.com/joergstreeck/freshplan-sales-tool/pull/139) - READY FOR MERGE
+- [/tmp/pr-comment.md](/tmp/pr-comment.md) - Detailed Code Review Fixes Summary
+
+**⚠️ WICHTIG:** TRIGGER_SPRINT_2_1_7.md beschreibt einen ANDEREN geplanten Sprint (Team Management & Test Infrastructure), nicht diesen completed Sprint!
+
+---
+
+<a id="sprint-216-phase-2---results"></a>
 ## 🎯 **Sprint 2.1.6 Phase 2 - Results (Bestandsleads-Migration & Admin Features & BusinessType Harmonization)**
 
 **Status:** ✅ COMPLETE (Commits 01819eb, ce9206a - Branch: feature/mod02-sprint-2.1.6-admin-apis)
@@ -473,6 +550,7 @@ Implementation-Details:
 
 ---
 
+<a id="sprint-214---results"></a>
 ## 🎯 **Sprint 2.1.4 - Results (Lead Deduplication & Data Quality)**
 
 **Status:** ✅ COMPLETE (PR #123 merged 2025-10-01)
@@ -554,6 +632,7 @@ SECURITY-IMPLEMENTATION:
 
 ---
 
+<a id="sektion-4-development-patterns"></a>
 ## 🎯 **SEKTION 4: DEVELOPMENT-PATTERNS** (30%)
 
 ### **📝 Code-Standards & Architecture-Decisions**
@@ -632,6 +711,7 @@ MONITORING & OBSERVABILITY:
 
 ---
 
+<a id="quick-reference-modul-status-matrix"></a>
 ## 🎖️ **QUICK-REFERENCE: MODUL-STATUS-MATRIX**
 
 ```yaml
@@ -662,6 +742,7 @@ IMPLEMENTATION-PRIORITIES:
 
 ---
 
+<a id="ki-arbeitshinweise"></a>
 ## 🤖 **KI-ARBEITSHINWEISE**
 
 ### **Für neue Claude-Instanzen:**
@@ -676,6 +757,7 @@ IMPLEMENTATION-PRIORITIES:
 - **Business Value:** Lead-Conversion + Sample-Success + Cost-Optimization + Competitive-Advantage
 - **Integration-Points:** Cross-Module-Events + Settings-as-a-Service + Help-as-a-Service
 
+<a id="cross-references"></a>
 ## 📚 **Cross-References (Living Documentation)**
 
 **Siehe auch (SoT-Pack Integration):**
