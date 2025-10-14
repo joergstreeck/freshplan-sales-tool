@@ -26,7 +26,6 @@ const LegacyToolPage = lazy(() =>
 const IntegrationTestPage = lazy(() =>
   import('./pages/IntegrationTestPage').then(m => ({ default: m.IntegrationTestPage }))
 );
-const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const CustomersPageV2 = lazy(() =>
   import('./pages/CustomersPageV2').then(m => ({ default: m.CustomersPageV2 }))
 );
@@ -35,12 +34,6 @@ const CockpitPage = lazy(() =>
 );
 const CockpitPageV2 = lazy(() =>
   import('./pages/CockpitPageV2').then(m => ({ default: m.CockpitPageV2 }))
-);
-// const SettingsPage = lazy(() =>
-//   import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage }))
-// );
-const CalculatorPageV2 = lazy(() =>
-  import('./pages/CalculatorPageV2').then(m => ({ default: m.CalculatorPageV2 }))
 );
 const OpportunityPipelinePage = lazy(() =>
   import('./pages/OpportunityPipelinePage').then(m => ({ default: m.OpportunityPipelinePage }))
@@ -183,7 +176,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             element={<CustomersPageV2 openWizard={true} />}
                           />
                           <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
-                          <Route path="/customers-old" element={<CustomersPage />} />
                           {/* Customer Management Routes */}
                           <Route
                             path="/customer-management"
@@ -197,7 +189,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/customer-management/activities"
                             element={<Placeholders.Aktivitaeten />}
                           />
-                          <Route path="/calculator-v2" element={<CalculatorPageV2 />} />
                           <Route path="/legacy-tool" element={<LegacyToolPage />} />
 
                           {/* Help Center Routes */}
@@ -453,10 +444,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           )}
 
                           {/* Redirect alte URLs auf neue */}
-                          <Route
-                            path="/calculator"
-                            element={<Navigate to="/calculator-v2" replace />}
-                          />
                           <Route path="/kunden" element={<Navigate to="/customers" replace />} />
                           <Route
                             path="/verkaufschancen"
