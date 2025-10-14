@@ -69,7 +69,14 @@ public class IllegalArgumentMasterExceptionMapper
 
     // 8. Generic IllegalArgumentException - log for analysis and return user-friendly error
     logger.warning("Unhandled IllegalArgumentException: " + message);
+    logger.severe("Stack trace: " + getStackTraceAsString(exception));
     return createGenericErrorResponse(message);
+  }
+
+  private String getStackTraceAsString(Exception e) {
+    java.io.StringWriter sw = new java.io.StringWriter();
+    e.printStackTrace(new java.io.PrintWriter(sw));
+    return sw.toString();
   }
 
   private Response handleEnumParsingError(String message) {
