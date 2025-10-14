@@ -13,6 +13,7 @@ import {
   TablePagination,
   IconButton,
   Collapse,
+  useTheme,
 } from '@mui/material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
@@ -21,7 +22,7 @@ import {
   customerTypeLabels,
   customerStatusLabels,
   industryLabels,
-  customerStatusColors,
+  getCustomerStatusColor,
 } from '../../customer/types/customer.types';
 import type { ColumnConfig } from '../types/filter.types';
 import type { Lead } from '../../leads/types';
@@ -58,6 +59,7 @@ export function CustomerTable({
   onDelete,
   showActions = false,
 }: CustomerTableProps) {
+  const theme = useTheme();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
   const [stopClockDialogOpen, setStopClockDialogOpen] = React.useState(false);
@@ -265,15 +267,17 @@ export function CustomerTable({
                           // Sprint 2.1.6 Phase 4: Context-aware status labels
                           const statusLabels =
                             context === 'leads' ? leadStatusLabels : customerStatusLabels;
-                          const statusColors =
-                            context === 'leads' ? leadStatusColors : customerStatusColors;
                           const statusValue = customer.status as keyof typeof statusLabels;
+                          const statusColor =
+                            context === 'leads'
+                              ? leadStatusColors[statusValue] || '#9E9E9E'
+                              : getCustomerStatusColor(statusValue, theme);
                           return (
                             <Chip
                               label={statusLabels[statusValue] || customer.status}
                               size="small"
                               sx={{
-                                bgcolor: statusColors[statusValue] || '#9E9E9E',
+                                bgcolor: statusColor,
                                 color: 'white',
                               }}
                             />
