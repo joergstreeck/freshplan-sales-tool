@@ -43,6 +43,11 @@ declare module '@mui/material/styles' {
       probabilityLow?: string;
     };
   }
+
+  interface TypeBackground {
+    default: string;
+    paper: string;
+  }
 }
 
 export const freshfoodzTheme = createTheme({
@@ -84,6 +89,44 @@ export const freshfoodzTheme = createTheme({
       probabilityHigh: '#66BB6A', // Grün für hohe Wahrscheinlichkeit (80%+)
       probabilityMedium: '#FFA726', // Orange für mittlere Wahrscheinlichkeit (40-60%)
       probabilityLow: '#FF7043', // Orange-Rot für niedrige Wahrscheinlichkeit (20-40%)
+    },
+    // UI Utility Colors (CI-konform)
+    grey: {
+      50: '#fafafa',
+      100: '#f5f5f5',
+      200: '#eeeeee',
+      300: '#e0e0e0',
+      400: '#bdbdbd',
+      500: '#9e9e9e',
+      600: '#757575',
+      700: '#616161',
+      800: '#424242',
+      900: '#212121',
+    },
+    // Info colors (Material Design, aber CI-abgestimmt)
+    info: {
+      main: '#2196F3',
+      light: '#64B5F6',
+      dark: '#1976D2',
+      contrastText: '#fff',
+    },
+    success: {
+      main: '#94C456', // Primärgrün
+      light: '#a8d06d',
+      dark: '#7fb03f',
+      contrastText: '#fff',
+    },
+    warning: {
+      main: '#FFA726',
+      light: '#FFB74D',
+      dark: '#F57C00',
+      contrastText: '#000',
+    },
+    error: {
+      main: '#EF5350',
+      light: '#E57373',
+      dark: '#D32F2F',
+      contrastText: '#fff',
     },
   },
   typography: {

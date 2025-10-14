@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -14,6 +13,7 @@ import {
   ListItemAvatar,
   ListItemText,
   LinearProgress,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -41,12 +41,13 @@ interface LeadCard {
 
 export function NeukundengewinnungDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const leadTools: LeadCard[] = [
     {
       title: 'E-Mail Posteingang',
       description: 'Verwalten Sie eingehende Anfragen und konvertieren Sie diese zu Leads',
-      icon: <EmailIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <EmailIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/neukundengewinnung/posteingang',
       stats: {
         primary: '23 neue',
@@ -58,7 +59,7 @@ export function NeukundengewinnungDashboard() {
     {
       title: 'Lead-Erfassung',
       description: 'Erfassen und qualifizieren Sie neue Interessenten systematisch',
-      icon: <PersonAddIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <PersonAddIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/neukundengewinnung/leads',
       stats: {
         primary: '67 Leads',
@@ -69,7 +70,7 @@ export function NeukundengewinnungDashboard() {
     {
       title: 'Kampagnen',
       description: 'Planen und verwalten Sie Ihre Marketing-Kampagnen',
-      icon: <CampaignIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <CampaignIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/neukundengewinnung/kampagnen',
       stats: {
         primary: '5 aktiv',
@@ -95,19 +96,19 @@ export function NeukundengewinnungDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'new':
-        return '#94C456';
+        return theme.palette.primary.main;
       case 'qualified':
-        return '#29B6F6';
+        return theme.palette.info.main;
       case 'contacted':
-        return '#FFA726';
+        return theme.palette.warning.main;
       default:
-        return '#757575';
+        return theme.palette.grey[600];
     }
   };
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography
@@ -116,7 +117,7 @@ export function NeukundengewinnungDashboard() {
               mb: 1,
               fontFamily: 'Antonio, sans-serif',
               fontWeight: 'bold',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
             }}
           >
             Neukundengewinnung
@@ -130,33 +131,33 @@ export function NeukundengewinnungDashboard() {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#94C456', fontWeight: 'bold' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
                 234
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Leads diesen Monat
               </Typography>
-              <Typography variant="caption" sx={{ color: '#94C456' }}>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
                 +18% zum Vormonat
               </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
                 28%
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Conversion Rate
               </Typography>
-              <Typography variant="caption" sx={{ color: '#94C456' }}>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
                 +3% diese Woche
               </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
                 €45k
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -169,13 +170,13 @@ export function NeukundengewinnungDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: '#FFA726', fontWeight: 'bold' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}>
                 7 Tage
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Ø Lead-Zeit
               </Typography>
-              <Typography variant="caption" sx={{ color: '#94C456' }}>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
                 -2 Tage verbessert
               </Typography>
             </Paper>
@@ -210,7 +211,7 @@ export function NeukundengewinnungDashboard() {
                             size="small"
                             sx={{
                               ml: 'auto',
-                              backgroundColor: '#94C456',
+                              backgroundColor: theme.palette.primary.main,
                               color: 'white',
                             }}
                           />
@@ -221,7 +222,7 @@ export function NeukundengewinnungDashboard() {
                         sx={{
                           mb: 1,
                           fontFamily: 'Antonio, sans-serif',
-                          color: '#004F7B',
+                          color: theme.palette.secondary.main,
                         }}
                       >
                         {tool.title}
@@ -243,7 +244,7 @@ export function NeukundengewinnungDashboard() {
                         <Box>
                           <Typography
                             variant="h6"
-                            sx={{ color: tool.stats.trend === 'up' ? '#94C456' : '#004F7B' }}
+                            sx={{ color: tool.stats.trend === 'up' ? theme.palette.primary.main : theme.palette.secondary.main }}
                           >
                             {tool.stats.primary}
                           </Typography>
@@ -255,13 +256,13 @@ export function NeukundengewinnungDashboard() {
                         </Box>
                         {tool.stats.trend && (
                           <TrendingUpIcon
-                            sx={{ color: tool.stats.trend === 'up' ? '#94C456' : '#757575' }}
+                            sx={{ color: tool.stats.trend === 'up' ? theme.palette.primary.main : theme.palette.grey[600] }}
                           />
                         )}
                       </Box>
                     </CardContent>
                     <CardActions>
-                      <Button fullWidth sx={{ color: '#004F7B' }}>
+                      <Button fullWidth sx={{ color: theme.palette.secondary.main }}>
                         Öffnen
                       </Button>
                     </CardActions>
@@ -274,7 +275,7 @@ export function NeukundengewinnungDashboard() {
                 <Paper sx={{ p: 3 }}>
                   <Typography
                     variant="h6"
-                    sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                    sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
                   >
                     Lead Funnel
                   </Typography>
@@ -291,8 +292,8 @@ export function NeukundengewinnungDashboard() {
                       sx={{
                         height: 8,
                         borderRadius: 1,
-                        backgroundColor: '#e0e0e0',
-                        '& .MuiLinearProgress-bar': { backgroundColor: '#94C456' },
+                        backgroundColor: theme.palette.grey[300],
+                        '& .MuiLinearProgress-bar': { backgroundColor: theme.palette.primary.main },
                       }}
                     />
                   </Box>
@@ -309,8 +310,8 @@ export function NeukundengewinnungDashboard() {
                       sx={{
                         height: 8,
                         borderRadius: 1,
-                        backgroundColor: '#e0e0e0',
-                        '& .MuiLinearProgress-bar': { backgroundColor: '#29B6F6' },
+                        backgroundColor: theme.palette.grey[300],
+                        '& .MuiLinearProgress-bar': { backgroundColor: theme.palette.info.main },
                       }}
                     />
                   </Box>
@@ -327,8 +328,8 @@ export function NeukundengewinnungDashboard() {
                       sx={{
                         height: 8,
                         borderRadius: 1,
-                        backgroundColor: '#e0e0e0',
-                        '& .MuiLinearProgress-bar': { backgroundColor: '#FFA726' },
+                        backgroundColor: theme.palette.grey[300],
+                        '& .MuiLinearProgress-bar': { backgroundColor: theme.palette.warning.main },
                       }}
                     />
                   </Box>
@@ -345,8 +346,8 @@ export function NeukundengewinnungDashboard() {
                       sx={{
                         height: 8,
                         borderRadius: 1,
-                        backgroundColor: '#e0e0e0',
-                        '& .MuiLinearProgress-bar': { backgroundColor: '#004F7B' },
+                        backgroundColor: theme.palette.grey[300],
+                        '& .MuiLinearProgress-bar': { backgroundColor: theme.palette.secondary.main },
                       }}
                     />
                   </Box>
@@ -361,7 +362,7 @@ export function NeukundengewinnungDashboard() {
             <Paper sx={{ p: 3, mb: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
               >
                 Neue Leads
               </Typography>
@@ -401,7 +402,7 @@ export function NeukundengewinnungDashboard() {
                   </ListItem>
                 ))}
               </List>
-              <Button fullWidth variant="text" sx={{ mt: 1, color: '#94C456' }}>
+              <Button fullWidth variant="text" sx={{ mt: 1, color: theme.palette.primary.main }}>
                 Alle Leads anzeigen →
               </Button>
             </Paper>
@@ -410,7 +411,7 @@ export function NeukundengewinnungDashboard() {
             <Paper sx={{ p: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
               >
                 Anstehende Aktionen
               </Typography>
@@ -418,12 +419,12 @@ export function NeukundengewinnungDashboard() {
                 {upcomingActions.map((action, index) => (
                   <ListItem key={index} sx={{ px: 0 }}>
                     <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: '#f5f5f5' }}>
-                        <ScheduleIcon sx={{ color: '#004F7B' }} />
+                      <Avatar sx={{ bgcolor: theme.palette.grey[100] }}>
+                        <ScheduleIcon sx={{ color: theme.palette.secondary.main }} />
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={action.action} secondary={action.contact} />
-                    <Typography variant="body2" sx={{ color: '#94C456', fontWeight: 'medium' }}>
+                    <Typography variant="body2" sx={{ color: theme.palette.primary.main, fontWeight: 'medium' }}>
                       {action.time}
                     </Typography>
                   </ListItem>
@@ -434,8 +435,8 @@ export function NeukundengewinnungDashboard() {
                 variant="contained"
                 sx={{
                   mt: 2,
-                  backgroundColor: '#94C456',
-                  '&:hover': { backgroundColor: '#7BA347' },
+                  backgroundColor: theme.palette.primary.main,
+                  '&:hover': { backgroundColor: theme.palette.primary.dark },
                 }}
               >
                 Neue Aktion planen
@@ -443,7 +444,7 @@ export function NeukundengewinnungDashboard() {
             </Paper>
           </Grid>
         </Grid>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

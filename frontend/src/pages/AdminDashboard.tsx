@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -10,6 +9,7 @@ import {
   Chip,
   Paper,
   Divider,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -44,13 +44,14 @@ interface CategoryCard {
 
 export function AdminDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
   // const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const quickAccessCards: QuickAccessCard[] = [
     {
       title: 'Audit Dashboard',
       description: 'Überwachen Sie alle Systemaktivitäten und Änderungen',
-      icon: <DashboardIcon sx={{ fontSize: 40, color: '#94C456' }} />,
+      icon: <DashboardIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
       path: '/admin/audit',
       stats: '1,247 Events heute',
       status: 'active',
@@ -58,7 +59,7 @@ export function AdminDashboard() {
     {
       title: 'Benutzerverwaltung',
       description: 'Verwalten Sie Benutzer, Rollen und Berechtigungen',
-      icon: <PeopleIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
+      icon: <PeopleIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
       path: '/admin/users',
       stats: '42 aktive Benutzer',
       status: 'active',
@@ -66,7 +67,7 @@ export function AdminDashboard() {
     {
       title: 'Compliance Reports',
       description: 'DSGVO und regulatorische Berichte',
-      icon: <AssessmentIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
+      icon: <AssessmentIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
       path: '/admin/reports',
       stats: 'Nächster Report in 5 Tagen',
       status: 'info',
@@ -78,7 +79,7 @@ export function AdminDashboard() {
       id: 'system',
       title: 'System',
       description: 'Technische Systemverwaltung, Monitoring und Wartung',
-      icon: <ApiIcon sx={{ fontSize: 32, color: '#94C456' }} />,
+      icon: <ApiIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />,
       itemCount: 4,
       items: ['API Status', 'System-Logs', 'Performance', 'Backup & Recovery'],
     },
@@ -86,7 +87,7 @@ export function AdminDashboard() {
       id: 'integrations',
       title: 'Integrationen',
       description: 'Externe Services, APIs und Schnittstellen verwalten',
-      icon: <IntegrationInstructionsIcon sx={{ fontSize: 32, color: '#004F7B' }} />,
+      icon: <IntegrationInstructionsIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
       itemCount: 6,
       items: ['KI-Anbindungen', 'Xentral', 'E-Mail Services', 'Payment', 'Webhooks', '+ Neue'],
     },
@@ -94,7 +95,7 @@ export function AdminDashboard() {
       id: 'help',
       title: 'Hilfe-Konfiguration',
       description: 'Kontextsensitive Hilfe, Tooltips und Onboarding',
-      icon: <HelpOutlineIcon sx={{ fontSize: 32, color: '#004F7B' }} />,
+      icon: <HelpOutlineIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
       itemCount: 4,
       items: ['Hilfe-System Demo', 'Tooltips verwalten', 'Touren erstellen', 'Analytics'],
     },
@@ -112,8 +113,8 @@ export function AdminDashboard() {
   };
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography
@@ -122,7 +123,7 @@ export function AdminDashboard() {
               mb: 1,
               fontFamily: 'Antonio, sans-serif',
               fontWeight: 'bold',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
             }}
           >
             Administration Command Center
@@ -139,7 +140,7 @@ export function AdminDashboard() {
             sx={{
               mb: 2,
               fontFamily: 'Antonio, sans-serif',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
             }}
           >
             Schnellzugriff
@@ -168,7 +169,7 @@ export function AdminDashboard() {
                           size="small"
                           sx={{
                             ml: 'auto',
-                            backgroundColor: '#94C456',
+                            backgroundColor: theme.palette.primary.main,
                             color: 'white',
                           }}
                         />
@@ -194,7 +195,7 @@ export function AdminDashboard() {
                       <Typography
                         variant="caption"
                         sx={{
-                          color: '#94C456',
+                          color: theme.palette.primary.main,
                           fontWeight: 'medium',
                         }}
                       >
@@ -203,7 +204,7 @@ export function AdminDashboard() {
                     )}
                   </CardContent>
                   <CardActions sx={{ px: 2, pb: 2 }}>
-                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: '#004F7B' }}>
+                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: theme.palette.secondary.main }}>
                       Öffnen
                     </Button>
                   </CardActions>
@@ -222,7 +223,7 @@ export function AdminDashboard() {
             sx={{
               mb: 2,
               fontFamily: 'Antonio, sans-serif',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
             }}
           >
             Kategorien
@@ -238,7 +239,7 @@ export function AdminDashboard() {
                     border: '1px solid',
                     borderColor: 'divider',
                     '&:hover': {
-                      borderColor: '#94C456',
+                      borderColor: theme.palette.primary.main,
                       boxShadow: 2,
                     },
                   }}
@@ -252,7 +253,7 @@ export function AdminDashboard() {
                           variant="h6"
                           sx={{
                             fontFamily: 'Antonio, sans-serif',
-                            color: '#004F7B',
+                            color: theme.palette.secondary.main,
                           }}
                         >
                           {category.title}
@@ -267,7 +268,7 @@ export function AdminDashboard() {
                               label={item}
                               size="small"
                               variant="outlined"
-                              sx={{ borderColor: '#94C456', fontSize: '0.75rem' }}
+                              sx={{ borderColor: theme.palette.primary.main, fontSize: '0.75rem' }}
                             />
                           ))}
                           {category.items.length > 3 && (
@@ -275,7 +276,7 @@ export function AdminDashboard() {
                               label={`+${category.items.length - 3} mehr`}
                               size="small"
                               sx={{
-                                backgroundColor: '#f5f5f5',
+                                backgroundColor: theme.palette.grey[100],
                                 fontSize: '0.75rem',
                               }}
                             />
@@ -291,8 +292,8 @@ export function AdminDashboard() {
                         variant="contained"
                         endIcon={<ArrowForwardIcon />}
                         sx={{
-                          backgroundColor: '#94C456',
-                          '&:hover': { backgroundColor: '#7BA347' },
+                          backgroundColor: theme.palette.primary.main,
+                          '&:hover': { backgroundColor: theme.palette.primary.dark },
                         }}
                         onClick={e => {
                           e.stopPropagation();
@@ -314,7 +315,7 @@ export function AdminDashboard() {
           sx={{
             mt: 6,
             p: 2,
-            backgroundColor: '#f5f5f5',
+            backgroundColor: theme.palette.grey[100],
             borderRadius: 1,
             display: 'flex',
             justifyContent: 'space-between',
@@ -328,17 +329,17 @@ export function AdminDashboard() {
             <Chip
               label="API: OK"
               size="small"
-              sx={{ backgroundColor: '#94C456', color: 'white' }}
+              sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }}
             />
-            <Chip label="DB: OK" size="small" sx={{ backgroundColor: '#94C456', color: 'white' }} />
+            <Chip label="DB: OK" size="small" sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }} />
             <Chip
               label="Auth: OK"
               size="small"
-              sx={{ backgroundColor: '#94C456', color: 'white' }}
+              sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }}
             />
           </Box>
         </Box>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

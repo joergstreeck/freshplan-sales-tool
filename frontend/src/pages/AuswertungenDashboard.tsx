@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -9,6 +8,7 @@ import {
   Paper,
   Chip,
   LinearProgress,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -21,12 +21,13 @@ import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 
 export function AuswertungenDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const reports = [
     {
       title: 'Umsatzübersicht',
       description: 'Detaillierte Umsatzanalysen und Trends',
-      icon: <BarChartIcon sx={{ fontSize: 56, color: '#94C456' }} />,
+      icon: <BarChartIcon sx={{ fontSize: 56, color: theme.palette.primary.main }} />,
       path: '/berichte/umsatz',
       stats: '€1.8M',
       label: 'YTD',
@@ -37,7 +38,7 @@ export function AuswertungenDashboard() {
     {
       title: 'Kundenanalyse',
       description: 'Kundenverhalten und Segmentierung',
-      icon: <PieChartIcon sx={{ fontSize: 56, color: '#004F7B' }} />,
+      icon: <PieChartIcon sx={{ fontSize: 56, color: theme.palette.secondary.main }} />,
       path: '/berichte/kunden',
       stats: '1.247',
       label: 'Aktive Kunden',
@@ -48,7 +49,7 @@ export function AuswertungenDashboard() {
     {
       title: 'Aktivitätsberichte',
       description: 'Team-Performance und Aktivitäten',
-      icon: <TimelineIcon sx={{ fontSize: 56, color: '#FFA726' }} />,
+      icon: <TimelineIcon sx={{ fontSize: 56, color: theme.palette.warning.main }} />,
       path: '/berichte/aktivitaeten',
       stats: '3.4k',
       label: 'Diese Woche',
@@ -59,12 +60,12 @@ export function AuswertungenDashboard() {
   ];
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
+            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Auswertungen & Berichte
           </Typography>
@@ -94,7 +95,7 @@ export function AuswertungenDashboard() {
                     sx={{
                       mb: 1,
                       fontFamily: 'Antonio, sans-serif',
-                      color: '#004F7B',
+                      color: theme.palette.secondary.main,
                       textAlign: 'center',
                     }}
                   >
@@ -119,7 +120,7 @@ export function AuswertungenDashboard() {
                       <Box>
                         <Typography
                           variant="h4"
-                          sx={{ color: '#004F7B', fontWeight: 'bold', display: 'inline' }}
+                          sx={{ color: theme.palette.secondary.main, fontWeight: 'bold', display: 'inline' }}
                         >
                           {report.stats}
                         </Typography>
@@ -136,8 +137,8 @@ export function AuswertungenDashboard() {
                         label={report.trend}
                         size="small"
                         sx={{
-                          backgroundColor: report.trendUp ? '#e8f5e9' : '#ffebee',
-                          color: report.trendUp ? '#4caf50' : '#f44336',
+                          backgroundColor: report.trendUp ? theme.palette.success.light + '40' : theme.palette.error.light + '40',
+                          color: report.trendUp ? theme.palette.success.dark : theme.palette.error.dark,
                         }}
                       />
                     </Box>
@@ -147,9 +148,9 @@ export function AuswertungenDashboard() {
                       sx={{
                         height: 8,
                         borderRadius: 4,
-                        backgroundColor: '#e0e0e0',
+                        backgroundColor: theme.palette.grey[300],
                         '& .MuiLinearProgress-bar': {
-                          backgroundColor: '#94C456',
+                          backgroundColor: theme.palette.primary.main,
                           borderRadius: 4,
                         },
                       }}
@@ -167,7 +168,7 @@ export function AuswertungenDashboard() {
                   <Button
                     fullWidth
                     variant="contained"
-                    sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}
+                    sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }}
                   >
                     Bericht öffnen
                   </Button>
@@ -177,14 +178,14 @@ export function AuswertungenDashboard() {
           ))}
         </Grid>
 
-        <Paper sx={{ p: 3, mt: 4, backgroundColor: '#f5f5f5' }}>
-          <Typography variant="h6" sx={{ mb: 2, color: '#004F7B' }}>
+        <Paper sx={{ p: 3, mt: 4, backgroundColor: theme.palette.grey[100] }}>
+          <Typography variant="h6" sx={{ mb: 2, color: theme.palette.secondary.main }}>
             Quick Stats
           </Typography>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#94C456', fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
                   +23%
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -194,7 +195,7 @@ export function AuswertungenDashboard() {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
                   89%
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -204,7 +205,7 @@ export function AuswertungenDashboard() {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#FFA726', fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}>
                   4.2
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -214,7 +215,7 @@ export function AuswertungenDashboard() {
             </Grid>
             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
               <Box sx={{ textAlign: 'center' }}>
-                <Typography variant="h4" sx={{ color: '#29B6F6', fontWeight: 'bold' }}>
+                <Typography variant="h4" sx={{ color: theme.palette.info.main, fontWeight: 'bold' }}>
                   15min
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
@@ -224,7 +225,7 @@ export function AuswertungenDashboard() {
             </Grid>
           </Grid>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

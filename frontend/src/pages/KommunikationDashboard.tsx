@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -8,6 +7,7 @@ import {
   Button,
   Chip,
   Badge,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -19,12 +19,13 @@ import MailIcon from '@mui/icons-material/Mail';
 
 export function KommunikationDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const tools = [
     {
       title: 'Team-Chat',
       description: 'Echtzeit-Kommunikation mit dem Team',
-      icon: <ChatIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <ChatIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/kommunikation/chat',
       badge: 12,
       status: 'online',
@@ -32,7 +33,7 @@ export function KommunikationDashboard() {
     {
       title: 'Ankündigungen',
       description: 'Wichtige Mitteilungen und Updates',
-      icon: <AnnouncementIcon sx={{ fontSize: 48, color: '#FFA726' }} />,
+      icon: <AnnouncementIcon sx={{ fontSize: 48, color: theme.palette.warning.main }} />,
       path: '/kommunikation/ankuendigungen',
       badge: 3,
       status: 'neu',
@@ -40,26 +41,26 @@ export function KommunikationDashboard() {
     {
       title: 'Notizen',
       description: 'Persönliche und geteilte Notizen',
-      icon: <NoteIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <NoteIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/kommunikation/notizen',
       stats: '234 Notizen',
     },
     {
       title: 'Interne Nachrichten',
       description: 'Private Nachrichten zwischen Kollegen',
-      icon: <MailIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <MailIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/kommunikation/nachrichten',
       badge: 5,
     },
   ];
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
+            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Kommunikation & Zusammenarbeit
           </Typography>
@@ -92,7 +93,7 @@ export function KommunikationDashboard() {
                   </Box>
                   <Typography
                     variant="h6"
-                    sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                    sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
                   >
                     {tool.title}
                   </Typography>
@@ -104,19 +105,19 @@ export function KommunikationDashboard() {
                       label={tool.status === 'online' ? 'Online' : 'Neu'}
                       size="small"
                       sx={{
-                        backgroundColor: tool.status === 'online' ? '#94C456' : '#FFA726',
+                        backgroundColor: tool.status === 'online' ? theme.palette.primary.main : theme.palette.warning.main,
                         color: 'white',
                       }}
                     />
                   )}
                   {tool.stats && (
-                    <Typography variant="body2" sx={{ color: '#004F7B', fontWeight: 'medium' }}>
+                    <Typography variant="body2" sx={{ color: theme.palette.secondary.main, fontWeight: 'medium' }}>
                       {tool.stats}
                     </Typography>
                   )}
                 </CardContent>
                 <CardActions>
-                  <Button fullWidth sx={{ color: '#004F7B' }}>
+                  <Button fullWidth sx={{ color: theme.palette.secondary.main }}>
                     Öffnen
                   </Button>
                 </CardActions>
@@ -124,7 +125,7 @@ export function KommunikationDashboard() {
             </Grid>
           ))}
         </Grid>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }
