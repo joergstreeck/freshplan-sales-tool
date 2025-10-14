@@ -29,6 +29,7 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { HelpTooltip, useHelp, useHelpStore } from '../features/help';
 
 export const HelpSystemDemoPageV2: React.FC = () => {
+  const theme = useTheme();
   const [tooltipsEnabled, setTooltipsEnabled] = useState(true);
   const [proactiveHelpEnabled, setProactiveHelpEnabled] = useState(true);
   const [tourRunning, setTourRunning] = useState(false);
