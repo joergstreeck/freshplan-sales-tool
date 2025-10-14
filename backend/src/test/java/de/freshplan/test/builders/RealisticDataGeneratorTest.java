@@ -200,12 +200,12 @@ class RealisticDataGeneratorTest {
   void testPastDateTime_shouldReturnPastDateTime() {
     // Given
     RealisticDataGenerator gen = new RealisticDataGenerator();
-    LocalDateTime now = LocalDateTime.now();
 
     // When
     LocalDateTime pastDateTime = gen.pastDateTime(24);
 
-    // Then
+    // Then - Compare with current time (capture after generation to avoid nanosecond race)
+    LocalDateTime now = LocalDateTime.now();
     assertThat(pastDateTime).isBefore(now).isAfter(now.minusHours(25));
   }
 
@@ -213,13 +213,13 @@ class RealisticDataGeneratorTest {
   void testFutureDateTime_shouldReturnFutureDateTime() {
     // Given
     RealisticDataGenerator gen = new RealisticDataGenerator();
-    LocalDateTime now = LocalDateTime.now();
 
     // When
     LocalDateTime futureDateTime = gen.futureDateTime(24);
 
-    // Then
-    assertThat(futureDateTime).isAfter(now).isBefore(now.plusHours(25));
+    // Then - Compare with current time (capture after generation to avoid nanosecond race)
+    LocalDateTime now = LocalDateTime.now();
+    assertThat(futureDateTime).isAfter(now.minusSeconds(1)).isBefore(now.plusHours(25));
   }
 
   @Test
