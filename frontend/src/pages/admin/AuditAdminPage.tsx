@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid } from '@mui/material';
+import { Grid, useTheme } from '@mui/material';
 import {
   Box,
   Paper,
@@ -54,6 +54,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 };
 
 export const AuditAdminPage: React.FC = () => {
+  const theme = useTheme();
   const [currentTab, setCurrentTab] = useState(0);
   const [dateRange, setDateRange] = useState({
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -109,7 +110,7 @@ export const AuditAdminPage: React.FC = () => {
                   fontWeight: 'bold',
                 }}
               >
-                <SecurityIcon sx={{ mr: 2, color: '#004F7B', fontSize: 32 }} />
+                <SecurityIcon sx={{ mr: 2, color: theme.palette.secondary.main, fontSize: 32 }} />
                 Audit Dashboard
               </Typography>
               <Typography
@@ -143,7 +144,7 @@ export const AuditAdminPage: React.FC = () => {
                 <Tooltip title={autoRefresh ? 'Auto-Refresh aktiv' : 'Auto-Refresh inaktiv'}>
                   <IconButton
                     onClick={() => setAutoRefresh(!autoRefresh)}
-                    sx={{ color: autoRefresh ? '#94C456' : 'inherit' }}
+                    sx={{ color: autoRefresh ? theme.palette.primary.main : 'inherit' }}
                   >
                     <RefreshIcon />
                   </IconButton>
