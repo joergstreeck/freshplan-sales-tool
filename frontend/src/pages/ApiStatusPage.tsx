@@ -172,7 +172,7 @@ export function ApiStatusPage() {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
           >
             API Status & System Health
           </Typography>
@@ -262,7 +262,7 @@ export function ApiStatusPage() {
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
           >
-            <Typography variant="h5" sx={{ fontFamily: 'Antonio, sans-serif' }}>
+            <Typography variant="h5">
               API Endpoint Tests
             </Typography>
             <Button
@@ -357,7 +357,7 @@ export function ApiStatusPage() {
 
         {/* Test History */}
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
             Letzte Test-Durchläufe
           </Typography>
           <Typography variant="body2" color="text.secondary">

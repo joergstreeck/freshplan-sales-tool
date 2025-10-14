@@ -15,6 +15,7 @@ import {
   LinearProgress,
   Tooltip,
   useTheme,
+  alpha,
 } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import BugReportIcon from '@mui/icons-material/BugReport';
@@ -113,7 +114,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
           >
             Hilfe-System Konfiguration
           </Typography>
@@ -124,7 +125,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Configuration Panel */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             System-Einstellungen
           </Typography>
           <Grid container spacing={3}>
@@ -173,7 +174,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
         </Paper>
 
         {/* Features Grid */}
-        <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Hilfe-System Features
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -203,7 +204,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Test Actions */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             Test-Aktionen
           </Typography>
           <Grid container spacing={2}>
@@ -235,7 +236,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                   color: theme.palette.secondary.main,
                   '&:hover': {
                     borderColor: theme.palette.secondary.dark,
-                    backgroundColor: theme.palette.secondary.main + '0A',
+                    backgroundColor: alpha(theme.palette.secondary.main, 0.04),
                   },
                 }}
               >
@@ -253,7 +254,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                   color: theme.palette.secondary.main,
                   '&:hover': {
                     borderColor: theme.palette.secondary.dark,
-                    backgroundColor: theme.palette.secondary.main + '0A',
+                    backgroundColor: alpha(theme.palette.secondary.main, 0.04),
                   },
                 }}
               >
@@ -265,7 +266,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Analytics Dashboard */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             Analytics Dashboard
           </Typography>
           <Grid container spacing={3}>
@@ -275,7 +276,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                   <CardContent>
                     <Typography
                       variant="h3"
-                      sx={{ color: theme.palette.primary.main, fontFamily: 'Antonio, sans-serif' }}
+                      sx={{ color: theme.palette.primary.main }}
                     >
                       {item.value}
                     </Typography>
@@ -291,7 +292,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Demo Component with Tooltip */}
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             Interaktive Demo
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>

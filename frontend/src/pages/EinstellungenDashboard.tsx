@@ -72,7 +72,7 @@ export function EinstellungenDashboard() {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
           >
             Einstellungen
           </Typography>
@@ -103,7 +103,7 @@ export function EinstellungenDashboard() {
                       </Box>
                       <Typography
                         variant="h6"
-                        sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                        sx={{ mb: 1, color: theme.palette.secondary.main }}
                       >
                         {setting.title}
                       </Typography>
@@ -139,7 +139,7 @@ export function EinstellungenDashboard() {
               <CardContent>
                 <Typography
                   variant="h6"
-                  sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                  sx={{ mb: 2, color: theme.palette.secondary.main }}
                 >
                   Schnelleinstellungen
                 </Typography>

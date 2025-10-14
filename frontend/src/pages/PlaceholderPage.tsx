@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Box, Paper, Button, Grid, Card, CardContent, useTheme } from '@mui/material';
+import { Typography, Box, Paper, Button, Grid, Card, CardContent, useTheme, alpha } from '@mui/material';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import InfoIcon from '@mui/icons-material/Info';
@@ -48,7 +48,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
           {displayIcon}
           <Typography
             variant="h3"
-            sx={{ mt: 3, mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mt: 3, mb: 2, color: theme.palette.secondary.main }}
           >
             {title}
           </Typography>
@@ -67,14 +67,14 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
               sx={{
                 display: 'inline-block',
                 p: 2,
-                backgroundColor: theme.palette.success.light + '20',
+                backgroundColor: alpha(theme.palette.success.light, 0.13),
                 border: `1px solid ${theme.palette.primary.main}`,
               }}
             >
               <Typography variant="body2" color="text.secondary">
                 Voraussichtlich verfügbar:
               </Typography>
-              <Typography variant="h6" sx={{ color: theme.palette.primary.main, fontFamily: 'Antonio, sans-serif' }}>
+              <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>
                 {expectedDate}
               </Typography>
             </Paper>
@@ -86,7 +86,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
           <>
             <Typography
               variant="h5"
-              sx={{ mb: 3, textAlign: 'center', fontFamily: 'Antonio, sans-serif' }}
+              sx={{ mb: 3, textAlign: 'center' }}
             >
               Was Sie erwarten können
             </Typography>
@@ -109,8 +109,8 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
         <Paper
           sx={{
             p: 3,
-            backgroundColor: theme.palette.secondary.main + '0D',
-            border: `1px solid ${theme.palette.secondary.main}33`,
+            backgroundColor: alpha(theme.palette.secondary.main, 0.05),
+            border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
@@ -130,7 +130,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
                   color: theme.palette.secondary.main,
                   '&:hover': {
                     borderColor: theme.palette.secondary.dark,
-                    backgroundColor: theme.palette.secondary.main + '0A',
+                    backgroundColor: alpha(theme.palette.secondary.main, 0.04),
                   },
                 }}
               >

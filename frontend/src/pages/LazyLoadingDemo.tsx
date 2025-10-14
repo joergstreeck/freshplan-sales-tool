@@ -91,7 +91,7 @@ export function LazyLoadingDemo() {
                     rootMargin="50px"
                   />
                   <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-                    Image #{i} - Loads when visible
+                    Bild #{i} - Wird bei Sichtbarkeit geladen
                   </Typography>
                 </Grid>
               ))}
@@ -126,7 +126,7 @@ export function LazyLoadingDemo() {
                   rootMargin="100px"
                   placeholder={
                     <Paper sx={{ p: 3, bgcolor: 'action.hover' }}>
-                      <Typography>Heavy Component #{i} - Waiting to load...</Typography>
+                      <Typography>Schwere Komponente #{i} - Wartet auf Laden...</Typography>
                     </Paper>
                   }
                 >
@@ -163,8 +163,8 @@ export function LazyLoadingDemo() {
                 <Paper
                   sx={{ p: 2, bgcolor: lazyData1.loading ? 'action.hover' : 'background.paper' }}
                 >
-                  <Typography variant="subtitle2">Data Block #1</Typography>
-                  {lazyData1.loading && <Typography>Loading...</Typography>}
+                  <Typography variant="subtitle2">Datenblock #1</Typography>
+                  {lazyData1.loading && <Typography>Lädt...</Typography>}
                   {lazyData1.error && (
                     <Typography color="error">Error: {lazyData1.error.message}</Typography>
                   )}
@@ -172,7 +172,7 @@ export function LazyLoadingDemo() {
                     <Box>
                       <Typography variant="body2">{lazyData1.data.data}</Typography>
                       <Chip
-                        label={lazyData1.inView ? 'In View' : 'Out of View'}
+                        label={lazyData1.inView ? 'Sichtbar' : 'Nicht sichtbar'}
                         size="small"
                         sx={{ mt: 1 }}
                       />
@@ -185,8 +185,8 @@ export function LazyLoadingDemo() {
                 <Paper
                   sx={{ p: 2, bgcolor: lazyData2.loading ? 'action.hover' : 'background.paper' }}
                 >
-                  <Typography variant="subtitle2">Data Block #2</Typography>
-                  {lazyData2.loading && <Typography>Loading...</Typography>}
+                  <Typography variant="subtitle2">Datenblock #2</Typography>
+                  {lazyData2.loading && <Typography>Lädt...</Typography>}
                   {lazyData2.error && (
                     <Typography color="error">Error: {lazyData2.error.message}</Typography>
                   )}
@@ -194,7 +194,7 @@ export function LazyLoadingDemo() {
                     <Box>
                       <Typography variant="body2">{lazyData2.data.data}</Typography>
                       <Chip
-                        label={lazyData2.inView ? 'In View' : 'Out of View'}
+                        label={lazyData2.inView ? 'Sichtbar' : 'Nicht sichtbar'}
                         size="small"
                         sx={{ mt: 1 }}
                       />
@@ -207,8 +207,8 @@ export function LazyLoadingDemo() {
                 <Paper
                   sx={{ p: 2, bgcolor: lazyData3.loading ? 'action.hover' : 'background.paper' }}
                 >
-                  <Typography variant="subtitle2">Data Block #3</Typography>
-                  {lazyData3.loading && <Typography>Loading...</Typography>}
+                  <Typography variant="subtitle2">Datenblock #3</Typography>
+                  {lazyData3.loading && <Typography>Lädt...</Typography>}
                   {lazyData3.error && (
                     <Typography color="error">Error: {lazyData3.error.message}</Typography>
                   )}
@@ -216,7 +216,7 @@ export function LazyLoadingDemo() {
                     <Box>
                       <Typography variant="body2">{lazyData3.data.data}</Typography>
                       <Chip
-                        label={lazyData3.inView ? 'In View' : 'Out of View'}
+                        label={lazyData3.inView ? 'Sichtbar' : 'Nicht sichtbar'}
                         size="small"
                         sx={{ mt: 1 }}
                       />

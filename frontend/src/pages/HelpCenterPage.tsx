@@ -99,7 +99,7 @@ export const HelpCenterPage: React.FC = () => {
         <Box sx={{ py: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
           >
             Hilfe-Center
           </Typography>
@@ -125,7 +125,7 @@ export const HelpCenterPage: React.FC = () => {
                   <CardContent>
                     <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                       {sec.icon}
-                      <Typography variant="h5" sx={{ ml: 2, fontFamily: 'Antonio, sans-serif' }}>
+                      <Typography variant="h5" sx={{ ml: 2 }}>
                         {sec.title}
                       </Typography>
                     </Box>
@@ -160,7 +160,7 @@ export const HelpCenterPage: React.FC = () => {
             {section.icon}
             <Typography
               variant="h3"
-              sx={{ ml: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+              sx={{ ml: 2, color: theme.palette.secondary.main }}
             >
               {section.title}
             </Typography>
