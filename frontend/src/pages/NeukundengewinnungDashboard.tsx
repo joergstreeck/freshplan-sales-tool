@@ -115,7 +115,6 @@ export function NeukundengewinnungDashboard() {
             variant="h3"
             sx={{
               mb: 1,
-              fontFamily: 'Antonio, sans-serif',
               fontWeight: 'bold',
               color: theme.palette.secondary.main,
             }}
@@ -221,8 +220,7 @@ export function NeukundengewinnungDashboard() {
                         variant="h6"
                         sx={{
                           mb: 1,
-                          fontFamily: 'Antonio, sans-serif',
-                          color: theme.palette.secondary.main,
+                                      color: theme.palette.secondary.main,
                         }}
                       >
                         {tool.title}

@@ -30,7 +30,7 @@ export function CockpitPageV2() {
             justifyContent: 'center',
           }}
         >
-          <h2>Loading authentication...</h2>
+          <h2>Authentifizierung lädt...</h2>
         </div>
       </ThemeProvider>
     );

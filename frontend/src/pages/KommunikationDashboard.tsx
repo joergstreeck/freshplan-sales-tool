@@ -60,7 +60,7 @@ export function KommunikationDashboard() {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, , fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Kommunikation & Zusammenarbeit
           </Typography>
@@ -93,7 +93,7 @@ export function KommunikationDashboard() {
                   </Box>
                   <Typography
                     variant="h6"
-                    sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                    sx={{ mt: 2, mb: 1, , color: theme.palette.secondary.main }}
                   >
                     {tool.title}
                   </Typography>

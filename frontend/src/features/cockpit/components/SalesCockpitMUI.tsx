@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Box, Paper, Typography, Grid, Card, CardContent, Chip, Button, useTheme } from '@mui/material';
+import { Box, Paper, Typography, Grid, Card, CardContent, Chip, Button, useTheme, alpha } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -96,7 +96,7 @@ export function SalesCockpitMUI() {
               <Typography variant="subtitle2" gutterBottom>
                 Aktuelle Benachrichtigungen
               </Typography>
-              <Card sx={{ mb: 1, bgcolor: theme.palette.success.light + '40' }}>
+              <Card sx={{ mb: 1, bgcolor: alpha(theme.palette.success.light, 0.25) }}>
                 <CardContent sx={{ py: 1 }}>
                   <Typography variant="body2">🔔 Umsatzchance bei Premium Partner GmbH</Typography>
                   <Typography variant="caption" color="text.secondary">

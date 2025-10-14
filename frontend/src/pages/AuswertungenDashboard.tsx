@@ -9,6 +9,7 @@ import {
   Chip,
   LinearProgress,
   useTheme,
+  alpha,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -65,7 +66,7 @@ export function AuswertungenDashboard() {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Auswertungen & Berichte
           </Typography>
@@ -94,8 +95,7 @@ export function AuswertungenDashboard() {
                     variant="h5"
                     sx={{
                       mb: 1,
-                      fontFamily: 'Antonio, sans-serif',
-                      color: theme.palette.secondary.main,
+                              color: theme.palette.secondary.main,
                       textAlign: 'center',
                     }}
                   >
@@ -137,7 +137,7 @@ export function AuswertungenDashboard() {
                         label={report.trend}
                         size="small"
                         sx={{
-                          backgroundColor: report.trendUp ? theme.palette.success.light + '40' : theme.palette.error.light + '40',
+                          backgroundColor: report.trendUp ? alpha(theme.palette.success.light, 0.25) : alpha(theme.palette.error.light, 0.25),
                           color: report.trendUp ? theme.palette.success.dark : theme.palette.error.dark,
                         }}
                       />

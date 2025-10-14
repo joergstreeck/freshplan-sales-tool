@@ -121,7 +121,6 @@ export function AdminDashboard() {
             variant="h3"
             sx={{
               mb: 1,
-              fontFamily: 'Antonio, sans-serif',
               fontWeight: 'bold',
               color: theme.palette.secondary.main,
             }}
@@ -139,7 +138,6 @@ export function AdminDashboard() {
             variant="h5"
             sx={{
               mb: 2,
-              fontFamily: 'Antonio, sans-serif',
               color: theme.palette.secondary.main,
             }}
           >
@@ -179,7 +177,6 @@ export function AdminDashboard() {
                       variant="h6"
                       sx={{
                         mb: 1,
-                        fontFamily: 'Antonio, sans-serif',
                       }}
                     >
                       {card.title}
@@ -222,7 +219,6 @@ export function AdminDashboard() {
             variant="h5"
             sx={{
               mb: 2,
-              fontFamily: 'Antonio, sans-serif',
               color: theme.palette.secondary.main,
             }}
           >
@@ -252,7 +248,6 @@ export function AdminDashboard() {
                         <Typography
                           variant="h6"
                           sx={{
-                            fontFamily: 'Antonio, sans-serif',
                             color: theme.palette.secondary.main,
                           }}
                         >

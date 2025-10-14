@@ -15,6 +15,7 @@ import {
   ListItemText,
   Divider,
   useTheme,
+  alpha,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -114,8 +115,7 @@ export function KundenmanagementDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
+                  fontWeight: 'bold',
                 color: theme.palette.secondary.main,
               }}
             >
@@ -146,12 +146,12 @@ export function KundenmanagementDashboard() {
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
                 1.247
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
                 Aktive Kunden
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                 <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.primary.main }} />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
                   +67 diesen Monat
                 </Typography>
               </Box>
@@ -162,12 +162,12 @@ export function KundenmanagementDashboard() {
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
                 €2.3M
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
                 Pipeline Wert
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                 <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.primary.main }} />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
                   42 Opportunities
                 </Typography>
               </Box>
@@ -178,11 +178,11 @@ export function KundenmanagementDashboard() {
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
                 89%
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
                 Kundenzufriedenheit
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
                   NPS Score: 72
                 </Typography>
               </Box>
@@ -193,12 +193,12 @@ export function KundenmanagementDashboard() {
               <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
                 €145k
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body1" sx={{ color: alpha(theme.palette.common.white, 0.9) }}>
                 MRR
               </Typography>
               <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
                 <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.success.dark }} />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
+                <Typography variant="caption" sx={{ color: alpha(theme.palette.common.white, 0.8) }}>
                   +12% zum Vormonat
                 </Typography>
               </Box>

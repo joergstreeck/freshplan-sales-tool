@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid, useTheme } from '@mui/material';
+import { Grid, useTheme, alpha } from '@mui/material';
 import {
   Box,
   Paper,
@@ -106,7 +106,6 @@ export const AuditAdminPage: React.FC = () => {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  fontFamily: 'Antonio, sans-serif',
                   fontWeight: 'bold',
                 }}
               >
@@ -116,9 +115,8 @@ export const AuditAdminPage: React.FC = () => {
               <Typography
                 variant="subtitle1"
                 color="text.secondary"
-                sx={{ fontFamily: 'Poppins, sans-serif' }}
               >
-                Compliance Monitoring & Security Analysis
+                Compliance-Überwachung & Sicherheitsanalyse
               </Typography>
             </Grid>
 
@@ -212,7 +210,6 @@ export const AuditAdminPage: React.FC = () => {
               borderBottom: 1,
               borderColor: 'divider',
               '& .MuiTab-root': {
-                fontFamily: 'Poppins, sans-serif',
                 fontWeight: 500,
               },
             }}
@@ -269,7 +266,7 @@ export const AuditAdminPage: React.FC = () => {
             <TabPanel value={currentTab} index={2}>
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>
-                  <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+                  <Typography variant="h5" gutterBottom>
                     Kritische Ereignisse
                   </Typography>
                   {criticalEvents && criticalEvents.length > 0 ? (

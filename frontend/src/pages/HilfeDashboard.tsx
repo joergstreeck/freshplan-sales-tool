@@ -7,6 +7,7 @@ import {
   Button,
   Paper,
   useTheme,
+  alpha,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -65,7 +66,7 @@ export function HilfeDashboard() {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: theme.palette.secondary.main }}
+            sx={{ mb: 1, fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Hilfe & Support
           </Typography>
@@ -78,7 +79,7 @@ export function HilfeDashboard() {
         <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50], textAlign: 'center' }}>
           <Typography
             variant="h5"
-            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+            sx={{ mb: 2, color: theme.palette.secondary.main }}
           >
             Wie können wir Ihnen helfen?
           </Typography>
@@ -124,7 +125,7 @@ export function HilfeDashboard() {
                     {resource.icon}
                     <Typography
                       variant="h6"
-                      sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                      sx={{ mt: 2, mb: 1, color: theme.palette.secondary.main }}
                     >
                       {resource.title}
                     </Typography>
@@ -158,7 +159,7 @@ export function HilfeDashboard() {
                         backgroundColor:
                           resource.title === 'Support kontaktieren'
                             ? theme.palette.error.dark
-                            : 'rgba(0, 79, 123, 0.04)',
+                            : alpha(theme.palette.secondary.main, 0.04),
                       },
                     }}
                   >
@@ -173,7 +174,7 @@ export function HilfeDashboard() {
         </Grid>
 
         {/* Popular Topics */}
-        <Paper sx={{ p: 3, mt: 4, backgroundColor: theme.palette.success.light + '20', borderLeft: `4px solid ${theme.palette.primary.main}` }}>
+        <Paper sx={{ p: 3, mt: 4, backgroundColor: alpha(theme.palette.success.light, 0.13), borderLeft: `4px solid ${theme.palette.primary.main}` }}>
           <Typography variant="h6" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Beliebte Themen diese Woche
           </Typography>
