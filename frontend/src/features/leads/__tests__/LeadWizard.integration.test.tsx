@@ -129,6 +129,45 @@ beforeAll(() => {
         },
         { status: 201 }
       );
+    }),
+    // Mock lead contacts creation endpoint (ADR-007 Option C - Sprint 2.1.6 Phase 5+)
+    http.post('http://localhost:8080/api/leads/:leadId/contacts', async ({ request, params }) => {
+      const leadId = params.leadId;
+      const contactData = (await request.json()) as {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        phone?: string;
+        isPrimary?: boolean;
+      };
+
+      // Check for duplicate email in contacts
+      if (contactData.email === 'duplicate@example.com') {
+        return HttpResponse.json(
+          {
+            title: 'Duplicate Contact',
+            status: 409,
+            detail: 'Kontakt mit dieser E-Mail existiert bereits.',
+            errors: { email: ['E-Mail ist bereits vergeben'] },
+          },
+          { status: 409 }
+        );
+      }
+
+      // Successful contact creation
+      return HttpResponse.json(
+        {
+          id: 'contact-456',
+          leadId,
+          firstName: contactData.firstName,
+          lastName: contactData.lastName,
+          email: contactData.email,
+          phone: contactData.phone,
+          isPrimary: contactData.isPrimary ?? true,
+          createdAt: new Date().toISOString(),
+        },
+        { status: 201 }
+      );
     })
   );
 });
@@ -417,6 +456,20 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
           capturedPayload = await request.json();
           return HttpResponse.json({ id: 'lead-123', status: 'REGISTERED' }, { status: 201 });
+        }),
+        // Must also mock contact creation endpoint (ADR-007 Option C)
+        http.post('http://localhost:8080/api/leads/:leadId/contacts', async ({ request, params }) => {
+          const contactData = await request.json();
+          return HttpResponse.json(
+            {
+              id: 'contact-456',
+              leadId: params.leadId,
+              ...contactData,
+              isPrimary: true,
+              createdAt: new Date().toISOString(),
+            },
+            { status: 201 }
+          );
         })
       );
 
@@ -448,8 +501,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() => {
         expect(capturedPayload).toBeDefined();
         expect(capturedPayload.stage).toBe(1);
-        expect(capturedPayload.contact).toBeDefined();
-        expect(capturedPayload.contact.email).toBe('max@example.com');
+        expect(capturedPayload.contact).toBeUndefined(); // ADR-007 Option C: Contact sent separately
         // Sprint 2.1.5: consentGivenAt wird NICHT gesendet (UI-only)
       });
     });
@@ -462,6 +514,20 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         http.post('http://localhost:8080/api/leads', async ({ request }) => {
           capturedPayload = await request.json();
           return HttpResponse.json({ id: 'lead-123', status: 'REGISTERED' }, { status: 201 });
+        }),
+        // Must also mock contact creation endpoint (ADR-007 Option C)
+        http.post('http://localhost:8080/api/leads/:leadId/contacts', async ({ request, params }) => {
+          const contactData = await request.json();
+          return HttpResponse.json(
+            {
+              id: 'contact-456',
+              leadId: params.leadId,
+              ...contactData,
+              isPrimary: true,
+              createdAt: new Date().toISOString(),
+            },
+            { status: 201 }
+          );
         })
       );
 
