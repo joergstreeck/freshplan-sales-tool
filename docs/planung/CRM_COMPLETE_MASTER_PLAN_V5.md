@@ -161,6 +161,42 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-16 00:15 - Sprint 2.1.7.1-4 GEPLANT - Detaillierte 4-Sprint-Zerlegung (FOKUSSIERT!)
+
+**Kontext:** Nach ausführlicher Analyse und User-Diskussion wurde Sprint 2.1.7.1 in 4 separate Sprints aufgeteilt, um Scope Creep zu vermeiden und FOKUSSIERTE Deliverables zu garantieren.
+
+**Erledigt:**
+- ✅ **SPRINT-ANALYSE COMPLETE:**
+  - TRIGGER_SPRINT_2_1_7_1.md analysiert (ursprünglich 4 Features in 1 Sprint - zu breit!)
+  - Codebase-Deep-Dive: OpportunityResource, OpportunityService, LeadDetailPage, OpportunityPipeline
+  - Xentral-Dokumentation gefunden (FC-005, FC-009: APIs bereits vollständig dokumentiert in Modul 08)
+  - Kritische Business-Context-Fragen beantwortet: B2B-Food CRM vs Standard CRM, Provision-Modell, Churn-Alarm
+- ✅ **BUSINESS-ENTSCHEIDUNGEN (User-Confirmed):**
+  - Drag & Drop Fix: 3-stufige Lösung (PointerSensor + transformOrigin entfernen + scale statt rotate)
+  - RENEWAL-Stage ENTFERNEN → opportunityType field (V10033 Migration)
+  - Umsatz vs Zahlungsverhalten: 2 separate KPIs (GETRENNT!)
+  - Churn-Alarm: Variable customer-specific thresholds (7/14/30/45/60/90 Tage)
+  - Xentral-Kunden-Dropdown: Verkäufer-gefiltert (kein manuelles Tippen!)
+- ✅ **4 SPRINT-TRIGGER DOCUMENTS ERSTELLT/UPDATED:**
+  - TRIGGER_SPRINT_2_1_7_1.md (UPDATED): Lead → Opportunity (17h, FOKUSSIERT - nur UI Integration)
+  - TRIGGER_SPRINT_2_1_7_2.md (NEW): Customer + Xentral (18h - Dashboard ohne Daten wäre wertlos!)
+  - TRIGGER_SPRINT_2_1_7_3.md (NEW): RENEWAL-Workflow (8h - Upsell/Cross-sell)
+  - TRIGGER_SPRINT_2_1_7_4.md (NEW): Advanced Filters (13h - DEFERRED! YAGNI bis echte Daten vorhanden)
+- ✅ **TRIGGER_INDEX.md AKTUALISIERT:**
+  - Alle 4 Sprints im Index eingetragen (Zeilen 193-242)
+  - Status klar dokumentiert: 2.1.7.1-3 PLANNING, 2.1.7.4 DEFERRED
+
+**Kritische Erkenntnisse:**
+- Filter ohne echte Daten bauen = wertlos (Sprint 2.1.7.4 auf NACH Go-Live verschoben)
+- Customer-Dashboard ohne Xentral-Integration = wertlos (Sprint 2.1.7.2 beides ZUSAMMEN!)
+- FOKUSSIERTE Sprints (17h, 18h, 8h) statt Mega-Sprint (16-24h mit 4 Features)
+
+**Migration:** Keine (nur Planung, keine Code-Änderungen)
+**Tests:** n/a (Planning Phase)
+**Status:** ✅ PLANNING COMPLETE - Sprint 2.1.7.1 Ready for Kickoff
+
+---
+
 ### 2025-10-15 23:20 - Sprint 2.1.7.0 DOKUMENTIERT - Vollständige Doku in 4 Dokumenten + Session Handover
 
 **Kontext:** Sprint 2.1.7.0 vollständig dokumentiert nach erfolgreichem Merge. Alle relevanten Dokumente aktualisiert (Roadmap, Master Plan, Trigger Index, Sprint Trigger). Session-Handover für nächste Session erstellt.
@@ -1180,12 +1216,40 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🎯 SOFORT (Nächste Session):**
-  - Master Plan V5 lesen (Session Log vom 15.10.2025 23:20)
-  - Trigger Index prüfen (Sprint 2.1.7.0 abgeschlossen, nächster Sprint?)
-  - Production Roadmap checken (Phase 2: 85%, 23/36 PRs)
-  - Feature-Branch für neue Arbeit anlegen (git checkout -b feature/sprint-...)
-  - Migration-Nummer prüfen falls DB-Arbeit (./scripts/get-next-migration.sh)
+- **🎯 SOFORT (Nächste Session - Sprint 2.1.7.1 READY!):**
+  - **Feature-Branch anlegen:** `git checkout -b feature/sprint-2-1-7-1-lead-opportunity`
+  - **Migration-Check:** `./scripts/get-next-migration.sh` (nächste: V10030/V90006)
+  - **Sprint 2.1.7.1 starten:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (17h, 2 Tage, FOKUSSIERT!)
+  - **Voraussetzungen prüfen:** Sprint 2.1.7.0 ✅ COMPLETE, V10026 deployed ✅, V90003 DEV-SEED ✅
+
+- **📋 SPRINT 2.1.7.1 - LEAD → OPPORTUNITY UI INTEGRATION (FOKUSSIERT - 16.10.2025):**
+  - **SCOPE:** NUR Lead → Opportunity Workflow (Customer-Features in 2.1.7.2+3!)
+  - **Phase 1:** CreateOpportunityDialog mit Lead-Context-Prop-Pattern (6h)
+  - **Phase 2:** Kanban Backend-Filter (status: active/closed/all, assignedTo) (4h)
+  - **Phase 3:** Drag & Drop Fix (transformOrigin Bug - 3-stufige Lösung) (3h)
+  - **Phase 4:** E2E Tests mit Playwright (18 Tests) (4h)
+  - **Aufwand:** 17h = 2 Arbeitstage (REALISTISCH!)
+  - **Migrations:** Keine (nur UI + Backend-Filter)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md`
+
+- **📋 SPRINT 2.1.7.2 - CUSTOMER + XENTRAL (NACH 2.1.7.1):**
+  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard (ZUSAMMEN - sonst wertlos!)
+  - **KRITISCH:** Xentral-API testen BEVOR Start!
+  - **Aufwand:** 18h = 2-3 Tage
+  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
+
+- **📋 SPRINT 2.1.7.3 - RENEWAL-WORKFLOW (NACH 2.1.7.2):**
+  - **SCOPE:** Bestandskunden-Opportunities (Upsell/Cross-sell)
+  - **ARCHITEKTUR:** RENEWAL wird opportunityType (NICHT stage)
+  - **Aufwand:** 8h = 1 Arbeitstag
+  - **Migration:** V10033 (RENEWAL-Stage-Migration)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md`
+
+- **⚠️ SPRINT 2.1.7.4 - ADVANCED FILTERS (DEFERRED!):**
+  - **STATUS:** NOCH NICHT READY FÜR KICKOFF!
+  - **Grund:** YAGNI - keine echten Daten vorhanden (erst nach Go-Live mit 100 realen Leads bauen)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md`
 
 - **✅ SPRINT 2.1.7.0 - DESIGN SYSTEM MIGRATION COMPLETE (15.10.2025 - PR #140 MERGED):**
   - Status: ✅ MERGED TO MAIN (Commit f6642321b)
@@ -1205,14 +1269,6 @@
   - Code Review Fixes (10 Issues: 6 Code Review + 3 Pre-existing Tests + 1 CI ESLint)
   - Tests: 60/60 Backend GREEN (100%) + Frontend ESLint GREEN ✅
   - **Modul 02 Status:** ✅ COMPLETE (5/5 Phasen + Code Quality + Testability)
-
-- **📋 SPRINT 2.1.7.1 - OPPORTUNITIES UI INTEGRATION (NACH Sprint 2.1.7.0):**
-  - **Phase 1:** Lead→Opportunity Wizard UI (8-12h)
-  - **Phase 2:** Kanban Board Enhancements (4-6h)
-  - **Phase 3:** Customer→Opportunity UI (4-6h)
-  - **Phase 4:** Integration Testing + Bugfixes (4-6h)
-  - **Gesamtaufwand:** 16-24h (2-3 Tage)
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md`
 
 - **📋 Sprint 2.1.8 - Team Management & Test Infrastructure (verschoben, Start ~22.10.2025):**
   - **Track 1 (Business Features):**

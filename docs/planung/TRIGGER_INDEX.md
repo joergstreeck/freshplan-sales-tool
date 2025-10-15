@@ -190,14 +190,56 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
    - Status: ✅ MERGED TO MAIN (15.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_1.md - Opportunities UI Integration (NEU 13.10.2025)
-   - **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog + Button)
-   - **Phase 2:** Kanban Enhancements (Filter: Nur offene/Alle/Archiv)
-   - **Phase 3:** Customer → Opportunity UI + Conversion Button
-   - **Phase 4:** Testing & Polish (E2E Tests + Unit Tests)
-   - **Aufwand:** 16-24h (2-3 Tage)
-   - **Prerequisites:** ✅ Backend complete (Sprint 2.1.7.0)
-   - Status: 📋 PLANNING (Start: 14.10.2025)
+📋 TRIGGER_SPRINT_2_1_7_1.md - Lead → Opportunity UI Integration (FOKUSSIERT - 16.10.2025)
+   - **SCOPE:** NUR Lead → Opportunity Workflow (FOKUSSIERT!)
+   - **Phase 1:** CreateOpportunityDialog mit Lead-Context-Prop-Pattern
+   - **Phase 2:** Kanban Backend-Filter (status: active/closed/all, assignedTo)
+   - **Phase 3:** Drag & Drop Fix (transformOrigin Bug - 3-stufige Lösung)
+   - **Phase 4:** E2E Tests mit Playwright (18 Tests)
+   - **Aufwand:** 17h = 2 Arbeitstage (REALISTISCH!)
+   - **ENTFERNT:** Customer → Opportunity (→ Sprint 2.1.7.3), Opportunity → Customer (→ Sprint 2.1.7.2)
+   - **Prerequisites:** ✅ Sprint 2.1.7.0 COMPLETE, V10026 deployed, V90003 DEV-SEED verfügbar
+   - **Migrations:** Keine (nur UI + Backend-Filter)
+   - Status: 📋 PLANNING - Ready for Kickoff (16.10.2025)
+
+📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (16.10.2025)
+   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard (ZUSAMMEN!)
+   - **Phase 1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert)
+   - **Phase 2:** XentralApiClient (GET /customers, GET /invoices/{customerId}, GET /payments/{customerId})
+   - **Phase 3:** Customer-Dashboard (2 KPIs: Umsatz + Zahlungsverhalten - GETRENNT!)
+   - **Phase 4:** Churn-Alarm (variable Threshold 7/14/30/45/60/90 Tage)
+   - **Aufwand:** 18h = 2-3 Arbeitstage
+   - **KRITISCH:** Dashboard OHNE Xentral-Daten ist wertlos → beides ZUSAMMEN implementieren!
+   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE + Xentral Sales-Rep Mapping geklärt
+   - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
+   - **Tests:** 12 Backend (XentralApiClient) + 8 Frontend (Dashboard) = 20 Tests
+   - Status: 📋 PLANNING - Xentral-API-Test erforderlich vor Start!
+
+📋 TRIGGER_SPRINT_2_1_7_3.md - RENEWAL-Workflow (Upsell/Cross-sell - 16.10.2025)
+   - **SCOPE:** Bestandskunden-Opportunities (Upsell/Cross-sell)
+   - **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage)
+   - **Phase 2:** CreateOpportunityForCustomerDialog (stage: NEEDS_ANALYSIS, skip NEW_LEAD)
+   - **Phase 3:** CustomerOpportunitiesList (gruppiert: Offen/Gewonnen/Verloren)
+   - **Phase 4:** RENEWAL-Stage ENTFERNEN (Migration V10033 - RENEWAL → NEEDS_ANALYSIS + opportunityType)
+   - **Aufwand:** 8h = 1 Arbeitstag
+   - **ARCHITEKTUR:** RENEWAL wird opportunityType (NICHT stage) - Customer-Opportunities starten bei NEEDS_ANALYSIS
+   - **Prerequisites:** Sprint 2.1.7.2 COMPLETE
+   - **Migrations:** V10033 (RENEWAL-Stage-Migration)
+   - **Tests:** 6 Backend + 4 Frontend = 10 Tests
+   - Status: 📋 PLANNING - Ready after 2.1.7.2
+
+📋 TRIGGER_SPRINT_2_1_7_4.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
+   - **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
+   - **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate)
+   - **Phase 2:** Advanced Search Dialog (Multi-Criteria: Stage+Owner+DateRange+Value)
+   - **Phase 3:** Pipeline-Analytics Dashboard (Conversion Rates, Avg Deal Size, Sales Velocity)
+   - **Phase 4:** Custom Views speichern (User-Preferences)
+   - **Aufwand:** 13h = 1,5-2 Arbeitstage
+   - **KRITISCHE ENTSCHEIDUNG:** ⚠️ NICHT JETZT! YAGNI-Prinzip (You Ain't Gonna Need It)
+   - **Begründung:** Keine echten Daten vorhanden - Filter-Bedarf unklar - erst nach Go-Live mit 100 realen Leads bauen
+   - **Prerequisites:** Sprint 2.1.7.1-3 COMPLETE + Go-Live mit realen Daten
+   - **Migrations:** Keine (nur Frontend-State)
+   - Status: 📋 PLANNING - NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
 📋 TRIGGER_SPRINT_2_1_8.md - Team Management & Test Infrastructure (VERSCHOBEN)
    - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
