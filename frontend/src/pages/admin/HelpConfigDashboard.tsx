@@ -190,7 +190,10 @@ export function HelpConfigDashboard() {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
-              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 89%
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -200,7 +203,10 @@ export function HelpConfigDashboard() {
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 4.6/5
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -210,7 +216,10 @@ export function HelpConfigDashboard() {
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 -32%
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -220,7 +229,10 @@ export function HelpConfigDashboard() {
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
-              <Typography variant="h4" sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}
+              >
                 15 Min
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -266,7 +278,10 @@ export function HelpConfigDashboard() {
                             label={badge}
                             size="small"
                             sx={{
-                              backgroundColor: badge === 'Live' ? theme.palette.primary.main : theme.palette.grey[300],
+                              backgroundColor:
+                                badge === 'Live'
+                                  ? theme.palette.primary.main
+                                  : theme.palette.grey[300],
                               color: badge === 'Live' ? 'white' : 'text.secondary',
                             }}
                           />

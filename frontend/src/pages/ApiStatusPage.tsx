@@ -169,10 +169,7 @@ export function ApiStatusPage() {
       <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             API Status & System Health
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -261,9 +258,7 @@ export function ApiStatusPage() {
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
           >
-            <Typography variant="h5">
-              API Endpoint Tests
-            </Typography>
+            <Typography variant="h5">API Endpoint Tests</Typography>
             <Button
               variant="contained"
               startIcon={isTestRunning ? <CircularProgress size={20} /> : <RefreshIcon />}

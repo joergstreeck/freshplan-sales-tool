@@ -112,10 +112,7 @@ export const AuditAdminPage: React.FC = () => {
                 <SecurityIcon sx={{ mr: 2, color: theme.palette.secondary.main, fontSize: 32 }} />
                 Audit Dashboard
               </Typography>
-              <Typography
-                variant="subtitle1"
-                color="text.secondary"
-              >
+              <Typography variant="subtitle1" color="text.secondary">
                 Compliance-Überwachung & Sicherheitsanalyse
               </Typography>
             </Grid>

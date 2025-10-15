@@ -77,17 +77,17 @@ export function HilfeDashboard() {
 
         {/* Quick Search */}
         <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50], textAlign: 'center' }}>
-          <Typography
-            variant="h5"
-            sx={{ mb: 2, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h5" sx={{ mb: 2, color: theme.palette.secondary.main }}>
             Wie können wir Ihnen helfen?
           </Typography>
           <Box sx={{ maxWidth: 600, mx: 'auto' }}>
             <Button
               variant="contained"
               size="large"
-              sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }}
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                '&:hover': { backgroundColor: theme.palette.primary.dark },
+              }}
               onClick={() => navigate('/hilfe/faq')}
             >
               Suche starten
@@ -115,7 +115,10 @@ export function HilfeDashboard() {
                   height: '100%',
                   transition: 'all 0.2s',
                   cursor: 'pointer',
-                  border: resource.title === 'Erste Schritte' ? `2px solid ${theme.palette.primary.main}` : 'none',
+                  border:
+                    resource.title === 'Erste Schritte'
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : 'none',
                   '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
                 }}
                 onClick={() => navigate(resource.path)}
@@ -139,7 +142,12 @@ export function HilfeDashboard() {
                         <Typography
                           key={item}
                           variant="caption"
-                          sx={{ px: 1, py: 0.5, backgroundColor: theme.palette.grey[100], borderRadius: 1 }}
+                          sx={{
+                            px: 1,
+                            py: 0.5,
+                            backgroundColor: theme.palette.grey[100],
+                            borderRadius: 1,
+                          }}
                         >
                           {item}
                         </Typography>
@@ -153,8 +161,13 @@ export function HilfeDashboard() {
                     variant={resource.title === 'Support kontaktieren' ? 'contained' : 'text'}
                     sx={{
                       backgroundColor:
-                        resource.title === 'Support kontaktieren' ? theme.palette.error.main : 'transparent',
-                      color: resource.title === 'Support kontaktieren' ? 'white' : theme.palette.secondary.main,
+                        resource.title === 'Support kontaktieren'
+                          ? theme.palette.error.main
+                          : 'transparent',
+                      color:
+                        resource.title === 'Support kontaktieren'
+                          ? 'white'
+                          : theme.palette.secondary.main,
                       '&:hover': {
                         backgroundColor:
                           resource.title === 'Support kontaktieren'
@@ -174,7 +187,14 @@ export function HilfeDashboard() {
         </Grid>
 
         {/* Popular Topics */}
-        <Paper sx={{ p: 3, mt: 4, backgroundColor: alpha(theme.palette.success.light, 0.13), borderLeft: `4px solid ${theme.palette.primary.main}` }}>
+        <Paper
+          sx={{
+            p: 3,
+            mt: 4,
+            backgroundColor: alpha(theme.palette.success.light, 0.13),
+            borderLeft: `4px solid ${theme.palette.primary.main}`,
+          }}
+        >
           <Typography variant="h6" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Beliebte Themen diese Woche
           </Typography>

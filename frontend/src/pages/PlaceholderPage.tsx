@@ -1,5 +1,15 @@
 import React from 'react';
-import { Typography, Box, Paper, Button, Grid, Card, CardContent, useTheme, alpha } from '@mui/material';
+import {
+  Typography,
+  Box,
+  Paper,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  useTheme,
+  alpha,
+} from '@mui/material';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import InfoIcon from '@mui/icons-material/Info';
@@ -46,10 +56,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
         {/* Main Content */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           {displayIcon}
-          <Typography
-            variant="h3"
-            sx={{ mt: 3, mb: 2, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h3" sx={{ mt: 3, mb: 2, color: theme.palette.secondary.main }}>
             {title}
           </Typography>
           <Typography variant="h5" color="text.secondary" sx={{ mb: 1 }}>
@@ -84,10 +91,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
         {/* Coming Features */}
         {features.length > 0 && (
           <>
-            <Typography
-              variant="h5"
-              sx={{ mb: 3, textAlign: 'center' }}
-            >
+            <Typography variant="h5" sx={{ mb: 3, textAlign: 'center' }}>
               Was Sie erwarten können
             </Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -95,7 +99,9 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
                 <Grid size={{ xs: 12, md: 4 }} key={index}>
                   <Card sx={{ height: '100%', textAlign: 'center' }}>
                     <CardContent>
-                      <RocketLaunchIcon sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }} />
+                      <RocketLaunchIcon
+                        sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }}
+                      />
                       <Typography variant="body1">{feature}</Typography>
                     </CardContent>
                   </Card>

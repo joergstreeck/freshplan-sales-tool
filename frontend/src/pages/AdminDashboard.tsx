@@ -87,7 +87,9 @@ export function AdminDashboard() {
       id: 'integrations',
       title: 'Integrationen',
       description: 'Externe Services, APIs und Schnittstellen verwalten',
-      icon: <IntegrationInstructionsIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
+      icon: (
+        <IntegrationInstructionsIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />
+      ),
       itemCount: 6,
       items: ['KI-Anbindungen', 'Xentral', 'E-Mail Services', 'Payment', 'Webhooks', '+ Neue'],
     },
@@ -201,7 +203,11 @@ export function AdminDashboard() {
                     )}
                   </CardContent>
                   <CardActions sx={{ px: 2, pb: 2 }}>
-                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: theme.palette.secondary.main }}>
+                    <Button
+                      size="small"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{ color: theme.palette.secondary.main }}
+                    >
                       Öffnen
                     </Button>
                   </CardActions>
@@ -326,7 +332,11 @@ export function AdminDashboard() {
               size="small"
               sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }}
             />
-            <Chip label="DB: OK" size="small" sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }} />
+            <Chip
+              label="DB: OK"
+              size="small"
+              sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }}
+            />
             <Chip
               label="Auth: OK"
               size="small"

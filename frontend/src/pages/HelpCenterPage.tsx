@@ -61,8 +61,16 @@ export const HelpCenterPage: React.FC = () => {
       description: 'Lernen mit Videos',
       items: [
         { title: 'FreshPlan in 10 Minuten', content: 'Kompakter Überblick', duration: '10:23' },
-        { title: 'Kundenwizard erklärt', content: 'Neuen Kunden optimal anlegen', duration: '8:45' },
-        { title: 'Tipps & Tricks', content: 'Effizienter arbeiten mit FreshPlan', duration: '12:15' },
+        {
+          title: 'Kundenwizard erklärt',
+          content: 'Neuen Kunden optimal anlegen',
+          duration: '8:45',
+        },
+        {
+          title: 'Tipps & Tricks',
+          content: 'Effizienter arbeiten mit FreshPlan',
+          duration: '12:15',
+        },
         { title: 'Reporting Masterclass', content: 'Berichte wie ein Profi', duration: '15:30' },
       ],
     },
@@ -97,10 +105,7 @@ export const HelpCenterPage: React.FC = () => {
     return (
       <MainLayoutV2>
         <Box sx={{ py: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Hilfe-Center
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -134,7 +139,11 @@ export const HelpCenterPage: React.FC = () => {
                     </Typography>
                   </CardContent>
                   <CardActions>
-                    <Button size="small" endIcon={<ArrowForwardIcon />} sx={{ color: theme.palette.primary.main }}>
+                    <Button
+                      size="small"
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{ color: theme.palette.primary.main }}
+                    >
                       Öffnen
                     </Button>
                   </CardActions>
@@ -158,10 +167,7 @@ export const HelpCenterPage: React.FC = () => {
 
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             {section.icon}
-            <Typography
-              variant="h3"
-              sx={{ ml: 2, color: theme.palette.secondary.main }}
-            >
+            <Typography variant="h3" sx={{ ml: 2, color: theme.palette.secondary.main }}>
               {section.title}
             </Typography>
           </Box>

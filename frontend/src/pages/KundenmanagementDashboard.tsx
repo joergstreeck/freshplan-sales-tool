@@ -114,7 +114,7 @@ export function KundenmanagementDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                  fontWeight: 'bold',
+                fontWeight: 'bold',
                 color: theme.palette.secondary.main,
               }}
             >
@@ -142,7 +142,10 @@ export function KundenmanagementDashboard() {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 1.247
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -155,7 +158,10 @@ export function KundenmanagementDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 €2.3M
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -168,7 +174,10 @@ export function KundenmanagementDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 89%
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -181,7 +190,10 @@ export function KundenmanagementDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 3, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 €145k
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -232,7 +244,11 @@ export function KundenmanagementDashboard() {
                       </Box>
                       <Typography
                         variant="h6"
-                        sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                        sx={{
+                          mb: 1,
+                          fontFamily: 'Antonio, sans-serif',
+                          color: theme.palette.secondary.main,
+                        }}
                       >
                         {tool.title}
                       </Typography>
@@ -284,12 +300,21 @@ export function KundenmanagementDashboard() {
                       <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
                         <Typography
                           variant="h6"
-                          sx={{ color: theme.palette.primary.main, fontWeight: 'bold', minWidth: 20 }}
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontWeight: 'bold',
+                            minWidth: 20,
+                          }}
                         >
                           {index + 1}
                         </Typography>
                         <StarIcon
-                          sx={{ fontSize: 20, color: index === 0 ? theme.palette.primary.main : theme.palette.grey[300], ml: 1 }}
+                          sx={{
+                            fontSize: 20,
+                            color:
+                              index === 0 ? theme.palette.primary.main : theme.palette.grey[300],
+                            ml: 1,
+                          }}
                         />
                       </Box>
                       <ListItemText
@@ -298,10 +323,14 @@ export function KundenmanagementDashboard() {
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {customer.trend === 'up' && (
-                          <ArrowUpwardIcon sx={{ fontSize: 16, color: theme.palette.primary.main }} />
+                          <ArrowUpwardIcon
+                            sx={{ fontSize: 16, color: theme.palette.primary.main }}
+                          />
                         )}
                         {customer.trend === 'down' && (
-                          <ArrowDownwardIcon sx={{ fontSize: 16, color: theme.palette.error.main }} />
+                          <ArrowDownwardIcon
+                            sx={{ fontSize: 16, color: theme.palette.error.main }}
+                          />
                         )}
                         <Typography
                           variant="body2"
@@ -335,14 +364,21 @@ export function KundenmanagementDashboard() {
             <Paper sx={{ p: 3, mb: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                sx={{
+                  mb: 2,
+                  fontFamily: 'Antonio, sans-serif',
+                  color: theme.palette.secondary.main,
+                }}
               >
                 Quick Stats
               </Typography>
               <Grid container spacing={2}>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+                    >
                       42
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -352,7 +388,10 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h5" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+                    >
                       3.2
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -362,7 +401,10 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Typography variant="h5" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+                    >
                       18
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -372,7 +414,10 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+                    >
                       96%
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -387,7 +432,11 @@ export function KundenmanagementDashboard() {
             <Paper sx={{ p: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                sx={{
+                  mb: 2,
+                  fontFamily: 'Antonio, sans-serif',
+                  color: theme.palette.secondary.main,
+                }}
               >
                 Letzte Aktivitäten
               </Typography>
@@ -396,7 +445,14 @@ export function KundenmanagementDashboard() {
                   <ListItem key={index} sx={{ px: 0 }}>
                     <Box sx={{ mr: 2, fontSize: 24 }}>{getActivityIcon(activity.type)}</Box>
                     <ListItemText primary={activity.customer} secondary={activity.time} />
-                    <Avatar sx={{ width: 32, height: 32, fontSize: 12, bgcolor: theme.palette.primary.main }}>
+                    <Avatar
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        fontSize: 12,
+                        bgcolor: theme.palette.primary.main,
+                      }}
+                    >
                       {activity.user}
                     </Avatar>
                   </ListItem>
@@ -405,7 +461,11 @@ export function KundenmanagementDashboard() {
               <Button
                 fullWidth
                 variant="outlined"
-                sx={{ mt: 2, borderColor: theme.palette.primary.main, color: theme.palette.primary.main }}
+                sx={{
+                  mt: 2,
+                  borderColor: theme.palette.primary.main,
+                  color: theme.palette.primary.main,
+                }}
               >
                 Alle Aktivitäten
               </Button>

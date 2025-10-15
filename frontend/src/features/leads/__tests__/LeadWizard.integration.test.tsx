@@ -21,7 +21,7 @@ vi.mock('../api', async () => {
   const actual = await vi.importActual<typeof import('../api')>('../api');
   return {
     ...actual,
-    createLead: vi.fn().mockImplementation(async (payload) => {
+    createLead: vi.fn().mockImplementation(async payload => {
       // Return mock lead data
       return {
         id: 'lead-123',
@@ -679,9 +679,12 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
 
       // Should show 409 duplicate error (from contact creation, not lead creation)
-      await waitFor(() => {
-        expect(screen.getByRole('alert')).toBeInTheDocument();
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          expect(screen.getByRole('alert')).toBeInTheDocument();
+        },
+        { timeout: 3000 }
+      );
 
       // Verify error message is shown (either from lead or contact creation)
       // Note: The component shows a generic "Duplicate" error message
@@ -735,7 +738,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       const mockCreateLead = vi.mocked(api.createLead);
 
       // Simulate slow API
-      mockCreateLead.mockImplementationOnce(async (payload) => {
+      mockCreateLead.mockImplementationOnce(async payload => {
         await new Promise(resolve => setTimeout(resolve, 100));
         return {
           id: 'lead-123',

@@ -136,7 +136,13 @@ export function IntegrationsDashboard() {
         return <ErrorIcon sx={{ fontSize: 20, color: theme.palette.error.main }} />;
       case 'syncing':
         return (
-          <SyncIcon sx={{ fontSize: 20, color: theme.palette.info.main, animation: 'spin 2s linear infinite' }} />
+          <SyncIcon
+            sx={{
+              fontSize: 20,
+              color: theme.palette.info.main,
+              animation: 'spin 2s linear infinite',
+            }}
+          />
         );
       default:
         return null;
@@ -223,10 +229,7 @@ export function IntegrationsDashboard() {
 
         {/* Status Overview */}
         <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50] }}>
-          <Typography
-            variant="h6"
-            sx={{ mb: 2, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h6" sx={{ mb: 2, color: theme.palette.secondary.main }}>
             Integrations-Status
           </Typography>
           <Stack direction="row" spacing={4} alignItems="center">

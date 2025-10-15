@@ -70,10 +70,7 @@ export function EinstellungenDashboard() {
     <MainLayoutV2>
       <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Einstellungen
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -101,10 +98,7 @@ export function EinstellungenDashboard() {
                         {setting.icon}
                         <ArrowForwardIosIcon sx={{ ml: 'auto', color: theme.palette.grey[600] }} />
                       </Box>
-                      <Typography
-                        variant="h6"
-                        sx={{ mb: 1, color: theme.palette.secondary.main }}
-                      >
+                      <Typography variant="h6" sx={{ mb: 1, color: theme.palette.secondary.main }}>
                         {setting.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -115,7 +109,12 @@ export function EinstellungenDashboard() {
                           <Typography
                             key={item}
                             variant="caption"
-                            sx={{ px: 1, py: 0.5, backgroundColor: theme.palette.grey[100], borderRadius: 1 }}
+                            sx={{
+                              px: 1,
+                              py: 0.5,
+                              backgroundColor: theme.palette.grey[100],
+                              borderRadius: 1,
+                            }}
                           >
                             {item}
                           </Typography>
@@ -137,10 +136,7 @@ export function EinstellungenDashboard() {
           <Grid size={{ xs: 12, lg: 4 }}>
             <Card>
               <CardContent>
-                <Typography
-                  variant="h6"
-                  sx={{ mb: 2, color: theme.palette.secondary.main }}
-                >
+                <Typography variant="h6" sx={{ mb: 2, color: theme.palette.secondary.main }}>
                   Schnelleinstellungen
                 </Typography>
                 <List>
@@ -148,7 +144,9 @@ export function EinstellungenDashboard() {
                     <React.Fragment key={item.label}>
                       <ListItem sx={{ px: 0 }}>
                         <ListItemIcon sx={{ minWidth: 40 }}>
-                          {React.cloneElement(item.icon, { sx: { color: theme.palette.secondary.main } })}
+                          {React.cloneElement(item.icon, {
+                            sx: { color: theme.palette.secondary.main },
+                          })}
                         </ListItemIcon>
                         <ListItemText primary={item.label} secondary={item.value} />
                         <Button size="small" sx={{ color: theme.palette.primary.main }}>

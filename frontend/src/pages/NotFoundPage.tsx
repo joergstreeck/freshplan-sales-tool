@@ -62,11 +62,7 @@ export function NotFoundPage() {
               Zur Startseite
             </Button>
 
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => navigate(-1)}
-            >
+            <Button variant="outlined" color="secondary" onClick={() => navigate(-1)}>
               Zurück
             </Button>
           </Box>

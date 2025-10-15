@@ -95,5 +95,5 @@ export {
   createTestQueryClient,
   testTheme,
   AllTheProviders,
-  MinimalRouterProvider
+  MinimalRouterProvider,
 };

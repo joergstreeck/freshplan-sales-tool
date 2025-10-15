@@ -111,10 +111,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
       <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Hilfe-System Konfiguration
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -273,10 +270,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               <Grid size={{ xs: 6, md: 3 }} key={index}>
                 <Card sx={{ textAlign: 'center' }}>
                   <CardContent>
-                    <Typography
-                      variant="h3"
-                      sx={{ color: theme.palette.primary.main }}
-                    >
+                    <Typography variant="h3" sx={{ color: theme.palette.primary.main }}>
                       {item.value}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -301,7 +295,10 @@ export const HelpSystemDemoPageV2: React.FC = () => {
             >
               <Button
                 variant="contained"
-                sx={{ backgroundColor: theme.palette.primary.main, '&:hover': { backgroundColor: theme.palette.primary.dark } }}
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  '&:hover': { backgroundColor: theme.palette.primary.dark },
+                }}
               >
                 Hover für Tooltip
               </Button>

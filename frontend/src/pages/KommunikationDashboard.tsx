@@ -105,13 +105,19 @@ export function KommunikationDashboard() {
                       label={tool.status === 'online' ? 'Online' : 'Neu'}
                       size="small"
                       sx={{
-                        backgroundColor: tool.status === 'online' ? theme.palette.primary.main : theme.palette.warning.main,
+                        backgroundColor:
+                          tool.status === 'online'
+                            ? theme.palette.primary.main
+                            : theme.palette.warning.main,
                         color: 'white',
                       }}
                     />
                   )}
                   {tool.stats && (
-                    <Typography variant="body2" sx={{ color: theme.palette.secondary.main, fontWeight: 'medium' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: theme.palette.secondary.main, fontWeight: 'medium' }}
+                    >
                       {tool.stats}
                     </Typography>
                   )}

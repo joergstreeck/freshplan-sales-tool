@@ -170,10 +170,7 @@ export function SystemDashboard() {
 
         {/* System Health Overview */}
         <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50] }}>
-          <Typography
-            variant="h6"
-            sx={{ mb: 2, color: theme.palette.secondary.main }}
-          >
+          <Typography variant="h6" sx={{ mb: 2, color: theme.palette.secondary.main }}>
             System Health Overview
           </Typography>
           <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>

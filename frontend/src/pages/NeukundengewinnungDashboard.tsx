@@ -130,7 +130,10 @@ export function NeukundengewinnungDashboard() {
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 234
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -143,7 +146,10 @@ export function NeukundengewinnungDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 28%
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -156,7 +162,10 @@ export function NeukundengewinnungDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 €45k
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -169,7 +178,10 @@ export function NeukundengewinnungDashboard() {
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <Paper sx={{ p: 2, textAlign: 'center' }}>
-              <Typography variant="h4" sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}
+              >
                 7 Tage
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -220,7 +232,7 @@ export function NeukundengewinnungDashboard() {
                         variant="h6"
                         sx={{
                           mb: 1,
-                                      color: theme.palette.secondary.main,
+                          color: theme.palette.secondary.main,
                         }}
                       >
                         {tool.title}
@@ -242,7 +254,12 @@ export function NeukundengewinnungDashboard() {
                         <Box>
                           <Typography
                             variant="h6"
-                            sx={{ color: tool.stats.trend === 'up' ? theme.palette.primary.main : theme.palette.secondary.main }}
+                            sx={{
+                              color:
+                                tool.stats.trend === 'up'
+                                  ? theme.palette.primary.main
+                                  : theme.palette.secondary.main,
+                            }}
                           >
                             {tool.stats.primary}
                           </Typography>
@@ -254,7 +271,12 @@ export function NeukundengewinnungDashboard() {
                         </Box>
                         {tool.stats.trend && (
                           <TrendingUpIcon
-                            sx={{ color: tool.stats.trend === 'up' ? theme.palette.primary.main : theme.palette.grey[600] }}
+                            sx={{
+                              color:
+                                tool.stats.trend === 'up'
+                                  ? theme.palette.primary.main
+                                  : theme.palette.grey[600],
+                            }}
                           />
                         )}
                       </Box>
@@ -273,7 +295,11 @@ export function NeukundengewinnungDashboard() {
                 <Paper sx={{ p: 3 }}>
                   <Typography
                     variant="h6"
-                    sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                    sx={{
+                      mb: 2,
+                      fontFamily: 'Antonio, sans-serif',
+                      color: theme.palette.secondary.main,
+                    }}
                   >
                     Lead Funnel
                   </Typography>
@@ -345,7 +371,9 @@ export function NeukundengewinnungDashboard() {
                         height: 8,
                         borderRadius: 1,
                         backgroundColor: theme.palette.grey[300],
-                        '& .MuiLinearProgress-bar': { backgroundColor: theme.palette.secondary.main },
+                        '& .MuiLinearProgress-bar': {
+                          backgroundColor: theme.palette.secondary.main,
+                        },
                       }}
                     />
                   </Box>
@@ -360,7 +388,11 @@ export function NeukundengewinnungDashboard() {
             <Paper sx={{ p: 3, mb: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                sx={{
+                  mb: 2,
+                  fontFamily: 'Antonio, sans-serif',
+                  color: theme.palette.secondary.main,
+                }}
               >
                 Neue Leads
               </Typography>
@@ -409,7 +441,11 @@ export function NeukundengewinnungDashboard() {
             <Paper sx={{ p: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                sx={{
+                  mb: 2,
+                  fontFamily: 'Antonio, sans-serif',
+                  color: theme.palette.secondary.main,
+                }}
               >
                 Anstehende Aktionen
               </Typography>
@@ -422,7 +458,10 @@ export function NeukundengewinnungDashboard() {
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={action.action} secondary={action.contact} />
-                    <Typography variant="body2" sx={{ color: theme.palette.primary.main, fontWeight: 'medium' }}>
+                    <Typography
+                      variant="body2"
+                      sx={{ color: theme.palette.primary.main, fontWeight: 'medium' }}
+                    >
                       {action.time}
                     </Typography>
                   </ListItem>

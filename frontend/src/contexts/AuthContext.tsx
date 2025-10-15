@@ -51,7 +51,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login: async () => {},
       logout: () => {},
       token: 'mock-dev-token',
-      hasRole: (role: string) => ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase()),
+      hasRole: (role: string) =>
+        ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase()),
       hasAnyRole: (roles: string[]) =>
         roles.some(role => ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase())),
       getValidToken: async () => 'mock-dev-token',
