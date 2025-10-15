@@ -134,83 +134,10 @@ beforeAll(() => {
 });
 
 afterEach(() => {
-  server.resetHandlers();
   queryClient.clear(); // Clear query cache between tests
-
-  // Re-apply default handlers after reset
-  server.use(
-    http.get('http://localhost:8080/api/enums/business-types', () => {
-      return HttpResponse.json([
-        { value: 'RESTAURANT', label: 'Restaurant / Gaststätte' },
-        { value: 'HOTEL', label: 'Hotel / Beherbergung' },
-        { value: 'CATERING', label: 'Catering / Event' },
-        { value: 'BAKERY', label: 'Bäckerei / Konditorei' },
-      ]);
-    }),
-    http.get('http://localhost:8080/api/enums/lead-sources', () => {
-      return HttpResponse.json([
-        { value: 'MESSE', label: 'Messe / Event' },
-        { value: 'EMPFEHLUNG', label: 'Empfehlung / Partner' },
-        { value: 'TELEFON', label: 'Telefon / Kaltakquise' },
-        { value: 'WEB_FORMULAR', label: 'Web-Formular' },
-      ]);
-    }),
-    http.get('http://localhost:8080/api/enums/kitchen-sizes', () => {
-      return HttpResponse.json([
-        { value: 'small', label: 'Klein (< 20 Essen/Tag)' },
-        { value: 'medium', label: 'Mittel (20-100 Essen/Tag)' },
-        { value: 'large', label: 'Groß (> 100 Essen/Tag)' },
-      ]);
-    }),
-    http.post('http://localhost:8080/api/leads', async ({ request }) => {
-      const payload = (await request.json()) as {
-        stage?: number;
-        companyName: string;
-        source?: string;
-        contact?: { firstName?: string; lastName?: string; email?: string; phone?: string };
-        activities?: Array<{ activityType: string; performedAt: string }>;
-        estimatedVolume?: number;
-        businessType?: string;
-      };
-
-      if (!payload.companyName?.trim()) {
-        return HttpResponse.json(
-          {
-            title: 'Validation Failed',
-            status: 400,
-            detail: 'Company name is required',
-            errors: { companyName: ['Firmenname ist Pflicht'] },
-          },
-          { status: 400 }
-        );
-      }
-
-      if (payload.contact?.email === 'duplicate@example.com') {
-        return HttpResponse.json(
-          {
-            title: 'Duplicate Lead',
-            status: 409,
-            detail: 'Lead mit dieser E-Mail existiert bereits.',
-            errors: { email: ['E-Mail ist bereits vergeben'] },
-          },
-          { status: 409 }
-        );
-      }
-
-      return HttpResponse.json(
-        {
-          id: 'lead-123',
-          stage: payload.stage || 0,
-          companyName: payload.companyName,
-          source: payload.source,
-          contact: payload.contact,
-          status: 'REGISTERED',
-          createdAt: new Date().toISOString(),
-        },
-        { status: 201 }
-      );
-    })
-  );
+  // DON'T reset handlers - they're specific to this test file and stable
+  // The handlers defined in beforeAll are test-file-specific and don't need to be reset
+  // Removing server.resetHandlers() prevents timing issues where handlers aren't available when components mount
 });
 
 afterAll(() => server.close());
@@ -855,7 +782,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       // Select EMPFEHLUNG (Erstkontakt optional seit 2025-10-04)
       const sourceSelect = screen.getByLabelText(/herkunft/i);
       await user.click(sourceSelect);
-      await user.click(await screen.findByRole('option', { name: /empfehlung.*partner/i }));
+      // Wait for options to be loaded before selecting
+      const empfehlungOption = await screen.findByRole('option', { name: /empfehlung.*partner/i }, { timeout: 5000 });
+      await user.click(empfehlungOption);
 
       // Save WITHOUT Erstkontakt (Pre-Claim)
       const submitButton = screen.getByRole('button', { name: /vormerkung speichern/i });
