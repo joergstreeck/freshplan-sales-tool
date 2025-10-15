@@ -222,9 +222,7 @@ public class ContactInteractionResource {
       List<CustomerContact> contacts = dataHygieneService.findContactsByFreshnessLevel(level);
 
       // Convert entities to DTOs to avoid LazyInitializationException
-      List<ContactDTO> contactDTOs = contacts.stream()
-          .map(contactMapper::toDTO)
-          .toList();
+      List<ContactDTO> contactDTOs = contacts.stream().map(contactMapper::toDTO).toList();
 
       return Response.ok(contactDTOs).build();
     } catch (IllegalArgumentException e) {

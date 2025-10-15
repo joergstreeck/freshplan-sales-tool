@@ -282,9 +282,11 @@ public class DataHygieneService {
   /** Findet alle Kontakte mit einem bestimmten Freshness Level. */
   public List<CustomerContact> findContactsByFreshnessLevel(DataFreshnessLevel level) {
     // Eager load Customer to avoid LazyInitializationException
-    List<CustomerContact> allContacts = contactRepository.find(
-        "SELECT c FROM CustomerContact c LEFT JOIN FETCH c.customer LEFT JOIN FETCH c.assignedLocation"
-    ).list();
+    List<CustomerContact> allContacts =
+        contactRepository
+            .find(
+                "SELECT c FROM CustomerContact c LEFT JOIN FETCH c.customer LEFT JOIN FETCH c.assignedLocation")
+            .list();
 
     return allContacts.stream()
         .filter(contact -> getDataFreshnessLevel(contact) == level)
