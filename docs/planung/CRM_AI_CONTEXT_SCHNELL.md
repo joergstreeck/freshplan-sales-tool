@@ -131,7 +131,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - ✅ **Multi-Contact Support** - lead_contacts Tabelle (26 Felder), 100% Customer Parity, Backward Compatibility Trigger V10017
 
 **BUSINESS FEATURES (OPERATIONAL):**
-- ✅ **Lead Scoring System** - 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (268 LOC)
+- ✅ **Lead Scoring System** - 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (363 LOC - validiert 15.10.2025)
 - ✅ **ActivityOutcome Enum** - V10027 (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED)
 - ✅ **Opportunity Backend** - V10026 (lead_id/customer_id FKs), Lead→Opportunity→Customer workflows ready
 - ✅ **Customer Number Sequence** - V10028 (race-condition-safe, PostgreSQL Sequence)
@@ -145,7 +145,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **FRONTEND & DESIGN SYSTEM:**
 - ✅ **FreshFoodz CI V2 100% Compliance** - Sprint 2.1.7.0 (14.10.2025)
   - 97 Design Violations behoben (47 Font + 45 Color + 5 Language)
-  - MainLayoutV2 mit maxWidth prop auf allen 28 Pages produktiv
+  - MainLayoutV2 mit maxWidth prop auf 27 Pages produktiv (validiert 15.10.2025)
   - Container-Cleanup: 22× doppelte Container entfernt (-110 LOC)
 - ✅ **MUI Theme V2** - Antonio Bold (h1-h6) + Poppins (body) automatisch
 - ✅ **Design Tokens zentral** - Nur #94C456 Primary + #004F7B Secondary via theme.palette.*
