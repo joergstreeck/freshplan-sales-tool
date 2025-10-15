@@ -1,39 +1,52 @@
 ---
 sprint_id: "2.1.7.0"
-title: "Layout System Cleanup - MainLayoutV2 Modernisierung"
+title: "Design System Migration - FreshFoodz CI V2 + CRM_AI_CONTEXT Restructure"
 doc_type: "konzept"
 status: "in_progress"
 owner: "team/leads"
 date_start: "2025-10-14"
-date_end: "2025-10-14"
-modules: ["frontend", "shared"]
+date_end: "2025-10-15"
+modules: ["frontend", "shared", "backend", "docs"]
 entry_points:
   - "docs/planung/grundlagen/DESIGN_SYSTEM.md"
   - "frontend/src/components/layout/MainLayoutV2.tsx"
-  - "docs/planung/features-neu/02_neukundengewinnung/_index.md"
+  - "docs/planung/CRM_AI_CONTEXT_SCHNELL.md"
+  - "docs/planung/claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md"
 pr_refs: []
-updated: "2025-10-14"
+updated: "2025-10-15 00:15"
 ---
 
-# 🎯 TRIGGER SPRINT 2.1.7.0 - Layout System Cleanup
+# 🎯 TRIGGER SPRINT 2.1.7.0 - Layout System Cleanup + CRM_AI_CONTEXT Restructure
 
 **📍 Navigation:** Home → Planung → Sprint 2.1.7.0
 
-**Sprint-Typ:** Refactoring & Code Cleanup
-**Priorität:** MEDIUM (Technische Schuld beseitigen)
-**Zeithorizont:** 5-6 Stunden
+**Sprint-Typ:** Refactoring & Code Cleanup + Documentation Restructure
+**Priorität:** MEDIUM (Technische Schuld beseitigen + KI-Onboarding optimieren)
+**Zeithorizont:** 12 Stunden (tatsächlich - inkl. CRM_AI_CONTEXT Phase 3+4)
 **Abhängigkeiten:** Sprint 2.1.7 COMPLETE ✅
+**Status:** 🔄 IN PROGRESS - Design System Migration COMPLETE, CRM_AI_CONTEXT Restructure ACTIVE
+**Dokumentation:** [SPRINT_2_1_7_0_COMPLETE_SUMMARY.md](claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md)
 
 ---
 
 > **🎯 Arbeitsanweisung – Reihenfolge**
 > 1. **Dieses Dokument komplett lesen** (Ziel, Deliverables, Hinweise verstehen)
 > 2. **PLANUNGSMETHODIK.md** prüfen (Git Workflow Policy!)
-> 3. **Phase 1:** MainLayoutV2 Code erweitern (30 Min)
-> 4. **Phase 2:** Seiten-Inventar erstellen (30 Min)
-> 5. **Phase 3:** Cleanup in 4 Batches (2.5h)
-> 6. **Phase 4:** Dokumentation aktualisieren (30 Min)
-> 7. **Phase 5:** Tests & Validierung (45 Min)
+>
+> **TEIL A: Design System Migration (COMPLETE ✅)**
+> 3. **Phase 1:** MainLayoutV2 Code erweitern (30 Min) ✅
+> 4. **Phase 2:** Seiten-Inventar erstellen (30 Min) ✅
+> 5. **Phase 3:** Cleanup in 6 Batches (4h) ✅
+> 6. **Phase 4:** Dokumentation aktualisieren (30 Min) ✅
+> 7. **Phase 5:** Tests & Validierung (45 Min) ✅
+>
+> **TEIL B: CRM_AI_CONTEXT_SCHNELL.md Restructure (ACTIVE 🔄)**
+> 8. **Phase 1-2:** Neue thematische Struktur erstellt (COMPLETE ✅)
+> 9. **Phase 3:** Quick Facts + Common Pitfalls hinzugefügt (COMPLETE ✅)
+> 10. **Phase 4:** IST vs. SOLL Trennung - Opportunities Frontend Gap (IN PROGRESS 🔄)
+> 11. **Phase 5:** Codebase-Validierung - Backend (PENDING ⏳)
+> 12. **Phase 6:** Codebase-Validierung - Frontend (PENDING ⏳)
+> 13. **Phase 7:** IST-Zustand-Liste erstellen (PENDING ⏳)
 
 ---
 
@@ -81,6 +94,8 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## 📋 EXECUTIVE SUMMARY
 
+### TEIL A: Design System Migration ✅ COMPLETE
+
 **Problem:**
 22 von 23 Seiten nutzen ein **Double-Container Anti-Pattern**: `MainLayoutV2` (maxWidth: 'xl') + MUI `Container` (maxWidth: 'xl'/'lg'/'md'). Dies führt zu:
 - Inkonsistenter Breitensteuerung (8× xl, 4× lg, 1× sm)
@@ -108,6 +123,42 @@ Dann 22 doppelte Container entfernen. **Fertig.**
 - ✅ **Zeit:** 5-6h statt 2-4 Tage (SmartLayout-Ansatz)
 
 **Risiko:** VERY LOW (nur 1 Prop hinzufügen, default = aktuelles Verhalten)
+
+---
+
+### TEIL B: CRM_AI_CONTEXT_SCHNELL.md Restructure 🔄 ACTIVE
+
+**Problem:**
+Das aktuelle `CRM_AI_CONTEXT_SCHNELL_ALT.md` ist chronologisch nach Sprints strukturiert (Sprint 2.1.4, 2.1.6, 2.1.7, etc.). Dies führt zu:
+- **Unübersichtlichkeit:** Niemand (auch keine KI) kann 780+ Zeilen Sprint-Protokolle überblicken
+- **Schlechtes KI-Onboarding:** Neue Claude-Instanzen brauchen 10+ Minuten um Kontext zu verstehen
+- **Duplikationen:** Migrations und Features werden mehrfach erwähnt (über mehrere Sprints)
+- **Keine IST-Validierung:** Dokumentation beschreibt Planung, nicht Codebase-Realität
+
+**Lösung:**
+**Thematische Struktur** statt chronologischer Sprint-Logs:
+1. **Quick Facts** (30 Sekunden KI-Onboarding) ✅ NEU
+2. **Common Pitfalls** (Fehler vermeiden) ✅ NEU
+3. **Strategischer Kontext** (Business-Mission, ROI)
+4. **System-Architektur** (8-Module-Ecosystem, Infrastructure)
+5. **Technical Implementation** (Tech-Stack, Event-Backbone, **Migrations konsolidiert**)
+6. **Frontend & Design** (Theme V2, SmartLayout)
+7. **Development-Standards** (Code-Standards, Testing)
+8. **Codebase-Reality** (IST vs. SOLL, Modul-Status-Matrix, **Gaps dokumentiert**)
+
+**Business Impact:**
+- ✅ **KI-Onboarding:** 10+ Minuten → 30 Sekunden (Quick Facts)
+- ✅ **Fehlerreduktion:** Common Pitfalls verhindert typische KI-Fehler
+- ✅ **IST-Validierung:** Dokumentation spiegelt Codebase-Realität wider
+- ✅ **Wartbarkeit:** Thematisch = einfach zu aktualisieren (kein Sprint-Protokoll-Chaos)
+
+**Zeithorizont:** 1.5h (Phase 3-7)
+- Phase 3: Quick Facts + Pitfalls ✅ 20 Min (DONE)
+- Phase 4: IST vs. SOLL Trennung 🔄 15 Min (IN PROGRESS)
+- Phase 5-6: Codebase-Validierung ⏳ 50 Min (Backend + Frontend)
+- Phase 7: IST-Zustand-Liste ⏳ 10 Min
+
+**Risiko:** VERY LOW (nur Dokumentations-Refactoring, kein Code-Impact)
 
 ---
 
