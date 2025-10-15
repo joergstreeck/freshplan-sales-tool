@@ -5,6 +5,11 @@
 **📊 Ansatz:** Thematisch strukturiert - Strategie → Architektur → Implementation → Codebase
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
+**⚠️ Codebase-Validierung Disclaimer:**
+Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Sprint 2.1.7.0, 14.10.2025).
+**Single Source of Truth für Migrations:** `/docs/planung/MIGRATIONS.md` (wird aktiv gepflegt!)
+**Immer gegen Codebase validieren** wenn konkrete LOC-Zahlen oder Feature-Status kritisch sind!
+
 ---
 
 ## ⚡ QUICK FACTS (30 Sekunden KI-Onboarding)
@@ -27,9 +32,10 @@
 - ✅ **Cost-Efficiency** (5-50 Nutzer, keine Over-Engineering!)
 
 ### Migrations-Hygiene (KRITISCH!)
-- **V10xxx** = Production-Relevant (V10013-V10028)
-- **V90xxx** = DEV-SEED Data (V90001-V90005)
+- **V10xxx** = Production-Relevant (aktuell: V10013-V10029)
+- **V90xxx** = DEV-SEED Data (V90001-V90005, liegt in `/db/dev-seed/`)
 - **NIEMALS Nummern hardcoden!** `./scripts/get-next-migration.sh` nutzen!
+- **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
 ### Latest Sprint
 - **Sprint 2.1.7.0 (14.10.2025):** Design System Migration + CRM_AI_CONTEXT Restructure ✅ COMPLETE
@@ -147,7 +153,7 @@
 
 **CURRENT STATUS:**
 - 📊 **Tests:** 60/60 Backend GREEN (100%), Frontend GREEN
-- 📦 **Migrations:** V10013-V10028 deployed (Production-Relevant), V90001-V90005 (DEV-SEED)
+- 📦 **Migrations:** V10013-V10029 deployed → **Details:** `/docs/planung/MIGRATIONS.md`
 - 🚀 **Latest:** Sprint 2.1.7.0 (Design System Migration) ✅ COMPLETE (14.10.2025)
 - 🚀 **Previous:** Sprint 2.1.7 (ActivityOutcome + Opportunity Backend) ✅ COMPLETE (14.10.2025)
 
@@ -272,7 +278,7 @@
 **Next:** Sprint 2.1.7.1 - Opportunities Frontend UI Integration
 
 **PRs:** #103, #105, #110, #111, #122, #123, #131, #132, #133, #134, #135, #137, #139
-**Migrations:** V10013-V10028 (Production), V90003-V90005 (DEV-SEED)
+**Migrations:** V10013-V10029 (Production), V90003-V90005 (DEV-SEED) → **Details:** `/docs/planung/MIGRATIONS.md`
 **Key-Features:** KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B + Lead Scoring + Enterprise Security
 
 #### 👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations)
