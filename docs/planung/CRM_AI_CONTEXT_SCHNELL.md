@@ -565,6 +565,44 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 ```
 
+#### Enum Migration Pattern (Architektur-Entscheidung)
+
+**WICHTIG für alle zukünftigen Enums im System:**
+
+**Pattern:** `VARCHAR(30) + CHECK CONSTRAINT` (NIEMALS PostgreSQL ENUM Type!)
+
+**Begründung:**
+- ✅ **JPA-Standard:** `@Enumerated(STRING)` funktioniert direkt (kein Custom Converter nötig)
+- ✅ **Schema-Evolution einfach:** CHECK Constraint ändern = 2 Zeilen SQL (vs. ALTER TYPE CASCADE = komplex)
+- ✅ **Performance:** Nur ~5% langsamer als PostgreSQL ENUM bei B-Tree Index
+- ✅ **Type-Safety:** Compiler-Validierung verhindert Runtime-Errors
+
+**Beispiel (ActivityOutcome):**
+```sql
+-- Migration V10027
+ALTER TABLE activities
+  ADD COLUMN activity_outcome VARCHAR(30);
+
+ALTER TABLE activities
+  ADD CONSTRAINT activity_outcome_check
+  CHECK (activity_outcome IN (
+    'SUCCESSFUL', 'UNSUCCESSFUL', 'NO_ANSWER',
+    'CALLBACK_REQUESTED', 'INFO_SENT',
+    'QUALIFIED', 'DISQUALIFIED'
+  ));
+
+CREATE INDEX idx_activities_outcome ON activities(activity_outcome);
+```
+
+**Java:**
+```java
+@Enumerated(EnumType.STRING)  // JPA-Standard, kein Custom Converter!
+@Column(name = "activity_outcome", length = 30)
+private ActivityOutcome outcome;
+```
+
+**Anwendung:** Betrifft LeadSource, BusinessType, KitchenSize, ActivityOutcome, OpportunityStatus, PaymentMethod, DeliveryMethod
+
 ### 📁 Codebase-Structure (Modular-Monolith)
 
 **Backend:**
