@@ -3,6 +3,8 @@ package de.freshplan.api.exception.mapper;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 /**
@@ -74,8 +76,8 @@ public class IllegalArgumentMasterExceptionMapper
   }
 
   private String getStackTraceAsString(Exception e) {
-    java.io.StringWriter sw = new java.io.StringWriter();
-    e.printStackTrace(new java.io.PrintWriter(sw));
+    StringWriter sw = new StringWriter();
+    e.printStackTrace(new PrintWriter(sw));
     return sw.toString();
   }
 
