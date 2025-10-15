@@ -7,7 +7,7 @@ import { SalesCockpitV2 } from '../features/cockpit/components/SalesCockpitV2';
 
 export function CockpitPage() {
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <SalesCockpitV2 />
     </MainLayoutV2>
   );

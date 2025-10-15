@@ -1,6 +1,5 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import {
   Stack,
   Avatar,
   AvatarGroup,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -48,18 +48,19 @@ interface HelpToolCard {
 
 export function HelpConfigDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const helpTools: HelpToolCard[] = [
     {
       id: 'demo',
       title: 'Hilfe-System Demo',
       description: 'Testen Sie das kontextsensitive Hilfesystem mit Tooltips und Touren',
-      icon: <PlayCircleIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <PlayCircleIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/admin/help/demo',
       stats: {
         label: 'Aktive Features',
         value: '12',
-        color: '#94C456',
+        color: theme.palette.primary.main,
       },
       badges: ['Live', 'Interaktiv'],
       lastUpdated: 'Heute',
@@ -68,7 +69,7 @@ export function HelpConfigDashboard() {
       id: 'tooltips',
       title: 'Tooltips verwalten',
       description: 'Erstellen und bearbeiten Sie kontextuelle Hilfehinweise',
-      icon: <HelpOutlineIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <HelpOutlineIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/help/tooltips',
       stats: {
         label: 'Tooltips',
@@ -82,7 +83,7 @@ export function HelpConfigDashboard() {
       id: 'tours',
       title: 'Touren erstellen',
       description: 'Interaktive Schritt-für-Schritt Anleitungen für neue Features',
-      icon: <TourIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <TourIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/help/tours',
       stats: {
         label: 'Aktive Touren',
@@ -97,12 +98,12 @@ export function HelpConfigDashboard() {
       title: 'Analytics',
       description:
         'Analysieren Sie die Nutzung von Hilfe-Features und identifizieren Sie Problembereiche',
-      icon: <AnalyticsIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <AnalyticsIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/admin/help/analytics',
       stats: {
         label: 'Hilfeanfragen heute',
         value: '142',
-        color: '#FFA726',
+        color: theme.palette.warning.main,
       },
       badges: ['Dashboard', 'Reports'],
       lastUpdated: 'Live',
@@ -113,28 +114,28 @@ export function HelpConfigDashboard() {
     {
       id: 'docs',
       title: 'Dokumentation',
-      icon: <ArticleIcon sx={{ fontSize: 32, color: '#004F7B' }} />,
+      icon: <ArticleIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
       count: '45 Artikel',
       updated: 'Täglich',
     },
     {
       id: 'videos',
       title: 'Video-Tutorials',
-      icon: <VideoLibraryIcon sx={{ fontSize: 32, color: '#004F7B' }} />,
+      icon: <VideoLibraryIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
       count: '23 Videos',
       updated: 'Wöchentlich',
     },
     {
       id: 'faq',
       title: 'FAQ Verwaltung',
-      icon: <QuizIcon sx={{ fontSize: 32, color: '#004F7B' }} />,
+      icon: <QuizIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
       count: '156 Fragen',
       updated: 'vor 3 Tagen',
     },
     {
       id: 'training',
       title: 'Schulungen',
-      icon: <SchoolIcon sx={{ fontSize: 32, color: '#004F7B' }} />,
+      icon: <SchoolIcon sx={{ fontSize: 32, color: theme.palette.secondary.main }} />,
       count: '4 Kurse',
       updated: 'Monatlich',
     },
@@ -142,7 +143,7 @@ export function HelpConfigDashboard() {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Breadcrumbs */}
         <Breadcrumbs separator={<NavigateNextIcon fontSize="small" />} sx={{ mb: 3 }}>
           <Link
@@ -151,7 +152,7 @@ export function HelpConfigDashboard() {
             onClick={() => navigate('/admin')}
             sx={{
               textDecoration: 'none',
-              color: '#004F7B',
+              color: theme.palette.secondary.main,
               '&:hover': { textDecoration: 'underline' },
             }}
           >
@@ -165,7 +166,7 @@ export function HelpConfigDashboard() {
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => navigate('/admin')}
-            sx={{ color: '#004F7B' }}
+            sx={{ color: theme.palette.secondary.main }}
           >
             Zurück
           </Button>
@@ -174,9 +175,7 @@ export function HelpConfigDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
-                color: '#004F7B',
+                color: theme.palette.secondary.main,
               }}
             >
               Hilfe-System Verwaltung
@@ -190,8 +189,11 @@ export function HelpConfigDashboard() {
         {/* Stats Overview */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: '#f8f9fa' }}>
-              <Typography variant="h4" sx={{ color: '#94C456', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 89%
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -200,8 +202,11 @@ export function HelpConfigDashboard() {
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: '#f8f9fa' }}>
-              <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 4.6/5
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -210,8 +215,11 @@ export function HelpConfigDashboard() {
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: '#f8f9fa' }}>
-              <Typography variant="h4" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 -32%
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -220,8 +228,11 @@ export function HelpConfigDashboard() {
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, md: 3 }}>
-            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: '#f8f9fa' }}>
-              <Typography variant="h4" sx={{ color: '#FFA726', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 2, textAlign: 'center', backgroundColor: theme.palette.grey[50] }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.warning.main, fontWeight: 'bold' }}
+              >
                 15 Min
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -236,8 +247,7 @@ export function HelpConfigDashboard() {
           variant="h5"
           sx={{
             mb: 2,
-            fontFamily: 'Antonio, sans-serif',
-            color: '#004F7B',
+            color: theme.palette.secondary.main,
           }}
         >
           Hauptfunktionen
@@ -268,7 +278,10 @@ export function HelpConfigDashboard() {
                             label={badge}
                             size="small"
                             sx={{
-                              backgroundColor: badge === 'Live' ? '#94C456' : '#e0e0e0',
+                              backgroundColor:
+                                badge === 'Live'
+                                  ? theme.palette.primary.main
+                                  : theme.palette.grey[300],
                               color: badge === 'Live' ? 'white' : 'text.secondary',
                             }}
                           />
@@ -281,8 +294,7 @@ export function HelpConfigDashboard() {
                     variant="h5"
                     sx={{
                       mb: 1,
-                      fontFamily: 'Antonio, sans-serif',
-                      color: '#004F7B',
+                      color: theme.palette.secondary.main,
                     }}
                   >
                     {tool.title}
@@ -343,8 +355,8 @@ export function HelpConfigDashboard() {
                     fullWidth
                     variant="contained"
                     sx={{
-                      backgroundColor: '#94C456',
-                      '&:hover': { backgroundColor: '#7BA347' },
+                      backgroundColor: theme.palette.primary.main,
+                      '&:hover': { backgroundColor: theme.palette.primary.dark },
                     }}
                   >
                     {tool.id === 'demo' ? 'Demo starten' : 'Öffnen'}
@@ -360,8 +372,7 @@ export function HelpConfigDashboard() {
           variant="h5"
           sx={{
             mb: 2,
-            fontFamily: 'Antonio, sans-serif',
-            color: '#004F7B',
+            color: theme.palette.secondary.main,
           }}
         >
           Weitere Ressourcen
@@ -375,7 +386,7 @@ export function HelpConfigDashboard() {
                   cursor: 'pointer',
                   transition: 'all 0.2s',
                   '&:hover': {
-                    backgroundColor: '#f5f5f5',
+                    backgroundColor: theme.palette.grey[100],
                     transform: 'translateY(-2px)',
                   },
                 }}
@@ -408,11 +419,11 @@ export function HelpConfigDashboard() {
           sx={{
             mt: 4,
             p: 3,
-            backgroundColor: '#e8f5e9',
-            borderLeft: '4px solid #94C456',
+            backgroundColor: theme.palette.success.light,
+            borderLeft: '4px solid ' + theme.palette.primary.main,
           }}
         >
-          <Typography variant="h6" sx={{ mb: 1, color: '#004F7B' }}>
+          <Typography variant="h6" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Tipp: Proaktive Hilfe aktivieren
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -421,13 +432,13 @@ export function HelpConfigDashboard() {
           </Typography>
           <Button
             variant="text"
-            sx={{ mt: 1, color: '#94C456' }}
+            sx={{ mt: 1, color: theme.palette.primary.main }}
             onClick={() => navigate('/admin/help/demo')}
           >
             Mehr erfahren →
           </Button>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Chip } from '@mui/material';
+import { Box, Typography, Button, Chip, useTheme } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -18,6 +18,7 @@ export function CustomerListHeader({
   createButtonLabel = 'Neuer Kunde',
 }: CustomerListHeaderProps) {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   // Default to navigation if no onAddCustomer provided
   const handleAddCustomer = React.useMemo(
@@ -55,9 +56,9 @@ export function CustomerListHeader({
           startIcon={<AddIcon />}
           onClick={handleAddCustomer}
           sx={{
-            bgcolor: '#94C456',
+            bgcolor: theme.palette.primary.main,
             '&:hover': {
-              bgcolor: '#7BA345',
+              bgcolor: theme.palette.primary.dark,
             },
           }}
         >

@@ -30,7 +30,7 @@ export function CockpitPageV2() {
             justifyContent: 'center',
           }}
         >
-          <h2>Loading authentication...</h2>
+          <h2>Authentifizierung lädt...</h2>
         </div>
       </ThemeProvider>
     );
@@ -43,7 +43,7 @@ export function CockpitPageV2() {
   return (
     <ThemeProvider theme={freshfoodzTheme}>
       <CssBaseline />
-      <MainLayoutV2>
+      <MainLayoutV2 maxWidth="full">
         <CockpitViewV2 />
       </MainLayoutV2>
     </ThemeProvider>

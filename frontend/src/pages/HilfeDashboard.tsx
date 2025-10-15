@@ -1,12 +1,13 @@
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
   CardActions,
   Button,
   Paper,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -19,52 +20,53 @@ import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 
 export function HilfeDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const resources = [
     {
       title: 'Erste Schritte',
       description: 'Schnelleinstieg und Grundlagen',
-      icon: <RocketLaunchIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <RocketLaunchIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/hilfe/erste-schritte',
       items: ['Quick Start Guide', 'Onboarding Tour', 'Basis-Setup'],
     },
     {
       title: 'Handbücher',
       description: 'Ausführliche Dokumentation',
-      icon: <MenuBookIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <MenuBookIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/hilfe/handbuecher',
       items: ['Benutzerhandbuch', 'Admin-Guide', 'API-Docs'],
     },
     {
       title: 'Video-Tutorials',
       description: 'Schritt-für-Schritt Anleitungen',
-      icon: <VideoLibraryIcon sx={{ fontSize: 48, color: '#29B6F6' }} />,
+      icon: <VideoLibraryIcon sx={{ fontSize: 48, color: theme.palette.info.main }} />,
       path: '/hilfe/videos',
       items: ['23 Videos', '4 Std. Content', 'DE/EN'],
     },
     {
       title: 'Häufige Fragen',
       description: 'Antworten auf die wichtigsten Fragen',
-      icon: <QuizIcon sx={{ fontSize: 48, color: '#FFA726' }} />,
+      icon: <QuizIcon sx={{ fontSize: 48, color: theme.palette.warning.main }} />,
       path: '/hilfe/faq',
       items: ['156 FAQs', 'Suchbar', 'Kategorisiert'],
     },
     {
       title: 'Support kontaktieren',
       description: 'Direkter Kontakt zum Support-Team',
-      icon: <SupportAgentIcon sx={{ fontSize: 48, color: '#EF5350' }} />,
+      icon: <SupportAgentIcon sx={{ fontSize: 48, color: theme.palette.error.main }} />,
       path: '/hilfe/support',
       items: ['Live-Chat', 'E-Mail', 'Telefon'],
     },
   ];
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
+            sx={{ mb: 1, fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Hilfe & Support
           </Typography>
@@ -74,18 +76,18 @@ export function HilfeDashboard() {
         </Box>
 
         {/* Quick Search */}
-        <Paper sx={{ p: 3, mb: 4, backgroundColor: '#f8f9fa', textAlign: 'center' }}>
-          <Typography
-            variant="h5"
-            sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
-          >
+        <Paper sx={{ p: 3, mb: 4, backgroundColor: theme.palette.grey[50], textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ mb: 2, color: theme.palette.secondary.main }}>
             Wie können wir Ihnen helfen?
           </Typography>
           <Box sx={{ maxWidth: 600, mx: 'auto' }}>
             <Button
               variant="contained"
               size="large"
-              sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}
+              sx={{
+                backgroundColor: theme.palette.primary.main,
+                '&:hover': { backgroundColor: theme.palette.primary.dark },
+              }}
               onClick={() => navigate('/hilfe/faq')}
             >
               Suche starten
@@ -113,7 +115,10 @@ export function HilfeDashboard() {
                   height: '100%',
                   transition: 'all 0.2s',
                   cursor: 'pointer',
-                  border: resource.title === 'Erste Schritte' ? '2px solid #94C456' : 'none',
+                  border:
+                    resource.title === 'Erste Schritte'
+                      ? `2px solid ${theme.palette.primary.main}`
+                      : 'none',
                   '&:hover': { boxShadow: 4, transform: 'translateY(-2px)' },
                 }}
                 onClick={() => navigate(resource.path)}
@@ -123,7 +128,7 @@ export function HilfeDashboard() {
                     {resource.icon}
                     <Typography
                       variant="h6"
-                      sx={{ mt: 2, mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                      sx={{ mt: 2, mb: 1, color: theme.palette.secondary.main }}
                     >
                       {resource.title}
                     </Typography>
@@ -137,7 +142,12 @@ export function HilfeDashboard() {
                         <Typography
                           key={item}
                           variant="caption"
-                          sx={{ px: 1, py: 0.5, backgroundColor: '#f5f5f5', borderRadius: 1 }}
+                          sx={{
+                            px: 1,
+                            py: 0.5,
+                            backgroundColor: theme.palette.grey[100],
+                            borderRadius: 1,
+                          }}
                         >
                           {item}
                         </Typography>
@@ -151,13 +161,18 @@ export function HilfeDashboard() {
                     variant={resource.title === 'Support kontaktieren' ? 'contained' : 'text'}
                     sx={{
                       backgroundColor:
-                        resource.title === 'Support kontaktieren' ? '#EF5350' : 'transparent',
-                      color: resource.title === 'Support kontaktieren' ? 'white' : '#004F7B',
+                        resource.title === 'Support kontaktieren'
+                          ? theme.palette.error.main
+                          : 'transparent',
+                      color:
+                        resource.title === 'Support kontaktieren'
+                          ? 'white'
+                          : theme.palette.secondary.main,
                       '&:hover': {
                         backgroundColor:
                           resource.title === 'Support kontaktieren'
-                            ? '#c62828'
-                            : 'rgba(0, 79, 123, 0.04)',
+                            ? theme.palette.error.dark
+                            : alpha(theme.palette.secondary.main, 0.04),
                       },
                     }}
                   >
@@ -172,8 +187,15 @@ export function HilfeDashboard() {
         </Grid>
 
         {/* Popular Topics */}
-        <Paper sx={{ p: 3, mt: 4, backgroundColor: '#e8f5e9', borderLeft: '4px solid #94C456' }}>
-          <Typography variant="h6" sx={{ mb: 1, color: '#004F7B' }}>
+        <Paper
+          sx={{
+            p: 3,
+            mt: 4,
+            backgroundColor: alpha(theme.palette.success.light, 0.13),
+            borderLeft: `4px solid ${theme.palette.primary.main}`,
+          }}
+        >
+          <Typography variant="h6" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Beliebte Themen diese Woche
           </Typography>
           <Grid container spacing={2}>
@@ -188,7 +210,7 @@ export function HilfeDashboard() {
             </Grid>
           </Grid>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

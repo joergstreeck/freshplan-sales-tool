@@ -1,14 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import { renderWithRouter } from '../../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { ThemeProvider } from '@mui/material';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../../../i18n';
 import LeadList from '../LeadList';
 import * as api from '../api';
 import type { Lead, Problem } from '../types';
-import freshfoodzTheme from '../../../theme/freshfoodz';
 
 // Mock the API module
 vi.mock('../api');
@@ -18,13 +15,6 @@ const mockApi = api as {
   toProblem: ReturnType<typeof vi.fn>;
 };
 
-// Test wrapper with theme and i18n
-const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <I18nextProvider i18n={i18n}>
-    <ThemeProvider theme={freshfoodzTheme}>{children}</ThemeProvider>
-  </I18nextProvider>
-);
-
 describe('Lead Management Integration Tests', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -33,7 +23,7 @@ describe('Lead Management Integration Tests', () => {
   describe('Lead List Component', () => {
     it('shows loading state initially', () => {
       mockApi.listLeads.mockImplementation(() => new Promise(() => {}));
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
     });
@@ -50,7 +40,7 @@ describe('Lead Management Integration Tests', () => {
       ];
       mockApi.listLeads.mockResolvedValue(mockLeads);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Lead 1')).toBeInTheDocument();
@@ -67,7 +57,7 @@ describe('Lead Management Integration Tests', () => {
       };
       mockApi.listLeads.mockRejectedValue(error);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByRole('alert')).toBeInTheDocument();
@@ -81,7 +71,7 @@ describe('Lead Management Integration Tests', () => {
       const user = userEvent.setup();
       mockApi.listLeads.mockResolvedValue([]);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       // Wait for list to load
       await waitFor(() => {
@@ -115,7 +105,7 @@ describe('Lead Management Integration Tests', () => {
       const user = userEvent.setup();
       mockApi.listLeads.mockResolvedValue([]);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
@@ -168,7 +158,7 @@ describe('Lead Management Integration Tests', () => {
       };
       mockApi.createLead.mockRejectedValue(duplicateError);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
@@ -212,7 +202,7 @@ describe('Lead Management Integration Tests', () => {
       mockApi.createLead.mockResolvedValue(newLead);
       mockApi.listLeads.mockResolvedValueOnce([newLead]);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
@@ -260,7 +250,7 @@ describe('Lead Management Integration Tests', () => {
         source: 'manual',
       } as Lead);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
@@ -303,7 +293,7 @@ describe('Lead Management Integration Tests', () => {
       };
       mockApi.createLead.mockRejectedValue(validationError);
 
-      render(<LeadList />, { wrapper: TestWrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();

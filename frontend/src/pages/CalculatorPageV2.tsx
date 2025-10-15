@@ -1,12 +1,14 @@
 import React from 'react';
-import { Container, Typography, Paper, Box, Alert } from '@mui/material';
+import { Typography, Paper, Box, Alert, useTheme } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import CalculateIcon from '@mui/icons-material/Calculate';
 
 export function CalculatorPageV2() {
+  const theme = useTheme();
+
   return (
     <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
           FreshPlan Rabatt-Kalkulator
         </Typography>
@@ -26,7 +28,8 @@ export function CalculatorPageV2() {
               Berechnen Sie Ihren individuellen Rabatt für Lebensmittel-Großhandelsbestellungen.
             </Typography>
             <Typography color="text.secondary">
-              Bis zu <strong style={{ color: '#94C456' }}>15% Gesamtrabatt</strong> möglich!
+              Bis zu <strong style={{ color: theme.palette.primary.main }}>15% Gesamtrabatt</strong>{' '}
+              möglich!
             </Typography>
           </Box>
 
@@ -104,7 +107,7 @@ export function CalculatorPageV2() {
             </Box>
           </Box>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

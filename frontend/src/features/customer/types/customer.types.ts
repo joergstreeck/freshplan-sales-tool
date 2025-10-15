@@ -1,4 +1,5 @@
 // Customer types based on backend DTOs
+import type { Theme } from '@mui/material/styles';
 
 export interface CustomerResponse {
   id: string;
@@ -155,12 +156,22 @@ export const industryLabels: Record<Industry, string> = {
   [Industry.SONSTIGES]: 'Sonstiges',
 };
 
-// Status color mappings
-export const customerStatusColors: Record<CustomerStatus, string> = {
-  [CustomerStatus.LEAD]: '#2196F3', // Blue
-  [CustomerStatus.PROSPECT]: '#FF9800', // Orange
-  [CustomerStatus.AKTIV]: '#4CAF50', // Green
-  [CustomerStatus.RISIKO]: '#F44336', // Red
-  [CustomerStatus.INAKTIV]: '#9E9E9E', // Gray
-  [CustomerStatus.ARCHIVIERT]: '#607D8B', // Blue Gray
+// Status color mappings - MUI Theme-based
+export const getCustomerStatusColor = (status: CustomerStatus, theme: Theme): string => {
+  switch (status) {
+    case CustomerStatus.LEAD:
+      return theme.palette.info.main; // Blue
+    case CustomerStatus.PROSPECT:
+      return theme.palette.warning.main; // Orange
+    case CustomerStatus.AKTIV:
+      return theme.palette.success.main; // Green
+    case CustomerStatus.RISIKO:
+      return theme.palette.error.main; // Red
+    case CustomerStatus.INAKTIV:
+      return theme.palette.grey[500]; // Gray
+    case CustomerStatus.ARCHIVIERT:
+      return theme.palette.grey[600]; // Blue Gray
+    default:
+      return theme.palette.grey[500];
+  }
 };

@@ -3,6 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { Box, Alert, CircularProgress } from '@mui/material';
 import { useAuth } from '@/hooks/useAuth';
 import { isFeatureEnabled } from '@/config/featureFlags';
+import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
 
 interface ProtectedRouteProps {
   allowedRoles?: string[];
@@ -22,19 +23,21 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles = [
     // Still check roles even with authBypass
     if (!hasAnyRole(allowedRoles)) {
       return (
-        <Box sx={{ p: 3 }}>
-          <Alert
-            severity="error"
-            sx={{
-              '& .MuiAlert-icon': {
-                color: '#d32f2f',
-              },
-            }}
-          >
-            Sie haben keine Berechtigung für diesen Bereich. Erforderliche Rolle(n):{' '}
-            {allowedRoles.join(', ')}
-          </Alert>
-        </Box>
+        <MainLayoutV2>
+          <Box sx={{ p: 3 }}>
+            <Alert
+              severity="error"
+              sx={{
+                '& .MuiAlert-icon': {
+                  color: '#d32f2f',
+                },
+              }}
+            >
+              Sie haben keine Berechtigung für diesen Bereich. Erforderliche Rolle(n):{' '}
+              {allowedRoles.join(', ')}
+            </Alert>
+          </Box>
+        </MainLayoutV2>
       );
     }
     return children ? <>{children}</> : <Outlet />;
@@ -61,19 +64,21 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles = [
 
   if (!hasAnyRole(allowedRoles)) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Alert
-          severity="error"
-          sx={{
-            '& .MuiAlert-icon': {
-              color: '#d32f2f',
-            },
-          }}
-        >
-          Sie haben keine Berechtigung für diesen Bereich. Erforderliche Rolle(n):{' '}
-          {allowedRoles.join(', ')}
-        </Alert>
-      </Box>
+      <MainLayoutV2>
+        <Box sx={{ p: 3 }}>
+          <Alert
+            severity="error"
+            sx={{
+              '& .MuiAlert-icon': {
+                color: '#d32f2f',
+              },
+            }}
+          >
+            Sie haben keine Berechtigung für diesen Bereich. Erforderliche Rolle(n):{' '}
+            {allowedRoles.join(', ')}
+          </Alert>
+        </Box>
+      </MainLayoutV2>
     );
   }
 

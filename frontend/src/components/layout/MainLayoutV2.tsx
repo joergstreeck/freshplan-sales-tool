@@ -26,12 +26,14 @@ interface MainLayoutV2Props {
   children: React.ReactNode;
   showHeader?: boolean;
   hideHeader?: boolean; // Für spezielle Seiten wie Login
+  maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm'; // Flexible Content-Breite, default: 'xl'
 }
 
 export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
   children,
   showHeader = true,
   hideHeader = false,
+  maxWidth = 'xl', // Default: 1536px (bestehende Breite)
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -109,7 +111,8 @@ export const MainLayoutV2: React.FC<MainLayoutV2Props> = ({
               // Content-spezifisches Padding
               p: { xs: 2, sm: 3, md: 4 },
               // Maximale Breite für bessere Lesbarkeit auf großen Screens
-              maxWidth: 'xl',
+              // 'full' = 100% (Tabellen), 'xl'/'lg'/'md'/'sm' = MUI Breakpoints
+              maxWidth: maxWidth === 'full' ? '100%' : maxWidth,
               mx: 'auto',
               // Minimale Höhe für Content
               minHeight: '100vh',

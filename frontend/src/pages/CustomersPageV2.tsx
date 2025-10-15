@@ -470,14 +470,14 @@ export function CustomersPageV2({
 
   if (isLoading) {
     return (
-      <MainLayoutV2>
+      <MainLayoutV2 maxWidth="full">
         <CustomerListSkeleton />
       </MainLayoutV2>
     );
   }
 
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
         {/* Header mit Button - immer sichtbar */}
         <CustomerListHeader

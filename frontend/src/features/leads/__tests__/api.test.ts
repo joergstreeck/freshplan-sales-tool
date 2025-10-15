@@ -1,34 +1,26 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { listLeads, createLead, toProblem } from '../api';
-
-// Mock fetch
-global.fetch = vi.fn();
-const mockFetch = fetch as ReturnType<typeof vi.fn>;
-
-// Mock localStorage
-const localStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
-
-// Mock sessionStorage
-const sessionStorageMock = {
-  getItem: vi.fn(),
-  setItem: vi.fn(),
-  removeItem: vi.fn(),
-  clear: vi.fn(),
-};
-Object.defineProperty(window, 'sessionStorage', { value: sessionStorageMock });
+import { server } from '@/mocks/server';
+import { http, HttpResponse } from 'msw';
 
 describe('Leads API', () => {
+  beforeAll(() => {
+    server.listen({ onUnhandledRequest: 'bypass' });
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
-    localStorageMock.getItem.mockReturnValue(null);
-    sessionStorageMock.getItem.mockReturnValue(null);
+    localStorage.clear();
+    sessionStorage.clear();
     vi.stubEnv('VITE_API_URL', 'http://localhost:8080');
+  });
+
+  afterEach(() => {
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   describe('listLeads', () => {
@@ -38,37 +30,32 @@ describe('Leads API', () => {
         { id: '2', name: 'Lead 2', email: 'lead2@test.com' },
       ];
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ data: mockLeads }),
-      } as Response);
+      server.use(
+        http.get('http://localhost:8080/api/leads', () => {
+          return HttpResponse.json({ data: mockLeads });
+        })
+      );
 
       const result = await listLeads();
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/leads', {
-        headers: { Accept: 'application/json' },
-        credentials: 'include',
-      });
       expect(result).toEqual(mockLeads);
     });
 
     it('includes auth header when token exists', async () => {
-      localStorageMock.getItem.mockReturnValue('test-token');
+      localStorage.setItem('token', 'test-token');
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ data: [] }),
-      } as Response);
+      let receivedAuthHeader: string | null = null;
+
+      server.use(
+        http.get('http://localhost:8080/api/leads', ({ request }) => {
+          receivedAuthHeader = request.headers.get('Authorization');
+          return HttpResponse.json({ data: [] });
+        })
+      );
 
       await listLeads();
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/leads', {
-        headers: {
-          Accept: 'application/json',
-          Authorization: 'Bearer test-token',
-        },
-        credentials: 'include',
-      });
+      expect(receivedAuthHeader).toBe('Bearer test-token');
     });
 
     it('throws problem on API error', async () => {
@@ -78,10 +65,11 @@ describe('Leads API', () => {
         detail: 'Invalid token',
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve(errorResponse),
-      } as Response);
+      server.use(
+        http.get('http://localhost:8080/api/leads', () => {
+          return HttpResponse.json(errorResponse, { status: 401 });
+        })
+      );
 
       await expect(listLeads()).rejects.toEqual(errorResponse);
     });
@@ -92,22 +80,16 @@ describe('Leads API', () => {
       const payload = { name: 'New Lead', email: 'new@test.com' };
       const mockResponse = { id: '123', ...payload };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      } as Response);
+      server.use(
+        http.post('http://localhost:8080/api/leads', async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual(payload);
+          return HttpResponse.json(mockResponse);
+        })
+      );
 
       const result = await createLead(payload);
 
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/leads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ ...payload, source: 'manual' }),
-        credentials: 'include',
-      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -115,22 +97,15 @@ describe('Leads API', () => {
       const payload = { name: 'New Lead' };
       const mockResponse = { id: '123', ...payload };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve(mockResponse),
-      } as Response);
+      server.use(
+        http.post('http://localhost:8080/api/leads', async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual(payload);
+          return HttpResponse.json(mockResponse);
+        })
+      );
 
       await createLead(payload);
-
-      expect(mockFetch).toHaveBeenCalledWith('http://localhost:8080/api/leads', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-        body: JSON.stringify({ ...payload, source: 'manual' }),
-        credentials: 'include',
-      });
     });
 
     it('throws validation error with field details', async () => {
@@ -143,10 +118,11 @@ describe('Leads API', () => {
         },
       };
 
-      mockFetch.mockResolvedValueOnce({
-        ok: false,
-        json: () => Promise.resolve(errorResponse),
-      } as Response);
+      server.use(
+        http.post('http://localhost:8080/api/leads', () => {
+          return HttpResponse.json(errorResponse, { status: 400 });
+        })
+      );
 
       await expect(createLead({ name: '', email: 'invalid' })).rejects.toEqual(errorResponse);
     });

@@ -64,23 +64,55 @@
 <link href="https://fonts.googleapis.com/css2?family=Antonio:wght@700&family=Poppins:wght@400;500&display=swap" rel="stylesheet">
 ```
 
-## 🏗️ **DESIGN SYSTEM V2 - INTELLIGENTES LAYOUT**
+## 🏗️ **DESIGN SYSTEM V2 - LAYOUT-ARCHITEKTUR**
 
-**📋 IMPLEMENTATION-PLAN:**
-Die SmartLayout-Migration folgt der PLANUNGSMETHODIK → **[SmartLayout Migration Plan](../infrastruktur/SMARTLAYOUT_MIGRATION_PLAN.md)**
+**📋 AKTUELLER STAND (Sprint 2.1.7.0):**
+MainLayoutV2 mit expliziter Breiten-Steuerung ist **produktiv auf allen 28 Seiten** seit 14.10.2025.
 
-### **SmartLayout-Architektur:**
+---
 
-#### **Automatische Content-Breiten-Erkennung:**
-| Content-Typ | Max-Breite | Padding | Erkennung |
-|------------|------------|---------|-----------|
-| **Tabellen/Listen** | 100% | 16px | `<Table>`, `<DataGrid>`, `data-wide="true"` |
-| **Formulare** | 800px | 32px | `<form>`, mehrere `<TextField>` |
-| **Text/Artikel** | 1200px | 32px | Hauptsächlich `<Typography>`, `<p>` |
-| **Dashboard** | 100% | 16px | Grid mit mehreren Cards |
-| **Cockpit** | 100% | 0 | Spezifische Cockpit-Komponenten |
+### **✅ Aktuell implementiert: MainLayoutV2 (Explizite Breiten-Steuerung)**
 
-#### **Layout-Hierarchie:**
+**Sprint 2.1.7.0 Deliverables:**
+- ✅ 28 Seiten migriert auf MainLayoutV2 mit `maxWidth` Prop
+- ✅ Container-Cleanup (22× doppelte Container entfernt, -110 LOC)
+- ✅ Design Compliance (97 Violations behoben: Font/Color/Language)
+- ✅ 100% FreshFoodz CI V2 konform
+
+#### **MainLayoutV2 TypeScript Interface:**
+```typescript
+interface MainLayoutV2Props {
+  children: React.ReactNode;
+  showHeader?: boolean;
+  hideHeader?: boolean;
+  maxWidth?: 'full' | 'xl' | 'lg' | 'md' | 'sm';  // Default: 'xl' (1536px)
+}
+```
+
+#### **Verwendungs-Beispiele:**
+```typescript
+// Tabellen/Listen - volle Breite (100%)
+<MainLayoutV2 maxWidth="full">
+  <CustomerTable />
+</MainLayoutV2>
+
+// Formulare - Standard-Breite (1536px, default)
+<MainLayoutV2>  // maxWidth='xl' ist default
+  <LeadDetailForm />
+</MainLayoutV2>
+
+// Detail-Pages - Medium-Breite (1200px)
+<MainLayoutV2 maxWidth="lg">
+  <CustomerDetailPage />
+</MainLayoutV2>
+
+// Error-Pages - Schmale Breite (600px)
+<MainLayoutV2 maxWidth="sm">
+  <NotFoundPage />
+</MainLayoutV2>
+```
+
+#### **Layout-Hierarchie (IST-Zustand):**
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  [Logo] [Suche...............] [🔔] [User ▼]           │ ← Header (64px, #FFFFFF)
@@ -88,35 +120,44 @@ Die SmartLayout-Migration folgt der PLANUNGSMETHODIK → **[SmartLayout Migratio
                     ↓ Schatten (4px)
                     ↓ 8px Abstand
 ┌─────────────────────────────────────────────────────────┐
-│                 SmartLayout Content                      │ ← Paper Container (intelligente Breite)
+│         MainLayoutV2 Content (maxWidth prop)            │ ← Explizite Breite via Prop
 └─────────────────────────────────────────────────────────┘
 ```
 
-### **SmartLayout TypeScript Interface:**
+#### **Breiten-Entscheidungen (Design-Patterns):**
+| Content-Typ | maxWidth | MUI Breakpoint | Verwendung |
+|------------|----------|----------------|------------|
+| **Tabellen/Listen** | `'full'` | 100% | CustomerTable, LeadList, OpportunityPipeline |
+| **Formulare** | `'xl'` (default) | 1536px | LeadDetail, CustomerDetail (Forms mit vielen Feldern) |
+| **Info-Pages** | `'lg'` | 1200px | Error-Pages, Maintenance, Unauthorized |
+| **Kompakte Pages** | `'sm'` | 600px | NotFound, Login-Bestätigung |
+
+---
+
+### **🟡 Zukünftig geplant: SmartLayout (Auto-Detection)**
+
+Die SmartLayout-Architektur mit **automatischer Content-Breiten-Erkennung** ist für einen zukünftigen Sprint geplant:
+
+#### **SmartLayout Konzept (NICHT IMPLEMENTIERT):**
 ```typescript
+// ASPIRATIONAL - Noch nicht in Production!
 interface SmartLayoutProps {
   children: React.ReactNode;
   forceWidth?: 'full' | 'content' | 'narrow'; // Override wenn nötig
-  noPaper?: boolean; // Für spezielle Layouts
 }
 
+// Automatische Analyse von React-Children
 const detectContentType = (children: ReactNode): ContentType => {
-  // Analysiert React-Children automatisch
-  const elements = React.Children.toArray(children);
-
   const hasTable = elements.some(child =>
     child.type === Table || child.type === DataGrid
   );
-
-  const hasForm = elements.some(child =>
-    child.type === 'form' || countTextFields(child) > 3
-  );
-
-  if (hasTable) return 'wide';
-  if (hasForm) return 'form';
-  return 'content';
+  if (hasTable) return 'wide';  // 100% Breite
+  return 'content';  // Standard-Breite
 };
 ```
+
+**Status:** 🟡 Geplant für Sprint 2.2.x (noch nicht implementiert)
+**Aktuell:** MainLayoutV2 mit explizitem `maxWidth` Prop ist der **Production-Standard**
 
 ## 🧩 **UI-KOMPONENTEN CI-STANDARDS**
 
@@ -388,9 +429,9 @@ import { freshfoodzTheme } from '@/theme/freshfoodz';
 - [ ] Keine anderen Schriftarten verwendet
 
 #### **Layout ✓**
-- [ ] SmartLayout für automatische Breiten-Erkennung verwendet
+- [ ] MainLayoutV2 mit explizitem `maxWidth` Prop verwendet (AKTUELLER STANDARD)
 - [ ] Header immer 64px hoch mit weißem Hintergrund
-- [ ] Paper-Container mit korrekten Schatten
+- [ ] Content-Breite korrekt: `'full'` für Tabellen, `'xl'` für Forms, `'lg'`/`'sm'` für Info-Pages
 - [ ] 8px Abstand zwischen Header und Content
 
 #### **Logo ✓**
@@ -432,19 +473,21 @@ const CorrectButton = styled.button`
 
 ## ✅ **IMPLEMENTIERUNGSSTATUS**
 
-### **Abgeschlossen:**
+### **✅ Abgeschlossen (Sprint 2.1.7.0 - 14.10.2025):**
 - ✅ CSS Design Tokens (Farben, Layout)
 - ✅ Font-Loading (Antonio + Poppins)
-- ✅ MUI Theme (freshfoodz.ts)
-- ✅ SmartLayout Component
-- ✅ MainLayoutV3 mit intelligenter Breiten-Erkennung
+- ✅ MUI Theme (freshfoodz-theme.ts) - Antonio Bold h1-h6, Poppins body
+- ✅ **MainLayoutV2 mit maxWidth Prop** (28 Seiten produktiv)
+- ✅ **Design Compliance** (97 Violations behoben: Font/Color/Language)
+- ✅ **Container-Cleanup** (22× doppelte Container entfernt, -110 LOC)
 - ✅ Logo-Komponente (Logo.tsx - 19 KB)
+- ✅ FreshFoodz CI V2 100% konform (nur #94C456 Primary + #004F7B Secondary)
 
-### **Laufende Verbesserungen:**
-- Button/Form-Komponenten CI-konform machen
-- Navigation/Headers aktualisieren
+### **🟡 Geplant (Zukünftig):**
+- SmartLayout Component (Auto-Detection - noch nicht implementiert)
 - CI-Compliance Tests automatisieren
 - Performance-Monitoring für Fonts
+- Accessibility Automated Tests (WCAG 2.1 AA+)
 
 ## 🔧 **QUICK START**
 
@@ -452,7 +495,7 @@ const CorrectButton = styled.button`
 // 1. Theme verwenden (bereits in App eingebunden)
 import { Button, Typography } from '@mui/material';
 
-<Button variant="contained">Speichern</Button>     // Automatisch #94C456
+<Button variant="contained">Speichern</Button>     // Automatisch #94C456 (FreshFoodz Green)
 <Typography variant="h2">Überschrift</Typography>  // Automatisch Antonio Bold
 
 // 2. Logo verwenden
@@ -461,12 +504,23 @@ import { Logo } from '@/components/common/Logo';
 <Logo variant="full" height={40} />  // Desktop
 <Logo variant="icon" height={32} />  // Mobile
 
-// 3. SmartLayout verwenden
-import { SmartLayout } from '@/components/layout/SmartLayout';
+// 3. MainLayoutV2 verwenden (AKTUELLER STANDARD - Sprint 2.1.7.0)
+import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
 
-<SmartLayout>
-  <Table>...</Table>  // 100% Breite automatisch
-</SmartLayout>
+// Tabellen/Listen - volle Breite
+<MainLayoutV2 maxWidth="full">
+  <CustomerTable />
+</MainLayoutV2>
+
+// Formulare - Standard-Breite (default)
+<MainLayoutV2>  // maxWidth='xl' ist default (1536px)
+  <LeadDetailForm />
+</MainLayoutV2>
+
+// Error-Pages - schmale Breite
+<MainLayoutV2 maxWidth="sm">
+  <NotFoundPage />
+</MainLayoutV2>
 ```
 
 ---

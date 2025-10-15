@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Box,
-  Container,
   Card,
   CardHeader,
   CardContent,
@@ -15,6 +14,7 @@ import {
   AccordionSummary,
   AccordionDetails,
   IconButton,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
@@ -66,6 +66,7 @@ import { extractLeadIdFromSlug } from '../utils/slugify';
 export function LeadDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const theme = useTheme();
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -165,9 +166,9 @@ export function LeadDetailPage() {
   if (loading) {
     return (
       <MainLayoutV2>
-        <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Box sx={{ py: 4 }}>
           <Typography>Lädt...</Typography>
-        </Container>
+        </Box>
       </MainLayoutV2>
     );
   }
@@ -180,7 +181,7 @@ export function LeadDetailPage() {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 3 }}>
           <Button
@@ -218,10 +219,10 @@ export function LeadDetailPage() {
                     sx={{
                       bgcolor:
                         lead.leadScore >= 70
-                          ? '#94C456'
+                          ? theme.palette.primary.main
                           : lead.leadScore >= 40
-                            ? '#FF9800'
-                            : '#F44336',
+                            ? theme.palette.warning.main
+                            : theme.palette.error.main,
                       color: 'white',
                     }}
                   />
@@ -433,8 +434,8 @@ export function LeadDetailPage() {
                     onClick={() => setActivityDialogOpen(true)}
                     size="small"
                     sx={{
-                      bgcolor: '#94C456',
-                      '&:hover': { bgcolor: '#7FB03E' },
+                      bgcolor: theme.palette.primary.main,
+                      '&:hover': { bgcolor: theme.palette.primary.dark },
                     }}
                   >
                     Neue Aktivität
@@ -478,7 +479,7 @@ export function LeadDetailPage() {
           lead={lead}
           onSave={loadLead}
         />
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

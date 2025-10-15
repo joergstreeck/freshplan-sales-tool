@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -12,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -27,33 +27,34 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export function EinstellungenDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const mainSettings = [
     {
       title: 'Mein Profil',
       description: 'Persönliche Informationen und Avatar',
-      icon: <PersonIcon sx={{ fontSize: 48, color: '#94C456' }} />,
+      icon: <PersonIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/einstellungen/profil',
       items: ['Name & Kontakt', 'Avatar', 'Bio', 'Signatur'],
     },
     {
       title: 'Benachrichtigungen',
       description: 'E-Mail und Push-Benachrichtigungen',
-      icon: <NotificationsIcon sx={{ fontSize: 48, color: '#FFA726' }} />,
+      icon: <NotificationsIcon sx={{ fontSize: 48, color: theme.palette.warning.main }} />,
       path: '/einstellungen/benachrichtigungen',
       items: ['E-Mail Alerts', 'Push', 'In-App', 'Zeitplan'],
     },
     {
       title: 'Darstellung',
       description: 'Theme, Sprache und Layout',
-      icon: <PaletteIcon sx={{ fontSize: 48, color: '#29B6F6' }} />,
+      icon: <PaletteIcon sx={{ fontSize: 48, color: theme.palette.info.main }} />,
       path: '/einstellungen/darstellung',
       items: ['Dark Mode', 'Sprache', 'Schriftgröße', 'Layout'],
     },
     {
       title: 'Sicherheit',
       description: 'Passwort, 2FA und Sessions',
-      icon: <SecurityIcon sx={{ fontSize: 48, color: '#EF5350' }} />,
+      icon: <SecurityIcon sx={{ fontSize: 48, color: theme.palette.error.main }} />,
       path: '/einstellungen/sicherheit',
       items: ['Passwort', '2FA', 'Sessions', 'API Keys'],
     },
@@ -67,12 +68,9 @@ export function EinstellungenDashboard() {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', fontWeight: 'bold', color: '#004F7B' }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Einstellungen
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -98,12 +96,9 @@ export function EinstellungenDashboard() {
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
                         {setting.icon}
-                        <ArrowForwardIosIcon sx={{ ml: 'auto', color: '#757575' }} />
+                        <ArrowForwardIosIcon sx={{ ml: 'auto', color: theme.palette.grey[600] }} />
                       </Box>
-                      <Typography
-                        variant="h6"
-                        sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
-                      >
+                      <Typography variant="h6" sx={{ mb: 1, color: theme.palette.secondary.main }}>
                         {setting.title}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
@@ -114,7 +109,12 @@ export function EinstellungenDashboard() {
                           <Typography
                             key={item}
                             variant="caption"
-                            sx={{ px: 1, py: 0.5, backgroundColor: '#f5f5f5', borderRadius: 1 }}
+                            sx={{
+                              px: 1,
+                              py: 0.5,
+                              backgroundColor: theme.palette.grey[100],
+                              borderRadius: 1,
+                            }}
                           >
                             {item}
                           </Typography>
@@ -122,7 +122,7 @@ export function EinstellungenDashboard() {
                       </Box>
                     </CardContent>
                     <CardActions>
-                      <Button fullWidth sx={{ color: '#004F7B' }}>
+                      <Button fullWidth sx={{ color: theme.palette.secondary.main }}>
                         Konfigurieren
                       </Button>
                     </CardActions>
@@ -136,10 +136,7 @@ export function EinstellungenDashboard() {
           <Grid size={{ xs: 12, lg: 4 }}>
             <Card>
               <CardContent>
-                <Typography
-                  variant="h6"
-                  sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
-                >
+                <Typography variant="h6" sx={{ mb: 2, color: theme.palette.secondary.main }}>
                   Schnelleinstellungen
                 </Typography>
                 <List>
@@ -147,10 +144,12 @@ export function EinstellungenDashboard() {
                     <React.Fragment key={item.label}>
                       <ListItem sx={{ px: 0 }}>
                         <ListItemIcon sx={{ minWidth: 40 }}>
-                          {React.cloneElement(item.icon, { sx: { color: '#004F7B' } })}
+                          {React.cloneElement(item.icon, {
+                            sx: { color: theme.palette.secondary.main },
+                          })}
                         </ListItemIcon>
                         <ListItemText primary={item.label} secondary={item.value} />
-                        <Button size="small" sx={{ color: '#94C456' }}>
+                        <Button size="small" sx={{ color: theme.palette.primary.main }}>
                           Ändern
                         </Button>
                       </ListItem>
@@ -162,7 +161,7 @@ export function EinstellungenDashboard() {
             </Card>
           </Grid>
         </Grid>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

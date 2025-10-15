@@ -1,13 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { screen, waitFor } from '@testing-library/react';
+import { renderWithRouter } from '../../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
-import { I18nextProvider } from 'react-i18next';
-import i18n from '../../../i18n';
 import LeadList from '../LeadList';
 import * as api from '../api';
-import freshfoodzTheme from '../../../theme/freshfoodz';
 import { useAuth } from '../../../hooks/useAuth';
 
 // Mock the API
@@ -22,16 +19,6 @@ vi.mock('../../../hooks/useAuth', () => ({
   useAuth: vi.fn(),
 }));
 const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
-
-// Test wrapper with theme and i18n
-const Wrapper = ({ children }: { children: React.ReactNode }) => (
-  <I18nextProvider i18n={i18n}>
-    <ThemeProvider theme={freshfoodzTheme}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
-  </I18nextProvider>
-);
 
 describe('LeadList', () => {
   beforeEach(() => {
@@ -48,7 +35,7 @@ describe('LeadList', () => {
       () => new Promise(() => {}) // Never resolves
     );
 
-    render(<LeadList />, { wrapper: Wrapper });
+    renderWithRouter(<LeadList />);
 
     expect(screen.getByRole('progressbar', { name: /laden/i })).toBeInTheDocument();
   });
@@ -57,7 +44,7 @@ describe('LeadList', () => {
     const error = { title: 'Network Error', detail: 'Connection failed' };
     mockApi.listLeads.mockRejectedValue(error);
 
-    render(<LeadList />, { wrapper: Wrapper });
+    renderWithRouter(<LeadList />);
 
     await waitFor(() => {
       expect(screen.getByText(/network error/i)).toBeInTheDocument();
@@ -68,7 +55,7 @@ describe('LeadList', () => {
   it('shows empty state when no leads exist', async () => {
     mockApi.listLeads.mockResolvedValue([]);
 
-    render(<LeadList />, { wrapper: Wrapper });
+    renderWithRouter(<LeadList />);
 
     await waitFor(() => {
       expect(screen.getByText(/no leads available|keine leads vorhanden/i)).toBeInTheDocument();
@@ -84,7 +71,7 @@ describe('LeadList', () => {
     ];
     mockApi.listLeads.mockResolvedValue(mockLeads);
 
-    render(<LeadList />, { wrapper: Wrapper });
+    renderWithRouter(<LeadList />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Lead 1')).toBeInTheDocument();
@@ -98,7 +85,7 @@ describe('LeadList', () => {
     mockApi.listLeads.mockResolvedValue([]);
     const user = userEvent.setup();
 
-    render(<LeadList />, { wrapper: Wrapper });
+    renderWithRouter(<LeadList />);
 
     await waitFor(() => {
       const buttons = screen.getAllByRole('button', { name: /create lead|lead anlegen/i });
@@ -122,7 +109,7 @@ describe('LeadList', () => {
 
     const user = userEvent.setup();
 
-    render(<LeadList />, { wrapper: Wrapper });
+    renderWithRouter(<LeadList />);
 
     // Wait for empty state
     await waitFor(() => {
@@ -176,7 +163,7 @@ describe('LeadList', () => {
     it('should render LeadScoreIndicator for each lead', async () => {
       mockApi.listLeads.mockResolvedValue([mockLeadWithScore]);
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();
@@ -189,7 +176,7 @@ describe('LeadList', () => {
     it('should render Stop-the-Clock button with Pause icon when clock is running', async () => {
       mockApi.listLeads.mockResolvedValue([mockLeadWithScore]);
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();
@@ -208,7 +195,7 @@ describe('LeadList', () => {
       };
       mockApi.listLeads.mockResolvedValue([stoppedLead]);
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();
@@ -225,7 +212,7 @@ describe('LeadList', () => {
     it('should render Timeline button for each lead', async () => {
       mockApi.listLeads.mockResolvedValue([mockLeadWithScore]);
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();
@@ -246,7 +233,7 @@ describe('LeadList', () => {
         json: async () => ({ data: [], page: 1, size: 20, total: 0 }),
       });
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();
@@ -277,7 +264,7 @@ describe('LeadList', () => {
       mockApi.listLeads.mockResolvedValue([mockLeadWithScore]);
       const user = userEvent.setup();
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();
@@ -301,7 +288,7 @@ describe('LeadList', () => {
 
       mockApi.listLeads.mockResolvedValue([mockLeadWithScore]);
 
-      render(<LeadList />, { wrapper: Wrapper });
+      renderWithRouter(<LeadList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test GmbH')).toBeInTheDocument();

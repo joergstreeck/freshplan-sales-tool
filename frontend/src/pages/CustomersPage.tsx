@@ -4,7 +4,7 @@ import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
 
 const CustomersPage: React.FC = () => {
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <CustomerList />
     </MainLayoutV2>
   );

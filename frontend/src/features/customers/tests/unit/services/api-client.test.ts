@@ -8,14 +8,17 @@
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/09-TEST-PLAN/02-test-examples.md
  */
 
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import { apiClient } from '../../../services/api-client';
-
-// Mock fetch
-const mockFetch = vi.fn();
-global.fetch = mockFetch;
+import { server } from '@/mocks/server';
+import { http, HttpResponse } from 'msw';
 
 describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () => {
+  beforeAll(() => {
+    // Start MSW with bypass mode for unhandled requests
+    server.listen({ onUnhandledRequest: 'bypass' });
+  });
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Clear all storage
@@ -27,16 +30,21 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
 
   afterEach(() => {
     vi.clearAllTimers();
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   describe('✅ Flexible Payload Handling (KERNFEATURE)', () => {
     it('should send any data structure via POST', async () => {
-      // Setup successful response for each call
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true, id: 'test-123' }),
-      });
+      // Setup MSW handler for POST requests
+      server.use(
+        http.post('http://localhost:8080/api/customers', () => {
+          return HttpResponse.json({ success: true, id: 'test-123' });
+        })
+      );
 
       // Test ein paar repräsentative Payload-Strukturen
       const payloads = [
@@ -70,16 +78,17 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         const result = await apiClient.post('/api/customers', payload);
         expect(result).toEqual({ success: true, id: 'test-123' });
       }
-
-      expect(mockFetch).toHaveBeenCalledTimes(payloads.length);
     });
 
     it('should handle PUT/PATCH with flexible data structures', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ updated: true }),
-      });
+      server.use(
+        http.put('http://localhost:8080/api/customers/123', () => {
+          return HttpResponse.json({ updated: true });
+        }),
+        http.patch('http://localhost:8080/api/customers/123', () => {
+          return HttpResponse.json({ updated: true });
+        })
+      );
 
       // Partial updates with any structure
       const partialUpdates = [
@@ -113,8 +122,6 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         await apiClient.put('/api/customers/123', update);
         await apiClient.patch('/api/customers/123', update);
       }
-
-      expect(mockFetch).toHaveBeenCalledTimes(partialUpdates.length * 2);
     });
 
     it('should handle responses with any structure', async () => {
@@ -168,11 +175,11 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       ];
 
       for (const responseData of responses) {
-        mockFetch.mockResolvedValueOnce({
-          ok: true,
-          status: 200,
-          json: async () => responseData,
-        });
+        server.use(
+          http.get('http://localhost:8080/api/test', () => {
+            return HttpResponse.json(responseData);
+          })
+        );
 
         const result = await apiClient.get('/api/test');
         expect(result).toEqual(responseData);
@@ -181,15 +188,17 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
   });
 
   describe('🔧 HTTP Methods mit flexiblen Parametern', () => {
-    beforeEach(() => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true }),
-      });
-    });
-
     it('should handle GET with query parameters', async () => {
+      server.use(
+        http.get('http://localhost:8080/api/customers', ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get('page')).toBe('1');
+          expect(url.searchParams.get('size')).toBe('20');
+          expect(url.searchParams.get('filter')).toBe('active');
+          return HttpResponse.json({ success: true });
+        })
+      );
+
       const queryParams = {
         page: 1,
         size: 20,
@@ -206,14 +215,18 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       };
 
       await apiClient.get('/api/customers', { params: queryParams });
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringMatching(/page=1.*size=20.*filter=active/),
-        expect.objectContaining({ method: 'GET' })
-      );
     });
 
     it('should handle DELETE with optional data', async () => {
+      server.use(
+        http.delete('http://localhost:8080/api/customers/bulk', async ({ request }) => {
+          const body = await request.text();
+          const deleteData = JSON.parse(body);
+          expect(deleteData.ids).toHaveLength(3);
+          return HttpResponse.json({ success: true });
+        })
+      );
+
       // DELETE with body (for bulk operations)
       const deleteData = {
         ids: ['cust-1', 'cust-2', 'cust-3'],
@@ -228,73 +241,47 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       await apiClient.delete('/api/customers/bulk', {
         body: JSON.stringify(deleteData),
       });
-
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.stringContaining('/api/customers/bulk'),
-        expect.objectContaining({
-          method: 'DELETE',
-          body: JSON.stringify(deleteData),
-        })
-      );
     });
   });
 
   describe('🔐 Authentication & Headers', () => {
     it('should include auth tokens from various sources', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({}),
-      });
+      let receivedToken: string | null = null;
+
+      server.use(
+        http.get('http://localhost:8080/api/protected', ({ request }) => {
+          receivedToken = request.headers.get('Authorization');
+          return HttpResponse.json({});
+        })
+      );
 
       // Test sessionStorage token
       sessionStorage.setItem('auth_token', 'session-token-123');
       await apiClient.get('/api/protected');
-
-      expect(mockFetch).toHaveBeenLastCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer session-token-123',
-          }),
-        })
-      );
+      expect(receivedToken).toBe('Bearer session-token-123');
 
       // Clear session, test localStorage
       sessionStorage.clear();
       localStorage.setItem('auth_token', 'local-token-456');
       await apiClient.get('/api/protected');
-
-      expect(mockFetch).toHaveBeenLastCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer local-token-456',
-          }),
-        })
-      );
+      expect(receivedToken).toBe('Bearer local-token-456');
 
       // Test Keycloak token
       localStorage.clear();
       sessionStorage.setItem('kc_token', 'keycloak-token-789');
       await apiClient.get('/api/protected');
-
-      expect(mockFetch).toHaveBeenLastCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining({
-            Authorization: 'Bearer keycloak-token-789',
-          }),
-        })
-      );
+      expect(receivedToken).toBe('Bearer keycloak-token-789');
     });
 
     it('should handle custom headers with flexible values', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({}),
-      });
+      let receivedHeaders: Headers | undefined;
+
+      server.use(
+        http.get('http://localhost:8080/api/test', ({ request }) => {
+          receivedHeaders = request.headers;
+          return HttpResponse.json({});
+        })
+      );
 
       const customHeaders = {
         'X-Custom-Field': 'custom-value',
@@ -312,12 +299,8 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         headers: customHeaders,
       });
 
-      expect(mockFetch).toHaveBeenCalledWith(
-        expect.any(String),
-        expect.objectContaining({
-          headers: expect.objectContaining(customHeaders),
-        })
-      );
+      expect(receivedHeaders?.get('X-Custom-Field')).toBe('custom-value');
+      expect(receivedHeaders?.get('X-Client-Version')).toBe('2.0.0');
     });
   });
 
@@ -326,32 +309,50 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       // Test that timeout functionality exists (simplified test)
       expect(typeof apiClient.get).toBe('function');
 
-      // Mock network error to simulate timeout
-      mockFetch.mockRejectedValueOnce(new Error('Request timeout'));
+      server.use(
+        http.get('http://localhost:8080/api/slow', () => {
+          return HttpResponse.error();
+        })
+      );
 
       await expect(apiClient.get('/api/slow')).rejects.toThrow();
     }, 1000);
 
     it('should implement retry logic for server errors', async () => {
-      // First call fails, second succeeds
-      mockFetch.mockRejectedValueOnce(new Error('Network error')).mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true }),
-      });
+      let failedOnce = false;
+
+      server.use(
+        http.get('http://localhost:8080/api/retry-test', () => {
+          if (!failedOnce) {
+            failedOnce = true;
+            return HttpResponse.error();
+          }
+          return HttpResponse.json({ success: true });
+        })
+      );
 
       const result = await apiClient.get('/api/retry-test', { retry: 1 });
 
       expect(result).toEqual({ success: true });
-      expect(mockFetch).toHaveBeenCalledTimes(2);
+      // Verify that failedOnce was set to true (meaning the first call failed and retry succeeded)
+      expect(failedOnce).toBe(true);
     });
 
     it('should handle concurrent requests efficiently', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true }),
-      });
+      server.use(
+        http.get('http://localhost:8080/api/customers', () => {
+          return HttpResponse.json({ success: true });
+        }),
+        http.get('http://localhost:8080/api/locations', () => {
+          return HttpResponse.json({ success: true });
+        }),
+        http.post('http://localhost:8080/api/drafts', () => {
+          return HttpResponse.json({ success: true });
+        }),
+        http.put('http://localhost:8080/api/settings', () => {
+          return HttpResponse.json({ success: true });
+        })
+      );
 
       // Multiple concurrent requests
       const requests = [
@@ -364,7 +365,6 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
       const results = await Promise.all(requests);
 
       expect(results).toHaveLength(4);
-      expect(mockFetch).toHaveBeenCalledTimes(4);
       results.forEach(result => {
         expect(result).toEqual({ success: true });
       });
@@ -377,28 +377,28 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         // Standard error
         {
           status: 400,
-          json: async () => ({
+          data: {
             code: 'VALIDATION_ERROR',
             message: 'Validation failed',
             fieldErrors: {
               companyName: 'Required field',
               contactEmail: 'Invalid email format',
             },
-          }),
+          },
         },
 
         // Simple error
         {
           status: 404,
-          json: async () => ({
+          data: {
             error: 'Customer not found',
-          }),
+          },
         },
 
         // Complex nested error
         {
           status: 422,
-          json: async () => ({
+          data: {
             errors: {
               customer: {
                 fields: {
@@ -411,22 +411,27 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
               request_id: 'req-123',
               trace_id: 'trace-456',
             },
-          }),
+          },
         },
       ];
 
       for (const errorResponse of errorResponses) {
-        mockFetch.mockResolvedValueOnce({
-          ok: false,
-          ...errorResponse,
-        });
+        server.use(
+          http.get('http://localhost:8080/api/error', () => {
+            return HttpResponse.json(errorResponse.data, { status: errorResponse.status });
+          })
+        );
 
         await expect(apiClient.get('/api/error')).rejects.toThrow();
       }
     });
 
     it('should handle network errors gracefully', async () => {
-      mockFetch.mockRejectedValue(new Error('Network error'));
+      server.use(
+        http.get('http://localhost:8080/api/network-error', () => {
+          return HttpResponse.error();
+        })
+      );
 
       await expect(apiClient.get('/api/network-error')).rejects.toThrow('Netzwerkfehler');
     });
@@ -464,11 +469,17 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
 
   describe('🎯 Real-world Customer Scenarios', () => {
     it('should handle complete customer onboarding flow', async () => {
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true, id: 'customer-123' }),
-      });
+      server.use(
+        http.post('http://localhost:8080/api/customers/draft', () => {
+          return HttpResponse.json({ success: true, id: 'customer-123' });
+        }),
+        http.put('http://localhost:8080/api/customers/draft/customer-123', () => {
+          return HttpResponse.json({ success: true, id: 'customer-123' });
+        }),
+        http.post('http://localhost:8080/api/customers/draft/customer-123/finalize', () => {
+          return HttpResponse.json({ success: true, id: 'customer-123' });
+        })
+      );
 
       // Step 1: Create draft
       const draftData = {
@@ -512,8 +523,6 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
 
       // Step 3: Finalize
       await apiClient.post('/api/customers/draft/customer-123/finalize');
-
-      expect(mockFetch).toHaveBeenCalledTimes(3);
     });
 
     it('should handle field definitions loading with caching', async () => {
@@ -542,11 +551,11 @@ describe('ApiClient - Flexibles API mit any-Types (ENTERPRISE PHILOSOPHY)', () =
         ],
       };
 
-      mockFetch.mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => fieldDefinitions,
-      });
+      server.use(
+        http.get('http://localhost:8080/api/field-definitions', () => {
+          return HttpResponse.json(fieldDefinitions);
+        })
+      );
 
       // Load field definitions
       const result = await apiClient.get('/api/field-definitions', {

@@ -148,7 +148,7 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
             <td>
               <span
                 class="status-badge"
-                style="background-color: rgb(76, 175, 80);"
+                style="background-color: rgb(46, 125, 50);"
               >
                 Aktiv
               </span>
@@ -167,7 +167,7 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
               >
                 <div
                   class="risk-bar"
-                  style="width: 20%; background-color: rgb(76, 175, 80);"
+                  style="width: 20%; background-color: rgb(46, 125, 50);"
                 />
                 <span
                   class="risk-score"
@@ -202,7 +202,7 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
             <td>
               <span
                 class="status-badge"
-                style="background-color: rgb(244, 67, 54);"
+                style="background-color: rgb(211, 47, 47);"
               >
                 Risiko
               </span>
@@ -221,7 +221,7 @@ exports[`CustomerList Snapshot Tests > should match snapshot for loaded state 1`
               >
                 <div
                   class="risk-bar"
-                  style="width: 80%; background-color: rgb(244, 67, 54);"
+                  style="width: 80%; background-color: rgb(211, 47, 47);"
                 />
                 <span
                   class="risk-score"

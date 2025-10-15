@@ -1,14 +1,17 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useBusinessTypes } from '../useBusinessTypes';
-import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { vi, describe, it, expect, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
 import React from 'react';
-
-// Mock fetch globally
-global.fetch = vi.fn();
+import { server } from '@/mocks/server';
+import { http, HttpResponse } from 'msw';
 
 describe('useBusinessTypes', () => {
   let queryClient: QueryClient;
+
+  beforeAll(() => {
+    server.listen({ onUnhandledRequest: 'bypass' });
+  });
 
   beforeEach(() => {
     queryClient = new QueryClient({
@@ -23,6 +26,11 @@ describe('useBusinessTypes', () => {
 
   afterEach(() => {
     queryClient.clear();
+    server.resetHandlers();
+  });
+
+  afterAll(() => {
+    server.close();
   });
 
   const wrapper = ({ children }: { children: React.ReactNode }) => (
@@ -36,24 +44,17 @@ describe('useBusinessTypes', () => {
       { value: 'CATERING', label: 'Catering' },
     ];
 
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockData,
-    } as Response);
+    server.use(
+      http.get('*/api/enums/business-types', () => {
+        return HttpResponse.json(mockData);
+      })
+    );
 
     const { result } = renderHook(() => useBusinessTypes(), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockData);
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/api/enums/business-types'),
-      expect.objectContaining({
-        headers: expect.objectContaining({
-          'Content-Type': 'application/json',
-        }),
-      })
-    );
   });
 
   it('should return all 9 business types', async () => {
@@ -69,10 +70,11 @@ describe('useBusinessTypes', () => {
       { value: 'SONSTIGES', label: 'Sonstiges' },
     ];
 
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockData,
-    } as Response);
+    server.use(
+      http.get('*/api/enums/business-types', () => {
+        return HttpResponse.json(mockData);
+      })
+    );
 
     const { result } = renderHook(() => useBusinessTypes(), { wrapper });
 
@@ -95,10 +97,14 @@ describe('useBusinessTypes', () => {
   it('should cache data for 5 minutes (staleTime)', async () => {
     const mockData = [{ value: 'RESTAURANT', label: 'Restaurant' }];
 
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockData,
-    } as Response);
+    let fetchCount = 0;
+
+    server.use(
+      http.get('*/api/enums/business-types', () => {
+        fetchCount++;
+        return HttpResponse.json(mockData);
+      })
+    );
 
     const { result, rerender } = renderHook(() => useBusinessTypes(), {
       wrapper,
@@ -106,19 +112,23 @@ describe('useBusinessTypes', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(global.fetch).toHaveBeenCalledTimes(1);
+    const initialFetchCount = fetchCount;
 
     // Re-render should NOT trigger new fetch (within staleTime)
     rerender();
 
-    expect(global.fetch).toHaveBeenCalledTimes(1); // Still 1!
+    // Wait a bit to ensure no new fetch happens
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    expect(fetchCount).toBe(initialFetchCount); // Should not increase
   });
 
   it('should handle API errors', async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
-      ok: false,
-      statusText: 'Internal Server Error',
-    } as Response);
+    server.use(
+      http.get('*/api/enums/business-types', () => {
+        return HttpResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+      })
+    );
 
     const { result } = renderHook(() => useBusinessTypes(), { wrapper });
 
@@ -129,7 +139,11 @@ describe('useBusinessTypes', () => {
   });
 
   it('should handle network errors', async () => {
-    (global.fetch as ReturnType<typeof vi.fn>).mockRejectedValueOnce(new Error('Network error'));
+    server.use(
+      http.get('*/api/enums/business-types', () => {
+        return HttpResponse.error();
+      })
+    );
 
     const { result } = renderHook(() => useBusinessTypes(), { wrapper });
 

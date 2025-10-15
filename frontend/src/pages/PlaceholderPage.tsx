@@ -1,5 +1,15 @@
 import React from 'react';
-import { Container, Typography, Box, Paper, Button, Grid, Card, CardContent } from '@mui/material';
+import {
+  Typography,
+  Box,
+  Paper,
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  useTheme,
+  alpha,
+} from '@mui/material';
 import ConstructionIcon from '@mui/icons-material/Construction';
 import RocketLaunchIcon from '@mui/icons-material/RocketLaunch';
 import InfoIcon from '@mui/icons-material/Info';
@@ -22,29 +32,31 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
   description = 'Wir arbeiten hart daran, diese Funktion für Sie bereitzustellen.',
   expectedDate,
   features = [],
-  icon = <ConstructionIcon sx={{ fontSize: 80, color: '#94C456' }} />,
+  icon,
 }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
+
+  // Set default icon with theme color if not provided
+  const defaultIcon = <ConstructionIcon sx={{ fontSize: 80, color: theme.palette.primary.main }} />;
+  const displayIcon = icon || defaultIcon;
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Back Button */}
         <Button
           startIcon={<ArrowBackIcon />}
           onClick={() => navigate(-1)}
-          sx={{ mb: 3, color: '#004F7B' }}
+          sx={{ mb: 3, color: theme.palette.secondary.main }}
         >
           Zurück
         </Button>
 
         {/* Main Content */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
-          {icon}
-          <Typography
-            variant="h3"
-            sx={{ mt: 3, mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
-          >
+          {displayIcon}
+          <Typography variant="h3" sx={{ mt: 3, mb: 2, color: theme.palette.secondary.main }}>
             {title}
           </Typography>
           <Typography variant="h5" color="text.secondary" sx={{ mb: 1 }}>
@@ -62,14 +74,14 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
               sx={{
                 display: 'inline-block',
                 p: 2,
-                backgroundColor: 'rgba(148, 196, 86, 0.1)',
-                border: '1px solid #94C456',
+                backgroundColor: alpha(theme.palette.success.light, 0.13),
+                border: `1px solid ${theme.palette.primary.main}`,
               }}
             >
               <Typography variant="body2" color="text.secondary">
                 Voraussichtlich verfügbar:
               </Typography>
-              <Typography variant="h6" sx={{ color: '#94C456', fontFamily: 'Antonio, sans-serif' }}>
+              <Typography variant="h6" sx={{ color: theme.palette.primary.main }}>
                 {expectedDate}
               </Typography>
             </Paper>
@@ -79,10 +91,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
         {/* Coming Features */}
         {features.length > 0 && (
           <>
-            <Typography
-              variant="h5"
-              sx={{ mb: 3, textAlign: 'center', fontFamily: 'Antonio, sans-serif' }}
-            >
+            <Typography variant="h5" sx={{ mb: 3, textAlign: 'center' }}>
               Was Sie erwarten können
             </Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -90,7 +99,9 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
                 <Grid size={{ xs: 12, md: 4 }} key={index}>
                   <Card sx={{ height: '100%', textAlign: 'center' }}>
                     <CardContent>
-                      <RocketLaunchIcon sx={{ fontSize: 40, color: '#94C456', mb: 1 }} />
+                      <RocketLaunchIcon
+                        sx={{ fontSize: 40, color: theme.palette.primary.main, mb: 1 }}
+                      />
                       <Typography variant="body1">{feature}</Typography>
                     </CardContent>
                   </Card>
@@ -104,12 +115,12 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
         <Paper
           sx={{
             p: 3,
-            backgroundColor: 'rgba(0, 79, 123, 0.05)',
-            border: '1px solid rgba(0, 79, 123, 0.2)',
+            backgroundColor: alpha(theme.palette.secondary.main, 0.05),
+            border: `1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-            <InfoIcon sx={{ color: '#004F7B', mt: 0.5 }} />
+            <InfoIcon sx={{ color: theme.palette.secondary.main, mt: 0.5 }} />
             <Box>
               <Typography variant="h6" sx={{ mb: 1 }}>
                 Möchten Sie benachrichtigt werden?
@@ -121,11 +132,11 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
               <Button
                 variant="outlined"
                 sx={{
-                  borderColor: '#004F7B',
-                  color: '#004F7B',
+                  borderColor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.main,
                   '&:hover': {
-                    borderColor: '#003A5A',
-                    backgroundColor: 'rgba(0, 79, 123, 0.04)',
+                    borderColor: theme.palette.secondary.dark,
+                    backgroundColor: alpha(theme.palette.secondary.main, 0.04),
                   },
                 }}
               >
@@ -134,7 +145,7 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
             </Box>
           </Box>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 };

@@ -10,12 +10,12 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (80% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7 - 100% COMPLETE (14.10.2025) - **ActivityOutcome + Code Review Fixes + 100% Tests GREEN** 🎉
-- **Next Sprint:** 📋 Sprint 2.1.7.1 - PLANNING (Start: 15.10.2025) - **Opportunities UI Integration**
-- **Active Branch:** main (PR #139 READY FOR MERGE)
-- **Progress:** 21/36 PRs completed - 58% done
-- **Blockers:** ❌ Keine - **🎯 Ready for Sprint 2.1.7.1 (Frontend UI)**
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (82% complete)
+- **Current Sprint:** ✅ Sprint 2.1.7.0 - COMPLETE (14.10.2025) - **Design System Migration (FreshFoodz CI V2)**
+- **Next Sprint:** 📋 Sprint 2.1.7.1 - READY (Start: TBD) - **Opportunities UI Integration**
+- **Active Branch:** feature/sprint-2-1-7-0-design-system-migration (Ready for PR)
+- **Progress:** 22/36 PRs completed - 61% done
+- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.0 Complete, Ready for Testing & PR**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Opportunity Backend Integration COMPLETE (13.10.2025)** - V10026 + OpportunityService + 3 REST APIs + V90003 DEV-SEED (10 Opportunities)
@@ -233,6 +233,24 @@ Sprint 2.1.7: ActivityOutcome + Code Review ✅ COMPLETE (14.10.2025) - PR #139 
                                       → **Commits:** 869730d2d (fixes), 4e68415b9 (docs), a64574d2b (spotless), 540b9d09c (eslint)
                                       → **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
                                       → **Completion:** [SPRINT_2_1_7_SUMMARY.md](SPRINT_2_1_7_SUMMARY.md)
+
+Sprint 2.1.7.0: Design System Migration ✅ COMPLETE (14.10.2025) - **FreshFoodz CI V2 100% Compliance**
+                                      → **Kontext:** Komplette Frontend-Design-Migration - 28 Seiten, 97 Violations behoben
+                                      → **Design Compliance (97 Violations Fixed in 6 Batches):**
+                                        - **Font:** 47× hardcoded `fontFamily` entfernt → MUI Theme (Antonio Bold h1-h6, Poppins body)
+                                        - **Color:** 45× hardcoded colors/rgba → `theme.palette.*` + `alpha()` helper
+                                        - **Language:** 5× Englisch → Deutsch (100% "Sie"-Form)
+                                      → **FreshFoodz CI V2:** Primary #94C456 (Grün) + Secondary #004F7B (Blau) - Nur Theme-Farben
+                                      → **Layout System:** MainLayoutV2 `maxWidth` prop hinzugefügt (default: 'xl')
+                                      → **Bug-Fixes:** 8 kritische Bugs (3 Backend, 5 Frontend)
+                                        - LazyInitializationException in contact-interactions
+                                        - CustomerLocation JSON DEFAULT [] → {} (V90005 + V10029)
+                                        - Auth Role Normalization (Lowercase)
+                                        - ProtectedRoute Error-Wrapping (Sidebar sichtbar)
+                                      → **Metriken:** 28 Seiten, 43 Dateien, 20 Commits, -106 LOC (Code-Cleanup)
+                                      → **Migrations:** V90004 (DEV-SEED 5 Users), V90005+V10029 (CustomerLocation JSON fix)
+                                      → **Dokumentation:** [SPRINT_2_1_7_0_COMPLETE_SUMMARY.md](claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md)
+                                      → **Branch:** feature/sprint-2-1-7-0-design-system-migration (Ready for PR)
 
 Sprint 2.1.7.1: Opportunities UI     📋 PLANNING (14.10.2025) - Aufwand: 16-24h (2-3 Tage)
                                       → **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog, Lead Detail Integration, LeadOpportunitiesList)

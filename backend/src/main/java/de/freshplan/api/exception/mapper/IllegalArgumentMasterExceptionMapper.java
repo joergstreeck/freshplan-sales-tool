@@ -3,6 +3,8 @@ package de.freshplan.api.exception.mapper;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.logging.Logger;
 
 /**
@@ -69,7 +71,14 @@ public class IllegalArgumentMasterExceptionMapper
 
     // 8. Generic IllegalArgumentException - log for analysis and return user-friendly error
     logger.warning("Unhandled IllegalArgumentException: " + message);
+    logger.severe("Stack trace: " + getStackTraceAsString(exception));
     return createGenericErrorResponse(message);
+  }
+
+  private String getStackTraceAsString(Exception e) {
+    StringWriter sw = new StringWriter();
+    e.printStackTrace(new PrintWriter(sw));
+    return sw.toString();
   }
 
   private Response handleEnumParsingError(String message) {

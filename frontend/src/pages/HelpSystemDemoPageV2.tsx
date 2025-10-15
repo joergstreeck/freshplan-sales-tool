@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  Container,
   Typography,
   Box,
   Paper,
@@ -14,6 +13,8 @@ import {
   FormControlLabel,
   LinearProgress,
   Tooltip,
+  useTheme,
+  alpha,
 } from '@mui/material';
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import BugReportIcon from '@mui/icons-material/BugReport';
@@ -28,6 +29,7 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { HelpTooltip, useHelp, useHelpStore } from '../features/help';
 
 export const HelpSystemDemoPageV2: React.FC = () => {
+  const theme = useTheme();
   const [tooltipsEnabled, setTooltipsEnabled] = useState(true);
   const [proactiveHelpEnabled, setProactiveHelpEnabled] = useState(true);
   const [tourRunning, setTourRunning] = useState(false);
@@ -74,25 +76,25 @@ export const HelpSystemDemoPageV2: React.FC = () => {
     {
       title: 'Kontextuelle Tooltips',
       description: 'Hilfreiche Hinweise genau dort, wo sie gebraucht werden',
-      icon: <TipsAndUpdatesIcon sx={{ fontSize: 40, color: '#94C456' }} />,
+      icon: <TipsAndUpdatesIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
       enabled: tooltipsEnabled,
     },
     {
       title: 'Geführte Touren',
       description: 'Schritt-für-Schritt Anleitungen für komplexe Prozesse',
-      icon: <SchoolIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
+      icon: <SchoolIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
       enabled: true,
     },
     {
       title: 'Proaktive Hilfe',
       description: 'Automatische Hilfe bei erkannten Schwierigkeiten',
-      icon: <AutoFixHighIcon sx={{ fontSize: 40, color: '#94C456' }} />,
+      icon: <AutoFixHighIcon sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
       enabled: proactiveHelpEnabled,
     },
     {
       title: 'Interaktive Demos',
       description: 'Lerne durch Ausprobieren in sicherer Umgebung',
-      icon: <TouchAppIcon sx={{ fontSize: 40, color: '#004F7B' }} />,
+      icon: <TouchAppIcon sx={{ fontSize: 40, color: theme.palette.secondary.main }} />,
       enabled: true,
     },
   ];
@@ -106,13 +108,10 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             Hilfe-System Konfiguration
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -122,7 +121,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Configuration Panel */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             System-Einstellungen
           </Typography>
           <Grid container spacing={3}>
@@ -134,10 +133,10 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                     onChange={e => setTooltipsEnabled(e.target.checked)}
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#94C456',
+                        color: theme.palette.primary.main,
                       },
                       '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#94C456',
+                        backgroundColor: theme.palette.primary.main,
                       },
                     }}
                   />
@@ -153,10 +152,10 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                     onChange={e => setProactiveHelpEnabled(e.target.checked)}
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#94C456',
+                        color: theme.palette.primary.main,
                       },
                       '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#94C456',
+                        backgroundColor: theme.palette.primary.main,
                       },
                     }}
                   />
@@ -171,7 +170,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
         </Paper>
 
         {/* Features Grid */}
-        <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+        <Typography variant="h5" sx={{ mb: 3 }}>
           Hilfe-System Features
         </Typography>
         <Grid container spacing={3} sx={{ mb: 4 }}>
@@ -201,7 +200,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Test Actions */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             Test-Aktionen
           </Typography>
           <Grid container spacing={2}>
@@ -213,9 +212,9 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 onClick={handleStartTour}
                 disabled={tourRunning}
                 sx={{
-                  backgroundColor: '#94C456',
-                  '&:hover': { backgroundColor: '#7BA347' },
-                  '&:disabled': { backgroundColor: '#cccccc' },
+                  backgroundColor: theme.palette.primary.main,
+                  '&:hover': { backgroundColor: theme.palette.primary.dark },
+                  '&:disabled': { backgroundColor: theme.palette.grey[300] },
                 }}
               >
                 {tourRunning ? 'Tour läuft...' : 'Tour starten'}
@@ -229,11 +228,11 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 startIcon={<BugReportIcon />}
                 onClick={simulateStruggle}
                 sx={{
-                  borderColor: '#004F7B',
-                  color: '#004F7B',
+                  borderColor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.main,
                   '&:hover': {
-                    borderColor: '#003A5A',
-                    backgroundColor: 'rgba(0, 79, 123, 0.04)',
+                    borderColor: theme.palette.secondary.dark,
+                    backgroundColor: alpha(theme.palette.secondary.main, 0.04),
                   },
                 }}
               >
@@ -247,11 +246,11 @@ export const HelpSystemDemoPageV2: React.FC = () => {
                 startIcon={<AnalyticsIcon />}
                 onClick={() => loadAnalytics()}
                 sx={{
-                  borderColor: '#004F7B',
-                  color: '#004F7B',
+                  borderColor: theme.palette.secondary.main,
+                  color: theme.palette.secondary.main,
                   '&:hover': {
-                    borderColor: '#003A5A',
-                    backgroundColor: 'rgba(0, 79, 123, 0.04)',
+                    borderColor: theme.palette.secondary.dark,
+                    backgroundColor: alpha(theme.palette.secondary.main, 0.04),
                   },
                 }}
               >
@@ -263,7 +262,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Analytics Dashboard */}
         <Paper sx={{ p: 3, mb: 4 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             Analytics Dashboard
           </Typography>
           <Grid container spacing={3}>
@@ -271,10 +270,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               <Grid size={{ xs: 6, md: 3 }} key={index}>
                 <Card sx={{ textAlign: 'center' }}>
                   <CardContent>
-                    <Typography
-                      variant="h3"
-                      sx={{ color: '#94C456', fontFamily: 'Antonio, sans-serif' }}
-                    >
+                    <Typography variant="h3" sx={{ color: theme.palette.primary.main }}>
                       {item.value}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
@@ -289,7 +285,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
 
         {/* Demo Component with Tooltip */}
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 3, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 3 }}>
             Interaktive Demo
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -299,7 +295,10 @@ export const HelpSystemDemoPageV2: React.FC = () => {
             >
               <Button
                 variant="contained"
-                sx={{ backgroundColor: '#94C456', '&:hover': { backgroundColor: '#7BA347' } }}
+                sx={{
+                  backgroundColor: theme.palette.primary.main,
+                  '&:hover': { backgroundColor: theme.palette.primary.dark },
+                }}
               >
                 Hover für Tooltip
               </Button>
@@ -313,8 +312,8 @@ export const HelpSystemDemoPageV2: React.FC = () => {
               variant="outlined"
               startIcon={<InfoIcon />}
               sx={{
-                borderColor: '#004F7B',
-                color: '#004F7B',
+                borderColor: theme.palette.secondary.main,
+                color: theme.palette.secondary.main,
               }}
             >
               Mehr Infos
@@ -326,7 +325,7 @@ export const HelpSystemDemoPageV2: React.FC = () => {
             kontextuelle Unterstützung genau dann, wenn sie benötigt wird.
           </Alert>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 };

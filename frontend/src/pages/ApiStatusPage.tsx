@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
   Box,
-  Container,
   Typography,
   Paper,
   Grid,
@@ -16,6 +15,7 @@ import {
   ListItemIcon,
   ListItemText,
   Divider,
+  useTheme,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -46,6 +46,7 @@ interface SystemHealth {
 }
 
 export function ApiStatusPage() {
+  const theme = useTheme();
   const { token } = useAuth();
   const [testResults, setTestResults] = useState<TestResult[]>([]);
   const [isTestRunning, setIsTestRunning] = useState(false);
@@ -138,15 +139,15 @@ export function ApiStatusPage() {
     switch (status) {
       case 'healthy':
       case 'success':
-        return '#94C456';
+        return theme.palette.primary.main;
       case 'degraded':
       case 'pending':
-        return '#FFA726';
+        return theme.palette.warning.main;
       case 'down':
       case 'error':
-        return '#EF5350';
+        return theme.palette.error.main;
       default:
-        return '#757575';
+        return theme.palette.grey[600];
     }
   };
 
@@ -154,24 +155,21 @@ export function ApiStatusPage() {
     switch (status) {
       case 'healthy':
       case 'success':
-        return <CheckCircleIcon sx={{ color: '#94C456' }} />;
+        return <CheckCircleIcon sx={{ color: theme.palette.primary.main }} />;
       case 'down':
       case 'error':
-        return <ErrorIcon sx={{ color: '#EF5350' }} />;
+        return <ErrorIcon sx={{ color: theme.palette.error.main }} />;
       default:
-        return <AccessTimeIcon sx={{ color: '#FFA726' }} />;
+        return <AccessTimeIcon sx={{ color: theme.palette.warning.main }} />;
     }
   };
 
   return (
     <MainLayoutV2>
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h3"
-            sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
-          >
+          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
             API Status & System Health
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -260,18 +258,16 @@ export function ApiStatusPage() {
           <Box
             sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}
           >
-            <Typography variant="h5" sx={{ fontFamily: 'Antonio, sans-serif' }}>
-              API Endpoint Tests
-            </Typography>
+            <Typography variant="h5">API Endpoint Tests</Typography>
             <Button
               variant="contained"
               startIcon={isTestRunning ? <CircularProgress size={20} /> : <RefreshIcon />}
               onClick={runAllTests}
               disabled={isTestRunning}
               sx={{
-                backgroundColor: '#94C456',
-                '&:hover': { backgroundColor: '#7BA347' },
-                '&:disabled': { backgroundColor: '#cccccc' },
+                backgroundColor: theme.palette.primary.main,
+                '&:hover': { backgroundColor: theme.palette.primary.dark },
+                '&:disabled': { backgroundColor: theme.palette.grey[300] },
               }}
             >
               {isTestRunning ? 'Tests laufen...' : 'Alle Tests ausführen'}
@@ -355,7 +351,7 @@ export function ApiStatusPage() {
 
         {/* Test History */}
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h5" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+          <Typography variant="h5" sx={{ mb: 2 }}>
             Letzte Test-Durchläufe
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -364,7 +360,7 @@ export function ApiStatusPage() {
               : 'Noch keine Tests durchgeführt'}
           </Typography>
         </Paper>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

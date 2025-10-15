@@ -228,6 +228,7 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V10026** | Opportunity Lead/Customer FKs | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟠 MEDIUM | None | lead_id + customer_id FKs in opportunities, CHECK Constraint (lead_id OR customer_id OR stage='NEW_LEAD') |
 | **V10027** | Activity Outcome Enum | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟢 Low | None | activity_outcome VARCHAR(30) mit CHECK Constraint (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED) |
 | **V10028** | Customer Number Sequence | 2.1.7 | @joergstreeck | #139 | ❌ No | 🔴 HIGH | None | **PRODUCTION-KRITISCH!** PostgreSQL Sequence für race-condition-safe customer_number Generation. Format: KD-00001, KD-00002... **NIEMALS löschen!** |
+| **V10029** | CustomerLocation JSON DEFAULT Fix | 2.1.7.0 | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Schema-Fix: DEFAULT '[]' → '{}' für customer_locations JSON columns (address_details, contact_details, operational_details) |
 
 **Rollback Scripts:**
 
@@ -338,6 +339,8 @@ CREATE UNIQUE INDEX CONCURRENTLY ui_leads_company_city ON leads(company_name_nor
 | **V90001** | Seed DEV Customers Complete | 2.1.6.2 | 5 realistische Customers (IDs 90001-90005): Hotel, Catering, Betriebskantine, Restaurant, Bäckerei |
 | **V90002** | Seed DEV Leads Complete | 2.1.6.2 | 10 Leads (IDs 90001-90010) + 21 Contacts + 21 Activities, Score-Range 21-59, Edge Cases: PreClaim, Grace Period, LOST |
 | **V90003** | Seed DEV Opportunities Complete | 2.1.7 | 10 realistische Opportunities (IDs 90001-90010), Total Value €163,000, 4 from Leads + 6 from Customers, verschiedene Stages (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON) |
+| **V90004** | Seed DEV Users Complete | 2.1.7.0 | 5 realistische Test-User (IDs 90001-90005): Stefan Weber (Admin), Anna Schmidt (Manager), Markus Müller (Sales), Lisa Schneider (Sales), Thomas Wagner (Auditor) - mit Keycloak-Sync |
+| **V90005** | Fix CustomerLocation JSON Arrays | 2.1.7.0 | Data Migration: customer_locations.address_details/contact_details/operational_details von '[]' (Array) → '{}' (Object) für 38 affected records |
 
 **Details:**
 - **V90001:** 5 Customers mit vollständigen Daten (Adressen, Kontakte, Notes, BusinessTypes: GASTRONOMIE, CATERING, etc.)
@@ -612,9 +615,9 @@ DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVA
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-14 (V10026-V10028 + V90003 dokumentiert, PR #139 READY FOR MERGE)
+**Letzte Aktualisierung:** 2025-10-14 23:45 (V10029 + V90004-V90005 dokumentiert - Sprint 2.1.7.0 COMPLETE)
 
-**Nächste Migration:** V272 oder V10029+ (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V272 oder V10030+ (ermitteln via `./scripts/get-next-migration.sh`)
 
 **Aktuelle PR:** #139 - Sprint 2.1.7 ActivityOutcome + Code Review Fixes (READY FOR MERGE)
 **Branch:** main (PR #139)

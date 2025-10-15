@@ -12,7 +12,7 @@ import { KanbanBoardDndKit } from '../features/opportunity/components/KanbanBoar
  */
 export const OpportunityPipelinePage: React.FC = () => {
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <Box sx={{ height: '100vh', overflow: 'hidden' }}>
         <KanbanBoardDndKit />
       </Box>

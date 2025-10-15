@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Box,
-  Container,
   Typography,
   Card,
   CardContent,
@@ -15,6 +14,7 @@ import {
   ListItem,
   ListItemText,
   Divider,
+  useTheme,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import { useNavigate } from 'react-router-dom';
@@ -43,31 +43,32 @@ interface CustomerToolCard {
 
 export function KundenmanagementDashboard() {
   const navigate = useNavigate();
+  const theme = useTheme();
 
   const customerTools: CustomerToolCard[] = [
     {
       title: 'Alle Kunden',
       description: 'Verwalten Sie Ihre gesamte Kundenbasis',
-      icon: <PeopleIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <PeopleIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/customers',
       stats: '1.247 aktiv',
-      color: '#004F7B',
+      color: theme.palette.secondary.main,
     },
     {
       title: 'Verkaufschancen',
       description: 'Verfolgen Sie aktive Opportunities',
-      icon: <TrendingUpIcon sx={{ fontSize: 48, color: '#FFA726' }} />,
+      icon: <TrendingUpIcon sx={{ fontSize: 48, color: theme.palette.primary.main }} />,
       path: '/kundenmanagement/opportunities',
       stats: '€2.3M Pipeline',
-      color: '#FFA726',
+      color: theme.palette.primary.main,
     },
     {
       title: 'Aktivitäten',
       description: 'Anstehende Aufgaben und Termine',
-      icon: <AssignmentIcon sx={{ fontSize: 48, color: '#004F7B' }} />,
+      icon: <AssignmentIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
       path: '/kundenmanagement/aktivitaeten',
       stats: '34 heute',
-      color: '#004F7B',
+      color: theme.palette.secondary.main,
     },
   ];
 
@@ -102,8 +103,8 @@ export function KundenmanagementDashboard() {
   };
 
   return (
-    <MainLayoutV2>
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box
           sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
@@ -113,9 +114,8 @@ export function KundenmanagementDashboard() {
               variant="h3"
               sx={{
                 mb: 1,
-                fontFamily: 'Antonio, sans-serif',
                 fontWeight: 'bold',
-                color: '#004F7B',
+                color: theme.palette.secondary.main,
               }}
             >
               Kundenmanagement
@@ -128,8 +128,8 @@ export function KundenmanagementDashboard() {
             variant="contained"
             startIcon={<PersonAddIcon />}
             sx={{
-              backgroundColor: '#94C456',
-              '&:hover': { backgroundColor: '#7BA347' },
+              backgroundColor: theme.palette.primary.main,
+              '&:hover': { backgroundColor: theme.palette.primary.dark },
               fontWeight: 'bold',
             }}
             onClick={() => navigate('/customers/new')}
@@ -141,66 +141,67 @@ export function KundenmanagementDashboard() {
         {/* KPI Cards */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 1.247
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body2" color="text.secondary">
                 Aktive Kunden
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: '#94C456' }} />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                  +67 diesen Monat
-                </Typography>
-              </Box>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                +67 diesen Monat
+              </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 €2.3M
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body2" color="text.secondary">
                 Pipeline Wert
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: '#94C456' }} />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                  42 Opportunities
-                </Typography>
-              </Box>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                42 Opportunities
+              </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+              >
                 89%
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body2" color="text.secondary">
                 Kundenzufriedenheit
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                  NPS Score: 72
-                </Typography>
-              </Box>
+              <Typography variant="caption" color="text.secondary">
+                NPS Score: 72
+              </Typography>
             </Paper>
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <Paper sx={{ p: 3, background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)' }}>
-              <Typography variant="h4" sx={{ color: 'white', fontWeight: 'bold' }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography
+                variant="h4"
+                sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+              >
                 €145k
               </Typography>
-              <Typography variant="body1" sx={{ color: 'rgba(255,255,255,0.9)' }}>
+              <Typography variant="body2" color="text.secondary">
                 MRR
               </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                <ArrowUpwardIcon sx={{ fontSize: 16, color: '#2e7d32' }} />
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.8)' }}>
-                  +12% zum Vormonat
-                </Typography>
-              </Box>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                +12% zum Vormonat
+              </Typography>
             </Paper>
           </Grid>
         </Grid>
@@ -236,14 +237,18 @@ export function KundenmanagementDashboard() {
                             <Chip
                               label={tool.badge}
                               size="small"
-                              sx={{ backgroundColor: '#94C456', color: 'white' }}
+                              sx={{ backgroundColor: theme.palette.primary.main, color: 'white' }}
                             />
                           )}
                         </Box>
                       </Box>
                       <Typography
                         variant="h6"
-                        sx={{ mb: 1, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                        sx={{
+                          mb: 1,
+                          fontFamily: 'Antonio, sans-serif',
+                          color: theme.palette.secondary.main,
+                        }}
                       >
                         {tool.title}
                       </Typography>
@@ -280,11 +285,11 @@ export function KundenmanagementDashboard() {
               >
                 <Typography
                   variant="h6"
-                  sx={{ fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                  sx={{ fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
                 >
                   Top Kunden nach Umsatz
                 </Typography>
-                <Button size="small" sx={{ color: '#94C456' }}>
+                <Button size="small" sx={{ color: theme.palette.primary.main }}>
                   Alle anzeigen →
                 </Button>
               </Box>
@@ -295,12 +300,21 @@ export function KundenmanagementDashboard() {
                       <Box sx={{ display: 'flex', alignItems: 'center', mr: 2 }}>
                         <Typography
                           variant="h6"
-                          sx={{ color: '#94C456', fontWeight: 'bold', minWidth: 20 }}
+                          sx={{
+                            color: theme.palette.primary.main,
+                            fontWeight: 'bold',
+                            minWidth: 20,
+                          }}
                         >
                           {index + 1}
                         </Typography>
                         <StarIcon
-                          sx={{ fontSize: 20, color: index === 0 ? '#FFD700' : '#e0e0e0', ml: 1 }}
+                          sx={{
+                            fontSize: 20,
+                            color:
+                              index === 0 ? theme.palette.primary.main : theme.palette.grey[300],
+                            ml: 1,
+                          }}
                         />
                       </Box>
                       <ListItemText
@@ -309,20 +323,24 @@ export function KundenmanagementDashboard() {
                       />
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                         {customer.trend === 'up' && (
-                          <ArrowUpwardIcon sx={{ fontSize: 16, color: '#94C456' }} />
+                          <ArrowUpwardIcon
+                            sx={{ fontSize: 16, color: theme.palette.primary.main }}
+                          />
                         )}
                         {customer.trend === 'down' && (
-                          <ArrowDownwardIcon sx={{ fontSize: 16, color: '#ef5350' }} />
+                          <ArrowDownwardIcon
+                            sx={{ fontSize: 16, color: theme.palette.error.main }}
+                          />
                         )}
                         <Typography
                           variant="body2"
                           sx={{
                             color:
                               customer.trend === 'up'
-                                ? '#94C456'
+                                ? theme.palette.primary.main
                                 : customer.trend === 'down'
-                                  ? '#ef5350'
-                                  : '#757575',
+                                  ? theme.palette.error.main
+                                  : theme.palette.grey[600],
                             fontWeight: 'medium',
                           }}
                         >
@@ -346,14 +364,21 @@ export function KundenmanagementDashboard() {
             <Paper sx={{ p: 3, mb: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                sx={{
+                  mb: 2,
+                  fontFamily: 'Antonio, sans-serif',
+                  color: theme.palette.secondary.main,
+                }}
               >
                 Quick Stats
               </Typography>
               <Grid container spacing={2}>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h5" sx={{ color: '#94C456', fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+                    >
                       42
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -363,7 +388,10 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h5" sx={{ color: '#004F7B', fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+                    >
                       3.2
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -373,7 +401,10 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Typography variant="h5" sx={{ color: '#FFA726', fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}
+                    >
                       18
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -383,7 +414,10 @@ export function KundenmanagementDashboard() {
                 </Grid>
                 <Grid size={6}>
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
-                    <Typography variant="h5" sx={{ color: '#29B6F6', fontWeight: 'bold' }}>
+                    <Typography
+                      variant="h5"
+                      sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}
+                    >
                       96%
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -398,7 +432,11 @@ export function KundenmanagementDashboard() {
             <Paper sx={{ p: 3 }}>
               <Typography
                 variant="h6"
-                sx={{ mb: 2, fontFamily: 'Antonio, sans-serif', color: '#004F7B' }}
+                sx={{
+                  mb: 2,
+                  fontFamily: 'Antonio, sans-serif',
+                  color: theme.palette.secondary.main,
+                }}
               >
                 Letzte Aktivitäten
               </Typography>
@@ -407,7 +445,14 @@ export function KundenmanagementDashboard() {
                   <ListItem key={index} sx={{ px: 0 }}>
                     <Box sx={{ mr: 2, fontSize: 24 }}>{getActivityIcon(activity.type)}</Box>
                     <ListItemText primary={activity.customer} secondary={activity.time} />
-                    <Avatar sx={{ width: 32, height: 32, fontSize: 12, bgcolor: '#94C456' }}>
+                    <Avatar
+                      sx={{
+                        width: 32,
+                        height: 32,
+                        fontSize: 12,
+                        bgcolor: theme.palette.primary.main,
+                      }}
+                    >
                       {activity.user}
                     </Avatar>
                   </ListItem>
@@ -416,14 +461,18 @@ export function KundenmanagementDashboard() {
               <Button
                 fullWidth
                 variant="outlined"
-                sx={{ mt: 2, borderColor: '#94C456', color: '#94C456' }}
+                sx={{
+                  mt: 2,
+                  borderColor: theme.palette.primary.main,
+                  color: theme.palette.primary.main,
+                }}
               >
                 Alle Aktivitäten
               </Button>
             </Paper>
           </Grid>
         </Grid>
-      </Container>
+      </Box>
     </MainLayoutV2>
   );
 }

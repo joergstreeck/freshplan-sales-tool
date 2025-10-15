@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Grid } from '@mui/material';
+import { Grid, useTheme } from '@mui/material';
 import {
   Box,
   Paper,
@@ -54,6 +54,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 };
 
 export const AuditAdminPage: React.FC = () => {
+  const theme = useTheme();
   const [currentTab, setCurrentTab] = useState(0);
   const [dateRange, setDateRange] = useState({
     from: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
@@ -93,7 +94,7 @@ export const AuditAdminPage: React.FC = () => {
   };
 
   return (
-    <MainLayoutV2>
+    <MainLayoutV2 maxWidth="full">
       <Box>
         {/* Header */}
         <Paper sx={{ p: 2, mb: 3 }}>
@@ -105,19 +106,14 @@ export const AuditAdminPage: React.FC = () => {
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  fontFamily: 'Antonio, sans-serif',
                   fontWeight: 'bold',
                 }}
               >
-                <SecurityIcon sx={{ mr: 2, color: '#004F7B', fontSize: 32 }} />
+                <SecurityIcon sx={{ mr: 2, color: theme.palette.secondary.main, fontSize: 32 }} />
                 Audit Dashboard
               </Typography>
-              <Typography
-                variant="subtitle1"
-                color="text.secondary"
-                sx={{ fontFamily: 'Poppins, sans-serif' }}
-              >
-                Compliance Monitoring & Security Analysis
+              <Typography variant="subtitle1" color="text.secondary">
+                Compliance-Überwachung & Sicherheitsanalyse
               </Typography>
             </Grid>
 
@@ -143,7 +139,7 @@ export const AuditAdminPage: React.FC = () => {
                 <Tooltip title={autoRefresh ? 'Auto-Refresh aktiv' : 'Auto-Refresh inaktiv'}>
                   <IconButton
                     onClick={() => setAutoRefresh(!autoRefresh)}
-                    sx={{ color: autoRefresh ? '#94C456' : 'inherit' }}
+                    sx={{ color: autoRefresh ? theme.palette.primary.main : 'inherit' }}
                   >
                     <RefreshIcon />
                   </IconButton>
@@ -211,7 +207,6 @@ export const AuditAdminPage: React.FC = () => {
               borderBottom: 1,
               borderColor: 'divider',
               '& .MuiTab-root': {
-                fontFamily: 'Poppins, sans-serif',
                 fontWeight: 500,
               },
             }}
@@ -268,7 +263,7 @@ export const AuditAdminPage: React.FC = () => {
             <TabPanel value={currentTab} index={2}>
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>
-                  <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+                  <Typography variant="h5" gutterBottom>
                     Kritische Ereignisse
                   </Typography>
                   {criticalEvents && criticalEvents.length > 0 ? (
