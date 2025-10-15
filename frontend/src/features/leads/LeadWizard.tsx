@@ -257,7 +257,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
         console.log('✅ Contact created'); // DEBUG
       }
 
-      // Reset & Close
+      // Reset form and close dialog after successful creation
       setFormData({
         companyName: '',
         city: '',
