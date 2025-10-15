@@ -174,18 +174,21 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
    - Status: ✅ COMPLETE - PR #139 MERGED (14.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (NEU 14.10.2025)
-   - **Migration:** MainLayoutV2 → SmartLayout (23 Seiten)
-   - **Problem:** Zwei parallele Layout-Systeme, 1536px Limit verschwendet Platz
-   - **Lösung:** Intelligente Breiten-Anpassung (Tabellen=100%, Formulare=800px, Dashboards=100%)
-   - **Phase 1:** Vorbereitung (0.5 Tage) - SmartLayout Review, Test-Strategie, Seiten-Inventar
-   - **Phase 2:** Migration (2 Tage) - 4 Batches (Tabellen, Formulare, Dashboards, Sonstige)
-   - **Phase 3:** Testing (1 Tag) - Visual Regression, Responsive, UAT, Performance
-   - **Phase 4:** Cleanup (0.5 Tage) - MainLayoutV2 deprecaten, Dokumentation
-   - **Business Impact:** +30-50% mehr Spalten sichtbar, bessere Lesbarkeit, 4K-Monitore optimal genutzt
-   - **Risiko:** LOW (SmartLayout existiert, getestet, keine Breaking Changes)
-   - **Aufwand:** 2-4 Tage (69 Zeilen Code-Änderungen)
-   - Status: 📋 PLANNING (Start: 15.10.2025)
+✅ TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (✅ COMPLETE - 15.10.2025)
+   - **Kontext:** Komplette Frontend-Design-Migration zum FreshFoodz CI V2 Design System
+   - **Design Compliance:** 97 Violations behoben (47 Font + 45 Color + 5 Language)
+     - Font: Hardcoded fontFamily entfernt → MUI Theme (Antonio Bold h1-h6, Poppins body)
+     - Color: Hardcoded colors/rgba → theme.palette.* + alpha() helper
+     - Language: Englisch → Deutsch (100% "Sie"-Form)
+   - **FreshFoodz CI V2:** Primary #94C456 (Grün) + Secondary #004F7B (Blau) - Nur Theme-Farben
+   - **Layout System:** MainLayoutV2 maxWidth prop hinzugefügt (default: 'xl')
+   - **Bug-Fixes:** 8 kritische Bugs (LazyInitializationException, CustomerLocation JSON, Auth Role Normalization, ProtectedRoute Error-Wrapping)
+   - **Test Infrastructure:** LeadWizard 18/18 Tests GREEN (100%), Database Isolation mit vi.mock(), 40% schneller
+   - **Migrations:** V90004 (DEV-SEED 5 Users), V90005+V10029 (CustomerLocation JSON fix)
+   - **CI Fixes:** 2 zusätzliche Commits (Backend Spotless + Frontend Lint + Prettier)
+   - **Metriken:** 28 Seiten, 69 Dateien, +4.053/-2.219 LOC
+   - **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
+   - Status: ✅ MERGED TO MAIN (15.10.2025)
 
 📋 TRIGGER_SPRINT_2_1_7_1.md - Opportunities UI Integration (NEU 13.10.2025)
    - **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog + Button)
