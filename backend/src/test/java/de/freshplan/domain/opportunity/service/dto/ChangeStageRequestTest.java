@@ -212,15 +212,15 @@ class ChangeStageRequestTest {
   @Test
   @DisplayName("Should handle all OpportunityStage enum values")
   void validation_withAllStageValues_shouldPass() {
-    // Test all valid stage transitions
+    // Test all valid stage transitions (7 stages after RENEWAL removal)
     OpportunityStage[] stages = {
       OpportunityStage.NEW_LEAD,
       OpportunityStage.QUALIFICATION,
+      OpportunityStage.NEEDS_ANALYSIS,
       OpportunityStage.PROPOSAL,
       OpportunityStage.NEGOTIATION,
       OpportunityStage.CLOSED_WON,
-      OpportunityStage.CLOSED_LOST,
-      OpportunityStage.RENEWAL
+      OpportunityStage.CLOSED_LOST
     };
 
     for (OpportunityStage stage : stages) {
@@ -314,10 +314,10 @@ class ChangeStageRequestTest {
   void builder_withOnlyRequiredField_shouldWork() {
     // When
     ChangeStageRequest request =
-        ChangeStageRequest.builder().stage(OpportunityStage.RENEWAL).build();
+        ChangeStageRequest.builder().stage(OpportunityStage.QUALIFICATION).build();
 
     // Then
-    assertThat(request.getStage()).isEqualTo(OpportunityStage.RENEWAL);
+    assertThat(request.getStage()).isEqualTo(OpportunityStage.QUALIFICATION);
     assertThat(request.getCustomProbability()).isNull();
     assertThat(request.getReason()).isNull();
   }
