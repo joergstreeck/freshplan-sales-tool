@@ -29,8 +29,6 @@ export enum OpportunityStage {
   CLOSED_WON = 'CLOSED_WON',
   /** Verloren */
   CLOSED_LOST = 'CLOSED_LOST',
-  /** Vertragsverlängerung */
-  RENEWAL = 'RENEWAL',
 }
 
 /**
@@ -56,12 +54,20 @@ export interface IOpportunity {
   readonly expectedCloseDate?: string;
   /** Current stage in sales pipeline */
   readonly stage: OpportunityStage;
+  /** Stage display name (denormalized from OpportunityStage) */
+  readonly stageDisplayName?: string;
+  /** Stage color hex code (Sprint 2.1.7.1 - Dynamic border color) */
+  readonly stageColor?: string;
   /** Timestamp when stage was last changed */
   readonly stageChangedAt: string;
   /** Customer reference */
   readonly customerId?: string;
   /** Customer display name (denormalized for performance) */
   readonly customerName?: string;
+  /** Lead reference (Sprint 2.1.7.1 - Lead-Origin Traceability) */
+  readonly leadId?: number;
+  /** Lead company name (Sprint 2.1.7.1 - Fallback when no customer) */
+  readonly leadCompanyName?: string;
   /** Assigned sales representative ID */
   readonly assignedToId: string;
   /** Assigned sales representative name (denormalized) */

@@ -31,12 +31,18 @@ export interface Opportunity {
   name: string;
   /** Current pipeline stage */
   stage: OpportunityStage;
+  /** Stage color hex code (Sprint 2.1.7.1) */
+  stageColor?: string;
   /** Monetary value in EUR */
   value?: number;
   /** Win probability percentage (0-100) */
   probability?: number;
   /** Customer company name */
   customerName?: string;
+  /** Lead reference (Sprint 2.1.7.1 - Lead-Origin Traceability) */
+  leadId?: number;
+  /** Lead company name (Sprint 2.1.7.1 - Fallback when no customer) */
+  leadCompanyName?: string;
   /** Assigned sales person name */
   assignedToName?: string;
   /** Expected close date ISO string */
