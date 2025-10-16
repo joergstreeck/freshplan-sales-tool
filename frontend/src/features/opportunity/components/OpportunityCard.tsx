@@ -1,11 +1,12 @@
 import React, { useCallback, useMemo } from 'react';
-import { Card, CardContent, Typography, Box, Avatar, LinearProgress, Tooltip } from '@mui/material';
+import { Card, CardContent, Typography, Box, Avatar, LinearProgress, Tooltip, Chip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDraggable } from '@dnd-kit/core';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import PersonIcon from '@mui/icons-material/Person';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import type { Opportunity } from '../types';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
@@ -139,7 +140,9 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                 transform: 'translateY(-2px)',
               }
             : {},
-          border: '1px solid rgba(148, 196, 86, 0.2)',
+          border: opportunity.stageColor
+            ? `1px solid ${opportunity.stageColor}40` // 40 = 25% opacity in hex
+            : '1px solid rgba(148, 196, 86, 0.2)', // Fallback: FreshFoodz Green
           borderRadius: 2,
           position: 'relative',
           bgcolor: 'background.paper',
@@ -199,9 +202,10 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
             {opportunity.name}
           </Typography>
 
-          {/* Customer */}
-          {opportunity.customerName && (
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+          {/* Customer / Lead Badge (Sprint 2.1.7.1 - Customer Fallback + Lead Badge) */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+            {/* Customer Name oder Lead Fallback */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
               <Typography
                 variant="body2"
@@ -210,10 +214,30 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                   fontSize: '0.875rem',
                 }}
               >
-                {opportunity.customerName}
+                {opportunity.customerName || opportunity.leadCompanyName || 'Potenzieller Kunde'}
               </Typography>
             </Box>
-          )}
+
+            {/* Lead-Origin Badge (wenn von Lead konvertiert) */}
+            {opportunity.leadId && (
+              <Chip
+                icon={<TrendingUpIcon sx={{ fontSize: '0.875rem' }} />}
+                label={`von Lead #${opportunity.leadId}`}
+                size="small"
+                sx={{
+                  height: '20px',
+                  fontSize: '0.75rem',
+                  bgcolor: 'rgba(148, 196, 86, 0.15)', // FreshFoodz Green 15% opacity
+                  color: '#004F7B', // FreshFoodz Blue
+                  fontWeight: 500,
+                  '& .MuiChip-icon': {
+                    color: '#94C456', // FreshFoodz Green
+                  },
+                  border: '1px solid rgba(148, 196, 86, 0.3)',
+                }}
+              />
+            )}
+          </Box>
 
           {/* Value */}
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
