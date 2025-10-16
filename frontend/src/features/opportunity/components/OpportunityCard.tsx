@@ -11,7 +11,7 @@ import type { Opportunity } from '../types';
 import { logger } from '../../../lib/logger';
 import { useErrorHandler } from '../../../components/ErrorBoundary';
 
-// Component logger instance
+// Component logger instance (Sprint 2.1.7.1 - Lead-Traceability UI)
 const componentLogger = logger.child('OpportunityCard');
 
 /**

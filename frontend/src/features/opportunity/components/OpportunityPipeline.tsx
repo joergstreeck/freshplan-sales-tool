@@ -8,7 +8,7 @@ import { httpClient } from '../../../lib/apiClient';
 // Import unserer neuen Komponenten
 import { PipelineStage, OpportunityStage } from './PipelineStage';
 import { OpportunityCard } from './OpportunityCard';
-import type { Opportunity } from './OpportunityCard';
+import type { Opportunity } from '../types';
 
 // Mock-Daten entfernt - OpportunityPipeline nutzt jetzt ausschließlich echte API-Daten
 
@@ -48,6 +48,7 @@ export const OpportunityPipeline: React.FC = () => {
           stageColor: opp.stageColor ?? undefined,
         }));
 
+        console.log('[Sprint 2.1.7.1 DEBUG] API Opportunities:', apiOpportunities.slice(0, 2));
         setOpportunities(apiOpportunities);
         setError(null);
       } catch {
@@ -202,7 +203,7 @@ export const OpportunityPipeline: React.FC = () => {
           Verkaufschancen Pipeline
         </Typography>
         <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
-          Verwalten Sie Ihre Verkaufschancen in einem übersichtlichen Kanban-Board
+          Verwalten Sie Ihre Verkaufschancen in einem übersichtlichen Kanban-Board (Sprint 2.1.7.1)
         </Typography>
       </Box>
 
