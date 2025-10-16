@@ -1,12 +1,12 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-14
+**📅 Letzte Aktualisierung:** 2025-10-16
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** Thematisch strukturiert - Strategie → Architektur → Implementation → Codebase
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
 **⚠️ Codebase-Validierung Disclaimer:**
-Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Sprint 2.1.7.0, 14.10.2025).
+Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 16.10.2025).
 **Single Source of Truth für Migrations:** `/docs/planung/MIGRATIONS.md` (wird aktiv gepflegt!)
 **Immer gegen Codebase validieren** wenn konkrete LOC-Zahlen oder Feature-Status kritisch sind!
 
@@ -37,9 +37,10 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **NIEMALS Nummern hardcoden!** `./scripts/get-next-migration.sh` nutzen!
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
-### Latest Sprint
-- **Sprint 2.1.7.0 (14.10.2025):** Design System Migration + CRM_AI_CONTEXT Restructure ✅ COMPLETE
-- **Sprint 2.1.7 (14.10.2025):** ActivityOutcome Enum + Opportunity Backend + Customer Number Sequence ✅ COMPLETE
+### Latest Implementation
+- **Design System (15.10.2025):** FreshFoodz CI V2 Migration ✅ COMPLETE
+- **Opportunity Backend (14.10.2025):** Lead→Opportunity→Customer Workflows ✅ COMPLETE
+- **Xentral-Integration:** ERP-Integration für Umsatz + Zahlungsverhalten geplant
 
 ---
 
@@ -72,7 +73,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **Wichtige fehlende Features, die neue KIs kennen sollten:**
 
 ### Frontend-UI Gaps
-- ❌ **Opportunities Frontend UI** - Backend V10026 ready (lead_id/customer_id FKs), UI fehlt komplett
+- 🔶 **Opportunities Frontend UI** - Backend V10026 ready ✅, UI geplant (Lead→Opportunity, Opportunity→Customer, RENEWAL-Workflow)
 - ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant, nicht implementiert)
 
 ### Layout & Design
@@ -154,8 +155,9 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **CURRENT STATUS:**
 - 📊 **Tests:** Backend Tests GREEN (100% Coverage), Frontend Tests GREEN
 - 📦 **Migrations:** Production Migrations deployed → **Details:** `/docs/planung/MIGRATIONS.md`
-- 🚀 **Latest:** Sprint 2.1.7.0 (Design System Migration) ✅ COMPLETE (14.10.2025)
-- 🚀 **Previous:** Sprint 2.1.7 (ActivityOutcome + Opportunity Backend) ✅ COMPLETE (14.10.2025)
+- 🚀 **Backend:** Lead-Management + Opportunity-Workflows operational ✅
+- 🚀 **Frontend:** Design System V2 deployed, Opportunities UI in Planning 🔶
+- 📋 **Next:** Opportunities Frontend UI + Xentral-ERP-Integration
 
 ---
 
@@ -218,11 +220,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
   - Nach CLOSED_WON → Customer (ongoing relationship)
   - Orders laufen über ERP-System (Xentral)
 - **RENEWAL-Opportunities für Bestandskunden:**
-  - opportunityType field (NEU in Sprint 2.1.7.3)
+  - opportunityType field differenziert zwischen "New Business" und "Renewal"
   - Upsell/Cross-sell für bestehende Kunden
-  - Stage starts at NEEDS_ANALYSIS (skip NEW_LEAD)
+  - Customer-Opportunities starten bei NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
 - **Pipeline-Stages:** 7 Stages (NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST)
-- **RENEWAL-Stage ENTFERNT:** Migration V10033 (RENEWAL → opportunityType field)
+  - RENEWAL als separate Stage wurde durch opportunityType ersetzt (Migration V10033)
 
 **Customer-Relationship-Management:**
 - Multi-Location-Kunden mit verschiedenen Standorten
@@ -272,11 +274,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Idempotency Service (24h TTL, SHA-256) ✅
 - Bestandsleads-Migration APIs ✅
 
-**Frontend: 🟡 85% IMPLEMENTED**
+**Frontend: 🟡 IN PROGRESS**
 - Lead List + Create Dialog ✅
 - ActivityDialog (14 Tests GREEN) ✅
 - Lead Scoring UI ✅
-- **Opportunities UI ❌ FEHLT!** (Backend V10026 ready, UI pending)
+- **Opportunities UI 🔶 IN PLANNING** (Backend V10026 ready ✅)
 - Progressive Profiling ⏳ (geplant)
 
 **Tests & Qualität:**
@@ -292,8 +294,8 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - N+1 Query optimiert
 - Score Caching aktiv
 
-**Gap-Status:** Backend complete, Frontend 85% (Opportunities UI fehlt)
-**Next:** Sprint 2.1.7.1 - Opportunities Frontend UI Integration
+**Gap-Status:** Backend complete ✅, Frontend Opportunities UI in Planning
+**Next:** Opportunities Frontend UI Integration
 
 **PRs:** #103, #105, #110, #111, #122, #123, #131, #132, #133, #134, #135, #137, #139
 **Migrations:** Production + DEV-SEED deployed → **Details:** `/docs/planung/MIGRATIONS.md`
@@ -439,14 +441,19 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 5. **Ongoing Business:** Customer bestellt über Xentral ERP-System
    - Provision: Akquise-Provision (einmalig) + Bestandspflege-Provision (laufend)
    - Provision-Berechnung: Basiert auf Zahlungseingang (NICHT Rechnungsstellung!)
-6. **Upsell/Cross-sell:** RENEWAL-Opportunity für Bestandskunden (Sprint 2.1.7.3)
-   - opportunityType = "Renewal" (nicht "New Business")
-   - Stage starts at NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
+6. **Upsell/Cross-sell:** RENEWAL-Opportunity für Bestandskunden
+   - opportunityType = "Renewal" (statt "New Business")
+   - Stage startet bei NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
 
-#### Flow 2: Lead → Sample → Trial → Order
-1. Lead QUALIFIED → SampleBox konfiguriert → `sample.status.changed=SHIPPED`
-2. DELIVERY → Trial 2-4 Wochen, Feedback protokolliert → ROI aktualisiert
-3. Erfolgreiche Produkte → Order an ERP, Pipeline auf CONVERTED
+#### Flow 2: Customer Churn-Prevention (Xentral-Integration)
+1. **Churn-Alarm:** Customer letzte Bestellung vor X Tagen (X = churnAlertDays, default 30)
+2. **Verkäufer-Aktion:** Churn-Alarm erscheint im Dashboard → Verkäufer kontaktiert Kunden
+3. **RENEWAL-Opportunity:** Verkäufer erstellt neue Opportunity (opportunityType = "Renewal")
+   - Stage: NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
+   - Ziel: Upsell/Cross-sell/Reaktivierung
+4. **Xentral-Dashboard überwacht:** Umsatz-Trend (GROWING/STABLE/DECLINING)
+   - DECLINING → Frühwarnung an Verkäufer
+   - Zahlungsverhalten PROBLEMATIC → Innendienst informieren
 
 #### Flow 3: Lead-Protection Reminder
 1. T+60 ohne Aktivität → Reminder (Activity-Kinds: QUALIFIED_CALL, ROI_PRESENTATION, SAMPLE_FEEDBACK zählen)
