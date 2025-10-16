@@ -211,11 +211,29 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - T+3 Sample-Follow-up + T+7 Bulk-Order-Automation (SLA-Engine)
 - ROI-Calculator für Business-Value-Demonstration
 
+**Opportunity-Management (B2B-Food CRM Pattern):**
+- **Lead → Opportunity → Customer Workflow** (V10026 Backend ready, UI in Sprint 2.1.7.1-3)
+- **Opportunity = Customer Acquisition** (NICHT einzelne Orders!)
+  - Im B2B-Food-Geschäft: Opportunities = Neukunden gewinnen
+  - Nach CLOSED_WON → Customer (ongoing relationship)
+  - Orders laufen über ERP-System (Xentral)
+- **RENEWAL-Opportunities für Bestandskunden:**
+  - opportunityType field (NEU in Sprint 2.1.7.3)
+  - Upsell/Cross-sell für bestehende Kunden
+  - Stage starts at NEEDS_ANALYSIS (skip NEW_LEAD)
+- **Pipeline-Stages:** 7 Stages (NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST)
+- **RENEWAL-Stage ENTFERNT:** Migration V10033 (RENEWAL → opportunityType field)
+
 **Customer-Relationship-Management:**
 - Multi-Location-Kunden mit verschiedenen Standorten
 - CHEF/BUYER parallele Kommunikation + Workflow-Management
 - Seasonal Campaign-Management (Spargel/Oktoberfest/Weihnachten)
 - Sample-Management + Feedback-Integration
+- **Xentral-ERP-Integration** (FC-005 + FC-009 dokumentiert):
+  - Umsatz-Dashboard (30/90/365 Tage Rechnungsdaten)
+  - Zahlungsverhalten-Monitoring (Ampel-System)
+  - Churn-Alarm (variable Threshold pro Kunde: 7-90 Tage)
+  - Provision-Modell: Akquise + Bestandspflege (basiert auf Zahlungseingang, nicht Rechnungsstellung)
 
 **Business-Intelligence + Performance:**
 - Real-time Business-KPIs + Territory-Performance (Hot-Projections)
@@ -404,12 +422,33 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 ### 🔄 Ende-zu-Ende Business-Flows
 
-#### Flow 1: Lead → Sample → Trial → Order
+#### Flow 1: Lead → Opportunity → Customer (B2B-Food Standard-Workflow)
+1. **Lead-Phase:** Lead QUALIFIED → Multi-Contact dokumentiert (CHEF + BUYER)
+2. **Opportunity erstellen:** Lead → Opportunity konvertieren (V10026 Backend)
+   - Lead.status = CONVERTED (automatisch gesetzt)
+   - Opportunity.lead_id = original Lead ID (traceability)
+   - Pipeline-Stage: NEW_LEAD → QUALIFICATION → NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION
+3. **Customer-Akquise:** Opportunity CLOSED_WON → Customer erstellen (Sprint 2.1.7.2)
+   - Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!)
+   - Customer.original_lead_id = Lead ID (full traceability)
+   - Optional: Xentral-Verknüpfung sofort oder später
+4. **Xentral-Dashboard:** Customer mit Xentral-Verknüpfung zeigt Live-Daten
+   - Umsatz: 30/90/365 Tage (Rechnungsdaten)
+   - Zahlungsverhalten: Ampel (EXCELLENT/GOOD/ACCEPTABLE/PROBLEMATIC)
+   - Churn-Alarm: Tage seit letzter Bestellung (variable Threshold 7-90 Tage)
+5. **Ongoing Business:** Customer bestellt über Xentral ERP-System
+   - Provision: Akquise-Provision (einmalig) + Bestandspflege-Provision (laufend)
+   - Provision-Berechnung: Basiert auf Zahlungseingang (NICHT Rechnungsstellung!)
+6. **Upsell/Cross-sell:** RENEWAL-Opportunity für Bestandskunden (Sprint 2.1.7.3)
+   - opportunityType = "Renewal" (nicht "New Business")
+   - Stage starts at NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
+
+#### Flow 2: Lead → Sample → Trial → Order
 1. Lead QUALIFIED → SampleBox konfiguriert → `sample.status.changed=SHIPPED`
 2. DELIVERY → Trial 2-4 Wochen, Feedback protokolliert → ROI aktualisiert
 3. Erfolgreiche Produkte → Order an ERP, Pipeline auf CONVERTED
 
-#### Flow 2: Lead-Protection Reminder
+#### Flow 3: Lead-Protection Reminder
 1. T+60 ohne Aktivität → Reminder (Activity-Kinds: QUALIFIED_CALL, ROI_PRESENTATION, SAMPLE_FEEDBACK zählen)
 2. T+10 Grace → bei keiner Aktivität → Schutz erlischt automatisch
 3. Stop-the-Clock bei FreshFoodz-Gründen (Hold gesetzt, kumulative Pause-Tracking)

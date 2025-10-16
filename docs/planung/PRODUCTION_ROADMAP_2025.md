@@ -12,10 +12,10 @@
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (85% complete)
 - **Current Sprint:** ✅ Sprint 2.1.7.0 - MERGED TO MAIN (15.10.2025) - **Design System Migration (FreshFoodz CI V2)**
-- **Next Sprint:** 📋 Sprint 2.1.7.1 - READY (Start: TBD) - **Opportunities UI Integration**
-- **Active Branch:** main (Sprint 2.1.7.0 merged via PR #140)
+- **Next Sprint:** 📋 Sprint 2.1.7.1 - READY (Start: 16.10.2025) - **Lead → Opportunity UI (FOKUSSIERT - 17h, 2 Tage)**
+- **Active Branch:** main (Sprint 2.1.7.0 merged via PR #140, 2 commits ahead unpushed)
 - **Progress:** 23/36 PRs completed - 64% done
-- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.0 MERGED, Ready for 2.1.7.1**
+- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.1-4 geplant, Ready for Kickoff**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Opportunity Backend Integration COMPLETE (13.10.2025)** - V10026 + OpportunityService + 3 REST APIs + V90003 DEV-SEED (10 Opportunities)
@@ -41,9 +41,13 @@
   - ✅ **CI Status:** 50 commits, 3 weeks development, 125 files changed (+17.930/-1.826 LOC)
   - ✅ **MERGE:** 2025-10-12T01:43:11Z (Admin-Rechte, squash merge, commit c4c61de92)
 - **Next Action:**
-  1. **PRIORITÄT 1:** Sprint 2.1.7.1 starten (Opportunities UI Integration - 16-24h)
-  2. **PRIORITÄT 2:** MSW Test Migration (32 geskippte Tests konvertieren - 2-3h)
-  3. **PRIORITÄT 3:** Sprint 2.1.8 planen (Team Management & Test Infrastructure) ODER Sprint 2.2 (Kundenmanagement)
+  1. **PRIORITÄT 1:** Sprint 2.1.7.1 starten (Lead → Opportunity UI - 17h, 2 Tage, FOKUSSIERT!)
+     - Feature-Branch: `git checkout -b feature/sprint-2-1-7-1-lead-opportunity`
+     - Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10030/V90006)
+  2. **PRIORITÄT 2:** Sprint 2.1.7.2 nach 2.1.7.1 (Customer + Xentral - 18h, 2-3 Tage)
+     - KRITISCH: Xentral-API testen BEVOR Start!
+  3. **PRIORITÄT 3:** Sprint 2.1.7.3 nach 2.1.7.2 (RENEWAL-Workflow - 8h, 1 Tag)
+  4. **DEFERRED:** Sprint 2.1.7.4 (Advanced Filters - YAGNI bis echte Daten vorhanden)
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -254,13 +258,55 @@ Sprint 2.1.7.0: Design System Migration ✅ MERGED TO MAIN (15.10.2025) - **Fres
                                       → **Dokumentation:** [SPRINT_2_1_7_0_COMPLETE_SUMMARY.md](claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md)
                                       → **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
 
-Sprint 2.1.7.1: Opportunities UI     📋 PLANNING (14.10.2025) - Aufwand: 16-24h (2-3 Tage)
-                                      → **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog, Lead Detail Integration, LeadOpportunitiesList)
-                                      → **Phase 2:** Kanban Board Enhancements (Filter: Nur offene/Alle/Archiv, Backend Endpoint /api/opportunities?status=active)
-                                      → **Phase 3:** Customer → Opportunity UI (Customer Detail Integration, CustomerOpportunitiesList, Conversion Button)
-                                      → **Phase 4:** Testing & Polish (Unit Tests, E2E Tests mit Playwright, UI/UX Polish)
-                                      → **Prerequisites:** ✅ Sprint 2.1.7 Backend complete, ✅ V10026 + V90003 deployed
+Sprint 2.1.7.1: Lead → Opportunity UI 📋 PLANNING (16.10.2025) - Aufwand: 17h (2 Tage, FOKUSSIERT!)
+                                      → **SCOPE:** NUR Lead → Opportunity Workflow (Customer-Features in 2.1.7.2+3!)
+                                      → **Phase 1:** CreateOpportunityDialog mit Lead-Context-Prop-Pattern (6h)
+                                      → **Phase 2:** Kanban Backend-Filter (status: active/closed/all, assignedTo) (4h)
+                                      → **Phase 3:** Drag & Drop Fix (transformOrigin Bug - 3-stufige Lösung: PointerSensor + scale statt rotate) (3h)
+                                      → **Phase 4:** E2E Tests mit Playwright (18 Tests) (4h)
+                                      → **ENTFERNT:** Customer → Opportunity (→ Sprint 2.1.7.3), Opportunity → Customer (→ Sprint 2.1.7.2)
+                                      → **Migrations:** Keine (nur UI + Backend-Filter)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.0 COMPLETE, ✅ V10026 deployed, ✅ V90003 DEV-SEED
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_1.md](TRIGGER_SPRINT_2_1_7_1.md)
+
+Sprint 2.1.7.2: Customer + Xentral   📋 PLANNING (16.10.2025) - Aufwand: 18h (2-3 Tage)
+                                      → **SCOPE:** Opportunity → Customer + Xentral-Dashboard ZUSAMMEN (Dashboard ohne Daten wäre wertlos!)
+                                      → **Phase 1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!) (5h)
+                                      → **Phase 2:** XentralApiClient (GET /customers, GET /invoices/{customerId}, GET /payments/{customerId}) (4h)
+                                      → **Phase 3:** Customer-Dashboard (2 KPIs: Umsatz + Zahlungsverhalten GETRENNT!) (6h)
+                                      → **Phase 4:** Churn-Alarm (variable Threshold 7/14/30/45/60/90 Tage - customer-specific) (3h)
+                                      → **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days DEFAULT 30)
+                                      → **Tests:** 12 Backend (XentralApiClient) + 8 Frontend (Dashboard) = 20 Tests
+                                      → **KRITISCH:** Xentral-API testen BEVOR Start! (Sales-Rep Mapping validieren)
+                                      → **API-Referenz:** [FC-005 Xentral Integration](features-neu/08_administration/phase-2-integrations/analyse/03_XENTRAL_ALLIANZ_INTEGRATION_FINDINGS.md)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.1 COMPLETE, ✅ Xentral Sales-Rep Mapping geklärt
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_2.md](TRIGGER_SPRINT_2_1_7_2.md)
+
+Sprint 2.1.7.3: RENEWAL-Workflow     📋 PLANNING (16.10.2025) - Aufwand: 8h (1 Tag)
+                                      → **SCOPE:** Bestandskunden-Opportunities (Upsell/Cross-sell für Ongoing Business)
+                                      → **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage) (2h)
+                                      → **Phase 2:** CreateOpportunityForCustomerDialog (stage: NEEDS_ANALYSIS, skip NEW_LEAD) (2h)
+                                      → **Phase 3:** CustomerOpportunitiesList (gruppiert: Offen/Gewonnen/Verloren) (2h)
+                                      → **Phase 4:** RENEWAL-Stage ENTFERNEN (Migration V10033: RENEWAL → NEEDS_ANALYSIS + opportunityType field) (2h)
+                                      → **ARCHITEKTUR:** RENEWAL wird opportunityType (NICHT stage) - Customer-Opportunities starten bei NEEDS_ANALYSIS
+                                      → **Migration:** V10033 (migrate existing RENEWAL stages + add opportunityType column)
+                                      → **Tests:** 6 Backend + 4 Frontend = 10 Tests
+                                      → **Business Context:** B2B-Food CRM = Ongoing Relationships (nicht Single Sales), Provision = Akquise + Bestandspflege
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.2 COMPLETE
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_3.md](TRIGGER_SPRINT_2_1_7_3.md)
+
+Sprint 2.1.7.4: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h (wenn benötigt)
+                                      → **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
+                                      → **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate) (4h)
+                                      → **Phase 2:** Advanced Search Dialog (Multi-Criteria: Stage+Owner+DateRange+Value) (4h)
+                                      → **Phase 3:** Pipeline-Analytics Dashboard (Conversion Rates, Avg Deal Size, Sales Velocity) (3h)
+                                      → **Phase 4:** Custom Views speichern (User-Preferences) (2h)
+                                      → **KRITISCHE ENTSCHEIDUNG:** ⚠️ NICHT JETZT! YAGNI-Prinzip (You Ain't Gonna Need It)
+                                      → **Begründung:** Keine echten Daten vorhanden - Filter-Bedarf unklar - erst nach Go-Live mit 100 realen Leads bauen
+                                      → **Migrations:** Keine (nur Frontend-State)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.1-3 COMPLETE, ✅ Go-Live mit realen Daten, ✅ User-Feedback zu Filter-Bedarf
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_4.md](TRIGGER_SPRINT_2_1_7_4.md)
+                                      → **Status:** NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
 Sprint 2.1.8: Team Mgmt & Test Infra 📅 VERSCHOBEN (19-25.10.2025) - VORMALS Sprint 2.1.7
                                       → **Track 1 - Business (verschoben aus 2.1.6):**

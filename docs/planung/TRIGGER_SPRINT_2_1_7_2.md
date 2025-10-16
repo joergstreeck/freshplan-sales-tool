@@ -31,10 +31,16 @@
 ### **Technical Context**
 
 **Xentral-Integration ist FERTIG dokumentiert (Modul 08):**
-- ✅ FC-005: Invoice/Payment APIs dokumentiert
-- ✅ FC-009: Contract APIs dokumentiert
+- ✅ **[FC-005: Xentral Invoice/Payment APIs](../features-neu/08_administration/phase-2-integrations/analyse/03_XENTRAL_ALLIANZ_INTEGRATION_FINDINGS.md)** (840 Zeilen Doku!)
+  - Invoice API: GET /api/v1/invoices?customerId={id}
+  - Payment Summary API: GET /api/v1/customers/{id}/payment-summary
+  - Customer List API: GET /api/v1/customers?salesRepId={id}
+  - Event-Payloads: invoice.created, payment.received, payment.overdue
+- ✅ **[FC-009: Xentral Contract Management APIs](../features-neu/08_administration/phase-2-integrations/artefakte/xentral-contract-api.md)** (311 Zeilen Doku!)
+  - Contract Status Change Events
+  - Price Index Threshold Events
 - ✅ Xentral läuft BEREITS (Production-Ready)
-- ✅ Event-Payloads spezifiziert (840 Zeilen Doku!)
+- ✅ Sales-Rep Mapping: Dokumentiert in FC-005 (Zeilen 127-189)
 
 **Backend existiert bereits:**
 - ✅ V261: `customers.original_lead_id` (Lead → Customer Traceability)
