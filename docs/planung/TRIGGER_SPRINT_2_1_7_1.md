@@ -47,6 +47,38 @@ Vertriebler können:
 
 ---
 
+## ⚠️ WICHTIG: Backend-Vorbereitung (VOR Sprint-Start!)
+
+### **OpportunityStage Enum: RENEWAL entfernen**
+
+**KRITISCH:** RENEWAL-Stage muss VOR Frontend-Development entfernt werden!
+
+**Backend-Cleanup:**
+```java
+// backend/src/main/java/de/freshplan/domain/opportunity/entity/OpportunityStage.java
+public enum OpportunityStage {
+    NEW_LEAD("Neuer Lead", "#ff9800", 10),
+    QUALIFICATION("Qualifizierung", "#2196f3", 25),
+    NEEDS_ANALYSIS("Bedarfsanalyse", "#009688", 40),
+    PROPOSAL("Angebotserstellung", "#94c456", 60),
+    NEGOTIATION("Verhandlung", "#4caf50", 80),
+    CLOSED_WON("Gewonnen", "#4caf50", 100),
+    CLOSED_LOST("Verloren", "#f44336", 0);
+    // RENEWAL entfernt! ❌ (wird durch opportunityType ersetzt)
+}
+```
+
+**Migration (wenn RENEWAL-Daten existieren):**
+```bash
+# Nur FALLS bereits RENEWAL-Stage Daten im System sind:
+MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+# Erstelle Migration zum Migrieren von RENEWAL → NEEDS_ANALYSIS
+```
+
+**Hinweis:** RENEWAL-Workflow kommt in Sprint 2.1.7.3 als `opportunityType` Feld zurück!
+
+---
+
 ## 📦 DELIVERABLES
 
 ### **1. CreateOpportunityDialog Component** (3h)
@@ -592,11 +624,11 @@ Test Case 1: Lead → Opportunity Flow
 
 Test Case 2: Filter Functionality
 1. Open OpportunityPipeline
-2. Default: "Aktive" selected (nur 5 Stages sichtbar)
+2. Default: "Aktive" selected (nur 5 Stages sichtbar: NEW_LEAD bis NEGOTIATION)
 3. Click "Geschlossene"
 4. Verify: Nur CLOSED_WON + CLOSED_LOST sichtbar
 5. Click "Alle"
-6. Verify: Alle 8 Stages sichtbar
+6. Verify: Alle 7 Stages sichtbar
 7. Enable "Nur meine Deals"
 8. Verify: Nur Opportunities mit assignedTo = currentUser
 

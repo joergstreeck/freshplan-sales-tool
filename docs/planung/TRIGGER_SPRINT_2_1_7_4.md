@@ -30,7 +30,7 @@ Nach Diskussion und Entscheidung in Sprint 2.1.7.3:
 **RENEWAL wurde entfernt!**
 - ❌ RENEWAL ist KEINE Stage mehr
 - ✅ RENEWAL ist jetzt ein `opportunityType` Feld
-- ✅ Migration V10033 (Sprint 2.1.7.3) migriert RENEWAL-Stage → NEEDS_ANALYSIS + opportunityType='Renewal'
+- ✅ Migration in Sprint 2.1.7.3 migriert RENEWAL-Stage → NEEDS_ANALYSIS + opportunityType='Renewal'
 
 **Customer-Opportunities starten bei NEEDS_ANALYSIS:**
 - NEW_LEAD + QUALIFICATION entfällt (Kunde ist bereits qualifiziert!)
@@ -255,7 +255,11 @@ private String source; // "EVENT", "COLD_OUTREACH", "REFERRAL", etc.
 private String companyName; // Temporär - solange kein Lead/Customer verknüpft
 ```
 
-**Migration:** `V10035__add_opportunity_source_and_company_name.sql`
+**Migration erstellen:**
+```bash
+MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+# Beispiel: V10035__add_opportunity_source_and_company_name.sql
+```
 
 ```sql
 -- Opportunity Source (für manuelle Erstellung ohne Lead)

@@ -465,7 +465,11 @@ Stages: NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION → CLOSED_WON/LOST
 
 #### **4.2 Migration: RENEWAL-Stage entfernen** (30 Min)
 
-**Migration:** `V10033__remove_renewal_stage.sql`
+**Migration erstellen:**
+```bash
+MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
+# Beispiel: V10033__remove_renewal_stage.sql
+```
 
 ```sql
 -- VORSICHT: Breaking Change! Nur wenn keine Production-Daten!
@@ -599,7 +603,7 @@ Test Case 2: Customer-Opportunity-Historie
 
 Test Case 3: RENEWAL-Stage Migration
 1. Wenn RENEWAL-Stage-Daten existieren:
-2. Run Migration V10033
+2. Run Migration (get-next-migration.sh)
 3. Verify: Alle RENEWAL → NEEDS_ANALYSIS
 4. Verify: opportunityType = 'Renewal' gesetzt
 5. Verify: Backend kompiliert (ohne RENEWAL Enum!)
@@ -621,7 +625,7 @@ Test Case 3: RENEWAL-Stage Migration
 - [x] Frontend: CreateOpportunityForCustomerDialog
 - [x] Frontend: CustomerOpportunitiesList
 - [x] Frontend: OpportunityHistoryCard
-- [x] Migration: V10033 (RENEWAL-Stage entfernen)
+- [x] Migration: RENEWAL-Stage entfernen (Script: get-next-migration.sh)
 - [x] OpportunityStage Enum: 7 Stages (ohne RENEWAL)
 - [x] Unit Tests: CreateOpportunityForCustomerDialog
 - [x] E2E Tests: Customer → Opportunity Flow
@@ -675,7 +679,7 @@ Test Case 3: RENEWAL-Stage Migration
   - OpportunityService.findByCustomerId() (30 Min)
 - RENEWAL-Stage Logik klären (1h)
   - Design-Entscheidung (30 Min)
-  - Migration V10033 (30 Min)
+  - Migration erstellen (30 Min)
 - Activity-Tracking (1h)
   - Activity-Typen erweitern (30 Min)
   - ActivityDialog erweitern (30 Min)
@@ -730,5 +734,5 @@ Test Case 3: RENEWAL-Stage Migration
 
 **Nächster Schritt:**
 1. Feature-Branch: `git checkout -b feature/sprint-2-1-7-3-renewal-workflow`
-2. Migration V10033 vorbereiten (RENEWAL-Stage entfernen)
+2. Migration erstellen: `MIGRATION=$(./scripts/get-next-migration.sh | tail -1)`
 3. Los geht's! 💪
