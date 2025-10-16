@@ -68,12 +68,63 @@ public enum OpportunityStage {
 }
 ```
 
-**Migration (wenn RENEWAL-Daten existieren):**
+**SCHRITT 1: Prüfen ob RENEWAL-Daten existieren (VOR Backend-Cleanup!)**
 ```bash
-# Nur FALLS bereits RENEWAL-Stage Daten im System sind:
-MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
-# Erstelle Migration zum Migrieren von RENEWAL → NEEDS_ANALYSIS
+# DB-Check ausführen:
+PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db -c "
+SELECT
+  stage,
+  COUNT(*) as count,
+  ARRAY_AGG(name ORDER BY created_at DESC) FILTER (WHERE name IS NOT NULL) as example_names
+FROM opportunities
+GROUP BY stage
+ORDER BY
+  CASE stage
+    WHEN 'NEW_LEAD' THEN 1
+    WHEN 'QUALIFICATION' THEN 2
+    WHEN 'NEEDS_ANALYSIS' THEN 3
+    WHEN 'PROPOSAL' THEN 4
+    WHEN 'NEGOTIATION' THEN 5
+    WHEN 'CLOSED_WON' THEN 6
+    WHEN 'CLOSED_LOST' THEN 7
+    WHEN 'RENEWAL' THEN 8
+    ELSE 99
+  END;
+"
 ```
+
+**SCHRITT 2: Aktion basierend auf Ergebnis:**
+
+**Szenario A: 0 RENEWAL-Daten** ✅ (wahrscheinlich)
+- ❌ Keine Migration nötig
+- ✅ Nur OpportunityStage.java bereinigen (RENEWAL löschen)
+- ⏱️ Aufwand: 15 Minuten
+
+**Szenario B: 1-5 RENEWAL-Daten** ⚠️ (möglich in DEV)
+- ✅ Migration V10030 erstellen (RENEWAL → NEEDS_ANALYSIS + opportunityType='RENEWAL')
+- ✅ OpportunityStage.java bereinigen
+- ⏱️ Aufwand: 30 Minuten
+
+**Migration V10030 (falls RENEWAL-Daten existieren):**
+```sql
+-- V10030__remove_renewal_stage.sql
+UPDATE opportunities
+SET
+    stage = 'NEEDS_ANALYSIS',
+    opportunity_type = COALESCE(opportunity_type, 'RENEWAL')
+WHERE stage = 'RENEWAL';
+
+-- Validierung:
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM opportunities WHERE stage = 'RENEWAL') THEN
+        RAISE EXCEPTION 'Migration failed: RENEWAL stage still exists';
+    END IF;
+END $$;
+```
+
+**Szenario C: Viele RENEWAL-Daten** 🚨 (unwahrscheinlich)
+- Entscheidung mit Jörg: RENEWAL beibehalten bis Sprint 2.1.7.3?
 
 **Hinweis:** RENEWAL-Workflow kommt in Sprint 2.1.7.3 als `opportunityType` Feld zurück!
 
