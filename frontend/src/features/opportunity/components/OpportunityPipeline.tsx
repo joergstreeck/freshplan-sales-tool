@@ -34,7 +34,7 @@ export const OpportunityPipeline: React.FC = () => {
         setIsLoading(true);
         const response = await httpClient.get<Opportunity[]>('/api/opportunities');
 
-        // Transformiere die API-Daten falls nötig
+        // Transformiere die API-Daten falls nötig (Sprint 2.1.7.1 - Lead-Felder beibehalten)
         const apiOpportunities = response.data.map((opp: Partial<Opportunity>) => ({
           ...opp,
           // Stelle sicher, dass alle erforderlichen Felder vorhanden sind
@@ -42,6 +42,10 @@ export const OpportunityPipeline: React.FC = () => {
           probability: opp.probability || 0,
           createdAt: opp.createdAt || new Date().toISOString(),
           updatedAt: opp.updatedAt || new Date().toISOString(),
+          // Sprint 2.1.7.1: Lead-Origin Felder explizit übernehmen
+          leadId: opp.leadId ?? undefined,
+          leadCompanyName: opp.leadCompanyName ?? undefined,
+          stageColor: opp.stageColor ?? undefined,
         }));
 
         setOpportunities(apiOpportunities);
@@ -283,14 +287,10 @@ export const OpportunityPipeline: React.FC = () => {
           })}
         </Box>
 
-        {/* Drag Overlay - Hand-Auge-Koordination optimiert */}
+        {/* Drag Overlay - Sprint 2.1.7.1: transformOrigin removed (Drag & Drop Fix) */}
         <DragOverlay
           adjustScale={false}
           wrapperElement="div"
-          style={{
-            // Card wird an der ursprünglichen Grab-Position gehalten
-            transformOrigin: '0 0',
-          }}
           dropAnimation={{
             duration: 250,
             easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
@@ -299,7 +299,6 @@ export const OpportunityPipeline: React.FC = () => {
           {activeOpportunity && (
             <Box
               sx={{
-                transform: 'rotate(5deg)',
                 opacity: 0.9,
                 boxShadow: 4,
                 pointerEvents: 'none', // Drag-Performance optimieren
