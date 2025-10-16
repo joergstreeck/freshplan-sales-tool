@@ -130,7 +130,326 @@ END $$;
 
 ---
 
+## 🔍 CODE REVIEW & EXISTING COMPONENTS
+
+### **Existierende OpportunityCard.tsx - Analyse**
+
+**Datei:** `frontend/src/features/opportunity/components/OpportunityCard.tsx`
+
+**Status:** ✅ Sehr gute Basis - Production Ready mit kleinen Verbesserungen nötig
+
+**Was ist implementiert:**
+- ✅ **Performance-optimiert**: React.memo, useMemo, useCallback
+- ✅ **Drag & Drop**: Dedizierter Drag Handle (⋮⋮ Icon oben rechts)
+- ✅ **Error Handling**: Try-Catch + Structured Logging (componentLogger)
+- ✅ **Accessibility**: Tooltips, Semantic HTML
+- ✅ **Freshfoodz CI**: Korrekte Farben (#94C456, #004F7B, Antonio Font)
+- ✅ **Anzeige**: Name, Customer, Value, Probability (Progress Bar), Date, Assigned User Avatar
+
+**⚠️ Was fehlt für Sprint 2.1.7.1:**
+
+1. **Customer-Name Fallback** (Zeile 203-216):
+   ```tsx
+   // PROBLEM: Bei Lead→Opportunity gibt es noch KEINEN Customer
+   // Card zeigt "Unbekannt" statt Lead-Name
+
+   // ✅ LÖSUNG:
+   {opportunity.customerName || opportunity.leadCompanyName || 'Potenzieller Kunde'}
+   ```
+
+2. **Lead-Origin Indicator** (für Traceability):
+   ```tsx
+   // Zeige Lead-Quelle wenn vorhanden
+   {opportunity.leadId && (
+     <Chip
+       label={`von Lead #${opportunity.leadId}`}
+       size="small"
+       variant="outlined"
+       sx={{ mt: 0.5 }}
+     />
+   )}
+   ```
+
+3. **Stage Color Border** (dynamisch):
+   ```tsx
+   // Aktuell: Grüner Border für alle
+   border: '1px solid rgba(148, 196, 86, 0.2)',
+
+   // ✅ LÖSUNG: Border-Farbe aus OpportunityStage.getColor()
+   border: `2px solid ${opportunity.stageColor || 'rgba(148, 196, 86, 0.2)'}`,
+   ```
+
+4. **Deal Type / Opportunity Type Badge**:
+   ```tsx
+   // Zeige Opportunity-Typ wenn vorhanden
+   {opportunity.opportunityType && (
+     <Chip
+       label={opportunity.opportunityType}
+       size="small"
+       color={opportunity.opportunityType === 'RENEWAL' ? 'warning' : 'default'}
+       sx={{ mt: 0.5 }}
+     />
+   )}
+   ```
+
+**Aufwand für Verbesserungen:** ~30 Min (Quick Win!)
+
+---
+
+## 🧪 TEST-STRATEGIE (Solide Abdeckung)
+
+### **Level 1: Unit Tests (Jest + React Testing Library)** ~2-3h
+
+**Datei:** `frontend/src/features/opportunity/components/OpportunityCard.test.tsx`
+
+```typescript
+describe('OpportunityCard', () => {
+  it('renders all fields correctly', () => {
+    // ✅ Name, Value, Probability, Date, Assigned User
+  });
+
+  it('formats currency with German locale', () => {
+    // ✅ 20000 → "20.000 €"
+  });
+
+  it('formats date with German locale', () => {
+    // ✅ "2025-11-13" → "13.11.25"
+  });
+
+  it('shows probability color correctly', () => {
+    // ✅ 80% → Grün, 60% → Freshfoodz-Grün, 40% → Orange, 20% → Rot
+  });
+
+  it('calls onClick when card clicked (not dragging)', () => {
+    // ✅ Card-Klick triggert onClick Handler
+  });
+
+  it('does NOT call onClick while dragging', () => {
+    // ✅ Während Drag kein onClick
+  });
+
+  it('shows drag handle on hover', () => {
+    // ✅ ⋮⋮ Icon wird grün bei Hover
+  });
+
+  it('fallback to lead name if no customer', () => {
+    // ✅ "Müller Catering (Lead)" statt "Unbekannt"
+  });
+});
+```
+
+**Coverage:** ~85% der Card-Logik
+
+---
+
+### **Level 2: Integration Tests (React Testing Library + MSW)** ~3-4h
+
+**Datei:** `frontend/src/features/opportunity/components/OpportunityPipeline.integration.test.tsx`
+
+```typescript
+describe('OpportunityPipeline with Cards', () => {
+  it('loads opportunities from API and renders cards', async () => {
+    // ✅ Mock: GET /api/opportunities → 7 Cards erscheinen
+  });
+
+  it('filters cards by status (Active/Closed/All)', async () => {
+    // ✅ Klick "Aktive" → nur 5 Spalten sichtbar
+  });
+
+  it('searches cards by name', async () => {
+    // ✅ Eingabe "Müller" → nur Müller-Cards sichtbar
+  });
+
+  it('drags card from NEW_LEAD to QUALIFICATION', async () => {
+    // ✅ Drag → PUT /api/opportunities/{id}/stage/QUALIFICATION
+    // ✅ Card erscheint in neuer Spalte
+  });
+
+  it('shows error toast on API failure', async () => {
+    // ✅ API Error → Toast "Fehler beim Laden"
+  });
+});
+```
+
+**Coverage:** ~70% der Pipeline-Interaktionen
+
+---
+
+### **Level 3: E2E Tests (Playwright)** ~2-3h (1 Happy Path)
+
+**Datei:** `e2e/lead-to-opportunity.spec.ts`
+
+```typescript
+test('Lead → Opportunity Happy Path', async ({ page }) => {
+  // 1. Login als Vertriebler
+  await page.goto('/login');
+  await page.fill('input[name=username]', 'testuser');
+  await page.fill('input[name=password]', 'test123');
+  await page.click('button[type=submit]');
+
+  // 2. Öffne Lead Detail
+  await page.goto('/lead-generation/leads/mueller-catering-90001');
+  await page.waitForSelector('h4:has-text("Müller Catering")');
+
+  // 3. Klick "In Opportunity konvertieren"
+  await page.click('button:has-text("In Opportunity konvertieren")');
+
+  // 4. Dialog öffnet sich
+  await page.waitForSelector('dialog:has-text("Opportunity erstellen")');
+
+  // 5. Felder sind vorausgefüllt
+  const nameInput = page.locator('input[name=name]');
+  await expect(nameInput).toHaveValue(/Vertragschance.*Müller Catering/);
+
+  // 6. Wähle Deal Type
+  await page.click('select[name=dealType]');
+  await page.click('option:has-text("Liefervertrag")');
+
+  // 7. Submit
+  await page.click('button:has-text("Erstellen")');
+
+  // 8. Toast erscheint
+  await page.waitForSelector('div:has-text("Opportunity erstellt!")');
+
+  // 9. Redirect zu Pipeline
+  await expect(page).toHaveURL(/\/opportunities/);
+
+  // 10. Card ist in NEW_LEAD Spalte sichtbar
+  await page.waitForSelector('.pipeline-stage-NEW_LEAD');
+  const card = page.locator('.opportunity-card:has-text("Müller Catering")');
+  await expect(card).toBeVisible();
+
+  // 11. Card hat korrekten Wert
+  await expect(card).toContainText('50.000 €');
+});
+```
+
+**Coverage:** 100% des User-Flows
+
+---
+
+### **Minimale Testabdeckung für "solide" Sprint-Abnahme:**
+
+| Test-Level | Tool | Aufwand | Coverage | Wann ausführen |
+|------------|------|---------|----------|----------------|
+| **Unit Tests** | Jest + RTL | 2-3h | 85% | Pre-Commit Hook |
+| **Integration Tests** | Jest + MSW | 3-4h | 70% | CI Pipeline (Push) |
+| **E2E Tests (1 Happy Path)** | Playwright | 2-3h | Lead→Opp Flow | Vor Merge in main |
+
+**Total: ~7-10h** für robuste Testabdeckung
+
+**Schutz gegen:**
+- 🛡️ Regressions (Card-Format, Drag & Drop, Filter)
+- 🐛 Bugs (Validation, API-Errors, State-Management)
+- 📊 ~75% Code Coverage
+- 🎯 Critical Path gesichert (Lead→Opportunity)
+
+---
+
 ## 📦 DELIVERABLES
+
+### **0. Quick Wins - OpportunityCard Verbesserungen** (30 Min)
+
+**Datei:** `frontend/src/features/opportunity/components/OpportunityCard.tsx`
+
+**Änderung 1: Customer-Name Fallback** (Zeile 203)
+```tsx
+// VORHER:
+{opportunity.customerName && (
+  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+    <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
+    <Typography variant="body2">{opportunity.customerName}</Typography>
+  </Box>
+)}
+
+// NACHHER:
+{(opportunity.customerName || opportunity.leadCompanyName) && (
+  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+    <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
+    <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.875rem' }}>
+      {opportunity.customerName || opportunity.leadCompanyName || 'Potenzieller Kunde'}
+    </Typography>
+  </Box>
+)}
+```
+
+**Änderung 2: Lead-Origin Indicator** (nach Customer-Name, Zeile ~217)
+```tsx
+{/* Lead-Origin Badge für Traceability */}
+{opportunity.leadId && (
+  <Chip
+    label={`von Lead #${opportunity.leadId}`}
+    size="small"
+    variant="outlined"
+    sx={{
+      height: 20,
+      fontSize: '0.7rem',
+      mb: 1,
+      borderColor: theme.palette.grey[300],
+      color: theme.palette.text.secondary,
+    }}
+  />
+)}
+```
+
+**Änderung 3: Stage Color Border** (Zeile 142)
+```tsx
+// VORHER:
+border: '1px solid rgba(148, 196, 86, 0.2)',
+
+// NACHHER (dynamisch aus Stage-Farbe):
+border: `2px solid ${opportunity.stageColor ? `${opportunity.stageColor}40` : 'rgba(148, 196, 86, 0.2)'}`,
+// Hinweis: `${color}40` = Hex-Farbe + 40 = 25% Opacity
+```
+
+**Typ-Erweiterung nötig:**
+```tsx
+// frontend/src/features/opportunity/types.ts
+export interface Opportunity {
+  id: string;
+  name: string;
+  stage: OpportunityStage;
+  stageColor?: string;        // ← NEU! Farbe aus Backend
+  customerName?: string;
+  leadCompanyName?: string;   // ← NEU! Fallback bei Lead→Opportunity
+  leadId?: number;            // ← NEU! Für Traceability
+  value?: number;
+  probability?: number;
+  expectedCloseDate?: string;
+  assignedToName?: string;
+  // ...
+}
+```
+
+**Backend-Änderung (OpportunityResponse DTO):**
+```java
+// backend/.../dto/OpportunityResponse.java
+public class OpportunityResponse {
+    private UUID id;
+    private String name;
+    private OpportunityStage stage;
+    private String stageColor;        // ← NEU! stage.getColor()
+    private String leadCompanyName;   // ← NEU! lead != null ? lead.companyName : null
+    private Long leadId;              // ← NEU! lead != null ? lead.id : null
+    // ...
+}
+
+// OpportunityMapper.java
+public OpportunityResponse toResponse(Opportunity opportunity) {
+    OpportunityResponse response = new OpportunityResponse();
+    // ...
+    response.setStageColor(opportunity.getStage().getColor());
+    if (opportunity.getLead() != null) {
+        response.setLeadCompanyName(opportunity.getLead().getCompanyName());
+        response.setLeadId(opportunity.getLead().getId());
+    }
+    return response;
+}
+```
+
+**Aufwand:** 30 Min (Frontend) + 15 Min (Backend DTO) = **45 Min Total**
+
+---
 
 ### **1. CreateOpportunityDialog Component** (3h)
 
@@ -759,9 +1078,15 @@ Test Case 3: Drag & Drop
 
 ---
 
-## 📅 TIMELINE (Realistisch!)
+## 📅 TIMELINE (Realistisch + Quick Wins!)
+
+**Tag 0 - Vorbereitung (1h):**
+- DB-Check: RENEWAL-Daten prüfen (5 Min)
+- Backend-Cleanup: RENEWAL aus OpportunityStage.java entfernen (15 Min)
+- OpportunityCard Quick Wins (Frontend 30 Min + Backend DTO 15 Min = 45 Min)
 
 **Tag 1 (8h):**
+- Drag & Drop Fix (2h) ← Quick Win zuerst!
 - CreateOpportunityDialog (3h)
 - LeadDetailPage Integration (2h)
 - LeadOpportunitiesList (2h)
@@ -773,10 +1098,15 @@ Test Case 3: Drag & Drop
   - "Meine Deals" Filter (1h)
   - Quick-Search (2h)
   - Pagination (1h)
-- Drag & Drop Fix (2h)
-- Testing & Bugfixes (1h)
+- Testing & Bugfixes (2h)
+- Unit Tests schreiben (1h)
 
-**Total: 17h = 2 Arbeitstage** ✅
+**Tag 3 (optional - Tests) (3h):**
+- Integration Tests (2h)
+- E2E Happy Path Test (1h)
+
+**Core Development: 18h = 2 Arbeitstage** ✅
+**Mit Tests: 21h = 2.5 Arbeitstage** ✅
 
 ---
 
@@ -836,9 +1166,86 @@ Test Case 3: Drag & Drop
 
 ---
 
+## 🎯 SPRINT ZUSAMMENFASSUNG & KEY INSIGHTS
+
+### **Was wir bereits haben (Analyse 2025-10-16):**
+
+✅ **OpportunityCard.tsx** ist production-ready:
+- Performance-optimiert (React.memo, useMemo, useCallback)
+- Drag & Drop mit dediziertem Handle
+- Error Handling + Structured Logging
+- Freshfoodz CI konform
+
+✅ **Backend API** ist komplett (Sprint 2.1.7.0):
+- POST /api/opportunities/from-lead/{leadId}
+- OpportunityService.createFromLead()
+- V10026 Migration (opportunities.lead_id FK)
+- 10 DEV-SEED Opportunities
+
+### **Was wir bauen müssen:**
+
+🔨 **Quick Wins (1h):**
+- Customer-Name Fallback (zeigt Lead-Name statt "Unbekannt")
+- Lead-Origin Badge (Traceability: "von Lead #90001")
+- Stage Color Border (dynamisch aus OpportunityStage.getColor())
+- Backend DTO: leadCompanyName, leadId, stageColor
+
+🔨 **Core Features (17h):**
+1. CreateOpportunityDialog (3h) - MUI Dialog mit Validation
+2. LeadDetailPage Integration (2h) - Button + Opportunities-Sektion
+3. LeadOpportunitiesList (2h) - Card-Liste für Lead-Detail
+4. OpportunityPipeline Filter-UI (6h) - Status/Meine Deals/Search/Pagination
+5. Drag & Drop Fix (2h) - transformOrigin Bug beheben
+6. Testing & Bugfixes (2h)
+
+🧪 **Tests (optional 3-10h):**
+- Unit Tests (2-3h) - OpportunityCard, CreateOpportunityDialog
+- Integration Tests (3-4h) - Pipeline mit Filtern
+- E2E Tests (2-3h) - Lead → Opportunity Happy Path
+
+### **Kritische Entscheidungen:**
+
+⚠️ **RENEWAL-Stage entfernen:**
+- Aktuell: 8 Stages (mit RENEWAL)
+- Ziel: 7 Stages (ohne RENEWAL)
+- Migration V10030 nur nötig falls RENEWAL-Daten existieren
+- DB-Check VORHER durchführen!
+
+✅ **Filter-Standard:**
+- Default: "Aktive" (nur NEW_LEAD → NEGOTIATION)
+- CLOSED_WON/LOST ausgeblendet (übersichtlicher)
+
+✅ **Lead Status = CONVERTED:**
+- ONE-WAY conversion (Industry Standard)
+- Lead bleibt sichtbar (Traceability)
+- opportunity.lead_id verlinkt zurück
+
+### **Risiken & Mitigations:**
+
+| Risiko | Wahrscheinlichkeit | Impact | Mitigation |
+|--------|-------------------|--------|-----------|
+| RENEWAL-Daten existieren | Mittel | Mittel | DB-Check vorher, Migration V10030 vorbereitet |
+| Drag & Drop Bug bleibt | Niedrig | Hoch | Fix zuerst (Quick Win), Test auf allen Geräten |
+| Backend DTO Breaking Change | Niedrig | Mittel | Neue Felder optional, Fallbacks im Frontend |
+| Tests schlagen fehl | Mittel | Niedrig | CI-Integration erst nach manuellem Test |
+
+### **Success Metrics:**
+
+- ✅ Lead → Opportunity: Max 3 Klicks, < 30 Sekunden
+- ✅ Pipeline lädt < 2s (bei 50 Opportunities)
+- ✅ Filter-Switch < 500ms
+- ✅ Drag & Drop: 60 FPS, Card bleibt unter Mauszeiger
+- ✅ ~75% Test Coverage (mit Unit + Integration + E2E)
+
+---
+
 **Sprint bereit für Kickoff!** 🚀
 
 **Nächster Schritt:**
-1. Feature-Branch erstellen: `git checkout -b feature/sprint-2-1-7-1-lead-opportunity`
-2. Migration-Nummer checken: `./scripts/get-next-migration.sh` (falls Backend-Änderungen nötig)
-3. Los geht's! 💪
+1. ✅ Feature-Branch erstellt: `feature/sprint-2-1-7-1-lead-opportunity`
+2. Migration-Nummer gecheckt: **V10030** (nächste freie)
+3. DB-Check: RENEWAL-Daten prüfen (Szenario A/B/C)
+4. Quick Win: OpportunityCard Verbesserungen (30 Min)
+5. Los geht's! 💪
+
+**Dokumentation vollständig ergänzt:** 2025-10-16 18:45 Uhr
