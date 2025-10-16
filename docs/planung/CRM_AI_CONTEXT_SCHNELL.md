@@ -224,7 +224,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
   - Upsell/Cross-sell für bestehende Kunden
   - Customer-Opportunities starten bei NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
 - **Pipeline-Stages:** 7 Stages (NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST)
-  - RENEWAL als separate Stage wurde durch opportunityType ersetzt (Migration V10033)
+  - RENEWAL als separate Stage wird durch opportunityType ersetzt (Migration pending - Sprint 2.1.7.1)
 
 **Customer-Relationship-Management:**
 - Multi-Location-Kunden mit verschiedenen Standorten
@@ -422,38 +422,104 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Automatisch: created_at + updated_at + created_by + updated_by
 - Business-Events: lead_transfer_requested, lead_transfer_approved, stop_the_clock_applied
 
-### 🔄 Ende-zu-Ende Business-Flows
+### 🔄 LEAD → OPPORTUNITY → CUSTOMER LIFECYCLE
 
-#### Flow 1: Lead → Opportunity → Customer (B2B-Food Standard-Workflow)
-1. **Lead-Phase:** Lead QUALIFIED → Multi-Contact dokumentiert (CHEF + BUYER)
-2. **Opportunity erstellen:** Lead → Opportunity konvertieren (V10026 Backend)
-   - Lead.status = CONVERTED (automatisch gesetzt)
-   - Opportunity.lead_id = original Lead ID (traceability)
-   - Pipeline-Stage: NEW_LEAD → QUALIFICATION → NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION
-3. **Customer-Akquise:** Opportunity CLOSED_WON → Customer erstellen (Sprint 2.1.7.2)
-   - Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!)
-   - Customer.original_lead_id = Lead ID (full traceability)
-   - Optional: Xentral-Verknüpfung sofort oder später
-4. **Xentral-Dashboard:** Customer mit Xentral-Verknüpfung zeigt Live-Daten
-   - Umsatz: 30/90/365 Tage (Rechnungsdaten)
-   - Zahlungsverhalten: Ampel (EXCELLENT/GOOD/ACCEPTABLE/PROBLEMATIC)
-   - Churn-Alarm: Tage seit letzter Bestellung (variable Threshold 7-90 Tage)
-5. **Ongoing Business:** Customer bestellt über Xentral ERP-System
-   - Provision: Akquise-Provision (einmalig) + Bestandspflege-Provision (laufend)
-   - Provision-Berechnung: Basiert auf Zahlungseingang (NICHT Rechnungsstellung!)
-6. **Upsell/Cross-sell:** RENEWAL-Opportunity für Bestandskunden
-   - opportunityType = "Renewal" (statt "New Business")
-   - Stage startet bei NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
+**Voller End-to-End B2B-Food-Workflow mit Traceability + RENEWAL-Opportunities**
 
-#### Flow 2: Customer Churn-Prevention (Xentral-Integration)
-1. **Churn-Alarm:** Customer letzte Bestellung vor X Tagen (X = churnAlertDays, default 30)
-2. **Verkäufer-Aktion:** Churn-Alarm erscheint im Dashboard → Verkäufer kontaktiert Kunden
-3. **RENEWAL-Opportunity:** Verkäufer erstellt neue Opportunity (opportunityType = "Renewal")
-   - Stage: NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
-   - Ziel: Upsell/Cross-sell/Reaktivierung
-4. **Xentral-Dashboard überwacht:** Umsatz-Trend (GROWING/STABLE/DECLINING)
-   - DECLINING → Frühwarnung an Verkäufer
+---
+
+#### **Phase 1: Lead-Qualifizierung** (NEW → QUALIFIED → CONVERTED)
+
+**Lead-Status-Progression:**
+1. **NEW** - Neuer Lead erfasst (Import, Webform, manuell)
+2. **CONTACTED** - Erstkontakt erfolgt (T+3 Sample Follow-up, Cold Call)
+3. **QUALIFIED** - Multi-Contact dokumentiert (CHEF + BUYER erfasst), Lead-Scoring ≥40
+4. **CONVERTED** - In Opportunity konvertiert (ONE-WAY, Lead bleibt sichtbar für Traceability)
+
+**UI-Trigger (Sprint 2.1.7.1):**
+- Button **"In Opportunity konvertieren"** in LeadDetailPage
+- Verfügbar bei Status: QUALIFIED oder ACTIVE
+- Lead wird automatisch auf CONVERTED gesetzt (irreversibel)
+- Lead bleibt im System sichtbar (Traceability + Reporting)
+
+**Backend-Implementation (V10026 - deployed):**
+- `POST /api/opportunities/from-lead/{leadId}` erstellt Opportunity
+- Opportunity.lead_id = original Lead ID (FK mit INDEX)
+- Pipeline startet bei Stage: NEW_LEAD
+
+---
+
+#### **Phase 2: Verkaufsprozess** (Pipeline-Management)
+
+**7-Stage Pipeline:**
+1. **NEW_LEAD** - Initialer Kontakt (aus Lead oder direkt)
+2. **QUALIFICATION** - Bedarf + Budget qualifiziert
+3. **NEEDS_ANALYSIS** - Detaillierte Bedarfsanalyse
+4. **PROPOSAL** - Angebot erstellt + versendet
+5. **NEGOTIATION** - Verhandlungen laufen
+6. **CLOSED_WON** - Gewonnen! → Kunde anlegen möglich
+7. **CLOSED_LOST** - Verloren (Reason tracking)
+
+**Business-Rule:**
+- **1 Lead → 1 primäre Opportunity** (lead_id gespeichert)
+- Weitere Opportunities für denselben Lead möglich (z.B. unterschiedliche Produktlinien)
+
+**Opportunity-Types:**
+- **NEW_BUSINESS** - Neukunden-Akquise (Standard bei Lead-Conversion)
+- **UPSELL** - Bestandskunden-Erweiterung (höherer Warenkorbwert)
+- **CROSS_SELL** - Neue Produktkategorie für Bestandskunde
+- **RENEWAL** - Vertragsverlängerung / Reaktivierung
+
+---
+
+#### **Phase 3: Customer-Management** (Post-Conversion)
+
+**Customer-Akquise (Sprint 2.1.7.2 - geplant):**
+- Button **"Als Kunde anlegen"** bei Opportunity CLOSED_WON
+- Dialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!)
+- `POST /api/opportunities/{id}/convert-to-customer` erstellt Customer
+- Customer.original_lead_id = Lead ID (V261 - volle Traceability)
+- Optional: Xentral-Verknüpfung sofort oder später nachpflegen
+
+**Xentral-ERP-Integration (FC-005 + FC-009):**
+- **Umsatz-Dashboard:** 30/90/365 Tage Rechnungsdaten (Live-Sync)
+- **Zahlungsverhalten:** Ampel-System (EXCELLENT / GOOD / ACCEPTABLE / PROBLEMATIC)
+- **Churn-Alarm:** Tage seit letzter Bestellung (variable Threshold: 7-90 Tage pro Kunde)
+- **Umsatz-Trend:** GROWING / STABLE / DECLINING (automatische Analyse)
+
+**Ongoing Business:**
+- Orders laufen über Xentral ERP-System (NICHT über CRM!)
+- CRM zeigt Umsätze + Zahlungsverhalten + Churn-Alarm
+- Provision-Modell: Akquise-Provision (einmalig) + Bestandspflege-Provision (laufend)
+- **Provision-Berechnung:** Basiert auf Zahlungseingang (NICHT Rechnungsstellung!)
+
+---
+
+#### **RENEWAL-Opportunities für Bestandskunden**
+
+**Use Cases:**
+- **Upsell:** Bestehende Produktlinien erweitern (mehr Volumen)
+- **Cross-sell:** Neue Produktkategorien (z.B. Spargel → Bio-Fleisch)
+- **Churn-Prevention:** Customer reaktivieren nach Inaktivität
+- **Vertragsverlängerung:** Rahmenverträge verlängern
+
+**RENEWAL-Workflow:**
+1. **Trigger (manuell oder automatisch):**
+   - Churn-Alarm: Letzte Bestellung vor X Tagen (X = churnAlertDays, default 30)
+   - Verkäufer-Aktion: Dashboard zeigt Churn-Alarm → Button "Neue Opportunity"
    - Zahlungsverhalten PROBLEMATIC → Innendienst informieren
+2. **Opportunity erstellen:**
+   - `POST /api/opportunities/for-customer/{customerId}` (Sprint 2.1.7.2)
+   - opportunityType = "RENEWAL" (statt "NEW_BUSINESS")
+   - **Pipeline startet bei NEEDS_ANALYSIS** (skip NEW_LEAD/QUALIFICATION - Kunde ist bekannt!)
+3. **Verkaufsprozess:**
+   - NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION → CLOSED_WON/CLOSED_LOST
+   - Bei CLOSED_WON: Customer-Daten aktualisieren (kein neuer Customer!)
+
+**Xentral-Dashboard überwacht:**
+- Umsatz-Trend DECLINING → Frühwarnung an Verkäufer
+- Zahlungsverhalten PROBLEMATIC → Innendienst informieren
+- Churn-Alarm nach X Tagen ohne Bestellung → RENEWAL-Opportunity vorgeschlagen
 
 #### Flow 3: Lead-Protection Reminder
 1. T+60 ohne Aktivität → Reminder (Activity-Kinds: QUALIFIED_CALL, ROI_PRESENTATION, SAMPLE_FEEDBACK zählen)
