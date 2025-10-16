@@ -3,9 +3,39 @@
 **Sprint-ID:** 2.1.7.4
 **Status:** 📋 PLANNING
 **Priority:** P3 (Low - erst wenn echte Daten!)
-**Estimated Effort:** 13h (1,5-2 Arbeitstage)
+**Estimated Effort:** 16h (2 Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-16
+**Updated:** 2025-10-16 (Manuelle Opportunity-Erstellung ergänzt)
+**Dependencies:** Sprint 2.1.7.1 COMPLETE + echte Produktions-Daten
+
+---
+
+## ⚠️ WICHTIGE KLARSTELLUNGEN
+
+### **Opportunity Pipeline Stages: 7 Stages (FINAL)**
+
+Nach Diskussion und Entscheidung in Sprint 2.1.7.3:
+
+```
+1. NEW_LEAD       (10%)
+2. QUALIFICATION  (25%)
+3. NEEDS_ANALYSIS (40%)
+4. PROPOSAL       (60%)
+5. NEGOTIATION    (80%)
+6. CLOSED_WON     (100%)
+7. CLOSED_LOST    (0%)
+```
+
+**RENEWAL wurde entfernt!**
+- ❌ RENEWAL ist KEINE Stage mehr
+- ✅ RENEWAL ist jetzt ein `opportunityType` Feld
+- ✅ Migration V10033 (Sprint 2.1.7.3) migriert RENEWAL-Stage → NEEDS_ANALYSIS + opportunityType='Renewal'
+
+**Customer-Opportunities starten bei NEEDS_ANALYSIS:**
+- NEW_LEAD + QUALIFICATION entfällt (Kunde ist bereits qualifiziert!)
+- Nur für Lead-Conversion: Start bei NEW_LEAD
+
 **Dependencies:** Sprint 2.1.7.1 COMPLETE + echte Produktions-Daten
 
 ---
@@ -14,8 +44,9 @@
 
 ### **Business Value**
 
-**Vertriebler können Opportunities intelligent filtern und priorisieren:**
+**Vertriebler können Opportunities intelligent filtern, priorisieren und manuell erstellen:**
 
+- ✅ **Manuelle Opportunity-Erstellung** (ohne Lead/Customer - z.B. Messestand, Kaltakquise)
 - ✅ High-Value Filter (Deal-Wert > X€)
 - ✅ Urgent Filter (Close Date < 14 Tage)
 - ✅ Advanced Search Dialog (multi-criteria)
@@ -48,6 +79,201 @@
 ---
 
 ## 📦 DELIVERABLES (für SPÄTER!)
+
+### **0. Manuelle Opportunity-Erstellung** (3h)
+
+#### **0.1 "Neue Opportunity" Button in OpportunityPipeline** (30 Min)
+
+**Datei:** `frontend/src/features/opportunity/components/OpportunityPipeline.tsx`
+
+**Button hinzufügen:**
+```tsx
+{/* Header mit "Neue Opportunity" Button */}
+<Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+  <Typography variant="h5">Pipeline Übersicht</Typography>
+
+  <Box sx={{ flexGrow: 1 }} />
+
+  {/* NEU: Manuelle Opportunity-Erstellung */}
+  <Button
+    variant="contained"
+    color="primary"
+    startIcon={<AddIcon />}
+    onClick={() => setShowCreateDialog(true)}
+  >
+    Neue Opportunity
+  </Button>
+
+  {/* Bestehende Filter-Toggles... */}
+</Stack>
+
+<CreateOpportunityManualDialog
+  open={showCreateDialog}
+  onClose={() => setShowCreateDialog(false)}
+  onSuccess={() => loadOpportunities()}
+/>
+```
+
+#### **0.2 CreateOpportunityManualDialog Component** (1,5h)
+
+**Neue Datei:** `frontend/src/features/opportunity/components/CreateOpportunityManualDialog.tsx`
+
+**Anforderungen:**
+- MUI Dialog mit Form-Validation
+- Felder:
+  - **Opportunity-Quelle** (Select: "Messestand", "Kaltakquise", "Empfehlung", "Networking-Event", "Social Media", "Sonstiges")
+  - **Name** (Text, required)
+  - **Company Name** (Text, required - wird später zu Lead/Customer)
+  - **Deal Type** (Select: "Liefervertrag", "Testphase", "Pilot", "Vollversorgung", "Rahmenvertrag")
+  - **Expected Value** (Number, EUR, required)
+  - **Expected Close Date** (DatePicker, default: +30 Tage)
+  - **Description** (TextArea, optional)
+
+**Validation:**
+- Company Name required (min 2 Zeichen)
+- Expected Value > 0
+- Close Date > Today
+- Opportunity-Quelle selected
+
+**API Call:**
+```typescript
+POST /api/opportunities
+Body: {
+  source: 'EVENT' | 'COLD_OUTREACH' | 'REFERRAL' | 'NETWORKING' | 'SOCIAL_MEDIA' | 'OTHER',
+  name: string,
+  companyName: string,
+  dealType: string,
+  expectedValue: number,
+  expectedCloseDate: string (ISO-8601),
+  description?: string
+}
+
+Response: {
+  id: UUID,
+  name: string,
+  stage: 'NEW_LEAD',
+  opportunityType: 'NEW_BUSINESS',
+  ...
+}
+```
+
+**Success Flow:**
+```tsx
+const handleCreate = async () => {
+  try {
+    const opportunity = await httpClient.post('/api/opportunities', {
+      source: source,
+      name: name,
+      companyName: companyName,
+      dealType: dealType,
+      expectedValue: expectedValue,
+      expectedCloseDate: expectedCloseDate.toISOString(),
+      description: description
+    });
+
+    toast.success('Opportunity erstellt! 🎉');
+    onSuccess();
+    onClose();
+    navigate(`/opportunities/${opportunity.id}`);
+
+  } catch (error) {
+    toast.error('Fehler beim Erstellen der Opportunity');
+  }
+};
+```
+
+**Info-Box im Dialog:**
+```tsx
+<Alert severity="info" sx={{ mb: 2 }}>
+  💡 <strong>Hinweis:</strong> Diese Opportunity ist keinem Lead oder Kunden zugeordnet.
+  Du kannst später manuell einen Lead oder Kunden verknüpfen.
+</Alert>
+```
+
+#### **0.3 Backend: Manuelle Opportunity-Erstellung** (1h)
+
+**Datei:** `backend/src/main/java/de/freshplan/api/resources/OpportunityResource.java`
+
+**Neuer Endpoint:**
+```java
+/**
+ * Erstellt eine Opportunity OHNE Lead/Customer (manuelle Erstellung)
+ *
+ * POST /api/opportunities
+ */
+@POST
+@RolesAllowed({"admin", "manager", "sales"})
+public Response createOpportunity(@Valid CreateOpportunityManualRequest request) {
+    logger.debug("Creating manual opportunity: {}", request.getName());
+
+    // Validate: CompanyName required
+    if (request.getCompanyName() == null || request.getCompanyName().isBlank()) {
+        throw new BadRequestException("Company name is required");
+    }
+
+    Opportunity opportunity = opportunityService.createManual(request, getCurrentUser());
+
+    return Response.status(Response.Status.CREATED)
+        .entity(opportunityMapper.toResponse(opportunity))
+        .build();
+}
+```
+
+**OpportunityService.createManual():**
+```java
+public Opportunity createManual(CreateOpportunityManualRequest request, User currentUser) {
+    logger.debug("Creating manual opportunity for company: {}", request.getCompanyName());
+
+    Opportunity opportunity = new Opportunity();
+    opportunity.setName(request.getName());
+    opportunity.setCompanyName(request.getCompanyName()); // Temporär - später zu Lead/Customer
+    opportunity.setSource(request.getSource()); // "EVENT", "COLD_OUTREACH", etc.
+    opportunity.setDealType(request.getDealType());
+    opportunity.setOpportunityType("NEW_BUSINESS"); // Hardcoded (manuelle Opp = immer NEW_BUSINESS)
+    opportunity.setStage(OpportunityStage.NEW_LEAD); // Start bei NEW_LEAD
+    opportunity.setExpectedValue(request.getExpectedValue());
+    opportunity.setExpectedCloseDate(request.getExpectedCloseDate());
+    opportunity.setDescription(request.getDescription());
+    opportunity.setProbability(OpportunityStage.NEW_LEAD.getDefaultProbability()); // 10%
+    opportunity.setAssignedTo(currentUser);
+    opportunity.setCreatedBy(currentUser);
+
+    opportunityRepository.persist(opportunity);
+
+    logger.info("Manual opportunity created: {} (ID: {})", opportunity.getName(), opportunity.getId());
+
+    return opportunity;
+}
+```
+
+**Neue Felder in Opportunity.java:**
+```java
+@Column(name = "source")
+private String source; // "EVENT", "COLD_OUTREACH", "REFERRAL", etc.
+
+@Column(name = "company_name")
+private String companyName; // Temporär - solange kein Lead/Customer verknüpft
+```
+
+**Migration:** `V10035__add_opportunity_source_and_company_name.sql`
+
+```sql
+-- Opportunity Source (für manuelle Erstellung ohne Lead)
+ALTER TABLE opportunities ADD COLUMN source VARCHAR(50);
+ALTER TABLE opportunities ADD COLUMN company_name VARCHAR(255);
+
+COMMENT ON COLUMN opportunities.source IS
+'Opportunity-Quelle für manuelle Erstellung (EVENT, COLD_OUTREACH, REFERRAL, NETWORKING, SOCIAL_MEDIA, OTHER)';
+
+COMMENT ON COLUMN opportunities.company_name IS
+'Temporärer Company-Name (wenn noch kein Lead/Customer verknüpft). Wird NULL sobald Lead/Customer gesetzt.';
+
+-- Beispiel-Daten:
+UPDATE opportunities SET source = 'LEAD_CONVERSION' WHERE lead_id IS NOT NULL;
+UPDATE opportunities SET source = 'CUSTOMER_UPSELL' WHERE customer_id IS NOT NULL AND opportunity_type IN ('Upsell', 'Cross-sell', 'Renewal');
+```
+
+---
 
 ### **1. High-Value Filter** (2h)
 
@@ -778,15 +1004,17 @@ COMMENT ON TABLE user_filter_views IS
 ## 📅 TIMELINE (für SPÄTER!)
 
 **Tag 1 (8h):**
+- Manuelle Opportunity-Erstellung (3h)
 - High-Value Filter (2h)
 - Urgent Filter (2h)
-- Advanced Search Dialog (4h)
+- Advanced Search Dialog - Start (1h)
 
-**Tag 2 (5h):**
+**Tag 2 (8h):**
+- Advanced Search Dialog - Fertigstellung (3h)
 - Pipeline-Analytics Dashboard (3h)
 - Custom Views speichern (2h)
 
-**Total: 13h = 1,5-2 Arbeitstage** ✅
+**Total: 16h = 2 Arbeitstage** ✅
 
 ---
 
