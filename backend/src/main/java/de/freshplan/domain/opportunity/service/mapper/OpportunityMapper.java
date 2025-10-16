@@ -27,6 +27,9 @@ public class OpportunityMapper {
         .customerId(opportunity.getCustomer() != null ? opportunity.getCustomer().getId() : null)
         .customerName(
             opportunity.getCustomer() != null ? opportunity.getCustomer().getCompanyName() : null)
+        .leadId(opportunity.getLead() != null ? opportunity.getLead().id : null) // Sprint 2.1.7.1
+        .leadCompanyName(
+            opportunity.getLead() != null ? opportunity.getLead().companyName : null) // Sprint 2.1.7.1
         .assignedToId(
             opportunity.getAssignedTo() != null ? opportunity.getAssignedTo().getId() : null)
         .assignedToName(
