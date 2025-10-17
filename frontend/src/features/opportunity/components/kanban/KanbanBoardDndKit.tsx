@@ -10,6 +10,7 @@ import {
 } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Box, Paper, Typography, Stack } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 
@@ -33,21 +34,6 @@ const ACTIVE_STAGES = [
 const CLOSED_STAGES = [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST];
 
 const componentLogger = logger.child('KanbanBoardDndKit');
-
-// Drag & Drop Konfiguration
-// Diese Werte funktionieren für die meisten Browser und Bildschirmgrößen
-// Bei Bedarf können sie über CSS Custom Properties überschrieben werden
-const CARD_WIDTH = 280; // Standard-Breite der Opportunity Cards
-const DRAG_OFFSET_X = CARD_WIDTH; // Horizontale Korrektur für Cursor-Position
-
-// Vertikaler Offset: Kompensiert Browser-Unterschiede beim Drag-Start
-// Chrome/Edge: 30px, Firefox: 25px, Safari: 35px - wir nehmen den Mittelwert
-// const DRAG_OFFSET_Y = 30; // Currently unused, kept for future drag improvements
-
-// Browser-Detection für feinere Anpassungen (falls nötig)
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
-const BROWSER_OFFSET_Y = isSafari ? 35 : isFirefox ? 25 : 30;
 
 interface PipelineStats {
   totalActive: number;
@@ -145,9 +131,11 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       try {
+        console.log('[KANBAN DRAG START] 🚀', { activeId: event.active.id });
         componentLogger.debug('Drag operation started', { activeId: event.active.id });
         setActiveId(event.active.id as string);
       } catch (error) {
+        console.error('[KANBAN DRAG START ERROR]', error);
         componentLogger.error('Error in handleDragStart', { error });
         errorHandler(error as Error);
       }
@@ -429,30 +417,21 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           ))}
         </Box>
 
-        {/* Drag Overlay with proper offset */}
+        {/* Drag Overlay - Sprint 2.1.7.1: snapCenterToCursor = NO OFFSET! */}
         <DragOverlay
-          dropAnimation={{
-            duration: 200,
-            easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-          }}
-          style={{
-            cursor: 'grabbing',
-          }}
-          modifiers={[
-            // Custom modifier für Cursor-Zentrierung
-            // WICHTIG: Dieser Offset korrigiert die Position der Drag-Preview
-            // sodass die Karte unter dem Cursor zentriert wird.
-            // Bei Änderungen der Kartenbreite muss CARD_WIDTH angepasst werden!
-            ({ transform }) => ({
-              ...transform,
-              x: transform.x - DRAG_OFFSET_X, // Horizontaler Offset
-              y: transform.y + BROWSER_OFFSET_Y, // Browser-spezifischer vertikaler Offset
-            }),
-          ]}
+          dropAnimation={null}
+          modifiers={[snapCenterToCursor]}
         >
-          {activeOpportunity ? (
-            <OpportunityCard opportunity={activeOpportunity} isDragging />
-          ) : null}
+          {activeOpportunity && (
+            <Box
+              sx={{
+                cursor: 'grabbing',
+                boxShadow: 8,
+              }}
+            >
+              <OpportunityCard opportunity={activeOpportunity} isDragging />
+            </Box>
+          )}
         </DragOverlay>
       </DndContext>
     </Box>

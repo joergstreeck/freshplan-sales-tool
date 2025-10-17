@@ -2,7 +2,6 @@ import React from 'react';
 import { Paper, Box, Typography, Badge } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { OpportunityStage, type Opportunity } from '../../types';
 import { STAGE_CONFIGURATIONS } from '../../config/stage-config';
@@ -57,6 +56,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
             : '1px solid rgba(0, 0, 0, 0.12)',
           borderRadius: 2,
           transition: 'all 0.2s ease',
+          overflow: 'visible',  // Allow cards to escape during drag
+          position: 'relative',  // Establish stacking context
         }}
       >
         {/* Column Header */}
@@ -101,22 +102,25 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
           )}
         </Box>
 
-        {/* Sortable Area */}
-        <SortableContext
-          items={opportunities.map(o => o.id)}
-          strategy={verticalListSortingStrategy}
+        {/* Cards Area - Sprint 2.1.7.1: NO SortableContext! Just Droppable Zone */}
+        <Box
+          sx={{
+            minHeight: 400,
+            maxHeight: 'calc(100vh - 400px)',
+            overflowY: 'auto',
+            position: 'relative',  // Required for child z-index to work
+            isolation: 'isolate',  // Create new stacking context
+          }}
         >
-          <Box sx={{ minHeight: 400, maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
-            {opportunities.map(opportunity => (
-              <SortableOpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                onQuickAction={onQuickAction}
-                isAnimating={animatingIds.has(opportunity.id)}
-              />
-            ))}
-          </Box>
-        </SortableContext>
+          {opportunities.map(opportunity => (
+            <SortableOpportunityCard
+              key={opportunity.id}
+              opportunity={opportunity}
+              onQuickAction={onQuickAction}
+              isAnimating={animatingIds.has(opportunity.id)}
+            />
+          ))}
+        </Box>
       </Paper>
     );
   }
