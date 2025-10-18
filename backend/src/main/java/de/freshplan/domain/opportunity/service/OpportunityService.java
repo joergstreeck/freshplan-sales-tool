@@ -945,6 +945,25 @@ public class OpportunityService {
     return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
   }
 
+  /**
+   * Findet alle Opportunities für einen bestimmten Lead
+   * Sprint 2.1.7.1 - Lead → Opportunity Traceability
+   *
+   * @param leadId Die ID des Leads
+   * @return Liste von OpportunityResponse DTOs
+   */
+  public List<OpportunityResponse> findByLeadId(Long leadId) {
+    logger.debug("Finding opportunities for lead ID: {}", leadId);
+
+    List<Opportunity> opportunities = opportunityRepository.find("lead.id", leadId).list();
+
+    logger.info("Found {} opportunities for lead ID: {}", opportunities.size(), leadId);
+
+    return opportunities.stream()
+        .map(opportunityMapper::toResponse)
+        .collect(Collectors.toList());
+  }
+
   // =====================================
   // ACTIVITY MANAGEMENT
   // =====================================
