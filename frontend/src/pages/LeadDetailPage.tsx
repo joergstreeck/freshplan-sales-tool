@@ -34,7 +34,7 @@ import { ActivityDialog } from '../features/leads/components/ActivityDialog';
 import PreClaimBadge from '../features/leads/components/PreClaimBadge';
 import BusinessPotentialCard from '../features/leads/components/BusinessPotentialCard';
 import BusinessPotentialDialog from '../features/leads/components/BusinessPotentialDialog';
-import { CreateOpportunityDialog } from '../features/opportunity/components/CreateOpportunityDialog';
+import CreateOpportunityDialog from '../features/opportunity/components/CreateOpportunityDialog';
 import {
   LeadScoreSummaryCard,
   ScoreAccordion,
