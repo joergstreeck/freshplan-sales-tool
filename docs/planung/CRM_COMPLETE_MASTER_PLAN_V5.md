@@ -259,6 +259,35 @@
 
 ---
 
+### 2025-10-18 21:49 - Session-Übergabe - STANDARDÜBERGABE & Sprint-Status-Ermittlung
+
+**Kontext:** Neue Claude-Session nach erfolgreichem Merge von Sprint 2.1.7.1 (PR #141). Vollständige STANDARDÜBERGABE durchgeführt, Pflichtlektüre validiert, Sprint-Status ermittelt.
+
+**Erledigt:**
+- ✅ **STANDARDÜBERGABE KOMPLETT:**
+  - Branch Gate: main bestätigt (Sprint 2.1.7.1 gemerged)
+  - Migration-Check: V10031 (Sequential) / V90007 (SEED) ermittelt
+  - Migration Safety: Pre-Commit Hook aktiv
+  - System-Start: PostgreSQL, Backend, Frontend laufen alle
+- ✅ **PFLICHTLEKTÜRE VALIDIERT (Gehärtete Validierung):**
+  - 5 Dokumente gelesen: CLAUDE.md, Letzte Übergabe, TRIGGER_INDEX.md, MP5, Roadmap
+  - 3 spezifische Angaben pro Dokument erfasst
+  - Sprint-Status bestätigt: 2.1.7.1 COMPLETE, 2.1.7.2 READY
+- ✅ **SPRINT-OPTIONEN ERMITTELT:**
+  - Option 1: Sprint 2.1.7.2 - Customer + Xentral (18h) ← EMPFOHLEN
+  - Option 2: Sprint 2.1.8 - Team Management (40h)
+  - Option 3: Tech Debt - Mock-Daten → echte APIs (8h)
+- ✅ **HANDOVER ERSTELLT:**
+  - 2025-10-18_HANDOVER_21-49.md vollständig ausgefüllt
+  - Alle MANUAL-Platzhalter ersetzt
+  - Nächste Schritte dokumentiert
+
+**Migration:** n/a (keine DB-Arbeit)
+**Tests:** n/a (nur Setup/Validierung)
+**Status:** ✅ STANDARDÜBERGABE COMPLETE - Bereit für Sprint-Entscheidung
+
+---
+
 ### 2025-10-16 00:15 - Sprint 2.1.7.1-4 GEPLANT - Detaillierte 4-Sprint-Zerlegung (FOKUSSIERT!)
 
 **Kontext:** Nach ausführlicher Analyse und User-Diskussion wurde Sprint 2.1.7.1 in 4 separate Sprints aufgeteilt, um Scope Creep zu vermeiden und FOKUSSIERTE Deliverables zu garantieren.
@@ -1761,14 +1790,50 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **Sprint 2.1.6 Phase 3 - PRODUCTION START:** LeadMaintenanceService.java implementieren (4 Nightly Jobs)
-- **Job 1:** Progress Warning (60-Day Activity Rule - 1:00 Uhr)
-- **Job 2:** Protection Expiry (60-Day Deadline - 2:00 Uhr)
-- **Job 3:** DSGVO Pseudonymisierung (B2B Personal Data - 3:00 Uhr)
-- **Job 4:** Import Jobs Archival (7-Day TTL - 4:00 Uhr)
-- **Tests:** Hybrid-Strategie (80% Mock Service-Tests + 20% @QuarkusTest Integration)
-- **Events:** 4 CDI Events für Dashboard-Updates (LeadProgressWarningIssuedEvent, LeadProtectionExpiredEvent, LeadsPseudonymizedEvent, ImportJobsArchivedEvent)
-- **Email:** OutboxEmail-Integration (Modul 05 Pattern - Fallback: Logging bis Modul 05 ready)
+- **✅ SPRINT 2.1.7.1 - LEAD → OPPORTUNITY UI INTEGRATION (MERGED - 18.10.2025):**
+  - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 9ac9dfd16)
+  - **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141 (Merged 18.10.2025 19:02:28Z)
+  - **Deliverables:** 6/6 COMPLETE (OpportunityCard, CreateDialog, LeadDetailPage, LeadOpportunitiesList, Filter-UI, Drag & Drop Fix)
+  - **Migration:** V10030 (OpportunityType Enum - auf main)
+  - **Tests:** 45/45 GREEN (27 Backend + 18 Frontend)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (status: complete)
+
+- **🎯 NÄCHSTER SPRINT - OPTIONEN (USER-ENTSCHEIDUNG AUSSTEHEND):**
+
+  **Option 1 - Sprint 2.1.7.2 - Opportunity → Customer + Xentral-Dashboard** ← 🎯 EMPFOHLEN
+  - **Branch:** `feature/sprint-2-1-7-2-customer-xentral`
+  - **Aufwand:** ~18h (2-3 Tage)
+  - **SCOPE:** ConvertToCustomerDialog + XentralApiClient + Customer-Dashboard (2 KPIs) + Churn-Alarm
+  - **⚠️ KRITISCH:** Xentral-API testen BEVOR Start! (Sales-Rep Mapping validieren)
+  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
+  - **Tests:** 12 Backend + 8 Frontend = 20 Tests
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
+  - **Referenz:** FC-005, FC-009 (Xentral-Dokumentation vollständig)
+  - **Business Context:** Dashboard ohne Xentral-Daten wäre wertlos → beides ZUSAMMEN!
+
+  **Option 2 - Sprint 2.1.8 - Team Management & Test Infrastructure**
+  - **Branch:** `feature/sprint-2-1-8-team-management`
+  - **Aufwand:** ~40h (1 Woche)
+  - **SCOPE (Track 1 Business):** Lead-Transfer, Fuzzy-Matching, RLS, Team Management
+  - **SCOPE (Track 2 Test Infra):** CRM Szenario-Builder, Faker-Integration, Test-Patterns
+  - **Migrations:** V260 (lead_transfers), V261 (RLS policies), V262 (teams + team_members)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_8.md`
+  - **Strategic:** Quality Investment für Sprint 2.2+ Velocity
+
+  **Option 3 - Tech Debt - Mock-Daten durch echte APIs ersetzen**
+  - **Branch:** `feature/tech-debt-mock-to-real-apis`
+  - **Aufwand:** ~8h (1 Tag)
+  - **SCOPE:** KanbanBoardDndKit currentUser/teamMembers → Real Auth Context
+  - **Benefit:** Entfernt hardcoded Mock-Daten aus Production-Code
+  - **Context:** Sprint 2.1.7.2 benötigt echte User-API
+
+- **📋 EMPFEHLUNG:** Option 1 (Sprint 2.1.7.2)
+  - Logische Fortsetzung: Lead → Opportunity → Customer (durchgängiger Flow)
+  - Xentral-Dokumentation bereits vollständig vorhanden
+  - Überschaubarer Aufwand (18h vs 40h)
+  - Kritische Business-Value-Delivery (Customer-Conversion)
+
+- **⏳ WARTEND AUF:** User-Entscheidung für Sprint-Auswahl
 <!-- MP5:NEXT_STEPS:END -->
 
 ## 🎯 Critical Success Metrics

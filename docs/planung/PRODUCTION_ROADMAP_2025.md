@@ -11,11 +11,14 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (92% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.1 - MERGED TO MAIN (18.10.2025) - **Lead → Opportunity UI Integration**
-- **Next Sprint:** 📋 Sprint 2.1.7.2 - READY (Start: TBD) - **Opportunity Detail View Enhancement (18h, 2-3 Tage)**
-- **Active Branch:** main (Sprint 2.1.7.1 gemerged, Feature-Branch gelöscht)
+- **Current Sprint:** ✅ Sprint 2.1.7.1 - MERGED TO MAIN (18.10.2025) - **Lead → Opportunity UI Integration COMPLETE**
+- **Next Sprint:** 📋 USER-ENTSCHEIDUNG AUSSTEHEND - 3 Optionen verfügbar
+  - **Option 1:** Sprint 2.1.7.2 - Customer + Xentral (18h, 2-3 Tage) ← EMPFOHLEN
+  - **Option 2:** Sprint 2.1.8 - Team Management (40h, 1 Woche)
+  - **Option 3:** Tech Debt - Mock-Daten → echte APIs (8h, 1 Tag)
+- **Active Branch:** main (Sprint 2.1.7.1 gemerged, warten auf Sprint-Entscheidung)
 - **Progress:** 25/36 PRs completed - 69% done
-- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.2-4 geplant, Ready for Kickoff**
+- **Blockers:** ❌ Keine - **🎯 STANDARDÜBERGABE COMPLETE, alle Optionen READY**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Sprint 2.1.7.1 - Lead → Opportunity UI Integration MERGED (18.10.2025)** - PR #141 + V10030 OpportunityType + 45/45 Tests GREEN
@@ -36,14 +39,19 @@
   - ✅ **CODE REVIEWS:** Copilot + Gemini - alle Nitpicks adressiert (Font Constants, Mock Data, DRY, Shared Utilities)
   - ✅ **DESIGN SYSTEM:** 100% FreshFoodz CI V2 Compliance
   - ✅ **MERGE:** 2025-10-18T19:02:28Z (Admin-Rechte, squash merge, commit 9ac9dfd16)
-- **Next Action:**
-  1. **PRIORITÄT 1:** Sprint 2.1.7.2 starten (Opportunity Detail View Enhancement - 18h, 2-3 Tage)
-     - Feature-Branch: `git checkout -b feature/sprint-2-1-7-2-opportunity-detail`
-     - Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10031)
-     - Real Auth Context Integration (ersetzt Mock-Daten in KanbanBoardDndKit)
-  2. **PRIORITÄT 2:** Sprint 2.1.8 (Team Management & Test Infrastructure - nach 2.1.7.2)
-  3. **OPTION:** Technische Schulden abarbeiten (Mock-Daten → echte APIs)
-  4. **DEFERRED:** Sprint 2.1.7.4 (Advanced Filters - YAGNI bis echte Daten vorhanden)
+- **Next Action:** ⏳ **WARTEN AUF USER-ENTSCHEIDUNG** - Welcher Sprint soll gestartet werden?
+
+  **EMPFEHLUNG:** Option 1 (Sprint 2.1.7.2) - Logische Fortsetzung des Lead → Opportunity → Customer Flows
+
+  **Nach Entscheidung:**
+  1. Feature-Branch anlegen: `git checkout -b feature/sprint-2-1-7-X-[name]`
+  2. Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10031 Sequential / V90007 SEED)
+  3. Sprint-Trigger ausführen: `/docs/planung/TRIGGER_SPRINT_2_1_7_X.md`
+
+  **Verfügbare Optionen:**
+  - **Option 1 (18h):** Sprint 2.1.7.2 - Customer + Xentral Integration ← EMPFOHLEN
+  - **Option 2 (40h):** Sprint 2.1.8 - Team Management & Test Infrastructure
+  - **Option 3 (8h):** Tech Debt - Mock-Daten → echte APIs
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
