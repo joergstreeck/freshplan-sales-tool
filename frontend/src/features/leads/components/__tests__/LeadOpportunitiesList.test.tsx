@@ -8,12 +8,23 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../../theme/freshfoodz';
 import { LeadOpportunitiesList } from '../LeadOpportunitiesList';
 import { httpClient } from '../../../../lib/apiClient';
 import type { Opportunity } from '../../../opportunity/types';
+
+// Mock react-router-dom
+const mockNavigate = vi.fn();
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual('react-router-dom');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+  };
+});
 
 // Mock API Client
 vi.mock('../../../../lib/apiClient', () => ({
@@ -67,6 +78,7 @@ const mockOpportunities: Opportunity[] = [
 describe('LeadOpportunitiesList', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockNavigate.mockClear();
   });
 
   describe('Loading State', () => {
@@ -224,15 +236,27 @@ describe('LeadOpportunitiesList', () => {
       });
     });
 
-    it('renders links to opportunity detail pages', async () => {
+    it('navigates to opportunity detail page when card is clicked', async () => {
+      const user = userEvent.setup();
       vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
       await waitFor(() => {
-        const link = screen.getByRole('link', { name: /Test Opportunity 1/i });
-        expect(link).toHaveAttribute('href', '/opportunities/1');
+        expect(screen.getByText('Test Opportunity 1')).toBeInTheDocument();
       });
+
+      // Find the card by getting the parent of the opportunity name
+      const opportunityName = screen.getByText('Test Opportunity 1');
+      const card = opportunityName.closest('[class*="MuiCard"]');
+
+      expect(card).toBeInTheDocument();
+
+      // Click the card
+      await user.click(card!);
+
+      // Verify navigate was called with correct path
+      expect(mockNavigate).toHaveBeenCalledWith('/opportunities/1');
     });
   });
 

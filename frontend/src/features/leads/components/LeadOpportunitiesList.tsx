@@ -16,10 +16,9 @@ import {
   Chip,
   CircularProgress,
   Alert,
-  Link as MuiLink,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
@@ -39,6 +38,7 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
   onCountChange,
 }) => {
   const theme = useTheme();
+  const navigate = useNavigate();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -186,12 +186,15 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
       {opportunities.map((opportunity) => (
         <Card
           key={opportunity.id}
+          onClick={() => navigate(`/opportunities/${opportunity.id}`)}
           sx={{
             border: '1px solid',
             borderColor: 'divider',
+            cursor: 'pointer',
             '&:hover': {
               boxShadow: theme.shadows[4],
               borderColor: theme.palette.primary.main,
+              backgroundColor: theme.palette.action.hover,
             },
             transition: 'all 0.2s ease',
           }}
@@ -201,29 +204,17 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
               {/* Header: Name + Stage */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
                 <Box sx={{ flex: 1 }}>
-                  <MuiLink
-                    component={Link}
-                    to={`/opportunities/${opportunity.id}`}
+                  <Typography
+                    variant="h6"
                     sx={{
-                      textDecoration: 'none',
-                      color: 'inherit',
-                      '&:hover': {
-                        color: theme.palette.primary.main,
-                      },
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
                     }}
                   >
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 1,
-                      }}
-                    >
-                      <TrendingUpIcon fontSize="small" color="primary" />
-                      {opportunity.name}
-                    </Typography>
-                  </MuiLink>
+                    <TrendingUpIcon fontSize="small" color="primary" />
+                    {opportunity.name}
+                  </Typography>
                 </Box>
                 <Chip
                   label={getStageLabel(opportunity.stage)}
