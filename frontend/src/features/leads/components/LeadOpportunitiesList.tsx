@@ -24,7 +24,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PersonIcon from '@mui/icons-material/Person';
-import { apiClient } from '../../../lib/apiClient';
+import { httpClient } from '../../../lib/apiClient';
 import type { Opportunity, OpportunityType, OpportunityStage } from '../../opportunity/types';
 
 interface LeadOpportunitiesListProps {
@@ -43,7 +43,7 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({ le
       setLoading(true);
       setError(null);
       try {
-        const response = await apiClient.get<Opportunity[]>(`/api/leads/${leadId}/opportunities`);
+        const response = await httpClient.get<Opportunity[]>(`/api/leads/${leadId}/opportunities`);
         setOpportunities(response.data || []);
       } catch (err: any) {
         console.error('Failed to fetch opportunities:', err);

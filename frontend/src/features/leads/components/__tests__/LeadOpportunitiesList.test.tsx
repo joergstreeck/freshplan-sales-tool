@@ -12,12 +12,12 @@ import { BrowserRouter } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../../theme/freshfoodz';
 import { LeadOpportunitiesList } from '../LeadOpportunitiesList';
-import { apiClient } from '../../../../lib/apiClient';
+import { httpClient } from '../../../../lib/apiClient';
 import type { Opportunity } from '../../../opportunity/types';
 
 // Mock API Client
 vi.mock('../../../../lib/apiClient', () => ({
-  apiClient: {
+  httpClient: {
     get: vi.fn(),
   },
 }));
@@ -72,7 +72,7 @@ describe('LeadOpportunitiesList', () => {
   describe('Loading State', () => {
     it('shows loading spinner while fetching opportunities', () => {
       // Mock slow API response
-      vi.mocked(apiClient.get).mockImplementation(
+      vi.mocked(httpClient.get).mockImplementation(
         () => new Promise(() => {}) // Never resolves
       );
 
@@ -84,7 +84,7 @@ describe('LeadOpportunitiesList', () => {
 
   describe('Empty State', () => {
     it('shows empty message when no opportunities exist', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -97,7 +97,7 @@ describe('LeadOpportunitiesList', () => {
   describe('Error State', () => {
     it('shows error message when API call fails', async () => {
       const errorMessage = 'Lead not found';
-      vi.mocked(apiClient.get).mockRejectedValueOnce({
+      vi.mocked(httpClient.get).mockRejectedValueOnce({
         response: {
           data: {
             error: errorMessage,
@@ -113,7 +113,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('shows generic error message when response has no detail', async () => {
-      vi.mocked(apiClient.get).mockRejectedValueOnce(new Error('Network error'));
+      vi.mocked(httpClient.get).mockRejectedValueOnce(new Error('Network error'));
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -125,7 +125,7 @@ describe('LeadOpportunitiesList', () => {
 
   describe('Opportunities Display', () => {
     it('renders list of opportunities successfully', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -136,7 +136,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('shows opportunity type badges correctly', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -147,7 +147,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('displays opportunity values correctly formatted', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -158,7 +158,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('shows customer names', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -169,7 +169,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('displays expected close dates', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -180,7 +180,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('shows opportunity stage chips', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -191,7 +191,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('displays opportunity description when present', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -201,7 +201,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('shows summary with correct opportunity count', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: mockOpportunities });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: mockOpportunities });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -213,7 +213,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('uses singular form for single opportunity', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -225,7 +225,7 @@ describe('LeadOpportunitiesList', () => {
     });
 
     it('renders links to opportunity detail pages', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [mockOpportunities[0]] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -238,25 +238,25 @@ describe('LeadOpportunitiesList', () => {
 
   describe('API Integration', () => {
     it('calls correct API endpoint with leadId', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={456} />);
 
       await waitFor(() => {
-        expect(apiClient.get).toHaveBeenCalledWith('/api/leads/456/opportunities');
+        expect(httpClient.get).toHaveBeenCalledWith('/api/leads/456/opportunities');
       });
     });
 
     it('refetches opportunities when leadId changes', async () => {
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [] });
 
       const { rerender } = renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
       await waitFor(() => {
-        expect(apiClient.get).toHaveBeenCalledWith('/api/leads/123/opportunities');
+        expect(httpClient.get).toHaveBeenCalledWith('/api/leads/123/opportunities');
       });
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [] });
 
       rerender(
         <BrowserRouter>
@@ -267,8 +267,8 @@ describe('LeadOpportunitiesList', () => {
       );
 
       await waitFor(() => {
-        expect(apiClient.get).toHaveBeenCalledWith('/api/leads/456/opportunities');
-        expect(apiClient.get).toHaveBeenCalledTimes(2);
+        expect(httpClient.get).toHaveBeenCalledWith('/api/leads/456/opportunities');
+        expect(httpClient.get).toHaveBeenCalledTimes(2);
       });
     });
   });
@@ -280,7 +280,7 @@ describe('LeadOpportunitiesList', () => {
         description: undefined,
       };
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [opportunityWithoutDesc] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [opportunityWithoutDesc] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -298,7 +298,7 @@ describe('LeadOpportunitiesList', () => {
         value: undefined,
       };
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [opportunityWithoutValue] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [opportunityWithoutValue] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -313,7 +313,7 @@ describe('LeadOpportunitiesList', () => {
         expectedCloseDate: undefined,
       };
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [opportunityWithoutDate] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [opportunityWithoutDate] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
@@ -332,7 +332,7 @@ describe('LeadOpportunitiesList', () => {
         leadCompanyName: 'Lead Company Name',
       };
 
-      vi.mocked(apiClient.get).mockResolvedValueOnce({ data: [opportunityWithLeadCompany] });
+      vi.mocked(httpClient.get).mockResolvedValueOnce({ data: [opportunityWithLeadCompany] });
 
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
