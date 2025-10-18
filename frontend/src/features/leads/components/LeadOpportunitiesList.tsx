@@ -30,9 +30,14 @@ import type { Opportunity, OpportunityType, OpportunityStage } from '../../oppor
 interface LeadOpportunitiesListProps {
   /** Lead ID to fetch opportunities for */
   leadId: number;
+  /** Callback function to notify parent of opportunity count changes */
+  onCountChange?: (count: number) => void;
 }
 
-export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({ leadId }) => {
+export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
+  leadId,
+  onCountChange,
+}) => {
   const theme = useTheme();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [loading, setLoading] = useState(true);
@@ -44,17 +49,28 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({ le
       setError(null);
       try {
         const response = await httpClient.get<Opportunity[]>(`/api/leads/${leadId}/opportunities`);
-        setOpportunities(response.data || []);
+        const fetchedOpportunities = response.data || [];
+        setOpportunities(fetchedOpportunities);
+
+        // Notify parent component of count change
+        if (onCountChange) {
+          onCountChange(fetchedOpportunities.length);
+        }
       } catch (err: any) {
         console.error('Failed to fetch opportunities:', err);
         setError(err.response?.data?.error || 'Fehler beim Laden der Opportunities');
+
+        // Reset count on error
+        if (onCountChange) {
+          onCountChange(0);
+        }
       } finally {
         setLoading(false);
       }
     };
 
     fetchOpportunities();
-  }, [leadId]);
+  }, [leadId, onCountChange]);
 
   // Helper functions
   const formatValue = (value?: number) => {

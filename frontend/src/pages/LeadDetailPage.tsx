@@ -78,6 +78,9 @@ export function LeadDetailPage() {
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<LeadContactDTO | null>(null);
+
+  // Sprint 2.1.7.1: Opportunity Count State
+  const [opportunityCount, setOpportunityCount] = useState(0);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [businessPotentialDialogOpen, setBusinessPotentialDialogOpen] = useState(false);
   const [showOpportunityDialog, setShowOpportunityDialog] = useState(false);
@@ -465,8 +468,10 @@ export function LeadDetailPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
                   <TrendingUpIcon color="primary" />
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6">Verkaufschancen (0)</Typography>
-                    {expandedSection !== 'opportunities' && (
+                    <Typography variant="h6">
+                      Verkaufschancen ({opportunityCount})
+                    </Typography>
+                    {expandedSection !== 'opportunities' && opportunityCount === 0 && (
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         Noch keine Opportunities erstellt
                       </Typography>
@@ -476,7 +481,10 @@ export function LeadDetailPage() {
               </AccordionSummary>
 
               <AccordionDetails>
-                <LeadOpportunitiesList leadId={lead.id} />
+                <LeadOpportunitiesList
+                  leadId={lead.id}
+                  onCountChange={setOpportunityCount}
+                />
               </AccordionDetails>
             </Accordion>
           </Grid>
