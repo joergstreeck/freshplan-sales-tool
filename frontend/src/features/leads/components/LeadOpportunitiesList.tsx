@@ -199,7 +199,6 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({ le
                     <Typography
                       variant="h6"
                       sx={{
-                        fontWeight: 600,
                         display: 'flex',
                         alignItems: 'center',
                         gap: 1,
