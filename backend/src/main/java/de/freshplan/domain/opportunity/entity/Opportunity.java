@@ -38,6 +38,16 @@ public class Opportunity {
   @Column(name = "stage", nullable = false)
   private OpportunityStage stage;
 
+  /**
+   * Freshfoodz-spezifischer Geschäftstyp (NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT,
+   * VERLAENGERUNG)
+   *
+   * @since Sprint 2.1.7.1 (V10030)
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "opportunity_type", nullable = false, length = 50)
+  private OpportunityType opportunityType;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id")
   private Customer customer;
@@ -118,6 +128,10 @@ public class Opportunity {
     if (this.stageChangedAt == null) {
       this.stageChangedAt = LocalDateTime.now();
     }
+    // Sprint 2.1.7.1: Default opportunityType falls nicht gesetzt
+    if (this.opportunityType == null) {
+      this.opportunityType = OpportunityType.NEUGESCHAEFT;
+    }
   }
 
   // Business Method: Stage ändern mit Timestamp
@@ -172,6 +186,15 @@ public class Opportunity {
 
   public void setStage(OpportunityStage stage) {
     changeStage(stage);
+  }
+
+  public OpportunityType getOpportunityType() {
+    return opportunityType;
+  }
+
+  public void setOpportunityType(OpportunityType opportunityType) {
+    this.opportunityType = opportunityType;
+    this.updatedAt = LocalDateTime.now();
   }
 
   public Customer getCustomer() {

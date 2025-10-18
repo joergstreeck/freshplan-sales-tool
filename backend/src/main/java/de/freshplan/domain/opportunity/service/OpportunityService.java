@@ -321,6 +321,9 @@ public class OpportunityService {
     // 6. Set lead FK (enables Lead → Opportunity → Customer workflow)
     opportunity.setLead(lead);
 
+    // 6b. Set OpportunityType = NEUGESCHAEFT (Sprint 2.1.7.1 - Freshfoodz Business Type)
+    opportunity.setOpportunityType(de.freshplan.domain.opportunity.entity.OpportunityType.NEUGESCHAEFT);
+
     // 7. Set business fields from request
     if (request.getDescription() != null) {
       opportunity.setDescription(request.getDescription());

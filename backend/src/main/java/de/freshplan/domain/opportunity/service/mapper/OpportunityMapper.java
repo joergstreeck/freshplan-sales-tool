@@ -13,6 +13,22 @@ import jakarta.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class OpportunityMapper {
 
+  /**
+   * Bereinigt Opportunity-Namen von OpportunityType-Präfixen
+   * (Sprint 2.1.7.1 - Production Safety Layer)
+   *
+   * @param name Original Opportunity Name
+   * @return Bereinigter Name ohne Type-Präfix
+   */
+  private String cleanOpportunityName(String name) {
+    if (name == null) {
+      return null;
+    }
+    return name.replaceFirst(
+        "^(Neuer Standort|Sortimentserweiterung|Verlängerung|Verlaengerung|Neugeschäft|Neugeschaeft):\\s*",
+        "");
+  }
+
   /** Konvertiert Opportunity Entity zu Response DTO */
   public OpportunityResponse toResponse(Opportunity opportunity) {
     if (opportunity == null) {
@@ -21,9 +37,10 @@ public class OpportunityMapper {
 
     return OpportunityResponse.builder()
         .id(opportunity.getId())
-        .name(opportunity.getName())
+        .name(cleanOpportunityName(opportunity.getName()))
         .description(opportunity.getDescription())
         .stage(opportunity.getStage())
+        .opportunityType(opportunity.getOpportunityType()) // Sprint 2.1.7.1
         .customerId(opportunity.getCustomer() != null ? opportunity.getCustomer().getId() : null)
         .customerName(
             opportunity.getCustomer() != null ? opportunity.getCustomer().getCompanyName() : null)

@@ -2,6 +2,7 @@ package de.freshplan.domain.opportunity.service.dto;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -62,11 +63,18 @@ class CreateOpportunityRequestTest {
     // When
     CreateOpportunityRequest request =
         new CreateOpportunityRequest(
-            "New Deal", "Description", customerId, assignedTo, expectedValue, closeDate);
+            "New Deal",
+            "Description",
+            OpportunityType.NEUGESCHAEFT,
+            customerId,
+            assignedTo,
+            expectedValue,
+            closeDate);
 
     // Then
     assertThat(request.getName()).isEqualTo("New Deal");
     assertThat(request.getDescription()).isEqualTo("Description");
+    assertThat(request.getOpportunityType()).isEqualTo(OpportunityType.NEUGESCHAEFT);
     assertThat(request.getCustomerId()).isEqualTo(customerId);
     assertThat(request.getAssignedTo()).isEqualTo(assignedTo);
     assertThat(request.getExpectedValue()).isEqualByComparingTo(expectedValue);
@@ -216,6 +224,7 @@ class CreateOpportunityRequestTest {
         CreateOpportunityRequest.builder()
             .name("Builder Test")
             .description("Builder Description")
+            .opportunityType(OpportunityType.SORTIMENTSERWEITERUNG)
             .customerId(customerId)
             .assignedTo(assignedTo)
             .expectedValue(expectedValue)
@@ -225,6 +234,7 @@ class CreateOpportunityRequestTest {
     // Then
     assertThat(request.getName()).isEqualTo("Builder Test");
     assertThat(request.getDescription()).isEqualTo("Builder Description");
+    assertThat(request.getOpportunityType()).isEqualTo(OpportunityType.SORTIMENTSERWEITERUNG);
     assertThat(request.getCustomerId()).isEqualTo(customerId);
     assertThat(request.getAssignedTo()).isEqualTo(assignedTo);
     assertThat(request.getExpectedValue()).isEqualByComparingTo(expectedValue);
@@ -263,6 +273,7 @@ class CreateOpportunityRequestTest {
     // When
     request.setName("Updated Name");
     request.setDescription("Updated Description");
+    request.setOpportunityType(OpportunityType.NEUER_STANDORT);
     request.setCustomerId(customerId);
     request.setAssignedTo(assignedTo);
     request.setExpectedValue(expectedValue);
@@ -271,6 +282,7 @@ class CreateOpportunityRequestTest {
     // Then
     assertThat(request.getName()).isEqualTo("Updated Name");
     assertThat(request.getDescription()).isEqualTo("Updated Description");
+    assertThat(request.getOpportunityType()).isEqualTo(OpportunityType.NEUER_STANDORT);
     assertThat(request.getCustomerId()).isEqualTo(customerId);
     assertThat(request.getAssignedTo()).isEqualTo(assignedTo);
     assertThat(request.getExpectedValue()).isEqualByComparingTo(expectedValue);
