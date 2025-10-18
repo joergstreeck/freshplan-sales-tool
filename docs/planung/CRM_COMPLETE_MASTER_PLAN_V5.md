@@ -161,6 +161,35 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-18 21:30 - Sprint 2.1.7.1 Code Review Final - ALL Nitpicks Addressed + PR Template Fixed
+
+**Kontext:** Alle verbleibenden Copilot Code Review Nitpicks adressiert (Font Constants, Mock Data, DRY Helpers, Shared Utilities). PR #141 Template-Validierung behoben.
+
+**Erledigt:**
+- ✅ **CODE REVIEW REFACTORING (Commit e21a1bddc):**
+  - Font Constants: ANTONIO_FONT, POPPINS_FONT → 16+ Vorkommen refactored
+  - Mock Data Extraction: mockData.ts mit MOCK_CURRENT_USER + MOCK_TEAM_MEMBERS
+  - DRY Description: generateDefaultDescription() helper function
+  - Shared Utilities: opportunityHelpers.ts mit 5 helper functions (getOpportunityTypeLabel, getOpportunityTypeIcon, getOpportunityTypeColor, getStageLabel, getStageColor)
+  - Sprint Comment Update: Timeless descriptive comment (OpportunityTestDataFactory.java)
+- ✅ **CODE REVIEW RESPONSES:** Posted to GitHub PR #141 (Comment #3418719836)
+  - Gemini Fix #1+#2 erklärt (Case-insensitive regex, assignedToId filter)
+  - Copilot Fix #7 erklärt (HTTP error handling)
+  - Alle 9 Nitpicks zusammengefasst
+- ✅ **PR TEMPLATE FIXED:** GitHub Validation behoben
+  - PR #141 Body aktualisiert mit kompletter German Template (638 Zeilen)
+  - Alle 6 required sections: 🎯 Ziel, ⚠️ Risiko, 🔄 Migrations, ⚡ Performance, 🔒 Security, 📚 SoT
+
+**Neue Dateien:**
+- frontend/src/features/opportunity/constants/mockData.ts (30 Zeilen)
+- frontend/src/features/opportunity/utils/opportunityHelpers.ts (86 Zeilen)
+
+**Migration:** n/a (nur Refactoring)
+**Tests:** Keine neuen Tests (bestehende Tests GREEN)
+**Status:** ✅ Sprint 2.1.7.1 100% COMPLETE - PR #141 ready for human review
+
+---
+
 ### 2025-10-18 18:00 - Sprint 2.1.7.1 COMPLETE - Lead → Opportunity UI Integration (PR #141)
 
 **Kontext:** Sprint 2.1.7.1 vollständig abgeschlossen - Complete Lead → Opportunity Conversion Workflow mit Kanban Pipeline, Drag & Drop Fix, Filter-UI und 6 Deliverables.
@@ -1257,20 +1286,21 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-- **🎯 SOFORT (Nächste Session - Sprint 2.1.7.1 READY!):**
-  - **Feature-Branch anlegen:** `git checkout -b feature/sprint-2-1-7-1-lead-opportunity`
-  - **Migration-Check:** `./scripts/get-next-migration.sh` (nächste: V10030/V90006)
-  - **Sprint 2.1.7.1 starten:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (17h, 2 Tage, FOKUSSIERT!)
-  - **Voraussetzungen prüfen:** Sprint 2.1.7.0 ✅ COMPLETE, V10026 deployed ✅, V90003 DEV-SEED ✅
+- **⏳ WARTEND AUF USER-REVIEW (Sprint 2.1.7.1 - PR #141):**
+  - **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141
+  - **Status:** ✅ 100% COMPLETE, MERGEABLE, Review Required
+  - **Branch:** feature/sprint-2-1-7-1-lead-opportunity (49 commits)
+  - **Reviews:** 2 Code Reviews (Copilot + Gemini) - alle Issues adressiert
+  - **Tests:** 142/142 GREEN (100%)
+  - **Dokumentation:** Komplett (SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md, PR_SPRINT_2_1_7_1.md)
+  - **⏭️ Nach Merge:** Sprint 2.1.7.2 starten (Customer + Xentral Integration)
 
-- **📋 SPRINT 2.1.7.1 - LEAD → OPPORTUNITY UI INTEGRATION (FOKUSSIERT - 16.10.2025):**
-  - **SCOPE:** NUR Lead → Opportunity Workflow (Customer-Features in 2.1.7.2+3!)
-  - **Phase 1:** CreateOpportunityDialog mit Lead-Context-Prop-Pattern (6h)
-  - **Phase 2:** Kanban Backend-Filter (status: active/closed/all, assignedTo) (4h)
-  - **Phase 3:** Drag & Drop Fix (transformOrigin Bug - 3-stufige Lösung) (3h)
-  - **Phase 4:** E2E Tests mit Playwright (18 Tests) (4h)
-  - **Aufwand:** 17h = 2 Arbeitstage (REALISTISCH!)
-  - **Migrations:** Keine (nur UI + Backend-Filter)
+- **✅ SPRINT 2.1.7.1 - LEAD → OPPORTUNITY UI INTEGRATION (COMPLETE - 18.10.2025):**
+  - **Status:** ✅ 100% COMPLETE - wartet auf User-Review + Merge
+  - **Aufwand:** ~18h (2.5 Tage)
+  - **Migration:** V10030 (OpportunityType Enum)
+  - **Deliverables:** 6/6 COMPLETE (OpportunityCard, CreateDialog, LeadDetailPage, LeadOpportunitiesList, Filter-UI, Drag & Drop Fix)
+  - **Code Reviews:** Alle Copilot + Gemini Nitpicks adressiert (Font Constants, Mock Data, DRY, Shared Utilities)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md`
 
 - **📋 SPRINT 2.1.7.2 - CUSTOMER + XENTRAL (NACH 2.1.7.1):**
