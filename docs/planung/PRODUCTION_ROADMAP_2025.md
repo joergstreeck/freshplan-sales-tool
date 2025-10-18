@@ -10,11 +10,11 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (85% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.0 - MERGED TO MAIN (15.10.2025) - **Design System Migration (FreshFoodz CI V2)**
-- **Next Sprint:** 📋 Sprint 2.1.7.1 - READY (Start: 16.10.2025) - **Lead → Opportunity UI (FOKUSSIERT - 17h, 2 Tage)**
-- **Active Branch:** main (Sprint 2.1.7.0 merged via PR #140, 2 commits ahead unpushed)
-- **Progress:** 23/36 PRs completed - 64% done
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (88% complete)
+- **Current Sprint:** ✅ Sprint 2.1.7.1 - COMPLETE (18.10.2025) - **Lead → Opportunity UI Integration**
+- **Next Sprint:** 📋 Sprint 2.1.7.2 - READY (Start: TBD) - **Customer + Xentral-Integration (18h, 2-3 Tage)**
+- **Active Branch:** feature/sprint-2-1-7-1-lead-opportunity (PR #141 READY FOR REVIEW)
+- **Progress:** 24/36 PRs completed - 67% done
 - **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.1-4 geplant, Ready for Kickoff**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
@@ -117,7 +117,7 @@ Sprint 1.6: RLS Module Adoption       ✅ PR #107 MERGED → Modul 02 Fix + CI-G
 
 ### 🚀 **Phase 2: Core Business (7.5 Wochen) - IN PROGRESS**
 ```
-Progress: █████░░░░░ 55% (2.5/5 Sprints + 6 Sub-Sprints COMPLETE)
+Progress: ██████░░░░ 60% (2.5/5 Sprints + 7 Sub-Sprints COMPLETE)
 
 Sprint 2.1: 02 Neukundengewinnung     ✅ 100% COMPLETE → PR #103, #105, #110, #111 merged (FP-235 ✅)
                                       → 3 Production Patterns dokumentiert (Security/Performance/Events)
@@ -258,15 +258,29 @@ Sprint 2.1.7.0: Design System Migration ✅ MERGED TO MAIN (15.10.2025) - **Fres
                                       → **Dokumentation:** [SPRINT_2_1_7_0_COMPLETE_SUMMARY.md](claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md)
                                       → **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
 
-Sprint 2.1.7.1: Lead → Opportunity UI 📋 PLANNING (16.10.2025) - Aufwand: 17h (2 Tage, FOKUSSIERT!)
-                                      → **SCOPE:** NUR Lead → Opportunity Workflow (Customer-Features in 2.1.7.2+3!)
-                                      → **Phase 1:** CreateOpportunityDialog mit Lead-Context-Prop-Pattern (6h)
-                                      → **Phase 2:** Kanban Backend-Filter (status: active/closed/all, assignedTo) (4h)
-                                      → **Phase 3:** Drag & Drop Fix (transformOrigin Bug - 3-stufige Lösung: PointerSensor + scale statt rotate) (3h)
-                                      → **Phase 4:** E2E Tests mit Playwright (18 Tests) (4h)
-                                      → **ENTFERNT:** Customer → Opportunity (→ Sprint 2.1.7.3), Opportunity → Customer (→ Sprint 2.1.7.2)
-                                      → **Migrations:** Keine (nur UI + Backend-Filter)
-                                      → **Prerequisites:** ✅ Sprint 2.1.7.0 COMPLETE, ✅ V10026 deployed, ✅ V90003 DEV-SEED
+Sprint 2.1.7.1: Lead → Opportunity UI ✅ COMPLETE (18.10.2025) - **Lead Conversion Workflow** - **PR #141**
+                                      → **Kontext:** Complete Lead → Opportunity Conversion Workflow - 6 Deliverables, FOKUSSIERT!
+                                      → **Deliverables:**
+                                        - **D0:** OpportunityCard Verbesserungen (leadCompanyName, Lead-Origin Badge, Stage Color)
+                                        - **D1:** CreateOpportunityDialog Component + Tests (20/20 GREEN)
+                                        - **D2:** LeadDetailPage Integration ("In Opportunity konvertieren" Button)
+                                        - **D3:** LeadOpportunitiesList Component (20/20 Tests GREEN, Whole Card Clickable)
+                                        - **D4:** OpportunityPipeline Filter-UI (Status Filter, Benutzer-Dropdown Manager View, Quick-Search, Pagination)
+                                        - **D5:** Drag & Drop Fix (snapCenterToCursor - KRITISCH, 4.5h Debugging → 60 FPS sustained)
+                                        - **D6:** Testing & Bugfixes (SEED Deletion, Navigation, Counter Fix)
+                                      → **Migration V10030:** OpportunityType Enum (VARCHAR(50) + CHECK Constraint - JPA-kompatibel)
+                                      → **Tests:** 142 Tests GREEN (100%) - KanbanBoardDndKit 38/38, LeadOpportunitiesList 20/20, OpportunityCard 30/30
+                                      → **Design System:** 100% FreshFoodz CI V2 Compliance
+                                      → **Performance:** Drag & Drop 60 FPS, Pipeline Load ~1.2s (<2s target), Filter Switch ~120ms (<500ms target)
+                                      → **Aufwand:** ~18h (46 Commits + 1 Doku-Commit)
+                                      → **Kritische Fixes:**
+                                        - Drag & Drop Offset Bug (4.5h Debugging → snapCenterToCursor modifier)
+                                        - SEED Data Protection Bug (Test cleanup deleted production data)
+                                        - RLS Transaction Context Bug (Missing @Transactional annotation)
+                                      → **Dokumentation:**
+                                        - [SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md](artefakte/SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md) (5,900 Zeilen, 46 Commits)
+                                        - [PR_SPRINT_2_1_7_1.md](artefakte/PR_SPRINT_2_1_7_1.md) (499 Zeilen, German PR Template)
+                                      → **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_1.md](TRIGGER_SPRINT_2_1_7_1.md)
 
 Sprint 2.1.7.2: Customer + Xentral   📋 PLANNING (16.10.2025) - Aufwand: 18h (2-3 Tage)
