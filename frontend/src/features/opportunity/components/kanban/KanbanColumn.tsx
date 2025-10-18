@@ -1,5 +1,5 @@
-import React from 'react';
-import { Paper, Box, Typography, Badge } from '@mui/material';
+import React, { useState } from 'react';
+import { Paper, Box, Typography, Badge, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
@@ -29,6 +29,13 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
     const theme = useTheme();
     const config = STAGE_CONFIGS_RECORD[stage];
     const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
+
+    // Feature 4: Pagination (Sprint 2.1.7.1)
+    const CARDS_PER_COLUMN = 15;
+    const [showAll, setShowAll] = useState(false);
+    const hasMore = opportunities.length > CARDS_PER_COLUMN;
+    const visibleOpportunities = showAll ? opportunities : opportunities.slice(0, CARDS_PER_COLUMN);
+    const hiddenCount = opportunities.length - CARDS_PER_COLUMN;
 
     // Make the column a drop target
     const { setNodeRef, isOver } = useDroppable({
@@ -112,7 +119,7 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
             isolation: 'isolate',  // Create new stacking context
           }}
         >
-          {opportunities.map(opportunity => (
+          {visibleOpportunities.map(opportunity => (
             <SortableOpportunityCard
               key={opportunity.id}
               opportunity={opportunity}
@@ -120,6 +127,25 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
               isAnimating={animatingIds.has(opportunity.id)}
             />
           ))}
+
+          {/* Feature 4: "Weitere laden" Button (Sprint 2.1.7.1) */}
+          {hasMore && !showAll && (
+            <Button
+              variant="text"
+              onClick={() => setShowAll(true)}
+              fullWidth
+              sx={{
+                mt: 1,
+                color: theme.palette.text.secondary,
+                fontSize: '0.875rem',
+                '&:hover': {
+                  bgcolor: theme.palette.action.hover,
+                },
+              }}
+            >
+              ... {hiddenCount} weitere laden
+            </Button>
+          )}
         </Box>
       </Paper>
     );

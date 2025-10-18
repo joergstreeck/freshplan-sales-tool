@@ -11,8 +11,20 @@ import {
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
-import { Box, Paper, Typography, Stack } from '@mui/material';
+import {
+  Box,
+  Paper,
+  Typography,
+  Stack,
+  ToggleButtonGroup,
+  ToggleButton,
+  TextField,
+  Checkbox,
+  FormControlLabel,
+  InputAdornment,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
 import toast from 'react-hot-toast';
 
 import { OpportunityStage, type Opportunity } from '../../types';
@@ -52,6 +64,15 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
+
+  // Feature 1: Status Filter (Sprint 2.1.7.1)
+  const [statusFilter, setStatusFilter] = useState<'active' | 'closed' | 'all'>('active');
+
+  // Feature 2: "Nur meine Deals" Filter (Sprint 2.1.7.1)
+  const [myDealsOnly, setMyDealsOnly] = useState(false);
+
+  // Feature 3: Quick-Search (Sprint 2.1.7.1)
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Load opportunities from API on component mount
   useEffect(() => {
@@ -118,16 +139,55 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     };
   }, [opportunities]);
 
-  // Opportunities nach Stage gruppieren (memoized)
+  // Filter opportunities (Sprint 2.1.7.1)
+  const filteredOpportunities = useMemo(() => {
+    let filtered = opportunities;
+
+    // Feature 2: "Nur meine Deals" Filter
+    if (myDealsOnly) {
+      // TODO: Get current user from auth context
+      // For now, filter by assignedToName presence (placeholder)
+      filtered = filtered.filter(opp => opp.assignedToName && opp.assignedToName !== 'Nicht zugewiesen');
+    }
+
+    // Feature 3: Quick-Search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        opp =>
+          opp.name.toLowerCase().includes(query) ||
+          (opp.customerName && opp.customerName.toLowerCase().includes(query)) ||
+          (opp.leadCompanyName && opp.leadCompanyName.toLowerCase().includes(query))
+      );
+    }
+
+    return filtered;
+  }, [opportunities, myDealsOnly, searchQuery]);
+
+  // Determine visible stages based on status filter (Sprint 2.1.7.1)
+  const visibleStages = useMemo(() => {
+    switch (statusFilter) {
+      case 'active':
+        return ACTIVE_STAGES;
+      case 'closed':
+        return CLOSED_STAGES;
+      case 'all':
+        return [...ACTIVE_STAGES, ...CLOSED_STAGES];
+      default:
+        return ACTIVE_STAGES;
+    }
+  }, [statusFilter]);
+
+  // Opportunities nach Stage gruppieren (memoized) - mit Filter
   const opportunitiesByStage = useMemo(() => {
     return Object.values(OpportunityStage).reduce(
       (acc, stage) => {
-        acc[stage] = opportunities.filter(opp => opp.stage === stage);
+        acc[stage] = filteredOpportunities.filter(opp => opp.stage === stage);
         return acc;
       },
       {} as Record<OpportunityStage, Opportunity[]>
     );
-  }, [opportunities]);
+  }, [filteredOpportunities]);
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
@@ -336,9 +396,60 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
       {/* Pipeline Statistics Header */}
       <Paper sx={{ p: 3, mb: 2, bgcolor: theme.palette.background.default, borderRadius: 2 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          Pipeline Übersicht
-        </Typography>
+        {/* Header Row mit Title + Filter Controls */}
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+          <Typography variant="h4">
+            Pipeline Übersicht
+          </Typography>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Feature 3: Quick-Search */}
+          <TextField
+            placeholder="Suche nach Name oder Kunde..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ width: 300 }}
+          />
+
+          {/* Feature 2: "Nur meine Deals" */}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={myDealsOnly}
+                onChange={(e) => setMyDealsOnly(e.target.checked)}
+                size="small"
+              />
+            }
+            label="Nur meine Deals"
+          />
+
+          {/* Feature 1: Status Filter */}
+          <ToggleButtonGroup
+            value={statusFilter}
+            exclusive
+            onChange={(e, value) => value && setStatusFilter(value)}
+            size="small"
+          >
+            <ToggleButton value="active">
+              🔥 Aktive ({pipelineStats.totalActive})
+            </ToggleButton>
+            <ToggleButton value="closed">
+              📦 Geschlossene ({pipelineStats.totalWon + pipelineStats.totalLost})
+            </ToggleButton>
+            <ToggleButton value="all">
+              📊 Alle ({opportunities.length})
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
         <Stack direction="row" spacing={4} flexWrap="wrap">
           <Box>
             <Typography
@@ -420,19 +531,8 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             '&::-webkit-scrollbar-thumb': { bgcolor: 'grey.400', borderRadius: 4 },
           }}
         >
-          {/* Active Stages */}
-          {ACTIVE_STAGES.map(stage => (
-            <KanbanColumn
-              key={stage}
-              stage={stage}
-              opportunities={opportunitiesByStage[stage] || []}
-              onQuickAction={handleQuickAction}
-              animatingIds={animatingIds}
-            />
-          ))}
-
-          {/* Closed Stages */}
-          {CLOSED_STAGES.map(stage => (
+          {/* Stages based on Status Filter (Sprint 2.1.7.1) */}
+          {visibleStages.map(stage => (
             <KanbanColumn
               key={stage}
               stage={stage}
