@@ -9,6 +9,10 @@
 
 import { createTheme } from '@mui/material/styles';
 
+// Font Family Constants (Copilot Code Review)
+const ANTONIO_FONT = 'Antonio, sans-serif';
+const POPPINS_FONT = 'Poppins, sans-serif';
+
 declare module '@mui/material/styles' {
   interface Palette {
     freshfoodz: {
@@ -132,61 +136,61 @@ export const freshfoodzTheme = createTheme({
   typography: {
     fontFamily: 'Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     h1: {
-      fontFamily: 'Antonio, sans-serif',
+      fontFamily: ANTONIO_FONT,
       fontWeight: 700,
       fontSize: '2.5rem',
       lineHeight: 1.2,
       color: '#004F7B',
     },
     h2: {
-      fontFamily: 'Antonio, sans-serif',
+      fontFamily: ANTONIO_FONT,
       fontWeight: 700,
       fontSize: '2rem',
       lineHeight: 1.25,
       color: '#004F7B',
     },
     h3: {
-      fontFamily: 'Antonio, sans-serif',
+      fontFamily: ANTONIO_FONT,
       fontWeight: 700,
       fontSize: '1.75rem',
       lineHeight: 1.3,
       color: '#004F7B',
     },
     h4: {
-      fontFamily: 'Antonio, sans-serif',
+      fontFamily: ANTONIO_FONT,
       fontWeight: 700,
       fontSize: '1.5rem',
       lineHeight: 1.35,
       color: '#004F7B',
     },
     h5: {
-      fontFamily: 'Antonio, sans-serif',
+      fontFamily: ANTONIO_FONT,
       fontWeight: 700,
       fontSize: '1.25rem',
       lineHeight: 1.4,
       color: '#004F7B',
     },
     h6: {
-      fontFamily: 'Antonio, sans-serif',
+      fontFamily: ANTONIO_FONT,
       fontWeight: 700,
       fontSize: '1rem',
       lineHeight: 1.45,
       color: '#004F7B',
     },
     body1: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: POPPINS_FONT,
       fontWeight: 400,
       fontSize: '1rem',
       lineHeight: 1.5,
     },
     body2: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: POPPINS_FONT,
       fontWeight: 400,
       fontSize: '0.875rem',
       lineHeight: 1.43,
     },
     button: {
-      fontFamily: 'Poppins, sans-serif',
+      fontFamily: POPPINS_FONT,
       fontWeight: 500,
       textTransform: 'none' as const,
     },
@@ -203,7 +207,7 @@ export const freshfoodzTheme = createTheme({
           borderRadius: 8,
           textTransform: 'none',
           fontWeight: 500,
-          fontFamily: 'Poppins, sans-serif',
+          fontFamily: POPPINS_FONT,
           '&:hover': {
             transform: 'translateY(-1px)',
             boxShadow: '0 4px 8px rgba(0,0,0,0.12)',
@@ -279,26 +283,26 @@ export const freshfoodzTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
-          fontFamily: 'Poppins, sans-serif', // Default für Standard-Chips
+          fontFamily: POPPINS_FONT, // Default für Standard-Chips
         },
         colorPrimary: {
           backgroundColor: '#94C456',
           color: '#ffffff',
-          fontFamily: 'Antonio, sans-serif', // FreshFoodz CI - Antonio Bold für OpportunityType
+          fontFamily: ANTONIO_FONT, // FreshFoodz CI
           fontWeight: 700,
         },
         colorSecondary: {
           backgroundColor: '#004F7B',
           color: '#ffffff',
-          fontFamily: 'Antonio, sans-serif', // FreshFoodz CI - Antonio Bold
+          fontFamily: ANTONIO_FONT, // FreshFoodz CI
           fontWeight: 700,
         },
         colorInfo: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
         },
         colorWarning: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
         },
         label: {
@@ -332,7 +336,7 @@ export const freshfoodzTheme = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          fontFamily: 'Poppins, sans-serif',
+          fontFamily: POPPINS_FONT,
           color: '#004F7B',
           '&.Mui-selected': {
             color: '#94C456',
@@ -347,32 +351,32 @@ export const freshfoodzTheme = createTheme({
     MuiTypography: {
       styleOverrides: {
         h1: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
           color: '#004F7B',
         },
         h2: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
           color: '#004F7B',
         },
         h3: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
           color: '#004F7B',
         },
         h4: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
           color: '#004F7B',
         },
         h5: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
           color: '#004F7B',
         },
         h6: {
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: ANTONIO_FONT,
           fontWeight: 700,
           color: '#004F7B',
         },

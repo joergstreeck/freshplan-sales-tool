@@ -86,6 +86,14 @@ const OPPORTUNITY_TYPE_ICONS: Record<OpportunityType, string> = {
   [OpportunityType.VERLAENGERUNG]: '🔁',
 };
 
+/**
+ * Generate default description for Opportunity
+ * (Copilot Code Review - DRY principle)
+ */
+function generateDefaultDescription(lead: Lead): string {
+  return `Neugeschäft für ${lead.companyName}.${lead.leadScore ? ` Lead-Score: ${lead.leadScore}/100` : ''}`;
+}
+
 export default function CreateOpportunityDialog({
   open,
   lead,
@@ -101,9 +109,7 @@ export default function CreateOpportunityDialog({
     lead.estimatedVolume || undefined
   );
   const [expectedCloseDate, setExpectedCloseDate] = useState<Date | null>(addDays(new Date(), 30)); // +30 Tage
-  const [description, setDescription] = useState(
-    `Neugeschäft für ${lead.companyName}.${lead.leadScore ? ` Lead-Score: ${lead.leadScore}/100` : ''}`
-  );
+  const [description, setDescription] = useState(generateDefaultDescription(lead));
 
   // UI State
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -200,9 +206,7 @@ export default function CreateOpportunityDialog({
       setOpportunityType(OpportunityType.NEUGESCHAEFT);
       setExpectedValue(lead.estimatedVolume || undefined);
       setExpectedCloseDate(addDays(new Date(), 30));
-      setDescription(
-        `Neugeschäft für ${lead.companyName}.${lead.leadScore ? ` Lead-Score: ${lead.leadScore}/100` : ''}`
-      );
+      setDescription(generateDefaultDescription(lead));
       setApiError(null);
       setValidationErrors({});
       onClose();
