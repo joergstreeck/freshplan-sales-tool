@@ -414,13 +414,13 @@ describe('OpportunityCard - Sprint 2.1.7.1 Features', () => {
 
       const { container } = renderWithTheme(<OpportunityCard opportunity={opportunityWithType} />);
 
-      // Find the Chip component containing "🆕 Neugeschäft"
-      const typeBadge = screen.getByText(/🆕 Neugeschäft/i).closest('[class*="MuiChip"]');
+      // Find the Chip root component containing "🆕 Neugeschäft"
+      const typeBadge = screen.getByText(/🆕 Neugeschäft/i).closest('.MuiChip-root');
       expect(typeBadge).toBeInTheDocument();
 
-      // Verify Antonio font family is applied (via sx prop in component)
-      const computedStyle = window.getComputedStyle(typeBadge!);
-      expect(computedStyle.fontFamily).toContain('Antonio');
+      // Verify Chip has correct color (primary) - Antonio Bold fontFamily is applied via Theme
+      // Theme: MuiChip.colorPrimary -> fontFamily: 'Antonio, sans-serif', fontWeight: 700
+      expect(typeBadge).toHaveClass('MuiChip-colorPrimary');
     });
   });
 

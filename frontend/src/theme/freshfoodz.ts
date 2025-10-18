@@ -279,14 +279,30 @@ export const freshfoodzTheme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 16,
+          fontFamily: 'Poppins, sans-serif', // Default für Standard-Chips
         },
         colorPrimary: {
           backgroundColor: '#94C456',
           color: '#ffffff',
+          fontFamily: 'Antonio, sans-serif', // FreshFoodz CI - Antonio Bold für OpportunityType
+          fontWeight: 700,
         },
         colorSecondary: {
           backgroundColor: '#004F7B',
           color: '#ffffff',
+          fontFamily: 'Antonio, sans-serif', // FreshFoodz CI - Antonio Bold
+          fontWeight: 700,
+        },
+        colorInfo: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+        },
+        colorWarning: {
+          fontFamily: 'Antonio, sans-serif',
+          fontWeight: 700,
+        },
+        label: {
+          fontFamily: 'inherit', // Erbt von parent Chip
         },
       },
     },

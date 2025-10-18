@@ -185,13 +185,9 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                 sx={{
                   height: '22px',
                   fontSize: '0.7rem',
-                  fontFamily: 'Antonio, sans-serif !important',
-                  fontWeight: '700 !important',
                   '& .MuiChip-label': {
                     px: 1,
                     lineHeight: 1.2,
-                    fontFamily: 'Antonio, sans-serif !important',
-                    fontWeight: '700 !important',
                   },
                 }}
               />
