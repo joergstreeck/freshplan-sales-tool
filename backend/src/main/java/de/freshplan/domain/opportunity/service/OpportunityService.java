@@ -24,6 +24,7 @@ import de.freshplan.domain.opportunity.service.query.OpportunityQueryService;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
 import io.quarkus.panache.common.Page;
+import io.quarkus.panache.common.Sort;
 import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -950,12 +951,13 @@ public class OpportunityService {
    * Sprint 2.1.7.1 - Lead → Opportunity Traceability
    *
    * @param leadId Die ID des Leads
-   * @return Liste von OpportunityResponse DTOs
+   * @return Liste von OpportunityResponse DTOs, sortiert nach Erstellungsdatum (aufsteigend)
    */
   public List<OpportunityResponse> findByLeadId(Long leadId) {
     logger.debug("Finding opportunities for lead ID: {}", leadId);
 
-    List<Opportunity> opportunities = opportunityRepository.find("lead.id", leadId).list();
+    List<Opportunity> opportunities =
+        opportunityRepository.find("lead.id", Sort.by("createdAt").ascending(), leadId).list();
 
     logger.info("Found {} opportunities for lead ID: {}", opportunities.size(), leadId);
 
