@@ -1440,6 +1440,7 @@ public class LeadResource {
   @GET
   @Path("/{id}/opportunities")
   @RolesAllowed({"USER", "MANAGER", "ADMIN"})
+  @Transactional
   public Response getLeadOpportunities(@PathParam("id") Long id) {
     LOG.infof("Fetching opportunities for lead ID: %d", id);
 
