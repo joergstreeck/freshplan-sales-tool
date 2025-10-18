@@ -21,6 +21,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -53,11 +54,12 @@ public class LeadResourceOpportunitiesTest {
     // Reset counter for each test
     opportunityCounter = 0;
 
-    // Cleanup - WICHTIG: Richtige Reihenfolge wegen FK constraints
-    opportunityRepository.deleteAll();
-    em.createQuery("DELETE FROM LeadContact").executeUpdate();
-    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
-    em.createQuery("DELETE FROM Lead").executeUpdate();
+    // Cleanup only TEST data (not production seeds!)
+    // Delete only entities created by test user to preserve seed data
+    em.createQuery("DELETE FROM Opportunity o WHERE o.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact lc WHERE lc.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity la WHERE la.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM Lead l WHERE l.createdBy = 'testuser'").executeUpdate();
 
     // Ensure test territory exists
     ensureTestTerritoryExists();
@@ -114,6 +116,17 @@ public class LeadResourceOpportunitiesTest {
         baseTime.plusSeconds(2));
 
     em.flush();
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Cleanup test data after each test (safety measure)
+    // Only delete data created by test user
+    em.createQuery("DELETE FROM Opportunity o WHERE o.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact lc WHERE lc.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity la WHERE la.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM Lead l WHERE l.createdBy = 'testuser'").executeUpdate();
   }
 
   @Transactional
