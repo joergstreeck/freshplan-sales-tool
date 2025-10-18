@@ -23,16 +23,27 @@ echo -e "${YELLOW}📄 Gefundene Migrationen:${NC}"
 echo "$MIGRATION_FILES"
 echo ""
 
-# Finde höchste existierende Nummer (aus ALLEN 3 Ordnern, NUR committed files!)
-# Wichtig: git ls-tree HEAD verwenden (zeigt NUR committed files)
-HIGHEST=$(git ls-tree -r --name-only HEAD backend/src/main/resources/db/migration/ backend/src/main/resources/db/dev-migration/ backend/src/main/resources/db/dev-seed/ 2>/dev/null | \
+# Finde höchste Nummern (2-Sequenzen-Modell!)
+# Sequenz 1: Production + Test (V1-V89999 GEMEINSAM)
+# Sequenz 2: SEED (V90001+ EIGENE Sequenz)
+
+HIGHEST_SEQUENTIAL=$(git ls-tree -r --name-only HEAD backend/src/main/resources/db/migration/ backend/src/main/resources/db/dev-migration/ 2>/dev/null | \
+  grep "V[0-9]*__.*\.sql" | sed 's/.*V\([0-9]*\)__.*/\1/' | awk '$1 < 90000' | sort -n | tail -1)
+
+HIGHEST_SEED=$(git ls-tree -r --name-only HEAD backend/src/main/resources/db/dev-seed/ 2>/dev/null | \
   grep "V[0-9]*__.*\.sql" | sed 's/.*V\([0-9]*\)__.*/\1/' | sort -n | tail -1)
 
-if [ -z "$HIGHEST" ]; then
-    HIGHEST=0
+if [ -z "$HIGHEST_SEQUENTIAL" ]; then
+    HIGHEST_SEQUENTIAL=0
 fi
 
-echo -e "${YELLOW}📊 Höchste existierende Nummer: V$HIGHEST${NC}"
+if [ -z "$HIGHEST_SEED" ]; then
+    HIGHEST_SEED=90000
+fi
+
+echo -e "${YELLOW}📊 Höchste Nummern (2-Sequenzen-Modell):${NC}"
+echo -e "   Sequential (Prod+Test): V$HIGHEST_SEQUENTIAL"
+echo -e "   SEED: V$HIGHEST_SEED"
 echo ""
 
 # Prüfe jede neue Migration
@@ -44,12 +55,26 @@ for FILE in $MIGRATION_FILES; do
 
     echo -e "${YELLOW}🔍 Prüfe: $FILENAME (V$VERSION)${NC}"
 
-    # CHECK 1: Nummer muss höher sein als bisherige
-    if [ "$VERSION" -le "$HIGHEST" ]; then
-        echo -e "${RED}❌ FEHLER: V$VERSION ist nicht höher als V$HIGHEST!${NC}"
-        echo -e "${RED}   Verwende: ./scripts/get-next-migration.sh${NC}"
-        ERROR=1
-        continue
+    # CHECK 1: Nummer muss höher sein als bisherige (sequenz-spezifisch!)
+    if [ "$VERSION" -ge 90001 ]; then
+        # SEED Sequenz
+        if [ "$VERSION" -le "$HIGHEST_SEED" ]; then
+            echo -e "${RED}❌ FEHLER: V$VERSION (SEED) ist nicht höher als V$HIGHEST_SEED!${NC}"
+            echo -e "${RED}   SEED-Sequenz: V90001+${NC}"
+            echo -e "${RED}   Nächste SEED: V$((HIGHEST_SEED + 1))${NC}"
+            ERROR=1
+            continue
+        fi
+    else
+        # Sequential Sequenz (Prod+Test)
+        if [ "$VERSION" -le "$HIGHEST_SEQUENTIAL" ]; then
+            echo -e "${RED}❌ FEHLER: V$VERSION (Sequential) ist nicht höher als V$HIGHEST_SEQUENTIAL!${NC}"
+            echo -e "${RED}   Sequential-Sequenz: V1-V89999 (Prod+Test gemeinsam)${NC}"
+            echo -e "${RED}   Nächste Sequential: V$((HIGHEST_SEQUENTIAL + 1))${NC}"
+            echo -e "${RED}   Verwende: ./scripts/get-next-migration.sh${NC}"
+            ERROR=1
+            continue
+        fi
     fi
 
     # CHECK 2: Bestimme Ordner (JETZT 3 OPTIONEN!)

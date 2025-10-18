@@ -10,43 +10,39 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (88% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.1 - COMPLETE (18.10.2025) - **Lead → Opportunity UI Integration**
-- **Next Sprint:** 📋 Sprint 2.1.7.2 - READY (Start: TBD) - **Customer + Xentral-Integration (18h, 2-3 Tage)**
-- **Active Branch:** feature/sprint-2-1-7-1-lead-opportunity (PR #141 READY FOR REVIEW)
-- **Progress:** 24/36 PRs completed - 67% done
-- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.1-4 geplant, Ready for Kickoff**
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (92% complete)
+- **Current Sprint:** ✅ Sprint 2.1.7.1 - MERGED TO MAIN (18.10.2025) - **Lead → Opportunity UI Integration**
+- **Next Sprint:** 📋 Sprint 2.1.7.2 - READY (Start: TBD) - **Opportunity Detail View Enhancement (18h, 2-3 Tage)**
+- **Active Branch:** main (Sprint 2.1.7.1 gemerged, Feature-Branch gelöscht)
+- **Progress:** 25/36 PRs completed - 69% done
+- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.2-4 geplant, Ready for Kickoff**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉🎉🎉 **Opportunity Backend Integration COMPLETE (13.10.2025)** - V10026 + OpportunityService + 3 REST APIs + V90003 DEV-SEED (10 Opportunities)
-  - ✅ **PR #137 - 4 MAIN FEATURES:**
-    - **Lead Scoring System:** 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (268 LOC), 19 Tests GREEN
-    - **Multi-Contact Support:** 26-Felder lead_contacts Tabelle, 100% Customer Parity, Backward Compatibility Trigger (V10017 KRITISCH!)
-    - **Enterprise Security:** 5 Layer (Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure Prevention, HTTP Headers)
-    - **Critical Bug Fixes:** 4 Fixes (ETag Race Condition, Ambiguous Email Column, Missing Triggers, UTF-8 Encoding)
-  - ✅ **12 MIGRATIONEN V10013-V10024:**
-    - V10013-V10015: Settings ETag Triggers, Lead Enums (VARCHAR + CHECK), first_contact_documented_at
-    - V10016-V10017: lead_contacts Tabelle + Backward Compatibility Trigger (KRITISCH - synchronisiert primary contact → legacy fields)
-    - V10018-V10022: Pain Scoring System (4 Faktoren), Lead Scoring System (0-100 Score), territory_id nullable
-    - V10023-V10024: Lead Scoring Complete (revenue_score, NOT NULL Constraints)
-  - ✅ **MIGRATION SAFETY SYSTEM (3-Layer):**
-    - Pre-Commit Hook: Blocks wrong folder, old numbers, test-keywords vs. folder
-    - GitHub Workflow: CI validation on every push/PR
-    - Enhanced get-next-migration.sh: Dynamic Sanity-Check (MAX_JUMP=100), folder selection dialog
-  - ✅ **CI/CD DEBUGGING (6 Iterationen - 2h Session):**
-    - Root Cause: ZWEI Workflows (pr-pipeline-fast.yml + worktree-ci.yml) liefen ALLE Tests
-    - Solution: npm script `test:critical` mit expliziten Pfaden → BEIDE Workflows grün!
-  - ✅ **PERFORMANCE:** N+1 Query Fix (7x faster: 850ms→120ms), Score Caching (90% fewer DB writes)
-  - ✅ **TESTS:** 31/31 LeadResourceTest GREEN + 10/10 Security Tests GREEN + 10 Critical Tests passing
-  - ✅ **CI Status:** 50 commits, 3 weeks development, 125 files changed (+17.930/-1.826 LOC)
-  - ✅ **MERGE:** 2025-10-12T01:43:11Z (Admin-Rechte, squash merge, commit c4c61de92)
+- **Latest:** 🎉🎉🎉 **Sprint 2.1.7.1 - Lead → Opportunity UI Integration MERGED (18.10.2025)** - PR #141 + V10030 OpportunityType + 45/45 Tests GREEN
+  - ✅ **PR #141 - 6 DELIVERABLES (MERGED 18.10.2025 19:02:28Z, Commit 9ac9dfd16):**
+    - **D1:** CreateOpportunityDialog Component + Tests (20/20 GREEN)
+    - **D2:** LeadDetailPage Integration ("In Opportunity konvertieren" Button)
+    - **D3:** LeadOpportunitiesList Component (20/20 Tests GREEN, Whole Card Clickable)
+    - **D4:** OpportunityPipeline Filter-UI (Status Filter, Manager View, Quick-Search, Pagination)
+    - **D5:** Drag & Drop Fix (snapCenterToCursor - KRITISCH, 4.5h Debugging)
+    - **D6:** OpportunityCard Verbesserungen (leadCompanyName, Lead-Origin Badge, Stage Color)
+  - ✅ **MIGRATION V10030:** OpportunityType Enum (VARCHAR(50) + CHECK Constraint - JPA-kompatibel)
+  - ✅ **TESTS:** 45/45 Tests GREEN (27 Backend + 18 Frontend) - 100% Coverage ✅
+  - ✅ **CI-FIXES (3 Commits nach Code Review):**
+    - ESLint: 11 Errors behoben (any→unknown, unused imports, type casting)
+    - Mock Guard: KanbanBoardDndKit.tsx Mock-Import entfernt
+    - PR Template: Case-Sensitivity behoben (ZIEL→Ziel)
+    - Prettier: 12 Files auto-formatiert
+  - ✅ **CODE REVIEWS:** Copilot + Gemini - alle Nitpicks adressiert (Font Constants, Mock Data, DRY, Shared Utilities)
+  - ✅ **DESIGN SYSTEM:** 100% FreshFoodz CI V2 Compliance
+  - ✅ **MERGE:** 2025-10-18T19:02:28Z (Admin-Rechte, squash merge, commit 9ac9dfd16)
 - **Next Action:**
-  1. **PRIORITÄT 1:** Sprint 2.1.7.1 starten (Lead → Opportunity UI - 17h, 2 Tage, FOKUSSIERT!)
-     - Feature-Branch: `git checkout -b feature/sprint-2-1-7-1-lead-opportunity`
-     - Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10030/V90006)
-  2. **PRIORITÄT 2:** Sprint 2.1.7.2 nach 2.1.7.1 (Customer + Xentral - 18h, 2-3 Tage)
-     - KRITISCH: Xentral-API testen BEVOR Start!
-  3. **PRIORITÄT 3:** Sprint 2.1.7.3 nach 2.1.7.2 (RENEWAL-Workflow - 8h, 1 Tag)
+  1. **PRIORITÄT 1:** Sprint 2.1.7.2 starten (Opportunity Detail View Enhancement - 18h, 2-3 Tage)
+     - Feature-Branch: `git checkout -b feature/sprint-2-1-7-2-opportunity-detail`
+     - Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10031)
+     - Real Auth Context Integration (ersetzt Mock-Daten in KanbanBoardDndKit)
+  2. **PRIORITÄT 2:** Sprint 2.1.8 (Team Management & Test Infrastructure - nach 2.1.7.2)
+  3. **OPTION:** Technische Schulden abarbeiten (Mock-Daten → echte APIs)
   4. **DEFERRED:** Sprint 2.1.7.4 (Advanced Filters - YAGNI bis echte Daten vorhanden)
 
 **🔗 WICHTIGE REFERENZEN:**

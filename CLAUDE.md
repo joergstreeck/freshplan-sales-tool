@@ -82,10 +82,19 @@ Ich schreibe meine Updates **zwischen** diese Anker in MP5:
 14. **REPOSITORY SAUBER:** `./scripts/quick-cleanup.sh` vor jedem Push
 
 ## ⚠️ KRITISCHE GUARDRAILS
-### 🔢 Migration-Nummern (NIEMALS hardcoden!)
+### 🔢 Migration-Nummern (2-Sequenzen-Modell)
+**NIEMALS hardcoden! IMMER `./scripts/get-next-migration.sh` nutzen!**
+
+**Sequenz 1 (GEMEINSAM):** Production (`db/migration/`) + Test (`db/dev-migration/`) teilen V1-V89999
+- NEXT = MAX(highest_prod, highest_test) + 1
+- Erlaubt Test→Production ohne Renumbering (nur Ordner wechselt)
+
+**Sequenz 2 (EIGENE):** SEED (`db/dev-seed/`) nutzt V90001+ (nur %dev Profile, UI-Test-Daten)
+- NEXT = highest_seed + 1
+
 ```bash
-MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
-# Fallback: ls -la backend/src/main/resources/db/migration/ | tail -3
+# IMMER verwenden (ermittelt automatisch korrekte Sequenz):
+./scripts/get-next-migration.sh
 ```
 
 ### 🔧 CI-Auto-Fix Limits

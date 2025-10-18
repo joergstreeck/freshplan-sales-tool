@@ -105,33 +105,65 @@ jobs:
 
           echo "✅ Alle Ordner-Prüfungen bestanden!"
 
-      - name: Check Migration Numbers
+      - name: Check Migration Numbers (2-Sequenzen-Modell)
         run: |
-          echo "🔢 Prüfe Migration-Nummern..."
+          echo "🔢 Prüfe Migration-Nummern (2-Sequenzen-Modell)..."
 
-          # Sammle alle Nummern (aus ALLEN 3 Ordnern)
-          ALL_VERSIONS=$(find backend/src/main/resources/db/migration \
+          # Sequenz 1: Sequential (Prod+Test V1-V89999 GEMEINSAM)
+          SEQUENTIAL_VERSIONS=$(find backend/src/main/resources/db/migration \
             backend/src/main/resources/db/dev-migration \
-            backend/src/main/resources/db/dev-seed \
+            -name "V*.sql" 2>/dev/null | \
+            sed 's/.*V\([0-9]*\)__.*/\1/' | awk '$1 < 90000' | sort -n | uniq)
+
+          # Sequenz 2: SEED (V90001+)
+          SEED_VERSIONS=$(find backend/src/main/resources/db/dev-seed \
             -name "V*.sql" 2>/dev/null | \
             sed 's/.*V\([0-9]*\)__.*/\1/' | sort -n | uniq)
 
-          if [ -z "$ALL_VERSIONS" ]; then
-            echo "ℹ️  Keine Migrationen gefunden"
-            exit 0
+          ERROR=0
+
+          # Prüfe Sequential Sequenz
+          if [ ! -z "$SEQUENTIAL_VERSIONS" ]; then
+            echo "📊 Sequenz 1 (Production + Test): V1-V89999 GEMEINSAM"
+            PREV=0
+            for VERSION in $SEQUENTIAL_VERSIONS; do
+              if [ "$VERSION" -le "$PREV" ]; then
+                echo "❌ FEHLER: V$VERSION ist nicht aufsteigend!"
+                echo "   Vorherige: V$PREV"
+                ERROR=1
+              fi
+              PREV=$VERSION
+            done
+            if [ $ERROR -eq 0 ]; then
+              echo "✅ Sequential aufsteigend! (V1 bis V$PREV)"
+            fi
+          else
+            echo "ℹ️  Keine Sequential Migrationen gefunden"
           fi
 
-          # Prüfe aufsteigende Reihenfolge
-          PREV=0
-          ERROR=0
-          for VERSION in $ALL_VERSIONS; do
-            if [ "$VERSION" -le "$PREV" ]; then
-              echo "❌ FEHLER: V$VERSION ist nicht aufsteigend!"
-              echo "   Vorherige: V$PREV"
-              ERROR=1
+          # Prüfe SEED Sequenz
+          if [ ! -z "$SEED_VERSIONS" ]; then
+            echo ""
+            echo "📊 Sequenz 2 (SEED): V90001+"
+            PREV=90000
+            for VERSION in $SEED_VERSIONS; do
+              if [ "$VERSION" -le "$PREV" ]; then
+                echo "❌ FEHLER: V$VERSION ist nicht aufsteigend!"
+                echo "   Vorherige: V$PREV"
+                ERROR=1
+              fi
+              if [ "$VERSION" -lt 90001 ]; then
+                echo "❌ FEHLER: V$VERSION ist < V90001 (SEED muss >= V90001 sein)!"
+                ERROR=1
+              fi
+              PREV=$VERSION
+            done
+            if [ $ERROR -eq 0 ]; then
+              echo "✅ SEED aufsteigend! (V90001 bis V$PREV)"
             fi
-            PREV=$VERSION
-          done
+          else
+            echo "ℹ️  Keine SEED Migrationen gefunden"
+          fi
 
           if [ $ERROR -eq 1 ]; then
             echo ""
@@ -139,7 +171,8 @@ jobs:
             exit 1
           fi
 
-          echo "✅ Alle Nummern aufsteigend! (V1 bis V$PREV)"
+          echo ""
+          echo "✅ Beide Sequenzen korrekt!"
 
       - name: Summary
         if: success()
