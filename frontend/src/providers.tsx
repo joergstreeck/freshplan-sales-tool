@@ -51,9 +51,6 @@ const TestAuditTimeline = lazy(() => import('./pages/TestAuditTimeline'));
 const LazyLoadingDemo = lazy(() =>
   import('./pages/LazyLoadingDemo').then(m => ({ default: m.LazyLoadingDemo }))
 );
-const TestDragDropPage = lazy(() =>
-  import('./pages/TestDragDropPage').then(m => ({ default: m.TestDragDropPage }))
-);
 const HelpCenterPage = lazy(() =>
   import('./pages/HelpCenterPage').then(m => ({ default: m.HelpCenterPage }))
 );
@@ -444,9 +441,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           )}
                           {isDevelopmentMode && (
                             <Route path="/lazy-loading-demo" element={<LazyLoadingDemo />} />
-                          )}
-                          {isDevelopmentMode && (
-                            <Route path="/test-dragdrop" element={<TestDragDropPage />} />
                           )}
 
                           {/* Redirect alte URLs auf neue */}
