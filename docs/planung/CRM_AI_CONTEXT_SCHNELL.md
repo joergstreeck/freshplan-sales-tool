@@ -1,12 +1,12 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-14
+**📅 Letzte Aktualisierung:** 2025-10-18
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** Thematisch strukturiert - Strategie → Architektur → Implementation → Codebase
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
 **⚠️ Codebase-Validierung Disclaimer:**
-Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Sprint 2.1.7.0, 14.10.2025).
+Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 18.10.2025).
 **Single Source of Truth für Migrations:** `/docs/planung/MIGRATIONS.md` (wird aktiv gepflegt!)
 **Immer gegen Codebase validieren** wenn konkrete LOC-Zahlen oder Feature-Status kritisch sind!
 
@@ -37,9 +37,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **NIEMALS Nummern hardcoden!** `./scripts/get-next-migration.sh` nutzen!
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
-### Latest Sprint
-- **Sprint 2.1.7.0 (14.10.2025):** Design System Migration + CRM_AI_CONTEXT Restructure ✅ COMPLETE
-- **Sprint 2.1.7 (14.10.2025):** ActivityOutcome Enum + Opportunity Backend + Customer Number Sequence ✅ COMPLETE
+### Latest Implementation
+- **Lead → Opportunity UI (18.10.2025):** Complete Workflow - Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI ✅ COMPLETE
+- **Design System (15.10.2025):** FreshFoodz CI V2 Migration ✅ COMPLETE
+- **Opportunity Backend (14.10.2025):** Lead→Opportunity→Customer Workflows ✅ COMPLETE
+- **Xentral-Integration:** ERP-Integration für Umsatz + Zahlungsverhalten geplant
 
 ---
 
@@ -67,12 +69,13 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 ---
 
-## 🚨 KNOWN GAPS (Stand: 2025-10-14)
+## 🚨 KNOWN GAPS (Stand: 2025-10-18)
 
 **Wichtige fehlende Features, die neue KIs kennen sollten:**
 
 ### Frontend-UI Gaps
-- ❌ **Opportunities Frontend UI** - Backend V10026 ready (lead_id/customer_id FKs), UI fehlt komplett
+- ✅ **Lead → Opportunity UI** - COMPLETE (Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI) ✅
+- 🔶 **Opportunity → Customer UI** - Backend ready, UI geplant (Customer-Akquise bei CLOSED_WON)
 - ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant, nicht implementiert)
 
 ### Layout & Design
@@ -154,8 +157,9 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **CURRENT STATUS:**
 - 📊 **Tests:** Backend Tests GREEN (100% Coverage), Frontend Tests GREEN
 - 📦 **Migrations:** Production Migrations deployed → **Details:** `/docs/planung/MIGRATIONS.md`
-- 🚀 **Latest:** Sprint 2.1.7.0 (Design System Migration) ✅ COMPLETE (14.10.2025)
-- 🚀 **Previous:** Sprint 2.1.7 (ActivityOutcome + Opportunity Backend) ✅ COMPLETE (14.10.2025)
+- 🚀 **Backend:** Lead-Management + Opportunity-Workflows operational ✅
+- 🚀 **Frontend:** Design System V2 deployed, Opportunities UI in Planning 🔶
+- 📋 **Next:** Opportunities Frontend UI + Xentral-ERP-Integration
 
 ---
 
@@ -211,11 +215,29 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - T+3 Sample-Follow-up + T+7 Bulk-Order-Automation (SLA-Engine)
 - ROI-Calculator für Business-Value-Demonstration
 
+**Opportunity-Management (B2B-Food CRM Pattern):**
+- **Lead → Opportunity → Customer Workflow** (V10026 Backend ready, UI in Sprint 2.1.7.1-3)
+- **Opportunity = Customer Acquisition** (NICHT einzelne Orders!)
+  - Im B2B-Food-Geschäft: Opportunities = Neukunden gewinnen
+  - Nach CLOSED_WON → Customer (ongoing relationship)
+  - Orders laufen über ERP-System (Xentral)
+- **RENEWAL-Opportunities für Bestandskunden:**
+  - opportunityType field differenziert zwischen "New Business" und "Renewal"
+  - Upsell/Cross-sell für bestehende Kunden
+  - Customer-Opportunities starten bei NEEDS_ANALYSIS (skip NEW_LEAD/QUALIFICATION)
+- **Pipeline-Stages:** 7 Stages (NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST)
+  - RENEWAL als separate Stage wird durch opportunityType ersetzt (Migration pending - Sprint 2.1.7.1)
+
 **Customer-Relationship-Management:**
 - Multi-Location-Kunden mit verschiedenen Standorten
 - CHEF/BUYER parallele Kommunikation + Workflow-Management
 - Seasonal Campaign-Management (Spargel/Oktoberfest/Weihnachten)
 - Sample-Management + Feedback-Integration
+- **Xentral-ERP-Integration** (FC-005 + FC-009 dokumentiert):
+  - Umsatz-Dashboard (30/90/365 Tage Rechnungsdaten)
+  - Zahlungsverhalten-Monitoring (Ampel-System)
+  - Churn-Alarm (variable Threshold pro Kunde: 7-90 Tage)
+  - Provision-Modell: Akquise + Bestandspflege (basiert auf Zahlungseingang, nicht Rechnungsstellung)
 
 **Business-Intelligence + Performance:**
 - Real-time Business-KPIs + Territory-Performance (Hot-Projections)
@@ -254,11 +276,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Idempotency Service (24h TTL, SHA-256) ✅
 - Bestandsleads-Migration APIs ✅
 
-**Frontend: 🟡 85% IMPLEMENTED**
+**Frontend: 🟡 IN PROGRESS**
 - Lead List + Create Dialog ✅
 - ActivityDialog (14 Tests GREEN) ✅
 - Lead Scoring UI ✅
-- **Opportunities UI ❌ FEHLT!** (Backend V10026 ready, UI pending)
+- **Opportunities UI 🔶 IN PLANNING** (Backend V10026 ready ✅)
 - Progressive Profiling ⏳ (geplant)
 
 **Tests & Qualität:**
@@ -274,8 +296,8 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - N+1 Query optimiert
 - Score Caching aktiv
 
-**Gap-Status:** Backend complete, Frontend 85% (Opportunities UI fehlt)
-**Next:** Sprint 2.1.7.1 - Opportunities Frontend UI Integration
+**Gap-Status:** Backend complete ✅, Frontend Opportunities UI in Planning
+**Next:** Opportunities Frontend UI Integration
 
 **PRs:** #103, #105, #110, #111, #122, #123, #131, #132, #133, #134, #135, #137, #139
 **Migrations:** Production + DEV-SEED deployed → **Details:** `/docs/planung/MIGRATIONS.md`
@@ -402,14 +424,126 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Automatisch: created_at + updated_at + created_by + updated_by
 - Business-Events: lead_transfer_requested, lead_transfer_approved, stop_the_clock_applied
 
-### 🔄 Ende-zu-Ende Business-Flows
+### 🔄 LEAD → OPPORTUNITY → CUSTOMER LIFECYCLE
 
-#### Flow 1: Lead → Sample → Trial → Order
-1. Lead QUALIFIED → SampleBox konfiguriert → `sample.status.changed=SHIPPED`
-2. DELIVERY → Trial 2-4 Wochen, Feedback protokolliert → ROI aktualisiert
-3. Erfolgreiche Produkte → Order an ERP, Pipeline auf CONVERTED
+**Voller End-to-End B2B-Food-Workflow mit Traceability + RENEWAL-Opportunities**
 
-#### Flow 2: Lead-Protection Reminder
+---
+
+#### **Phase 1: Lead-Qualifizierung** (NEW → QUALIFIED → CONVERTED)
+
+**Lead-Status-Progression:**
+1. **NEW** - Neuer Lead erfasst (Import, Webform, manuell)
+2. **CONTACTED** - Erstkontakt erfolgt (T+3 Sample Follow-up, Cold Call)
+3. **QUALIFIED** - Multi-Contact dokumentiert (CHEF + BUYER erfasst), Lead-Scoring ≥40
+4. **CONVERTED** - In Opportunity konvertiert (ONE-WAY, Lead bleibt sichtbar für Traceability)
+
+**UI-Workflow (COMPLETE ✅):**
+- **Button "In Opportunity konvertieren"** in LeadDetailPage (nur bei QUALIFIED/ACTIVE)
+- **CreateOpportunityDialog:** Pre-filled mit Lead-Daten, OpportunityType Selection (4 Freshfoodz Types)
+- **Lead-Status Update:** Automatisch auf CONVERTED gesetzt (irreversibel)
+- **Converted-Badge:** Zeigt Konvertierungsdatum in LeadDetailPage
+- **Opportunities-Accordion:** Zeigt alle Opportunities für einen Lead (Traceability)
+- **Lead-Origin Badge:** "von Lead #12345" in Opportunity-Cards (vollständige Rückverfolgbarkeit)
+
+**Backend-Implementation (V10026 + V10030):**
+- `POST /api/opportunities/from-lead/{leadId}` erstellt Opportunity
+- `GET /api/leads/{id}/opportunities` liefert alle Opportunities eines Leads
+- Opportunity.lead_id = original Lead ID (FK mit INDEX)
+- Opportunity.opportunity_type = NEUGESCHAEFT (Default bei Lead-Conversion)
+- Pipeline startet bei Stage: NEW_LEAD
+
+---
+
+#### **Phase 2: Verkaufsprozess** (Pipeline-Management)
+
+**7-Stage Pipeline:**
+1. **NEW_LEAD** - Initialer Kontakt (aus Lead oder direkt)
+2. **QUALIFICATION** - Bedarf + Budget qualifiziert
+3. **NEEDS_ANALYSIS** - Detaillierte Bedarfsanalyse
+4. **PROPOSAL** - Angebot erstellt + versendet
+5. **NEGOTIATION** - Verhandlungen laufen
+6. **CLOSED_WON** - Gewonnen! → Kunde anlegen möglich
+7. **CLOSED_LOST** - Verloren (Reason tracking)
+
+**UI-Workflow (COMPLETE ✅):**
+- **Kanban Pipeline:** Visualisierung aller Opportunities mit Drag & Drop zwischen Stages
+- **Stage-Transition Validation:** CLOSED_WON/CLOSED_LOST können nicht verschoben werden (nur Reaktivierung via Button)
+- **Automatic Probability Update:** Pro Stage automatisch angepasst (10% → 25% → 40% → 60% → 80% → 100%/0%)
+- **Pipeline Filter:**
+  - Status Filter: Active (default) | Closed | All
+  - Benutzer-Filter (Manager View): Dropdown für Team-Member Selection (Coaching-Mode)
+  - Quick-Search: Real-time filtering über Name/Customer/Lead
+  - Pagination: Max 15 Cards pro Spalte (Performance)
+- **Pipeline Statistics:** Active/Won/Lost Count + Total Value + Conversion Rate
+
+**Business-Rule:**
+- **1 Lead → 1 primäre Opportunity** (lead_id gespeichert)
+- Weitere Opportunities für denselben Lead möglich (z.B. unterschiedliche Produktlinien)
+
+**Opportunity-Types (Freshfoodz Business Types):**
+- **NEUGESCHAEFT** - Neukunden-Akquise (Standard bei Lead-Conversion)
+- **SORTIMENTSERWEITERUNG** - Produkterweiterung oder Volumen-Erhöhung (entspricht Upsell + Cross-sell)
+- **NEUER_STANDORT** - Zusätzliche Location für bestehenden Kunden
+- **VERLAENGERUNG** - Rahmenvertrag-Renewal / Verlängerung
+
+**Backend-Implementation (V10030):**
+- OpportunityType als VARCHAR(50) + CHECK Constraint (JPA-kompatibel, kein PostgreSQL ENUM)
+- Default: NEUGESCHAEFT (bei createFromLead())
+- Migration V10030: Pattern-based cleanup von Opportunity-Namen (entfernt Type-Prefixes)
+
+---
+
+#### **Phase 3: Customer-Management** (Post-Conversion)
+
+**Customer-Akquise (geplant - Sprint 2.1.7.2):**
+- Button **"Als Kunde anlegen"** bei Opportunity CLOSED_WON (UI noch nicht implementiert)
+- Dialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!)
+- `POST /api/opportunities/{id}/convert-to-customer` erstellt Customer
+- Customer.original_lead_id = Lead ID (V261 - volle Traceability)
+- Optional: Xentral-Verknüpfung sofort oder später nachpflegen
+
+**Xentral-ERP-Integration (FC-005 + FC-009):**
+- **Umsatz-Dashboard:** 30/90/365 Tage Rechnungsdaten (Live-Sync)
+- **Zahlungsverhalten:** Ampel-System (EXCELLENT / GOOD / ACCEPTABLE / PROBLEMATIC)
+- **Churn-Alarm:** Tage seit letzter Bestellung (variable Threshold: 7-90 Tage pro Kunde)
+- **Umsatz-Trend:** GROWING / STABLE / DECLINING (automatische Analyse)
+
+**Ongoing Business:**
+- Orders laufen über Xentral ERP-System (NICHT über CRM!)
+- CRM zeigt Umsätze + Zahlungsverhalten + Churn-Alarm
+- Provision-Modell: Akquise-Provision (einmalig) + Bestandspflege-Provision (laufend)
+- **Provision-Berechnung:** Basiert auf Zahlungseingang (NICHT Rechnungsstellung!)
+
+---
+
+#### **RENEWAL-Opportunities für Bestandskunden**
+
+**Use Cases:**
+- **Upsell:** Bestehende Produktlinien erweitern (mehr Volumen)
+- **Cross-sell:** Neue Produktkategorien (z.B. Spargel → Bio-Fleisch)
+- **Churn-Prevention:** Customer reaktivieren nach Inaktivität
+- **Vertragsverlängerung:** Rahmenverträge verlängern
+
+**RENEWAL-Workflow:**
+1. **Trigger (manuell oder automatisch):**
+   - Churn-Alarm: Letzte Bestellung vor X Tagen (X = churnAlertDays, default 30)
+   - Verkäufer-Aktion: Dashboard zeigt Churn-Alarm → Button "Neue Opportunity"
+   - Zahlungsverhalten PROBLEMATIC → Innendienst informieren
+2. **Opportunity erstellen:**
+   - `POST /api/opportunities/for-customer/{customerId}` (Sprint 2.1.7.2)
+   - opportunityType = "RENEWAL" (statt "NEW_BUSINESS")
+   - **Pipeline startet bei NEEDS_ANALYSIS** (skip NEW_LEAD/QUALIFICATION - Kunde ist bekannt!)
+3. **Verkaufsprozess:**
+   - NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION → CLOSED_WON/CLOSED_LOST
+   - Bei CLOSED_WON: Customer-Daten aktualisieren (kein neuer Customer!)
+
+**Xentral-Dashboard überwacht:**
+- Umsatz-Trend DECLINING → Frühwarnung an Verkäufer
+- Zahlungsverhalten PROBLEMATIC → Innendienst informieren
+- Churn-Alarm nach X Tagen ohne Bestellung → RENEWAL-Opportunity vorgeschlagen
+
+#### Flow 3: Lead-Protection Reminder
 1. T+60 ohne Aktivität → Reminder (Activity-Kinds: QUALIFIED_CALL, ROI_PRESENTATION, SAMPLE_FEEDBACK zählen)
 2. T+10 Grace → bei keiner Aktivität → Schutz erlischt automatisch
 3. Stop-the-Clock bei FreshFoodz-Gründen (Hold gesetzt, kumulative Pause-Tracking)

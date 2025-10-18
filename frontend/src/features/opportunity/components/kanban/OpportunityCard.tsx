@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Stack,
   Box,
   Avatar,
   LinearProgress,
@@ -12,14 +11,15 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
-import BusinessIcon from '@mui/icons-material/Business';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import RestoreIcon from '@mui/icons-material/Restore';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { Chip } from '@mui/material';
 
-import { OpportunityStage, type Opportunity } from '../../types';
+import { OpportunityStage, OpportunityType, type Opportunity } from '../../types';
 
 // Aktive Pipeline Stages (immer sichtbar)
 const ACTIVE_STAGES = [
@@ -45,6 +45,50 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
   ({ opportunity, isDragging = false, onQuickAction, showActions = false }) => {
     const theme = useTheme();
     const [, setIsHovered] = useState(false);
+
+    // Clean opportunity name from type prefix (Sprint 2.1.7.1 - Production Safety)
+    const cleanOpportunityName = useCallback((name: string): string => {
+      return name.replace(
+        /^(Neuer Standort|Sortimentserweiterung|Verlängerung|Verlaengerung|Neugeschäft|Neugeschaeft):\s*/i,
+        ''
+      );
+    }, []);
+
+    const getOpportunityTypeLabel = useCallback((type?: OpportunityType): string => {
+      if (!type) return '';
+      const labels: Record<OpportunityType, string> = {
+        [OpportunityType.NEUGESCHAEFT]: 'Neugeschäft',
+        [OpportunityType.SORTIMENTSERWEITERUNG]: 'Sortimentserweiterung',
+        [OpportunityType.NEUER_STANDORT]: 'Neuer Standort',
+        [OpportunityType.VERLAENGERUNG]: 'Vertragsverlängerung',
+      };
+      return labels[type] || type;
+    }, []);
+
+    const getOpportunityTypeIcon = useCallback((type?: OpportunityType): string => {
+      if (!type) return '💼';
+      const icons: Record<OpportunityType, string> = {
+        [OpportunityType.NEUGESCHAEFT]: '🆕',
+        [OpportunityType.SORTIMENTSERWEITERUNG]: '📈',
+        [OpportunityType.NEUER_STANDORT]: '📍',
+        [OpportunityType.VERLAENGERUNG]: '🔁',
+      };
+      return icons[type] || '💼';
+    }, []);
+
+    const getOpportunityTypeColor = useCallback(
+      (type?: OpportunityType): 'primary' | 'secondary' | 'info' | 'warning' | 'default' => {
+        if (!type) return 'default';
+        const colors: Record<OpportunityType, 'primary' | 'secondary' | 'info' | 'warning'> = {
+          [OpportunityType.NEUGESCHAEFT]: 'primary',
+          [OpportunityType.SORTIMENTSERWEITERUNG]: 'secondary',
+          [OpportunityType.NEUER_STANDORT]: 'info',
+          [OpportunityType.VERLAENGERUNG]: 'warning',
+        };
+        return colors[type] || 'default';
+      },
+      []
+    );
 
     const getProbabilityColor = useCallback(
       (probability?: number) => {
@@ -84,9 +128,11 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
         sx={{
           opacity: isDragging ? 0.5 : 1,
           boxShadow: isDragging ? theme.shadows[8] : theme.shadows[2],
-          border: `1px solid ${theme.palette.divider}`,
+          border: opportunity.stageColor
+            ? `1px solid ${opportunity.stageColor}40` // 40 = 25% opacity (Sprint 2.1.7.1)
+            : `1px solid ${theme.palette.divider}`,
           cursor: 'grab',
-          transform: isDragging ? 'rotate(2deg)' : 'none',
+          // Sprint 2.1.7.1: NO transform here! SortableOpportunityCard handles it
           '&:hover': {
             boxShadow: theme.shadows[4],
           },
@@ -101,28 +147,59 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
               lineHeight: 1.3,
             }}
           >
-            {opportunity.name}
+            {cleanOpportunityName(opportunity.name)}
           </Typography>
 
-          {/* Customer & Contact */}
-          <Stack spacing={0.5} sx={{ mb: 1 }}>
-            {opportunity.customerName && (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <BusinessIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                  {opportunity.customerName}
-                </Typography>
-              </Box>
+          {/* Customer / Lead Badge (Sprint 2.1.7.1 - Customer Fallback + Lead Badge) */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+            {/* Kundenname oder Lead-Fallback */}
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
+              <Typography
+                variant="body2"
+                sx={{ color: theme.palette.text.secondary, fontSize: '0.875rem' }}
+              >
+                {opportunity.customerName || opportunity.leadCompanyName || 'Unbekannt'}
+              </Typography>
+            </Box>
+
+            {/* Lead-Origin Badge (wenn von Lead konvertiert) */}
+            {opportunity.leadId && (
+              <Chip
+                icon={<TrendingUpIcon sx={{ fontSize: '0.875rem' }} />}
+                label={`von Lead #${opportunity.leadId}`}
+                size="small"
+                sx={{
+                  height: '20px',
+                  fontSize: '0.75rem',
+                  bgcolor: theme => `${theme.palette.primary.main}15`, // FreshFoodz Green 15% opacity (Design System konform)
+                  color: theme => theme.palette.secondary.main, // FreshFoodz Blue aus Theme
+                  fontWeight: 500,
+                  '& .MuiChip-icon': {
+                    color: theme => theme.palette.primary.main, // FreshFoodz Green aus Theme
+                  },
+                  border: theme => `1px solid ${theme.palette.primary.main}30`, // 30% opacity
+                }}
+              />
             )}
-            {opportunity.contactName && (
-              <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
-                <Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
-                  {opportunity.contactName}
-                </Typography>
-              </Box>
+
+            {/* OpportunityType Badge (Freshfoodz Business Types - Sprint 2.1.7.1) */}
+            {opportunity.opportunityType && (
+              <Chip
+                label={`${getOpportunityTypeIcon(opportunity.opportunityType)} ${getOpportunityTypeLabel(opportunity.opportunityType)}`}
+                size="small"
+                color={getOpportunityTypeColor(opportunity.opportunityType)}
+                sx={{
+                  height: '22px',
+                  fontSize: '0.7rem',
+                  '& .MuiChip-label': {
+                    px: 1,
+                    lineHeight: 1.2,
+                  },
+                }}
+              />
             )}
-          </Stack>
+          </Box>
 
           {/* Value */}
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>

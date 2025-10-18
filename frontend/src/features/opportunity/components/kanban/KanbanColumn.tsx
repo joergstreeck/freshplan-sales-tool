@@ -1,8 +1,7 @@
-import React from 'react';
-import { Paper, Box, Typography, Badge } from '@mui/material';
+import React, { useState } from 'react';
+import { Paper, Box, Typography, Badge, Button } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
-import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 
 import { OpportunityStage, type Opportunity } from '../../types';
 import { STAGE_CONFIGURATIONS } from '../../config/stage-config';
@@ -31,6 +30,13 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
     const config = STAGE_CONFIGS_RECORD[stage];
     const totalValue = opportunities.reduce((sum, opp) => sum + (opp.value || 0), 0);
 
+    // Feature 4: Pagination (Sprint 2.1.7.1)
+    const CARDS_PER_COLUMN = 15;
+    const [showAll, setShowAll] = useState(false);
+    const hasMore = opportunities.length > CARDS_PER_COLUMN;
+    const visibleOpportunities = showAll ? opportunities : opportunities.slice(0, CARDS_PER_COLUMN);
+    const hiddenCount = opportunities.length - CARDS_PER_COLUMN;
+
     // Make the column a drop target
     const { setNodeRef, isOver } = useDroppable({
       id: stage,
@@ -57,6 +63,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
             : '1px solid rgba(0, 0, 0, 0.12)',
           borderRadius: 2,
           transition: 'all 0.2s ease',
+          overflow: 'visible', // Allow cards to escape during drag
+          position: 'relative', // Establish stacking context
         }}
       >
         {/* Column Header */}
@@ -101,22 +109,44 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
           )}
         </Box>
 
-        {/* Sortable Area */}
-        <SortableContext
-          items={opportunities.map(o => o.id)}
-          strategy={verticalListSortingStrategy}
+        {/* Cards Area - Sprint 2.1.7.1: NO SortableContext! Just Droppable Zone */}
+        <Box
+          sx={{
+            minHeight: 400,
+            maxHeight: 'calc(100vh - 400px)',
+            overflowY: 'auto',
+            position: 'relative', // Required for child z-index to work
+            isolation: 'isolate', // Create new stacking context
+          }}
         >
-          <Box sx={{ minHeight: 400, maxHeight: 'calc(100vh - 400px)', overflowY: 'auto' }}>
-            {opportunities.map(opportunity => (
-              <SortableOpportunityCard
-                key={opportunity.id}
-                opportunity={opportunity}
-                onQuickAction={onQuickAction}
-                isAnimating={animatingIds.has(opportunity.id)}
-              />
-            ))}
-          </Box>
-        </SortableContext>
+          {visibleOpportunities.map(opportunity => (
+            <SortableOpportunityCard
+              key={opportunity.id}
+              opportunity={opportunity}
+              onQuickAction={onQuickAction}
+              isAnimating={animatingIds.has(opportunity.id)}
+            />
+          ))}
+
+          {/* Feature 4: "Weitere laden" Button (Sprint 2.1.7.1) */}
+          {hasMore && !showAll && (
+            <Button
+              variant="text"
+              onClick={() => setShowAll(true)}
+              fullWidth
+              sx={{
+                mt: 1,
+                color: theme.palette.text.secondary,
+                fontSize: '0.875rem',
+                '&:hover': {
+                  bgcolor: theme.palette.action.hover,
+                },
+              }}
+            >
+              ... {hiddenCount} weitere laden
+            </Button>
+          )}
+        </Box>
       </Paper>
     );
   }

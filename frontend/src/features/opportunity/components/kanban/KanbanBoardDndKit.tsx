@@ -10,8 +10,25 @@ import {
 } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
-import { Box, Paper, Typography, Stack } from '@mui/material';
+import { snapCenterToCursor } from '@dnd-kit/modifiers';
+import {
+  Box,
+  Paper,
+  Typography,
+  Stack,
+  ToggleButtonGroup,
+  ToggleButton,
+  TextField,
+  InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Divider,
+} from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import SearchIcon from '@mui/icons-material/Search';
+import toast from 'react-hot-toast';
 
 import { OpportunityStage, type Opportunity } from '../../types';
 import { logger } from '../../../../lib/logger';
@@ -34,21 +51,6 @@ const CLOSED_STAGES = [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST
 
 const componentLogger = logger.child('KanbanBoardDndKit');
 
-// Drag & Drop Konfiguration
-// Diese Werte funktionieren für die meisten Browser und Bildschirmgrößen
-// Bei Bedarf können sie über CSS Custom Properties überschrieben werden
-const CARD_WIDTH = 280; // Standard-Breite der Opportunity Cards
-const DRAG_OFFSET_X = CARD_WIDTH; // Horizontale Korrektur für Cursor-Position
-
-// Vertikaler Offset: Kompensiert Browser-Unterschiede beim Drag-Start
-// Chrome/Edge: 30px, Firefox: 25px, Safari: 35px - wir nehmen den Mittelwert
-// const DRAG_OFFSET_Y = 30; // Currently unused, kept for future drag improvements
-
-// Browser-Detection für feinere Anpassungen (falls nötig)
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
-const BROWSER_OFFSET_Y = isSafari ? 35 : isFirefox ? 25 : 30;
-
 interface PipelineStats {
   totalActive: number;
   totalWon: number;
@@ -65,6 +67,29 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [activeId, setActiveId] = useState<string | null>(null);
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
+
+  // Feature 1: Status Filter (Sprint 2.1.7.1)
+  const [statusFilter, setStatusFilter] = useState<'active' | 'closed' | 'all'>('active');
+
+  // Feature 2: Benutzer-Filter (Sprint 2.1.7.1 - Manager View)
+  const [selectedUserId, setSelectedUserId] = useState<string>('all');
+
+  // Feature 3: Quick-Search (Sprint 2.1.7.1)
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // TODO Sprint 2.1.7.2: Replace with real data from Auth Context + User API
+  // Temporary hardcoded data for development (will be removed in Sprint 2.1.7.2)
+  const currentUser = {
+    id: 'current-user-123',
+    name: 'Max Manager',
+    role: 'MANAGER' as const,
+  };
+  const teamMembers = [
+    { id: 'current-user-123', name: 'Max Manager' },
+    { id: 'user-1', name: 'Anna Schmidt' },
+    { id: 'user-2', name: 'Peter Meier' },
+    { id: 'user-3', name: 'Sarah Wagner' },
+  ];
 
   // Load opportunities from API on component mount
   useEffect(() => {
@@ -131,23 +156,64 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     };
   }, [opportunities]);
 
-  // Opportunities nach Stage gruppieren (memoized)
+  // Filter opportunities (Sprint 2.1.7.1)
+  const filteredOpportunities = useMemo(() => {
+    let filtered = opportunities;
+
+    // Feature 2: Benutzer-Filter (Manager View)
+    // Only filter by user if not "all" selected
+    if (selectedUserId !== 'all') {
+      // Filter by assignedToId for accurate matching (Gemini Code Review)
+      filtered = filtered.filter(opp => opp.assignedToId === selectedUserId);
+    }
+
+    // Feature 3: Quick-Search
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        opp =>
+          opp.name.toLowerCase().includes(query) ||
+          (opp.customerName && opp.customerName.toLowerCase().includes(query)) ||
+          (opp.leadCompanyName && opp.leadCompanyName.toLowerCase().includes(query))
+      );
+    }
+
+    return filtered;
+  }, [opportunities, selectedUserId, searchQuery]);
+
+  // Determine visible stages based on status filter (Sprint 2.1.7.1)
+  const visibleStages = useMemo(() => {
+    switch (statusFilter) {
+      case 'active':
+        return ACTIVE_STAGES;
+      case 'closed':
+        return CLOSED_STAGES;
+      case 'all':
+        return [...ACTIVE_STAGES, ...CLOSED_STAGES];
+      default:
+        return ACTIVE_STAGES;
+    }
+  }, [statusFilter]);
+
+  // Opportunities nach Stage gruppieren (memoized) - mit Filter
   const opportunitiesByStage = useMemo(() => {
     return Object.values(OpportunityStage).reduce(
       (acc, stage) => {
-        acc[stage] = opportunities.filter(opp => opp.stage === stage);
+        acc[stage] = filteredOpportunities.filter(opp => opp.stage === stage);
         return acc;
       },
       {} as Record<OpportunityStage, Opportunity[]>
     );
-  }, [opportunities]);
+  }, [filteredOpportunities]);
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       try {
+        console.log('[KANBAN DRAG START] 🚀', { activeId: event.active.id });
         componentLogger.debug('Drag operation started', { activeId: event.active.id });
         setActiveId(event.active.id as string);
       } catch (error) {
+        console.error('[KANBAN DRAG START ERROR]', error);
         componentLogger.error('Error in handleDragStart', { error });
         errorHandler(error as Error);
       }
@@ -174,6 +240,31 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           setActiveId(null);
           return;
         }
+
+        // VALIDATION: CLOSED_* können nicht verschoben werden
+        // → Reaktivierung nur über "Reaktivieren"-Button in Card
+        if (
+          sourceStage === OpportunityStage.CLOSED_WON ||
+          sourceStage === OpportunityStage.CLOSED_LOST
+        ) {
+          toast.error('Geschlossene Opportunities können nicht verschoben werden', {
+            duration: 3000,
+            icon: '🔒',
+          });
+          setActiveId(null);
+          componentLogger.warn('Blocked drag from closed stage', {
+            opportunityId: active.id,
+            fromStage: sourceStage,
+            toStage: targetStage,
+          });
+          return;
+        }
+
+        // TODO: Future validation (Sprint 2.1.7.2+):
+        // - Max 1 Stage rückwärts
+        // - Confirmation Dialog bei großen Sprüngen
+        // - Reason-Field bei Rückwärts
+        // → Erst nach User-Feedback implementieren
 
         // Add animation effect
         setAnimatingIds(prev => new Set([...prev, active.id as string]));
@@ -322,9 +413,65 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', p: 2 }}>
       {/* Pipeline Statistics Header */}
       <Paper sx={{ p: 3, mb: 2, bgcolor: theme.palette.background.default, borderRadius: 2 }}>
-        <Typography variant="h4" sx={{ mb: 3 }}>
-          Pipeline Übersicht
-        </Typography>
+        {/* Header Row mit Title + Filter Controls */}
+        <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+          <Typography variant="h4">Pipeline Übersicht</Typography>
+
+          <Box sx={{ flexGrow: 1 }} />
+
+          {/* Feature 3: Quick-Search */}
+          <TextField
+            placeholder="Suche nach Name oder Kunde..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ width: 300 }}
+          />
+
+          {/* Feature 2: Benutzer-Filter (Manager View) */}
+          {currentUser.role === 'MANAGER' && (
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Verkäufer</InputLabel>
+              <Select
+                value={selectedUserId}
+                onChange={e => setSelectedUserId(e.target.value)}
+                label="Verkäufer"
+              >
+                <MenuItem value="all">
+                  <strong>Alle Verkäufer</strong>
+                </MenuItem>
+                <Divider />
+                {teamMembers.map(member => (
+                  <MenuItem key={member.id} value={member.id}>
+                    {member.name}
+                    {member.id === currentUser.id && ' (ich)'}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
+
+          {/* Feature 1: Status Filter */}
+          <ToggleButtonGroup
+            value={statusFilter}
+            exclusive
+            onChange={(e, value) => value && setStatusFilter(value)}
+            size="small"
+          >
+            <ToggleButton value="active">🔥 Aktive ({pipelineStats.totalActive})</ToggleButton>
+            <ToggleButton value="closed">
+              📦 Geschlossene ({pipelineStats.totalWon + pipelineStats.totalLost})
+            </ToggleButton>
+            <ToggleButton value="all">📊 Alle ({opportunities.length})</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
         <Stack direction="row" spacing={4} flexWrap="wrap">
           <Box>
             <Typography
@@ -406,19 +553,8 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             '&::-webkit-scrollbar-thumb': { bgcolor: 'grey.400', borderRadius: 4 },
           }}
         >
-          {/* Active Stages */}
-          {ACTIVE_STAGES.map(stage => (
-            <KanbanColumn
-              key={stage}
-              stage={stage}
-              opportunities={opportunitiesByStage[stage] || []}
-              onQuickAction={handleQuickAction}
-              animatingIds={animatingIds}
-            />
-          ))}
-
-          {/* Closed Stages */}
-          {CLOSED_STAGES.map(stage => (
+          {/* Stages based on Status Filter (Sprint 2.1.7.1) */}
+          {visibleStages.map(stage => (
             <KanbanColumn
               key={stage}
               stage={stage}
@@ -429,30 +565,18 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           ))}
         </Box>
 
-        {/* Drag Overlay with proper offset */}
-        <DragOverlay
-          dropAnimation={{
-            duration: 200,
-            easing: 'cubic-bezier(0.18, 0.67, 0.6, 1.22)',
-          }}
-          style={{
-            cursor: 'grabbing',
-          }}
-          modifiers={[
-            // Custom modifier für Cursor-Zentrierung
-            // WICHTIG: Dieser Offset korrigiert die Position der Drag-Preview
-            // sodass die Karte unter dem Cursor zentriert wird.
-            // Bei Änderungen der Kartenbreite muss CARD_WIDTH angepasst werden!
-            ({ transform }) => ({
-              ...transform,
-              x: transform.x - DRAG_OFFSET_X, // Horizontaler Offset
-              y: transform.y + BROWSER_OFFSET_Y, // Browser-spezifischer vertikaler Offset
-            }),
-          ]}
-        >
-          {activeOpportunity ? (
-            <OpportunityCard opportunity={activeOpportunity} isDragging />
-          ) : null}
+        {/* Drag Overlay - Sprint 2.1.7.1: snapCenterToCursor = NO OFFSET! */}
+        <DragOverlay dropAnimation={null} modifiers={[snapCenterToCursor]}>
+          {activeOpportunity && (
+            <Box
+              sx={{
+                cursor: 'grabbing',
+                boxShadow: 8,
+              }}
+            >
+              <OpportunityCard opportunity={activeOpportunity} isDragging />
+            </Box>
+          )}
         </DragOverlay>
       </DndContext>
     </Box>

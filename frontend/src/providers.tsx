@@ -38,6 +38,9 @@ const CockpitPageV2 = lazy(() =>
 const OpportunityPipelinePage = lazy(() =>
   import('./pages/OpportunityPipelinePage').then(m => ({ default: m.OpportunityPipelinePage }))
 );
+const OpportunityDetailPage = lazy(() =>
+  import('./pages/OpportunityDetailPage').then(m => ({ default: m.OpportunityDetailPage }))
+);
 // const HelpSystemDemoPage = lazy(() =>
 //   import('./pages/HelpSystemDemoPage').then(m => ({ default: m.HelpSystemDemoPage }))
 // );
@@ -185,6 +188,8 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/customer-management/opportunities"
                             element={<OpportunityPipelinePage />}
                           />
+                          {/* Opportunity Detail Route - Sprint 2.1.7.1 */}
+                          <Route path="/opportunities/:id" element={<OpportunityDetailPage />} />
                           <Route
                             path="/customer-management/activities"
                             element={<Placeholders.Aktivitaeten />}

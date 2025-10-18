@@ -174,27 +174,85 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
    - Status: ✅ COMPLETE - PR #139 MERGED (14.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (NEU 14.10.2025)
-   - **Migration:** MainLayoutV2 → SmartLayout (23 Seiten)
-   - **Problem:** Zwei parallele Layout-Systeme, 1536px Limit verschwendet Platz
-   - **Lösung:** Intelligente Breiten-Anpassung (Tabellen=100%, Formulare=800px, Dashboards=100%)
-   - **Phase 1:** Vorbereitung (0.5 Tage) - SmartLayout Review, Test-Strategie, Seiten-Inventar
-   - **Phase 2:** Migration (2 Tage) - 4 Batches (Tabellen, Formulare, Dashboards, Sonstige)
-   - **Phase 3:** Testing (1 Tag) - Visual Regression, Responsive, UAT, Performance
-   - **Phase 4:** Cleanup (0.5 Tage) - MainLayoutV2 deprecaten, Dokumentation
-   - **Business Impact:** +30-50% mehr Spalten sichtbar, bessere Lesbarkeit, 4K-Monitore optimal genutzt
-   - **Risiko:** LOW (SmartLayout existiert, getestet, keine Breaking Changes)
-   - **Aufwand:** 2-4 Tage (69 Zeilen Code-Änderungen)
-   - Status: 📋 PLANNING (Start: 15.10.2025)
+✅ TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (✅ COMPLETE - 15.10.2025)
+   - **Kontext:** Komplette Frontend-Design-Migration zum FreshFoodz CI V2 Design System
+   - **Design Compliance:** 97 Violations behoben (47 Font + 45 Color + 5 Language)
+     - Font: Hardcoded fontFamily entfernt → MUI Theme (Antonio Bold h1-h6, Poppins body)
+     - Color: Hardcoded colors/rgba → theme.palette.* + alpha() helper
+     - Language: Englisch → Deutsch (100% "Sie"-Form)
+   - **FreshFoodz CI V2:** Primary #94C456 (Grün) + Secondary #004F7B (Blau) - Nur Theme-Farben
+   - **Layout System:** MainLayoutV2 maxWidth prop hinzugefügt (default: 'xl')
+   - **Bug-Fixes:** 8 kritische Bugs (LazyInitializationException, CustomerLocation JSON, Auth Role Normalization, ProtectedRoute Error-Wrapping)
+   - **Test Infrastructure:** LeadWizard 18/18 Tests GREEN (100%), Database Isolation mit vi.mock(), 40% schneller
+   - **Migrations:** V90004 (DEV-SEED 5 Users), V90005+V10029 (CustomerLocation JSON fix)
+   - **CI Fixes:** 2 zusätzliche Commits (Backend Spotless + Frontend Lint + Prettier)
+   - **Metriken:** 28 Seiten, 69 Dateien, +4.053/-2.219 LOC
+   - **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
+   - Status: ✅ MERGED TO MAIN (15.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_1.md - Opportunities UI Integration (NEU 13.10.2025)
-   - **Phase 1:** Lead → Opportunity UI (CreateOpportunityDialog + Button)
-   - **Phase 2:** Kanban Enhancements (Filter: Nur offene/Alle/Archiv)
-   - **Phase 3:** Customer → Opportunity UI + Conversion Button
-   - **Phase 4:** Testing & Polish (E2E Tests + Unit Tests)
-   - **Aufwand:** 16-24h (2-3 Tage)
-   - **Prerequisites:** ✅ Backend complete (Sprint 2.1.7.0)
-   - Status: 📋 PLANNING (Start: 14.10.2025)
+✅ TRIGGER_SPRINT_2_1_7_1.md - Lead → Opportunity UI Integration (✅ COMPLETE - 18.10.2025) - **PR #141**
+   - **SCOPE:** NUR Lead → Opportunity Workflow (FOKUSSIERT!) ✅
+   - **6 Deliverables:**
+     - **D0:** OpportunityCard Verbesserungen (leadCompanyName, Lead-Origin Badge, Stage Color) ✅
+     - **D1:** CreateOpportunityDialog Component + Tests (20/20 GREEN) ✅
+     - **D2:** LeadDetailPage Integration ("In Opportunity konvertieren" Button) ✅
+     - **D3:** LeadOpportunitiesList Component (20/20 Tests GREEN, Whole Card Clickable) ✅
+     - **D4:** OpportunityPipeline Filter-UI (Status Filter, Benutzer-Dropdown Manager View, Quick-Search, Pagination) ✅
+     - **D5:** Drag & Drop Fix (snapCenterToCursor - KRITISCH, 4.5h Debugging) ✅
+     - **D6:** Testing & Bugfixes (SEED Deletion, Navigation, Counter Fix) ✅
+   - **Migration V10030:** OpportunityType Enum (VARCHAR(50) + CHECK Constraint - JPA-kompatibel)
+   - **Tests:** 142 Tests GREEN (100%) - KanbanBoardDndKit 38/38, LeadOpportunitiesList 20/20, OpportunityCard 30/30
+   - **Design System:** 100% FreshFoodz CI V2 Compliance
+   - **Performance:** Drag & Drop 60 FPS, Pipeline Load ~1.2s, Filter Switch ~120ms
+   - **Aufwand:** ~18h (46 Commits + 1 Doku-Commit)
+   - **Kritische Fixes:**
+     - Drag & Drop Offset Bug (4.5h Debugging → snapCenterToCursor modifier)
+     - SEED Data Protection Bug (Test cleanup deleted production data)
+     - RLS Transaction Context Bug (Missing @Transactional annotation)
+   - **Dokumentation:**
+     - [SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md](artefakte/SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md) (5,900 Zeilen, 46 Commits)
+     - [PR_SPRINT_2_1_7_1.md](artefakte/PR_SPRINT_2_1_7_1.md) (499 Zeilen, German PR Template)
+   - **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141
+   - Status: ✅ COMPLETE (18.10.2025) - PR #141 READY FOR REVIEW → Sprint 2.1.7.2 Ready
+
+📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (16.10.2025)
+   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard (ZUSAMMEN!)
+   - **Phase 1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert)
+   - **Phase 2:** XentralApiClient (GET /customers, GET /invoices/{customerId}, GET /payments/{customerId})
+   - **Phase 3:** Customer-Dashboard (2 KPIs: Umsatz + Zahlungsverhalten - GETRENNT!)
+   - **Phase 4:** Churn-Alarm (variable Threshold 7/14/30/45/60/90 Tage)
+   - **Aufwand:** 18h = 2-3 Arbeitstage
+   - **KRITISCH:** Dashboard OHNE Xentral-Daten ist wertlos → beides ZUSAMMEN implementieren!
+   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE + Xentral Sales-Rep Mapping geklärt
+   - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
+   - **Tests:** 12 Backend (XentralApiClient) + 8 Frontend (Dashboard) = 20 Tests
+   - Status: 📋 PLANNING - Xentral-API-Test erforderlich vor Start!
+
+📋 TRIGGER_SPRINT_2_1_7_3.md - RENEWAL-Workflow (Upsell/Cross-sell - 16.10.2025)
+   - **SCOPE:** Bestandskunden-Opportunities (Upsell/Cross-sell)
+   - **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage)
+   - **Phase 2:** CreateOpportunityForCustomerDialog (stage: NEEDS_ANALYSIS, skip NEW_LEAD)
+   - **Phase 3:** CustomerOpportunitiesList (gruppiert: Offen/Gewonnen/Verloren)
+   - **Phase 4:** RENEWAL-Stage ENTFERNEN (Migration V10033 - RENEWAL → NEEDS_ANALYSIS + opportunityType)
+   - **Aufwand:** 8h = 1 Arbeitstag
+   - **ARCHITEKTUR:** RENEWAL wird opportunityType (NICHT stage) - Customer-Opportunities starten bei NEEDS_ANALYSIS
+   - **Prerequisites:** Sprint 2.1.7.2 COMPLETE
+   - **Migrations:** V10033 (RENEWAL-Stage-Migration)
+   - **Tests:** 6 Backend + 4 Frontend = 10 Tests
+   - Status: 📋 PLANNING - Ready after 2.1.7.2
+
+📋 TRIGGER_SPRINT_2_1_7_4.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
+   - **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
+   - **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate)
+   - **Phase 2:** Advanced Search Dialog (Multi-Criteria: Stage+Owner+DateRange+Value)
+   - **Phase 3:** Pipeline-Analytics Dashboard (Conversion Rates, Avg Deal Size, Sales Velocity)
+   - **Phase 4:** Custom Views speichern (User-Preferences)
+   - **Aufwand:** 13h = 1,5-2 Arbeitstage
+   - **KRITISCHE ENTSCHEIDUNG:** ⚠️ NICHT JETZT! YAGNI-Prinzip (You Ain't Gonna Need It)
+   - **Begründung:** Keine echten Daten vorhanden - Filter-Bedarf unklar - erst nach Go-Live mit 100 realen Leads bauen
+   - **Prerequisites:** Sprint 2.1.7.1-3 COMPLETE + Go-Live mit realen Daten
+   - **Migrations:** Keine (nur Frontend-State)
+   - Status: 📋 PLANNING - NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
 📋 TRIGGER_SPRINT_2_1_8.md - Team Management & Test Infrastructure (VERSCHOBEN)
    - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching

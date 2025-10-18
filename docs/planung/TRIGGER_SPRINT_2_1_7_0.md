@@ -1,8 +1,8 @@
 ---
 sprint_id: "2.1.7.0"
-title: "Design System Migration - FreshFoodz CI V2 + CRM_AI_CONTEXT Restructure"
+title: "Design System Migration - FreshFoodz CI V2 + Test Infrastructure"
 doc_type: "konzept"
-status: "in_progress"
+status: "complete"
 owner: "team/leads"
 date_start: "2025-10-14"
 date_end: "2025-10-15"
@@ -12,8 +12,10 @@ entry_points:
   - "frontend/src/components/layout/MainLayoutV2.tsx"
   - "docs/planung/CRM_AI_CONTEXT_SCHNELL.md"
   - "docs/planung/claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md"
-pr_refs: []
-updated: "2025-10-15 00:15"
+pr_refs: ["#140"]
+pr_merge_commit: "f6642321b"
+date_merged: "2025-10-15 22:54 CEST"
+updated: "2025-10-15 23:00"
 ---
 
 # 🎯 TRIGGER SPRINT 2.1.7.0 - Layout System Cleanup + CRM_AI_CONTEXT Restructure

@@ -1,6 +1,5 @@
 import React from 'react';
-import { useSortable } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
+import { useDraggable } from '@dnd-kit/core';
 import { OpportunityCard } from './kanban/OpportunityCard';
 import type { Opportunity } from '../types';
 
@@ -13,41 +12,29 @@ interface SortableOpportunityCardProps {
 export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = ({
   opportunity,
   onQuickAction,
-  isAnimating = false,
+  isAnimating: _isAnimating = false,
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-    setActivatorNodeRef,
-  } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: opportunity.id,
+    data: { opportunity }, // Sprint 2.1.7.1: Pass opportunity data for DragOverlay
   });
 
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition: isAnimating ? 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)' : transition,
+  // Sprint 2.1.7.1: FINAL - Hide original, DragOverlay (portal) shows it
+  const style: React.CSSProperties = {
+    transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
+    opacity: isDragging ? 0 : 1, // Hide completely - DragOverlay renders outside DOM
+    visibility: isDragging ? 'hidden' : 'visible',
     marginBottom: '12px',
-    opacity: isDragging ? 0.5 : isAnimating ? 0 : 1,
-    scale: isAnimating ? 1.1 : 1,
-    // CARD LAYOUT FIX
-    width: '100%',
-    boxSizing: 'border-box',
-    position: 'relative',
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
-      <div ref={setActivatorNodeRef} {...attributes} {...listeners}>
-        <OpportunityCard
-          opportunity={opportunity}
-          onQuickAction={onQuickAction}
-          showActions={true}
-        />
-      </div>
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <OpportunityCard
+        opportunity={opportunity}
+        onQuickAction={onQuickAction}
+        showActions={true}
+        isDragging={isDragging}
+      />
     </div>
   );
 };

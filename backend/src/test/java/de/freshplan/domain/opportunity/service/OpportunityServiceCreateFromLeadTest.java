@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityFromLeadRequest;
 import de.freshplan.modules.leads.domain.Lead;
@@ -202,5 +203,37 @@ public class OpportunityServiceCreateFromLeadTest {
     // Expected Value from request (null) - service doesn't auto-fill from Lead
     // This is intentional: Frontend should pass expectedValue explicitly
     assertThat(result.getExpectedValue()).isNull();
+  }
+
+  @Test
+  @Transactional
+  @DisplayName(
+      "Should set OpportunityType=NEUGESCHAEFT by default (Sprint 2.1.7.1 Freshfoodz Business Type)")
+  void createFromLead_shouldSetDefaultOpportunityTypeNeugeschaeft() {
+    // Arrange
+    var request =
+        CreateOpportunityFromLeadRequest.builder()
+            .name("Test Opportunity")
+            .dealType("Liefervertrag")
+            .timeframe("Q2 2025")
+            .expectedValue(BigDecimal.valueOf(20000))
+            .expectedCloseDate(LocalDate.now().plusDays(60))
+            .build();
+
+    // Act
+    var result = opportunityService.createFromLead(testLead.id, request);
+
+    // Assert: opportunityType should be NEUGESCHAEFT (Freshfoodz default for Lead → Opportunity)
+    assertThat(result.getOpportunityType())
+        .as(
+            "Sprint 2.1.7.1: createFromLead() should automatically set OpportunityType=NEUGESCHAEFT")
+        .isEqualTo(OpportunityType.NEUGESCHAEFT);
+
+    // Verify in DB (load from repository to ensure persistence)
+    Opportunity persistedOpp = opportunityRepository.findById(result.getId());
+    assertThat(persistedOpp).isNotNull();
+    assertThat(persistedOpp.getOpportunityType())
+        .as("Persisted Opportunity should have OpportunityType=NEUGESCHAEFT in DB")
+        .isEqualTo(OpportunityType.NEUGESCHAEFT);
   }
 }

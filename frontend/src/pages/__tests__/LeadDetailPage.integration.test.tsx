@@ -27,6 +27,8 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
+// No mock needed - LeadOpportunitiesList will use real component with mocked API
+
 const mockLead = {
   id: 123,
   companyName: 'Test Company',
@@ -461,5 +463,179 @@ describe('LeadDetailPage Integration Tests', () => {
     await waitFor(() => {
       expect(screen.getByText(/⚠️ 45/i)).toBeInTheDocument();
     });
+  });
+
+  // ================================================================================
+  // SPRINT 2.1.7.1 - LEAD → OPPORTUNITY CONVERSION INTEGRATION TESTS
+  // ================================================================================
+
+  describe('Sprint 2.1.7.1 - Lead → Opportunity Conversion', () => {
+    test('shows "In Opportunity konvertieren" button for QUALIFIED status', async () => {
+      const qualifiedLead = { ...mockLead, status: 'QUALIFIED' };
+
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(qualifiedLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByRole('button', { name: /In Opportunity konvertieren/i })
+      ).toBeInTheDocument();
+    });
+
+    test('shows "In Opportunity konvertieren" button for ACTIVE status', async () => {
+      const activeLead = { ...mockLead, status: 'ACTIVE' };
+
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(activeLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      expect(
+        screen.getByRole('button', { name: /In Opportunity konvertieren/i })
+      ).toBeInTheDocument();
+    });
+
+    test('hides "In Opportunity konvertieren" button for CONVERTED status', async () => {
+      const convertedLead = { ...mockLead, status: 'CONVERTED' };
+
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(convertedLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByRole('button', { name: /In Opportunity konvertieren/i })
+      ).not.toBeInTheDocument();
+    });
+
+    test('hides "In Opportunity konvertieren" button for REGISTERED status', async () => {
+      const registeredLead = { ...mockLead, status: 'REGISTERED' };
+
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(registeredLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      expect(
+        screen.queryByRole('button', { name: /In Opportunity konvertieren/i })
+      ).not.toBeInTheDocument();
+    });
+
+    test('shows converted badge when lead status is CONVERTED', async () => {
+      const convertedDate = new Date('2025-10-15T10:00:00Z');
+      const convertedLead = {
+        ...mockLead,
+        status: 'CONVERTED',
+        updatedAt: convertedDate.toISOString(),
+      };
+
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(convertedLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      // Check for converted badge
+      expect(screen.getByText(/Lead wurde zu Opportunity konvertiert am/i)).toBeInTheDocument();
+      expect(screen.getByText(/Siehe Verkaufschancen unten/i)).toBeInTheDocument();
+    });
+
+    test('does not show converted badge when lead is not CONVERTED', async () => {
+      const activeLead = { ...mockLead, status: 'ACTIVE' };
+
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(activeLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      // Converted badge should not be present
+      expect(
+        screen.queryByText(/Lead wurde zu Opportunity konvertiert am/i)
+      ).not.toBeInTheDocument();
+    });
+
+    test('shows Verkaufschancen (Opportunities) accordion section', async () => {
+      server.use(
+        http.get('http://localhost:8080/api/leads/:id', () => {
+          return HttpResponse.json(mockLead);
+        }),
+        http.get('http://localhost:8080/api/leads/:id/opportunities', () => {
+          return HttpResponse.json([]);
+        })
+      );
+
+      renderPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
+      });
+
+      // Check for Verkaufschancen accordion header
+      expect(screen.getByText(/Verkaufschancen/i)).toBeInTheDocument();
+    });
+
+    // NOTE: LeadOpportunitiesList component behavior is fully tested in
+    // LeadOpportunitiesList.test.tsx (20 tests GREEN).
+    // These integration tests focus on Task 11 integration points only.
   });
 });

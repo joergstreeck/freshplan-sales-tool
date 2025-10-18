@@ -5,7 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import de.freshplan.domain.user.entity.User;
+import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.test.builders.CustomerTestDataFactory;
 import de.freshplan.test.builders.OpportunityTestDataFactory;
 import de.freshplan.test.builders.UserTestDataFactory;
@@ -406,6 +408,220 @@ class OpportunityMapperTest {
         assertThat(response).isNotNull();
         assertThat(response.getName()).contains("Test Opportunity");
       }
+    }
+  }
+
+  @Nested
+  @Tag("unit")
+  @DisplayName("Sprint 2.1.7.1 Features - OpportunityType + Lead Traceability + Name Cleaning")
+  class Sprint2171FeaturesTests {
+
+    @Test
+    @DisplayName("Should map opportunityType correctly for all 4 Freshfoodz types")
+    void toResponse_shouldMapOpportunityType() {
+      // Test all 4 Freshfoodz business types
+      for (OpportunityType type : OpportunityType.values()) {
+        // Arrange
+        var opportunity =
+            OpportunityTestDataFactory.builder()
+                .withName("Test " + type.name())
+                .withOpportunityType(type)
+                .inStage(OpportunityStage.QUALIFICATION)
+                .forCustomer(testCustomer)
+                .assignedTo(testUser)
+                .build();
+        opportunity.setId(UUID.randomUUID());
+
+        // Act
+        var response = opportunityMapper.toResponse(opportunity);
+
+        // Assert
+        assertThat(response.getOpportunityType())
+            .as("OpportunityType %s should be mapped correctly", type)
+            .isEqualTo(type);
+      }
+    }
+
+    @Test
+    @DisplayName("Should map default OpportunityType NEUGESCHAEFT")
+    void toResponse_shouldMapDefaultOpportunityType() {
+      // Arrange
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .withName("Test Opportunity")
+              .inStage(OpportunityStage.NEW_LEAD)
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
+      opportunity.setId(UUID.randomUUID());
+
+      // TestDataFactory sets NEUGESCHAEFT by default (Sprint 2.1.7.1)
+
+      // Act
+      var response = opportunityMapper.toResponse(opportunity);
+
+      // Assert
+      assertThat(response.getOpportunityType()).isEqualTo(OpportunityType.NEUGESCHAEFT);
+    }
+
+    @Test
+    @DisplayName("Should map leadId and leadCompanyName when lead exists")
+    void toResponse_shouldMapLeadTraceability() {
+      // Arrange
+      Lead lead = new Lead();
+      lead.id = 12345L;
+      lead.companyName = "Test Lead Company GmbH";
+
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .withName("Opportunity from Lead")
+              .inStage(OpportunityStage.NEEDS_ANALYSIS)
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
+      opportunity.setId(UUID.randomUUID());
+      opportunity.setLead(lead);
+
+      // Act
+      var response = opportunityMapper.toResponse(opportunity);
+
+      // Assert
+      assertThat(response.getLeadId()).isEqualTo(12345L);
+      assertThat(response.getLeadCompanyName()).isEqualTo("Test Lead Company GmbH");
+    }
+
+    @Test
+    @DisplayName("Should handle null lead gracefully")
+    void toResponse_shouldHandleNullLead() {
+      // Arrange
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .withName("Direct Customer Opportunity")
+              .inStage(OpportunityStage.NEW_LEAD)
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
+      opportunity.setId(UUID.randomUUID());
+      opportunity.setLead(null);
+
+      // Act
+      var response = opportunityMapper.toResponse(opportunity);
+
+      // Assert
+      assertThat(response.getLeadId()).isNull();
+      assertThat(response.getLeadCompanyName()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should map lead AND customer simultaneously (Lead Conversion scenario)")
+    void toResponse_shouldMapLeadAndCustomerSimultaneously() {
+      // Arrange - Opportunity created from Lead (has both lead origin + converted customer)
+      Lead lead = new Lead();
+      lead.id = 99L;
+      lead.companyName = "Original Lead Name";
+
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .withName("Lead Conversion Opportunity")
+              .inStage(OpportunityStage.PROPOSAL)
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
+      opportunity.setId(UUID.randomUUID());
+      opportunity.setLead(lead);
+
+      // Act
+      var response = opportunityMapper.toResponse(opportunity);
+
+      // Assert - Both lead AND customer data should be present
+      assertThat(response.getLeadId()).isEqualTo(99L);
+      assertThat(response.getLeadCompanyName()).isEqualTo("Original Lead Name");
+      assertThat(response.getCustomerId()).isEqualTo(testCustomer.getId());
+      assertThat(response.getCustomerName()).isEqualTo("Test Company Ltd.");
+    }
+
+    @Test
+    @DisplayName("Should clean OpportunityType prefixes from name (Production Safety Layer)")
+    void toResponse_shouldCleanOpportunityTypePrefixes() {
+      // Test all OpportunityType prefix patterns
+      String[][] testCases = {
+        {"Neugeschäft: Catering Event GmbH", "Catering Event GmbH"},
+        {"Neugeschaeft: Catering Event GmbH", "Catering Event GmbH"},
+        {"Sortimentserweiterung: Bistro Deluxe", "Bistro Deluxe"},
+        {"Neuer Standort: Restaurant Chain", "Restaurant Chain"},
+        {"Verlängerung: Long-Term Customer", "Long-Term Customer"},
+        {"Verlaengerung: Long-Term Customer", "Long-Term Customer"},
+        {"No Prefix Name", "No Prefix Name"}, // Should remain unchanged
+        {"Neugeschäft:NoSpace", "NoSpace"}, // Should handle missing space
+        {"Normal Company Name", "Normal Company Name"} // No prefix
+      };
+
+      for (String[] testCase : testCases) {
+        String inputName = testCase[0];
+        String expectedCleanName = testCase[1];
+
+        // Arrange
+        var opportunity =
+            OpportunityTestDataFactory.builder()
+                .withName(inputName)
+                .inStage(OpportunityStage.NEW_LEAD)
+                .forCustomer(testCustomer)
+                .assignedTo(testUser)
+                .build();
+        opportunity.setId(UUID.randomUUID());
+
+        // Act
+        var response = opportunityMapper.toResponse(opportunity);
+
+        // Assert
+        assertThat(response.getName())
+            .as("Name '%s' should be cleaned to '%s'", inputName, expectedCleanName)
+            .isEqualTo(expectedCleanName);
+      }
+    }
+
+    @Test
+    @DisplayName("Should handle null name gracefully in cleanOpportunityName")
+    void toResponse_shouldHandleNullNameInCleaning() {
+      // Arrange
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .inStage(OpportunityStage.NEW_LEAD)
+              .build();
+      opportunity.setId(UUID.randomUUID());
+      opportunity.setName(null);
+
+      // Act
+      var response = opportunityMapper.toResponse(opportunity);
+
+      // Assert
+      assertThat(response.getName()).isNull();
+    }
+
+    @Test
+    @DisplayName("Should clean name AND preserve opportunityType field independently (not coupled)")
+    void toResponse_shouldCleanNameButPreserveOpportunityType() {
+      // Arrange - Opportunity with prefix in name, but explicit opportunityType field
+      var opportunity =
+          OpportunityTestDataFactory.builder()
+              .withName("Neugeschäft: Test Company") // Has prefix in name
+              .withOpportunityType(
+                  OpportunityType.SORTIMENTSERWEITERUNG) // But explicit different type!
+              .inStage(OpportunityStage.NEW_LEAD)
+              .forCustomer(testCustomer)
+              .assignedTo(testUser)
+              .build();
+      opportunity.setId(UUID.randomUUID());
+
+      // Act
+      var response = opportunityMapper.toResponse(opportunity);
+
+      // Assert - Name should be cleaned, BUT opportunityType should be from field
+      assertThat(response.getName()).isEqualTo("Test Company");
+      assertThat(response.getOpportunityType())
+          .isEqualTo(OpportunityType.SORTIMENTSERWEITERUNG); // NOT NEUGESCHAEFT from name prefix!
     }
   }
 }

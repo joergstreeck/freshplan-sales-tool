@@ -90,7 +90,7 @@ class InvalidStageTransitionExceptionTest {
   void getters_shouldReturnCorrectStages() {
     // Given
     OpportunityStage from = OpportunityStage.QUALIFICATION;
-    OpportunityStage to = OpportunityStage.RENEWAL;
+    OpportunityStage to = OpportunityStage.NEEDS_ANALYSIS;
 
     // When
     InvalidStageTransitionException exception = new InvalidStageTransitionException(from, to);

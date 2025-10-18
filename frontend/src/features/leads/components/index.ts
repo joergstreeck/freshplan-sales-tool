@@ -11,3 +11,6 @@ export { LeadBasicDataAccordion } from './LeadBasicDataAccordion';
 
 // Activity Timeline Components
 export { LeadActivityTimelineGrouped } from './LeadActivityTimelineGrouped';
+
+// Sprint 2.1.7.1 - Lead → Opportunity Conversion
+export { LeadOpportunitiesList } from './LeadOpportunitiesList';

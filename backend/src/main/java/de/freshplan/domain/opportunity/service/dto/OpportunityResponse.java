@@ -1,6 +1,7 @@
 package de.freshplan.domain.opportunity.service.dto;
 
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,8 +22,11 @@ public class OpportunityResponse {
   private OpportunityStage stage;
   private String stageDisplayName;
   private String stageColor;
+  private OpportunityType opportunityType; // Sprint 2.1.7.1 - Freshfoodz Business Type
   private UUID customerId;
   private String customerName;
+  private Long leadId; // Sprint 2.1.7.1 - Lead-Origin Traceability
+  private String leadCompanyName; // Sprint 2.1.7.1 - Lead-Name Fallback
   private UUID assignedToId;
   private String assignedToName;
   private BigDecimal expectedValue;
@@ -75,6 +79,21 @@ public class OpportunityResponse {
 
     public Builder customerName(String customerName) {
       response.customerName = customerName;
+      return this;
+    }
+
+    public Builder leadId(Long leadId) {
+      response.leadId = leadId;
+      return this;
+    }
+
+    public Builder leadCompanyName(String leadCompanyName) {
+      response.leadCompanyName = leadCompanyName;
+      return this;
+    }
+
+    public Builder opportunityType(OpportunityType opportunityType) {
+      response.opportunityType = opportunityType;
       return this;
     }
 
@@ -187,6 +206,30 @@ public class OpportunityResponse {
 
   public void setCustomerName(String customerName) {
     this.customerName = customerName;
+  }
+
+  public Long getLeadId() {
+    return leadId;
+  }
+
+  public void setLeadId(Long leadId) {
+    this.leadId = leadId;
+  }
+
+  public String getLeadCompanyName() {
+    return leadCompanyName;
+  }
+
+  public void setLeadCompanyName(String leadCompanyName) {
+    this.leadCompanyName = leadCompanyName;
+  }
+
+  public OpportunityType getOpportunityType() {
+    return opportunityType;
+  }
+
+  public void setOpportunityType(OpportunityType opportunityType) {
+    this.opportunityType = opportunityType;
   }
 
   public UUID getAssignedToId() {

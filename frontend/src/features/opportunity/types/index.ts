@@ -3,8 +3,8 @@
  * Single point of entry for all opportunity-related types
  */
 
-// Re-export stage enum from opportunity.types.ts
-export { OpportunityStage } from './opportunity.types';
+// Re-export enums from opportunity.types.ts
+export { OpportunityStage, OpportunityType } from './opportunity.types';
 
 // Re-export from opportunity.types.ts (comprehensive types)
 export type {
@@ -31,12 +31,20 @@ export interface Opportunity {
   name: string;
   /** Current pipeline stage */
   stage: OpportunityStage;
+  /** Stage color hex code (Sprint 2.1.7.1) */
+  stageColor?: string;
+  /** Opportunity Type - Sprint 2.1.7.1 (Freshfoodz Business Type) */
+  opportunityType?: OpportunityType;
   /** Monetary value in EUR */
   value?: number;
   /** Win probability percentage (0-100) */
   probability?: number;
   /** Customer company name */
   customerName?: string;
+  /** Lead reference (Sprint 2.1.7.1 - Lead-Origin Traceability) */
+  leadId?: number;
+  /** Lead company name (Sprint 2.1.7.1 - Fallback when no customer) */
+  leadCompanyName?: string;
   /** Assigned sales person name */
   assignedToName?: string;
   /** Expected close date ISO string */

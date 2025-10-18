@@ -202,7 +202,7 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V268** | Create outbox_emails table | 2.1.6 Phase 3 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Minimal Outbox Pattern |
 | **V269** | Add lead_score column | 2.1.6 Phase 4 | ⚠️ Conflict | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Out of Order conflict, applied via V271 |
 | **V270** | Fix outbox_emails add failed_at | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Hotfix V268 Schema Mismatch |
-| **V271** | Fix add lead_score column (V269 Hotfix) | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring (Idempotent) |
+| **V271** | Fix add lead_score column (V269 Hotfix) | 2.1.6 Phase 4 | ✅ Deployed | @joergstreeck | #135 | ✅ Yes | 🟢 Low | None | ADR-006 Phase 2 Scoring (Idempotent) |
 | **V272** | *(Reserved - Next available)* | - | 📋 Available | - | - | - | - | - | Use `./scripts/get-next-migration.sh` |
 
 ---
@@ -228,7 +228,8 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V10026** | Opportunity Lead/Customer FKs | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟠 MEDIUM | None | lead_id + customer_id FKs in opportunities, CHECK Constraint (lead_id OR customer_id OR stage='NEW_LEAD') |
 | **V10027** | Activity Outcome Enum | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟢 Low | None | activity_outcome VARCHAR(30) mit CHECK Constraint (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED) |
 | **V10028** | Customer Number Sequence | 2.1.7 | @joergstreeck | #139 | ❌ No | 🔴 HIGH | None | **PRODUCTION-KRITISCH!** PostgreSQL Sequence für race-condition-safe customer_number Generation. Format: KD-00001, KD-00002... **NIEMALS löschen!** |
-| **V10029** | CustomerLocation JSON DEFAULT Fix | 2.1.7.0 | @joergstreeck | TBD | ✅ Yes | 🟢 Low | None | Schema-Fix: DEFAULT '[]' → '{}' für customer_locations JSON columns (address_details, contact_details, operational_details) |
+| **V10029** | CustomerLocation JSON DEFAULT Fix | 2.1.7.0 | @joergstreeck | #140 | ✅ Yes | 🟢 Low | None | Schema-Fix: DEFAULT '[]' → '{}' für customer_locations JSON columns (address_details, contact_details, operational_details) |
+| **V10030** | OpportunityType Enum | 2.1.7.1 | @joergstreeck | #141 | ✅ Yes | 🟢 Low | None | opportunity_type VARCHAR(50) + CHECK Constraint (4 values: NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG), DEFAULT 'NEUGESCHAEFT', JPA-kompatibel |
 
 **Rollback Scripts:**
 

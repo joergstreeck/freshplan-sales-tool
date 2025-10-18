@@ -29,8 +29,23 @@ export enum OpportunityStage {
   CLOSED_WON = 'CLOSED_WON',
   /** Verloren */
   CLOSED_LOST = 'CLOSED_LOST',
-  /** Vertragsverlängerung */
-  RENEWAL = 'RENEWAL',
+}
+
+/**
+ * Opportunity Type enumeration (Sprint 2.1.7.1 - Freshfoodz Business Types)
+ * @enum {string}
+ * @description Definiert die verschiedenen Geschäftsarten für Opportunities.
+ *              Muss mit Backend OpportunityType.java synchron bleiben.
+ */
+export enum OpportunityType {
+  /** Neugeschäft - First-time customer */
+  NEUGESCHAEFT = 'NEUGESCHAEFT',
+  /** Sortimentserweiterung - Product expansion or volume increase */
+  SORTIMENTSERWEITERUNG = 'SORTIMENTSERWEITERUNG',
+  /** Neuer Standort - Additional location */
+  NEUER_STANDORT = 'NEUER_STANDORT',
+  /** Vertragsverlängerung - Contract renewal */
+  VERLAENGERUNG = 'VERLAENGERUNG',
 }
 
 /**
@@ -56,12 +71,22 @@ export interface IOpportunity {
   readonly expectedCloseDate?: string;
   /** Current stage in sales pipeline */
   readonly stage: OpportunityStage;
+  /** Stage display name (denormalized from OpportunityStage) */
+  readonly stageDisplayName?: string;
+  /** Stage color hex code (Sprint 2.1.7.1 - Dynamic border color) */
+  readonly stageColor?: string;
+  /** Opportunity Type - Sprint 2.1.7.1 (Freshfoodz Business Type) */
+  readonly opportunityType?: OpportunityType;
   /** Timestamp when stage was last changed */
   readonly stageChangedAt: string;
   /** Customer reference */
   readonly customerId?: string;
   /** Customer display name (denormalized for performance) */
   readonly customerName?: string;
+  /** Lead reference (Sprint 2.1.7.1 - Lead-Origin Traceability) */
+  readonly leadId?: number;
+  /** Lead company name (Sprint 2.1.7.1 - Fallback when no customer) */
+  readonly leadCompanyName?: string;
   /** Assigned sales representative ID */
   readonly assignedToId: string;
   /** Assigned sales representative name (denormalized) */
@@ -90,6 +115,8 @@ export interface ICreateOpportunityRequest {
   name: string;
   /** @maxLength 4000 */
   description?: string;
+  /** Opportunity Type - Sprint 2.1.7.1 */
+  opportunityType?: OpportunityType;
   /** @minimum 0 @multipleOf 0.01 */
   value?: number;
   /** @minimum 0 @maximum 100 */

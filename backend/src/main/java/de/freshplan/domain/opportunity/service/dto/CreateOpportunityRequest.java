@@ -1,5 +1,6 @@
 package de.freshplan.domain.opportunity.service.dto;
 
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PositiveOrZero;
 import jakarta.validation.constraints.Size;
@@ -22,6 +23,8 @@ public class CreateOpportunityRequest {
   @Size(max = 2000, message = "Beschreibung darf maximal 2000 Zeichen lang sein")
   private String description;
 
+  private OpportunityType opportunityType; // Sprint 2.1.7.1 - Freshfoodz Business Type
+
   private UUID customerId;
 
   private UUID assignedTo;
@@ -38,12 +41,14 @@ public class CreateOpportunityRequest {
   public CreateOpportunityRequest(
       String name,
       String description,
+      OpportunityType opportunityType,
       UUID customerId,
       UUID assignedTo,
       BigDecimal expectedValue,
       LocalDate expectedCloseDate) {
     this.name = name;
     this.description = description;
+    this.opportunityType = opportunityType;
     this.customerId = customerId;
     this.assignedTo = assignedTo;
     this.expectedValue = expectedValue;
@@ -54,6 +59,7 @@ public class CreateOpportunityRequest {
   private CreateOpportunityRequest(Builder builder) {
     this.name = builder.name;
     this.description = builder.description;
+    this.opportunityType = builder.opportunityType;
     this.customerId = builder.customerId;
     this.assignedTo = builder.assignedTo;
     this.expectedValue = builder.expectedValue;
@@ -75,6 +81,14 @@ public class CreateOpportunityRequest {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public OpportunityType getOpportunityType() {
+    return opportunityType;
+  }
+
+  public void setOpportunityType(OpportunityType opportunityType) {
+    this.opportunityType = opportunityType;
   }
 
   public UUID getCustomerId() {
@@ -117,6 +131,7 @@ public class CreateOpportunityRequest {
   public static class Builder {
     private String name;
     private String description;
+    private OpportunityType opportunityType;
     private UUID customerId;
     private UUID assignedTo;
     private BigDecimal expectedValue;
@@ -129,6 +144,11 @@ public class CreateOpportunityRequest {
 
     public Builder description(String description) {
       this.description = description;
+      return this;
+    }
+
+    public Builder opportunityType(OpportunityType opportunityType) {
+      this.opportunityType = opportunityType;
       return this;
     }
 

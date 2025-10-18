@@ -38,6 +38,16 @@ public class Opportunity {
   @Column(name = "stage", nullable = false)
   private OpportunityStage stage;
 
+  /**
+   * Freshfoodz-spezifischer Geschäftstyp (NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT,
+   * VERLAENGERUNG)
+   *
+   * @since Sprint 2.1.7.1 (V10030)
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "opportunity_type", nullable = false, length = 50)
+  private OpportunityType opportunityType;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "customer_id")
   private Customer customer;
@@ -106,7 +116,6 @@ public class Opportunity {
       case NEGOTIATION -> 80;
       case CLOSED_WON -> 100;
       case CLOSED_LOST -> 0;
-      case RENEWAL -> 75;
     };
   }
 
@@ -119,6 +128,10 @@ public class Opportunity {
     if (this.stageChangedAt == null) {
       this.stageChangedAt = LocalDateTime.now();
     }
+    // Sprint 2.1.7.1: Default opportunityType falls nicht gesetzt
+    if (this.opportunityType == null) {
+      this.opportunityType = OpportunityType.NEUGESCHAEFT;
+    }
   }
 
   // Business Method: Stage ändern mit Timestamp
@@ -129,12 +142,9 @@ public class Opportunity {
     }
 
     // Business Rule: Geschlossene Opportunities können nicht mehr geändert werden
-    // AUSNAHME: CLOSED_WON darf zu RENEWAL wechseln (Contract Renewal)
+    // Closed opportunities (CLOSED_WON/CLOSED_LOST) are final and cannot be changed
     if (isClosedOpportunity()) {
-      // Allow transition from CLOSED_WON to RENEWAL, but block all others from a closed state
-      if (!(this.stage == OpportunityStage.CLOSED_WON && newStage == OpportunityStage.RENEWAL)) {
-        return; // Silently ignore other transitions from closed opportunities
-      }
+      return; // Silently ignore transitions from closed opportunities
     }
 
     if (this.stage != newStage) {
@@ -176,6 +186,15 @@ public class Opportunity {
 
   public void setStage(OpportunityStage stage) {
     changeStage(stage);
+  }
+
+  public OpportunityType getOpportunityType() {
+    return opportunityType;
+  }
+
+  public void setOpportunityType(OpportunityType opportunityType) {
+    this.opportunityType = opportunityType;
+    this.updatedAt = LocalDateTime.now();
   }
 
   public Customer getCustomer() {

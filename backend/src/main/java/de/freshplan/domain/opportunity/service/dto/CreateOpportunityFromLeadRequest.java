@@ -1,5 +1,6 @@
 package de.freshplan.domain.opportunity.service.dto;
 
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -20,6 +21,12 @@ public class CreateOpportunityFromLeadRequest {
 
   /** Opportunity description (optional) */
   private String description;
+
+  /**
+   * Opportunity Type - Sprint 2.1.7.1 (Freshfoodz Business Type - defaults to NEUGESCHAEFT if not
+   * provided)
+   */
+  private OpportunityType opportunityType;
 
   /** Deal type (e.g., "Liefervertrag", "Erstauftrag", "Rahmenvertrag") */
   private String dealType;
@@ -56,6 +63,14 @@ public class CreateOpportunityFromLeadRequest {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public OpportunityType getOpportunityType() {
+    return opportunityType;
+  }
+
+  public void setOpportunityType(OpportunityType opportunityType) {
+    this.opportunityType = opportunityType;
   }
 
   public String getDealType() {
@@ -114,6 +129,11 @@ public class CreateOpportunityFromLeadRequest {
 
     public Builder description(String description) {
       request.description = description;
+      return this;
+    }
+
+    public Builder opportunityType(OpportunityType opportunityType) {
+      request.opportunityType = opportunityType;
       return this;
     }
 

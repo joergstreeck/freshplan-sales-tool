@@ -3,6 +3,7 @@ package de.freshplan.test.builders;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import de.freshplan.domain.user.entity.User;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,6 +33,8 @@ public class OpportunityTestDataFactory {
     private String name;
     private String description;
     private OpportunityStage stage = OpportunityStage.NEW_LEAD;
+    private OpportunityType opportunityType =
+        OpportunityType.NEUGESCHAEFT; // Default opportunity type for new opportunities
     private Customer customer;
     private User assignedTo;
     private BigDecimal expectedValue;
@@ -80,6 +83,12 @@ public class OpportunityTestDataFactory {
     /** Set the stage. */
     public Builder inStage(OpportunityStage stage) {
       this.stage = stage;
+      return this;
+    }
+
+    /** Set the opportunity type (Sprint 2.1.7.1). */
+    public Builder withOpportunityType(OpportunityType opportunityType) {
+      this.opportunityType = opportunityType;
       return this;
     }
 
@@ -177,6 +186,7 @@ public class OpportunityTestDataFactory {
 
       // Set optional fields
       opportunity.setDescription(description);
+      opportunity.setOpportunityType(opportunityType); // Sprint 2.1.7.1
       opportunity.setCustomer(customer);
       opportunity.setExpectedValue(expectedValue);
       opportunity.setExpectedCloseDate(expectedCloseDate);

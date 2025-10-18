@@ -74,6 +74,9 @@ public class LeadResource {
   // Sprint 2.1.7 Code Review Fix: Clock injection (Issue #127)
   @Inject Clock clock;
 
+  // Sprint 2.1.7.1: Opportunity Service for Lead→Opportunity traceability
+  @Inject de.freshplan.domain.opportunity.service.OpportunityService opportunityService;
+
   @Context UriInfo uriInfo;
 
   @Context Request request;
@@ -1425,6 +1428,35 @@ public class LeadResource {
                 "fitScore", lead.fitScore != null ? lead.fitScore : 0,
                 "engagementScore", lead.engagementScore != null ? lead.engagementScore : 0))
         .build();
+  }
+
+  /**
+   * Get all opportunities for a specific lead Sprint 2.1.7.1 - Lead → Opportunity Traceability
+   *
+   * @param id Lead ID
+   * @return List of OpportunityResponse DTOs
+   */
+  @GET
+  @Path("/{id}/opportunities")
+  @RolesAllowed({"USER", "MANAGER", "ADMIN"})
+  @Transactional
+  public Response getLeadOpportunities(@PathParam("id") Long id) {
+    LOG.infof("Fetching opportunities for lead ID: %d", id);
+
+    // Verify lead exists
+    Lead lead = Lead.findById(id);
+    if (lead == null) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(Map.of("error", "Lead not found"))
+          .build();
+    }
+
+    List<de.freshplan.domain.opportunity.service.dto.OpportunityResponse> opportunities =
+        opportunityService.findByLeadId(id);
+
+    LOG.infof("Found %d opportunities for lead ID: %d", opportunities.size(), id);
+
+    return Response.ok(opportunities).build();
   }
 
   /**

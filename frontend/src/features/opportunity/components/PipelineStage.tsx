@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Paper, Typography, Badge, Stack } from '@mui/material';
+import { Box, Paper, Typography, Badge } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
@@ -110,13 +110,11 @@ export const PipelineStage: React.FC<PipelineStageProps> = React.memo(
           : config?.bgColor || theme.palette.background.paper,
         border: isOver ? '3px dashed #94C456' : '1px solid rgba(0, 0, 0, 0.12)',
         borderRadius: 2,
-        transition: theme.transitions.create(
-          ['border', 'background-color', 'box-shadow', 'transform'],
-          {
-            duration: theme.transitions.duration.short,
-          }
-        ),
-        transform: isOver ? 'scale(1.02)' : 'scale(1)',
+        transition: theme.transitions.create(['border', 'background-color', 'box-shadow'], {
+          duration: theme.transitions.duration.short,
+        }),
+        // Sprint 2.1.7.1 FIX: REMOVED transform - caused inverted X-axis bug!
+        // transform: isOver ? 'scale(1.02)' : 'scale(1)',
         boxShadow: isOver ? theme.shadows[4] : theme.shadows[1],
         width: '280px',
         minWidth: '280px',
@@ -182,7 +180,7 @@ export const PipelineStage: React.FC<PipelineStageProps> = React.memo(
         </Box>
 
         {/* Opportunities Container */}
-        <Stack spacing={1.5}>{children}</Stack>
+        {children}
       </Paper>
     );
   }
