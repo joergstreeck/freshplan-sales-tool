@@ -161,11 +161,27 @@ export default function CreateOpportunityDialog({
     } catch (error: any) {
       console.error('Failed to create opportunity from lead:', error);
 
-      // Extract error message from backend
-      const message =
-        error.response?.data?.detail ||
-        error.response?.data?.title ||
-        'Fehler beim Erstellen der Opportunity';
+      // Handle specific HTTP status codes (Copilot Code Review)
+      const status = error.response?.status;
+      let message: string;
+
+      switch (status) {
+        case 404:
+          message = 'Lead nicht gefunden. Möglicherweise wurde er gelöscht.';
+          break;
+        case 409:
+          message = 'Dieser Lead wurde bereits in eine Opportunity konvertiert.';
+          break;
+        case 403:
+          message = 'Keine Berechtigung. Sie können diesen Lead nicht konvertieren.';
+          break;
+        default:
+          // Extract error message from backend
+          message =
+            error.response?.data?.detail ||
+            error.response?.data?.title ||
+            'Fehler beim Erstellen der Opportunity';
+      }
 
       setApiError(message);
     } finally {

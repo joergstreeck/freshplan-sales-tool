@@ -14,8 +14,8 @@ import jakarta.enterprise.context.ApplicationScoped;
 public class OpportunityMapper {
 
   /**
-   * Bereinigt Opportunity-Namen von OpportunityType-Präfixen
-   * (Sprint 2.1.7.1 - Production Safety Layer)
+   * Bereinigt Opportunity-Namen von OpportunityType-Präfixen (Sprint 2.1.7.1 - Production Safety
+   * Layer)
    *
    * @param name Original Opportunity Name
    * @return Bereinigter Name ohne Type-Präfix
@@ -24,8 +24,9 @@ public class OpportunityMapper {
     if (name == null) {
       return null;
     }
+    // Case-insensitive regex für konsistente Bereinigung (Gemini Code Review)
     return name.replaceFirst(
-        "^(Neuer Standort|Sortimentserweiterung|Verlängerung|Verlaengerung|Neugeschäft|Neugeschaeft):\\s*",
+        "(?i)^(Neuer Standort|Sortimentserweiterung|Verlängerung|Verlaengerung|Neugeschäft|Neugeschaeft):\\s*",
         "");
   }
 
@@ -46,7 +47,9 @@ public class OpportunityMapper {
             opportunity.getCustomer() != null ? opportunity.getCustomer().getCompanyName() : null)
         .leadId(opportunity.getLead() != null ? opportunity.getLead().id : null) // Sprint 2.1.7.1
         .leadCompanyName(
-            opportunity.getLead() != null ? opportunity.getLead().companyName : null) // Sprint 2.1.7.1
+            opportunity.getLead() != null
+                ? opportunity.getLead().companyName
+                : null) // Sprint 2.1.7.1
         .assignedToId(
             opportunity.getAssignedTo() != null ? opportunity.getAssignedTo().getId() : null)
         .assignedToName(

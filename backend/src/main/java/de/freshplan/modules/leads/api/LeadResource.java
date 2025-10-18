@@ -1431,8 +1431,7 @@ public class LeadResource {
   }
 
   /**
-   * Get all opportunities for a specific lead
-   * Sprint 2.1.7.1 - Lead → Opportunity Traceability
+   * Get all opportunities for a specific lead Sprint 2.1.7.1 - Lead → Opportunity Traceability
    *
    * @param id Lead ID
    * @return List of OpportunityResponse DTOs

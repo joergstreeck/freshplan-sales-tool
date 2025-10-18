@@ -323,7 +323,8 @@ public class OpportunityService {
     opportunity.setLead(lead);
 
     // 6b. Set OpportunityType = NEUGESCHAEFT (Sprint 2.1.7.1 - Freshfoodz Business Type)
-    opportunity.setOpportunityType(de.freshplan.domain.opportunity.entity.OpportunityType.NEUGESCHAEFT);
+    opportunity.setOpportunityType(
+        de.freshplan.domain.opportunity.entity.OpportunityType.NEUGESCHAEFT);
 
     // 7. Set business fields from request
     if (request.getDescription() != null) {
@@ -947,8 +948,8 @@ public class OpportunityService {
   }
 
   /**
-   * Findet alle Opportunities für einen bestimmten Lead
-   * Sprint 2.1.7.1 - Lead → Opportunity Traceability
+   * Findet alle Opportunities für einen bestimmten Lead Sprint 2.1.7.1 - Lead → Opportunity
+   * Traceability
    *
    * @param leadId Die ID des Leads
    * @return Liste von OpportunityResponse DTOs, sortiert nach Erstellungsdatum (aufsteigend)
@@ -961,9 +962,7 @@ public class OpportunityService {
 
     logger.info("Found {} opportunities for lead ID: {}", opportunities.size(), leadId);
 
-    return opportunities.stream()
-        .map(opportunityMapper::toResponse)
-        .collect(Collectors.toList());
+    return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
   }
 
   // =====================================

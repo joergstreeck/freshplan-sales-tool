@@ -41,8 +41,7 @@ class OpportunityTypeTest {
   @Test
   @DisplayName("SORTIMENTSERWEITERUNG should have correct label")
   void sortimentserweiterung_shouldHaveCorrectLabel() {
-    assertThat(OpportunityType.SORTIMENTSERWEITERUNG.getLabel())
-        .isEqualTo("Sortimentserweiterung");
+    assertThat(OpportunityType.SORTIMENTSERWEITERUNG.getLabel()).isEqualTo("Sortimentserweiterung");
   }
 
   @Test

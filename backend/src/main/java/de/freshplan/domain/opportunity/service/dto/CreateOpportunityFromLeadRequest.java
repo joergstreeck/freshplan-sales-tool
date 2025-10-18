@@ -22,7 +22,10 @@ public class CreateOpportunityFromLeadRequest {
   /** Opportunity description (optional) */
   private String description;
 
-  /** Opportunity Type - Sprint 2.1.7.1 (Freshfoodz Business Type - defaults to NEUGESCHAEFT if not provided) */
+  /**
+   * Opportunity Type - Sprint 2.1.7.1 (Freshfoodz Business Type - defaults to NEUGESCHAEFT if not
+   * provided)
+   */
   private OpportunityType opportunityType;
 
   /** Deal type (e.g., "Liefervertrag", "Erstauftrag", "Rahmenvertrag") */

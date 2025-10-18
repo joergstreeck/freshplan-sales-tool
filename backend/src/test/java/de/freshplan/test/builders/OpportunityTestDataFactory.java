@@ -33,7 +33,8 @@ public class OpportunityTestDataFactory {
     private String name;
     private String description;
     private OpportunityStage stage = OpportunityStage.NEW_LEAD;
-    private OpportunityType opportunityType = OpportunityType.NEUGESCHAEFT; // Sprint 2.1.7.1 Default
+    private OpportunityType opportunityType =
+        OpportunityType.NEUGESCHAEFT; // Sprint 2.1.7.1 Default
     private Customer customer;
     private User assignedTo;
     private BigDecimal expectedValue;

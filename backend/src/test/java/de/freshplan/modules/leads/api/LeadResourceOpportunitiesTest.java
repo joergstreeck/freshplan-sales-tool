@@ -7,7 +7,6 @@ import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
 import de.freshplan.domain.opportunity.entity.OpportunityType;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
-import java.lang.reflect.Field;
 import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
@@ -18,6 +17,7 @@ import io.restassured.http.ContentType;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -28,8 +28,8 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
- * Integration Tests für LeadResource GET /api/leads/{id}/opportunities Endpoint
- * Sprint 2.1.7.1 - Lead → Opportunity Traceability
+ * Integration Tests für LeadResource GET /api/leads/{id}/opportunities Endpoint Sprint 2.1.7.1 -
+ * Lead → Opportunity Traceability
  *
  * @description E2E Tests für das Abrufen aller Opportunities eines Leads
  * @since 2025-10-18
@@ -57,8 +57,10 @@ public class LeadResourceOpportunitiesTest {
     // Cleanup only TEST data (not production seeds!)
     // Delete only entities created by test user to preserve seed data
     em.createQuery("DELETE FROM Opportunity o WHERE o.lead.createdBy = 'testuser'").executeUpdate();
-    em.createQuery("DELETE FROM LeadContact lc WHERE lc.lead.createdBy = 'testuser'").executeUpdate();
-    em.createQuery("DELETE FROM LeadActivity la WHERE la.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact lc WHERE lc.lead.createdBy = 'testuser'")
+        .executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity la WHERE la.lead.createdBy = 'testuser'")
+        .executeUpdate();
     em.createQuery("DELETE FROM Lead l WHERE l.createdBy = 'testuser'").executeUpdate();
 
     // Ensure test territory exists
@@ -124,8 +126,10 @@ public class LeadResourceOpportunitiesTest {
     // Cleanup test data after each test (safety measure)
     // Only delete data created by test user
     em.createQuery("DELETE FROM Opportunity o WHERE o.lead.createdBy = 'testuser'").executeUpdate();
-    em.createQuery("DELETE FROM LeadContact lc WHERE lc.lead.createdBy = 'testuser'").executeUpdate();
-    em.createQuery("DELETE FROM LeadActivity la WHERE la.lead.createdBy = 'testuser'").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact lc WHERE lc.lead.createdBy = 'testuser'")
+        .executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity la WHERE la.lead.createdBy = 'testuser'")
+        .executeUpdate();
     em.createQuery("DELETE FROM Lead l WHERE l.createdBy = 'testuser'").executeUpdate();
   }
 
@@ -177,7 +181,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"USER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"USER"})
   @DisplayName("GET /leads/{id}/opportunities - Returns all opportunities for a lead")
   void testGetLeadOpportunities_Success() {
     given()
@@ -202,7 +208,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"USER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"USER"})
   @DisplayName("GET /leads/{id}/opportunities - Returns empty array for lead without opportunities")
   void testGetLeadOpportunities_EmptyList() {
     // Create a lead without opportunities
@@ -239,7 +247,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"USER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"USER"})
   @DisplayName("GET /leads/{id}/opportunities - Returns 404 for non-existent lead")
   void testGetLeadOpportunities_LeadNotFound() {
     Long nonExistentLeadId = 999999L;
@@ -254,7 +264,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"MANAGER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"MANAGER"})
   @DisplayName("GET /leads/{id}/opportunities - Works for MANAGER role")
   void testGetLeadOpportunities_ManagerRole() {
     given()
@@ -267,7 +279,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"ADMIN"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"ADMIN"})
   @DisplayName("GET /leads/{id}/opportunities - Works for ADMIN role")
   void testGetLeadOpportunities_AdminRole() {
     given()
@@ -291,7 +305,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"USER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"USER"})
   @DisplayName("GET /leads/{id}/opportunities - Returns correct leadCompanyName")
   void testGetLeadOpportunities_LeadCompanyName() {
     given()
@@ -306,7 +322,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"USER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"USER"})
   @DisplayName("GET /leads/{id}/opportunities - Returns opportunities in all stages")
   void testGetLeadOpportunities_AllStages() {
     given()
@@ -319,7 +337,9 @@ public class LeadResourceOpportunitiesTest {
   }
 
   @Test
-  @TestSecurity(user = "testuser", roles = {"USER"})
+  @TestSecurity(
+      user = "testuser",
+      roles = {"USER"})
   @DisplayName("GET /leads/{id}/opportunities - Correct probability values")
   void testGetLeadOpportunities_ProbabilityValues() {
     given()

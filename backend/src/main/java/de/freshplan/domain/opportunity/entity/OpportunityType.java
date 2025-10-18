@@ -6,32 +6,25 @@ package de.freshplan.domain.opportunity.entity;
  * <p>Definiert die verschiedenen Arten von Verkaufschancen basierend auf der Freshfoodz
  * Business-Logik.
  *
- * <p>Pattern: VARCHAR + CHECK Constraint (NICHT PostgreSQL ENUM Type!)
- * Begründung: JPA-Standard @Enumerated(STRING), flexibler, wartbarer
+ * <p>Pattern: VARCHAR + CHECK Constraint (NICHT PostgreSQL ENUM Type!) Begründung:
+ * JPA-Standard @Enumerated(STRING), flexibler, wartbarer
  *
  * @author FreshPlan Team
  * @since Sprint 2.1.7.1
- * @see <a href="docs/planung/features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md">ENUM_MIGRATION_STRATEGY.md</a>
+ * @see <a
+ *     href="docs/planung/features-neu/02_neukundengewinnung/artefakte/ENUM_MIGRATION_STRATEGY.md">ENUM_MIGRATION_STRATEGY.md</a>
  */
 public enum OpportunityType {
-  /**
-   * Kunde kauft zum ersten Mal (egal ob Artikel oder Konzept)
-   */
+  /** Kunde kauft zum ersten Mal (egal ob Artikel oder Konzept) */
   NEUGESCHAEFT("Neugeschäft"),
 
-  /**
-   * Neue Produktkategorie (einzelner Artikel bis Gesamtkonzept)
-   */
+  /** Neue Produktkategorie (einzelner Artikel bis Gesamtkonzept) */
   SORTIMENTSERWEITERUNG("Sortimentserweiterung"),
 
-  /**
-   * Zusätzlicher Standort beim bestehenden Kunden
-   */
+  /** Zusätzlicher Standort beim bestehenden Kunden */
   NEUER_STANDORT("Neuer Standort"),
 
-  /**
-   * Rahmenvertrag-Renewal (Verlängerung)
-   */
+  /** Rahmenvertrag-Renewal (Verlängerung) */
   VERLAENGERUNG("Vertragsverlängerung");
 
   private final String label;
@@ -42,6 +35,7 @@ public enum OpportunityType {
 
   /**
    * Get German display label
+   *
    * @return Deutsche Bezeichnung für UI
    */
   public String getLabel() {
@@ -50,6 +44,7 @@ public enum OpportunityType {
 
   /**
    * Check if this type represents a completely new business relationship
+   *
    * @return true für NEUGESCHAEFT
    */
   public boolean isNewBusiness() {
@@ -58,6 +53,7 @@ public enum OpportunityType {
 
   /**
    * Check if this type represents recurring business (renewal)
+   *
    * @return true für VERLAENGERUNG
    */
   public boolean isRenewal() {
@@ -66,6 +62,7 @@ public enum OpportunityType {
 
   /**
    * Check if this type represents expansion of existing business
+   *
    * @return true für SORTIMENTSERWEITERUNG oder NEUER_STANDORT
    */
   public boolean isExpansion() {

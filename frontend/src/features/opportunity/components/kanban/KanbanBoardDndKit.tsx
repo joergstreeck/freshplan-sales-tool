@@ -166,14 +166,8 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     // Feature 2: Benutzer-Filter (Manager View)
     // Only filter by user if not "all" selected
     if (selectedUserId !== 'all') {
-      // TODO: Replace with real assignedToUserId field when backend is ready
-      // For now, match by assignedToName (placeholder logic)
-      const selectedUser = teamMembers.find(u => u.id === selectedUserId);
-      if (selectedUser) {
-        filtered = filtered.filter(opp =>
-          opp.assignedToName && opp.assignedToName.includes(selectedUser.name)
-        );
-      }
+      // Filter by assignedToId for accurate matching (Gemini Code Review)
+      filtered = filtered.filter(opp => opp.assignedToId === selectedUserId);
     }
 
     // Feature 3: Quick-Search
@@ -188,7 +182,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     }
 
     return filtered;
-  }, [opportunities, selectedUserId, searchQuery, teamMembers]);
+  }, [opportunities, selectedUserId, searchQuery]);
 
   // Determine visible stages based on status filter (Sprint 2.1.7.1)
   const visibleStages = useMemo(() => {

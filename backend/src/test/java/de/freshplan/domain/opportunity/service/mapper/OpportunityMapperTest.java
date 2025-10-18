@@ -601,8 +601,7 @@ class OpportunityMapperTest {
     }
 
     @Test
-    @DisplayName(
-        "Should clean name AND preserve opportunityType field independently (not coupled)")
+    @DisplayName("Should clean name AND preserve opportunityType field independently (not coupled)")
     void toResponse_shouldCleanNameButPreserveOpportunityType() {
       // Arrange - Opportunity with prefix in name, but explicit opportunityType field
       var opportunity =
@@ -622,8 +621,7 @@ class OpportunityMapperTest {
       // Assert - Name should be cleaned, BUT opportunityType should be from field
       assertThat(response.getName()).isEqualTo("Test Company");
       assertThat(response.getOpportunityType())
-          .isEqualTo(
-              OpportunityType.SORTIMENTSERWEITERUNG); // NOT NEUGESCHAEFT from name prefix!
+          .isEqualTo(OpportunityType.SORTIMENTSERWEITERUNG); // NOT NEUGESCHAEFT from name prefix!
     }
   }
 }

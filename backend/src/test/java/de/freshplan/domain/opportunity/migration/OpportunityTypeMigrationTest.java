@@ -69,9 +69,7 @@ class OpportunityTypeMigrationTest {
 
     var rs = stmt.executeQuery();
 
-    assertThat(rs.next())
-        .as("CHECK constraint 'chk_opportunity_type' should exist")
-        .isTrue();
+    assertThat(rs.next()).as("CHECK constraint 'chk_opportunity_type' should exist").isTrue();
 
     rs.close();
     stmt.close();
