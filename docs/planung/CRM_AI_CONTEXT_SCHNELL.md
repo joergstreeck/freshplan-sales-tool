@@ -464,11 +464,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **1 Lead → 1 primäre Opportunity** (lead_id gespeichert)
 - Weitere Opportunities für denselben Lead möglich (z.B. unterschiedliche Produktlinien)
 
-**Opportunity-Types:**
-- **NEW_BUSINESS** - Neukunden-Akquise (Standard bei Lead-Conversion)
-- **UPSELL** - Bestandskunden-Erweiterung (höherer Warenkorbwert)
-- **CROSS_SELL** - Neue Produktkategorie für Bestandskunde
-- **RENEWAL** - Vertragsverlängerung / Reaktivierung
+**Opportunity-Types (Freshfoodz Business Types - Sprint 2.1.7.1):**
+- **NEUGESCHAEFT** - Neukunden-Akquise (Standard bei Lead-Conversion)
+- **SORTIMENTSERWEITERUNG** - Produkterweiterung oder Volumen-Erhöhung (entspricht Upsell + Cross-sell)
+- **NEUER_STANDORT** - Zusätzliche Location für bestehenden Kunden
+- **VERLAENGERUNG** - Rahmenvertrag-Renewal / Verlängerung
 
 ---
 

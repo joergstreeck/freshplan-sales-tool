@@ -1155,7 +1155,7 @@ Test Case 2: Churn-Alarm Konfiguration
 - Sprint 2.1.7.1: Lead → Opportunity (COMPLETE erforderlich!)
 
 ### **Follow-up Sprints:**
-- Sprint 2.1.7.3: RENEWAL-Workflow (Upsell/Cross-sell)
+- Sprint 2.1.7.3: Bestandskunden-Workflow (SORTIMENTSERWEITERUNG/VERLAENGERUNG)
 - Sprint 2.1.7.4: Advanced Filters & Analytics
 
 ---

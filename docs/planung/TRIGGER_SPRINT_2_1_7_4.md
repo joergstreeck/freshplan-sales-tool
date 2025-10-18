@@ -27,10 +27,10 @@ Nach Diskussion und Entscheidung in Sprint 2.1.7.3:
 7. CLOSED_LOST    (0%)
 ```
 
-**RENEWAL wurde entfernt!**
-- ❌ RENEWAL ist KEINE Stage mehr
-- ✅ RENEWAL ist jetzt ein `opportunityType` Feld
-- ✅ Migration in Sprint 2.1.7.3 migriert RENEWAL-Stage → NEEDS_ANALYSIS + opportunityType='Renewal'
+**OpportunityType statt RENEWAL-Stage:**
+- ❌ RENEWAL ist KEINE Stage mehr (entfernt in Sprint 2.1.7.1)
+- ✅ OpportunityType Enum mit Freshfoodz Business Types implementiert
+- ✅ NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG
 
 **Customer-Opportunities starten bei NEEDS_ANALYSIS:**
 - NEW_LEAD + QUALIFICATION entfällt (Kunde ist bereits qualifiziert!)
@@ -152,7 +152,7 @@ Response: {
   id: UUID,
   name: string,
   stage: 'NEW_LEAD',
-  opportunityType: 'NEW_BUSINESS',
+  opportunityType: OpportunityType.NEUGESCHAEFT,
   ...
 }
 ```
@@ -229,7 +229,7 @@ public Opportunity createManual(CreateOpportunityManualRequest request, User cur
     opportunity.setCompanyName(request.getCompanyName()); // Temporär - später zu Lead/Customer
     opportunity.setSource(request.getSource()); // "EVENT", "COLD_OUTREACH", etc.
     opportunity.setDealType(request.getDealType());
-    opportunity.setOpportunityType("NEW_BUSINESS"); // Hardcoded (manuelle Opp = immer NEW_BUSINESS)
+    opportunity.setOpportunityType(OpportunityType.NEUGESCHAEFT); // Hardcoded (manuelle Opp = immer NEUGESCHAEFT)
     opportunity.setStage(OpportunityStage.NEW_LEAD); // Start bei NEW_LEAD
     opportunity.setExpectedValue(request.getExpectedValue());
     opportunity.setExpectedCloseDate(request.getExpectedCloseDate());
@@ -274,7 +274,7 @@ COMMENT ON COLUMN opportunities.company_name IS
 
 -- Beispiel-Daten:
 UPDATE opportunities SET source = 'LEAD_CONVERSION' WHERE lead_id IS NOT NULL;
-UPDATE opportunities SET source = 'CUSTOMER_UPSELL' WHERE customer_id IS NOT NULL AND opportunity_type IN ('Upsell', 'Cross-sell', 'Renewal');
+UPDATE opportunities SET source = 'CUSTOMER_EXPANSION' WHERE customer_id IS NOT NULL AND opportunity_type IN ('SORTIMENTSERWEITERUNG', 'NEUER_STANDORT', 'VERLAENGERUNG');
 ```
 
 ---
@@ -547,10 +547,10 @@ export function AdvancedSearchDialog({ open, onClose, onApply }: Props) {
                 onChange={(e) => setFilters({...filters, opportunityType: e.target.value || null})}
               >
                 <MenuItem value="">Alle</MenuItem>
-                <MenuItem value="Upsell">Upsell</MenuItem>
-                <MenuItem value="Cross-sell">Cross-sell</MenuItem>
-                <MenuItem value="Renewal">Renewal</MenuItem>
-                <MenuItem value="Standard">Standard</MenuItem>
+                <MenuItem value="NEUGESCHAEFT">Neugeschäft</MenuItem>
+                <MenuItem value="SORTIMENTSERWEITERUNG">Sortimentserweiterung</MenuItem>
+                <MenuItem value="NEUER_STANDORT">Neuer Standort</MenuItem>
+                <MenuItem value="VERLAENGERUNG">Vertragsverlängerung</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -1027,10 +1027,10 @@ COMMENT ON TABLE user_filter_views IS
 ### **Dependent Sprints:**
 - Sprint 2.1.7.1: Lead → Opportunity (COMPLETE)
 - Sprint 2.1.7.2: Customer-Management + Xentral (COMPLETE)
-- Sprint 2.1.7.3: RENEWAL-Workflow (COMPLETE)
+- Sprint 2.1.7.3: Bestandskunden-Workflow (COMPLETE)
 
 ### **Follow-up Sprints:**
-- Sprint 2.1.8.x: AI-basierte Upsell-Vorschläge (weit später!)
+- Sprint 2.1.8.x: AI-basierte Cross-Selling-Vorschläge (weit später!)
 - Sprint 2.1.9.x: Opportunity ROI Calculator (später!)
 
 ---
