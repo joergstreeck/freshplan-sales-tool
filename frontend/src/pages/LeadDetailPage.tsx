@@ -15,6 +15,7 @@ import {
   AccordionDetails,
   IconButton,
   useTheme,
+  Alert,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import {
@@ -23,6 +24,7 @@ import {
   ExpandMore as ExpandMoreIcon,
   TrendingUp as TrendingUpIcon,
   Group as GroupIcon,
+  CheckCircle as CheckCircleIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { LeadContactsCard } from '../features/leads/components/LeadContactsCard';
@@ -32,6 +34,7 @@ import { ActivityDialog } from '../features/leads/components/ActivityDialog';
 import PreClaimBadge from '../features/leads/components/PreClaimBadge';
 import BusinessPotentialCard from '../features/leads/components/BusinessPotentialCard';
 import BusinessPotentialDialog from '../features/leads/components/BusinessPotentialDialog';
+import { CreateOpportunityDialog } from '../features/opportunity/components/CreateOpportunityDialog';
 import {
   LeadScoreSummaryCard,
   ScoreAccordion,
@@ -76,6 +79,7 @@ export function LeadDetailPage() {
   const [editingContact, setEditingContact] = useState<LeadContactDTO | null>(null);
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [businessPotentialDialogOpen, setBusinessPotentialDialogOpen] = useState(false);
+  const [showOpportunityDialog, setShowOpportunityDialog] = useState(false);
 
   // Accordion State - Main Sections (default: basicData expanded)
   const [expandedSection, setExpandedSection] = useState<string | false>('basicData');
@@ -230,11 +234,40 @@ export function LeadDetailPage() {
               </Stack>
             </Box>
 
-            <Box>
+            <Stack direction="row" spacing={2} alignItems="center">
               <PreClaimBadge lead={lead} />
-            </Box>
+              {/* Sprint 2.1.7.1: Lead → Opportunity Conversion Button */}
+              {(lead.status === 'QUALIFIED' || lead.status === 'ACTIVE') &&
+                lead.status !== 'CONVERTED' && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<TrendingUpIcon />}
+                    onClick={() => setShowOpportunityDialog(true)}
+                    sx={{
+                      bgcolor: theme.palette.primary.main,
+                      '&:hover': { bgcolor: theme.palette.primary.dark },
+                    }}
+                  >
+                    In Opportunity konvertieren
+                  </Button>
+                )}
+            </Stack>
           </Box>
         </Box>
+
+        {/* Sprint 2.1.7.1: Converted Badge */}
+        {lead.status === 'CONVERTED' && (
+          <Alert
+            severity="success"
+            icon={<CheckCircleIcon />}
+            sx={{ mb: 3 }}
+          >
+            Lead wurde zu Opportunity konvertiert am{' '}
+            {new Date(lead.updatedAt).toLocaleDateString('de-DE')}
+            {' → Siehe Verkaufschancen unten'}
+          </Alert>
+        )}
 
         <Grid container spacing={3}>
           {/* Left Column: Main Content */}
@@ -420,6 +453,38 @@ export function LeadDetailPage() {
                 />
               </AccordionDetails>
             </Accordion>
+
+            {/* Sprint 2.1.7.1: Opportunities Section */}
+            <Accordion
+              expanded={expandedSection === 'opportunities'}
+              onChange={handleSectionChange('opportunities')}
+              sx={{ mb: 2, border: '1px solid', borderColor: 'divider' }}
+            >
+              <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
+                  <TrendingUpIcon color="primary" />
+                  <Box sx={{ flexGrow: 1 }}>
+                    <Typography variant="h6">Verkaufschancen (0)</Typography>
+                    {expandedSection !== 'opportunities' && (
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                        Noch keine Opportunities erstellt
+                      </Typography>
+                    )}
+                  </Box>
+                </Box>
+              </AccordionSummary>
+
+              <AccordionDetails>
+                <Alert severity="info">
+                  Noch keine Opportunities für diesen Lead erstellt.
+                  {lead.status !== 'CONVERTED' &&
+                    (lead.status === 'QUALIFIED' || lead.status === 'ACTIVE') && (
+                      <> Klicken Sie auf "In Opportunity konvertieren" um zu starten.</>
+                    )}
+                </Alert>
+                {/* TODO: Replace with <LeadOpportunitiesList leadId={lead.id} /> in Task 13 */}
+              </AccordionDetails>
+            </Accordion>
           </Grid>
 
           {/* Right Column: Activity Timeline */}
@@ -478,6 +543,19 @@ export function LeadDetailPage() {
           onClose={() => setBusinessPotentialDialogOpen(false)}
           lead={lead}
           onSave={loadLead}
+        />
+
+        {/* Sprint 2.1.7.1: Create Opportunity Dialog */}
+        <CreateOpportunityDialog
+          open={showOpportunityDialog}
+          lead={lead}
+          onClose={() => setShowOpportunityDialog(false)}
+          onSuccess={() => {
+            setShowOpportunityDialog(false);
+            // Reload lead to update status
+            loadLead();
+            toast.success('Opportunity erfolgreich erstellt! 🎉');
+          }}
         />
       </Box>
     </MainLayoutV2>
