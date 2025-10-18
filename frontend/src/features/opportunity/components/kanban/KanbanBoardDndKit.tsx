@@ -19,9 +19,12 @@ import {
   ToggleButtonGroup,
   ToggleButton,
   TextField,
-  Checkbox,
-  FormControlLabel,
   InputAdornment,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Divider,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
@@ -68,11 +71,28 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   // Feature 1: Status Filter (Sprint 2.1.7.1)
   const [statusFilter, setStatusFilter] = useState<'active' | 'closed' | 'all'>('active');
 
-  // Feature 2: "Nur meine Deals" Filter (Sprint 2.1.7.1)
-  const [myDealsOnly, setMyDealsOnly] = useState(false);
+  // Feature 2: Benutzer-Filter (Sprint 2.1.7.1 - Manager View)
+  const [selectedUserId, setSelectedUserId] = useState<string>('all');
 
   // Feature 3: Quick-Search (Sprint 2.1.7.1)
   const [searchQuery, setSearchQuery] = useState('');
+
+  // TODO: Get from Auth Context in Sprint 2.1.7.2
+  // Dummy current user for demo
+  const currentUser = {
+    id: 'current-user-123',
+    name: 'Max Manager',
+    role: 'MANAGER', // or 'USER' for sales rep
+  };
+
+  // TODO: Get from API in Sprint 2.1.7.2
+  // Dummy team members for demo
+  const teamMembers = [
+    { id: 'current-user-123', name: 'Max Manager' },
+    { id: 'user-1', name: 'Anna Schmidt' },
+    { id: 'user-2', name: 'Peter Meier' },
+    { id: 'user-3', name: 'Sarah Wagner' },
+  ];
 
   // Load opportunities from API on component mount
   useEffect(() => {
@@ -143,11 +163,17 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const filteredOpportunities = useMemo(() => {
     let filtered = opportunities;
 
-    // Feature 2: "Nur meine Deals" Filter
-    if (myDealsOnly) {
-      // TODO: Get current user from auth context
-      // For now, filter by assignedToName presence (placeholder)
-      filtered = filtered.filter(opp => opp.assignedToName && opp.assignedToName !== 'Nicht zugewiesen');
+    // Feature 2: Benutzer-Filter (Manager View)
+    // Only filter by user if not "all" selected
+    if (selectedUserId !== 'all') {
+      // TODO: Replace with real assignedToUserId field when backend is ready
+      // For now, match by assignedToName (placeholder logic)
+      const selectedUser = teamMembers.find(u => u.id === selectedUserId);
+      if (selectedUser) {
+        filtered = filtered.filter(opp =>
+          opp.assignedToName && opp.assignedToName.includes(selectedUser.name)
+        );
+      }
     }
 
     // Feature 3: Quick-Search
@@ -162,7 +188,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
     }
 
     return filtered;
-  }, [opportunities, myDealsOnly, searchQuery]);
+  }, [opportunities, selectedUserId, searchQuery, teamMembers]);
 
   // Determine visible stages based on status filter (Sprint 2.1.7.1)
   const visibleStages = useMemo(() => {
@@ -420,17 +446,28 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             sx={{ width: 300 }}
           />
 
-          {/* Feature 2: "Nur meine Deals" */}
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={myDealsOnly}
-                onChange={(e) => setMyDealsOnly(e.target.checked)}
-                size="small"
-              />
-            }
-            label="Nur meine Deals"
-          />
+          {/* Feature 2: Benutzer-Filter (Manager View) */}
+          {currentUser.role === 'MANAGER' && (
+            <FormControl size="small" sx={{ minWidth: 200 }}>
+              <InputLabel>Verkäufer</InputLabel>
+              <Select
+                value={selectedUserId}
+                onChange={(e) => setSelectedUserId(e.target.value)}
+                label="Verkäufer"
+              >
+                <MenuItem value="all">
+                  <strong>Alle Verkäufer</strong>
+                </MenuItem>
+                <Divider />
+                {teamMembers.map((member) => (
+                  <MenuItem key={member.id} value={member.id}>
+                    {member.name}
+                    {member.id === currentUser.id && ' (ich)'}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
 
           {/* Feature 1: Status Filter */}
           <ToggleButtonGroup
