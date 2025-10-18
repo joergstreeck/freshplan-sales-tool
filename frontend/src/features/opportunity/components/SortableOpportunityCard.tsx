@@ -12,7 +12,7 @@ interface SortableOpportunityCardProps {
 export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = ({
   opportunity,
   onQuickAction,
-  isAnimating = false,
+  isAnimating: _isAnimating = false,
 }) => {
   const {
     attributes,

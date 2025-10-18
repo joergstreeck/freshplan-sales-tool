@@ -15,7 +15,6 @@ import {
   TextField,
   Button,
   Alert,
-  Box,
   MenuItem,
   FormControl,
   InputLabel,
@@ -164,10 +163,11 @@ export default function CreateOpportunityDialog({
       // Success!
       onSuccess();
       handleClose();
-    } catch (error: any) {
-      console.error('Failed to create opportunity from lead:', error);
+    } catch (err: unknown) {
+      console.error('Failed to create opportunity from lead:', err);
 
       // Handle specific HTTP status codes (Copilot Code Review)
+      const error = err as { response?: { status?: number; data?: { detail?: string; title?: string } } };
       const status = error.response?.status;
       let message: string;
 

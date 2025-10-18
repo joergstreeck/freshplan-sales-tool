@@ -34,7 +34,6 @@ import { OpportunityStage, type Opportunity } from '../../types';
 import { logger } from '../../../../lib/logger';
 import { useErrorHandler } from '../../../../components/ErrorBoundary';
 import { httpClient } from '../../../../lib/apiClient';
-import { MOCK_CURRENT_USER, MOCK_TEAM_MEMBERS } from '../../constants/mockData';
 
 import { OpportunityCard } from './OpportunityCard';
 import { KanbanColumn } from './KanbanColumn';
@@ -78,9 +77,19 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   // Feature 3: Quick-Search (Sprint 2.1.7.1)
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock data (TODO: Replace in Sprint 2.1.7.2)
-  const currentUser = MOCK_CURRENT_USER;
-  const teamMembers = MOCK_TEAM_MEMBERS;
+  // TODO Sprint 2.1.7.2: Replace with real data from Auth Context + User API
+  // Temporary hardcoded data for development (will be removed in Sprint 2.1.7.2)
+  const currentUser = {
+    id: 'current-user-123',
+    name: 'Max Manager',
+    role: 'MANAGER' as const,
+  };
+  const teamMembers = [
+    { id: 'current-user-123', name: 'Max Manager' },
+    { id: 'user-1', name: 'Anna Schmidt' },
+    { id: 'user-2', name: 'Peter Meier' },
+    { id: 'user-3', name: 'Sarah Wagner' },
+  ];
 
   // Load opportunities from API on component mount
   useEffect(() => {

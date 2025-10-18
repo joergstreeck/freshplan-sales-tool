@@ -380,7 +380,7 @@ describe('OpportunityCard - Sprint 2.1.7.1 Features', () => {
       it(`renders correct badge for OpportunityType ${type}`, () => {
         const opportunityWithType: Opportunity = {
           ...mockOpportunity,
-          opportunityType: type as any,
+          opportunityType: type as OpportunityType,
         };
 
         renderWithTheme(<OpportunityCard opportunity={opportunityWithType} />);
@@ -412,7 +412,7 @@ describe('OpportunityCard - Sprint 2.1.7.1 Features', () => {
         opportunityType: 'NEUGESCHAEFT',
       };
 
-      const { container } = renderWithTheme(<OpportunityCard opportunity={opportunityWithType} />);
+      renderWithTheme(<OpportunityCard opportunity={opportunityWithType} />);
 
       // Find the Chip root component containing "🆕 Neugeschäft"
       const typeBadge = screen.getByText(/🆕 Neugeschäft/i).closest('.MuiChip-root');

@@ -56,9 +56,10 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
         if (onCountChange) {
           onCountChange(fetchedOpportunities.length);
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Failed to fetch opportunities:', err);
-        setError(err.response?.data?.error || 'Fehler beim Laden der Opportunities');
+        const error = err as { response?: { data?: { error?: string } } };
+        setError(error.response?.data?.error || 'Fehler beim Laden der Opportunities');
 
         // Reset count on error
         if (onCountChange) {

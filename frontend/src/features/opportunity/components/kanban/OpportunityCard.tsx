@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Stack,
   Box,
   Avatar,
   LinearProgress,
@@ -12,7 +11,6 @@ import {
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import PersonIcon from '@mui/icons-material/Person';
-import BusinessIcon from '@mui/icons-material/Business';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

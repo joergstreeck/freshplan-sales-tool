@@ -40,9 +40,10 @@ export function OpportunityDetailPage() {
       try {
         const response = await httpClient.get<Opportunity>(`/api/opportunities/${id}`);
         setOpportunity(response.data);
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Failed to fetch opportunity:', err);
-        setError(err.response?.data?.message || 'Opportunity nicht gefunden');
+        const error = err as { response?: { data?: { message?: string } } };
+        setError(error.response?.data?.message || 'Opportunity nicht gefunden');
       } finally {
         setLoading(false);
       }

@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Box, Paper, Typography, Badge, Stack } from '@mui/material';
+import { Box, Paper, Typography, Badge } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
 import { useDroppable } from '@dnd-kit/core';
 
