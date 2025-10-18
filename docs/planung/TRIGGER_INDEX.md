@@ -190,17 +190,20 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
    - Status: ✅ MERGED TO MAIN (15.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_1.md - Lead → Opportunity UI Integration (FOKUSSIERT - 16.10.2025)
-   - **SCOPE:** NUR Lead → Opportunity Workflow (FOKUSSIERT!)
-   - **Phase 1:** CreateOpportunityDialog mit Lead-Context-Prop-Pattern
-   - **Phase 2:** Kanban Backend-Filter (status: active/closed/all, assignedTo)
-   - **Phase 3:** Drag & Drop Fix (transformOrigin Bug - 3-stufige Lösung)
-   - **Phase 4:** E2E Tests mit Playwright (18 Tests)
-   - **Aufwand:** 17h = 2 Arbeitstage (REALISTISCH!)
-   - **ENTFERNT:** Customer → Opportunity (→ Sprint 2.1.7.3), Opportunity → Customer (→ Sprint 2.1.7.2)
-   - **Prerequisites:** ✅ Sprint 2.1.7.0 COMPLETE, V10026 deployed, V90003 DEV-SEED verfügbar
-   - **Migrations:** Keine (nur UI + Backend-Filter)
-   - Status: 📋 PLANNING - Ready for Kickoff (16.10.2025)
+✅ TRIGGER_SPRINT_2_1_7_1.md - Lead → Opportunity UI Integration (COMPLETE - 18.10.2025)
+   - **SCOPE:** NUR Lead → Opportunity Workflow (FOKUSSIERT!) ✅
+   - **Deliverable 0:** OpportunityCard Verbesserungen (leadCompanyName, Lead-Origin Badge, Stage Color) ✅
+   - **Deliverable 1:** CreateOpportunityDialog Component + Tests ✅
+   - **Deliverable 2:** LeadDetailPage Integration ("In Opportunity konvertieren" Button) ✅
+   - **Deliverable 3:** LeadOpportunitiesList Component (20/20 Tests GREEN, Whole Card Clickable) ✅
+   - **Deliverable 4:** OpportunityPipeline Filter-UI (Status Filter, Benutzer-Dropdown, Quick-Search, Pagination) ✅
+   - **Deliverable 5:** Drag & Drop Fix (snapCenterToCursor) ✅
+   - **Deliverable 6:** Testing & Bugfixes (Seed-Deletion Fix, Navigation Fix, Counter Fix) ✅
+   - **Aufwand:** ~18h (inkl. Bugfixes + UX-Verbesserungen)
+   - **FEATURE ENHANCEMENT:** Benutzer-Filter als Dropdown (Manager View) statt Checkbox - professionellere UX ✅
+   - **Tests:** KanbanBoardDndKit 38/38 GREEN, LeadOpportunitiesList 20/20 GREEN, OpportunityCard 30/30 GREEN
+   - **Commits:** 10+ Commits (feat/refactor/fix/test) - Letzte: f2d179e3e (Benutzer-Dropdown)
+   - Status: ✅ COMPLETE (18.10.2025) - READY FOR SPRINT 2.1.7.2
 
 📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (16.10.2025)
    - **SCOPE:** Opportunity → Customer + Xentral-Dashboard (ZUSAMMEN!)

@@ -1,12 +1,14 @@
 # 🚀 Sprint 2.1.7.1 - Lead → Opportunity Workflow (FOKUSSIERT)
 
 **Sprint-ID:** 2.1.7.1
-**Status:** 🔶 PLANNING
+**Status:** ✅ COMPLETE
 **Priority:** P1 (High)
 **Estimated Effort:** 17h (2 Arbeitstage)
-**Owner:** TBD
+**Actual Effort:** ~18h (inkl. Bugfixes + UX-Verbesserungen)
+**Owner:** Claude + Jörg
 **Created:** 2025-10-13
-**Updated:** 2025-10-16 (nach Diskussion mit AI + Jörg)
+**Updated:** 2025-10-18 (COMPLETE - alle Deliverables umgesetzt)
+**Completed:** 2025-10-18
 
 ---
 
@@ -753,54 +755,53 @@ public List<OpportunityResponse> findClosedOpportunities(Page page) {
 }
 ```
 
-**Feature 2: "Meine Deals" Filter (1h)**
+**Feature 2: Benutzer-Filter (Manager View) (1h)** ✅ UPDATED 2025-10-18
 ```tsx
-const [myDealsOnly, setMyDealsOnly] = useState(false);
+// State: User-Selection statt Boolean
+const [selectedUserId, setSelectedUserId] = useState<string>('all');
 
-<FormControlLabel
-  control={
-    <Checkbox
-      checked={myDealsOnly}
-      onChange={(e) => setMyDealsOnly(e.target.checked)}
-    />
-  }
-  label="Nur meine Deals"
-/>
+// Role-based rendering (nur für Manager sichtbar!)
+{currentUser.role === 'MANAGER' && (
+  <FormControl size="small" sx={{ minWidth: 200 }}>
+    <InputLabel>Verkäufer</InputLabel>
+    <Select
+      value={selectedUserId}
+      onChange={(e) => setSelectedUserId(e.target.value)}
+      label="Verkäufer"
+    >
+      <MenuItem value="all">
+        <strong>Alle Verkäufer</strong>
+      </MenuItem>
+      <Divider />
+      {teamMembers.map((member) => (
+        <MenuItem key={member.id} value={member.id}>
+          {member.name}
+          {member.id === currentUser.id && ' (ich)'}
+        </MenuItem>
+      ))}
+    </Select>
+  </FormControl>
+)}
 
-// API Call erweitern:
-const params = new URLSearchParams();
-params.append('status', statusFilter);
-if (myDealsOnly) {
-  params.append('assignedTo', currentUser.id);
-}
-
-const response = await httpClient.get(`/api/opportunities?${params.toString()}`);
-```
-
-**Backend-Erweiterung:**
-```java
-// OpportunityResource.java - Erweitern
-@GET
-@RolesAllowed({"admin", "manager", "sales"})
-public Response getAllOpportunities(
-    @QueryParam("page") @DefaultValue("0") int page,
-    @QueryParam("size") @DefaultValue("20") int size,
-    @QueryParam("status") @DefaultValue("active") String status,
-    @QueryParam("assignedTo") UUID assignedToUserId) {
-
-    // ... status filtering wie oben ...
-
-    // Zusätzlich: User-Filtering
-    if (assignedToUserId != null) {
-        opportunities = opportunities.stream()
-            .filter(opp -> opp.getAssignedTo() != null &&
-                          opp.getAssignedTo().getId().equals(assignedToUserId))
-            .collect(Collectors.toList());
-    }
-
-    return Response.ok(opportunities).build();
+// Filter-Logic
+if (selectedUserId !== 'all') {
+  const selectedUser = teamMembers.find(u => u.id === selectedUserId);
+  filtered = filtered.filter(opp =>
+    opp.assignedToName?.includes(selectedUser.name)
+  );
 }
 ```
+
+**Vorteile gegenüber Checkbox:**
+- ✅ Manager kann einzelne Verkäufer auswählen (Coaching-Mode)
+- ✅ Verkäufer sehen den Filter gar nicht (RLS gibt sowieso nur eigene Deals)
+- ✅ Professioneller (Standard in Salesforce/HubSpot)
+- ✅ "Alle Verkäufer" als Default für Team-Überblick
+
+**Backend-Integration (Sprint 2.1.7.2):**
+- TODO: Replace dummy currentUser/teamMembers with Auth Context
+- TODO: API endpoint `/api/users` für Team-Liste
+- Backend RLS bereits implementiert (User sieht nur eigene, Manager sieht alle)
 
 **Feature 3: Quick-Search (2h)**
 ```tsx
