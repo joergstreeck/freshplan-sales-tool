@@ -167,7 +167,9 @@ export default function CreateOpportunityDialog({
       console.error('Failed to create opportunity from lead:', err);
 
       // Handle specific HTTP status codes (Copilot Code Review)
-      const error = err as { response?: { status?: number; data?: { detail?: string; title?: string } } };
+      const error = err as {
+        response?: { status?: number; data?: { detail?: string; title?: string } };
+      };
       const status = error.response?.status;
       let message: string;
 
@@ -241,7 +243,7 @@ export default function CreateOpportunityDialog({
             <TextField
               label="Name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={e => setName(e.target.value)}
               fullWidth
               disabled={isSubmitting}
               placeholder={`Wird automatisch generiert (${lead.companyName})`}
@@ -260,10 +262,10 @@ export default function CreateOpportunityDialog({
               <InputLabel>Opportunity-Typ</InputLabel>
               <Select
                 value={opportunityType}
-                onChange={(e) => setOpportunityType(e.target.value as OpportunityType)}
+                onChange={e => setOpportunityType(e.target.value as OpportunityType)}
                 label="Opportunity-Typ"
               >
-                {Object.values(OpportunityType).map((type) => (
+                {Object.values(OpportunityType).map(type => (
                   <MenuItem key={type} value={type}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Typography>{OPPORTUNITY_TYPE_ICONS[type]}</Typography>
@@ -282,7 +284,7 @@ export default function CreateOpportunityDialog({
               label="Erwarteter Wert"
               type="number"
               value={expectedValue || ''}
-              onChange={(e) => setExpectedValue(parseFloat(e.target.value) || undefined)}
+              onChange={e => setExpectedValue(parseFloat(e.target.value) || undefined)}
               fullWidth
               required
               disabled={isSubmitting}
@@ -302,7 +304,7 @@ export default function CreateOpportunityDialog({
             <DatePicker
               label="Erwartetes Abschlussdatum"
               value={expectedCloseDate}
-              onChange={(newValue) => setExpectedCloseDate(newValue)}
+              onChange={newValue => setExpectedCloseDate(newValue)}
               disabled={isSubmitting}
               minDate={addDays(new Date(), 1)} // Minimum: tomorrow
               slotProps={{
@@ -311,7 +313,8 @@ export default function CreateOpportunityDialog({
                   required: true,
                   error: !!validationErrors.expectedCloseDate,
                   helperText:
-                    validationErrors.expectedCloseDate || 'Wann soll der Deal abgeschlossen werden?',
+                    validationErrors.expectedCloseDate ||
+                    'Wann soll der Deal abgeschlossen werden?',
                   InputProps: {
                     startAdornment: (
                       <InputAdornment position="start">
@@ -327,7 +330,7 @@ export default function CreateOpportunityDialog({
             <TextField
               label="Beschreibung"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={e => setDescription(e.target.value)}
               fullWidth
               multiline
               rows={3}
@@ -342,8 +345,18 @@ export default function CreateOpportunityDialog({
                 Nach dem Erstellen:
               </Typography>
               <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                <li>Lead-Status wird auf <Chip label="CONVERTED" size="small" sx={{ fontSize: '0.7rem', height: '18px' }} /> gesetzt</li>
-                <li>Opportunity erscheint in der Pipeline (Stage: <strong>NEW_LEAD</strong>)</li>
+                <li>
+                  Lead-Status wird auf{' '}
+                  <Chip
+                    label="CONVERTED"
+                    size="small"
+                    sx={{ fontSize: '0.7rem', height: '18px' }}
+                  />{' '}
+                  gesetzt
+                </li>
+                <li>
+                  Opportunity erscheint in der Pipeline (Stage: <strong>NEW_LEAD</strong>)
+                </li>
                 <li>Sie werden zur Opportunity-Pipeline weitergeleitet</li>
               </ul>
             </Alert>

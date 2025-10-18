@@ -14,13 +14,7 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
   onQuickAction,
   isAnimating: _isAnimating = false,
 }) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    isDragging,
-  } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: opportunity.id,
     data: { opportunity }, // Sprint 2.1.7.1: Pass opportunity data for DragOverlay
   });
@@ -28,18 +22,13 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
   // Sprint 2.1.7.1: FINAL - Hide original, DragOverlay (portal) shows it
   const style: React.CSSProperties = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : undefined,
-    opacity: isDragging ? 0 : 1,  // Hide completely - DragOverlay renders outside DOM
+    opacity: isDragging ? 0 : 1, // Hide completely - DragOverlay renders outside DOM
     visibility: isDragging ? 'hidden' : 'visible',
     marginBottom: '12px',
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-    >
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
       <OpportunityCard
         opportunity={opportunity}
         onQuickAction={onQuickAction}

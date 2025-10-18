@@ -262,11 +262,7 @@ export function LeadDetailPage() {
 
         {/* Sprint 2.1.7.1: Converted Badge */}
         {lead.status === 'CONVERTED' && (
-          <Alert
-            severity="success"
-            icon={<CheckCircleIcon />}
-            sx={{ mb: 3 }}
-          >
+          <Alert severity="success" icon={<CheckCircleIcon />} sx={{ mb: 3 }}>
             Lead wurde zu Opportunity konvertiert am{' '}
             {new Date(lead.updatedAt).toLocaleDateString('de-DE')}
             {' → Siehe Verkaufschancen unten'}
@@ -468,9 +464,7 @@ export function LeadDetailPage() {
                 <Box sx={{ display: 'flex', alignItems: 'center', width: '100%', gap: 1 }}>
                   <TrendingUpIcon color="primary" />
                   <Box sx={{ flexGrow: 1 }}>
-                    <Typography variant="h6">
-                      Verkaufschancen ({opportunityCount})
-                    </Typography>
+                    <Typography variant="h6">Verkaufschancen ({opportunityCount})</Typography>
                     {expandedSection !== 'opportunities' && opportunityCount === 0 && (
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
                         Noch keine Opportunities erstellt
@@ -481,10 +475,7 @@ export function LeadDetailPage() {
               </AccordionSummary>
 
               <AccordionDetails>
-                <LeadOpportunitiesList
-                  leadId={lead.id}
-                  onCountChange={setOpportunityCount}
-                />
+                <LeadOpportunitiesList leadId={lead.id} onCountChange={setOpportunityCount} />
               </AccordionDetails>
             </Accordion>
           </Grid>

@@ -415,9 +415,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
       <Paper sx={{ p: 3, mb: 2, bgcolor: theme.palette.background.default, borderRadius: 2 }}>
         {/* Header Row mit Title + Filter Controls */}
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-          <Typography variant="h4">
-            Pipeline Übersicht
-          </Typography>
+          <Typography variant="h4">Pipeline Übersicht</Typography>
 
           <Box sx={{ flexGrow: 1 }} />
 
@@ -425,7 +423,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           <TextField
             placeholder="Suche nach Name oder Kunde..."
             value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
+            onChange={e => setSearchQuery(e.target.value)}
             size="small"
             InputProps={{
               startAdornment: (
@@ -443,14 +441,14 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
               <InputLabel>Verkäufer</InputLabel>
               <Select
                 value={selectedUserId}
-                onChange={(e) => setSelectedUserId(e.target.value)}
+                onChange={e => setSelectedUserId(e.target.value)}
                 label="Verkäufer"
               >
                 <MenuItem value="all">
                   <strong>Alle Verkäufer</strong>
                 </MenuItem>
                 <Divider />
-                {teamMembers.map((member) => (
+                {teamMembers.map(member => (
                   <MenuItem key={member.id} value={member.id}>
                     {member.name}
                     {member.id === currentUser.id && ' (ich)'}
@@ -467,15 +465,11 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
             onChange={(e, value) => value && setStatusFilter(value)}
             size="small"
           >
-            <ToggleButton value="active">
-              🔥 Aktive ({pipelineStats.totalActive})
-            </ToggleButton>
+            <ToggleButton value="active">🔥 Aktive ({pipelineStats.totalActive})</ToggleButton>
             <ToggleButton value="closed">
               📦 Geschlossene ({pipelineStats.totalWon + pipelineStats.totalLost})
             </ToggleButton>
-            <ToggleButton value="all">
-              📊 Alle ({opportunities.length})
-            </ToggleButton>
+            <ToggleButton value="all">📊 Alle ({opportunities.length})</ToggleButton>
           </ToggleButtonGroup>
         </Stack>
         <Stack direction="row" spacing={4} flexWrap="wrap">
@@ -572,10 +566,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
         </Box>
 
         {/* Drag Overlay - Sprint 2.1.7.1: snapCenterToCursor = NO OFFSET! */}
-        <DragOverlay
-          dropAnimation={null}
-          modifiers={[snapCenterToCursor]}
-        >
+        <DragOverlay dropAnimation={null} modifiers={[snapCenterToCursor]}>
           {activeOpportunity && (
             <Box
               sx={{

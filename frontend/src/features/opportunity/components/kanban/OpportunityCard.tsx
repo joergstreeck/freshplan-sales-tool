@@ -48,7 +48,10 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
 
     // Clean opportunity name from type prefix (Sprint 2.1.7.1 - Production Safety)
     const cleanOpportunityName = useCallback((name: string): string => {
-      return name.replace(/^(Neuer Standort|Sortimentserweiterung|Verlängerung|Verlaengerung|Neugeschäft|Neugeschaeft):\s*/i, '');
+      return name.replace(
+        /^(Neuer Standort|Sortimentserweiterung|Verlängerung|Verlaengerung|Neugeschäft|Neugeschaeft):\s*/i,
+        ''
+      );
     }, []);
 
     const getOpportunityTypeLabel = useCallback((type?: OpportunityType): string => {
@@ -73,16 +76,19 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
       return icons[type] || '💼';
     }, []);
 
-    const getOpportunityTypeColor = useCallback((type?: OpportunityType): 'primary' | 'secondary' | 'info' | 'warning' | 'default' => {
-      if (!type) return 'default';
-      const colors: Record<OpportunityType, 'primary' | 'secondary' | 'info' | 'warning'> = {
-        [OpportunityType.NEUGESCHAEFT]: 'primary',
-        [OpportunityType.SORTIMENTSERWEITERUNG]: 'secondary',
-        [OpportunityType.NEUER_STANDORT]: 'info',
-        [OpportunityType.VERLAENGERUNG]: 'warning',
-      };
-      return colors[type] || 'default';
-    }, []);
+    const getOpportunityTypeColor = useCallback(
+      (type?: OpportunityType): 'primary' | 'secondary' | 'info' | 'warning' | 'default' => {
+        if (!type) return 'default';
+        const colors: Record<OpportunityType, 'primary' | 'secondary' | 'info' | 'warning'> = {
+          [OpportunityType.NEUGESCHAEFT]: 'primary',
+          [OpportunityType.SORTIMENTSERWEITERUNG]: 'secondary',
+          [OpportunityType.NEUER_STANDORT]: 'info',
+          [OpportunityType.VERLAENGERUNG]: 'warning',
+        };
+        return colors[type] || 'default';
+      },
+      []
+    );
 
     const getProbabilityColor = useCallback(
       (probability?: number) => {
@@ -149,7 +155,10 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
             {/* Kundenname oder Lead-Fallback */}
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <PersonIcon fontSize="small" sx={{ color: theme.palette.grey[600], mr: 0.5 }} />
-              <Typography variant="body2" sx={{ color: theme.palette.text.secondary, fontSize: '0.875rem' }}>
+              <Typography
+                variant="body2"
+                sx={{ color: theme.palette.text.secondary, fontSize: '0.875rem' }}
+              >
                 {opportunity.customerName || opportunity.leadCompanyName || 'Unbekannt'}
               </Typography>
             </Box>
@@ -163,13 +172,13 @@ export const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(
                 sx={{
                   height: '20px',
                   fontSize: '0.75rem',
-                  bgcolor: (theme) => `${theme.palette.primary.main}15`, // FreshFoodz Green 15% opacity (Design System konform)
-                  color: (theme) => theme.palette.secondary.main, // FreshFoodz Blue aus Theme
+                  bgcolor: theme => `${theme.palette.primary.main}15`, // FreshFoodz Green 15% opacity (Design System konform)
+                  color: theme => theme.palette.secondary.main, // FreshFoodz Blue aus Theme
                   fontWeight: 500,
                   '& .MuiChip-icon': {
-                    color: (theme) => theme.palette.primary.main, // FreshFoodz Green aus Theme
+                    color: theme => theme.palette.primary.main, // FreshFoodz Green aus Theme
                   },
-                  border: (theme) => `1px solid ${theme.palette.primary.main}30`, // 30% opacity
+                  border: theme => `1px solid ${theme.palette.primary.main}30`, // 30% opacity
                 }}
               />
             )}

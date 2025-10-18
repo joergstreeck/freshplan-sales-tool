@@ -69,11 +69,7 @@ export function OpportunityDetailPage() {
           <Alert severity="error" sx={{ mb: 2 }}>
             {error || 'Opportunity nicht gefunden'}
           </Alert>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)}
-          >
+          <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
             Zurück
           </Button>
         </Box>
@@ -86,11 +82,7 @@ export function OpportunityDetailPage() {
       <Box sx={{ maxWidth: 1200, mx: 'auto', p: 3 }}>
         {/* Header */}
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBackIcon />}
-            onClick={() => navigate(-1)}
-          >
+          <Button variant="outlined" startIcon={<ArrowBackIcon />} onClick={() => navigate(-1)}>
             Zurück
           </Button>
           <Typography variant="h4" component="h1">

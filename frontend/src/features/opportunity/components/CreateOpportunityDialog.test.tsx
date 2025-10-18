@@ -74,7 +74,9 @@ describe('CreateOpportunityDialog', () => {
         />
       );
 
-      expect(screen.queryByRole('heading', { name: 'Opportunity erstellen' })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('heading', { name: 'Opportunity erstellen' })
+      ).not.toBeInTheDocument();
     });
 
     it('renders all form fields', () => {
@@ -333,7 +335,7 @@ describe('CreateOpportunityDialog', () => {
 
       // Mock slow API response
       vi.mocked(httpClient.post).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({ data: {} }), 100))
+        () => new Promise(resolve => setTimeout(() => resolve({ data: {} }), 100))
       );
 
       renderWithTheme(
@@ -360,7 +362,7 @@ describe('CreateOpportunityDialog', () => {
 
       // Mock slow API response
       vi.mocked(httpClient.post).mockImplementation(
-        () => new Promise((resolve) => setTimeout(() => resolve({ data: {} }), 200))
+        () => new Promise(resolve => setTimeout(() => resolve({ data: {} }), 200))
       );
 
       renderWithTheme(
@@ -376,9 +378,12 @@ describe('CreateOpportunityDialog', () => {
       await user.click(submitButton);
 
       // Loading text should appear
-      await waitFor(() => {
-        expect(screen.getByRole('button', { name: 'Erstelle...' })).toBeInTheDocument();
-      }, { timeout: 1000 });
+      await waitFor(
+        () => {
+          expect(screen.getByRole('button', { name: 'Erstelle...' })).toBeInTheDocument();
+        },
+        { timeout: 1000 }
+      );
     });
 
     it('displays API error message', async () => {

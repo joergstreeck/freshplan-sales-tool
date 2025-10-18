@@ -115,7 +115,9 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
     return icons[type] || '💼';
   };
 
-  const getOpportunityTypeColor = (type?: OpportunityType): 'primary' | 'secondary' | 'info' | 'warning' | 'default' => {
+  const getOpportunityTypeColor = (
+    type?: OpportunityType
+  ): 'primary' | 'secondary' | 'info' | 'warning' | 'default' => {
     if (!type) return 'default';
     const colors: Record<string, 'primary' | 'secondary' | 'info' | 'warning'> = {
       NEUGESCHAEFT: 'primary',
@@ -184,7 +186,7 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
   // Opportunities list
   return (
     <Stack spacing={2}>
-      {opportunities.map((opportunity) => (
+      {opportunities.map(opportunity => (
         <Card
           key={opportunity.id}
           onClick={() => navigate(`/opportunities/${opportunity.id}`)}
@@ -203,7 +205,14 @@ export const LeadOpportunitiesList: React.FC<LeadOpportunitiesListProps> = ({
           <CardContent>
             <Stack spacing={2}>
               {/* Header: Name + Stage */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'flex-start',
+                  gap: 2,
+                }}
+              >
                 <Box sx={{ flex: 1 }}>
                   <Typography
                     variant="h6"

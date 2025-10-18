@@ -63,8 +63,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
             : '1px solid rgba(0, 0, 0, 0.12)',
           borderRadius: 2,
           transition: 'all 0.2s ease',
-          overflow: 'visible',  // Allow cards to escape during drag
-          position: 'relative',  // Establish stacking context
+          overflow: 'visible', // Allow cards to escape during drag
+          position: 'relative', // Establish stacking context
         }}
       >
         {/* Column Header */}
@@ -115,8 +115,8 @@ export const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(
             minHeight: 400,
             maxHeight: 'calc(100vh - 400px)',
             overflowY: 'auto',
-            position: 'relative',  // Required for child z-index to work
-            isolation: 'isolate',  // Create new stacking context
+            position: 'relative', // Required for child z-index to work
+            isolation: 'isolate', // Create new stacking context
           }}
         >
           {visibleOpportunities.map(opportunity => (

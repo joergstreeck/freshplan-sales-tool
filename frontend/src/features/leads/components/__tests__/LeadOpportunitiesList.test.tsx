@@ -101,7 +101,9 @@ describe('LeadOpportunitiesList', () => {
       renderWithProviders(<LeadOpportunitiesList leadId={123} />);
 
       await waitFor(() => {
-        expect(screen.getByText(/Noch keine Opportunities für diesen Lead erstellt/i)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Noch keine Opportunities für diesen Lead erstellt/i)
+        ).toBeInTheDocument();
       });
     });
   });

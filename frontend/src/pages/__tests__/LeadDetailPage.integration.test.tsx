@@ -488,7 +488,9 @@ describe('LeadDetailPage Integration Tests', () => {
         expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
       });
 
-      expect(screen.getByRole('button', { name: /In Opportunity konvertieren/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /In Opportunity konvertieren/i })
+      ).toBeInTheDocument();
     });
 
     test('shows "In Opportunity konvertieren" button for ACTIVE status', async () => {
@@ -509,7 +511,9 @@ describe('LeadDetailPage Integration Tests', () => {
         expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
       });
 
-      expect(screen.getByRole('button', { name: /In Opportunity konvertieren/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /In Opportunity konvertieren/i })
+      ).toBeInTheDocument();
     });
 
     test('hides "In Opportunity konvertieren" button for CONVERTED status', async () => {
@@ -530,7 +534,9 @@ describe('LeadDetailPage Integration Tests', () => {
         expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
       });
 
-      expect(screen.queryByRole('button', { name: /In Opportunity konvertieren/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /In Opportunity konvertieren/i })
+      ).not.toBeInTheDocument();
     });
 
     test('hides "In Opportunity konvertieren" button for REGISTERED status', async () => {
@@ -551,7 +557,9 @@ describe('LeadDetailPage Integration Tests', () => {
         expect(screen.getByRole('heading', { name: 'Test Company' })).toBeInTheDocument();
       });
 
-      expect(screen.queryByRole('button', { name: /In Opportunity konvertieren/i })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('button', { name: /In Opportunity konvertieren/i })
+      ).not.toBeInTheDocument();
     });
 
     test('shows converted badge when lead status is CONVERTED', async () => {
@@ -601,7 +609,9 @@ describe('LeadDetailPage Integration Tests', () => {
       });
 
       // Converted badge should not be present
-      expect(screen.queryByText(/Lead wurde zu Opportunity konvertiert am/i)).not.toBeInTheDocument();
+      expect(
+        screen.queryByText(/Lead wurde zu Opportunity konvertiert am/i)
+      ).not.toBeInTheDocument();
     });
 
     test('shows Verkaufschancen (Opportunities) accordion section', async () => {

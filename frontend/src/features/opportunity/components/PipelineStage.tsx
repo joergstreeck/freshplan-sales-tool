@@ -110,12 +110,9 @@ export const PipelineStage: React.FC<PipelineStageProps> = React.memo(
           : config?.bgColor || theme.palette.background.paper,
         border: isOver ? '3px dashed #94C456' : '1px solid rgba(0, 0, 0, 0.12)',
         borderRadius: 2,
-        transition: theme.transitions.create(
-          ['border', 'background-color', 'box-shadow'],
-          {
-            duration: theme.transitions.duration.short,
-          }
-        ),
+        transition: theme.transitions.create(['border', 'background-color', 'box-shadow'], {
+          duration: theme.transitions.duration.short,
+        }),
         // Sprint 2.1.7.1 FIX: REMOVED transform - caused inverted X-axis bug!
         // transform: isOver ? 'scale(1.02)' : 'scale(1)',
         boxShadow: isOver ? theme.shadows[4] : theme.shadows[1],
