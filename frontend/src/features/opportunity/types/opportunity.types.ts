@@ -32,6 +32,23 @@ export enum OpportunityStage {
 }
 
 /**
+ * Opportunity Type enumeration (Sprint 2.1.7.1 - Freshfoodz Business Types)
+ * @enum {string}
+ * @description Definiert die verschiedenen Geschäftsarten für Opportunities.
+ *              Muss mit Backend OpportunityType.java synchron bleiben.
+ */
+export enum OpportunityType {
+  /** Neugeschäft - First-time customer */
+  NEUGESCHAEFT = 'NEUGESCHAEFT',
+  /** Sortimentserweiterung - Product expansion or volume increase */
+  SORTIMENTSERWEITERUNG = 'SORTIMENTSERWEITERUNG',
+  /** Neuer Standort - Additional location */
+  NEUER_STANDORT = 'NEUER_STANDORT',
+  /** Vertragsverlängerung - Contract renewal */
+  VERLAENGERUNG = 'VERLAENGERUNG',
+}
+
+/**
  * Opportunity entity representing a sales opportunity in the pipeline
  * @interface IOpportunity
  * @description Vollständige Opportunity-Entität wie vom Backend geliefert.
@@ -58,6 +75,8 @@ export interface IOpportunity {
   readonly stageDisplayName?: string;
   /** Stage color hex code (Sprint 2.1.7.1 - Dynamic border color) */
   readonly stageColor?: string;
+  /** Opportunity Type - Sprint 2.1.7.1 (Freshfoodz Business Type) */
+  readonly opportunityType?: OpportunityType;
   /** Timestamp when stage was last changed */
   readonly stageChangedAt: string;
   /** Customer reference */
@@ -96,6 +115,8 @@ export interface ICreateOpportunityRequest {
   name: string;
   /** @maxLength 4000 */
   description?: string;
+  /** Opportunity Type - Sprint 2.1.7.1 */
+  opportunityType?: OpportunityType;
   /** @minimum 0 @multipleOf 0.01 */
   value?: number;
   /** @minimum 0 @maximum 100 */
