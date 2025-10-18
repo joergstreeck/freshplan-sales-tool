@@ -1,12 +1,12 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-16
+**📅 Letzte Aktualisierung:** 2025-10-18
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** Thematisch strukturiert - Strategie → Architektur → Implementation → Codebase
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
 **⚠️ Codebase-Validierung Disclaimer:**
-Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 16.10.2025).
+Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 18.10.2025).
 **Single Source of Truth für Migrations:** `/docs/planung/MIGRATIONS.md` (wird aktiv gepflegt!)
 **Immer gegen Codebase validieren** wenn konkrete LOC-Zahlen oder Feature-Status kritisch sind!
 
@@ -38,6 +38,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
 ### Latest Implementation
+- **Lead → Opportunity UI (18.10.2025):** Complete Workflow - Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI ✅ COMPLETE
 - **Design System (15.10.2025):** FreshFoodz CI V2 Migration ✅ COMPLETE
 - **Opportunity Backend (14.10.2025):** Lead→Opportunity→Customer Workflows ✅ COMPLETE
 - **Xentral-Integration:** ERP-Integration für Umsatz + Zahlungsverhalten geplant
@@ -68,12 +69,13 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 ---
 
-## 🚨 KNOWN GAPS (Stand: 2025-10-14)
+## 🚨 KNOWN GAPS (Stand: 2025-10-18)
 
 **Wichtige fehlende Features, die neue KIs kennen sollten:**
 
 ### Frontend-UI Gaps
-- 🔶 **Opportunities Frontend UI** - Backend V10026 ready ✅, UI geplant (Lead→Opportunity, Opportunity→Customer, RENEWAL-Workflow)
+- ✅ **Lead → Opportunity UI** - COMPLETE (Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI) ✅
+- 🔶 **Opportunity → Customer UI** - Backend ready, UI geplant (Customer-Akquise bei CLOSED_WON)
 - ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant, nicht implementiert)
 
 ### Layout & Design
@@ -436,15 +438,19 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 3. **QUALIFIED** - Multi-Contact dokumentiert (CHEF + BUYER erfasst), Lead-Scoring ≥40
 4. **CONVERTED** - In Opportunity konvertiert (ONE-WAY, Lead bleibt sichtbar für Traceability)
 
-**UI-Trigger (Sprint 2.1.7.1):**
-- Button **"In Opportunity konvertieren"** in LeadDetailPage
-- Verfügbar bei Status: QUALIFIED oder ACTIVE
-- Lead wird automatisch auf CONVERTED gesetzt (irreversibel)
-- Lead bleibt im System sichtbar (Traceability + Reporting)
+**UI-Workflow (COMPLETE ✅):**
+- **Button "In Opportunity konvertieren"** in LeadDetailPage (nur bei QUALIFIED/ACTIVE)
+- **CreateOpportunityDialog:** Pre-filled mit Lead-Daten, OpportunityType Selection (4 Freshfoodz Types)
+- **Lead-Status Update:** Automatisch auf CONVERTED gesetzt (irreversibel)
+- **Converted-Badge:** Zeigt Konvertierungsdatum in LeadDetailPage
+- **Opportunities-Accordion:** Zeigt alle Opportunities für einen Lead (Traceability)
+- **Lead-Origin Badge:** "von Lead #12345" in Opportunity-Cards (vollständige Rückverfolgbarkeit)
 
-**Backend-Implementation (V10026 - deployed):**
+**Backend-Implementation (V10026 + V10030):**
 - `POST /api/opportunities/from-lead/{leadId}` erstellt Opportunity
+- `GET /api/leads/{id}/opportunities` liefert alle Opportunities eines Leads
 - Opportunity.lead_id = original Lead ID (FK mit INDEX)
+- Opportunity.opportunity_type = NEUGESCHAEFT (Default bei Lead-Conversion)
 - Pipeline startet bei Stage: NEW_LEAD
 
 ---
@@ -460,22 +466,38 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 6. **CLOSED_WON** - Gewonnen! → Kunde anlegen möglich
 7. **CLOSED_LOST** - Verloren (Reason tracking)
 
+**UI-Workflow (COMPLETE ✅):**
+- **Kanban Pipeline:** Visualisierung aller Opportunities mit Drag & Drop zwischen Stages
+- **Stage-Transition Validation:** CLOSED_WON/CLOSED_LOST können nicht verschoben werden (nur Reaktivierung via Button)
+- **Automatic Probability Update:** Pro Stage automatisch angepasst (10% → 25% → 40% → 60% → 80% → 100%/0%)
+- **Pipeline Filter:**
+  - Status Filter: Active (default) | Closed | All
+  - Benutzer-Filter (Manager View): Dropdown für Team-Member Selection (Coaching-Mode)
+  - Quick-Search: Real-time filtering über Name/Customer/Lead
+  - Pagination: Max 15 Cards pro Spalte (Performance)
+- **Pipeline Statistics:** Active/Won/Lost Count + Total Value + Conversion Rate
+
 **Business-Rule:**
 - **1 Lead → 1 primäre Opportunity** (lead_id gespeichert)
 - Weitere Opportunities für denselben Lead möglich (z.B. unterschiedliche Produktlinien)
 
-**Opportunity-Types (Freshfoodz Business Types - Sprint 2.1.7.1):**
+**Opportunity-Types (Freshfoodz Business Types):**
 - **NEUGESCHAEFT** - Neukunden-Akquise (Standard bei Lead-Conversion)
 - **SORTIMENTSERWEITERUNG** - Produkterweiterung oder Volumen-Erhöhung (entspricht Upsell + Cross-sell)
 - **NEUER_STANDORT** - Zusätzliche Location für bestehenden Kunden
 - **VERLAENGERUNG** - Rahmenvertrag-Renewal / Verlängerung
 
+**Backend-Implementation (V10030):**
+- OpportunityType als VARCHAR(50) + CHECK Constraint (JPA-kompatibel, kein PostgreSQL ENUM)
+- Default: NEUGESCHAEFT (bei createFromLead())
+- Migration V10030: Pattern-based cleanup von Opportunity-Namen (entfernt Type-Prefixes)
+
 ---
 
 #### **Phase 3: Customer-Management** (Post-Conversion)
 
-**Customer-Akquise (Sprint 2.1.7.2 - geplant):**
-- Button **"Als Kunde anlegen"** bei Opportunity CLOSED_WON
+**Customer-Akquise (geplant - Sprint 2.1.7.2):**
+- Button **"Als Kunde anlegen"** bei Opportunity CLOSED_WON (UI noch nicht implementiert)
 - Dialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!)
 - `POST /api/opportunities/{id}/convert-to-customer` erstellt Customer
 - Customer.original_lead_id = Lead ID (V261 - volle Traceability)
