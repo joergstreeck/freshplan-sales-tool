@@ -44,6 +44,7 @@ import {
   EngagementScoreForm,
   LeadBasicDataAccordion,
   LeadActivityTimelineGrouped,
+  LeadOpportunitiesList,
 } from '../features/leads/components';
 import { toast } from 'react-hot-toast';
 import {
@@ -475,14 +476,7 @@ export function LeadDetailPage() {
               </AccordionSummary>
 
               <AccordionDetails>
-                <Alert severity="info">
-                  Noch keine Opportunities für diesen Lead erstellt.
-                  {lead.status !== 'CONVERTED' &&
-                    (lead.status === 'QUALIFIED' || lead.status === 'ACTIVE') && (
-                      <> Klicken Sie auf "In Opportunity konvertieren" um zu starten.</>
-                    )}
-                </Alert>
-                {/* TODO: Replace with <LeadOpportunitiesList leadId={lead.id} /> in Task 13 */}
+                <LeadOpportunitiesList leadId={lead.id} />
               </AccordionDetails>
             </Accordion>
           </Grid>
