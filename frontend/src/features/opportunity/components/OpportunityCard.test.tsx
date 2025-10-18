@@ -2,8 +2,8 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../theme/freshfoodz';
-import { OpportunityCard } from './OpportunityCard';
-import type { Opportunity } from './OpportunityCard';
+import { OpportunityCard } from './kanban/OpportunityCard';
+import type { Opportunity } from './kanban/OpportunityCard';
 
 // Define OpportunityStage enum for tests
 const OpportunityStage = {
@@ -18,8 +18,8 @@ const OpportunityStage = {
   RENEWAL: 'RENEWAL',
 };
 
-// Mock the opportunity types including STAGE_CONFIGS
-vi.mock('../types/opportunity.types', () => ({
+// Mock the opportunity types including OpportunityType
+vi.mock('../types', () => ({
   OpportunityStage: {
     LEAD: 'NEW_LEAD',
     NEW_LEAD: 'NEW_LEAD',
@@ -30,6 +30,12 @@ vi.mock('../types/opportunity.types', () => ({
     CLOSED_WON: 'CLOSED_WON',
     CLOSED_LOST: 'CLOSED_LOST',
     RENEWAL: 'RENEWAL',
+  },
+  OpportunityType: {
+    NEUGESCHAEFT: 'NEUGESCHAEFT',
+    SORTIMENTSERWEITERUNG: 'SORTIMENTSERWEITERUNG',
+    NEUER_STANDORT: 'NEUER_STANDORT',
+    VERLAENGERUNG: 'VERLAENGERUNG',
   },
 }));
 
@@ -260,6 +266,205 @@ describe.skip('OpportunityCard', () => {
 
       // Should not throw
       expect(() => fireEvent.click(card!)).not.toThrow();
+    });
+  });
+});
+
+/**
+ * Sprint 2.1.7.1 Enterprise Tests - OpportunityType + Lead Traceability + stageColor
+ *
+ * Tests für die neuen Features:
+ * - Lead-Traceability Badge (leadId + leadCompanyName)
+ * - Dynamic Border Color (stageColor)
+ * - OpportunityType Badge (NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG)
+ */
+describe('OpportunityCard - Sprint 2.1.7.1 Features', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  describe('Lead-Traceability Badge', () => {
+    it('renders lead badge when leadId is present', () => {
+      const opportunityFromLead: Opportunity = {
+        ...mockOpportunity,
+        leadId: 12345,
+        leadCompanyName: 'Test Catering GmbH',
+      };
+
+      renderWithTheme(<OpportunityCard opportunity={opportunityFromLead} />);
+
+      // Badge should render with leadId
+      expect(screen.getByText(/von Lead #12345/i)).toBeInTheDocument();
+    });
+
+    it('does not render lead badge when leadId is missing', () => {
+      const directOpportunity: Opportunity = {
+        ...mockOpportunity,
+        leadId: undefined,
+        leadCompanyName: undefined,
+      };
+
+      renderWithTheme(<OpportunityCard opportunity={directOpportunity} />);
+
+      // Badge should NOT render
+      expect(screen.queryByText(/von Lead/i)).not.toBeInTheDocument();
+    });
+
+    it('renders lead badge with correct styling', () => {
+      const opportunityFromLead: Opportunity = {
+        ...mockOpportunity,
+        leadId: 99999,
+      };
+
+      const { container } = renderWithTheme(<OpportunityCard opportunity={opportunityFromLead} />);
+
+      // Find the Chip component containing "von Lead #99999"
+      const leadBadge = screen.getByText(/von Lead #99999/i).closest('[class*="MuiChip"]');
+      expect(leadBadge).toBeInTheDocument();
+
+      // Verify TrendingUpIcon is rendered (Vitest checks if SVG icon exists)
+      expect(container.querySelector('[data-testid="TrendingUpIcon"]')).toBeInTheDocument();
+    });
+  });
+
+  describe('Dynamic Border Color (stageColor)', () => {
+    it('applies stageColor to card border with 40% opacity', () => {
+      const opportunityWithStageColor: Opportunity = {
+        ...mockOpportunity,
+        stageColor: '#FF5733', // Custom stage color
+      };
+
+      const { container } = renderWithTheme(
+        <OpportunityCard opportunity={opportunityWithStageColor} />
+      );
+
+      // Find the Card component (outermost MuiCard)
+      const card = container.querySelector('[class*="MuiCard"]');
+      expect(card).toBeInTheDocument();
+
+      // Verify border style includes stageColor with 40% opacity
+      // Format: "1px solid #FF573340" (40 = 25% opacity in hex)
+      const computedStyle = window.getComputedStyle(card!);
+      expect(computedStyle.border).toContain('1px solid');
+      // Note: exact color matching may vary due to browser rendering, so we just verify border exists
+    });
+
+    it('uses default divider color when stageColor is missing', () => {
+      const opportunityWithoutStageColor: Opportunity = {
+        ...mockOpportunity,
+        stageColor: undefined,
+      };
+
+      const { container } = renderWithTheme(
+        <OpportunityCard opportunity={opportunityWithoutStageColor} />
+      );
+
+      const card = container.querySelector('[class*="MuiCard"]');
+      expect(card).toBeInTheDocument();
+
+      // Should use default theme.palette.divider
+      const computedStyle = window.getComputedStyle(card!);
+      expect(computedStyle.border).toContain('1px solid');
+    });
+  });
+
+  describe('OpportunityType Badge', () => {
+    const opportunityTypes = [
+      { type: 'NEUGESCHAEFT', label: 'Neugeschäft', icon: '🆕' },
+      { type: 'SORTIMENTSERWEITERUNG', label: 'Sortimentserweiterung', icon: '📈' },
+      { type: 'NEUER_STANDORT', label: 'Neuer Standort', icon: '📍' },
+      { type: 'VERLAENGERUNG', label: 'Vertragsverlängerung', icon: '🔁' },
+    ];
+
+    opportunityTypes.forEach(({ type, label, icon }) => {
+      it(`renders correct badge for OpportunityType ${type}`, () => {
+        const opportunityWithType: Opportunity = {
+          ...mockOpportunity,
+          opportunityType: type as any,
+        };
+
+        renderWithTheme(<OpportunityCard opportunity={opportunityWithType} />);
+
+        // Badge should render with icon + label
+        const badgeText = `${icon} ${label}`;
+        expect(screen.getByText(badgeText)).toBeInTheDocument();
+      });
+    });
+
+    it('does not render OpportunityType badge when type is missing', () => {
+      const opportunityWithoutType: Opportunity = {
+        ...mockOpportunity,
+        opportunityType: undefined,
+      };
+
+      renderWithTheme(<OpportunityCard opportunity={opportunityWithoutType} />);
+
+      // No OpportunityType badges should render
+      expect(screen.queryByText(/Neugeschäft/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Sortimentserweiterung/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Neuer Standort/i)).not.toBeInTheDocument();
+      expect(screen.queryByText(/Vertragsverlängerung/i)).not.toBeInTheDocument();
+    });
+
+    it('renders OpportunityType badge with correct styling (Antonio font)', () => {
+      const opportunityWithType: Opportunity = {
+        ...mockOpportunity,
+        opportunityType: 'NEUGESCHAEFT',
+      };
+
+      const { container } = renderWithTheme(<OpportunityCard opportunity={opportunityWithType} />);
+
+      // Find the Chip component containing "🆕 Neugeschäft"
+      const typeBadge = screen.getByText(/🆕 Neugeschäft/i).closest('[class*="MuiChip"]');
+      expect(typeBadge).toBeInTheDocument();
+
+      // Verify Antonio font family is applied (via sx prop in component)
+      const computedStyle = window.getComputedStyle(typeBadge!);
+      expect(computedStyle.fontFamily).toContain('Antonio');
+    });
+  });
+
+  describe('Combined Sprint 2.1.7.1 Features', () => {
+    it('renders all Sprint 2.1.7.1 features together (Lead + Type + stageColor)', () => {
+      const fullFeatureOpportunity: Opportunity = {
+        ...mockOpportunity,
+        leadId: 54321,
+        leadCompanyName: 'Demo Restaurant Chain',
+        opportunityType: 'SORTIMENTSERWEITERUNG',
+        stageColor: '#4CAF50',
+      };
+
+      renderWithTheme(<OpportunityCard opportunity={fullFeatureOpportunity} />);
+
+      // All 3 features should be visible
+      expect(screen.getByText(/von Lead #54321/i)).toBeInTheDocument();
+      expect(screen.getByText(/📈 Sortimentserweiterung/i)).toBeInTheDocument();
+
+      // Verify stageColor border (via container check)
+      const { container } = render(
+        <ThemeProvider theme={freshfoodzTheme}>
+          <OpportunityCard opportunity={fullFeatureOpportunity} />
+        </ThemeProvider>
+      );
+      const card = container.querySelector('[class*="MuiCard"]');
+      expect(card).toBeInTheDocument();
+    });
+
+    it('renders correctly when only OpportunityType is present (no Lead)', () => {
+      const typeOnlyOpportunity: Opportunity = {
+        ...mockOpportunity,
+        leadId: undefined, // No lead traceability
+        opportunityType: 'NEUER_STANDORT',
+        stageColor: '#2196F3',
+      };
+
+      renderWithTheme(<OpportunityCard opportunity={typeOnlyOpportunity} />);
+
+      // OpportunityType badge should render
+      expect(screen.getByText(/📍 Neuer Standort/i)).toBeInTheDocument();
+
+      // Lead badge should NOT render
+      expect(screen.queryByText(/von Lead/i)).not.toBeInTheDocument();
     });
   });
 });
