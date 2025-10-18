@@ -33,7 +33,7 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import EuroIcon from '@mui/icons-material/Euro';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import BusinessIcon from '@mui/icons-material/Business';
-import { apiClient } from '../../../lib/apiClient';
+import { httpClient } from '../../../lib/apiClient';
 import { OpportunityType } from '../types/opportunity.types';
 import type { Lead } from '../../leads/types';
 
@@ -153,7 +153,7 @@ export default function CreateOpportunityDialog({
         description: description.trim() || undefined,
       };
 
-      await apiClient.post(`/api/opportunities/from-lead/${lead.id}`, request);
+      await httpClient.post(`/api/opportunities/from-lead/${lead.id}`, request);
 
       // Success!
       onSuccess();

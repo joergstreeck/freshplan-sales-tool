@@ -13,11 +13,11 @@ import { ThemeProvider } from '@mui/material/styles';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 import CreateOpportunityDialog from './CreateOpportunityDialog';
 import type { Lead } from '../../leads/types';
-import { apiClient } from '../../../lib/apiClient';
+import { httpClient } from '../../../lib/apiClient';
 
 // Mock API Client
 vi.mock('../../../lib/apiClient', () => ({
-  apiClient: {
+  httpClient: {
     post: vi.fn(),
   },
 }));
@@ -216,7 +216,7 @@ describe('CreateOpportunityDialog', () => {
       });
 
       // API should not be called
-      expect(apiClient.post).not.toHaveBeenCalled();
+      expect(httpClient.post).not.toHaveBeenCalled();
     });
 
     it('shows error when expectedValue is negative', async () => {
@@ -246,7 +246,7 @@ describe('CreateOpportunityDialog', () => {
       });
 
       // API should not be called
-      expect(apiClient.post).not.toHaveBeenCalled();
+      expect(httpClient.post).not.toHaveBeenCalled();
     });
 
     it('validates expectedCloseDate must be in future', () => {
@@ -275,7 +275,7 @@ describe('CreateOpportunityDialog', () => {
       const user = userEvent.setup();
 
       // Mock successful API response
-      vi.mocked(apiClient.post).mockResolvedValueOnce({ data: { id: '456' } });
+      vi.mocked(httpClient.post).mockResolvedValueOnce({ data: { id: '456' } });
 
       renderWithTheme(
         <CreateOpportunityDialog
@@ -293,8 +293,8 @@ describe('CreateOpportunityDialog', () => {
 
       // API should be called
       await waitFor(() => {
-        expect(apiClient.post).toHaveBeenCalledTimes(1);
-        expect(apiClient.post).toHaveBeenCalledWith(
+        expect(httpClient.post).toHaveBeenCalledTimes(1);
+        expect(httpClient.post).toHaveBeenCalledWith(
           `/api/opportunities/from-lead/${mockLead.id}`,
           expect.objectContaining({
             opportunityType: 'NEUGESCHAEFT',
@@ -332,7 +332,7 @@ describe('CreateOpportunityDialog', () => {
       const user = userEvent.setup();
 
       // Mock slow API response
-      vi.mocked(apiClient.post).mockImplementation(
+      vi.mocked(httpClient.post).mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ data: {} }), 100))
       );
 
@@ -359,7 +359,7 @@ describe('CreateOpportunityDialog', () => {
       const user = userEvent.setup();
 
       // Mock slow API response
-      vi.mocked(apiClient.post).mockImplementation(
+      vi.mocked(httpClient.post).mockImplementation(
         () => new Promise((resolve) => setTimeout(() => resolve({ data: {} }), 200))
       );
 
@@ -386,7 +386,7 @@ describe('CreateOpportunityDialog', () => {
 
       // Mock API error
       const errorMessage = 'Lead wurde bereits konvertiert';
-      vi.mocked(apiClient.post).mockRejectedValueOnce({
+      vi.mocked(httpClient.post).mockRejectedValueOnce({
         response: {
           data: {
             detail: errorMessage,
