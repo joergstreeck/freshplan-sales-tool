@@ -3,9 +3,10 @@
 **Sprint-ID:** 2.1.7.3
 **Status:** 📋 PLANNING
 **Priority:** P2 (Medium)
-**Estimated Effort:** 8h (1 Arbeitstag)
+**Estimated Effort:** 16h (2 Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-16
+**Updated:** 2025-10-18 (OpportunityDetailPage Features hinzugefügt)
 **Dependencies:** Sprint 2.1.7.2 COMPLETE
 
 ---
@@ -607,6 +608,314 @@ Test Case 3: OpportunityType Backend-Validierung
 3. Verify: Opportunity created mit opportunityType = "VERLAENGERUNG"
 4. Verify: Stage = "NEEDS_ANALYSIS" (nicht NEW_LEAD!)
 5. Verify: probability = 40% (NEEDS_ANALYSIS default)
+```
+
+---
+
+### **7. OpportunityDetailPage: Edit-Funktionalität** (3h) 📝 HINZUGEFÜGT 2025-10-18
+
+**Business Value:** Verkäufer können Opportunity-Details korrigieren ohne Backend-Zugriff
+
+#### **7.1 Edit-Mode aktivieren** (1h)
+
+**Datei:** `frontend/src/pages/OpportunityDetailPage.tsx`
+
+```tsx
+const [isEditMode, setIsEditMode] = useState(false);
+const [editedOpportunity, setEditedOpportunity] = useState<Opportunity | null>(null);
+
+// Edit-Button im Header
+{!isEditMode && (
+  <Button
+    variant="outlined"
+    startIcon={<EditIcon />}
+    onClick={() => {
+      setEditedOpportunity({ ...opportunity });
+      setIsEditMode(true);
+    }}
+  >
+    Bearbeiten
+  </Button>
+)}
+
+// Save/Cancel Buttons im Edit-Mode
+{isEditMode && (
+  <Stack direction="row" spacing={2}>
+    <Button
+      variant="contained"
+      startIcon={<SaveIcon />}
+      onClick={handleSave}
+    >
+      Speichern
+    </Button>
+    <Button
+      variant="outlined"
+      onClick={() => setIsEditMode(false)}
+    >
+      Abbrechen
+    </Button>
+  </Stack>
+)}
+```
+
+#### **7.2 Editable Fields** (2h)
+
+**Felder die bearbeitet werden können:**
+- Name (TextField)
+- Expected Value (NumberField mit Euro-Formatierung)
+- Expected Close Date (DatePicker)
+- Probability (Slider 0-100%)
+- Description (TextArea)
+- OpportunityType (Select - nur bei Customer-Opportunities)
+
+**Backend:**
+```java
+@PUT
+@Path("/{id}")
+@RolesAllowed({"USER", "MANAGER", "ADMIN"})
+public Response updateOpportunity(@PathParam("id") UUID id, UpdateOpportunityRequest request) {
+    // Validation + Update
+}
+```
+
+---
+
+### **8. Stage-Änderungen: Manuelle Controls** (2h) 🔀 HINZUGEFÜGT 2025-10-18
+
+**Business Value:** Verkäufer können Stage ohne Drag&Drop ändern (z.B. auf Mobile, oder bei Bulk-Updates)
+
+#### **8.1 Stage-Dropdown in OpportunityDetailPage** (1h)
+
+```tsx
+<FormControl fullWidth>
+  <InputLabel>Pipeline-Status</InputLabel>
+  <Select
+    value={opportunity.stage}
+    onChange={(e) => handleStageChange(e.target.value)}
+    disabled={isClosedStage(opportunity.stage)}
+  >
+    {STAGE_OPTIONS.map((stage) => (
+      <MenuItem key={stage.value} value={stage.value}>
+        {stage.icon} {stage.label} ({stage.probability}%)
+      </MenuItem>
+    ))}
+  </Select>
+</FormControl>
+
+{/* Warning bei Rückwärts-Bewegung */}
+{isBackwardMove && (
+  <Alert severity="warning">
+    Stage-Rückschritt: Bitte Grund angeben (optional)
+  </Alert>
+)}
+```
+
+#### **8.2 Quick-Action Buttons** (1h)
+
+**OpportunityCard:** Schnellzugriff für häufige Stage-Änderungen
+
+```tsx
+<Stack direction="row" spacing={1}>
+  {stage !== 'CLOSED_WON' && (
+    <IconButton
+      size="small"
+      color="success"
+      onClick={() => handleQuickAction('won')}
+      title="Als gewonnen markieren"
+    >
+      <CheckCircleIcon />
+    </IconButton>
+  )}
+
+  {stage !== 'CLOSED_LOST' && (
+    <IconButton
+      size="small"
+      color="error"
+      onClick={() => handleQuickAction('lost')}
+      title="Als verloren markieren"
+    >
+      <CancelIcon />
+    </IconButton>
+  )}
+</Stack>
+```
+
+---
+
+### **9. Activity Timeline UI** (2h) 📊 HINZUGEFÜGT 2025-10-18
+
+**Business Value:** Verkäufer sehen komplette Opportunity-Historie auf einen Blick
+
+**Note:** Activity-Tracking Backend bereits in Deliverable 5 geplant - hier nur UI!
+
+#### **9.1 Timeline Component** (1.5h)
+
+**Neue Datei:** `frontend/src/features/opportunity/components/ActivityTimeline.tsx`
+
+```tsx
+export const ActivityTimeline: React.FC<{ opportunityId: string }> = ({ opportunityId }) => {
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    // Load from API
+    httpClient.get(`/api/opportunities/${opportunityId}/activities`).then(...);
+  }, [opportunityId]);
+
+  return (
+    <Timeline>
+      {activities.map((activity) => (
+        <TimelineItem key={activity.id}>
+          <TimelineSeparator>
+            <TimelineDot color={getActivityColor(activity.type)}>
+              {getActivityIcon(activity.type)}
+            </TimelineDot>
+            <TimelineConnector />
+          </TimelineSeparator>
+          <TimelineContent>
+            <Typography variant="subtitle2">
+              {activity.type} - {activity.title}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {formatDate(activity.createdAt)} • {activity.createdBy}
+            </Typography>
+            {activity.description && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                {activity.description}
+              </Typography>
+            )}
+          </TimelineContent>
+        </TimelineItem>
+      ))}
+    </Timeline>
+  );
+};
+```
+
+#### **9.2 Integration in OpportunityDetailPage** (30 Min)
+
+```tsx
+<Accordion>
+  <AccordionSummary>
+    <Typography variant="h6">
+      Aktivitäts-Historie ({activities.length})
+    </Typography>
+  </AccordionSummary>
+  <AccordionDetails>
+    <ActivityTimeline opportunityId={opportunity.id} />
+  </AccordionDetails>
+</Accordion>
+```
+
+---
+
+### **10. Dokumente & Kontakte** (3h) 📎 HINZUGEFÜGT 2025-10-18
+
+**Business Value:** Zentrale Ablage für Vertrags-Dokumente und Ansprechpartner
+
+**SCOPE-DECISION:** MVP-Version nur Frontend-Platzhalter, Backend in späterem Sprint
+
+#### **10.1 Dokumente-Sektion (Placeholder)** (1h)
+
+```tsx
+<Accordion>
+  <AccordionSummary>
+    <Typography variant="h6">
+      Dokumente ({documents.length})
+    </Typography>
+  </AccordionSummary>
+  <AccordionDetails>
+    <Alert severity="info">
+      Dokumenten-Management kommt in Sprint 2.2.x
+      <br />
+      Geplant: Angebote, Verträge, Präsentationen hochladen
+    </Alert>
+
+    {/* Placeholder UI */}
+    <Stack spacing={2} sx={{ mt: 2, opacity: 0.5 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <AttachFileIcon />
+        <Typography>Angebot_Bella_Italia_Q4_2025.pdf</Typography>
+        <Chip label="Placeholder" size="small" />
+      </Box>
+    </Stack>
+  </AccordionDetails>
+</Accordion>
+```
+
+#### **10.2 Kontakte-Sektion (Linked Entities)** (2h)
+
+**Backend-Integration:** Link zu bestehenden LeadContacts/CustomerContacts
+
+```tsx
+<Accordion>
+  <AccordionSummary>
+    <Typography variant="h6">
+      Ansprechpartner ({contacts.length})
+    </Typography>
+  </AccordionSummary>
+  <AccordionDetails>
+    {/* Load from Lead/Customer contacts */}
+    {opportunity.leadId && (
+      <Typography variant="caption">
+        Ansprechpartner aus Lead #{opportunity.leadId}
+      </Typography>
+    )}
+
+    <Stack spacing={2}>
+      {contacts.map((contact) => (
+        <Card key={contact.id} variant="outlined">
+          <CardContent>
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Avatar>{contact.name[0]}</Avatar>
+              <Box>
+                <Typography variant="subtitle2">{contact.name}</Typography>
+                <Typography variant="caption">{contact.role}</Typography>
+                <Stack direction="row" spacing={1} sx={{ mt: 0.5 }}>
+                  <Chip icon={<PhoneIcon />} label={contact.phone} size="small" />
+                  <Chip icon={<EmailIcon />} label={contact.email} size="small" />
+                </Stack>
+              </Box>
+            </Stack>
+          </CardContent>
+        </Card>
+      ))}
+    </Stack>
+  </AccordionDetails>
+</Accordion>
+```
+
+---
+
+### **11. Testing & Integration** (2h) 🧪 ERWEITERT
+
+**Unit Tests (1h):**
+- OpportunityDetailPage Edit-Mode: Save/Cancel Flow
+- Stage-Change Validation: Backward-Move Warning
+- ActivityTimeline: Rendering & Grouping
+
+**Manual E2E Testing (1h):**
+```
+Test Case 4: Edit-Funktionalität
+1. Open OpportunityDetailPage
+2. Click "Bearbeiten"
+3. Change: Name, Value, Close Date
+4. Click "Speichern"
+5. Verify: Changes persisted
+6. Verify: Activity logged ("Opportunity bearbeitet")
+
+Test Case 5: Stage-Änderung Manual
+1. OpportunityDetailPage (Stage: QUALIFICATION)
+2. Change Stage-Dropdown → PROPOSAL
+3. Verify: Stage updated
+4. Verify: Probability auto-updated (25% → 60%)
+5. Verify: Activity logged ("Stage geändert: QUALIFICATION → PROPOSAL")
+
+Test Case 6: Activity Timeline
+1. OpportunityDetailPage mit 5 Activities
+2. Open "Aktivitäts-Historie" Accordion
+3. Verify: Timeline chronologisch (neueste oben)
+4. Verify: Icons korrekt (CALL = 📞, MEETING = 👥, etc.)
+5. Verify: User-Namen angezeigt
 ```
 
 ---
