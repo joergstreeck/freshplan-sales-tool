@@ -13,6 +13,7 @@ import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import { snapCenterToCursor } from '@dnd-kit/modifiers';
 import { Box, Paper, Typography, Stack } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import toast from 'react-hot-toast';
 
 import { OpportunityStage, type Opportunity } from '../../types';
 import { logger } from '../../../../lib/logger';
@@ -162,6 +163,31 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
           setActiveId(null);
           return;
         }
+
+        // VALIDATION: CLOSED_* können nicht verschoben werden
+        // → Reaktivierung nur über "Reaktivieren"-Button in Card
+        if (
+          sourceStage === OpportunityStage.CLOSED_WON ||
+          sourceStage === OpportunityStage.CLOSED_LOST
+        ) {
+          toast.error('Geschlossene Opportunities können nicht verschoben werden', {
+            duration: 3000,
+            icon: '🔒',
+          });
+          setActiveId(null);
+          componentLogger.warn('Blocked drag from closed stage', {
+            opportunityId: active.id,
+            fromStage: sourceStage,
+            toStage: targetStage,
+          });
+          return;
+        }
+
+        // TODO: Future validation (Sprint 2.1.7.2+):
+        // - Max 1 Stage rückwärts
+        // - Confirmation Dialog bei großen Sprüngen
+        // - Reason-Field bei Rückwärts
+        // → Erst nach User-Feedback implementieren
 
         // Add animation effect
         setAnimatingIds(prev => new Set([...prev, active.id as string]));
