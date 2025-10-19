@@ -103,7 +103,9 @@ describe('CreateOpportunityForCustomerDialog', () => {
         />
       );
 
-      expect(screen.getByRole('heading', { name: 'Neue Opportunity erstellen' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('heading', { name: 'Neue Opportunity erstellen' })
+      ).toBeInTheDocument();
       expect(screen.getByText(/Bestandskunde:/i)).toBeInTheDocument();
       expect(screen.getByText('Bella Italia Restaurant')).toBeInTheDocument();
     });
@@ -229,9 +231,7 @@ describe('CreateOpportunityForCustomerDialog', () => {
       );
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/Multipliers konnten nicht geladen werden/i)
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Multipliers konnten nicht geladen werden/i)).toBeInTheDocument();
       });
     });
 
@@ -574,7 +574,9 @@ describe('CreateOpportunityForCustomerDialog', () => {
 
       // Should still render without crashing
       await waitFor(() => {
-        expect(screen.getByRole('heading', { name: 'Neue Opportunity erstellen' })).toBeInTheDocument();
+        expect(
+          screen.getByRole('heading', { name: 'Neue Opportunity erstellen' })
+        ).toBeInTheDocument();
       });
 
       // Should calculate with base volume (50000) as fallback

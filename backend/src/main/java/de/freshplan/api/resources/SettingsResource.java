@@ -4,12 +4,19 @@ import de.freshplan.domain.opportunity.service.OpportunityMultiplierService;
 import de.freshplan.domain.opportunity.service.dto.OpportunityMultiplierResponse;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.SecurityContext;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -39,6 +46,8 @@ public class SettingsResource {
   private static final Logger logger = Logger.getLogger(SettingsResource.class);
 
   @Inject OpportunityMultiplierService multiplierService;
+
+  @Context SecurityContext securityContext;
 
   /**
    * Get all opportunity multipliers (Business-Type-Matrix)
@@ -94,11 +103,63 @@ public class SettingsResource {
     return Response.ok(multipliers).build();
   }
 
+  /**
+   * Update opportunity multiplier value (Admin-Only)
+   *
+   * Sprint 2.1.7.3 - Edit-Funktionalität
+   */
+  @PUT
+  @Path("/opportunity-multipliers/{id}")
+  @RolesAllowed("admin")
+  @Transactional
+  public Response updateMultiplier(@PathParam("id") UUID id, UpdateMultiplierRequest request) {
+    logger.info(
+        "PUT /api/settings/opportunity-multipliers/" + id + " - multiplier=" + request.multiplier());
+
+    try {
+      // Update multiplier via service
+      de.freshplan.domain.opportunity.entity.OpportunityMultiplier updated =
+          multiplierService.updateMultiplier(id, request.multiplier());
+
+      // Convert to response DTO
+      OpportunityMultiplierResponse response = OpportunityMultiplierResponse.fromEntity(updated);
+
+      logger.info("Successfully updated multiplier " + id);
+      return Response.ok(response).build();
+
+    } catch (jakarta.ws.rs.NotFoundException e) {
+      logger.warn("Multiplier not found: " + id);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(java.util.Map.of("error", "Multiplier not found"))
+          .build();
+    } catch (IllegalArgumentException e) {
+      logger.warn("Validation failed: " + e.getMessage());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(java.util.Map.of("error", e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      logger.error("Failed to update multiplier " + id, e);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(java.util.Map.of("error", "Internal server error"))
+          .build();
+    }
+  }
+
+  /** DTO for updating multipliers */
+  public record UpdateMultiplierRequest(
+      @jakarta.validation.constraints.NotNull(message = "Multiplier is required")
+          @jakarta.validation.constraints.DecimalMin(
+              value = "0.0",
+              message = "Multiplier must be >= 0.0")
+          @jakarta.validation.constraints.DecimalMax(
+              value = "2.0",
+              message = "Multiplier must be <= 2.0")
+          BigDecimal multiplier) {}
+
   // ============================================================================
-  // FUTURE ENDPOINTS (Modul 08 - Admin-Dashboard)
+  // FUTURE ENDPOINTS (Modul 08 - Extended Admin Features)
   // ============================================================================
 
-  // PUT /api/settings/opportunity-multipliers/{id} - Update multiplier (Admin-UI)
   // POST /api/settings/opportunity-multipliers - Create custom multiplier
   // DELETE /api/settings/opportunity-multipliers/{id} - Delete custom multiplier
   // POST /api/settings/opportunity-multipliers/reset - Reset to factory defaults

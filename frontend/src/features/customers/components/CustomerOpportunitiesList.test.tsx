@@ -310,9 +310,7 @@ describe('CustomerOpportunitiesList', () => {
         expect(screen.getByText('Neugeschäft Catering')).toBeInTheDocument();
       });
 
-      const opportunityCard = screen
-        .getByText('Neugeschäft Catering')
-        .closest('.MuiCard-root');
+      const opportunityCard = screen.getByText('Neugeschäft Catering').closest('.MuiCard-root');
       expect(opportunityCard).toBeInTheDocument();
 
       await user.click(opportunityCard!);

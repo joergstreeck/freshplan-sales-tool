@@ -198,7 +198,9 @@ export default function CreateOpportunityForCustomerDialog({
       calculateExpectedValue();
     } catch (err) {
       console.error('Failed to load opportunity multipliers:', err);
-      setMultipliersError('Multipliers konnten nicht geladen werden. Manuelle Eingabe erforderlich.');
+      setMultipliersError(
+        'Multipliers konnten nicht geladen werden. Manuelle Eingabe erforderlich.'
+      );
     } finally {
       setIsLoadingMultipliers(false);
     }
@@ -375,7 +377,16 @@ export default function CreateOpportunityForCustomerDialog({
           <Stack spacing={2} sx={{ mt: 1 }}>
             {/* Business-Type-Matrix Info Box */}
             {isLoadingMultipliers ? (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  p: 2,
+                  bgcolor: 'grey.50',
+                  borderRadius: 1,
+                }}
+              >
                 <CircularProgress size={20} />
                 <Typography variant="body2">Lade Multiplier-Matrix...</Typography>
               </Box>
@@ -388,18 +399,14 @@ export default function CreateOpportunityForCustomerDialog({
                   Basisvolumen: {baseVolume.toLocaleString('de-DE')}€ (
                   {customer.actualAnnualVolume ? 'Xentral' : 'Lead-Schätzung'})
                   <br />
-                  Multiplier: {currentMultiplier} (
-                  {customer.industry || 'UNKNOWN'} × {OPPORTUNITY_TYPE_LABELS[opportunityType]})
+                  Multiplier: {currentMultiplier} ({customer.industry || 'UNKNOWN'} ×{' '}
+                  {OPPORTUNITY_TYPE_LABELS[opportunityType]})
                   <br />
-                  <strong>
-                    Erwarteter Wert: {expectedValue?.toLocaleString('de-DE')}€
-                  </strong>
+                  <strong>Erwarteter Wert: {expectedValue?.toLocaleString('de-DE')}€</strong>
                 </Typography>
               </Alert>
             ) : (
-              <Alert severity="warning">
-                Kein Basisvolumen verfügbar. Bitte manuell schätzen.
-              </Alert>
+              <Alert severity="warning">Kein Basisvolumen verfügbar. Bitte manuell schätzen.</Alert>
             )}
 
             {/* Name Field */}
@@ -481,8 +488,7 @@ export default function CreateOpportunityForCustomerDialog({
                   required: true,
                   error: !!validationErrors.expectedCloseDate,
                   helperText:
-                    validationErrors.expectedCloseDate ||
-                    'Bestandskunden-Deals: Default +60 Tage',
+                    validationErrors.expectedCloseDate || 'Bestandskunden-Deals: Default +60 Tage',
                   InputProps: {
                     startAdornment: (
                       <InputAdornment position="start">
@@ -513,8 +519,13 @@ export default function CreateOpportunityForCustomerDialog({
                 Nach dem Erstellen:
               </Typography>
               <ul style={{ margin: '4px 0', paddingLeft: '20px' }}>
-                <li>Opportunity erscheint in der Pipeline (Stage: <strong>NEEDS_ANALYSIS</strong>)</li>
-                <li>Kunde bleibt <Chip label="AKTIV" size="small" sx={{ fontSize: '0.7rem', height: '18px' }} /></li>
+                <li>
+                  Opportunity erscheint in der Pipeline (Stage: <strong>NEEDS_ANALYSIS</strong>)
+                </li>
+                <li>
+                  Kunde bleibt{' '}
+                  <Chip label="AKTIV" size="small" sx={{ fontSize: '0.7rem', height: '18px' }} />
+                </li>
                 <li>Sie werden zur Opportunity-Pipeline weitergeleitet</li>
               </ul>
             </Alert>

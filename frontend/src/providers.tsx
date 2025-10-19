@@ -79,7 +79,9 @@ const HelpSystemDemoPageV2 = lazy(() =>
   import('./pages/HelpSystemDemoPageV2').then(m => ({ default: m.HelpSystemDemoPageV2 }))
 );
 const OpportunitySettingsPage = lazy(() =>
-  import('./pages/admin/OpportunitySettingsPage').then(m => ({ default: m.OpportunitySettingsPage }))
+  import('./pages/admin/OpportunitySettingsPage').then(m => ({
+    default: m.OpportunitySettingsPage,
+  }))
 );
 // Dashboards für Hauptmenüpunkte
 const NeukundengewinnungDashboard = lazy(() =>

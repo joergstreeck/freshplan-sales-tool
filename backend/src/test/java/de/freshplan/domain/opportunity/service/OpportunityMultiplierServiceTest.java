@@ -343,4 +343,134 @@ public class OpportunityMultiplierServiceTest {
         .as("HOTEL should have higher SORTIMENTSERWEITERUNG potential than RESTAURANT")
         .isGreaterThan(restaurantSortiment.getMultiplier());
   }
+
+  // ==========================================================================
+  // updateMultiplier() Tests (Sprint 2.1.7.3 - Edit Functionality)
+  // ==========================================================================
+
+  @Test
+  @Transactional
+  @DisplayName("updateMultiplier() - Should successfully update multiplier value")
+  void updateMultiplier_validValue_shouldUpdateSuccessfully() {
+    // Arrange
+    OpportunityMultiplier originalMultiplier =
+        multiplierService.findMultiplier("RESTAURANT", "SORTIMENTSERWEITERUNG");
+    assertThat(originalMultiplier).isNotNull();
+
+    java.util.UUID multiplierId = originalMultiplier.getId();
+    BigDecimal newValue = new BigDecimal("0.35");
+    BigDecimal oldValue = originalMultiplier.getMultiplier();
+
+    try {
+      // Act
+      OpportunityMultiplier updatedMultiplier =
+          multiplierService.updateMultiplier(multiplierId, newValue);
+
+      // Assert
+      assertThat(updatedMultiplier).isNotNull();
+      assertThat(updatedMultiplier.getMultiplier())
+          .as("Multiplier should be updated to new value")
+          .isEqualByComparingTo(new BigDecimal("0.35"));
+
+      assertThat(updatedMultiplier.getUpdatedAt())
+          .as("updatedAt should be set")
+          .isNotNull()
+          .isAfterOrEqualTo(originalMultiplier.getUpdatedAt());
+    } finally {
+      // Cleanup - restore original value
+      multiplierService.updateMultiplier(multiplierId, oldValue);
+    }
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("updateMultiplier() - Should reject value < 0.0")
+  void updateMultiplier_negativeValue_shouldThrowException() {
+    // Arrange
+    OpportunityMultiplier multiplier =
+        multiplierService.findMultiplier("RESTAURANT", "SORTIMENTSERWEITERUNG");
+    assertThat(multiplier).isNotNull();
+
+    BigDecimal negativeValue = new BigDecimal("-0.5");
+
+    // Act & Assert
+    assertThatThrownBy(() -> multiplierService.updateMultiplier(multiplier.getId(), negativeValue))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Multiplier must be >= 0.0");
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("updateMultiplier() - Should reject value > 2.0")
+  void updateMultiplier_valueTooHigh_shouldThrowException() {
+    // Arrange
+    OpportunityMultiplier multiplier =
+        multiplierService.findMultiplier("RESTAURANT", "SORTIMENTSERWEITERUNG");
+    assertThat(multiplier).isNotNull();
+
+    BigDecimal tooHighValue = new BigDecimal("2.5");
+
+    // Act & Assert
+    assertThatThrownBy(() -> multiplierService.updateMultiplier(multiplier.getId(), tooHighValue))
+        .isInstanceOf(IllegalArgumentException.class)
+        .hasMessageContaining("Multiplier must be <= 2.0");
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("updateMultiplier() - Should throw NotFoundException for invalid ID")
+  void updateMultiplier_invalidId_shouldThrowNotFoundException() {
+    // Arrange
+    java.util.UUID invalidId = java.util.UUID.randomUUID();
+    BigDecimal validValue = new BigDecimal("1.0");
+
+    // Act & Assert
+    assertThatThrownBy(() -> multiplierService.updateMultiplier(invalidId, validValue))
+        .isInstanceOf(jakarta.ws.rs.NotFoundException.class)
+        .hasMessageContaining("Multiplier not found");
+  }
+
+  @Test
+  @Transactional
+  @DisplayName("updateMultiplier() - Should accept boundary values 0.0 and 2.0")
+  void updateMultiplier_boundaryValues_shouldSucceed() {
+    // Arrange
+    OpportunityMultiplier multiplier1 =
+        multiplierService.findMultiplier("RESTAURANT", "SORTIMENTSERWEITERUNG");
+    OpportunityMultiplier multiplier2 =
+        multiplierService.findMultiplier("HOTEL", "SORTIMENTSERWEITERUNG");
+
+    assertThat(multiplier1).isNotNull();
+    assertThat(multiplier2).isNotNull();
+
+    // Store original values for cleanup
+    BigDecimal original1 = multiplier1.getMultiplier();
+    BigDecimal original2 = multiplier2.getMultiplier();
+
+    BigDecimal lowerBoundary = new BigDecimal("0.0");
+    BigDecimal upperBoundary = new BigDecimal("2.0");
+
+    try {
+      // Act - Test lower boundary (0.0)
+      OpportunityMultiplier updated1 =
+          multiplierService.updateMultiplier(multiplier1.getId(), lowerBoundary);
+
+      // Act - Test upper boundary (2.0)
+      OpportunityMultiplier updated2 =
+          multiplierService.updateMultiplier(multiplier2.getId(), upperBoundary);
+
+      // Assert
+      assertThat(updated1.getMultiplier())
+          .as("Should accept lower boundary 0.0")
+          .isEqualByComparingTo(new BigDecimal("0.00"));
+
+      assertThat(updated2.getMultiplier())
+          .as("Should accept upper boundary 2.0")
+          .isEqualByComparingTo(new BigDecimal("2.00"));
+    } finally {
+      // Cleanup - restore original values
+      multiplierService.updateMultiplier(multiplier1.getId(), original1);
+      multiplierService.updateMultiplier(multiplier2.getId(), original2);
+    }
+  }
 }

@@ -54,11 +54,14 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
   - [x] OpportunityMultiplier Entity + Service
   - [x] GET /api/settings/opportunity-multipliers (39 Tests GREEN)
 
-- [x] **7. Admin Settings UI** (2h) ✅ COMPLETE
-  - [x] OpportunitySettingsPage (Read-Only Ansicht aller 36 Multipliers)
+- [x] **7. Admin Settings UI** (6h) ✅ COMPLETE
+  - [x] OpportunitySettingsPage Basis (Tabellen-Ansicht aller 36 Multipliers)
   - [x] Route /admin/settings/opportunities (Protected Admin-Only)
-  - [x] Sidebar-Eintrag "Opportunity Settings" (TrendingUp Icon)
-  - [x] **Commit:** 60690a4df
+  - [x] Sidebar-Eintrag "Verkaufschancen-Einstellungen" (TrendingUp Icon)
+  - [x] Backend: PUT /api/settings/opportunity-multipliers/{id} (Update Multiplier)
+  - [x] Frontend: Edit-Dialog mit Validation + Berechnungslogik-Erklärung
+  - [x] Tests: Backend PUT Endpoint (5 Tests GREEN)
+  - [x] Design System: Komplett deutsch (Verkaufschancen statt Opportunity)
 
 ### **Bug-Fixes & Extensions (100% COMPLETE)**
 
@@ -148,7 +151,12 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - Admin Settings UI (OpportunitySettingsPage + Sidebar) ✅
 - E2E Testing (optional - deferred)
 
-**Total:** ~32h / 30-31h estimated (103% - Sprint Complete)
+**Tag 5 (4h):** ⏳ IN PROGRESS
+- Backend: PUT Endpoint für Multiplier-Updates ⏳
+- Frontend: Edit-Dialog mit Validation ⏳
+- Tests: Backend + Frontend (13 Tests) ⏳
+
+**Total:** ~36h / 30-31h estimated (116% - Extended Scope)
 
 ---
 

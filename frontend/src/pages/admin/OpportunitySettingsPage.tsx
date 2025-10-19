@@ -1,7 +1,7 @@
 /**
- * OpportunitySettingsPage - Business-Type-Matrix Konfiguration
+ * OpportunitySettingsPage - Verkaufschancen-Einstellungen
  *
- * Sprint 2.1.7.3 - Admin-UI für Opportunity Multipliers
+ * Sprint 2.1.7.3 - Admin-UI für Verkaufschancen-Multiplikatoren
  *
  * Design System Compliance:
  * - MainLayoutV2 mit maxWidth="full" (Tabellen-Pattern)
@@ -30,26 +30,38 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  IconButton,
 } from '@mui/material';
-import { Search as SearchIcon, TrendingUp as TrendingUpIcon } from '@mui/icons-material';
+import {
+  Search as SearchIcon,
+  TrendingUp as TrendingUpIcon,
+  Close as CloseIcon,
+  Edit as EditIcon,
+} from '@mui/icons-material';
 import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface OpportunityMultiplier {
-  id: number;
+  id: string; // UUID
   businessType: string;
   opportunityType: string;
   multiplier: number;
   createdAt: string;
   updatedAt: string;
-  createdBy: string;
-  updatedBy: string;
 }
 
 export const OpportunitySettingsPage = () => {
+  const queryClient = useQueryClient();
   const [businessTypeFilter, setBusinessTypeFilter] = useState<string>('ALL');
   const [opportunityTypeFilter, setOpportunityTypeFilter] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
+  const [editingMultiplier, setEditingMultiplier] = useState<OpportunityMultiplier | null>(null);
+  const [editValue, setEditValue] = useState<number>(0);
 
   const {
     data: multipliers,
@@ -65,6 +77,46 @@ export const OpportunitySettingsPage = () => {
       return response.json();
     },
   });
+
+  // Mutation für Multiplier Updates
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, multiplier }: { id: string; multiplier: number }) => {
+      const response = await fetch(
+        `http://localhost:8080/api/settings/opportunity-multipliers/${id}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ multiplier }),
+        }
+      );
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `HTTP ${response.status}`);
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['opportunity-multipliers'] });
+      setEditingMultiplier(null);
+    },
+  });
+
+  const handleEditClick = (multiplier: OpportunityMultiplier) => {
+    setEditingMultiplier(multiplier);
+    setEditValue(multiplier.multiplier);
+  };
+
+  const handleCloseDialog = () => {
+    setEditingMultiplier(null);
+    setEditValue(0);
+  };
+
+  const handleSave = () => {
+    if (editingMultiplier) {
+      updateMutation.mutate({ id: editingMultiplier.id, multiplier: editValue });
+    }
+  };
 
   const filteredMultipliers = multipliers?.filter(m => {
     const matchesBusinessType =
@@ -119,22 +171,14 @@ export const OpportunitySettingsPage = () => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
             <TrendingUpIcon color="secondary" sx={{ fontSize: 32 }} />
             <Typography variant="h4" color="secondary">
-              Opportunity Multipliers
+              Verkaufschancen-Einstellungen
             </Typography>
           </Box>
           <Typography variant="body1" color="text.secondary">
-            Business-Type-Matrix für intelligente Umsatzschätzung (9 BusinessTypes × 4
-            OpportunityTypes = 36 Multipliers)
+            Multiplikatoren für intelligente Umsatzschätzung (9 Geschäftstypen × 4
+            Verkaufschancen-Typen = 36 Kombinationen)
           </Typography>
         </Box>
-
-        {/* Info Alert */}
-        <Alert severity="info" sx={{ mb: 3 }}>
-          <strong>Sprint 2.1.7.3 - Read-Only Ansicht</strong>
-          <br />
-          Diese Multipliers werden automatisch bei Customer → Opportunity Flow verwendet.
-          Bearbeitung erfolgt in Modul 08 (Admin-UI für Settings).
-        </Alert>
 
         {/* Filters */}
         <Paper sx={{ p: 3, mb: 3 }}>
@@ -156,11 +200,11 @@ export const OpportunitySettingsPage = () => {
               }}
             />
             <FormControl sx={{ flex: '1 1 200px' }}>
-              <InputLabel>Business Type</InputLabel>
+              <InputLabel>Geschäftstyp</InputLabel>
               <Select
                 value={businessTypeFilter}
                 onChange={e => setBusinessTypeFilter(e.target.value)}
-                label="Business Type"
+                label="Geschäftstyp"
               >
                 <MenuItem value="ALL">Alle</MenuItem>
                 {uniqueBusinessTypes.map(bt => (
@@ -171,11 +215,11 @@ export const OpportunitySettingsPage = () => {
               </Select>
             </FormControl>
             <FormControl sx={{ flex: '1 1 200px' }}>
-              <InputLabel>Opportunity Type</InputLabel>
+              <InputLabel>Verkaufschancen-Typ</InputLabel>
               <Select
                 value={opportunityTypeFilter}
                 onChange={e => setOpportunityTypeFilter(e.target.value)}
-                label="Opportunity Type"
+                label="Verkaufschancen-Typ"
               >
                 <MenuItem value="ALL">Alle</MenuItem>
                 {uniqueOpportunityTypes.map(ot => (
@@ -198,7 +242,7 @@ export const OpportunitySettingsPage = () => {
         {/* Error State */}
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            Fehler beim Laden der Multipliers:{' '}
+            Fehler beim Laden der Multiplikatoren:{' '}
             {error instanceof Error ? error.message : 'Unbekannter Fehler'}
           </Alert>
         )}
@@ -211,19 +255,19 @@ export const OpportunitySettingsPage = () => {
                 <TableHead>
                   <TableRow sx={{ bgcolor: 'grey.50' }}>
                     <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
-                      Business Type
+                      Geschäftstyp
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
-                      Opportunity Type
+                      Verkaufschancen-Typ
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
-                      Multiplier
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
-                      Erstellt
+                      Multiplikator
                     </TableCell>
                     <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
                       Aktualisiert
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                      Aktionen
                     </TableCell>
                   </TableRow>
                 </TableHead>
@@ -232,13 +276,23 @@ export const OpportunitySettingsPage = () => {
                     <TableRow>
                       <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                         <Typography variant="body2" color="text.secondary">
-                          Keine Multipliers gefunden
+                          Keine Multiplikatoren gefunden
                         </Typography>
                       </TableCell>
                     </TableRow>
                   ) : (
                     filteredMultipliers.map(m => (
-                      <TableRow key={m.id} hover>
+                      <TableRow
+                        key={m.id}
+                        hover
+                        sx={{
+                          cursor: 'pointer',
+                          '&:hover': {
+                            bgcolor: 'action.hover',
+                          },
+                        }}
+                        onClick={() => handleEditClick(m)}
+                      >
                         <TableCell>
                           <Chip
                             label={businessTypeLabels[m.businessType] || m.businessType}
@@ -264,21 +318,20 @@ export const OpportunitySettingsPage = () => {
                         </TableCell>
                         <TableCell>
                           <Typography variant="body2">
-                            {new Date(m.createdAt).toLocaleDateString('de-DE')}
+                            {new Date(m.updatedAt).toLocaleDateString('de-DE')}
                             <br />
                             <Typography component="span" variant="caption" color="text.secondary">
-                              von {m.createdBy}
+                              {new Date(m.updatedAt).toLocaleTimeString('de-DE', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })}
                             </Typography>
                           </Typography>
                         </TableCell>
                         <TableCell>
-                          <Typography variant="body2">
-                            {new Date(m.updatedAt).toLocaleDateString('de-DE')}
-                            <br />
-                            <Typography component="span" variant="caption" color="text.secondary">
-                              von {m.updatedBy}
-                            </Typography>
-                          </Typography>
+                          <IconButton size="small" color="primary">
+                            <EditIcon fontSize="small" />
+                          </IconButton>
                         </TableCell>
                       </TableRow>
                     ))
@@ -290,11 +343,132 @@ export const OpportunitySettingsPage = () => {
             {/* Stats Footer */}
             <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Typography variant="body2" color="text.secondary">
-                {filteredMultipliers.length} von {multipliers?.length || 0} Multipliers angezeigt
+                {filteredMultipliers.length} von {multipliers?.length || 0} Multiplikatoren angezeigt
               </Typography>
             </Box>
           </>
         )}
+
+        {/* Edit Dialog */}
+        <Dialog
+          open={editingMultiplier !== null}
+          onClose={handleCloseDialog}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <EditIcon color="primary" />
+                <Typography variant="h6" color="primary">
+                  Multiplikator bearbeiten
+                </Typography>
+              </Box>
+              <IconButton size="small" onClick={handleCloseDialog}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+          </DialogTitle>
+
+          <DialogContent>
+            {editingMultiplier && (
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, pt: 2 }}>
+                {/* Read-Only: Geschäftstyp */}
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
+                    Geschäftstyp
+                  </Typography>
+                  <Chip
+                    label={
+                      businessTypeLabels[editingMultiplier.businessType] ||
+                      editingMultiplier.businessType
+                    }
+                    color="secondary"
+                    variant="outlined"
+                    sx={{ mt: 0.5 }}
+                  />
+                </Box>
+
+                {/* Read-Only: Verkaufschancen-Typ */}
+                <Box>
+                  <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5 }}>
+                    Verkaufschancen-Typ
+                  </Typography>
+                  <Chip
+                    label={
+                      opportunityTypeLabels[editingMultiplier.opportunityType] ||
+                      editingMultiplier.opportunityType
+                    }
+                    color="primary"
+                    variant="outlined"
+                    sx={{ mt: 0.5 }}
+                  />
+                </Box>
+
+                {/* Berechnungslogik Erklärung */}
+                <Alert severity="info">
+                  <Typography variant="body2" sx={{ mb: 1 }}>
+                    <strong>Berechnungslogik:</strong>
+                  </Typography>
+                  <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace' }}>
+                    Erwarteter Umsatz = Basisumsatz × Multiplikator
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 1, display: 'block' }}
+                  >
+                    Basisumsatz kommt aus: Xentral (tatsächliches Jahresvolumen) → Lead-Schätzung
+                    (erwartetes Jahresvolumen) → 0 (manuelle Eingabe)
+                  </Typography>
+                </Alert>
+
+                {/* Editable: Multiplikator */}
+                <TextField
+                  label="Multiplikator"
+                  type="number"
+                  value={editValue}
+                  onChange={e => setEditValue(parseFloat(e.target.value))}
+                  inputProps={{
+                    min: 0,
+                    max: 2,
+                    step: 0.01,
+                  }}
+                  helperText="Gültig: 0.0 bis 2.0 (z.B. 0.25 = 25% des Basisumsatzes, 1.0 = 100% des Basisumsatzes)"
+                  fullWidth
+                  required
+                  error={editValue < 0 || editValue > 2}
+                />
+
+                {/* Mutation Error */}
+                {updateMutation.isError && (
+                  <Alert severity="error">
+                    Fehler beim Speichern:{' '}
+                    {updateMutation.error instanceof Error
+                      ? updateMutation.error.message
+                      : 'Unbekannter Fehler'}
+                  </Alert>
+                )}
+              </Box>
+            )}
+          </DialogContent>
+
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button onClick={handleCloseDialog} disabled={updateMutation.isPending}>
+              Abbrechen
+            </Button>
+            <Button
+              onClick={handleSave}
+              variant="contained"
+              color="primary"
+              disabled={
+                updateMutation.isPending || editValue < 0 || editValue > 2 || !editingMultiplier
+              }
+            >
+              {updateMutation.isPending ? 'Speichern...' : 'Speichern'}
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </MainLayoutV2>
   );

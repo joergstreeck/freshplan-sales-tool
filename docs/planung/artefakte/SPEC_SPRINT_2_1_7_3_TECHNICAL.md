@@ -722,6 +722,130 @@ public class SettingsResource {
 
 ---
 
+## 7️⃣ Admin Settings UI - Edit-Funktionalität
+
+### **7.1 Backend API: PUT /api/settings/opportunity-multipliers/{id}**
+
+**Endpoint:** `PUT /api/settings/opportunity-multipliers/{id}`
+
+**Auth:** `@RolesAllowed("admin")`
+
+**Request Body:**
+```json
+{
+  "multiplier": 0.30
+}
+```
+
+**Validation:**
+- `multiplier`: Required, ≥ 0.0, ≤ 2.0 (max 200% für Plausibilität)
+- `id`: UUID, must exist
+
+**Response 200 OK:**
+```json
+{
+  "id": "uuid",
+  "businessType": "RESTAURANT",
+  "opportunityType": "SORTIMENTSERWEITERUNG",
+  "multiplier": 0.30,
+  "createdAt": "2025-10-19T10:00:00Z",
+  "createdBy": "admin-uuid",
+  "updatedAt": "2025-10-19T14:30:00Z",
+  "updatedBy": "admin-uuid"
+}
+```
+
+**Error Codes:**
+- `400 Bad Request`: Invalid multiplier value (< 0 or > 2.0)
+- `403 Forbidden`: Not admin role
+- `404 Not Found`: Multiplier ID not found
+- `422 Unprocessable Entity`: Validation failed
+
+**Business Logic:**
+```java
+// OpportunityMultiplierService.updateMultiplier()
+@Transactional
+public OpportunityMultiplier updateMultiplier(UUID id, BigDecimal newMultiplier) {
+  // 1. Validate multiplier range
+  if (newMultiplier.compareTo(BigDecimal.ZERO) < 0) {
+    throw new IllegalArgumentException("Multiplier must be >= 0.0");
+  }
+  if (newMultiplier.compareTo(new BigDecimal("2.0")) > 0) {
+    throw new IllegalArgumentException("Multiplier must be <= 2.0");
+  }
+
+  // 2. Find existing
+  OpportunityMultiplier multiplier = OpportunityMultiplier.findById(id);
+  if (multiplier == null) {
+    throw new NotFoundException("Multiplier not found: " + id);
+  }
+
+  // 3. Update with Audit (timestamp only, no user tracking)
+  multiplier.setMultiplier(newMultiplier);
+  multiplier.setUpdatedAt(LocalDateTime.now());
+  multiplier.persist();
+
+  return multiplier;
+}
+```
+
+---
+
+### **7.2 Frontend: Edit-Dialog**
+
+**Datei:** `frontend/src/pages/admin/OpportunitySettingsPage.tsx`
+
+**Component:** `EditMultiplierDialog`
+
+**Trigger:** Klick auf Table Row → Opens Edit Dialog
+
+**Felder:**
+| Feld | Typ | Validation | Read-Only |
+|------|-----|------------|-----------|
+| **businessType** | Text | - | ✅ Yes |
+| **opportunityType** | Text | - | ✅ Yes |
+| **multiplier** | NumberField | 0.0 - 2.0 | ❌ Editable |
+
+**Validation:**
+```tsx
+const schema = z.object({
+  multiplier: z.number()
+    .min(0, 'Multiplier muss ≥ 0.0 sein')
+    .max(2.0, 'Multiplier muss ≤ 2.0 sein')
+});
+```
+
+**API Call:**
+```tsx
+const handleSave = async (id: number, newMultiplier: number) => {
+  const response = await fetch(
+    `http://localhost:8080/api/settings/opportunity-multipliers/${id}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ multiplier: newMultiplier })
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  // Invalidate cache → re-fetch table data
+  queryClient.invalidateQueries(['opportunity-multipliers']);
+};
+```
+
+**UX:**
+- Click Row → Edit Dialog opens
+- Change Multiplier → Live Validation
+- Save → PUT Request → Dialog closes → Table refreshes
+- Cancel → Dialog closes without changes
+
+**Design System:** MUI Dialog, TextField with `type="number"`, Theme Colors
+
+---
+
 ## 📊 TEST COVERAGE
 
 **Backend:**

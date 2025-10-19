@@ -4,6 +4,7 @@ import de.freshplan.domain.opportunity.entity.OpportunityMultiplier;
 import de.freshplan.domain.opportunity.service.dto.OpportunityMultiplierResponse;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.jboss.logging.Logger;
@@ -76,10 +77,67 @@ public class OpportunityMultiplierService {
   }
 
   // ============================================================================
-  // FUTURE: Admin CRUD Operations (Modul 08 - Admin-Dashboard)
+  // Admin CRUD Operations (Sprint 2.1.7.3 - Edit-Funktionalität)
   // ============================================================================
 
-  // updateMultiplier(id, newValue) - UPDATE via Admin-UI
+  /**
+   * Update multiplier value (Admin-Only)
+   *
+   * <p>Sprint 2.1.7.3 - Allows admins to adjust multipliers
+   *
+   * @param id Multiplier ID (UUID)
+   * @param newMultiplier New multiplier value (0.0-2.0)
+   * @return Updated multiplier
+   * @throws jakarta.ws.rs.NotFoundException if multiplier not found
+   * @throws IllegalArgumentException if validation fails
+   */
+  @Transactional
+  public OpportunityMultiplier updateMultiplier(java.util.UUID id, BigDecimal newMultiplier) {
+    logger.info("Updating multiplier: id=" + id + ", newMultiplier=" + newMultiplier);
+
+    // 1. Validate multiplier range
+    if (newMultiplier.compareTo(BigDecimal.ZERO) < 0) {
+      throw new IllegalArgumentException("Multiplier must be >= 0.0 (was: " + newMultiplier + ")");
+    }
+    if (newMultiplier.compareTo(new BigDecimal("2.0")) > 0) {
+      throw new IllegalArgumentException("Multiplier must be <= 2.0 (was: " + newMultiplier + ")");
+    }
+
+    // 2. Find existing multiplier
+    OpportunityMultiplier multiplier = OpportunityMultiplier.findById(id);
+    if (multiplier == null) {
+      logger.warn("Multiplier not found: " + id);
+      throw new jakarta.ws.rs.NotFoundException("Multiplier not found: " + id);
+    }
+
+    // 3. Update with audit trail (timestamp only)
+    BigDecimal oldValue = multiplier.getMultiplier();
+    multiplier.setMultiplier(newMultiplier);
+    multiplier.setUpdatedAt(java.time.LocalDateTime.now());
+
+    // 4. Persist
+    multiplier.persist();
+
+    logger.info(
+        "Successfully updated multiplier "
+            + id
+            + ": "
+            + oldValue
+            + " → "
+            + newMultiplier
+            + " (businessType="
+            + multiplier.getBusinessType()
+            + ", opportunityType="
+            + multiplier.getOpportunityType()
+            + ")");
+
+    return multiplier;
+  }
+
+  // ============================================================================
+  // FUTURE: Extended Admin Features (Modul 08)
+  // ============================================================================
+
   // createMultiplier(dto) - INSERT custom multiplier
   // deleteMultiplier(id) - DELETE custom multiplier
   // resetToDefaults() - RESET to factory defaults (36 seed entries)

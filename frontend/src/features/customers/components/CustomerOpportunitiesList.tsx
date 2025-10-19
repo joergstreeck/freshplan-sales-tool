@@ -347,9 +347,7 @@ export const CustomerOpportunitiesList: React.FC<CustomerOpportunitiesListProps>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PendingActionsIcon color="primary" />
-              <Typography variant="h6">
-                Offen ({openOpportunities.length})
-              </Typography>
+              <Typography variant="h6">Offen ({openOpportunities.length})</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
@@ -368,9 +366,7 @@ export const CustomerOpportunitiesList: React.FC<CustomerOpportunitiesListProps>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <CheckCircleIcon color="success" />
-              <Typography variant="h6">
-                Gewonnen ({wonOpportunities.length})
-              </Typography>
+              <Typography variant="h6">Gewonnen ({wonOpportunities.length})</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
@@ -389,9 +385,7 @@ export const CustomerOpportunitiesList: React.FC<CustomerOpportunitiesListProps>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <CancelIcon color="error" />
-              <Typography variant="h6">
-                Verloren ({lostOpportunities.length})
-              </Typography>
+              <Typography variant="h6">Verloren ({lostOpportunities.length})</Typography>
             </Box>
           </AccordionSummary>
           <AccordionDetails>
@@ -409,10 +403,16 @@ export const CustomerOpportunitiesList: React.FC<CustomerOpportunitiesListProps>
         <strong>{opportunities.length}</strong>{' '}
         {opportunities.length === 1 ? 'Opportunity' : 'Opportunities'} für diesen Kunden
         {openOpportunities.length > 0 && (
-          <> • <strong>{openOpportunities.length}</strong> offen</>
+          <>
+            {' '}
+            • <strong>{openOpportunities.length}</strong> offen
+          </>
         )}
         {wonOpportunities.length > 0 && (
-          <> • <strong>{wonOpportunities.length}</strong> gewonnen</>
+          <>
+            {' '}
+            • <strong>{wonOpportunities.length}</strong> gewonnen
+          </>
         )}
       </Alert>
     </Stack>
