@@ -38,7 +38,7 @@ import { useQuery } from '@tanstack/react-query';
 import { customerApi } from '../features/customer/api/customerApi';
 import type { Customer, CustomerContact } from '../features/customer/types/customer.types';
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
-import { CreateOpportunityForCustomerDialog } from '../features/opportunity/components/CreateOpportunityForCustomerDialog';
+import CreateOpportunityForCustomerDialog from '../features/opportunity/components/CreateOpportunityForCustomerDialog';
 import { CustomerOpportunitiesList } from '../features/customers/components/CustomerOpportunitiesList';
 
 interface TabPanelProps {
