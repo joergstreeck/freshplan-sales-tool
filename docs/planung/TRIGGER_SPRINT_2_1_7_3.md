@@ -235,8 +235,8 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - Sprint 2.1.7.2: Xentral Integration (actualAnnualVolume field ready)
 
 **Follow-up Sprints:**
-- Sprint 2.1.7.4: Advanced Filters & Analytics
-- Modul 08: Admin-UI für Multiplier-Settings
+- Sprint 2.1.7.4: Customer Status Architecture (PROSPECT/AKTIV Logik)
+- Sprint 2.1.7.5: Advanced Filters & Analytics (DEFERRED)
 
 ---
 

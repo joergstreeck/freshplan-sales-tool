@@ -312,8 +312,23 @@ Sprint 2.1.7.3: RENEWAL-Workflow     📋 PLANNING (16.10.2025) - Aufwand: 8h (1
                                       → **Business Context:** B2B-Food CRM = Ongoing Relationships (nicht Single Sales), Provision = Akquise + Bestandspflege
                                       → **Prerequisites:** ✅ Sprint 2.1.7.2 COMPLETE
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_3.md](TRIGGER_SPRINT_2_1_7_3.md)
+                                      → **Status:** ✅ COMPLETE (19.10.2025) - PR #142
 
-Sprint 2.1.7.4: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h (wenn benötigt)
+Sprint 2.1.7.4: Customer Status Arch  📋 PLANNING (19.10.2025) - Aufwand: 10h (1.5 Tage)
+                                      → **SCOPE:** CustomerStatus.LEAD entfernen, PROSPECT/AKTIV Logik
+                                      → **Phase 1:** Migration V10032 (LEAD → PROSPECT, Enum Cleanup) (2h)
+                                      → **Phase 2:** LeadConvertService: PROSPECT statt AKTIV (1h)
+                                      → **Phase 3:** Auto-Conversion bei Opportunity WON (3h)
+                                      → **Phase 4:** Manual Activation Button ("Erste Bestellung geliefert") (2h)
+                                      → **Phase 5:** Dashboard KPIs (PROSPECT-Zähler, Conversion Rate) (1h)
+                                      → **Phase 6:** Xentral-Vorbereitung (Interface) (1h)
+                                      → **Business Rule:** PROSPECT (Opportunity gewonnen) → AKTIV (erste Bestellung geliefert)
+                                      → **Migration:** V10032 (CustomerStatus Enum Cleanup)
+                                      → **Tests:** 39 Tests (26 Backend + 13 Frontend)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.3 COMPLETE
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_4.md](TRIGGER_SPRINT_2_1_7_4.md)
+
+Sprint 2.1.7.5: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h (wenn benötigt)
                                       → **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
                                       → **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate) (4h)
                                       → **Phase 2:** Advanced Search Dialog (Multi-Criteria: Stage+Owner+DateRange+Value) (4h)
@@ -322,8 +337,8 @@ Sprint 2.1.7.4: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h
                                       → **KRITISCHE ENTSCHEIDUNG:** ⚠️ NICHT JETZT! YAGNI-Prinzip (You Ain't Gonna Need It)
                                       → **Begründung:** Keine echten Daten vorhanden - Filter-Bedarf unklar - erst nach Go-Live mit 100 realen Leads bauen
                                       → **Migrations:** Keine (nur Frontend-State)
-                                      → **Prerequisites:** ✅ Sprint 2.1.7.1-3 COMPLETE, ✅ Go-Live mit realen Daten, ✅ User-Feedback zu Filter-Bedarf
-                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_4.md](TRIGGER_SPRINT_2_1_7_4.md)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.1-4 COMPLETE, ✅ Go-Live mit realen Daten, ✅ User-Feedback zu Filter-Bedarf
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_5.md](TRIGGER_SPRINT_2_1_7_5.md)
                                       → **Status:** NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
 Sprint 2.1.8: Team Mgmt & Test Infra 📅 VERSCHOBEN (19-25.10.2025) - VORMALS Sprint 2.1.7

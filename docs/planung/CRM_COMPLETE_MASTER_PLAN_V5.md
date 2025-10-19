@@ -362,16 +362,17 @@
   - Churn-Alarm: Variable customer-specific thresholds (7/14/30/45/60/90 Tage)
   - Xentral-Kunden-Dropdown: Verkäufer-gefiltert (kein manuelles Tippen!)
 - ✅ **4 SPRINT-TRIGGER DOCUMENTS ERSTELLT/UPDATED:**
-  - TRIGGER_SPRINT_2_1_7_1.md (UPDATED): Lead → Opportunity (17h, FOKUSSIERT - nur UI Integration)
-  - TRIGGER_SPRINT_2_1_7_2.md (NEW): Customer + Xentral (18h - Dashboard ohne Daten wäre wertlos!)
-  - TRIGGER_SPRINT_2_1_7_3.md (NEW): RENEWAL-Workflow (8h - Upsell/Cross-sell)
-  - TRIGGER_SPRINT_2_1_7_4.md (NEW): Advanced Filters (13h - DEFERRED! YAGNI bis echte Daten vorhanden)
+  - TRIGGER_SPRINT_2_1_7_1.md (COMPLETE): Lead → Opportunity UI Integration (PR #141)
+  - TRIGGER_SPRINT_2_1_7_2.md (PLANNING): Customer + Xentral (18h - Dashboard ohne Daten wäre wertlos!)
+  - TRIGGER_SPRINT_2_1_7_3.md (COMPLETE): Bestandskunden-Workflow (36h - PR #142)
+  - TRIGGER_SPRINT_2_1_7_4.md (NEW): Customer Status Architecture (10h - PROSPECT/AKTIV Logik)
+  - TRIGGER_SPRINT_2_1_7_5.md (DEFERRED): Advanced Filters (13h - YAGNI bis echte Daten vorhanden)
 - ✅ **TRIGGER_INDEX.md AKTUALISIERT:**
-  - Alle 4 Sprints im Index eingetragen (Zeilen 193-242)
-  - Status klar dokumentiert: 2.1.7.1-3 PLANNING, 2.1.7.4 DEFERRED
+  - Alle 5 Sprints im Index eingetragen (Zeilen 193-257)
+  - Status: 2.1.7.1 ✅, 2.1.7.3 ✅, 2.1.7.2 📋, 2.1.7.4 📋, 2.1.7.5 ⚠️ DEFERRED
 
 **Kritische Erkenntnisse:**
-- Filter ohne echte Daten bauen = wertlos (Sprint 2.1.7.4 auf NACH Go-Live verschoben)
+- Filter ohne echte Daten bauen = wertlos (Sprint 2.1.7.5 auf NACH Go-Live verschoben)
 - Customer-Dashboard ohne Xentral-Integration = wertlos (Sprint 2.1.7.2 beides ZUSAMMEN!)
 - FOKUSSIERTE Sprints (17h, 18h, 8h) statt Mega-Sprint (16-24h mit 4 Features)
 
@@ -1432,10 +1433,20 @@
   - **Tests:** 64/64 GREEN ✅ (43 Backend + 21 Frontend)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: complete)
 
-- **⚠️ SPRINT 2.1.7.4 - ADVANCED FILTERS (DEFERRED!):**
+- **📋 SPRINT 2.1.7.4 - CUSTOMER STATUS ARCHITECTURE (PLANNING):**
+  - **SCOPE:** CustomerStatus.LEAD entfernen, PROSPECT/AKTIV Logik implementieren
+  - **Key Deliverables:** Auto-Conversion bei Opportunity WON, Manual Activation Button, Dashboard KPIs
+  - **Business Rule:** PROSPECT (Opportunity gewonnen) → AKTIV (erste Bestellung geliefert)
+  - **Aufwand:** ~10h (1.5 Arbeitstage)
+  - **Migration:** V10032 (CustomerStatus Enum Cleanup - LEAD entfernen)
+  - **Tests:** 39 Tests (26 Backend + 13 Frontend)
+  - **Prerequisites:** Sprint 2.1.7.3 COMPLETE
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md` (status: planning)
+
+- **⚠️ SPRINT 2.1.7.5 - ADVANCED FILTERS (DEFERRED!):**
   - **STATUS:** NOCH NICHT READY FÜR KICKOFF!
   - **Grund:** YAGNI - keine echten Daten vorhanden (erst nach Go-Live mit 100 realen Leads bauen)
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md`
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_5.md`
 
 - **✅ SPRINT 2.1.7.0 - DESIGN SYSTEM MIGRATION COMPLETE (15.10.2025 - PR #140 MERGED):**
   - Status: ✅ MERGED TO MAIN (Commit f6642321b)

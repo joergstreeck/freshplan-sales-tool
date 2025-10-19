@@ -228,20 +228,33 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Tests:** 12 Backend (XentralApiClient) + 8 Frontend (Dashboard) = 20 Tests
    - Status: 📋 PLANNING - Xentral-API-Test erforderlich vor Start!
 
-📋 TRIGGER_SPRINT_2_1_7_3.md - RENEWAL-Workflow (Upsell/Cross-sell - 16.10.2025)
-   - **SCOPE:** Bestandskunden-Opportunities (Upsell/Cross-sell)
-   - **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage)
-   - **Phase 2:** CreateOpportunityForCustomerDialog (stage: NEEDS_ANALYSIS, skip NEW_LEAD)
-   - **Phase 3:** CustomerOpportunitiesList (gruppiert: Offen/Gewonnen/Verloren)
-   - **Phase 4:** RENEWAL-Stage ENTFERNEN (Migration V10033 - RENEWAL → NEEDS_ANALYSIS + opportunityType)
-   - **Aufwand:** 8h = 1 Arbeitstag
-   - **ARCHITEKTUR:** RENEWAL wird opportunityType (NICHT stage) - Customer-Opportunities starten bei NEEDS_ANALYSIS
-   - **Prerequisites:** Sprint 2.1.7.2 COMPLETE
-   - **Migrations:** V10033 (RENEWAL-Stage-Migration)
-   - **Tests:** 6 Backend + 4 Frontend = 10 Tests
-   - Status: 📋 PLANNING - Ready after 2.1.7.2
+✅ TRIGGER_SPRINT_2_1_7_3.md - Bestandskunden-Workflow (✅ COMPLETE - 19.10.2025) - **PR #142**
+   - **SCOPE:** Customer → Opportunity Flow mit Business-Type-Matrix
+   - **Phase 1:** "Verkaufschance erstellen" Button (CustomerDetailPage)
+   - **Phase 2:** CreateOpportunityForCustomerDialog (intelligente Umsatzschätzung)
+   - **Phase 3:** CustomerOpportunitiesList (Accordion: Offen/Gewonnen/Verloren)
+   - **Phase 4:** Admin Settings UI (OpportunitySettingsPage - Edit Multipliers)
+   - **Business-Type-Matrix:** 9 BusinessTypes × 4 OpportunityTypes = 36 Multipliers
+   - **Aufwand:** 36h (erweitert von 30h - Admin-UI hinzugefügt)
+   - **Tests:** 90/90 GREEN (Backend 43, Frontend 47)
+   - **Migrations:** V10031 (opportunity_multipliers mit CHECK constraints)
+   - Status: ✅ COMPLETE (PR #142 ready)
 
-📋 TRIGGER_SPRINT_2_1_7_4.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
+📋 TRIGGER_SPRINT_2_1_7_4.md - Customer Status Architecture (19.10.2025)
+   - **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik
+   - **Phase 1:** Migration V10032 (LEAD → PROSPECT, Enum Cleanup)
+   - **Phase 2:** LeadConvertService: PROSPECT statt AKTIV setzen
+   - **Phase 3:** Auto-Conversion bei Opportunity WON (Lead → Customer)
+   - **Phase 4:** Manual Activation Button ("Erste Bestellung geliefert")
+   - **Phase 5:** Dashboard KPIs (PROSPECT-Zähler, Conversion Rate)
+   - **Aufwand:** 10h = 1.5 Arbeitstage
+   - **Business Rule:** PROSPECT (Opportunity gewonnen) → AKTIV (erste Bestellung)
+   - **Prerequisites:** Sprint 2.1.7.3 COMPLETE
+   - **Migrations:** V10032 (CustomerStatus Cleanup)
+   - **Tests:** 39 Tests (26 Backend + 13 Frontend)
+   - Status: 📋 PLANNING - Ready to start
+
+📋 TRIGGER_SPRINT_2_1_7_5.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
    - **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
    - **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate)
    - **Phase 2:** Advanced Search Dialog (Multi-Criteria: Stage+Owner+DateRange+Value)
