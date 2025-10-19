@@ -102,8 +102,8 @@ public class Customer extends PanacheEntityBase {
   private Integer employeeCount;
 
   /**
-   * Number of branches/locations (100% Lead parity). Note: Redundant with totalLocationsEU but
-   * kept for Lead conversion compatibility.
+   * Number of branches/locations (100% Lead parity). Note: Redundant with totalLocationsEU but kept
+   * for Lead conversion compatibility.
    *
    * @since 2.1.7.2
    */
@@ -111,8 +111,8 @@ public class Customer extends PanacheEntityBase {
   private Integer branchCount = 1;
 
   /**
-   * Chain/franchise flag (100% Lead parity). Note: Redundant with totalLocationsEU &gt; 1 check
-   * but kept for Lead conversion compatibility.
+   * Chain/franchise flag (100% Lead parity). Note: Redundant with totalLocationsEU &gt; 1 check but
+   * kept for Lead conversion compatibility.
    *
    * @since 2.1.7.2
    */
@@ -120,8 +120,8 @@ public class Customer extends PanacheEntityBase {
   private Boolean isChain = false;
 
   /**
-   * Estimated purchase volume (100% Lead parity). Note: Complements expectedAnnualVolume - Lead
-   * has estimatedVolume, Customer had expectedAnnualVolume.
+   * Estimated purchase volume (100% Lead parity). Note: Complements expectedAnnualVolume - Lead has
+   * estimatedVolume, Customer had expectedAnnualVolume.
    *
    * @since 2.1.7.2
    */

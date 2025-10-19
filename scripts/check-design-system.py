@@ -170,18 +170,26 @@ def main():
     print(f"✅ Found {len(all_files)} files")
     print()
     
-    # Check files
-    all_violations = {}
-    total_violations = 0
-    
+    # Check files (separate STRICT vs RELAXED violations)
+    strict_violations = {}  # Normal files (must be fixed)
+    chart_violations = {}   # Chart files (warnings only)
+    total_strict = 0
+    total_chart = 0
+
     for file_path in all_files:
         violations = check_file(file_path)
         if violations:
             relative_path = file_path.relative_to(PROJECT_ROOT)
-            all_violations[relative_path] = violations
-            total_violations += len(violations)
-    
+            if is_chart_file(file_path):
+                chart_violations[relative_path] = violations
+                total_chart += len(violations)
+            else:
+                strict_violations[relative_path] = violations
+                total_strict += len(violations)
+
     # Report
+    total_violations = total_strict + total_chart
+
     if total_violations == 0:
         print("✅ SUCCESS: Design System compliant!")
         print(f"   Files checked: {len(all_files)}")
@@ -191,13 +199,14 @@ def main():
         print("   ✓ No hardcoded fonts")
         print("   ✓ German UI text")
         sys.exit(0)
-    else:
-        print(f"❌ FAILURE: {total_violations} violations found:")
+
+    # Print violations (STRICT first, then CHART)
+    if total_strict > 0:
+        print(f"❌ CRITICAL: {total_strict} STRICT violations found (must be fixed):")
         print()
-        
-        for file_path, violations in sorted(all_violations.items()):
+        for file_path, violations in sorted(strict_violations.items()):
             print(f"  📄 {file_path}")
-            for line_num, line, message in violations[:5]:  # Max 5 per file
+            for line_num, line, message in violations[:5]:
                 print(f"     Line {line_num}: {message}")
                 if len(line) > 80:
                     print(f"       {line[:77]}...")
@@ -206,8 +215,22 @@ def main():
             if len(violations) > 5:
                 print(f"     ... and {len(violations) - 5} more")
             print()
-        
-        print("━" * 50)
+
+    if total_chart > 0:
+        print(f"⚠️  WARNING: {total_chart} RELAXED violations in chart files (informational):")
+        print()
+        for file_path, violations in sorted(chart_violations.items()):
+            print(f"  📊 {file_path} (Chart File - Recharts colors allowed)")
+            for line_num, line, message in violations[:3]:
+                print(f"     Line {line_num}: {message}")
+            if len(violations) > 3:
+                print(f"     ... and {len(violations) - 3} more")
+            print()
+
+    print("━" * 50)
+
+    # Exit based on STRICT violations only
+    if total_strict > 0:
         print("🚫 Design System Rules Violated")
         print()
         print("🔧 How to fix:")
@@ -217,6 +240,12 @@ def main():
         print()
         print("📖 See: docs/planung/grundlagen/DESIGN_SYSTEM.md")
         sys.exit(1)
+    else:
+        print("✅ SUCCESS: No STRICT violations (Chart warnings are OK)")
+        print(f"   Files checked: {len(all_files)}")
+        print(f"   STRICT violations: 0")
+        print(f"   Chart warnings: {total_chart} (informational)")
+        sys.exit(0)
 
 if __name__ == '__main__':
     main()

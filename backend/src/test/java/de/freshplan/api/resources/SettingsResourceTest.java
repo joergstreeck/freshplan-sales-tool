@@ -99,12 +99,7 @@ public class SettingsResourceTest {
   @Test
   @DisplayName("GET /opportunity-multipliers - Should require authentication")
   void getOpportunityMultipliers_noAuth_shouldReturn401() {
-    given()
-        .accept(ContentType.JSON)
-        .when()
-        .get("/opportunity-multipliers")
-        .then()
-        .statusCode(401);
+    given().accept(ContentType.JSON).when().get("/opportunity-multipliers").then().statusCode(401);
   }
 
   // ==========================================================================
@@ -113,8 +108,7 @@ public class SettingsResourceTest {
 
   @Test
   @TestSecurity(user = "testuser", roles = "USER")
-  @DisplayName(
-      "GET /opportunity-multipliers - Should contain all 9 BusinessTypes")
+  @DisplayName("GET /opportunity-multipliers - Should contain all 9 BusinessTypes")
   void getOpportunityMultipliers_shouldContainAll9BusinessTypes() {
     given()
         .accept(ContentType.JSON)
@@ -122,23 +116,23 @@ public class SettingsResourceTest {
         .get("/opportunity-multipliers")
         .then()
         .statusCode(200)
-        .body("businessType", hasItems(
-            "RESTAURANT",
-            "HOTEL",
-            "CATERING",
-            "KANTINE",
-            "BILDUNG",
-            "GESUNDHEIT",
-            "GROSSHANDEL",
-            "LEH",
-            "SONSTIGES"
-        ));
+        .body(
+            "businessType",
+            hasItems(
+                "RESTAURANT",
+                "HOTEL",
+                "CATERING",
+                "KANTINE",
+                "BILDUNG",
+                "GESUNDHEIT",
+                "GROSSHANDEL",
+                "LEH",
+                "SONSTIGES"));
   }
 
   @Test
   @TestSecurity(user = "testuser", roles = "USER")
-  @DisplayName(
-      "GET /opportunity-multipliers - Should contain all 4 OpportunityTypes")
+  @DisplayName("GET /opportunity-multipliers - Should contain all 4 OpportunityTypes")
   void getOpportunityMultipliers_shouldContainAll4OpportunityTypes() {
     given()
         .accept(ContentType.JSON)
@@ -146,18 +140,14 @@ public class SettingsResourceTest {
         .get("/opportunity-multipliers")
         .then()
         .statusCode(200)
-        .body("opportunityType", hasItems(
-            "NEUGESCHAEFT",
-            "SORTIMENTSERWEITERUNG",
-            "NEUER_STANDORT",
-            "VERLAENGERUNG"
-        ));
+        .body(
+            "opportunityType",
+            hasItems("NEUGESCHAEFT", "SORTIMENTSERWEITERUNG", "NEUER_STANDORT", "VERLAENGERUNG"));
   }
 
   @Test
   @TestSecurity(user = "testuser", roles = "USER")
-  @DisplayName(
-      "GET /opportunity-multipliers - RESTAURANT SORTIMENTSERWEITERUNG should be 0.25")
+  @DisplayName("GET /opportunity-multipliers - RESTAURANT SORTIMENTSERWEITERUNG should be 0.25")
   void getOpportunityMultipliers_restaurantSortimentserweiterung_shouldBe025() {
     given()
         .accept(ContentType.JSON)
@@ -172,8 +162,7 @@ public class SettingsResourceTest {
 
   @Test
   @TestSecurity(user = "testuser", roles = "USER")
-  @DisplayName(
-      "GET /opportunity-multipliers - HOTEL SORTIMENTSERWEITERUNG should be 0.65")
+  @DisplayName("GET /opportunity-multipliers - HOTEL SORTIMENTSERWEITERUNG should be 0.65")
   void getOpportunityMultipliers_hotelSortimentserweiterung_shouldBe065() {
     given()
         .accept(ContentType.JSON)
@@ -188,8 +177,7 @@ public class SettingsResourceTest {
 
   @Test
   @TestSecurity(user = "testuser", roles = "USER")
-  @DisplayName(
-      "GET /opportunity-multipliers - All NEUGESCHAEFT should be 1.00")
+  @DisplayName("GET /opportunity-multipliers - All NEUGESCHAEFT should be 1.00")
   void getOpportunityMultipliers_allNeugeschaeft_shouldBe100() {
     given()
         .accept(ContentType.JSON)
@@ -212,12 +200,7 @@ public class SettingsResourceTest {
   void getOpportunityMultipliers_shouldRespondQuickly() {
     long start = System.currentTimeMillis();
 
-    given()
-        .accept(ContentType.JSON)
-        .when()
-        .get("/opportunity-multipliers")
-        .then()
-        .statusCode(200);
+    given().accept(ContentType.JSON).when().get("/opportunity-multipliers").then().statusCode(200);
 
     long duration = System.currentTimeMillis() - start;
 
@@ -233,8 +216,7 @@ public class SettingsResourceTest {
 
   @Test
   @TestSecurity(user = "testuser", roles = "USER")
-  @DisplayName(
-      "GET /opportunity-multipliers - Response should be cacheable (for React Query)")
+  @DisplayName("GET /opportunity-multipliers - Response should be cacheable (for React Query)")
   void getOpportunityMultipliers_shouldBeCacheable() {
     // Frontend should cache this response (React Query 5min stale time)
     // Verify response is consistent on multiple calls

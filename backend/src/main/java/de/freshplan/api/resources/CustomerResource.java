@@ -2,7 +2,6 @@ package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.CustomerStatus;
-import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.command.CustomerCommandService;
 import de.freshplan.domain.customer.service.dto.*;

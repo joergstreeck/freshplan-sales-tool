@@ -20,8 +20,8 @@ import org.hibernate.annotations.UuidGenerator;
  *   <li>baseVolume = 0 (Manual entry - FALLBACK)
  * </ul>
  *
- * <p>Beispiel: HOTEL (baseVolume=100k€) → SORTIMENTSERWEITERUNG (multiplier=0.65) =
- * expectedValue = 65.000€
+ * <p>Beispiel: HOTEL (baseVolume=100k€) → SORTIMENTSERWEITERUNG (multiplier=0.65) = expectedValue =
+ * 65.000€
  *
  * @since Sprint 2.1.7.3
  */
@@ -47,8 +47,8 @@ public class OpportunityMultiplier extends PanacheEntityBase {
    * <p>Values: RESTAURANT, HOTEL, CATERING, KANTINE, BILDUNG, GESUNDHEIT, GROSSHANDEL, LEH,
    * SONSTIGES
    *
-   * <p>⚠️ IMPORTANT: Must match {@link de.freshplan.domain.shared.BusinessType} enum values
-   * (stored as VARCHAR, not Enum column)
+   * <p>⚠️ IMPORTANT: Must match {@link de.freshplan.domain.shared.BusinessType} enum values (stored
+   * as VARCHAR, not Enum column)
    */
   @Column(name = "business_type", length = 50, nullable = false)
   private String businessType;

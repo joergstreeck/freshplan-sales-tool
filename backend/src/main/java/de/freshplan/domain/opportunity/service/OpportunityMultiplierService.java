@@ -54,8 +54,7 @@ public class OpportunityMultiplierService {
   public List<OpportunityMultiplier> getMultipliersByBusinessType(String businessType) {
     logger.debug("Fetching multipliers for business type: " + businessType);
 
-    return OpportunityMultiplier.list(
-        "businessType = ?1 ORDER BY opportunityType", businessType);
+    return OpportunityMultiplier.list("businessType = ?1 ORDER BY opportunityType", businessType);
   }
 
   /**
@@ -70,8 +69,10 @@ public class OpportunityMultiplierService {
   @Transactional
   public OpportunityMultiplier findMultiplier(String businessType, String opportunityType) {
     logger.debug(
-        "Finding multiplier for businessType=" + businessType + ", opportunityType=" +
-        opportunityType);
+        "Finding multiplier for businessType="
+            + businessType
+            + ", opportunityType="
+            + opportunityType);
 
     return OpportunityMultiplier.findByTypes(businessType, opportunityType);
   }

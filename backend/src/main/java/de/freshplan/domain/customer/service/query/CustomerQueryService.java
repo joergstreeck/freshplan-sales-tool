@@ -3,7 +3,6 @@ package de.freshplan.domain.customer.service.query;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
-import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.CustomerDashboardResponse;
 import de.freshplan.domain.customer.service.dto.CustomerListResponse;

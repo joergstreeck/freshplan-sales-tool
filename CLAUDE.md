@@ -82,97 +82,23 @@ Ich schreibe meine Updates **zwischen** diese Anker in MP5:
 14. **REPOSITORY SAUBER:** `./scripts/quick-cleanup.sh` vor jedem Push
 
 ## ⚠️ KRITISCHE GUARDRAILS
+### 🗄️ Backend/Frontend Parity (ZERO TOLERANCE)
+**Jedes Frontend-Feld MUSS im Backend existieren!**
+- Backend Entity → EnumResource (`/api/enums/xyz`) → fieldCatalog.json `enumSource`
+- NIEMALS hardcoded `options` ohne Backend-Enum
+- Guards: Pre-commit Hook, CI Check, `python3 scripts/check-field-parity.py`
 
-### 🗄️ BACKEND/FRONTEND PARITY (ZERO TOLERANCE!)
-**REGEL:** Jedes Frontend-Feld MUSS im Backend existieren. Keine Exceptions!
+### 🎨 Design System (NO HARDCODING)
+**MUI Theme System nutzen! Keine hex-colors/fonts. UI Deutsch.**
+- ✅ `sx={{ bgcolor: 'primary.main' }}`, `<Typography variant="h4">`
+- ❌ `sx={{ bgcolor: '#94C456' }}`, `fontFamily: 'Antonio'`
+- Guards: Pre-commit Hook, CI Check, `python3 scripts/check-design-system.py`
+- Docs: `docs/planung/grundlagen/DESIGN_SYSTEM.md`
 
-✅ **RICHTIG: Backend → API → Frontend**
-```typescript
-// 1. Backend: Customer.java
-private FinancingType primaryFinancing;
-
-// 2. EnumResource.java
-@GET @Path("/api/enums/financing-types")
-
-// 3. Frontend: fieldCatalog.json
-{"key": "primaryFinancing", "fieldType": "enum", "enumSource": "financing-types"}
-```
-
-❌ **FALSCH: Hardcoded Frontend-Felder**
-```json
-// NIEMALS hardcoded options ohne Backend-Enum!
-{"fieldType": "select", "options": [...]}
-```
-
-**Bei neuen Feldern:**
-1. Migration + Customer.java Entity-Feld hinzufügen
-2. Falls Enum: EnumResource.java Endpoint erstellen (`/api/enums/xyz`)
-3. fieldCatalog.json mit `enumSource` (NICHT `options`)
-
-**Automatische Guards (installiert):**
-- 🔒 Pre-commit Hook: `./scripts/setup-git-hooks.sh` (blockt Commits)
-- 🔒 CI Check: `.github/workflows/field-parity-check.yml` (blockt PRs)
-- 🔍 Manuell: `python3 scripts/check-field-parity.py`
-
-### 🎨 DESIGN SYSTEM COMPLIANCE (NO HARDCODING!)
-**REGEL:** Nutze MUI Theme System. Keine hardcoded Colors/Fonts. UI in Deutsch.
-
-✅ **RICHTIG: Theme System nutzen**
-```typescript
-// Colors: theme.palette verwenden
-sx={{ bgcolor: 'primary.main', color: 'text.primary' }}
-
-// Fonts: theme.typography verwenden
-<Typography variant="h4"> // Antonio Bold
-<Typography variant="body1"> // Poppins Regular
-
-// UI Text: Deutsch
-<Button>Speichern</Button>
-<Button>Löschen</Button>
-```
-
-❌ **FALSCH: Hardcoded Values**
-```typescript
-// NIEMALS direkte Hex-Colors!
-sx={{ bgcolor: '#94C456', color: '#004F7B' }}
-
-// NIEMALS direkte Font-Angaben!
-sx={{ fontFamily: 'Antonio, sans-serif' }}
-
-// NIEMALS englische UI-Texte!
-<Button>Save</Button>
-<Button>Delete</Button>
-```
-
-**Design System Referenz:**
-- **Farben:** Primärgrün #94C456, Dunkelblau #004F7B
-- **Fonts:** Antonio Bold (Headlines), Poppins (Body)
-- **Docs:** `docs/planung/grundlagen/DESIGN_SYSTEM.md`
-
-**Automatische Guards (installiert):**
-- 🔒 Pre-commit Hook: `./scripts/setup-git-hooks.sh` (blockt Commits)
-- 🔒 CI Check: `.github/workflows/design-system-check.yml` (blockt PRs)
-- 🔍 Manuell: `python3 scripts/check-design-system.py`
-
-### 🔢 Migration-Nummern (2-Sequenzen-Modell)
-**NIEMALS hardcoden! IMMER `./scripts/get-next-migration.sh` nutzen!**
-
-**Sequenz 1 (GEMEINSAM):** Production (`db/migration/`) + Test (`db/dev-migration/`) teilen V1-V89999
-- NEXT = MAX(highest_prod, highest_test) + 1
-- Erlaubt Test→Production ohne Renumbering (nur Ordner wechselt)
-
-**Sequenz 2 (EIGENE):** SEED (`db/dev-seed/`) nutzt V90001+ (nur %dev Profile, UI-Test-Daten)
-- NEXT = highest_seed + 1
-
-```bash
-# IMMER verwenden (ermittelt automatisch korrekte Sequenz):
-./scripts/get-next-migration.sh
-```
-
-### 🔧 CI-Auto-Fix Limits
-- **NUR Feature-Branches** (niemals main!)
-- **Required Reviews bleiben** bestehen
-- **Token-Scope minimal** (read:repo, write:packages falls nötig)
+### 🔢 Migrationen (NIEMALS hardcoden!)
+**IMMER `./scripts/get-next-migration.sh` nutzen!**
+- Sequenz 1 (Production/Test): V1-V89999 (gemeinsamer Counter)
+- Sequenz 2 (Seed): V90001+ (nur %dev Profile)
 
 ### 🚫 GIT PUSH POLICY (KRITISCH!)
 - **NIEMALS `git push` ohne explizite User-Erlaubnis!**

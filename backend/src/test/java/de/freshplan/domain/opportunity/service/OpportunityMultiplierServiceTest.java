@@ -33,7 +33,9 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
-@TestSecurity(user = "testuser", roles = {"admin", "manager", "sales"})
+@TestSecurity(
+    user = "testuser",
+    roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityMultiplierService Integration Tests")
 public class OpportunityMultiplierServiceTest {
 
@@ -67,7 +69,10 @@ public class OpportunityMultiplierServiceTest {
 
     // Verify all BusinessTypes present (9 types)
     List<String> businessTypes =
-        multipliers.stream().map(OpportunityMultiplierResponse::getBusinessType).distinct().toList();
+        multipliers.stream()
+            .map(OpportunityMultiplierResponse::getBusinessType)
+            .distinct()
+            .toList();
 
     assertThat(businessTypes)
         .as("Should contain all 9 BusinessTypes")
@@ -112,8 +117,7 @@ public class OpportunityMultiplierServiceTest {
   }
 
   @Test
-  @DisplayName(
-      "getAllMultipliers() - NEUGESCHAEFT should always be 1.00 (100% of base volume)")
+  @DisplayName("getAllMultipliers() - NEUGESCHAEFT should always be 1.00 (100% of base volume)")
   void getAllMultipliers_neugeschaeftShouldBe100Percent() {
     // Act
     List<OpportunityMultiplierResponse> multipliers = multiplierService.getAllMultipliers();
@@ -140,8 +144,7 @@ public class OpportunityMultiplierServiceTest {
   // ==========================================================================
 
   @Test
-  @DisplayName(
-      "getMultipliersByBusinessType() - Should return 4 multipliers for RESTAURANT")
+  @DisplayName("getMultipliersByBusinessType() - Should return 4 multipliers for RESTAURANT")
   void getMultipliersByBusinessType_restaurant_shouldReturn4Multipliers() {
     // Act
     List<OpportunityMultiplier> multipliers =
@@ -176,9 +179,7 @@ public class OpportunityMultiplierServiceTest {
         multiplierService.getMultipliersByBusinessType("HOTEL");
 
     // Assert
-    assertThat(multipliers)
-        .as("HOTEL should have 4 multipliers")
-        .hasSize(4);
+    assertThat(multipliers).as("HOTEL should have 4 multipliers").hasSize(4);
 
     // Verify HOTEL has highest SORTIMENTSERWEITERUNG multiplier (0.65)
     OpportunityMultiplier sortimentserweiterung =
@@ -193,17 +194,14 @@ public class OpportunityMultiplierServiceTest {
   }
 
   @Test
-  @DisplayName(
-      "getMultipliersByBusinessType() - Should return empty list for unknown BusinessType")
+  @DisplayName("getMultipliersByBusinessType() - Should return empty list for unknown BusinessType")
   void getMultipliersByBusinessType_unknownType_shouldReturnEmptyList() {
     // Act
     List<OpportunityMultiplier> multipliers =
         multiplierService.getMultipliersByBusinessType("INVALID_TYPE");
 
     // Assert
-    assertThat(multipliers)
-        .as("Unknown BusinessType should return empty list")
-        .isEmpty();
+    assertThat(multipliers).as("Unknown BusinessType should return empty list").isEmpty();
   }
 
   // ==========================================================================
@@ -211,17 +209,14 @@ public class OpportunityMultiplierServiceTest {
   // ==========================================================================
 
   @Test
-  @DisplayName(
-      "findMultiplier() - Should find RESTAURANT × SORTIMENTSERWEITERUNG = 0.25")
+  @DisplayName("findMultiplier() - Should find RESTAURANT × SORTIMENTSERWEITERUNG = 0.25")
   void findMultiplier_restaurantSortimentserweiterung_shouldReturn025() {
     // Act
     OpportunityMultiplier multiplier =
         multiplierService.findMultiplier("RESTAURANT", "SORTIMENTSERWEITERUNG");
 
     // Assert
-    assertThat(multiplier)
-        .as("RESTAURANT × SORTIMENTSERWEITERUNG should exist")
-        .isNotNull();
+    assertThat(multiplier).as("RESTAURANT × SORTIMENTSERWEITERUNG should exist").isNotNull();
 
     assertThat(multiplier.getMultiplier())
         .as("RESTAURANT SORTIMENTSERWEITERUNG should be 0.25")
@@ -239,9 +234,7 @@ public class OpportunityMultiplierServiceTest {
         multiplierService.findMultiplier("HOTEL", "SORTIMENTSERWEITERUNG");
 
     // Assert
-    assertThat(multiplier)
-        .as("HOTEL × SORTIMENTSERWEITERUNG should exist")
-        .isNotNull();
+    assertThat(multiplier).as("HOTEL × SORTIMENTSERWEITERUNG should exist").isNotNull();
 
     assertThat(multiplier.getMultiplier())
         .as("HOTEL SORTIMENTSERWEITERUNG should be 0.65 (highest potential)")
@@ -257,8 +250,7 @@ public class OpportunityMultiplierServiceTest {
 
     // Assert
     assertThat(multiplier).isNotNull();
-    assertThat(multiplier.getMultiplier())
-        .isEqualByComparingTo(new BigDecimal("0.50"));
+    assertThat(multiplier.getMultiplier()).isEqualByComparingTo(new BigDecimal("0.50"));
   }
 
   @Test
@@ -283,9 +275,7 @@ public class OpportunityMultiplierServiceTest {
         multiplierService.findMultiplier("INVALID_TYPE", "SORTIMENTSERWEITERUNG");
 
     // Assert
-    assertThat(multiplier)
-        .as("Unknown BusinessType should return null")
-        .isNull();
+    assertThat(multiplier).as("Unknown BusinessType should return null").isNull();
   }
 
   @Test
@@ -296,9 +286,7 @@ public class OpportunityMultiplierServiceTest {
         multiplierService.findMultiplier("RESTAURANT", "INVALID_TYPE");
 
     // Assert
-    assertThat(multiplier)
-        .as("Unknown OpportunityType should return null")
-        .isNull();
+    assertThat(multiplier).as("Unknown OpportunityType should return null").isNull();
   }
 
   // ==========================================================================
@@ -306,17 +294,14 @@ public class OpportunityMultiplierServiceTest {
   // ==========================================================================
 
   @Test
-  @DisplayName(
-      "Business Logic - VERLAENGERUNG should have high multipliers (70%-95%)")
+  @DisplayName("Business Logic - VERLAENGERUNG should have high multipliers (70%-95%)")
   void businessLogic_verlaengerung_shouldHaveHighMultipliers() {
     // Act
     List<OpportunityMultiplierResponse> multipliers = multiplierService.getAllMultipliers();
 
     // Filter VERLAENGERUNG
     List<OpportunityMultiplierResponse> verlaengerungMultipliers =
-        multipliers.stream()
-            .filter(m -> "VERLAENGERUNG".equals(m.getOpportunityType()))
-            .toList();
+        multipliers.stream().filter(m -> "VERLAENGERUNG".equals(m.getOpportunityType())).toList();
 
     // Assert - VERLAENGERUNG should be high (renewal retention)
     verlaengerungMultipliers.forEach(
@@ -329,8 +314,7 @@ public class OpportunityMultiplierServiceTest {
   }
 
   @Test
-  @DisplayName(
-      "Business Logic - HOTEL should have higher multipliers than RESTAURANT")
+  @DisplayName("Business Logic - HOTEL should have higher multipliers than RESTAURANT")
   void businessLogic_hotel_shouldHaveHigherMultipliersThanRestaurant() {
     // Act
     OpportunityMultiplier hotelSortiment =

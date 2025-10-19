@@ -126,7 +126,8 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   }
 
   /** Find customers by filters with pagination. */
-  public List<Customer> findByFilters(List<String> status, String businessType, int page, int size) {
+  public List<Customer> findByFilters(
+      List<String> status, String businessType, int page, int size) {
     StringBuilder query = new StringBuilder("isDeleted = false");
 
     if (status != null && !status.isEmpty()) {

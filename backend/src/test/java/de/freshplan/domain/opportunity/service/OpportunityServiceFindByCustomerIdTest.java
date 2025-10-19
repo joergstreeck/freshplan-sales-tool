@@ -10,9 +10,6 @@ import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.dto.CreateOpportunityForCustomerRequest;
 import de.freshplan.domain.opportunity.service.dto.OpportunityResponse;
 import de.freshplan.test.builders.CustomerTestDataFactory;
-import io.quarkus.arc.Arc;
-import io.quarkus.arc.ArcContainer;
-import io.quarkus.arc.ManagedContext;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.enterprise.context.control.ActivateRequestContext;
@@ -230,8 +227,7 @@ public class OpportunityServiceFindByCustomerIdTest {
     // Change stages (realistic transitions)
     // NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION → CLOSED_WON
     opportunityService.changeStage(opp2.getId(), OpportunityStage.PROPOSAL, "Submitted proposal");
-    opportunityService.changeStage(
-        opp2.getId(), OpportunityStage.NEGOTIATION, "Negotiating terms");
+    opportunityService.changeStage(opp2.getId(), OpportunityStage.NEGOTIATION, "Negotiating terms");
     opportunityService.changeStage(opp2.getId(), OpportunityStage.CLOSED_WON, "Deal won");
 
     // NEEDS_ANALYSIS → CLOSED_LOST (direct loss allowed)

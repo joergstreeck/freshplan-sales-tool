@@ -36,9 +36,7 @@ public class OpportunityMultiplierEntityTest {
   void setUp() {
     // Migration V10031 seeds 36 multipliers - no cleanup needed
     long count = OpportunityMultiplier.count();
-    assertThat(count)
-        .as("Migration V10031 should seed 36 multipliers")
-        .isGreaterThanOrEqualTo(36);
+    assertThat(count).as("Migration V10031 should seed 36 multipliers").isGreaterThanOrEqualTo(36);
   }
 
   // ==========================================================================
@@ -104,8 +102,7 @@ public class OpportunityMultiplierEntityTest {
     // Act
     OpportunityMultiplier nullBusiness =
         OpportunityMultiplier.findByTypes(null, "SORTIMENTSERWEITERUNG");
-    OpportunityMultiplier nullOpportunity =
-        OpportunityMultiplier.findByTypes("RESTAURANT", null);
+    OpportunityMultiplier nullOpportunity = OpportunityMultiplier.findByTypes("RESTAURANT", null);
     OpportunityMultiplier bothNull = OpportunityMultiplier.findByTypes(null, null);
 
     // Assert
@@ -151,8 +148,7 @@ public class OpportunityMultiplierEntityTest {
 
   @Test
   @Transactional
-  @DisplayName(
-      "getMultiplierValue() - Should handle null default value")
+  @DisplayName("getMultiplierValue() - Should handle null default value")
   void getMultiplierValue_nullDefault_shouldWorkCorrectly() {
     // Act
     BigDecimal foundValue =
@@ -178,13 +174,9 @@ public class OpportunityMultiplierEntityTest {
         OpportunityMultiplier.findByTypes("RESTAURANT", "SORTIMENTSERWEITERUNG");
 
     // Assert
-    assertThat(multiplier.getCreatedAt())
-        .as("CreatedAt should be set by migration")
-        .isNotNull();
+    assertThat(multiplier.getCreatedAt()).as("CreatedAt should be set by migration").isNotNull();
 
-    assertThat(multiplier.getUpdatedAt())
-        .as("UpdatedAt should be set by migration")
-        .isNotNull();
+    assertThat(multiplier.getUpdatedAt()).as("UpdatedAt should be set by migration").isNotNull();
   }
 
   @Test
@@ -212,10 +204,8 @@ public class OpportunityMultiplierEntityTest {
     // Act - Sample NEUGESCHAEFT multipliers
     OpportunityMultiplier restaurant =
         OpportunityMultiplier.findByTypes("RESTAURANT", "NEUGESCHAEFT");
-    OpportunityMultiplier hotel =
-        OpportunityMultiplier.findByTypes("HOTEL", "NEUGESCHAEFT");
-    OpportunityMultiplier catering =
-        OpportunityMultiplier.findByTypes("CATERING", "NEUGESCHAEFT");
+    OpportunityMultiplier hotel = OpportunityMultiplier.findByTypes("HOTEL", "NEUGESCHAEFT");
+    OpportunityMultiplier catering = OpportunityMultiplier.findByTypes("CATERING", "NEUGESCHAEFT");
 
     // Assert - All NEUGESCHAEFT should be 1.00 (100%)
     assertThat(restaurant.getMultiplier())
@@ -233,8 +223,7 @@ public class OpportunityMultiplierEntityTest {
 
   @Test
   @Transactional
-  @DisplayName(
-      "Business Logic - HOTEL SORTIMENTSERWEITERUNG should be highest (0.65)")
+  @DisplayName("Business Logic - HOTEL SORTIMENTSERWEITERUNG should be highest (0.65)")
   void businessLogic_hotelSortimentserweiterung_shouldBeHighest() {
     // Act
     OpportunityMultiplier hotel =
@@ -254,8 +243,7 @@ public class OpportunityMultiplierEntityTest {
 
   @Test
   @Transactional
-  @DisplayName(
-      "Business Logic - BILDUNG SORTIMENTSERWEITERUNG should be lowest (0.20)")
+  @DisplayName("Business Logic - BILDUNG SORTIMENTSERWEITERUNG should be lowest (0.20)")
   void businessLogic_bildungSortimentserweiterung_shouldBeLowest() {
     // Act
     OpportunityMultiplier bildung =

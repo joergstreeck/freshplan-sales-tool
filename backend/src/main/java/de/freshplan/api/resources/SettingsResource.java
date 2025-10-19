@@ -106,7 +106,7 @@ public class SettingsResource {
   /**
    * Update opportunity multiplier value (Admin-Only)
    *
-   * Sprint 2.1.7.3 - Edit-Funktionalität
+   * <p>Sprint 2.1.7.3 - Edit-Funktionalität
    */
   @PUT
   @Path("/opportunity-multipliers/{id}")
@@ -114,7 +114,10 @@ public class SettingsResource {
   @Transactional
   public Response updateMultiplier(@PathParam("id") UUID id, UpdateMultiplierRequest request) {
     logger.info(
-        "PUT /api/settings/opportunity-multipliers/" + id + " - multiplier=" + request.multiplier());
+        "PUT /api/settings/opportunity-multipliers/"
+            + id
+            + " - multiplier="
+            + request.multiplier());
 
     try {
       // Update multiplier via service
@@ -147,8 +150,7 @@ public class SettingsResource {
 
   /** DTO for updating multipliers */
   public record UpdateMultiplierRequest(
-      @jakarta.validation.constraints.NotNull(message = "Multiplier is required")
-          @jakarta.validation.constraints.DecimalMin(
+      @jakarta.validation.constraints.NotNull(message = "Multiplier is required") @jakarta.validation.constraints.DecimalMin(
               value = "0.0",
               message = "Multiplier must be >= 0.0")
           @jakarta.validation.constraints.DecimalMax(
