@@ -38,10 +38,12 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
 ### Latest Implementation
+- **Customer → Opportunity UI (19.10.2025):** Business-Type-Matrix, OpportunitySettingsPage, Admin-UI ✅ COMPLETE (Sprint 2.1.7.3)
 - **Lead → Opportunity UI (18.10.2025):** Complete Workflow - Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI ✅ COMPLETE
 - **Design System (15.10.2025):** FreshFoodz CI V2 Migration ✅ COMPLETE
 - **Opportunity Backend (14.10.2025):** Lead→Opportunity→Customer Workflows ✅ COMPLETE
-- **Xentral-Integration:** ERP-Integration für Umsatz + Zahlungsverhalten geplant
+- **Customer Status Architecture (Sprint 2.1.7.4 PLANNING):** PROSPECT→AKTIV Lifecycle, Seasonal Business Support 📋 NEXT SPRINT
+- **Xentral-Integration (Sprint 2.1.7.2 PLANNING):** ERP-Integration für Umsatz + Zahlungsverhalten, Nightly Polling 📋 AFTER 2.1.7.4
 
 ---
 
@@ -216,10 +218,10 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - ROI-Calculator für Business-Value-Demonstration
 
 **Opportunity-Management (B2B-Food CRM Pattern):**
-- **Lead → Opportunity → Customer Workflow** (V10026 Backend ready, UI in Sprint 2.1.7.1-3)
+- **Lead → Opportunity → Customer Workflow** (V10026 Backend ready, UI Sprint 2.1.7.1-3 COMPLETE)
 - **Opportunity = Customer Acquisition** (NICHT einzelne Orders!)
   - Im B2B-Food-Geschäft: Opportunities = Neukunden gewinnen
-  - Nach CLOSED_WON → Customer (ongoing relationship)
+  - Nach CLOSED_WON → Auto-Convert Lead → Customer (Status: PROSPECT)
   - Orders laufen über ERP-System (Xentral)
 - **RENEWAL-Opportunities für Bestandskunden:**
   - opportunityType field differenziert zwischen "New Business" und "Renewal"
@@ -228,16 +230,37 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **Pipeline-Stages:** 7 Stages (NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST)
   - RENEWAL als separate Stage wird durch opportunityType ersetzt (Migration pending - Sprint 2.1.7.1)
 
+**Customer Status Lifecycle (Sprint 2.1.7.4 Architecture):**
+- **PROSPECT:** Opportunity gewonnen (CLOSED_WON), wartet auf erste gelieferte Bestellung
+  - Lead → Opportunity → Customer Conversion setzt Status: PROSPECT (NICHT AKTIV!)
+  - ⚠️ **WICHTIG:** CustomerStatus.LEAD wird entfernt (konzeptionell falsch - Leads gehören in leads Tabelle!)
+- **AKTIV:** Hat mindestens 1 gelieferte Bestellung (echter Kunde!)
+  - Automatisch: Xentral-Webhook "Order Delivered" (Sprint 2.1.7.2)
+  - Manuell: "Als AKTIV markieren" Button (Fallback für manuelle Aktivierung)
+- **Seasonal Business Support:** Eisdielen, Biergärten, Ski-Hütten (Food-Branche!)
+  - Felder: is_seasonal_business, seasonal_months[], seasonal_pattern
+  - ChurnDetectionService: Saisonbetriebe NICHT als RISIKO markieren während Off-Season
+- **RISIKO/INAKTIV:** Lifecycle-Management (Sprint 2.1.7.6)
+  - Churn-Detection mit variablen Thresholds (14-365 Tage pro Kunde)
+  - Seasonal-Aware: Keine falschen Alarme bei Saisonbetrieben
+
 **Customer-Relationship-Management:**
 - Multi-Location-Kunden mit verschiedenen Standorten
 - CHEF/BUYER parallele Kommunikation + Workflow-Management
 - Seasonal Campaign-Management (Spargel/Oktoberfest/Weihnachten)
 - Sample-Management + Feedback-Integration
-- **Xentral-ERP-Integration** (FC-005 + FC-009 dokumentiert):
+- **Customer Status Lifecycle (Sprint 2.1.7.4 Architecture):**
+  - PROSPECT: Wartet auf erste Bestellung (nach Opportunity CLOSED_WON)
+  - AKTIV: Hat gelieferte Bestellung (via Xentral-Webhook oder Manual Activation)
+  - Seasonal Business Support: Keine falschen Churn-Alarme bei Saisonbetrieben
+  - ⚠️ CustomerStatus.LEAD entfernt (Leads gehören in leads Tabelle, NICHT customers!)
+- **Xentral-ERP-Integration** (Sprint 2.1.7.2 Planning):
+  - Polling-Ansatz: Nightly Job 1x täglich (02:00 Uhr) - Webhooks in Beta
   - Umsatz-Dashboard (30/90/365 Tage Rechnungsdaten)
-  - Zahlungsverhalten-Monitoring (Ampel-System)
-  - Churn-Alarm (variable Threshold pro Kunde: 7-90 Tage)
+  - Zahlungsverhalten-Monitoring (Ampel-System: 🟢🟡🟠🔴)
+  - Churn-Alarm (variable Threshold pro Kunde: 14-365 Tage, Seasonal-Aware)
   - Provision-Modell: Akquise + Bestandspflege (basiert auf Zahlungseingang, nicht Rechnungsstellung)
+  - Sales-Rep Auto-Sync: Email-basiertes Mapping (User.xentral_sales_rep_id)
 
 **Business-Intelligence + Performance:**
 - Real-time Business-KPIs + Territory-Performance (Hot-Projections)
