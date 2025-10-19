@@ -3,10 +3,10 @@
 **Sprint-ID:** 2.1.7.4
 **Status:** 📋 PLANNING
 **Priority:** P1 (High - Architektur-Fix)
-**Estimated Effort:** 10h (1.5 Arbeitstage)
+**Estimated Effort:** 12h (1.5 Arbeitstage)
 **Owner:** Claude
 **Created:** 2025-10-19
-**Updated:** 2025-10-19
+**Updated:** 2025-10-19 (Seasonal Business hinzugefügt)
 **Dependencies:** Sprint 2.1.7.3 COMPLETE
 
 ---
@@ -55,6 +55,7 @@ Saubere Status-Architektur für Lead → Customer Conversion mit klaren Lifecycl
 -- Solution:
 --   - Alle LEAD → PROSPECT migrieren
 --   - CHECK Constraint aktualisieren (LEAD entfernen)
+--   - Seasonal Business Support (Flag + Monate für Saisonbetriebe)
 -- =============================================================================
 
 -- 1. Migrate all LEAD customers to PROSPECT
@@ -80,7 +81,26 @@ ALTER TABLE customers
 ADD CONSTRAINT customer_status_check
 CHECK (status IN ('PROSPECT', 'AKTIV', 'RISIKO', 'INAKTIV', 'ARCHIVIERT'));
 
--- 3. Verify: No LEAD customers remain
+-- 3. Add Seasonal Business Support (NEW - Sprint 2.1.7.4)
+-- Kritisch für Food-Branche: Eisdielen, Biergärten, Ski-Hütten, etc.
+ALTER TABLE customers
+ADD COLUMN is_seasonal_business BOOLEAN DEFAULT FALSE,
+ADD COLUMN seasonal_months INTEGER[] DEFAULT NULL,
+ADD COLUMN seasonal_pattern VARCHAR(50) DEFAULT NULL;
+
+COMMENT ON COLUMN customers.is_seasonal_business IS 'Flag: Saisonbetrieb (z.B. Eisdiele, Biergarten)';
+COMMENT ON COLUMN customers.seasonal_months IS 'Array von Monaten (1-12), in denen Kunde aktiv ist';
+COMMENT ON COLUMN customers.seasonal_pattern IS 'Pattern-Name: SUMMER, WINTER, CUSTOM, etc.';
+
+-- Example: Mark known seasonal businesses in DEV-SEED
+UPDATE customers
+SET is_seasonal_business = TRUE,
+    seasonal_months = ARRAY[3,4,5,6,7,8,9,10],
+    seasonal_pattern = 'SUMMER'
+WHERE (company_name ILIKE '%eis%' OR company_name ILIKE '%biergarten%')
+  AND customer_number LIKE 'KD-DEV-%';
+
+-- 4. Verify: No LEAD customers remain
 DO $$
 DECLARE
     remaining_leads INTEGER;
@@ -592,12 +612,245 @@ public class MockXentralOrderEventHandler implements XentralOrderEventHandler {
 
 ---
 
+### **7. Seasonal Business Support** (2h)
+
+**Ziel:** Saisonbetriebe korrekt behandeln (keine falschen Churn-Alarme!)
+
+**Kritische Business-Szenarien:**
+```
+- Eisdiele: März-Oktober (7 Monate aktiv, 5 Monate Pause)
+- Ski-Hütte: Dezember-März (4 Monate aktiv, 8 Monate Pause)
+- Biergarten: April-September (6 Monate aktiv)
+- Freibad-Kiosk: Mai-September (5 Monate aktiv)
+- Weihnachtsmarkt-Stand: November-Dezember (2 Monate aktiv!)
+```
+
+**Problem ohne Seasonal Support:**
+```
+Eisdiele:
+- Oktober: Letzte Bestellung → AKTIV ✅
+- Januar: 90 Tage keine Bestellung → RISIKO ❌ (FALSCH!)
+- März: 150 Tage keine Bestellung → INAKTIV ❌ (TOTAL FALSCH!)
+
+Dashboard:
+- Churn-Rate: 40% ❌ (alle Eisdielen im Winter!)
+- Risiko-Kunden: 50+ ❌ (alle Saisonbetriebe!)
+```
+
+**Backend - Entity:**
+```java
+// Customer.java - New Fields (Migration V10032)
+
+@Column(name = "is_seasonal_business")
+private Boolean isSeasonalBusiness = false;
+
+@Column(name = "seasonal_months", columnDefinition = "integer[]")
+private List<Integer> seasonalMonths; // Array[1-12] für aktive Monate
+
+@Column(name = "seasonal_pattern", length = 50)
+private String seasonalPattern; // 'SUMMER', 'WINTER', 'CUSTOM', etc.
+```
+
+**Backend - Service Logic:**
+```java
+// ChurnDetectionService.java (NEU oder Teil von CustomerService)
+
+/**
+ * Check if customer should be monitored for churn
+ *
+ * Seasonal businesses are excluded during off-season
+ */
+public boolean shouldCheckForChurn(Customer customer) {
+  // Skip seasonal customers outside their season
+  if (Boolean.TRUE.equals(customer.getIsSeasonalBusiness())) {
+    int currentMonth = LocalDate.now().getMonthValue();
+
+    List<Integer> activeMonths = customer.getSeasonalMonths();
+    if (activeMonths != null && !activeMonths.isEmpty()) {
+      // Wenn NICHT in Saison → kein Churn-Check!
+      if (!activeMonths.contains(currentMonth)) {
+        return false; // Outside season = expected inactivity
+      }
+    }
+  }
+
+  return true; // Regular churn monitoring
+}
+
+/**
+ * Get at-risk customers (excluding seasonal businesses outside season)
+ */
+public List<Customer> getAtRiskCustomers() {
+  List<Customer> allAtRisk = Customer.find(
+    "status = 'AKTIV' AND lastOrderDate < ?1",
+    LocalDate.now().minusDays(90)
+  ).list();
+
+  return allAtRisk.stream()
+    .filter(this::shouldCheckForChurn)
+    .collect(Collectors.toList());
+}
+```
+
+**Backend - DTO:**
+```java
+// CustomerResponse.java - Add fields
+
+public record CustomerResponse(
+  // ... existing fields ...
+
+  // Seasonal Business (Sprint 2.1.7.4)
+  Boolean isSeasonalBusiness,
+  List<Integer> seasonalMonths,
+  String seasonalPattern
+) {}
+```
+
+**Frontend - CustomerDetailPage:**
+```tsx
+// Seasonal Business Indicator
+{customer.isSeasonalBusiness && (
+  <Alert severity="info" icon={<NaturePeopleIcon />} sx={{ mb: 2 }}>
+    <AlertTitle>Saisonbetrieb</AlertTitle>
+    <Typography variant="body2">
+      Aktive Monate: {customer.seasonalPattern === 'SUMMER' ? 'März-Oktober' :
+                       customer.seasonalPattern === 'WINTER' ? 'Dezember-März' :
+                       customer.seasonalMonths?.join(', ')}
+    </Typography>
+    <Typography variant="caption" color="text.secondary">
+      Churn-Monitoring ist außerhalb der Saison pausiert
+    </Typography>
+  </Alert>
+)}
+```
+
+**Frontend - Edit Customer (Optional):**
+```tsx
+// Add Seasonal Business Toggle
+<FormControlLabel
+  control={
+    <Switch
+      checked={customer.isSeasonalBusiness}
+      onChange={(e) => setIsSeasonalBusiness(e.target.checked)}
+    />
+  }
+  label="Saisonbetrieb"
+/>
+
+{customer.isSeasonalBusiness && (
+  <>
+    <Select
+      label="Saison-Pattern"
+      value={seasonalPattern}
+      onChange={(e) => setSeasonalPattern(e.target.value)}
+    >
+      <MenuItem value="SUMMER">Sommer (März-Oktober)</MenuItem>
+      <MenuItem value="WINTER">Winter (Dezember-März)</MenuItem>
+      <MenuItem value="CUSTOM">Benutzerdefiniert</MenuItem>
+    </Select>
+
+    {seasonalPattern === 'CUSTOM' && (
+      <MonthPicker
+        label="Aktive Monate"
+        value={seasonalMonths}
+        onChange={setSeasonalMonths}
+      />
+    )}
+  </>
+)}
+```
+
+**Dashboard - Metrics Update:**
+```java
+// CustomerMetricsService.java - Extended
+
+public record CustomerMetrics(
+  int totalCustomers,
+  int activeCustomers,
+  int prospects,
+  int atRisk,               // ← NOW: Excludes seasonal out-of-season!
+  int inactive,
+  double conversionRate,
+  // NEW:
+  int seasonalActive,       // In-season seasonal businesses
+  int seasonalPaused        // Out-of-season (not counted as at-risk!)
+) {
+
+  public static CustomerMetrics calculate() {
+    int currentMonth = LocalDate.now().getMonthValue();
+
+    // Regular customers at risk
+    int regularAtRisk = Customer.count(
+      "status = 'AKTIV' AND lastOrderDate < ?1 AND (is_seasonal_business IS NULL OR is_seasonal_business = FALSE)",
+      LocalDate.now().minusDays(90)
+    );
+
+    // Seasonal businesses IN season at risk
+    int seasonalAtRisk = Customer.find(
+      "status = 'AKTIV' AND is_seasonal_business = TRUE AND lastOrderDate < ?1",
+      LocalDate.now().minusDays(90)
+    ).stream()
+      .filter(c -> c.getSeasonalMonths().contains(currentMonth))
+      .count();
+
+    // Seasonal paused (out of season - NOT at risk!)
+    int seasonalPaused = Customer.find(
+      "status = 'AKTIV' AND is_seasonal_business = TRUE"
+    ).stream()
+      .filter(c -> !c.getSeasonalMonths().contains(currentMonth))
+      .count();
+
+    int seasonalActive = Customer.find(
+      "status = 'AKTIV' AND is_seasonal_business = TRUE"
+    ).stream()
+      .filter(c -> c.getSeasonalMonths().contains(currentMonth))
+      .count();
+
+    return new CustomerMetrics(
+      total,
+      active,
+      prospects,
+      regularAtRisk + seasonalAtRisk, // ← Korrigiert!
+      inactive,
+      conversionRate,
+      seasonalActive,
+      seasonalPaused
+    );
+  }
+}
+```
+
+**Frontend - Dashboard Widget:**
+```tsx
+<Grid item xs={12} md={3}>
+  <MetricCard
+    title="Saisonal Pausiert"
+    value={metrics.seasonalPaused}
+    subtitle="Außerhalb Saison (normal)"
+    icon={<NaturePeopleIcon />}
+    color="info"
+    tooltip="Saisonbetriebe die aktuell nicht aktiv sind (kein Grund zur Sorge!)"
+  />
+</Grid>
+```
+
+**Tests:**
+- 5 Backend Tests (ChurnDetectionService, shouldCheckForChurn)
+- 3 Frontend Tests (Seasonal Indicator, Dashboard Widget)
+
+**Business Impact:**
+- ✅ Keine falschen Churn-Alarme mehr
+- ✅ Dashboard-Metriken realistisch
+- ✅ Vertriebsleiter hat klares Bild
+
+---
+
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
-- Backend: 26 neue Tests
-- Frontend: 13 neue Tests
-- **Total: 39 Tests**
+- Backend: 34 neue Tests (26 original + 8 seasonal)
+- Frontend: 16 neue Tests (13 original + 3 seasonal)
+- **Total: 50 Tests**
 
 **Code Changes:**
 - 1 Migration (V10032)
@@ -638,17 +891,18 @@ public class MockXentralOrderEventHandler implements XentralOrderEventHandler {
 
 ## 📅 TIMELINE
 
-**Tag 1 (6h):**
-- Migration V10032 (2h)
+**Tag 1 (7h):**
+- Migration V10032 mit Seasonal Business (3h)
 - LeadConvertService Fix (1h)
 - Auto-Conversion (3h)
 
-**Tag 2 (4h):**
+**Tag 2 (5h):**
 - Manual Activation Button (2h)
 - Dashboard Updates (1h)
 - Xentral Interface (1h)
+- Seasonal Business Logic (1h)
 
-**Total:** 10h (1.5 Arbeitstage)
+**Total:** 12h (1.5 Arbeitstage)
 
 ---
 
@@ -682,7 +936,7 @@ public class MockXentralOrderEventHandler implements XentralOrderEventHandler {
 
 ### **User-Decision (2025-10-19)**
 
-**Frage:** Wann wird Customer AKTIV?
+**1. Wann wird Customer AKTIV?**
 **Antwort:** Bei erster **gelieferter Bestellung** (nicht bei Rechnung!)
 
 **Rationale:**
@@ -690,10 +944,35 @@ public class MockXentralOrderEventHandler implements XentralOrderEventHandler {
 - Ware geliefert = Kunde ist real (Stornos sind selten)
 - Verkäufer-Moral: Sofort sichtbar statt 60 Tage warten
 
+**2. Seasonal Business Support?**
+**Antwort:** JA - IN Sprint 2.1.7.4 (kritisch für Food-Branche!)
+
+**Rationale:**
+- Eisdielen, Biergärten, Ski-Hütten = massive Branche
+- Ohne Support: 40% falsche Churn-Rate im Winter!
+- 2h Extra-Aufwand = akzeptabel für Business-Kritikalität
+
+**3. PROSPECT Lifecycle (Auto-Archivierung)?**
+**Antwort:** NICHT automatisch archivieren! Warnungen statt Auto-Action.
+
+**Rationale:**
+- B2B Food hat oft 3-6 Monate Vorlauf (Bauarbeiten, Budget-Freeze)
+- Auto-Archive ohne Review = gefährlich
+- Besser: Warnungen nach 60/90 Tagen, dann manuelle Entscheidung
+
+**4. Seasonal Pattern Implementation?**
+**Antwort:** Start mit Monats-Arrays (Sprint 2.1.7.4), Pattern-Logik später (Sprint 2.1.7.6)
+
+**Scope-Aufteilung:**
+- Sprint 2.1.7.4: Seasonal Business Flag + Monate (DB + Basic Logic)
+- Sprint 2.1.7.6: PROSPECT Lifecycle + Advanced Seasonal Patterns
+
 ### **Technical Debt**
 
 - Xentral Webhook noch nicht implementiert (Sprint 2.1.7.2)
 - Manual Activation ist Workaround bis Webhook ready
+- PROSPECT Lifecycle (Warnungen) → Sprint 2.1.7.6
+- Advanced Seasonal Patterns → Sprint 2.1.7.6
 
 ---
 
