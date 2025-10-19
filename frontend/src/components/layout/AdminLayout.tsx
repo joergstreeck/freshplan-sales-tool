@@ -260,7 +260,7 @@ export const AdminLayout: React.FC = () => {
                   >
                     <ListItemIcon
                       sx={{
-                        color: isActive ? '#94C456' : '#004F7B',
+                        color: isActive ? 'primary.main' : 'secondary.main',
                         minWidth: 40,
                       }}
                     >
@@ -278,7 +278,7 @@ export const AdminLayout: React.FC = () => {
                         fontFamily: theme => theme.typography.body1.fontFamily,
                         fontSize: '14px',
                         fontWeight: isActive ? 600 : 500,
-                        color: isActive ? '#004F7B' : 'text.primary',
+                        color: isActive ? 'secondary.main' : 'text.primary',
                       }}
                     />
                   </ListItemButton>

@@ -13,6 +13,7 @@ import {
   Button,
   Stack,
   Divider,
+  useTheme,
 } from '@mui/material';
 import {
   Edit as EditIcon,
@@ -43,7 +44,7 @@ interface LeadContactsCardProps {
  * - Add/Edit/Delete contacts
  * - Set primary contact
  *
- * Design: FreshFoodz CI (#94C456, #004F7B)
+ * Design: FreshFoodz CI
  */
 export function LeadContactsCard({
   contacts,
@@ -53,12 +54,13 @@ export function LeadContactsCard({
   onSetPrimary,
   readonly = false,
 }: LeadContactsCardProps) {
+  const theme = useTheme();
   const primaryContact = contacts.find(c => c.primary);
   const secondaryContacts = contacts.filter(c => !c.primary);
 
   const getWarmthColor = (score?: number) => {
     if (!score) return theme.palette.grey[500]; // Gray
-    if (score >= 70) return '#94C456'; // FreshFoodz Green
+    if (score >= 70) return theme.palette.primary.main; // FreshFoodz Green
     if (score >= 40) return theme.palette.warning.main; // Orange
     return theme.palette.error.main; // Red
   };
@@ -67,7 +69,7 @@ export function LeadContactsCard({
     <ListItem
       key={contact.id}
       sx={{
-        borderLeft: isPrimary ? '4px solid #94C456' : '4px solid transparent',
+        borderLeft: isPrimary ? `4px solid ${theme.palette.primary.main}` : '4px solid transparent',
         bgcolor: isPrimary ? 'rgba(148, 196, 86, 0.05)' : 'transparent',
         mb: 1,
         borderRadius: 1,

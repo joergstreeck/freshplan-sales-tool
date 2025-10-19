@@ -124,7 +124,7 @@ export const UserTableMUI = () => {
             startIcon={<PersonAddIcon />}
             onClick={openCreateModal}
             sx={{
-              backgroundColor: '#94C456',
+              backgroundColor: 'primary.main',
               color: 'white',
               '&:hover': {
                 backgroundColor: 'primary.dark',
@@ -156,7 +156,7 @@ export const UserTableMUI = () => {
             variant="outlined"
             onClick={handleSearch}
             sx={{
-              borderColor: '#004F7B',
+              borderColor: 'secondary.main',
               color: 'secondary.main',
               '&:hover': {
                 borderColor: 'secondary.dark',

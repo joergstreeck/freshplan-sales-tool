@@ -317,7 +317,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
                         color: 'primary.main',
                       },
                       '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#94C456',
+                        backgroundColor: 'primary.main',
                       },
                     }}
                   />
@@ -354,7 +354,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
               onClick={onCancel}
               disabled={isPending}
               sx={{
-                borderColor: '#004F7B',
+                borderColor: 'secondary.main',
                 color: 'secondary.main',
                 '&:hover': {
                   borderColor: 'secondary.dark',
@@ -370,7 +370,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
             disabled={!isValid || isPending}
             startIcon={isPending && <CircularProgress size={20} />}
             sx={{
-              backgroundColor: '#94C456',
+              backgroundColor: 'primary.main',
               color: 'white',
               '&:hover': {
                 backgroundColor: 'primary.dark',

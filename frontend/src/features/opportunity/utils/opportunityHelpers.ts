@@ -42,14 +42,14 @@ export function getOpportunityTypeIcon(type?: OpportunityType): string {
  * OpportunityType Color Mapping (FreshFoodz CI)
  */
 export function getOpportunityTypeColor(type?: OpportunityType): string {
-  if (!type) return '#94C456'; // Primary Green
+  if (!type) return 'primary.main'; // Primary Green
   const colors: Record<OpportunityType, string> = {
-    NEUGESCHAEFT: '#94C456', // Primary Green
-    SORTIMENTSERWEITERUNG: '#004F7B', // Secondary Blue
+    NEUGESCHAEFT: 'primary.main', // Primary Green
+    SORTIMENTSERWEITERUNG: 'secondary.main', // Secondary Blue
     NEUER_STANDORT: 'warning.main', // Orange
     VERLAENGERUNG: 'info.main', // Light Blue
   };
-  return colors[type] || '#94C456';
+  return colors[type] || 'primary.main';
 }
 
 /**
@@ -78,7 +78,7 @@ export function getStageColor(stage: OpportunityStage): string {
     NEEDS_ANALYSIS: 'info.main', // Blue
     PROPOSAL: 'warning.light', // Amber
     NEGOTIATION: 'secondary.light', // Purple
-    CLOSED_WON: '#94C456', // Primary Green
+    CLOSED_WON: 'primary.main', // Primary Green
     CLOSED_LOST: 'error.main', // Red
   };
   return colors[stage] || 'grey.300';

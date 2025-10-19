@@ -180,7 +180,7 @@ export const UniversalExportButton: React.FC<UniversalExportButtonProps> = ({
         sx={
           buttonColor === 'primary'
             ? {
-                borderColor: '#94C456',
+                borderColor: 'primary.main',
                 color: 'secondary.main',
                 '&:hover': {
                   borderColor: 'primary.dark',

@@ -149,10 +149,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '&:hover fieldset': {
-                        borderColor: '#94C456',
+                        borderColor: 'primary.main',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#94C456',
+                        borderColor: 'primary.main',
                       },
                     },
                   }}

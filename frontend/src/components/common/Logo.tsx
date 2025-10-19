@@ -72,7 +72,7 @@ export const Logo: React.FC<LogoProps> = ({
           width: logoHeight,
           height: logoHeight,
           borderRadius: '50%',
-          backgroundColor: '#94C456',
+          backgroundColor: 'primary.main',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',

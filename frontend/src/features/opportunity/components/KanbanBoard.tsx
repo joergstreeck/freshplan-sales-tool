@@ -71,8 +71,8 @@ const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunit
     (probability?: number) => {
       if (!probability) return theme.palette.grey[400];
       if (probability >= 80) return theme.palette.success.main;
-      if (probability >= 60) return '#94C456';
-      if (probability >= 40) return 'warning.main';
+      if (probability >= 60) return theme.palette.primary.main;
+      if (probability >= 40) return theme.palette.warning.main;
       if (probability >= 20) return theme.palette.error.light;
       return theme.palette.error.main;
     },
@@ -289,7 +289,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
             color="primary"
             sx={{
               '& .MuiBadge-badge': {
-                bgcolor: config?.color || '#94C456',
+                bgcolor: config?.color || 'primary.main',
                 color: 'white',
                 fontWeight: 600,
               },
@@ -574,7 +574,7 @@ export const KanbanBoard: React.FC = React.memo(() => {
           alignItems: 'center',
           justifyContent: 'space-between',
           bgcolor: 'background.paper',
-          borderBottom: '2px solid #94C456',
+          borderBottom: theme => `2px solid ${theme.palette.primary.main}`,
         }}
       >
         {/* Titel */}
@@ -702,7 +702,7 @@ export const KanbanBoard: React.FC = React.memo(() => {
                   borderRadius: 4,
                 },
                 '&::-webkit-scrollbar-thumb': {
-                  backgroundColor: '#94C456',
+                  backgroundColor: 'primary.main',
                   borderRadius: 4,
                   '&:hover': {
                     backgroundColor: theme.palette.primary.dark,

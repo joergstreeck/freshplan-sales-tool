@@ -38,7 +38,7 @@ const QuickFilterChip: React.FC<QuickFilterChipProps> = ({
   label,
   active,
   onClick,
-  color = '#94C456',
+  color = 'primary.main',
   icon,
   count,
 }) => (
@@ -196,7 +196,7 @@ export const FilterBar: React.FC = () => {
           label="Aktive Kunden"
           active={hasFilter('status', 'AKTIV')}
           onClick={() => toggleQuickFilter('status', 'AKTIV')}
-          color="#94C456"
+          color="primary.main"
           icon={<TrendingUpIcon fontSize="small" />}
         />
 
@@ -212,7 +212,7 @@ export const FilterBar: React.FC = () => {
           label="Neue Leads"
           active={hasFilter('status', 'LEAD')}
           onClick={() => toggleQuickFilter('status', 'LEAD')}
-          color="#004F7B"
+          color="secondary.main"
           icon={<NewIcon fontSize="small" />}
         />
 

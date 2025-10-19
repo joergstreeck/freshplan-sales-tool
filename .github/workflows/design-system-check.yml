@@ -28,9 +28,11 @@ jobs:
           echo "🎨 Validating Design System Compliance..."
           echo ""
           echo "Checking for:"
-          echo "  • Hardcoded colors (use theme.palette)"
+          echo "  • Hardcoded colors (use theme.palette) - STRICT for normal files"
           echo "  • Hardcoded fonts (use theme.typography)"
           echo "  • English UI text (use German)"
+          echo ""
+          echo "NOTE: Chart files use RELAXED rules (Recharts colors allowed)"
           echo ""
           python3 scripts/check-design-system.py
 

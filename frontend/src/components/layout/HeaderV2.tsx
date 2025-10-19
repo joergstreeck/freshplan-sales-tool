@@ -389,10 +389,10 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                     borderColor: 'transparent',
                   },
                   '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#94C456',
+                    borderColor: 'primary.main',
                   },
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#94C456',
+                    borderColor: 'primary.main',
                     borderWidth: 2,
                   },
                 },

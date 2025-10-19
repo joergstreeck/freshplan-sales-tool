@@ -161,7 +161,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
             size="small"
             color={customer.status === 'AKTIV' ? 'success' : 'default'}
             sx={{
-              backgroundColor: customer.status === 'AKTIV' ? '#94C456' : undefined,
+              backgroundColor: customer.status === 'AKTIV' ? 'primary.main' : undefined,
               color: customer.status === 'AKTIV' ? '#fff' : undefined,
             }}
           />

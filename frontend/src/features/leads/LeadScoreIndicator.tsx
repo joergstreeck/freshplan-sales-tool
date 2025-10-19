@@ -1,4 +1,4 @@
-import { Box, LinearProgress, Typography, Tooltip } from '@mui/material';
+import { Box, LinearProgress, Typography, Tooltip, useTheme } from '@mui/material';
 import { TrendingUp, TrendingDown, TrendingFlat } from '@mui/icons-material';
 
 interface LeadScoreIndicatorProps {
@@ -14,7 +14,7 @@ interface LeadScoreIndicatorProps {
  * Visualisiert Lead-Qualität 0-100 Punkte:
  * - 0-39: Niedrig (rot)
  * - 40-69: Mittel (gelb)
- * - 70-100: Hoch (grün #94C456 - FreshFoodz CI)
+ * - 70-100: Hoch (grün - FreshFoodz CI)
  *
  * Berechnung (Backend):
  * - Umsatzpotenzial: 25%
@@ -28,6 +28,8 @@ export default function LeadScoreIndicator({
   showLabel = true,
   showTrend = false,
 }: LeadScoreIndicatorProps) {
+  const theme = useTheme();
+
   if (score === undefined || score === null) {
     return (
       <Box display="flex" alignItems="center" gap={1}>
@@ -42,7 +44,7 @@ export default function LeadScoreIndicator({
   const getScoreColor = (value: number): string => {
     if (value < 40) return theme.palette.error.main; // Rot
     if (value < 70) return theme.palette.warning.main; // Orange
-    return '#94C456'; // FreshFoodz Grün
+    return theme.palette.primary.main; // FreshFoodz Grün
   };
 
   // Score-basiertes Label

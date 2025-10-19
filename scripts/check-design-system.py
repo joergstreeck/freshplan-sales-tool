@@ -16,20 +16,30 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 FRONTEND_SRC = PROJECT_ROOT / "frontend/src"
 
-# KRITISCHE VIOLATIONS - Design System
-CRITICAL_PATTERNS = [
-    # 1. Hardcoded Hex Colors (außer Whitelist + Recharts fills)
-    (r'(?<!fill=)["\']#(?!94C456|004F7B|FFFFFF|000000|F5F5F5|fff|000|8884d8)[0-9A-Fa-f]{3,6}["\']',
-     "HARDCODED COLOR: Use theme.palette instead"),
-    
+# Chart/Data-Viz files MAY have hardcoded colors for Recharts (fill attributes, gradients)
+CHART_FILES = [
+    'AuditActivityChart.tsx',
+    'AuditActivityHeatmap.tsx',
+    'AuditDashboard.tsx',
+    'DataHygieneDashboard.tsx',
+    'LeadQualityDashboard.tsx',
+    'LeadProtectionManager.tsx',
+]
+
+# KRITISCHE VIOLATIONS - Design System (NORMAL FILES - NO BRAND COLORS ALLOWED)
+CRITICAL_PATTERNS_STRICT = [
+    # 1. Hardcoded Hex Colors - STRICT (only basic colors allowed: white, black, gray)
+    (r'(?<!fill=)["\']#(?!FFFFFF|000000|F5F5F5|fff|000)[0-9A-Fa-f]{3,6}["\']',
+     "HARDCODED COLOR: Use theme.palette instead (NO hardcoded brand colors!)"),
+
     # 2. Inline RGB colors (not rgba - rgba is OK for opacity/gradients)
     (r'(?<!a)\(rgb\s*\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)',
      "HARDCODED RGB: Use theme.palette instead"),
-    
+
     # 3. Direct fontFamily (außer 'inherit' und CSS vars)
     (r'fontFamily:\s*["\'](?!inherit|var\()[A-Za-z]',
      "HARDCODED FONT: Use theme.typography instead"),
-    
+
     # 4. Englische UI-Texte (Common violations)
     (r'[>"]Save[<"]',
      "ENGLISH TEXT: Use 'Speichern' (German)"),
@@ -51,6 +61,21 @@ CRITICAL_PATTERNS = [
      "ENGLISH TEXT: Use 'Filtern' (German)"),
     (r'[>"]Export[<"]',
      "ENGLISH TEXT: Use 'Exportieren' (German)"),
+]
+
+# KRITISCHE VIOLATIONS - Chart Files (Relaxed - Brand colors allowed for Recharts)
+CRITICAL_PATTERNS_CHARTS = [
+    # 1. Hardcoded Hex Colors - RELAXED (brand colors allowed for fill/gradients)
+    # Only block obviously wrong colors (not FreshFoodz palette)
+    (r'["\']#(?!94C456|004F7B|FFFFFF|000000|F5F5F5|fff|000|8884d8|0088FE|00C49F|FFBB28|FF8042)[0-9A-Fa-f]{3,6}["\']',
+     "SUSPICIOUS COLOR: Consider using FreshFoodz palette (#94C456, #004F7B)"),
+
+    # 2-4: Same as strict (RGB, fonts, English text)
+    (r'(?<!a)\(rgb\s*\(\s*\d+\s*,\s*\d+\s*,\s*\d+\s*\)',
+     "HARDCODED RGB: Use theme.palette instead"),
+
+    (r'fontFamily:\s*["\'](?!inherit|var\()[A-Za-z]',
+     "HARDCODED FONT: Use theme.typography instead"),
 ]
 
 # Ignore patterns (false positives)
@@ -75,25 +100,32 @@ def should_ignore_line(line: str, file_path: Path) -> bool:
     
     return False
 
+def is_chart_file(file_path: Path) -> bool:
+    """Check if file is a chart/data-viz file (relaxed rules)"""
+    return any(chart_file in str(file_path) for chart_file in CHART_FILES)
+
 def check_file(file_path: Path) -> List[Tuple[int, str, str]]:
     """Check file for design system violations"""
     violations = []
-    
+
+    # Select pattern set based on file type
+    patterns = CRITICAL_PATTERNS_CHARTS if is_chart_file(file_path) else CRITICAL_PATTERNS_STRICT
+
     try:
         content = file_path.read_text()
         lines = content.split('\n')
-        
+
         for line_num, line in enumerate(lines, 1):
             if should_ignore_line(line, file_path):
                 continue
-            
-            for pattern, message in CRITICAL_PATTERNS:
+
+            for pattern, message in patterns:
                 if re.search(pattern, line):
                     violations.append((line_num, line.strip()[:100], message))
-        
+
     except Exception:
         pass  # Skip files that can't be read
-    
+
     return violations
 
 def main():
@@ -114,7 +146,7 @@ def main():
     ts_files = list(FRONTEND_SRC.glob("**/*.ts"))
     
     # WHITELIST: Theme definition files MUST have hardcoded colors/fonts (SoT!)
-    # Chart/Data-Viz files MAY have hardcoded colors for gradients/heatmaps
+    # These files are COMPLETELY EXCLUDED from checks
     THEME_FILES = [
         'theme/freshfoodz.ts',
         'theme/ThemeProvider.tsx',
@@ -122,13 +154,9 @@ def main():
         'theme/customerFieldTheme.ts',
         # Root Provider (OUTSIDE ThemeProvider context - no useTheme available)
         'providers.tsx',
-        # Charts & Data Visualization (Recharts gradients, heatmaps)
-        'AuditActivityChart.tsx',
-        'AuditActivityHeatmap.tsx',
-        'AuditDashboard.tsx',  # Chart components inside
-        'DataHygieneDashboard.tsx',  # Heatmap colors
-        'LeadQualityDashboard.tsx',  # Chart gradients
     ]
+
+    # NOTE: Chart files are NOT excluded, but use RELAXED rules (see CHART_FILES + CRITICAL_PATTERNS_CHARTS)
 
     all_files = [
         f for f in (tsx_files + ts_files)
