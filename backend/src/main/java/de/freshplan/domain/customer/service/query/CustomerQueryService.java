@@ -113,23 +113,6 @@ public class CustomerQueryService {
   }
 
   /**
-   * Filters customers by industry. EXACT COPY from CustomerService.getCustomersByIndustry() - line
-   * 345
-   */
-  public CustomerListResponse getCustomersByIndustry(Industry industry, int page, int size) {
-    Page pageRequest = Page.of(page, size);
-    List<Customer> customers = customerRepository.findByIndustry(industry, pageRequest);
-
-    // Count manually since we don't have countByIndustry method
-    long totalElements = customers.size();
-
-    List<CustomerResponse> customerResponses =
-        customers.stream().map(this::mapToResponse).collect(Collectors.toList());
-
-    return CustomerListResponse.of(customerResponses, page, size, totalElements);
-  }
-
-  /**
    * Gets the hierarchy tree for a customer. EXACT COPY from CustomerService.getCustomerHierarchy()
    * - line 361
    */

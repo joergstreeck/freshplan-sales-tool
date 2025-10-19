@@ -363,16 +363,13 @@ class CustomerRepositoryTest {
     assertThat(result.get(0).getId()).isEqualTo(data.testCustomer.getId());
   }
 
-  @Test
-  @TestTransaction
-  void findByIndustry_shouldReturnCorrectCustomers() {
-    TestDataSet data = createStandardTestData();
-
-    var result = repository.findByIndustry(Industry.GESUNDHEITSWESEN, null);
-
-    assertThat(result).hasSize(1);
-    assertThat(result.get(0).getId()).isEqualTo(data.testCustomer.getId());
-  }
+  // DISABLED: findByIndustry() method removed - use findByFilters(status, businessType) instead
+  // @Test
+  // @TestTransaction
+  // void findByIndustry_shouldReturnCorrectCustomers() {
+  //   // Test disabled - findByIndustry() method removed from CustomerRepository
+  //   // Use findByFilters() with businessType parameter instead
+  // }
 
   // ========== HIERARCHY SUPPORT ==========
 

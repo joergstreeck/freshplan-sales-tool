@@ -341,20 +341,6 @@ public class CustomerService {
     return CustomerListResponse.of(customerResponses, page, size, totalElements);
   }
 
-  /** Filters customers by industry. */
-  public CustomerListResponse getCustomersByIndustry(Industry industry, int page, int size) {
-    Page pageRequest = Page.of(page, size);
-    List<Customer> customers = customerRepository.findByIndustry(industry, pageRequest);
-
-    // Count manually since we don't have countByIndustry method
-    long totalElements = customers.size();
-
-    List<CustomerResponse> customerResponses =
-        customers.stream().map(this::mapToResponse).collect(Collectors.toList());
-
-    return CustomerListResponse.of(customerResponses, page, size, totalElements);
-  }
-
   // ========== HIERARCHY OPERATIONS ==========
 
   /** Gets the hierarchy tree for a customer. */

@@ -54,7 +54,7 @@ public class CustomerMapper {
         customer.getTradingName(),
         customer.getLegalForm(),
         customer.getCustomerType(),
-        customer.getIndustry(),
+        customer.getBusinessType(),
         customer.getClassification(),
         customer.getParentCustomer() != null
             ? customer.getParentCustomer().getId().toString()
@@ -118,7 +118,7 @@ public class CustomerMapper {
         null, // tradingName
         null, // legalForm
         customer.getCustomerType(),
-        customer.getIndustry(),
+        customer.getBusinessType(),
         null, // classification
         null, // parentCustomerId
         null, // hierarchyType
@@ -220,7 +220,7 @@ public class CustomerMapper {
 
     // Classification with defaults
     customer.setCustomerType(request.customerType());
-    customer.setIndustry(request.industry());
+    customer.setBusinessType(request.businessType());
     customer.setClassification(request.classification());
 
     // Hierarchy
@@ -316,8 +316,8 @@ public class CustomerMapper {
     if (request.customerType() != null) {
       customer.setCustomerType(request.customerType());
     }
-    if (request.industry() != null) {
-      customer.setIndustry(request.industry());
+    if (request.businessType() != null) {
+      customer.setBusinessType(request.businessType());
     }
     if (request.classification() != null) {
       customer.setClassification(request.classification());

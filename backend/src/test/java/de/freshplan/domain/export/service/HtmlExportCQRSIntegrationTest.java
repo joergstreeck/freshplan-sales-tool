@@ -179,7 +179,7 @@ class HtmlExportCQRSIntegrationTest {
     ExportRequest request =
         ExportRequest.builder()
             .entityType("customer")
-            .industry("HOTEL")
+            .businessType("HOTEL")
             .includeDetails(true)
             .page(0)
             .size(100)
@@ -368,7 +368,7 @@ class HtmlExportCQRSIntegrationTest {
     ExportRequest request =
         ExportRequest.builder()
             .entityType("customer")
-            .industry("XXXNONEXISTENTXXX")
+            .businessType("XXXNONEXISTENTXXX")
             .includeDetails(true)
             .page(0)
             .size(100)
@@ -408,7 +408,7 @@ class HtmlExportCQRSIntegrationTest {
         ExportRequest.builder()
             .entityType("customer")
             .status(Arrays.asList("AKTIV", "LEAD"))
-            .industry("HOTEL")
+            .businessType("HOTEL")
             .includeDetails(true)
             .includeStats(true)
             .build();

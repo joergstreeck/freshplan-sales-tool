@@ -177,9 +177,9 @@ public class HtmlExportQueryService {
         .append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
         .append(" Uhr</p>\n");
 
-    if (request.getIndustry() != null) {
+    if (request.getBusinessType() != null) {
       html.append("<p><strong>Branche:</strong> ")
-          .append(escapeHtml(request.getIndustry()))
+          .append(escapeHtml(request.getBusinessType()))
           .append("</p>\n");
     }
 
@@ -192,7 +192,7 @@ public class HtmlExportQueryService {
 
     // Fetch customers
     List<Customer> customers =
-        customerRepository.findByFilters(request.getStatus(), request.getIndustry());
+        customerRepository.findByFilters(request.getStatus(), request.getBusinessType());
 
     // Apply date range filter if specified
     if (request.getDateFrom() != null || request.getDateTo() != null) {
@@ -279,7 +279,7 @@ public class HtmlExportQueryService {
             .append(escapeHtml(status))
             .append("</td>\n");
 
-        html.append("  <td>").append(escapeHtml(customer.getIndustry())).append("</td>\n");
+        html.append("  <td>").append(escapeHtml(customer.getBusinessType())).append("</td>\n");
 
         // Contact count and primary contact
         int contactCount = customer.getContacts() != null ? customer.getContacts().size() : 0;

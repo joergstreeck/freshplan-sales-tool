@@ -325,7 +325,7 @@ public class ExportResource {
   @Operation(summary = "Export customers as Excel workbook")
   public Response exportCustomersExcel(
       @QueryParam("status") List<String> status,
-      @QueryParam("industry") String industry,
+      @QueryParam("businessType") String businessType,
       @QueryParam("includeContacts") @DefaultValue("true") boolean includeContacts,
       @QueryParam("includeStats") @DefaultValue("true") boolean includeStats) {
 
@@ -334,7 +334,7 @@ public class ExportResource {
     ExportRequest request =
         ExportRequest.builder()
             .status(status)
-            .industry(industry)
+            .businessType(businessType)
             .includeContacts(includeContacts)
             .includeStats(includeStats)
             .build();
@@ -370,13 +370,13 @@ public class ExportResource {
   @Operation(summary = "Export customers as HTML report (printable to PDF)")
   public Response exportCustomersPdf(
       @QueryParam("status") List<String> status,
-      @QueryParam("industry") String industry,
+      @QueryParam("businessType") String businessType,
       @QueryParam("format") @DefaultValue("list") String format) {
 
     log.info("Exporting customers as HTML for PDF printing");
 
     ExportRequest request =
-        ExportRequest.builder().status(status).industry(industry).format(format).build();
+        ExportRequest.builder().status(status).businessType(businessType).format(format).build();
 
     // Log export action
     auditService.logExport("CUSTOMERS_PDF", request.toMap());
@@ -400,7 +400,7 @@ public class ExportResource {
   @Operation(summary = "Export customers as JSON")
   public Response exportCustomersJson(
       @QueryParam("status") List<String> status,
-      @QueryParam("industry") String industry,
+      @QueryParam("businessType") String businessType,
       @QueryParam("includeContacts") @DefaultValue("true") boolean includeContacts,
       @QueryParam("page") @DefaultValue("0") @Min(0) int page,
       @QueryParam("size") @DefaultValue("1000") @Min(1) @Max(10000) int size) {
@@ -408,7 +408,7 @@ public class ExportResource {
     ExportRequest request =
         ExportRequest.builder()
             .status(status)
-            .industry(industry)
+            .businessType(businessType)
             .includeContacts(includeContacts)
             .page(page)
             .size(size)
@@ -417,10 +417,10 @@ public class ExportResource {
     // Log export action
     auditService.logExport("CUSTOMERS_JSON", request.toMap());
 
-    List<Customer> customers = customerRepository.findByFilters(status, industry, page, size);
+    List<Customer> customers = customerRepository.findByFilters(status, businessType, page, size);
 
     return Response.ok(customers)
-        .header("X-Total-Count", customerRepository.countByFilters(status, industry))
+        .header("X-Total-Count", customerRepository.countByFilters(status, businessType))
         .build();
   }
 

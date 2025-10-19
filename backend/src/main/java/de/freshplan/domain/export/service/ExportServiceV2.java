@@ -239,7 +239,7 @@ public class ExportServiceV2 {
 
       // Add data rows
       List<Customer> customers =
-          customerRepository.findByFilters(request.getStatus(), request.getIndustry());
+          customerRepository.findByFilters(request.getStatus(), request.getBusinessType());
       int rowNum = 1;
 
       for (Customer customer : customers) {
@@ -251,7 +251,7 @@ public class ExportServiceV2 {
         row.createCell(2)
             .setCellValue(customer.getStatus() != null ? customer.getStatus().toString() : "");
         row.createCell(3)
-            .setCellValue(customer.getIndustry() != null ? customer.getIndustry().toString() : "");
+            .setCellValue(customer.getBusinessType() != null ? customer.getBusinessType().toString() : "");
         row.createCell(4).setCellValue(""); // City field not available
         row.createCell(5)
             .setCellValue(customer.getContacts() != null ? customer.getContacts().size() : 0);

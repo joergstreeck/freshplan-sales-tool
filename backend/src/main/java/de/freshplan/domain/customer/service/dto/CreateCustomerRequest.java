@@ -1,6 +1,7 @@
 package de.freshplan.domain.customer.service.dto;
 
 import de.freshplan.domain.customer.entity.*;
+import de.freshplan.domain.shared.BusinessType;
 import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,7 +23,7 @@ public record CreateCustomerRequest(
 
     // Classification
     @NotNull(message = "Customer type is required") CustomerType customerType,
-    Industry industry,
+    BusinessType businessType,
     Classification classification,
 
     // Hierarchy (optional)
@@ -57,7 +58,7 @@ public record CreateCustomerRequest(
         null, // tradingName
         null, // legalForm
         customerType,
-        null, // industry
+        null, // businessType
         null, // classification
         null, // parentCustomerId
         null, // hierarchyType
@@ -83,7 +84,7 @@ public record CreateCustomerRequest(
     private String tradingName;
     private String legalForm;
     private CustomerType customerType;
-    private Industry industry;
+    private BusinessType businessType;
     private Classification classification;
     private String parentCustomerId;
     private CustomerHierarchyType hierarchyType;
@@ -117,8 +118,8 @@ public record CreateCustomerRequest(
       return this;
     }
 
-    public Builder industry(Industry industry) {
-      this.industry = industry;
+    public Builder businessType(BusinessType businessType) {
+      this.businessType = businessType;
       return this;
     }
 
@@ -188,7 +189,7 @@ public record CreateCustomerRequest(
           tradingName,
           legalForm,
           customerType,
-          industry,
+          businessType,
           classification,
           parentCustomerId,
           hierarchyType,

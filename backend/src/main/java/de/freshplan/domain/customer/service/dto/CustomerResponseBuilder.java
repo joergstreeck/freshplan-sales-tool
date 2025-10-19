@@ -1,6 +1,7 @@
 package de.freshplan.domain.customer.service.dto;
 
 import de.freshplan.domain.customer.entity.*;
+import de.freshplan.domain.shared.BusinessType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public final class CustomerResponseBuilder {
 
   // Classification
   private CustomerType customerType;
-  private Industry industry;
+  private BusinessType businessType;
   private Classification classification;
 
   // Hierarchy
@@ -113,8 +114,8 @@ public final class CustomerResponseBuilder {
     return this;
   }
 
-  public CustomerResponseBuilder industry(Industry industry) {
-    this.industry = industry;
+  public CustomerResponseBuilder businessType(BusinessType businessType) {
+    this.businessType = businessType;
     return this;
   }
 
@@ -291,7 +292,7 @@ public final class CustomerResponseBuilder {
     this.tradingName = customer.getTradingName();
     this.legalForm = customer.getLegalForm();
     this.customerType = customer.getCustomerType();
-    this.industry = customer.getIndustry();
+    this.businessType = customer.getBusinessType();
     this.classification = customer.getClassification();
 
     if (customer.getParentCustomer() != null) {
@@ -351,7 +352,7 @@ public final class CustomerResponseBuilder {
         tradingName,
         legalForm,
         customerType,
-        industry,
+        businessType,
         classification,
         parentCustomerId,
         hierarchyType,

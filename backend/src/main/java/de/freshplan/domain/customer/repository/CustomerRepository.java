@@ -4,7 +4,7 @@ import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
-import de.freshplan.domain.customer.entity.Industry;
+import de.freshplan.domain.shared.BusinessType;
 import io.quarkus.hibernate.orm.panache.PanacheRepositoryBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
@@ -93,31 +93,31 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   // ========== EXPORT QUERIES ==========
 
   /** Find customers by filters for export. */
-  public List<Customer> findByFilters(List<String> status, String industry) {
+  public List<Customer> findByFilters(List<String> status, String businessType) {
     StringBuilder query = new StringBuilder("isDeleted = false");
 
     if (status != null && !status.isEmpty()) {
       query.append(" AND status IN ?1");
-      if (industry != null) {
-        query.append(" AND industry = ?2");
+      if (businessType != null) {
+        query.append(" AND businessType = ?2");
         try {
-          Industry industryEnum = Industry.valueOf(industry);
-          return find(query.toString(), status, industryEnum).list();
+          BusinessType businessTypeEnum = BusinessType.valueOf(businessType);
+          return find(query.toString(), status, businessTypeEnum).list();
         } catch (IllegalArgumentException e) {
-          // Invalid industry - return empty list
+          // Invalid businessType - return empty list
           return List.of();
         }
       }
       return find(query.toString(), status).list();
     }
 
-    if (industry != null) {
-      query.append(" AND industry = ?1");
+    if (businessType != null) {
+      query.append(" AND businessType = ?1");
       try {
-        Industry industryEnum = Industry.valueOf(industry);
-        return find(query.toString(), industryEnum).list();
+        BusinessType businessTypeEnum = BusinessType.valueOf(businessType);
+        return find(query.toString(), businessTypeEnum).list();
       } catch (IllegalArgumentException e) {
-        // Invalid industry - return empty list
+        // Invalid businessType - return empty list
         return List.of();
       }
     }
@@ -126,31 +126,31 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   }
 
   /** Find customers by filters with pagination. */
-  public List<Customer> findByFilters(List<String> status, String industry, int page, int size) {
+  public List<Customer> findByFilters(List<String> status, String businessType, int page, int size) {
     StringBuilder query = new StringBuilder("isDeleted = false");
 
     if (status != null && !status.isEmpty()) {
       query.append(" AND status IN ?1");
-      if (industry != null) {
-        query.append(" AND industry = ?2");
+      if (businessType != null) {
+        query.append(" AND businessType = ?2");
         try {
-          Industry industryEnum = Industry.valueOf(industry);
-          return find(query.toString(), status, industryEnum).page(Page.of(page, size)).list();
+          BusinessType businessTypeEnum = BusinessType.valueOf(businessType);
+          return find(query.toString(), status, businessTypeEnum).page(Page.of(page, size)).list();
         } catch (IllegalArgumentException e) {
-          // Invalid industry - return empty list
+          // Invalid businessType - return empty list
           return List.of();
         }
       }
       return find(query.toString(), status).page(Page.of(page, size)).list();
     }
 
-    if (industry != null) {
-      query.append(" AND industry = ?1");
+    if (businessType != null) {
+      query.append(" AND businessType = ?1");
       try {
-        Industry industryEnum = Industry.valueOf(industry);
-        return find(query.toString(), industryEnum).page(Page.of(page, size)).list();
+        BusinessType businessTypeEnum = BusinessType.valueOf(businessType);
+        return find(query.toString(), businessTypeEnum).page(Page.of(page, size)).list();
       } catch (IllegalArgumentException e) {
-        // Invalid industry - return empty list
+        // Invalid businessType - return empty list
         return List.of();
       }
     }
@@ -159,21 +159,21 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   }
 
   /** Count customers by filters. */
-  public long countByFilters(List<String> status, String industry) {
+  public long countByFilters(List<String> status, String businessType) {
     StringBuilder query = new StringBuilder("isDeleted = false");
 
     if (status != null && !status.isEmpty()) {
       query.append(" AND status IN ?1");
-      if (industry != null) {
-        query.append(" AND industry = ?2");
-        return count(query.toString(), status, industry);
+      if (businessType != null) {
+        query.append(" AND businessType = ?2");
+        return count(query.toString(), status, businessType);
       }
       return count(query.toString(), status);
     }
 
-    if (industry != null) {
-      query.append(" AND industry = ?1");
-      return count(query.toString(), industry);
+    if (businessType != null) {
+      query.append(" AND businessType = ?1");
+      return count(query.toString(), businessType);
     }
 
     return count(query.toString());
@@ -242,11 +242,6 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
   /** Find customers by lifecycle stage. */
   public List<Customer> findByLifecycleStage(CustomerLifecycleStage stage, Page page) {
     return find("lifecycleStage = ?1 AND isDeleted = false", stage).page(page).list();
-  }
-
-  /** Find customers by industry. */
-  public List<Customer> findByIndustry(Industry industry, Page page) {
-    return find("industry = ?1 AND isDeleted = false", industry).page(page).list();
   }
 
   // ========== HIERARCHY SUPPORT ==========
