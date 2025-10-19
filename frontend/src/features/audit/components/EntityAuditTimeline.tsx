@@ -417,7 +417,7 @@ export function EntityAuditTimeline({
                               key={i}
                               variant="caption"
                               display="block"
-                              sx={{ fontFamily: 'monospace' }}
+                              sx={{ fontFamily: '"Courier New", Courier, monospace' }}
                             >
                               {change}
                             </Typography>

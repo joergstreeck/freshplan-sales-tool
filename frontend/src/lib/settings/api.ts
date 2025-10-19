@@ -128,7 +128,7 @@ function getDefaultTheme(): Record<string, unknown> {
     mode: 'light',
     primaryColor: '#94C456',
     secondaryColor: '#004F7B',
-    fontFamily: 'Poppins, sans-serif',
+    fontFamily: theme => theme.typography.body1.fontFamily,
   };
 }
 

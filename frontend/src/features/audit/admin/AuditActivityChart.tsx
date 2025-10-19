@@ -59,7 +59,7 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height }}>
-        <CircularProgress sx={{ color: '#004F7B' }} />
+        <CircularProgress sx={{ color: 'secondary.main' }} />
       </Box>
     );
   }
@@ -130,7 +130,7 @@ export const AuditActivityChart: React.FC<AuditActivityChartProps> = ({
               border: '1px solid #e0e0e0',
               borderRadius: 8,
             }}
-            labelStyle={{ color: '#333', fontWeight: 'bold' }}
+            labelStyle={{ color: 'grey.800', fontWeight: 'bold' }}
           />
           {showLegend && <Legend wrapperStyle={{ paddingTop: '20px' }} iconType="rect" />}
           <Area

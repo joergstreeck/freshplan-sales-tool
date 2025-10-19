@@ -40,6 +40,7 @@ import type { Customer, CustomerContact } from '../features/customer/types/custo
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
 import CreateOpportunityForCustomerDialog from '../features/opportunity/components/CreateOpportunityForCustomerDialog';
 import { CustomerOpportunitiesList } from '../features/customers/components/CustomerOpportunitiesList';
+import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -80,6 +81,9 @@ export function CustomerDetailPage() {
   // Opportunity Dialog State
   const [showOpportunityDialog, setShowOpportunityDialog] = useState(false);
   const [opportunityCount, setOpportunityCount] = useState(0);
+
+  // Edit Dialog State
+  const [showEditWizard, setShowEditWizard] = useState(false);
 
   // Get highlightContact parameter for deep-linking
   const highlightContactId = searchParams.get('highlightContact');
@@ -239,7 +243,7 @@ export function CustomerDetailPage() {
               <Button
                 variant="contained"
                 startIcon={<EditIcon />}
-                onClick={() => navigate(`/customers/${customerId}/edit`)}
+                onClick={() => setShowEditWizard(true)}
               >
                 Bearbeiten
               </Button>
@@ -323,6 +327,20 @@ export function CustomerDetailPage() {
             // Switch to Opportunities tab to show the new opportunity
             setActiveTab(2);
           }}
+        />
+
+        {/* Edit Customer Wizard Modal */}
+        <CustomerOnboardingWizardModal
+          open={showEditWizard}
+          onClose={() => setShowEditWizard(false)}
+          onComplete={() => {
+            setShowEditWizard(false);
+            // Refresh customer data - useCustomerDetails should auto-refetch
+            window.location.reload(); // Simple refresh for now, can be optimized with query invalidation
+          }}
+          customerId={customerId}
+          initialData={customer}
+          editMode={true}
         />
       </Box>
     </MainLayoutV2>

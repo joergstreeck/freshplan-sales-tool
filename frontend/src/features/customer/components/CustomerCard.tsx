@@ -28,8 +28,8 @@ interface CustomerCardProps {
 const statusColors: Record<string, string> = {
   LEAD: '#004F7B', // Freshfoodz Blau
   AKTIV: '#94C456', // Freshfoodz Grün
-  INAKTIV: '#999',
-  GESPERRT: '#F44336',
+  INAKTIV: theme.palette.grey[600],
+  GESPERRT: theme.palette.error.main,
 };
 
 const statusLabels: Record<string, string> = {
@@ -40,9 +40,9 @@ const statusLabels: Record<string, string> = {
 };
 
 const getRiskColor = (score: number): string => {
-  if (score >= 70) return '#F44336'; // Rot
-  if (score >= 40) return '#FF9800'; // Orange
-  return '#4CAF50'; // Grün
+  if (score >= 70) return theme.palette.error.main; // Rot
+  if (score >= 40) return theme.palette.warning.main; // Orange
+  return theme.palette.success.main; // Grün
 };
 
 export const CustomerCard: React.FC<CustomerCardProps> = ({
@@ -121,7 +121,7 @@ export const CustomerCard: React.FC<CustomerCardProps> = ({
               sx={{
                 width: '100%',
                 height: 8,
-                backgroundColor: '#e0e0e0',
+                backgroundColor: 'grey.300',
                 borderRadius: 4,
                 overflow: 'hidden',
               }}

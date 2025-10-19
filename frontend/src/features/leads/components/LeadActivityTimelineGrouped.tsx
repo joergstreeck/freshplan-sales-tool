@@ -85,52 +85,52 @@ function groupActivitiesByTimeRange(activities: Activity[]) {
 function getActivityTypeInfo(type: string): { icon: React.ReactElement; color: string } {
   const typeMap: Record<string, { icon: React.ReactElement; color: string }> = {
     // Lead lifecycle events
-    LEAD_CREATED: { icon: <StarIcon />, color: '#94C456' },
-    CREATED: { icon: <StarIcon />, color: '#94C456' },
-    LEAD_ASSIGNED: { icon: <PersonAddIcon />, color: '#2196F3' },
+    LEAD_CREATED: { icon: <StarIcon />, color: 'primary.main' },
+    CREATED: { icon: <StarIcon />, color: 'primary.main' },
+    LEAD_ASSIGNED: { icon: <PersonAddIcon />, color: 'info.main' },
 
     // Communication activities
-    CALL: { icon: <PhoneIcon />, color: '#2196F3' },
-    EMAIL: { icon: <EmailIcon />, color: '#00BCD4' },
-    MEETING: { icon: <EventIcon />, color: '#9C27B0' },
-    MEETING_SCHEDULED: { icon: <EventIcon />, color: '#9C27B0' },
+    CALL: { icon: <PhoneIcon />, color: 'info.main' },
+    EMAIL: { icon: <EmailIcon />, color: 'info.light' },
+    MEETING: { icon: <EventIcon />, color: 'secondary.light' },
+    MEETING_SCHEDULED: { icon: <EventIcon />, color: 'secondary.light' },
 
     // Contact & Documentation
-    FIRST_CONTACT_DOCUMENTED: { icon: <HandshakeIcon />, color: '#4CAF50' },
-    CONTACT_ADDED: { icon: <PersonAddIcon />, color: '#00BCD4' },
-    NOTE: { icon: <DescriptionIcon />, color: '#607D8B' },
-    NOTE_ADDED: { icon: <DescriptionIcon />, color: '#607D8B' },
+    FIRST_CONTACT_DOCUMENTED: { icon: <HandshakeIcon />, color: 'success.main' },
+    CONTACT_ADDED: { icon: <PersonAddIcon />, color: 'info.light' },
+    NOTE: { icon: <DescriptionIcon />, color: 'grey.600' },
+    NOTE_ADDED: { icon: <DescriptionIcon />, color: 'grey.600' },
 
     // Sales activities
-    SAMPLE_SENT: { icon: <LocalShippingIcon />, color: '#FF9800' },
-    PROPOSAL_SENT: { icon: <AssignmentIcon />, color: '#9C27B0' },
+    SAMPLE_SENT: { icon: <LocalShippingIcon />, color: 'warning.main' },
+    PROPOSAL_SENT: { icon: <AssignmentIcon />, color: 'secondary.light' },
 
     // Status changes
-    STATUS_CHANGED: { icon: <SyncIcon />, color: '#FF9800' },
-    QUALIFIED: { icon: <CheckCircleIcon />, color: '#4CAF50' },
-    DISQUALIFIED: { icon: <CancelIcon />, color: '#F44336' },
+    STATUS_CHANGED: { icon: <SyncIcon />, color: 'warning.main' },
+    QUALIFIED: { icon: <CheckCircleIcon />, color: 'success.main' },
+    DISQUALIFIED: { icon: <CancelIcon />, color: 'error.main' },
 
     // Clock management
-    CLOCK_STOPPED: { icon: <PauseIcon />, color: '#FF9800' },
-    CLOCK_RESUMED: { icon: <PlayArrowIcon />, color: '#4CAF50' },
+    CLOCK_STOPPED: { icon: <PauseIcon />, color: 'warning.main' },
+    CLOCK_RESUMED: { icon: <PlayArrowIcon />, color: 'success.main' },
   };
 
-  return typeMap[type] || { icon: <PushPinIcon />, color: '#9E9E9E' };
+  return typeMap[type] || { icon: <PushPinIcon />, color: 'grey.500' };
 }
 
 // Sprint 2.1.7 Issue #126: ActivityOutcome Badge Info
 function getOutcomeInfo(outcome: string): { label: string; color: string; icon: string } {
   const outcomeMap: Record<string, { label: string; color: string; icon: string }> = {
-    SUCCESSFUL: { label: 'Erfolgreich', color: '#4CAF50', icon: '✅' },
-    UNSUCCESSFUL: { label: 'Nicht erfolgreich', color: '#F44336', icon: '❌' },
-    NO_ANSWER: { label: 'Keine Antwort', color: '#FF9800', icon: '📵' },
-    CALLBACK_REQUESTED: { label: 'Rückruf gewünscht', color: '#2196F3', icon: '🔄' },
-    INFO_SENT: { label: 'Info versendet', color: '#00BCD4', icon: '📧' },
-    QUALIFIED: { label: 'Qualifiziert', color: '#94C456', icon: '⭐' },
-    DISQUALIFIED: { label: 'Disqualifiziert', color: '#9E9E9E', icon: '⛔' },
+    SUCCESSFUL: { label: 'Erfolgreich', color: 'success.main', icon: '✅' },
+    UNSUCCESSFUL: { label: 'Nicht erfolgreich', color: 'error.main', icon: '❌' },
+    NO_ANSWER: { label: 'Keine Antwort', color: 'warning.main', icon: '📵' },
+    CALLBACK_REQUESTED: { label: 'Rückruf gewünscht', color: 'info.main', icon: '🔄' },
+    INFO_SENT: { label: 'Info versendet', color: 'info.light', icon: '📧' },
+    QUALIFIED: { label: 'Qualifiziert', color: 'primary.main', icon: '⭐' },
+    DISQUALIFIED: { label: 'Disqualifiziert', color: 'grey.500', icon: '⛔' },
   };
 
-  return outcomeMap[outcome] || { label: outcome, color: '#757575', icon: '❓' };
+  return outcomeMap[outcome] || { label: outcome, color: 'grey.600', icon: '❓' };
 }
 
 export function LeadActivityTimelineGrouped({ leadId }: LeadActivityTimelineGroupedProps) {

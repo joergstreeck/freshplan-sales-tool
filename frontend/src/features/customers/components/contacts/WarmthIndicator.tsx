@@ -41,25 +41,25 @@ export const WarmthIndicator: React.FC<WarmthIndicatorProps> = ({
   const getWarmthConfig = () => {
     const configs = {
       HOT: {
-        color: '#FF4444',
+        color: 'error.main',
         icon: <WhatshotIcon />,
         label: 'Heiß',
         description: 'Sehr aktive Beziehung',
       },
       WARM: {
-        color: '#FF8800',
+        color: 'warning.main',
         icon: <ThermostatAutoIcon />,
         label: 'Warm',
         description: 'Gute Beziehung',
       },
       COOLING: {
-        color: '#FFBB00',
+        color: 'warning.light',
         icon: <ThermostatAutoIcon />,
         label: 'Abkühlend',
         description: 'Aufmerksamkeit erforderlich',
       },
       COLD: {
-        color: '#666666',
+        color: 'text.secondary',
         icon: <AcUnitIcon />,
         label: 'Kalt',
         description: 'Dringend reaktivieren',

@@ -184,10 +184,10 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                 borderRadius: '50%',
                 backgroundColor:
                   customer.riskScore > 70
-                    ? '#f44336'
+                    ? 'error.main'
                     : customer.riskScore > 40
-                      ? '#ff9800'
-                      : '#4caf50',
+                      ? 'warning.main'
+                      : 'success.main',
               }}
             />
             <Typography variant="body2">{customer.riskScore}%</Typography>

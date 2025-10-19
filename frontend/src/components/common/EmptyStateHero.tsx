@@ -81,10 +81,10 @@ export function EmptyStateHero({
             onClick={action.onClick}
             sx={{
               minWidth: isMobile ? 200 : 'auto',
-              bgcolor: '#94C456', // Freshfoodz Grün
+              bgcolor: 'primary.main', // Freshfoodz Grün
               color: 'white',
               '&:hover': {
-                bgcolor: '#7BA545',
+                bgcolor: 'primary.dark',
                 transform: 'translateY(-2px)',
                 boxShadow: theme.shadows[4],
               },

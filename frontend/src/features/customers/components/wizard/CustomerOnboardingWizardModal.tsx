@@ -26,12 +26,19 @@ interface CustomerOnboardingWizardModalProps {
   open: boolean;
   onClose: () => void;
   onComplete: (customer: Customer) => void;
+  // Edit mode props
+  customerId?: string;
+  initialData?: Partial<Record<string, unknown>>;
+  editMode?: boolean;
 }
 
 export function CustomerOnboardingWizardModal({
   open,
   onClose,
   onComplete,
+  customerId,
+  initialData,
+  editMode = false,
 }: CustomerOnboardingWizardModalProps) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -73,7 +80,14 @@ export function CustomerOnboardingWizardModal({
             </IconButton>
           </Box>
           <Box sx={{ p: 2, overflow: 'auto', height: 'calc(100% - 64px)' }}>
-            <CustomerOnboardingWizard onComplete={onComplete} onCancel={onClose} isModal={true} />
+            <CustomerOnboardingWizard
+              onComplete={onComplete}
+              onCancel={onClose}
+              isModal={true}
+              customerId={customerId}
+              initialData={initialData}
+              editMode={editMode}
+            />
           </Box>
         </Box>
       </Drawer>
@@ -125,7 +139,14 @@ export function CustomerOnboardingWizardModal({
 
       <DialogContent sx={{ p: 0, overflow: 'hidden' }}>
         <Box sx={{ height: '100%', overflow: 'auto', p: 3 }}>
-          <CustomerOnboardingWizard onComplete={onComplete} onCancel={onClose} isModal={true} />
+          <CustomerOnboardingWizard
+            onComplete={onComplete}
+            onCancel={onClose}
+            isModal={true}
+            customerId={customerId}
+            initialData={initialData}
+            editMode={editMode}
+          />
         </Box>
       </DialogContent>
     </Dialog>

@@ -343,7 +343,8 @@ export const OpportunitySettingsPage = () => {
             {/* Stats Footer */}
             <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
               <Typography variant="body2" color="text.secondary">
-                {filteredMultipliers.length} von {multipliers?.length || 0} Multiplikatoren angezeigt
+                {filteredMultipliers.length} von {multipliers?.length || 0} Multiplikatoren
+                angezeigt
               </Typography>
             </Box>
           </>
@@ -410,7 +411,11 @@ export const OpportunitySettingsPage = () => {
                   <Typography variant="body2" sx={{ mb: 1 }}>
                     <strong>Berechnungslogik:</strong>
                   </Typography>
-                  <Typography variant="body2" component="div" sx={{ fontFamily: 'monospace' }}>
+                  <Typography
+                    variant="body2"
+                    component="div"
+                    sx={{ fontFamily: '"Courier New", Courier, monospace' }}
+                  >
                     Erwarteter Umsatz = Basisumsatz × Multiplikator
                   </Typography>
                   <Typography

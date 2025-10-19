@@ -12,7 +12,7 @@
  * @since 2025-10-19
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -166,7 +166,7 @@ export default function CreateOpportunityForCustomerDialog({
     if (open) {
       loadMultipliers();
     }
-  }, [open]);
+  }, [open, loadMultipliers]);
 
   /**
    * Calculate expectedValue when opportunityType changes
@@ -175,7 +175,7 @@ export default function CreateOpportunityForCustomerDialog({
     if (multipliers.length > 0) {
       calculateExpectedValue();
     }
-  }, [opportunityType, multipliers]);
+  }, [opportunityType, multipliers, calculateExpectedValue]);
 
   /**
    * Update description when opportunityType changes
@@ -184,7 +184,7 @@ export default function CreateOpportunityForCustomerDialog({
     setDescription(generateDefaultDescription(customer, opportunityType));
   }, [opportunityType, customer]);
 
-  const loadMultipliers = async () => {
+  const loadMultipliers = useCallback(async () => {
     setIsLoadingMultipliers(true);
     setMultipliersError(null);
 
@@ -204,13 +204,13 @@ export default function CreateOpportunityForCustomerDialog({
     } finally {
       setIsLoadingMultipliers(false);
     }
-  };
+  }, [calculateExpectedValue]);
 
   /**
    * Calculate expectedValue using Business-Type-Matrix
    * Formula: expectedValue = baseVolume × multiplier
    */
-  const calculateExpectedValue = () => {
+  const calculateExpectedValue = useCallback(() => {
     const baseVolume = getBaseVolume(customer);
 
     if (baseVolume === 0) {
@@ -231,7 +231,7 @@ export default function CreateOpportunityForCustomerDialog({
       // Fallback: Use NEUGESCHAEFT multiplier (1.00) if not found
       setExpectedValue(baseVolume);
     }
-  };
+  }, [customer, opportunityType, multipliers]);
 
   /**
    * Get current multiplier for display
@@ -395,7 +395,11 @@ export default function CreateOpportunityForCustomerDialog({
                 <Typography variant="body2" fontWeight="bold" gutterBottom>
                   Intelligente Wertschätzung:
                 </Typography>
-                <Typography variant="caption" component="div" sx={{ fontFamily: 'monospace' }}>
+                <Typography
+                  variant="caption"
+                  component="div"
+                  sx={{ fontFamily: '"Courier New", Courier, monospace' }}
+                >
                   Basisvolumen: {baseVolume.toLocaleString('de-DE')}€ (
                   {customer.actualAnnualVolume ? 'Xentral' : 'Lead-Schätzung'})
                   <br />

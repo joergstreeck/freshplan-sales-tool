@@ -156,7 +156,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                       toastOptions={{
                         duration: 4000,
                         style: {
-                          background: '#363636',
+                          background: '#424242',
                           color: '#fff',
                         },
                         success: {
@@ -166,7 +166,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                         },
                         error: {
                           style: {
-                            background: '#ef5350',
+                            background: '#EF5350',
                           },
                         },
                       }}

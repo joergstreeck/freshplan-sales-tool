@@ -109,7 +109,10 @@ export const UserTableMUI = () => {
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
           <Box>
-            <Typography variant="h4" sx={{ fontFamily: 'Antonio, sans-serif', mb: 0.5 }}>
+            <Typography
+              variant="h4"
+              sx={{ fontFamily: theme => theme.typography.h4.fontFamily, mb: 0.5 }}
+            >
               Benutzerverwaltung
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -124,7 +127,7 @@ export const UserTableMUI = () => {
               backgroundColor: '#94C456',
               color: 'white',
               '&:hover': {
-                backgroundColor: '#7BA347',
+                backgroundColor: 'primary.dark',
               },
             }}
           >
@@ -154,9 +157,9 @@ export const UserTableMUI = () => {
             onClick={handleSearch}
             sx={{
               borderColor: '#004F7B',
-              color: '#004F7B',
+              color: 'secondary.main',
               '&:hover': {
-                borderColor: '#003A5A',
+                borderColor: 'secondary.dark',
                 backgroundColor: 'rgba(0, 79, 123, 0.04)',
               },
             }}
@@ -175,7 +178,7 @@ export const UserTableMUI = () => {
       <Paper>
         {isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress sx={{ color: '#94C456' }} />
+            <CircularProgress sx={{ color: 'primary.main' }} />
           </Box>
         ) : users.length === 0 ? (
           <Box sx={{ textAlign: 'center', p: 4 }}>
@@ -278,7 +281,7 @@ export const UserTableMUI = () => {
                           <IconButton
                             size="small"
                             onClick={() => openEditModal(user.id)}
-                            sx={{ color: '#004F7B' }}
+                            sx={{ color: 'secondary.main' }}
                           >
                             <EditIcon fontSize="small" />
                           </IconButton>

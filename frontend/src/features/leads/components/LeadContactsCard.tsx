@@ -57,10 +57,10 @@ export function LeadContactsCard({
   const secondaryContacts = contacts.filter(c => !c.primary);
 
   const getWarmthColor = (score?: number) => {
-    if (!score) return '#9E9E9E'; // Gray
+    if (!score) return theme.palette.grey[500]; // Gray
     if (score >= 70) return '#94C456'; // FreshFoodz Green
-    if (score >= 40) return '#FF9800'; // Orange
-    return '#F44336'; // Red
+    if (score >= 40) return theme.palette.warning.main; // Orange
+    return theme.palette.error.main; // Red
   };
 
   const renderContactItem = (contact: LeadContactDTO, isPrimary: boolean) => (
@@ -86,7 +86,7 @@ export function LeadContactsCard({
               <Chip
                 label="Hauptkontakt"
                 size="small"
-                sx={{ bgcolor: '#94C456', color: 'white', fontWeight: 600 }}
+                sx={{ bgcolor: 'primary.main', color: 'white', fontWeight: 600 }}
               />
             )}
             {contact.warmthScore && (

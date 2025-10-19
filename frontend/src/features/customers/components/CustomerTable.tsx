@@ -183,7 +183,7 @@ export function CustomerTable({
                                   label="NEU"
                                   size="small"
                                   sx={{
-                                    bgcolor: '#94C456',
+                                    bgcolor: 'primary.main',
                                     color: 'white',
                                     fontSize: '0.7rem',
                                     height: 20,
@@ -200,7 +200,7 @@ export function CustomerTable({
                                       label={`⏳ Pre-Claim (${daysRemaining}T)`}
                                       size="small"
                                       sx={{
-                                        bgcolor: isUrgent ? '#FF6B6B' : '#FFA726',
+                                        bgcolor: isUrgent ? 'error.light' : 'warning.main',
                                         color: 'white',
                                         fontSize: '0.7rem',
                                         height: 20,
@@ -247,9 +247,9 @@ export function CustomerTable({
                             2: 'Qualifizierung',
                           };
                           const stageColors: Record<number, string> = {
-                            0: '#2196F3', // Blue
-                            1: '#FF9800', // Orange
-                            2: '#4CAF50', // Green
+                            0: theme.palette.info.main, // Blue
+                            1: theme.palette.warning.main, // Orange
+                            2: theme.palette.success.main, // Green
                           };
                           const stageValue = (customer as Lead).stage;
                           return (
@@ -257,7 +257,7 @@ export function CustomerTable({
                               label={stageLabels[stageValue] || stageValue?.toString()}
                               size="small"
                               sx={{
-                                bgcolor: stageColors[stageValue] || '#9E9E9E',
+                                bgcolor: stageColors[stageValue] || 'grey.500',
                                 color: 'white',
                               }}
                             />
@@ -270,7 +270,7 @@ export function CustomerTable({
                           const statusValue = customer.status as keyof typeof statusLabels;
                           const statusColor =
                             context === 'leads'
-                              ? leadStatusColors[statusValue] || '#9E9E9E'
+                              ? leadStatusColors[statusValue] || theme.palette.grey[500]
                               : getCustomerStatusColor(statusValue, theme);
                           return (
                             <Chip

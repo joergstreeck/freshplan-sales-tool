@@ -40,8 +40,8 @@ export default function LeadScoreIndicator({
 
   // Score-basierte Farbe
   const getScoreColor = (value: number): string => {
-    if (value < 40) return '#f44336'; // Rot
-    if (value < 70) return '#ff9800'; // Orange
+    if (value < 40) return theme.palette.error.main; // Rot
+    if (value < 70) return theme.palette.warning.main; // Orange
     return '#94C456'; // FreshFoodz Grün
   };
 
@@ -55,9 +55,9 @@ export default function LeadScoreIndicator({
   // Trend-Icon (optional, für spätere Erweiterung)
   const getTrendIcon = () => {
     // Placeholder: könnte später mit historischen Daten verglichen werden
-    if (score >= 70) return <TrendingUp fontSize="small" sx={{ color: '#94C456' }} />;
-    if (score < 40) return <TrendingDown fontSize="small" sx={{ color: '#f44336' }} />;
-    return <TrendingFlat fontSize="small" sx={{ color: '#ff9800' }} />;
+    if (score >= 70) return <TrendingUp fontSize="small" sx={{ color: 'primary.main' }} />;
+    if (score < 40) return <TrendingDown fontSize="small" sx={{ color: 'error.main' }} />;
+    return <TrendingFlat fontSize="small" sx={{ color: 'warning.main' }} />;
   };
 
   const scoreColor = getScoreColor(score);
@@ -105,7 +105,7 @@ export default function LeadScoreIndicator({
             sx={{
               height: progressHeight,
               borderRadius: 1,
-              backgroundColor: '#e0e0e0',
+              backgroundColor: 'grey.300',
               '& .MuiLinearProgress-bar': {
                 backgroundColor: scoreColor,
                 borderRadius: 1,

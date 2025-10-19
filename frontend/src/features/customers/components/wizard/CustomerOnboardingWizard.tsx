@@ -61,6 +61,10 @@ interface CustomerOnboardingWizardProps {
   onComplete?: (customer: unknown) => void;
   onCancel?: () => void;
   isModal?: boolean;
+  // Edit mode props
+  customerId?: string;
+  initialData?: Partial<CustomerData>;
+  editMode?: boolean;
 }
 
 /**
@@ -73,6 +77,9 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
   onComplete,
   onCancel,
   isModal = false,
+  customerId,
+  initialData,
+  editMode = false,
 }) => {
   const navigate = useNavigate();
   const [finalizing, setFinalizing] = useState(false);
@@ -91,6 +98,7 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     canProgressToNextStep,
     finalizeCustomer,
     reset,
+    setInitialData,
   } = useCustomerOnboardingStore();
 
   const { isLoading: loadingFields, error: fieldError } = useFieldDefinitions();
@@ -102,6 +110,29 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
       debugCustomerFieldTheme();
     }
   }, []);
+
+  // Load initial data in edit mode
+  useEffect(() => {
+    if (editMode && initialData) {
+      console.log('[CustomerOnboardingWizard] Loading initial data for edit mode:', initialData);
+
+      // Transform DB values to UI format (UPPERCASE → lowercase for compatibility)
+      const transformedData = { ...initialData };
+
+      // Transform legalForm: "GmbH" → "gmbh"
+      if (transformedData.legalForm && typeof transformedData.legalForm === 'string') {
+        transformedData.legalForm = (transformedData.legalForm as string)
+          .toLowerCase()
+          .replace(/ /g, '_')
+          .replace(/\./g, '');
+      }
+
+      // businessType stays UPPERCASE (enum field)
+      // Other enum fields can stay as-is
+
+      setInitialData(transformedData, customerId);
+    }
+  }, [editMode, initialData, customerId, setInitialData]);
 
   // All steps are visible in the new structure - Step 3 is optional but still shown
   const visibleSteps = WIZARD_STEPS;

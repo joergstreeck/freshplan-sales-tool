@@ -173,7 +173,7 @@ export const KeyboardShortcutsHelp: React.FC = () => {
                                 backgroundColor: theme.palette.grey[200],
                                 border: `1px solid ${theme.palette.divider}`,
                                 borderRadius: 1,
-                                fontFamily: 'monospace',
+                                fontFamily: '"Courier New", Courier, monospace',
                                 fontSize: '0.875rem',
                               }}
                             />

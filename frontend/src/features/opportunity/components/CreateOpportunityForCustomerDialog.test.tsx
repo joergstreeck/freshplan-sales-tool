@@ -34,7 +34,7 @@ const mockCustomer: CustomerResponse = {
   id: 'customer-123',
   customerNumber: 'CUS-001',
   companyName: 'Bella Italia Restaurant',
-  customerType: 'UNTERNEHMEN' as any,
+  customerType: CustomerType.UNTERNEHMEN,
   industry: Industry.RESTAURANT,
   status: CustomerStatus.AKTIV,
   expectedAnnualVolume: 50000,

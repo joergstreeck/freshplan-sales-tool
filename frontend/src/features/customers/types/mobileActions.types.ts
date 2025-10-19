@@ -87,7 +87,7 @@ export const DEFAULT_SWIPE_ACTIONS: SwipeActions = {
     type: 'email',
     label: 'E-Mail',
     icon: null, // Will be set by component
-    color: '#2196F3',
+    color: 'info.main',
     contextual: true,
   },
   right: {
@@ -95,7 +95,7 @@ export const DEFAULT_SWIPE_ACTIONS: SwipeActions = {
     type: 'call',
     label: 'Anrufen',
     icon: null, // Will be set by component
-    color: '#4CAF50',
+    color: 'success.main',
     contextual: true,
   },
 };
@@ -118,13 +118,13 @@ export const ACTION_PRIORITIES = {
  * Action type to color mapping
  */
 export const ACTION_COLORS = {
-  call: '#4CAF50',
-  email: '#2196F3',
-  whatsapp: '#25D366',
-  sms: '#9C27B0',
-  calendar: '#FF9800',
-  note: '#607D8B',
-  meeting: '#795548',
+  call: 'success.main',
+  email: 'info.main',
+  whatsapp: 'success.dark',
+  sms: 'secondary.light',
+  calendar: 'warning.main',
+  note: 'grey.600',
+  meeting: 'grey.700',
 } as const;
 
 /**

@@ -134,10 +134,10 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
     // Warmth-based border color
     if (warmth) {
       const warmthColors = {
-        HOT: '#FF4444',
-        WARM: '#FF8800',
-        COOLING: '#FFBB00',
-        COLD: '#666666',
+        HOT: 'error.main',
+        WARM: 'warning.main',
+        COOLING: 'warning.light',
+        COLD: theme.palette.grey[600],
       };
       if (!contact.isPrimary) {
         state.borderColor = warmthColors[warmth.temperature];
@@ -160,7 +160,13 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   };
 
   const getAvatarColor = () => {
-    const colors = ['#94C456', '#004F7B', '#FF8800', '#2196F3', '#9C27B0'];
+    const colors = [
+      'primary.main',
+      'secondary.main',
+      'warning.main',
+      'info.main',
+      'secondary.light',
+    ];
     const index =
       (contact.firstName.charCodeAt(0) + contact.lastName.charCodeAt(0)) % colors.length;
     return colors[index];

@@ -246,8 +246,8 @@ export function ContactDialog({
           variant="contained"
           disabled={saving || !formData.firstName.trim() || !formData.lastName.trim()}
           sx={{
-            bgcolor: '#94C456',
-            '&:hover': { bgcolor: '#7FB03E' },
+            bgcolor: 'primary.main',
+            '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
           {saving ? 'Speichert...' : 'Speichern'}

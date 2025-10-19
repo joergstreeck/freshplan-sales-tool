@@ -204,7 +204,7 @@ export const FilterBar: React.FC = () => {
           label="Risiko > 70"
           active={hasFilter('riskScore', '>70')}
           onClick={() => toggleQuickFilter('riskScore', '>70')}
-          color="#FF9800"
+          color="warning.main"
           icon={<WarningIcon fontSize="small" />}
         />
 

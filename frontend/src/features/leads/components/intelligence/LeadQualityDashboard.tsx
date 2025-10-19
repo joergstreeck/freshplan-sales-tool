@@ -106,7 +106,7 @@ const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   const getTrendIcon = () => {
     if (!trend) return null;
-    if (trend > 0) return <TrendingUp sx={{ color: '#4caf50', fontSize: 20 }} />;
+    if (trend > 0) return <TrendingUp sx={{ color: 'success.main', fontSize: 20 }} />;
     return null;
   };
 
@@ -173,7 +173,11 @@ export const LeadQualityDashboard: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, color: '#004F7B', fontWeight: 'bold' }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ mb: 3, color: 'secondary.main', fontWeight: 'bold' }}
+      >
         Lead-Qualität Übersicht
       </Typography>
 
@@ -186,7 +190,7 @@ export const LeadQualityDashboard: React.FC = () => {
             subtitle="Basis: Alle Leads"
             trend={data.qualityTrend}
             color="#004F7B"
-            icon={<Star sx={{ fontSize: 40, color: '#94C456' }} />}
+            icon={<Star sx={{ fontSize: 40, color: 'primary.main' }} />}
           />
         </Grid>
 
@@ -196,7 +200,7 @@ export const LeadQualityDashboard: React.FC = () => {
             value={data.scoreDistribution.top}
             subtitle="Score 80-100 Punkte"
             color="#94C456"
-            icon={<CheckCircle sx={{ fontSize: 40, color: '#94C456' }} />}
+            icon={<CheckCircle sx={{ fontSize: 40, color: 'primary.main' }} />}
           />
         </Grid>
 
@@ -206,7 +210,7 @@ export const LeadQualityDashboard: React.FC = () => {
             value={`${Math.round((data.qualificationLevels.complete / data.totalLeads) * 100)}%`}
             subtitle={`${data.qualificationLevels.complete}/${data.totalLeads} Leads`}
             color="#4CAF50"
-            icon={<CheckCircle sx={{ fontSize: 40, color: '#4CAF50' }} />}
+            icon={<CheckCircle sx={{ fontSize: 40, color: 'success.main' }} />}
           />
         </Grid>
 
@@ -216,7 +220,7 @@ export const LeadQualityDashboard: React.FC = () => {
             value={data.qualificationLevels.minimal}
             subtitle="Kritische Datenlücken"
             color="#F44336"
-            icon={<Warning sx={{ fontSize: 40, color: '#F44336' }} />}
+            icon={<Warning sx={{ fontSize: 40, color: 'error.main' }} />}
           />
         </Grid>
       </Grid>
@@ -226,7 +230,7 @@ export const LeadQualityDashboard: React.FC = () => {
         {/* Lead-Score-Verteilung */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#004F7B' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Lead-Score-Verteilung
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
@@ -255,7 +259,7 @@ export const LeadQualityDashboard: React.FC = () => {
         {/* Qualifizierungs-Level */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#004F7B' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Qualifizierungs-Level
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
@@ -371,7 +375,7 @@ export const LeadQualityDashboard: React.FC = () => {
       {/* Qualifizierungs-Fortschritt */}
       <Box sx={{ mt: 3 }}>
         <Paper sx={{ p: 2 }}>
-          <Typography variant="h6" gutterBottom sx={{ color: '#004F7B' }}>
+          <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
             Qualifizierungs-Fortschritt
           </Typography>
           <Stack spacing={2}>

@@ -14,13 +14,13 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
-  UseQueryOptions,
-  UseMutationOptions,
+  type UseQueryOptions,
+  type UseMutationOptions,
 } from '@tanstack/react-query';
 import { customerApi } from './customerApi';
 import { fieldDefinitionApi } from './fieldDefinitionApi';
 import { locationApi } from './locationApi';
-import {
+import type {
   CustomerWithFields,
   CustomerDraftResponse,
   CustomerSearchResponse,
@@ -32,9 +32,9 @@ import {
   PaginatedResponse,
   ApiError,
 } from '../types/api.types';
-import { Customer } from '../types/customer.types';
-import { FieldDefinition, EntityType } from '../types/field.types';
-import { LocationWithFields } from '../types/location.types';
+import type { Customer } from '../types/customer.types';
+import type { FieldDefinition, EntityType } from '../types/field.types';
+import type { LocationWithFields } from '../types/location.types';
 
 // Query Keys
 export const queryKeys = {

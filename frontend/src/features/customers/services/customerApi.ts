@@ -9,7 +9,7 @@
  */
 
 import { apiClient } from './api-client';
-import {
+import type {
   CustomerWithFields,
   CustomerDraftResponse,
   CustomerSearchResponse,
@@ -22,7 +22,7 @@ import {
   ImportResultResponse,
   CustomerListItem,
 } from '../types/api.types';
-import { Customer } from '../types/customer.types';
+import type { Customer } from '../types/customer.types';
 
 /**
  * Import validation response type

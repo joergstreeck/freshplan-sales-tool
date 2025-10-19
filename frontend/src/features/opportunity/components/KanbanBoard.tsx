@@ -70,11 +70,11 @@ const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunit
   const getProbabilityColor = useCallback(
     (probability?: number) => {
       if (!probability) return theme.palette.grey[400];
-      if (probability >= 80) return '#66BB6A';
+      if (probability >= 80) return theme.palette.success.main;
       if (probability >= 60) return '#94C456';
-      if (probability >= 40) return '#FFA726';
-      if (probability >= 20) return '#FF7043';
-      return '#EF5350';
+      if (probability >= 40) return 'warning.main';
+      if (probability >= 20) return theme.palette.error.light;
+      return theme.palette.error.main;
     },
     [theme]
   );
@@ -131,8 +131,8 @@ const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunit
               <Typography
                 variant="h6"
                 sx={{
-                  color: '#004F7B',
-                  fontFamily: 'Antonio, sans-serif',
+                  color: 'secondary.main',
+                  fontFamily: theme => theme.typography.h4.fontFamily,
                   fontWeight: 600,
                   fontSize: '1rem',
                   mb: 1,
@@ -154,7 +154,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunit
 
               {/* Value */}
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <EuroIcon fontSize="small" sx={{ color: '#94C456', mr: 0.5 }} />
+                <EuroIcon fontSize="small" sx={{ color: 'primary.main', mr: 0.5 }} />
                 <Typography
                   variant="body2"
                   sx={{ color: theme.palette.text.primary, fontWeight: 600 }}
@@ -215,7 +215,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = React.memo(({ opportunit
                     sx={{
                       width: 24,
                       height: 24,
-                      bgcolor: '#94C456',
+                      bgcolor: 'primary.main',
                       fontSize: '0.75rem',
                       fontWeight: 600,
                     }}
@@ -251,8 +251,8 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
   const config = STAGE_CONFIGS_RECORD[stage] || {
     label: stage,
     icon: <AssignmentIcon />,
-    bgColor: '#f5f5f5',
-    borderColor: '#e0e0e0',
+    bgColor: 'grey.100',
+    borderColor: 'grey.300',
   };
   const totalValue = opportunities?.reduce((sum, opp) => sum + (opp.value || 0), 0) || 0;
 
@@ -264,7 +264,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
         minWidth: 280,
         maxWidth: 450,
         p: 2,
-        bgcolor: config?.bgColor || '#f5f5f5',
+        bgcolor: config?.bgColor || 'grey.100',
         border: '1px solid rgba(0, 0, 0, 0.12)',
         borderRadius: 2,
       }}
@@ -275,8 +275,8 @@ const KanbanColumn: React.FC<KanbanColumnProps> = React.memo(({ stage, opportuni
           <Typography
             variant="h6"
             sx={{
-              color: config?.color || '#666',
-              fontFamily: 'Antonio, sans-serif',
+              color: config?.color || theme.palette.grey[600],
+              fontFamily: theme => theme.typography.h4.fontFamily,
               fontWeight: 700,
               fontSize: '1.1rem',
             }}
@@ -581,8 +581,8 @@ export const KanbanBoard: React.FC = React.memo(() => {
         <Typography
           variant="h5"
           sx={{
-            color: '#004F7B',
-            fontFamily: 'Antonio, sans-serif',
+            color: 'secondary.main',
+            fontFamily: theme => theme.typography.h4.fontFamily,
             fontWeight: 700,
           }}
         >
@@ -591,13 +591,13 @@ export const KanbanBoard: React.FC = React.memo(() => {
 
         {/* Zentrale Metriken */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Typography variant="body1" sx={{ color: '#94C456', fontWeight: 600 }}>
+          <Typography variant="body1" sx={{ color: 'primary.main', fontWeight: 600 }}>
             {pipelineStats.totalActive} Aktive
           </Typography>
           <Typography variant="body1" sx={{ color: theme.palette.text.secondary }}>
             •
           </Typography>
-          <Typography variant="body1" sx={{ color: '#004F7B', fontWeight: 600 }}>
+          <Typography variant="body1" sx={{ color: 'secondary.main', fontWeight: 600 }}>
             {new Intl.NumberFormat('de-DE', {
               style: 'currency',
               currency: 'EUR',
@@ -637,8 +637,8 @@ export const KanbanBoard: React.FC = React.memo(() => {
             fontSize: '0.875rem',
           }}
         >
-          <CheckCircleIcon sx={{ fontSize: 16, color: '#66BB6A' }} />
-          <Typography variant="body2" sx={{ color: '#66BB6A' }}>
+          <CheckCircleIcon sx={{ fontSize: 16, color: 'success.main' }} />
+          <Typography variant="body2" sx={{ color: 'success.main' }}>
             {pipelineStats.totalWon} Gewonnen (
             {new Intl.NumberFormat('de-DE', {
               style: 'currency',
@@ -652,8 +652,8 @@ export const KanbanBoard: React.FC = React.memo(() => {
             •
           </Typography>
 
-          <CancelIcon sx={{ fontSize: 16, color: '#EF5350' }} />
-          <Typography variant="body2" sx={{ color: '#EF5350' }}>
+          <CancelIcon sx={{ fontSize: 16, color: 'error.main' }} />
+          <Typography variant="body2" sx={{ color: 'error.main' }}>
             {pipelineStats.totalLost} Verloren (
             {new Intl.NumberFormat('de-DE', {
               style: 'currency',
@@ -667,7 +667,7 @@ export const KanbanBoard: React.FC = React.memo(() => {
             •
           </Typography>
 
-          <Typography variant="body2" sx={{ color: '#FFA726', fontWeight: 600 }}>
+          <Typography variant="body2" sx={{ color: 'warning.main', fontWeight: 600 }}>
             {Math.round(pipelineStats.conversionRate * 100)}% Erfolgsquote
           </Typography>
         </Box>
@@ -705,7 +705,7 @@ export const KanbanBoard: React.FC = React.memo(() => {
                   backgroundColor: '#94C456',
                   borderRadius: 4,
                   '&:hover': {
-                    backgroundColor: '#7BA646',
+                    backgroundColor: theme.palette.primary.dark,
                   },
                 },
               }),
@@ -733,7 +733,9 @@ export const KanbanBoard: React.FC = React.memo(() => {
                       transform: 'translateY(-50%)',
                       width: 100,
                       height: 200,
-                      bgcolor: snapshot.isDraggingOver ? '#66BB6A' : 'rgba(102, 187, 106, 0.1)',
+                      bgcolor: snapshot.isDraggingOver
+                        ? theme.palette.success.main
+                        : 'rgba(102, 187, 106, 0.1)',
                       border: '2px dashed #66BB6A',
                       display: 'flex',
                       flexDirection: 'column',
@@ -746,8 +748,8 @@ export const KanbanBoard: React.FC = React.memo(() => {
                       },
                     }}
                   >
-                    <CheckCircleIcon sx={{ fontSize: 40, color: '#66BB6A', mb: 1 }} />
-                    <Typography variant="caption" sx={{ color: '#66BB6A', fontWeight: 600 }}>
+                    <CheckCircleIcon sx={{ fontSize: 40, color: 'success.main', mb: 1 }} />
+                    <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>
                       Gewonnen
                     </Typography>
                     {provided.placeholder}
@@ -767,7 +769,9 @@ export const KanbanBoard: React.FC = React.memo(() => {
                       bottom: 20,
                       width: 100,
                       height: 120,
-                      bgcolor: snapshot.isDraggingOver ? '#EF5350' : 'rgba(239, 83, 80, 0.1)',
+                      bgcolor: snapshot.isDraggingOver
+                        ? theme.palette.error.main
+                        : 'rgba(239, 83, 80, 0.1)',
                       border: '2px dashed #EF5350',
                       display: 'flex',
                       flexDirection: 'column',
@@ -780,8 +784,8 @@ export const KanbanBoard: React.FC = React.memo(() => {
                       },
                     }}
                   >
-                    <CancelIcon sx={{ fontSize: 40, color: '#EF5350', mb: 1 }} />
-                    <Typography variant="caption" sx={{ color: '#EF5350', fontWeight: 600 }}>
+                    <CancelIcon sx={{ fontSize: 40, color: 'error.main', mb: 1 }} />
+                    <Typography variant="caption" sx={{ color: 'error.main', fontWeight: 600 }}>
                       Verloren
                     </Typography>
                     {provided.placeholder}

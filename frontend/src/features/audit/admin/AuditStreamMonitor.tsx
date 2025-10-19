@@ -193,10 +193,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
           <Box display="flex" alignItems="center" gap={1}>
             <Typography
               variant="h6"
-              sx={{
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
-              }}
+              sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
             >
               Live Activity Stream
             </Typography>
@@ -246,7 +243,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
               sx={{
                 '& .MuiFormControlLabel-label': {
                   fontSize: '0.875rem',
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: theme => theme.typography.body1.fontFamily,
                 },
               }}
             />
@@ -292,7 +289,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
           >
             {isConnected ? (
               <>
-                <CircularProgress sx={{ color: '#94C456' }} />
+                <CircularProgress sx={{ color: 'primary.main' }} />
                 <Typography color="text.secondary">Warte auf Events...</Typography>
               </>
             ) : (
@@ -334,7 +331,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                       variant="caption"
                       sx={{
                         minWidth: 60,
-                        fontFamily: 'monospace',
+                        fontFamily: '"Courier New", Courier, monospace',
                         color: 'text.secondary',
                       }}
                     >
@@ -408,7 +405,7 @@ export const AuditStreamMonitor: React.FC<AuditStreamMonitorProps> = ({
                           variant="caption"
                           sx={{
                             color: 'text.disabled',
-                            fontFamily: 'monospace',
+                            fontFamily: '"Courier New", Courier, monospace',
                           }}
                         >
                           IP: {entry.ipAddress}

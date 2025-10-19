@@ -17,6 +17,7 @@ import {
   ListItemIcon,
   Divider,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import {
   Sort as SortIcon,
@@ -40,6 +41,7 @@ export function SmartSortSelector({
   variant = 'full',
   showDescription = true,
 }: SmartSortSelectorProps) {
+  const theme = useTheme();
   const { smartSortId, setSmartSort } = useFocusListStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -83,15 +85,15 @@ export function SmartSortSelector({
   const getCategoryColor = (category: SmartSortOption['category']) => {
     switch (category) {
       case 'priority':
-        return '#f44336'; // Rot
+        return theme.palette.error.main; // Rot
       case 'business':
-        return '#4caf50'; // Grün
+        return theme.palette.success.main; // Grün
       case 'activity':
-        return '#2196f3'; // Blau
+        return theme.palette.info.main; // Blau
       case 'custom':
-        return '#9e9e9e'; // Grau
+        return theme.palette.grey[500]; // Grau
       default:
-        return '#9e9e9e';
+        return theme.palette.grey[500];
     }
   };
 

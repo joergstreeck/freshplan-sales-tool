@@ -17,7 +17,7 @@ export const TeamChat = () => (
     description="Bleiben Sie mit Ihrem Team in Kontakt - direkt in FreshPlan."
     expectedDate="Q2 2025"
     features={['Echtzeit-Messaging', 'Team-Channels', 'Datei-Sharing']}
-    icon={<ChatIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<ChatIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -28,7 +28,7 @@ export const Ankuendigungen = () => (
     description="Teilen Sie wichtige Updates und Neuigkeiten mit allen Mitarbeitern."
     expectedDate="Q1 2025"
     features={['Unternehmens-News', 'Prioritäts-Markierungen', 'Lesebestätigungen']}
-    icon={<AnnouncementIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<AnnouncementIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -39,7 +39,7 @@ export const Notizen = () => (
     description="Halten Sie Ideen fest und teilen Sie Notizen mit Kollegen."
     expectedDate="Q2 2025"
     features={['Rich-Text Editor', 'Notiz-Kategorien', 'Team-Notizen']}
-    icon={<NotesIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<NotesIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -50,7 +50,7 @@ export const InterneNachrichten = () => (
     description="Privater Nachrichtenaustausch innerhalb Ihres Teams."
     expectedDate="Q2 2025"
     features={['Direkt-Nachrichten', 'Gruppen-Nachrichten', 'Nachrichtenverlauf']}
-    icon={<MailIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<MailIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -62,7 +62,7 @@ export const MeinProfil = () => (
     description="Aktualisieren Sie Ihr Profil, Kontaktdaten und Präferenzen."
     expectedDate="Q1 2025"
     features={['Profil-Informationen', 'Avatar-Upload', 'Kontaktdaten']}
-    icon={<PersonIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<PersonIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -73,7 +73,7 @@ export const Benachrichtigungen = () => (
     description="Personalisieren Sie Ihre Benachrichtigungseinstellungen."
     expectedDate="Q1 2025"
     features={['E-Mail-Benachrichtigungen', 'In-App Notifications', 'Push-Nachrichten']}
-    icon={<NotificationsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<NotificationsIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -84,7 +84,7 @@ export const Darstellung = () => (
     description="Themes, Layouts und visuelle Präferenzen anpassen."
     expectedDate="Q2 2025"
     features={['Dark Mode', 'Farbschemas', 'Schriftgrößen']}
-    icon={<PaletteIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<PaletteIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -95,6 +95,6 @@ export const Sicherheit = () => (
     description="Verwalten Sie Passwörter, Zwei-Faktor-Authentifizierung und aktive Sessions."
     expectedDate="Q1 2025"
     features={['Passwort ändern', 'Zwei-Faktor-Authentifizierung', 'Session-Verwaltung']}
-    icon={<SecurityIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<SecurityIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );

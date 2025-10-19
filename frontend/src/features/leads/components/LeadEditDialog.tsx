@@ -169,8 +169,8 @@ export function LeadEditDialog({ open, onClose, lead, onSave }: LeadEditDialogPr
           variant="contained"
           disabled={saving || !formData.companyName.trim()}
           sx={{
-            bgcolor: '#94C456',
-            '&:hover': { bgcolor: '#7FB03E' },
+            bgcolor: 'primary.main',
+            '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
           {saving ? 'Speichert...' : 'Speichern'}

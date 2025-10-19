@@ -183,11 +183,11 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
       <Paper sx={{ p: 2, mb: 2 }}>
         <Box display="flex" alignItems="center" justifyContent="space-between">
           <Box display="flex" alignItems="center" gap={2}>
-            <Avatar sx={{ bgcolor: '#004F7B' }}>
+            <Avatar sx={{ bgcolor: 'secondary.main' }}>
               <PersonIcon />
             </Avatar>
             <Box>
-              <Typography variant="h6" sx={{ fontFamily: 'Antonio, sans-serif' }}>
+              <Typography variant="h6" sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}>
                 Aktivitätsverlauf
               </Typography>
               {userName && (
@@ -352,7 +352,7 @@ export const UserAuditTimeline: React.FC<UserAuditTimelineProps> = ({
                                     p: 1,
                                     bgcolor: 'grey.50',
                                     borderRadius: 1,
-                                    fontFamily: 'monospace',
+                                    fontFamily: '"Courier New", Courier, monospace',
                                     fontSize: '0.85rem',
                                   }}
                                 >

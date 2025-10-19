@@ -39,7 +39,7 @@ export const EmailPosteingang = () => (
       'Automatische Lead-Erkennung',
       'Quick-Actions für Lead-Konvertierung',
     ]}
-    icon={<EmailIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<EmailIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -50,7 +50,7 @@ export const Kampagnen = () => (
     description="Erstellen Sie zielgerichtete Kampagnen für maximale Neukundengewinnung."
     expectedDate="Q2 2025"
     features={['Kampagnen-Designer', 'E-Mail-Templates', 'Performance-Tracking']}
-    icon={<CampaignIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<CampaignIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -66,7 +66,7 @@ export const LeadErfassung = () => (
       'Lead-Scoring',
       'Integration mit CRM-Prozessen',
     ]}
-    icon={<PersonAddIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<PersonAddIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -82,7 +82,7 @@ export const Verkaufschancen = () => (
       'Forecast-Berichte',
       'Automatische Nachfass-Erinnerungen',
     ]}
-    icon={<AccountTreeIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<AccountTreeIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -94,7 +94,7 @@ export const Aktivitaeten = () => (
     description="Vollständige Historie aller Aktivitäten und Interaktionen mit Ihren Kunden."
     expectedDate="Q1 2025"
     features={['Aktivitäts-Timeline', 'Automatische Erfassung', 'Filter und Suche']}
-    icon={<LocalActivityIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<LocalActivityIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -106,7 +106,7 @@ export const UmsatzBericht = () => (
     description="Verstehen Sie Ihre Umsatzentwicklung mit interaktiven Dashboards."
     expectedDate="Q2 2025"
     features={['Umsatz-Dashboards', 'Trend-Analysen', 'Prognose-Tools']}
-    icon={<TrendingUpIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<TrendingUpIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -117,7 +117,7 @@ export const KundenAnalyse = () => (
     description="Verstehen Sie Ihre Kunden besser durch datengetriebene Analysen."
     expectedDate="Q2 2025"
     features={['Kundensegmentierung', 'Verhaltensanalysen', 'Churn-Prognosen']}
-    icon={<GroupIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<GroupIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -128,7 +128,7 @@ export const AktivitaetsberBerichte = () => (
     description="Detaillierte Berichte über alle Vertriebsaktivitäten und deren Erfolg."
     expectedDate="Q2 2025"
     features={['Aktivitäts-Metriken', 'Team-Performance', 'Conversion-Analysen']}
-    icon={<AssessmentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<AssessmentIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -140,7 +140,7 @@ export const Einstellungen = () => (
     description="Konfigurieren Sie Systemeinstellungen, Benachrichtigungen und mehr."
     expectedDate="Q1 2025"
     features={['Persönliche Einstellungen', 'Benachrichtigungen', 'Integrationen']}
-    icon={<SettingsIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<SettingsIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -152,7 +152,7 @@ export const AdminSettings = () => (
     description="Verwalten Sie systemweite Einstellungen und Konfigurationen."
     expectedDate="Q2 2025"
     features={['Globale Konfiguration', 'Sicherheitseinstellungen', 'Backup-Management']}
-    icon={<SettingsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<SettingsIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -163,7 +163,7 @@ export const SystemLogs = () => (
     description="Echtzeit-Logs und historische Systemereignisse für Troubleshooting."
     expectedDate="Q2 2025"
     features={['Echtzeit-Logs', 'Log-Filterung', 'Export-Funktionen']}
-    icon={<StorageIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<StorageIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -174,7 +174,7 @@ export const ComplianceReports = () => (
     description="Automatische Generierung von Compliance- und Audit-Berichten."
     expectedDate="Q3 2025"
     features={['DSGVO-Berichte', 'Audit-Trails', 'Automatische Reports']}
-    icon={<ArticleIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<ArticleIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -185,7 +185,7 @@ export const TooltipsVerwalten = () => (
     description="Erstellen und bearbeiten Sie Tooltips für bessere Benutzerführung."
     expectedDate="Q2 2025"
     features={['Tooltip-Editor', 'Kontext-Regeln', 'A/B-Testing']}
-    icon={<EditNoteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<EditNoteIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -196,7 +196,7 @@ export const TourenErstellen = () => (
     description="Führen Sie neue Benutzer mit geführten Touren durch die Anwendung."
     expectedDate="Q2 2025"
     features={['Tour-Designer', 'Schritt-für-Schritt Editor', 'Benutzer-Segmentierung']}
-    icon={<RouteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<RouteIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -207,7 +207,7 @@ export const HelpAnalytics = () => (
     description="Detaillierte Analysen zur Nutzung und Effektivität des Hilfe-Systems."
     expectedDate="Q3 2025"
     features={['Nutzungs-Statistiken', 'Effektivitäts-Metriken', 'Verbesserungs-Vorschläge']}
-    icon={<InsightsIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<InsightsIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -219,7 +219,7 @@ export const ErsteSchritte = () => (
     description="Schritt-für-Schritt Anleitungen für einen erfolgreichen Start."
     expectedDate="Verfügbar"
     features={['Quick-Start Guide', 'Video-Tutorials', 'Best Practices']}
-    icon={<SchoolIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<SchoolIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -230,7 +230,7 @@ export const Handbuecher = () => (
     description="Detaillierte Anleitungen und Referenzmaterial für alle FreshPlan-Features."
     expectedDate="Kontinuierlich erweitert"
     features={['Feature-Dokumentation', 'Use-Case Beispiele', 'Troubleshooting Guides']}
-    icon={<LibraryBooksIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<LibraryBooksIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -241,7 +241,7 @@ export const VideoTutorials = () => (
     description="Professionelle Video-Anleitungen für effizientes Arbeiten."
     expectedDate="Q1 2025"
     features={['Grundlagen-Videos', 'Feature-Deep-Dives', 'Tips & Tricks']}
-    icon={<VideoLibraryIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<VideoLibraryIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -252,7 +252,7 @@ export const FAQ = () => (
     description="Finden Sie Antworten auf die am häufigsten gestellten Fragen."
     expectedDate="Verfügbar"
     features={['Kategorisierte FAQs', 'Suchfunktion', 'Community-Antworten']}
-    icon={<QuizIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<QuizIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -263,7 +263,7 @@ export const Support = () => (
     description="Erreichen Sie unser Support-Team für persönliche Unterstützung."
     expectedDate="Verfügbar"
     features={['Ticket-System', 'Live-Chat', 'Telefon-Support']}
-    icon={<SupportAgentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<SupportAgentIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -280,7 +280,7 @@ export const MeinProfil = () => (
       'Passwort-Verwaltung',
       'Zwei-Faktor-Authentifizierung',
     ]}
-    icon={<AccountCircleIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<AccountCircleIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -291,7 +291,7 @@ export const Benachrichtigungen = () => (
     description="Konfigurieren Sie E-Mail-, Push- und In-App-Benachrichtigungen."
     expectedDate="Q1 2025"
     features={['Benachrichtigungs-Typen', 'Zeitplanung', 'Kanal-Präferenzen', 'Stummschaltung']}
-    icon={<NotificationsIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<NotificationsIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -302,7 +302,7 @@ export const Darstellung = () => (
     description="Themes, Layouts und visuelle Präferenzen nach Ihrem Geschmack."
     expectedDate="Q2 2025"
     features={['Dark/Light Mode', 'Farbschema-Anpassung', 'Layout-Optionen', 'Schriftgröße']}
-    icon={<PaletteIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<PaletteIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -313,7 +313,7 @@ export const Sicherheit = () => (
     description="Erweiterte Sicherheitseinstellungen und Zugriffskontrolle."
     expectedDate="Q1 2025"
     features={['Login-Historie', 'Aktive Sitzungen', 'API-Schlüssel', 'Berechtigungen']}
-    icon={<SecurityIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<SecurityIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -330,7 +330,7 @@ export const Performance = () => (
       'Bottleneck-Analyse',
       'Optimierungs-Vorschläge',
     ]}
-    icon={<SpeedIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<SpeedIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -346,7 +346,7 @@ export const BackupRecovery = () => (
       'Recovery-Points',
       'Disaster Recovery Plan',
     ]}
-    icon={<BackupIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<BackupIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -357,7 +357,7 @@ export const SystemVerwaltung = () => (
     description="Verwalten Sie alle wichtigen Systemkomponenten an einem Ort."
     expectedDate="Q2 2025"
     features={['Service-Status', 'Konfiguration', 'Wartungsmodus', 'System-Updates']}
-    icon={<DashboardIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<DashboardIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 

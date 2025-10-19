@@ -36,7 +36,15 @@ export const Step1BasisFilialstruktur: React.FC = () => {
 
   // Field groups for better organization
   const baseFields = useMemo(() => {
-    return ['customerNumber', 'companyName', 'legalForm', 'industry', 'chainCustomer']
+    return [
+      'customerNumber',
+      'companyName',
+      'legalForm',
+      'businessType',
+      'kitchenSize',
+      'employeeCount',
+      'chainCustomer',
+    ]
       .map(key => getFieldByKey(key))
       .filter(isFieldDefinition);
   }, [getFieldByKey]);

@@ -62,9 +62,9 @@ const StatCard: React.FC<StatCardProps> = ({
       <Typography
         variant="h4"
         sx={{
-          fontFamily: 'Antonio, sans-serif',
+          fontFamily: theme => theme.typography.h4.fontFamily,
           fontWeight: 'bold',
-          color: '#333',
+          color: 'grey.800',
           mb: 0.5,
         }}
       >
@@ -74,7 +74,7 @@ const StatCard: React.FC<StatCardProps> = ({
       <Typography
         variant="subtitle2"
         color="text.secondary"
-        sx={{ fontFamily: 'Poppins, sans-serif' }}
+        sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
       >
         {title}
       </Typography>
@@ -133,7 +133,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           title="Kritische Ereignisse"
           value={metrics.criticalEventsToday}
           icon={<WarningIcon />}
-          color={metrics.criticalEventsToday > 0 ? '#f44336' : '#4caf50'}
+          color={metrics.criticalEventsToday > 0 ? 'error.main' : 'success.main'}
           trend={metrics.criticalEventsToday > 0 ? { value: 5, isUp: true } : undefined}
         />
       </Grid>
@@ -143,14 +143,18 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
           title="Audit Coverage"
           value={`${metrics.coverage}%`}
           icon={<SecurityIcon />}
-          color="#ff9800"
+          color="warning.main"
         />
       </Grid>
 
       {/* Compliance Overview */}
       <Grid size={{ xs: 12, md: 8 }}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}
+          >
             Compliance Status
           </Typography>
 
@@ -169,9 +173,9 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
                   sx={{
                     height: 8,
                     borderRadius: 4,
-                    bgcolor: '#e0e0e0',
+                    bgcolor: 'grey.300',
                     '& .MuiLinearProgress-bar': {
-                      bgcolor: metrics.retentionCompliance >= 80 ? '#94C456' : '#ff9800',
+                      bgcolor: metrics.retentionCompliance >= 80 ? 'primary.main' : 'warning.main',
                     },
                   }}
                 />
@@ -200,7 +204,11 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
       {/* Top Event Types */}
       <Grid size={{ xs: 12, md: 4 }}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}
+          >
             Top Ereignistypen
           </Typography>
 
@@ -222,7 +230,7 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
                   size="small"
                   sx={{
                     bgcolor: '#004F7B15',
-                    color: '#004F7B',
+                    color: 'secondary.main',
                   }}
                 />
               </Box>
@@ -234,7 +242,11 @@ export const AuditDashboard: React.FC<AuditDashboardProps> = ({
       {/* Activity Timeline */}
       <Grid size={{ xs: 12 }}>
         <Paper sx={{ p: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+          <Typography
+            variant="h6"
+            gutterBottom
+            sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}
+          >
             Aktivitätsverlauf (7 Tage)
           </Typography>
 

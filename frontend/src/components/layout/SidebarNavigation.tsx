@@ -27,7 +27,7 @@ const StyledDrawer = styled(Drawer, {
       duration: theme.transitions.duration.enteringScreen,
     }),
     overflowX: 'hidden',
-    backgroundColor: '#FAFAFA', // Leicht grauer Hintergrund für besseren Kontrast
+    backgroundColor: 'grey.50', // Leicht grauer Hintergrund für besseren Kontrast
     borderRight: '2px solid #94C456', // Freshfoodz Grün als Akzent
     boxShadow: '2px 0 8px rgba(0, 0, 0, 0.05)',
   },
@@ -145,8 +145,8 @@ export const SidebarNavigation: React.FC = () => {
             <Typography
               variant="h6"
               sx={{
-                color: '#004F7B',
-                fontFamily: 'Antonio, sans-serif',
+                color: 'secondary.main',
+                fontFamily: theme => theme.typography.h4.fontFamily,
                 fontWeight: 700,
               }}
             >
@@ -159,7 +159,7 @@ export const SidebarNavigation: React.FC = () => {
             onClick={toggleSidebar}
             size="small"
             sx={{
-              color: '#94C456',
+              color: 'primary.main',
               '&:hover': {
                 backgroundColor: 'rgba(148, 196, 86, 0.1)',
               },

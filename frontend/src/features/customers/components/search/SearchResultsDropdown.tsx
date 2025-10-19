@@ -455,7 +455,9 @@ export const SearchResultsDropdown: React.FC<SearchResultsDropdownProps> = ({
                           }}
                         >
                           <LocationIcon sx={{ fontSize: 14, color: 'primary.main' }} />
-                          <span style={{ fontSize: '0.875rem', fontWeight: 600, color: '#1976d2' }}>
+                          <span
+                            style={{ fontSize: '0.875rem', fontWeight: 600, color: 'info.main' }}
+                          >
                             bei: {highlightText(result.data.customerName, searchQuery)}
                           </span>
                         </span>

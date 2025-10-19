@@ -153,13 +153,13 @@ const PreClaimDashboardWidget: React.FC = () => {
             <Box
               sx={{
                 p: 2,
-                bgcolor: '#E3F2FD',
+                bgcolor: 'info.lighter',
                 borderRadius: 1,
                 border: '1px solid #2196F3',
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h4" sx={{ color: '#2196F3', fontWeight: 700 }}>
+              <Typography variant="h4" sx={{ color: 'info.main', fontWeight: 700 }}>
                 {metrics.totalPreClaims}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -172,13 +172,13 @@ const PreClaimDashboardWidget: React.FC = () => {
             <Box
               sx={{
                 p: 2,
-                bgcolor: '#FFF3E0',
+                bgcolor: 'warning.lighter',
                 borderRadius: 1,
                 border: '1px solid #FF9800',
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h4" sx={{ color: '#FF9800', fontWeight: 700 }}>
+              <Typography variant="h4" sx={{ color: 'warning.main', fontWeight: 700 }}>
                 {metrics.expiringThisWeek}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -191,13 +191,13 @@ const PreClaimDashboardWidget: React.FC = () => {
             <Box
               sx={{
                 p: 2,
-                bgcolor: '#FFEBEE',
+                bgcolor: 'error.lighter',
                 borderRadius: 1,
                 border: '1px solid #F44336',
                 textAlign: 'center',
               }}
             >
-              <Typography variant="h4" sx={{ color: '#F44336', fontWeight: 700 }}>
+              <Typography variant="h4" sx={{ color: 'error.main', fontWeight: 700 }}>
                 {metrics.overdue}
               </Typography>
               <Typography variant="body2" color="text.secondary">
@@ -213,7 +213,7 @@ const PreClaimDashboardWidget: React.FC = () => {
             <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, mb: 1 }}>
               ⚠️ Überfällige Pre-Claims (Erstkontakt dokumentieren!)
             </Typography>
-            <List dense sx={{ bgcolor: '#FFEBEE', borderRadius: 1, mb: 2 }}>
+            <List dense sx={{ bgcolor: 'error.lighter', borderRadius: 1, mb: 2 }}>
               {overdueLeads.map(lead => (
                 <ListItem key={lead.id}>
                   <ListItemText
@@ -226,7 +226,7 @@ const PreClaimDashboardWidget: React.FC = () => {
                           label={`${lead.daysOverdue}d überfällig`}
                           size="small"
                           sx={{
-                            bgcolor: '#F44336',
+                            bgcolor: 'error.main',
                             color: '#fff',
                             fontWeight: 600,
                             fontSize: '0.7rem',
@@ -249,14 +249,14 @@ const PreClaimDashboardWidget: React.FC = () => {
           <Box
             sx={{
               p: 2,
-              bgcolor: '#E8F5E9',
+              bgcolor: 'success.lighter',
               borderRadius: 1,
               border: '1px solid #94C456',
               textAlign: 'center',
               mb: 2,
             }}
           >
-            <CheckCircleIcon sx={{ color: '#94C456', fontSize: 40, mb: 1 }} />
+            <CheckCircleIcon sx={{ color: 'primary.main', fontSize: 40, mb: 1 }} />
             <Typography variant="body2" color="text.secondary">
               Keine überfälligen Pre-Claims. Gut gemacht!
             </Typography>
@@ -274,11 +274,11 @@ const PreClaimDashboardWidget: React.FC = () => {
               window.location.href = '/leads?filter=pre-claim';
             }}
             sx={{
-              borderColor: '#2196F3',
-              color: '#2196F3',
+              borderColor: 'info.main',
+              color: 'info.main',
               '&:hover': {
-                borderColor: '#1976D2',
-                bgcolor: '#E3F2FD',
+                borderColor: 'info.dark',
+                bgcolor: 'info.lighter',
               },
             }}
           >
