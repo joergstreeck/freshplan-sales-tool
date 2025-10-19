@@ -366,17 +366,55 @@ public void syncXentralData() {
 }
 ```
 
-**Fallback:** Sprint 2.1.7.4 hat "Manual Activation Button" für Notfälle
+}
+```
 
 ### **Begründung**
-- ✅ **Real-Time:** PROSPECT → AKTIV sofort bei Bestellung
-- ✅ **Performant:** Kein Polling nötig (weniger API-Calls)
-- ✅ **User Experience:** Verkäufer sieht sofort AKTIV-Status
-- ✅ **Fallback:** Manual Button falls Webhook ausfällt
+- ✅ **Sofort umsetzbar:** Keine Beta-Feature-Flags, kein API-Kontakt nötig
+- ✅ **Einfacher:** Nightly Job statt Webhook-Infrastruktur
+- ✅ **Ausreichend:** Dashboard/Churn-Alarm brauchen kein Real-Time
+- ✅ **Migration-Path:** Später zu Webhooks wechselbar (wenn Production-Ready)
+
+### **Polling-Frequenz Entscheidung**
+
+**Problem:** Wie oft pollen?
+- Option A: Nightly (1x täglich, 02:00 Uhr) ← **GEWÄHLT**
+- Option B: Hybrid (Nightly + On-Demand bei Dialog-Öffnung)
+
+**User-Entscheidung (2025-10-19):** ✅ **Option A (Nightly)**
+
+**Begründung:**
+- ✅ Neue Xentral-Kunden werden **selten** angelegt (nicht täglich)
+- ✅ Verkäufer können 24h warten, bis Kunde im Dropdown erscheint
+- ✅ Einfacher (kein On-Demand API-Call, +0h statt +2h Aufwand)
+
+**Nightly Job Ablauf:**
+1. **02:00 Uhr:** Sync ALLE Xentral-Kunden (mit Sales-Rep Filter)
+2. **02:15 Uhr:** Sync ALLE Rechnungen (Umsatz + Zahlungsverhalten)
+3. **02:30 Uhr:** Check delivered Orders (PROSPECT → AKTIV Transition)
+4. **02:45 Uhr:** Churn-Detection läuft (nutzt frische Daten)
+
+**Dropdown-Verhalten:**
+- ConvertToCustomerDialog zeigt **gecachte** Xentral-Kunden (aus DB)
+- Daten max. 24h alt
+- Akzeptabel laut User-Feedback
 
 ### **Alternativen (verworfen)**
-❌ **Polling:** 1h Delay (zu langsam), mehr API-Calls (Performance)
-❌ **Hybrid:** Over-Engineering (Webhook reicht mit Manual Fallback)
+❌ **Webhook (Real-Time):** In Beta, benötigt api@xentral.com Kontakt
+❌ **Hybrid (Nightly + On-Demand):** Over-Engineering, +2h Aufwand
+❌ **Stündliches Polling:** Unnötig, Use Cases nicht zeitkritisch
+
+### **Migration-Path zu Webhooks (später)**
+Wenn Xentral Webhooks Production-Ready sind:
+```java
+// Später: Webhook Endpoint (statt Nightly Job)
+@POST
+@Path("/api/xentral/webhook/order-delivered")
+public Response handleOrderDelivered(XentralOrderDeliveredEvent event) {
+    orderEventHandler.handleOrderDelivered(event);
+    return Response.ok().build();
+}
+```
 
 ---
 
