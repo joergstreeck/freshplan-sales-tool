@@ -1,42 +1,13 @@
-# 🚀 Sprint 2.1.7.5 - Advanced Filters & Analytics
+# 🚀 Sprint 2.1.7.5 - Opportunity Management KOMPLETT
 
 **Sprint-ID:** 2.1.7.5
-**Status:** 📋 PLANNING
-**Priority:** P3 (Low - erst wenn echte Daten!)
-**Estimated Effort:** 16h (2 Arbeitstage)
+**Status:** 📋 READY TO START
+**Priority:** P1 (High - Opportunity-Modul vervollständigen)
+**Estimated Effort:** 35-40h (5-6 Arbeitstage, ~1 Woche)
 **Owner:** TBD
-**Created:** 2025-10-16
-**Updated:** 2025-10-16 (Manuelle Opportunity-Erstellung ergänzt)
-**Dependencies:** Sprint 2.1.7.1 COMPLETE + echte Produktions-Daten
-
----
-
-## ⚠️ WICHTIGE KLARSTELLUNGEN
-
-### **Opportunity Pipeline Stages: 7 Stages (FINAL)**
-
-Nach Diskussion und Entscheidung in Sprint 2.1.7.3:
-
-```
-1. NEW_LEAD       (10%)
-2. QUALIFICATION  (25%)
-3. NEEDS_ANALYSIS (40%)
-4. PROPOSAL       (60%)
-5. NEGOTIATION    (80%)
-6. CLOSED_WON     (100%)
-7. CLOSED_LOST    (0%)
-```
-
-**OpportunityType statt RENEWAL-Stage:**
-- ❌ RENEWAL ist KEINE Stage mehr (entfernt in Sprint 2.1.7.1)
-- ✅ OpportunityType Enum mit Freshfoodz Business Types implementiert
-- ✅ NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG
-
-**Customer-Opportunities starten bei NEEDS_ANALYSIS:**
-- NEW_LEAD + QUALIFICATION entfällt (Kunde ist bereits qualifiziert!)
-- Nur für Lead-Conversion: Start bei NEW_LEAD
-
-**Dependencies:** Sprint 2.1.7.1 COMPLETE + echte Produktions-Daten
+**Created:** 2025-10-19
+**Updated:** 2025-10-19 (Option C: Detail View + Advanced Filters kombiniert)
+**Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.2 COMPLETE, Sprint 2.1.7.3 COMPLETE, Sprint 2.1.7.4 COMPLETE
 
 ---
 
@@ -44,1044 +15,344 @@ Nach Diskussion und Entscheidung in Sprint 2.1.7.3:
 
 ### **Business Value**
 
-**Vertriebler können Opportunities intelligent filtern, priorisieren und manuell erstellen:**
+**Vertriebler können Opportunities VOLLSTÄNDIG managen - von Erstellung bis Abschluss:**
 
-- ✅ **Manuelle Opportunity-Erstellung** (ohne Lead/Customer - z.B. Messestand, Kaltakquise)
-- ✅ High-Value Filter (Deal-Wert > X€)
-- ✅ Urgent Filter (Close Date < 14 Tage)
-- ✅ Advanced Search Dialog (multi-criteria)
-- ✅ Pipeline-Analytics Dashboard (Konversionsrate, Forecast, Bottlenecks)
-- ✅ Custom Views speichern ("Meine Hot Deals", "Urgent This Week")
+**Track 1 - Detail View & Management:**
+- ✅ OpportunityDetailPage (vollständige Detailansicht statt nur Kanban-Cards)
+- ✅ Edit-Funktionalität (Opportunities bearbeiten ohne erneut Dialog öffnen)
+- ✅ Stage-Änderungen (manuelle Controls - Alternative zu Drag & Drop)
+- ✅ Activity Timeline UI (Activities visualisieren, Backend existiert bereits)
+- ✅ Dokumente & Kontakte (Anhänge verwalten, Lead-Contacts anzeigen)
+
+**Track 2 - Advanced Filters & Analytics:**
+- ✅ High-Value Filter (Deal-Wert > €10k, €50k, €100k)
+- ✅ Urgent Filter (Close Date < 7/14/30 Tage)
+- ✅ Multi-Criteria Search (Stage + Owner + DateRange + Value)
+- ✅ Pipeline-Analytics Dashboard (Conversion Rates, Forecast, Bottlenecks)
+- ✅ Custom Views (später optional - "Meine Hot Deals", "Urgent This Week")
 
 **Business Impact:**
-- **Fokus auf High-Value-Deals:** Verkäufer priorisiert große Deals
-- **Deadline-Management:** Kein Deal mehr verpassen (Urgent Filter!)
-- **Pipeline-Health sichtbar:** Manager sieht: Wo hakt es? (Bottleneck-Analyse)
-- **Revenue-Forecast:** Geschäftsleitung sieht: Welcher Umsatz kommt? (Weighted Pipeline)
+- Vollständiges CRUD für Opportunities (CREATE ✅, READ ✅, UPDATE ⚠️, DELETE ⚠️)
+- Vertriebler müssen nicht zwischen Kanban/Detail wechseln
+- Activity-Historie sofort sichtbar (wann wurde telefoniert, was besprochen?)
+- Dokumente zentral (Angebote, Verträge, Präsentationen)
+- Priorisierung: Fokus auf High-Value + Urgent Deals
+- Manager-Sicht: Pipeline-Health auf einen Blick
 
 ### **Technical Context**
 
-**Warum JETZT NICHT implementieren?**
-- ❌ **Keine echten Daten:** DEV-SEED hat nur 10 Opportunities
-- ❌ **Filter-Bedarf unklar:** Wir wissen nicht, was Verkäufer WIRKLICH brauchen
-- ❌ **YAGNI-Prinzip:** Baue Features nur wenn Pain Point existiert
+**Warum JETZT implementieren?**
+- ✅ **CREATE Flow existiert** (Sprint 2.1.7.1 + 2.1.7.3)
+- ✅ **Backend existiert** (OpportunityService, ActivityService, PUT/GET Endpoints)
+- ✅ **DEV-SEED existiert** (10 Opportunities + Activities testbar)
+- ✅ **User Experience Gap** (aktuell nur Kanban-Cards - keine Detail-Ansicht!)
+- ✅ **Logische Fortsetzung** (nach CUSTOMER/XENTRAL komplett → Opportunity komplett)
 
-**Wann implementieren?**
-- ✅ **Nach Go-Live:** Wenn 100+ Opportunities im System
-- ✅ **Nach User-Feedback:** "Ich brauche Filter X!"
-- ✅ **Nach Migration:** Wenn 500-1000 Opportunities aus altem System importiert
+**Backend existiert bereits:**
+- ✅ PUT `/api/opportunities/{id}` (OpportunityResource.updateOpportunity)
+- ✅ GET `/api/opportunities/{id}/activities` (ActivityResource)
+- ✅ POST `/api/opportunities/{id}/activities` (ActivityResource)
+- ✅ OpportunityStage Enum (7 Stages: NEW_LEAD → CLOSED_WON/LOST)
 
-**Was JETZT schon vorbereitet wird:**
-- ✅ Backend-Infrastruktur: Filter-Query-Object-Pattern
-- ✅ Frontend-Platzhalter: "Advanced Filters (Coming Soon)"
-- ✅ Dokumentation: Was wollen wir bauen?
-
----
-
-## 📦 DELIVERABLES (für SPÄTER!)
-
-### **0. Manuelle Opportunity-Erstellung** (3h)
-
-#### **0.1 "Neue Opportunity" Button in OpportunityPipeline** (30 Min)
-
-**Datei:** `frontend/src/features/opportunity/components/OpportunityPipeline.tsx`
-
-**Button hinzufügen:**
-```tsx
-{/* Header mit "Neue Opportunity" Button */}
-<Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-  <Typography variant="h5">Pipeline Übersicht</Typography>
-
-  <Box sx={{ flexGrow: 1 }} />
-
-  {/* NEU: Manuelle Opportunity-Erstellung */}
-  <Button
-    variant="contained"
-    color="primary"
-    startIcon={<AddIcon />}
-    onClick={() => setShowCreateDialog(true)}
-  >
-    Neue Opportunity
-  </Button>
-
-  {/* Bestehende Filter-Toggles... */}
-</Stack>
-
-<CreateOpportunityManualDialog
-  open={showCreateDialog}
-  onClose={() => setShowCreateDialog(false)}
-  onSuccess={() => loadOpportunities()}
-/>
-```
-
-#### **0.2 CreateOpportunityManualDialog Component** (1,5h)
-
-**Neue Datei:** `frontend/src/features/opportunity/components/CreateOpportunityManualDialog.tsx`
-
-**Anforderungen:**
-- MUI Dialog mit Form-Validation
-- Felder:
-  - **Opportunity-Quelle** (Select: "Messestand", "Kaltakquise", "Empfehlung", "Networking-Event", "Social Media", "Sonstiges")
-  - **Name** (Text, required)
-  - **Company Name** (Text, required - wird später zu Lead/Customer)
-  - **Deal Type** (Select: "Liefervertrag", "Testphase", "Pilot", "Vollversorgung", "Rahmenvertrag")
-  - **Expected Value** (Number, EUR, required)
-  - **Expected Close Date** (DatePicker, default: +30 Tage)
-  - **Description** (TextArea, optional)
-
-**Validation:**
-- Company Name required (min 2 Zeichen)
-- Expected Value > 0
-- Close Date > Today
-- Opportunity-Quelle selected
-
-**API Call:**
-```typescript
-POST /api/opportunities
-Body: {
-  source: 'EVENT' | 'COLD_OUTREACH' | 'REFERRAL' | 'NETWORKING' | 'SOCIAL_MEDIA' | 'OTHER',
-  name: string,
-  companyName: string,
-  dealType: string,
-  expectedValue: number,
-  expectedCloseDate: string (ISO-8601),
-  description?: string
-}
-
-Response: {
-  id: UUID,
-  name: string,
-  stage: 'NEW_LEAD',
-  opportunityType: OpportunityType.NEUGESCHAEFT,
-  ...
-}
-```
-
-**Success Flow:**
-```tsx
-const handleCreate = async () => {
-  try {
-    const opportunity = await httpClient.post('/api/opportunities', {
-      source: source,
-      name: name,
-      companyName: companyName,
-      dealType: dealType,
-      expectedValue: expectedValue,
-      expectedCloseDate: expectedCloseDate.toISOString(),
-      description: description
-    });
-
-    toast.success('Opportunity erstellt! 🎉');
-    onSuccess();
-    onClose();
-    navigate(`/opportunities/${opportunity.id}`);
-
-  } catch (error) {
-    toast.error('Fehler beim Erstellen der Opportunity');
-  }
-};
-```
-
-**Info-Box im Dialog:**
-```tsx
-<Alert severity="info" sx={{ mb: 2 }}>
-  💡 <strong>Hinweis:</strong> Diese Opportunity ist keinem Lead oder Kunden zugeordnet.
-  Du kannst später manuell einen Lead oder Kunden verknüpfen.
-</Alert>
-```
-
-#### **0.3 Backend: Manuelle Opportunity-Erstellung** (1h)
-
-**Datei:** `backend/src/main/java/de/freshplan/api/resources/OpportunityResource.java`
-
-**Neuer Endpoint:**
-```java
-/**
- * Erstellt eine Opportunity OHNE Lead/Customer (manuelle Erstellung)
- *
- * POST /api/opportunities
- */
-@POST
-@RolesAllowed({"admin", "manager", "sales"})
-public Response createOpportunity(@Valid CreateOpportunityManualRequest request) {
-    logger.debug("Creating manual opportunity: {}", request.getName());
-
-    // Validate: CompanyName required
-    if (request.getCompanyName() == null || request.getCompanyName().isBlank()) {
-        throw new BadRequestException("Company name is required");
-    }
-
-    Opportunity opportunity = opportunityService.createManual(request, getCurrentUser());
-
-    return Response.status(Response.Status.CREATED)
-        .entity(opportunityMapper.toResponse(opportunity))
-        .build();
-}
-```
-
-**OpportunityService.createManual():**
-```java
-public Opportunity createManual(CreateOpportunityManualRequest request, User currentUser) {
-    logger.debug("Creating manual opportunity for company: {}", request.getCompanyName());
-
-    Opportunity opportunity = new Opportunity();
-    opportunity.setName(request.getName());
-    opportunity.setCompanyName(request.getCompanyName()); // Temporär - später zu Lead/Customer
-    opportunity.setSource(request.getSource()); // "EVENT", "COLD_OUTREACH", etc.
-    opportunity.setDealType(request.getDealType());
-    opportunity.setOpportunityType(OpportunityType.NEUGESCHAEFT); // Hardcoded (manuelle Opp = immer NEUGESCHAEFT)
-    opportunity.setStage(OpportunityStage.NEW_LEAD); // Start bei NEW_LEAD
-    opportunity.setExpectedValue(request.getExpectedValue());
-    opportunity.setExpectedCloseDate(request.getExpectedCloseDate());
-    opportunity.setDescription(request.getDescription());
-    opportunity.setProbability(OpportunityStage.NEW_LEAD.getDefaultProbability()); // 10%
-    opportunity.setAssignedTo(currentUser);
-    opportunity.setCreatedBy(currentUser);
-
-    opportunityRepository.persist(opportunity);
-
-    logger.info("Manual opportunity created: {} (ID: {})", opportunity.getName(), opportunity.getId());
-
-    return opportunity;
-}
-```
-
-**Neue Felder in Opportunity.java:**
-```java
-@Column(name = "source")
-private String source; // "EVENT", "COLD_OUTREACH", "REFERRAL", etc.
-
-@Column(name = "company_name")
-private String companyName; // Temporär - solange kein Lead/Customer verknüpft
-```
-
-**Migration erstellen:**
-```bash
-MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
-# Beispiel: V10035__add_opportunity_source_and_company_name.sql
-```
-
-```sql
--- Opportunity Source (für manuelle Erstellung ohne Lead)
-ALTER TABLE opportunities ADD COLUMN source VARCHAR(50);
-ALTER TABLE opportunities ADD COLUMN company_name VARCHAR(255);
-
-COMMENT ON COLUMN opportunities.source IS
-'Opportunity-Quelle für manuelle Erstellung (EVENT, COLD_OUTREACH, REFERRAL, NETWORKING, SOCIAL_MEDIA, OTHER)';
-
-COMMENT ON COLUMN opportunities.company_name IS
-'Temporärer Company-Name (wenn noch kein Lead/Customer verknüpft). Wird NULL sobald Lead/Customer gesetzt.';
-
--- Beispiel-Daten:
-UPDATE opportunities SET source = 'LEAD_CONVERSION' WHERE lead_id IS NOT NULL;
-UPDATE opportunities SET source = 'CUSTOMER_EXPANSION' WHERE customer_id IS NOT NULL AND opportunity_type IN ('SORTIMENTSERWEITERUNG', 'NEUER_STANDORT', 'VERLAENGERUNG');
-```
+**Neue Komponenten:**
+- OpportunityDetailPage (Route: `/opportunities/:id`)
+- EditOpportunityDialog (MUI Dialog)
+- ActivityTimeline Component (vertikale Timeline)
+- DocumentsTab, ContactsTab (Tabs in DetailPage)
+- AdvancedSearchDialog (Multi-Criteria Filter)
+- PipelineAnalyticsDashboard (Route: `/opportunities/analytics`)
 
 ---
 
-### **1. High-Value Filter** (2h)
+## 📦 DELIVERABLES
 
-#### **1.1 OpportunityPipeline Filter-UI erweitern** (1h)
+### **TRACK 1: DETAIL VIEW & MANAGEMENT (20-28h)**
 
-**Datei:** `frontend/src/features/opportunity/components/OpportunityPipeline.tsx`
+### **1. OpportunityDetailPage** (6-8h)
+- [x] Route: `/opportunities/:id`
+- [x] Layout mit Tabs: Overview, Activities, Documents, Contacts
+- [x] Header: Title, Stage Badge, Value, Close Date, Edit Button
+- [x] Navigation: Von Pipeline + Lists klickbar (Kanban-Card → Detail)
+- [x] Tests: 8 Tests (Component + Navigation + Tabs)
 
-**Checkbox hinzufügen:**
-```tsx
-const [highValueOnly, setHighValueOnly] = useState(false);
-const [highValueThreshold, setHighValueThreshold] = useState(10000); // Default: 10.000€
+### **2. Edit-Funktionalität** (3-4h)
+- [x] EditOpportunityDialog Component (MUI Dialog)
+- [x] Backend: PUT `/api/opportunities/{id}` (existiert bereits!)
+- [x] Fields: title, description, expectedValue, closeDate, stage, opportunityType
+- [x] Validation: expectedValue > 0, closeDate >= today
+- [x] Success Flow: Toast + Reload + Dialog schließen
+- [x] Tests: 6 Tests (Dialog + API Integration + Validation)
 
-<Stack direction="row" spacing={2} alignItems="center">
-  <FormControlLabel
-    control={
-      <Checkbox
-        checked={highValueOnly}
-        onChange={(e) => setHighValueOnly(e.target.checked)}
-      />
-    }
-    label="Nur High-Value Deals"
-  />
+### **3. Stage-Änderungen Manuelle Controls** (2-3h)
+- [x] Stage-Dropdown in Header (Alternative zu Drag & Drop)
+- [x] Stage-History anzeigen (wann geändert von wem)
+- [x] Backend: PUT `/api/opportunities/{id}/stage` (NEU!)
+- [x] Confirmation Dialog bei großen Sprüngen (NEW_LEAD → CLOSED_WON)
+- [x] Tests: 4 Tests (Stage Change + Validation + History)
 
-  {/* Threshold-Einstellung (nur wenn aktiviert) */}
-  {highValueOnly && (
-    <TextField
-      type="number"
-      value={highValueThreshold}
-      onChange={(e) => setHighValueThreshold(parseInt(e.target.value))}
-      size="small"
-      InputProps={{
-        startAdornment: <span>≥</span>,
-        endAdornment: <span>€</span>
-      }}
-      sx={{ width: 150 }}
-    />
-  )}
-</Stack>
+### **4. Activity Timeline UI** (5-7h)
+- [x] ActivityTimeline Component (vertikale Timeline wie LinkedIn)
+- [x] Activity-Cards: Icon (Call/Email/Meeting), Outcome Badge, Notes, Timestamp
+- [x] AddActivityDialog (Type, Outcome, Notes, Date)
+- [x] Backend: GET `/api/opportunities/{id}/activities` (existiert!)
+- [x] Backend: POST `/api/opportunities/{id}/activities` (existiert!)
+- [x] Sort: Neueste zuerst (desc)
+- [x] Tests: 10 Tests (Timeline + Add Activity + Sort)
 
-// API Call erweitern:
-const params = new URLSearchParams();
-params.append('status', statusFilter);
-if (myDealsOnly) {
-  params.append('assignedTo', currentUser.id);
-}
-if (highValueOnly) {
-  params.append('minValue', highValueThreshold.toString());
-}
-
-const response = await httpClient.get(`/api/opportunities?${params.toString()}`);
-```
-
-#### **1.2 Backend Filter-Endpoint erweitern** (1h)
-
-**Datei:** `backend/src/main/java/de/freshplan/api/resources/OpportunityResource.java`
-
-```java
-@GET
-@RolesAllowed({"admin", "manager", "sales"})
-public Response getAllOpportunities(
-    @QueryParam("page") @DefaultValue("0") int page,
-    @QueryParam("size") @DefaultValue("20") int size,
-    @QueryParam("status") @DefaultValue("active") String status,
-    @QueryParam("assignedTo") UUID assignedToUserId,
-    @QueryParam("minValue") BigDecimal minValue) { // ← NEU!
-
-    logger.debug("Fetching opportunities - status: {}, minValue: {}", status, minValue);
-
-    // ... existing filtering ...
-
-    // Zusätzlich: MinValue-Filtering
-    if (minValue != null) {
-        opportunities = opportunities.stream()
-            .filter(opp -> opp.getExpectedValue() != null &&
-                          opp.getExpectedValue().compareTo(minValue) >= 0)
-            .collect(Collectors.toList());
-    }
-
-    return Response.ok(opportunities).build();
-}
-```
+### **5. Dokumente & Kontakte** (4-6h)
+- [x] Documents Tab: Upload, List, Download, Delete
+- [x] Contacts Tab: Verknüpfte Lead-Contacts anzeigen (readonly)
+- [x] Backend: POST `/api/opportunities/{id}/documents` (NEU!)
+- [x] Backend: GET `/api/opportunities/{id}/documents` (NEU!)
+- [x] Backend: GET `/api/opportunities/{id}/contacts` (NEU - von Lead)
+- [x] File Upload: Max 10MB, PDF/DOCX/XLSX/PNG/JPG
+- [x] Tests: 8 Tests (Documents Upload + Contacts Display)
 
 ---
 
-### **2. Urgent Filter** (2h)
-
-#### **2.1 OpportunityPipeline Filter-UI erweitern** (1h)
-
-**Checkbox hinzufügen:**
-```tsx
-const [urgentOnly, setUrgentOnly] = useState(false);
-const [urgentDays, setUrgentDays] = useState(14); // Default: 14 Tage
-
-<FormControlLabel
-  control={
-    <Checkbox
-      checked={urgentOnly}
-      onChange={(e) => setUrgentOnly(e.target.checked)}
-    />
-  }
-  label="Nur dringende Deals"
-/>
-
-{/* Threshold-Einstellung */}
-{urgentOnly && (
-  <TextField
-    type="number"
-    value={urgentDays}
-    onChange={(e) => setUrgentDays(parseInt(e.target.value))}
-    size="small"
-    InputProps={{
-      startAdornment: <span>Close Date &lt;</span>,
-      endAdornment: <span>Tage</span>
-    }}
-    sx={{ width: 180 }}
-  />
-)}
-
-// API Call:
-if (urgentOnly) {
-  const urgentDate = new Date();
-  urgentDate.setDate(urgentDate.getDate() + urgentDays);
-  params.append('maxCloseDate', urgentDate.toISOString());
-}
-```
-
-#### **2.2 Backend Filter-Endpoint erweitern** (1h)
-
-```java
-@QueryParam("maxCloseDate") String maxCloseDate) { // ← NEU! ISO-8601 String
-
-    // ... existing filtering ...
-
-    // Zusätzlich: MaxCloseDate-Filtering
-    if (maxCloseDate != null) {
-        LocalDate threshold = LocalDate.parse(maxCloseDate);
-        opportunities = opportunities.stream()
-            .filter(opp -> opp.getExpectedCloseDate() != null &&
-                          opp.getExpectedCloseDate().isBefore(threshold))
-            .collect(Collectors.toList());
-    }
-
-    return Response.ok(opportunities).build();
-}
-```
-
----
-
-### **3. Advanced Search Dialog** (4h)
-
-#### **3.1 AdvancedSearchDialog Component** (2h)
-
-**Neue Datei:** `frontend/src/features/opportunity/components/AdvancedSearchDialog.tsx`
-
-**Multi-Criteria Filter:**
-```tsx
-export function AdvancedSearchDialog({ open, onClose, onApply }: Props) {
-  const [filters, setFilters] = useState<OpportunityFilters>({
-    status: 'active',
-    stages: [],
-    minValue: null,
-    maxValue: null,
-    minCloseDate: null,
-    maxCloseDate: null,
-    assignedTo: null,
-    opportunityType: null,
-    search: ''
-  });
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Erweiterte Suche</DialogTitle>
-      <DialogContent>
-        <Grid container spacing={2}>
-          {/* Row 1: Status + Stages */}
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Status</InputLabel>
-              <Select
-                value={filters.status}
-                onChange={(e) => setFilters({...filters, status: e.target.value})}
-              >
-                <MenuItem value="active">Aktiv</MenuItem>
-                <MenuItem value="closed">Geschlossen</MenuItem>
-                <MenuItem value="all">Alle</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Stages</InputLabel>
-              <Select
-                multiple
-                value={filters.stages}
-                onChange={(e) => setFilters({...filters, stages: e.target.value})}
-                renderValue={(selected) => selected.join(', ')}
-              >
-                {Object.values(OpportunityStage).map(stage => (
-                  <MenuItem key={stage} value={stage}>
-                    <Checkbox checked={filters.stages.includes(stage)} />
-                    <ListItemText primary={stage} />
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Row 2: Value Range */}
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Min. Wert (€)"
-              type="number"
-              value={filters.minValue || ''}
-              onChange={(e) => setFilters({...filters, minValue: parseFloat(e.target.value) || null})}
-              fullWidth
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Max. Wert (€)"
-              type="number"
-              value={filters.maxValue || ''}
-              onChange={(e) => setFilters({...filters, maxValue: parseFloat(e.target.value) || null})}
-              fullWidth
-            />
-          </Grid>
-
-          {/* Row 3: Close Date Range */}
-          <Grid item xs={12} md={6}>
-            <DatePicker
-              label="Close Date von"
-              value={filters.minCloseDate}
-              onChange={(date) => setFilters({...filters, minCloseDate: date})}
-              slotProps={{ textField: { fullWidth: true } }}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <DatePicker
-              label="Close Date bis"
-              value={filters.maxCloseDate}
-              onChange={(date) => setFilters({...filters, maxCloseDate: date})}
-              slotProps={{ textField: { fullWidth: true } }}
-            />
-          </Grid>
-
-          {/* Row 4: Assigned To + Type */}
-          <Grid item xs={12} md={6}>
-            <Autocomplete
-              options={users}
-              getOptionLabel={(user) => user.fullName}
-              value={filters.assignedTo}
-              onChange={(e, value) => setFilters({...filters, assignedTo: value})}
-              renderInput={(params) => (
-                <TextField {...params} label="Verkäufer" fullWidth />
-              )}
-            />
-          </Grid>
-
-          <Grid item xs={12} md={6}>
-            <FormControl fullWidth>
-              <InputLabel>Opportunity-Typ</InputLabel>
-              <Select
-                value={filters.opportunityType || ''}
-                onChange={(e) => setFilters({...filters, opportunityType: e.target.value || null})}
-              >
-                <MenuItem value="">Alle</MenuItem>
-                <MenuItem value="NEUGESCHAEFT">Neugeschäft</MenuItem>
-                <MenuItem value="SORTIMENTSERWEITERUNG">Sortimentserweiterung</MenuItem>
-                <MenuItem value="NEUER_STANDORT">Neuer Standort</MenuItem>
-                <MenuItem value="VERLAENGERUNG">Vertragsverlängerung</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Row 5: Search */}
-          <Grid item xs={12}>
-            <TextField
-              label="Suche (Name, Beschreibung, Kunde)"
-              value={filters.search}
-              onChange={(e) => setFilters({...filters, search: e.target.value})}
-              fullWidth
-              InputProps={{
-                startAdornment: <SearchIcon />
-              }}
-            />
-          </Grid>
-        </Grid>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleReset}>Zurücksetzen</Button>
-        <Button onClick={onClose}>Abbrechen</Button>
-        <Button onClick={() => onApply(filters)} variant="contained">
-          Filter anwenden
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
-```
-
-#### **3.2 Backend: Query-Object-Pattern** (2h)
-
-**Neue Datei:** `backend/src/main/java/de/freshplan/domain/opportunity/service/dto/OpportunityFilterRequest.java`
-
-```java
-@Data
-@Builder
-public class OpportunityFilterRequest {
-    private String status; // "active", "closed", "all"
-    private List<OpportunityStage> stages;
-    private BigDecimal minValue;
-    private BigDecimal maxValue;
-    private LocalDate minCloseDate;
-    private LocalDate maxCloseDate;
-    private UUID assignedTo;
-    private String opportunityType;
-    private String search; // Fulltext search (name, description, customer)
-
-    // Pagination
-    private int page = 0;
-    private int size = 20;
-}
-```
-
-**OpportunityQueryService erweitern:**
-```java
-/**
- * Erweiterte Suche mit Query-Object
- *
- * @param filter OpportunityFilterRequest
- * @return Gefilterte Opportunities
- */
-public List<OpportunityResponse> findWithFilters(OpportunityFilterRequest filter) {
-    StringBuilder jpql = new StringBuilder("SELECT o FROM Opportunity o WHERE 1=1");
-    Map<String, Object> params = new HashMap<>();
-
-    // Status filtering
-    if ("active".equals(filter.getStatus())) {
-        jpql.append(" AND o.stage NOT IN (:closedStages)");
-        params.put("closedStages", List.of(OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST));
-    } else if ("closed".equals(filter.getStatus())) {
-        jpql.append(" AND o.stage IN (:closedStages)");
-        params.put("closedStages", List.of(OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST));
-    }
-
-    // Stage filtering
-    if (filter.getStages() != null && !filter.getStages().isEmpty()) {
-        jpql.append(" AND o.stage IN (:stages)");
-        params.put("stages", filter.getStages());
-    }
-
-    // Value range filtering
-    if (filter.getMinValue() != null) {
-        jpql.append(" AND o.expectedValue >= :minValue");
-        params.put("minValue", filter.getMinValue());
-    }
-    if (filter.getMaxValue() != null) {
-        jpql.append(" AND o.expectedValue <= :maxValue");
-        params.put("maxValue", filter.getMaxValue());
-    }
-
-    // Close Date range filtering
-    if (filter.getMinCloseDate() != null) {
-        jpql.append(" AND o.expectedCloseDate >= :minCloseDate");
-        params.put("minCloseDate", filter.getMinCloseDate());
-    }
-    if (filter.getMaxCloseDate() != null) {
-        jpql.append(" AND o.expectedCloseDate <= :maxCloseDate");
-        params.put("maxCloseDate", filter.getMaxCloseDate());
-    }
-
-    // Assigned To filtering
-    if (filter.getAssignedTo() != null) {
-        jpql.append(" AND o.assignedTo.id = :assignedTo");
-        params.put("assignedTo", filter.getAssignedTo());
-    }
-
-    // Opportunity Type filtering
-    if (filter.getOpportunityType() != null) {
-        jpql.append(" AND o.opportunityType = :opportunityType");
-        params.put("opportunityType", filter.getOpportunityType());
-    }
-
-    // Fulltext Search
-    if (filter.getSearch() != null && !filter.getSearch().isBlank()) {
-        jpql.append(" AND (LOWER(o.name) LIKE :search OR LOWER(o.description) LIKE :search OR LOWER(o.customer.companyName) LIKE :search)");
-        params.put("search", "%" + filter.getSearch().toLowerCase() + "%");
-    }
-
-    jpql.append(" ORDER BY o.stageChangedAt DESC");
-
-    // Execute query
-    TypedQuery<Opportunity> query = entityManager.createQuery(jpql.toString(), Opportunity.class);
-    params.forEach(query::setParameter);
-
-    query.setFirstResult(filter.getPage() * filter.getSize());
-    query.setMaxResults(filter.getSize());
-
-    List<Opportunity> opportunities = query.getResultList();
-    return opportunities.stream()
-        .map(opportunityMapper::toResponse)
-        .collect(Collectors.toList());
-}
-```
-
----
-
-### **4. Pipeline-Analytics Dashboard** (3h)
-
-#### **4.1 PipelineAnalyticsDashboard Component** (2h)
-
-**Neue Datei:** `frontend/src/features/opportunity/pages/PipelineAnalyticsDashboard.tsx`
-
-**Metriken:**
-```tsx
-export function PipelineAnalyticsDashboard() {
-  const [analytics, setAnalytics] = useState<PipelineAnalytics | null>(null);
-
-  useEffect(() => {
-    const loadAnalytics = async () => {
-      const response = await httpClient.get('/api/opportunities/pipeline/analytics');
-      setAnalytics(response.data);
-    };
-    loadAnalytics();
-  }, []);
-
-  return (
-    <MainLayoutV2>
-      <Typography variant="h4" sx={{ mb: 3 }}>Pipeline Analytics</Typography>
-
-      <Grid container spacing={3}>
-        {/* Row 1: KPIs */}
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Weighted Pipeline
-              </Typography>
-              <Typography variant="h5">
-                {formatCurrency(analytics.weightedPipeline)}
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                (Erwarteter Umsatz basierend auf Probability)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Konversionsrate
-              </Typography>
-              <Typography variant="h5">
-                {analytics.conversionRate}%
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                (Gewonnen / Gesamt)
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Durchschn. Deal-Größe
-              </Typography>
-              <Typography variant="h5">
-                {formatCurrency(analytics.avgDealSize)}
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={3}>
-          <Card>
-            <CardContent>
-              <Typography variant="caption" color="text.secondary">
-                Durchschn. Sales Cycle
-              </Typography>
-              <Typography variant="h5">
-                {analytics.avgSalesCycle} Tage
-              </Typography>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Row 2: Charts */}
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardHeader title="Konversions-Funnel" />
-            <CardContent>
-              <FunnelChart data={analytics.funnelData} />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={6}>
-          <Card>
-            <CardHeader title="Pipeline-Verteilung" />
-            <CardContent>
-              <BarChart data={analytics.stageDistribution} />
-            </CardContent>
-          </Card>
-        </Grid>
-
-        {/* Row 3: Bottleneck-Analyse */}
-        <Grid item xs={12}>
-          <Card>
-            <CardHeader title="Bottleneck-Analyse" />
-            <CardContent>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                Stages mit überdurchschnittlicher Verweildauer:
-              </Typography>
-              <Stack spacing={1}>
-                {analytics.bottlenecks.map(bottleneck => (
-                  <Alert key={bottleneck.stage} severity="warning">
-                    <strong>{bottleneck.stage}:</strong> Ø {bottleneck.avgDaysInStage} Tage
-                    (Normalwert: {bottleneck.expectedDays} Tage)
-                    → {bottleneck.opportunityCount} Opportunities betroffen
-                  </Alert>
-                ))}
-              </Stack>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-    </MainLayoutV2>
-  );
-}
-```
-
-#### **4.2 Backend: Analytics-Endpoint** (1h)
-
-**Datei:** `backend/src/main/java/de/freshplan/api/resources/OpportunityResource.java`
-
-```java
-/**
- * Pipeline Analytics
- *
- * GET /api/opportunities/pipeline/analytics
- */
-@GET
-@Path("/pipeline/analytics")
-@RolesAllowed({"admin", "manager", "sales"})
-public Response getPipelineAnalytics() {
-    logger.debug("Generating pipeline analytics");
-
-    PipelineAnalyticsResponse analytics = opportunityService.getPipelineAnalytics();
-
-    return Response.ok(analytics).build();
-}
-```
-
-**OpportunityService:**
-```java
-public PipelineAnalyticsResponse getPipelineAnalytics() {
-    // Weighted Pipeline (Summe: expectedValue * probability)
-    BigDecimal weightedPipeline = opportunityRepository.calculateForecast();
-
-    // Konversionsrate
-    Double conversionRate = opportunityRepository.getConversionRate();
-
-    // Durchschnittliche Deal-Größe
-    BigDecimal avgDealSize = opportunityRepository.getAverageDealSize();
-
-    // Durchschnittlicher Sales Cycle
-    Integer avgSalesCycle = opportunityRepository.getAverageSalesCycle();
-
-    // Funnel-Daten
-    List<FunnelStageDTO> funnelData = opportunityRepository.getFunnelData();
-
-    // Stage-Verteilung
-    Map<OpportunityStage, Long> stageDistribution = opportunityRepository.getStageDistribution();
-
-    // Bottleneck-Analyse
-    List<BottleneckDTO> bottlenecks = opportunityRepository.findBottlenecks();
-
-    return PipelineAnalyticsResponse.builder()
-        .weightedPipeline(weightedPipeline)
-        .conversionRate(conversionRate)
-        .avgDealSize(avgDealSize)
-        .avgSalesCycle(avgSalesCycle)
-        .funnelData(funnelData)
-        .stageDistribution(stageDistribution)
-        .bottlenecks(bottlenecks)
-        .build();
-}
-```
-
----
-
-### **5. Custom Views speichern** (2h)
-
-#### **5.1 SavedFilterView Component** (1h)
-
-**Neue Datei:** `frontend/src/features/opportunity/components/SavedFilterView.tsx`
-
-**Konzept:**
-```tsx
-export function SavedFilterView() {
-  const [savedViews, setSavedViews] = useState<FilterView[]>([]);
-
-  const predefinedViews = [
-    { name: 'Meine Hot Deals', filter: { assignedTo: currentUser.id, minValue: 10000 } },
-    { name: 'Urgent This Week', filter: { maxCloseDate: addDays(new Date(), 7) } },
-    { name: 'High-Value Pipeline', filter: { minValue: 20000, status: 'active' } },
-  ];
-
-  return (
-    <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
-      <Typography variant="caption" color="text.secondary" sx={{ pt: 1 }}>
-        Gespeicherte Ansichten:
-      </Typography>
-      {predefinedViews.map(view => (
-        <Chip
-          key={view.name}
-          label={view.name}
-          onClick={() => applyFilter(view.filter)}
-          variant="outlined"
-        />
-      ))}
-      <Button
-        size="small"
-        startIcon={<AddIcon />}
-        onClick={() => setShowSaveDialog(true)}
-      >
-        Neue Ansicht
-      </Button>
-    </Stack>
-  );
-}
-```
-
-#### **5.2 Backend: User-Filter-Views speichern** (1h)
-
-**Migration:** `V10034__create_user_filter_views.sql`
-
-```sql
-CREATE TABLE user_filter_views (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES app_user(id),
-    view_name VARCHAR(100) NOT NULL,
-    filter_config JSONB NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW(),
-    UNIQUE(user_id, view_name)
-);
-
-CREATE INDEX idx_user_filter_views_user_id ON user_filter_views(user_id);
-
-COMMENT ON TABLE user_filter_views IS
-'Gespeicherte Filter-Ansichten pro User (Custom Views für Opportunity-Pipeline)';
-```
-
----
-
-## ✅ DEFINITION OF DONE
-
-### **Functional:**
-- [x] High-Value Filter funktioniert (minValue QueryParam)
-- [x] Urgent Filter funktioniert (maxCloseDate QueryParam)
-- [x] Advanced Search Dialog mit Multi-Criteria
-- [x] Pipeline-Analytics Dashboard zeigt KPIs
-- [x] Custom Views können gespeichert werden
-
-### **Technical:**
-- [x] Backend: Query-Object-Pattern implementiert
-- [x] Backend: GET /api/opportunities/pipeline/analytics
-- [x] Backend: POST /api/user-filter-views (speichern)
-- [x] Backend: GET /api/user-filter-views (laden)
-- [x] Frontend: AdvancedSearchDialog
-- [x] Frontend: PipelineAnalyticsDashboard
-- [x] Frontend: SavedFilterView
-- [x] Migration: V10034 (user_filter_views Tabelle)
-- [x] Unit Tests: OpportunityQueryService.findWithFilters()
-
-### **Quality:**
-- [x] Code Review: 1 Approval
-- [x] UI/UX: Filter-Dialog nicht überladen!
-- [x] Performance: Advanced Search < 1s (bei 500 Opportunities)
-
-### **Documentation:**
-- [x] TRIGGER_SPRINT_2_1_7_4.md erstellt (✅ Done)
-- [x] TRIGGER_INDEX.md aktualisiert
-- [x] CRM_COMPLETE_MASTER_PLAN_V5.md: Session Log
+### **TRACK 2: ADVANCED FILTERS & ANALYTICS (13-15h)**
+
+### **6. High-Value & Urgent Filters** (3h)
+- [x] High-Value Filter: Checkbox + Threshold (€10k, €50k, €100k)
+- [x] Urgent Filter: Checkbox + Days (7, 14, 30 Tage)
+- [x] Backend: QueryParams minValue, maxCloseDate erweitern
+- [x] Tests: 4 Tests (Filter UI + Backend)
+
+### **7. Advanced Search Dialog** (4-5h)
+- [x] AdvancedSearchDialog Component (Multi-Criteria)
+- [x] Filters: Status, Stages (multi-select), Value Range, Close Date Range, Assigned To, Opportunity Type, Search
+- [x] Backend: Query-Object-Pattern (OpportunityFilterRequest DTO)
+- [x] Backend: OpportunityQueryService.findWithFilters()
+- [x] Reset Button + URL Persistence (optional)
+- [x] Tests: 6 Tests (Dialog + Query Service)
+
+### **8. Pipeline-Analytics Dashboard** (4-5h)
+- [x] PipelineAnalyticsDashboard Page (Route: `/opportunities/analytics`)
+- [x] KPIs: Weighted Pipeline, Conversion Rate, Avg Deal Size, Avg Sales Cycle
+- [x] Charts: Funnel Chart, Stage Distribution (Bar Chart)
+- [x] Bottleneck-Analyse: Stages mit überdurchschnittlicher Verweildauer
+- [x] Backend: GET `/api/opportunities/pipeline/analytics` (NEU!)
+- [x] Backend: OpportunityAnalyticsService (Calculations)
+- [x] Tests: 8 Tests (Analytics Service + Component)
+
+### **9. Custom Views (Optional - falls Zeit)** (2h)
+- [x] SavedFilterView Component (Chips: "Meine Hot Deals", "Urgent This Week")
+- [x] Backend: user_filter_views Table (Migration V10035)
+- [x] Backend: POST/GET `/api/user-filter-views`
+- [x] Tests: 4 Tests (Save + Load Views)
 
 ---
 
 ## 📊 SUCCESS METRICS
 
-### **Usability:**
-- Advanced Search: Max 5 Klicks, < 30 Sekunden
-- Analytics Dashboard: Auf einen Blick erkennbar: "Wo hakt es?"
+**Test Coverage:**
+- Track 1: 36 Tests (OpportunityDetailPage 8 + Edit 6 + Stage 4 + Activity 10 + Documents/Contacts 8)
+- Track 2: 22 Tests (Filters 4 + Advanced Search 6 + Analytics 8 + Custom Views 4)
+- **Total: 58 Tests** (akzeptabel für 35-40h Sprint)
 
-### **Performance:**
-- Filter-Query: < 1s (bei 500 Opportunities)
-- Analytics-Query: < 2s (komplexe Aggregationen)
+**Code Changes:**
+- 2 Migrations (V10033: opportunity_documents, V10034: opportunity_stage_history, V10035: user_filter_views)
+- 10 Frontend Components (DetailPage, Edit, Timeline, Tabs, Filters, Analytics)
+- 6 Backend Services/Resources (DocumentService, Analytics, QueryService)
 
-### **Business Impact:**
-- Deal-Win-Rate: Messbar (nach 3 Monaten: Improvement durch Priorisierung?)
-- Forecast-Accuracy: Messbar (Weighted Pipeline vs. tatsächlicher Umsatz)
+**Business Impact:**
+- Opportunity-Modul VOLLSTÄNDIG fertig (kein Feature-Gap mehr)
+- Vertriebler können ALLE Workflows ohne externe Tools
+- Manager haben Pipeline-Transparenz
+
+---
+
+## ✅ DEFINITION OF DONE
+
+### **Functional (Track 1)**
+- [x] OpportunityDetailPage zeigt alle Informationen (Header + 4 Tabs)
+- [x] Edit-Dialog funktioniert (UPDATE Opportunity)
+- [x] Stage-Änderungen manuell möglich (Dropdown + History)
+- [x] Activity Timeline zeigt alle Activities (sorted desc)
+- [x] AddActivityDialog erstellt neue Activities
+- [x] Documents Tab: Upload/Download/Delete funktioniert
+- [x] Contacts Tab: Lead-Contacts werden angezeigt
+
+### **Functional (Track 2)**
+- [x] High-Value Filter funktioniert (minValue QueryParam)
+- [x] Urgent Filter funktioniert (maxCloseDate QueryParam)
+- [x] Advanced Search Dialog mit Multi-Criteria
+- [x] Pipeline-Analytics Dashboard zeigt KPIs + Charts
+- [x] Custom Views können gespeichert werden (optional)
+
+### **Technical**
+- [x] Migrations V10033, V10034, V10035 deployed
+- [x] Backend: PUT `/api/opportunities/{id}/stage`
+- [x] Backend: POST/GET `/api/opportunities/{id}/documents`
+- [x] Backend: GET `/api/opportunities/{id}/contacts`
+- [x] Backend: GET `/api/opportunities/pipeline/analytics`
+- [x] Backend: OpportunityQueryService (Query-Object-Pattern)
+- [x] Frontend: 10 neue Components
+- [x] Tests: 58/58 Tests GREEN
+
+### **Quality**
+- [x] Tests: 58/58 GREEN (32 Backend + 26 Frontend)
+- [x] TypeScript: type-check PASSED
+- [x] Code Review: Self-reviewed
+- [x] Performance: Detail Page Load < 500ms, Analytics < 2s
+
+---
+
+## 📅 TIMELINE
+
+**Tag 1 (8h) - Detail Page Foundation:**
+- OpportunityDetailPage Component (6h)
+- Edit-Funktionalität (2h)
+
+**Tag 2 (8h) - Activities & Stage:**
+- Activity Timeline UI (5h)
+- Stage-Änderungen Manuelle Controls (3h)
+
+**Tag 3 (8h) - Documents & Contacts:**
+- Dokumente & Kontakte (6h)
+- Testing Track 1 (2h)
+
+**Tag 4 (8h) - Filters:**
+- High-Value & Urgent Filters (3h)
+- Advanced Search Dialog (5h)
+
+**Tag 5 (8h) - Analytics:**
+- Pipeline-Analytics Dashboard (5h)
+- Custom Views (2h - optional)
+- Testing Track 2 (1h)
+
+**Tag 6 (optional, 4h) - Polish & Bugfixes:**
+- Integration Testing (2h)
+- Code Review Fixes (1h)
+- Documentation (1h)
+
+**Total:** 35-40h (5-6 Arbeitstage, ~1 Woche)
+
+---
+
+## 📄 ARTEFAKTE
+
+**Technische Spezifikation:**
+→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_5_TECHNICAL.md`
+- Track 1: Detail View & Management (5 Deliverables, Code-Beispiele)
+- Track 2: Advanced Filters & Analytics (4 Deliverables, Code-Beispiele)
+- Migrations V10033-V10035 (vollständig)
+- Test Specifications (58 Tests)
+- Inhaltsverzeichnis mit internen Links (10 Hauptkapitel)
+
+**Design Decisions:**
+→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_5_DESIGN_DECISIONS.md`
+- Detail Page Layout (Tabs vs Sections) - **User-Entscheidung erforderlich!**
+- Edit vs Inline Edit
+- Stage Change (Dropdown vs Drag & Drop)
+- Document Storage (File System vs S3) - **User-Entscheidung erforderlich!**
+- Filter Persistence (URL vs LocalStorage)
+- Analytics Calculations (Real-time vs Cached)
+- Query-Object-Pattern (statt viele QueryParams)
+
+**Design System:**
+→ `/docs/planung/grundlagen/DESIGN_SYSTEM.md`
+- Freshfoodz Color Palette (#94C456, #004F7B)
+- Typography (Antonio Bold, Poppins)
+- Component Patterns
 
 ---
 
 ## 🚀 PREREQUISITES
 
-### **KRITISCH: Erst NACH Go-Live!**
-- ⚠️ **Keine echten Daten:** DEV-SEED hat nur 10 Opportunities
-- ⚠️ **Filter-Bedarf unklar:** User-Feedback fehlt
-- ⚠️ **YAGNI:** Baue nur was WIRKLICH gebraucht wird!
+### **✅ BEREITS GEKLÄRT:**
+1. **Backend existiert:**
+   - ✅ OpportunityService.update() (PUT /api/opportunities/{id})
+   - ✅ ActivityService.create() (POST /api/opportunities/{id}/activities)
+   - ✅ ActivityService.getByOpportunity() (GET /api/opportunities/{id}/activities)
 
-### **Ready to Start (später!):**
-- ✅ 100+ Opportunities im System (echte Daten!)
-- ✅ User-Feedback: "Ich brauche Filter X!"
-- ✅ Sprint 2.1.7.1-3 COMPLETE
+2. **DEV-SEED existiert:**
+   - ✅ V90003: 10 Opportunities mit Activities (testbar!)
+   - ✅ Realistic Data (€163,000 Total Value, verschiedene Stages)
 
-### **Blockers:**
-- ❌ Keine echten Produktions-Daten (BLOCKER!)
+3. **Sprint-Reihenfolge:**
+   - ✅ Sprint 2.1.7.1 COMPLETE (Lead → Opportunity CREATE)
+   - ✅ Sprint 2.1.7.3 COMPLETE (Customer → Opportunity CREATE)
+   - ✅ Sprint 2.1.7.4 COMPLETE (Customer Status Architecture)
+   - ✅ Sprint 2.1.7.2 COMPLETE (Xentral Integration)
+
+### **⏳ USER-ENTSCHEIDUNGEN ERFORDERLICH:**
+1. **Detail Page Layout:**
+   - Option A: Tabs (Overview, Activities, Documents, Contacts) ← EMPFOHLEN
+   - Option B: Sections (Scroll-basiert, alle sichtbar)
+   - Option C: Accordion (Expandable Sections)
+
+2. **Document Storage:**
+   - Option A: File System (`/uploads/opportunities/{id}/`) ← EINFACHER
+   - Option B: S3-kompatibel (MinIO für Start, später S3)
+   - Option C: Database BLOB (nicht empfohlen für >1MB)
+
+3. **Custom Views:**
+   - Option A: Nur Predefined Views (hardcoded) ← SCHNELLER
+   - Option B: User-Custom Views (Datenbank-Persistierung)
 
 ---
 
-## 📅 TIMELINE (für SPÄTER!)
+## 🎯 NÄCHSTE SCHRITTE
 
-**Tag 1 (8h):**
-- Manuelle Opportunity-Erstellung (3h)
-- High-Value Filter (2h)
-- Urgent Filter (2h)
-- Advanced Search Dialog - Start (1h)
+**Sprint-Reihenfolge (AKTUALISIERT - 2025-10-19):**
 
-**Tag 2 (8h):**
-- Advanced Search Dialog - Fertigstellung (3h)
-- Pipeline-Analytics Dashboard (3h)
-- Custom Views speichern (2h)
+```
+✅ Sprint 2.1.7.1 COMPLETE (Lead → Opportunity UI)
+✅ Sprint 2.1.7.3 COMPLETE (Customer → Opportunity Workflow)
+   ↓
+📋 Sprint 2.1.7.4 (Customer Status Architecture) ← AKTUELL
+   ↓
+📋 Sprint 2.1.7.2 (Xentral Integration)
+   ↓
+📋 Sprint 2.1.7.5 (Opportunity Management KOMPLETT) ← DANACH! ✅
+   ↓
+📋 Sprint 2.1.7.6 (Customer Lifecycle - RISIKO/INAKTIV/ARCHIVIERT)
+```
 
-**Total: 16h = 2 Arbeitstage** ✅
+**Warum Sprint 2.1.7.5 NACH Sprint 2.1.7.2?**
+- Sprint 2.1.7.2 = Customer-Flow komplett (Opportunity → Customer + Xentral)
+- Sprint 2.1.7.5 = Opportunity-Flow komplett (CREATE + DETAIL + EDIT + ANALYTICS)
+- Logische Reihenfolge: Customer komplett → Opportunity komplett
 
----
-
-## 🔗 RELATED WORK
-
-### **Dependent Sprints:**
-- Sprint 2.1.7.1: Lead → Opportunity (COMPLETE)
-- Sprint 2.1.7.2: Customer-Management + Xentral (COMPLETE)
-- Sprint 2.1.7.3: Bestandskunden-Workflow (COMPLETE)
-
-### **Follow-up Sprints:**
-- Sprint 2.1.8.x: AI-basierte Cross-Selling-Vorschläge (weit später!)
-- Sprint 2.1.9.x: Opportunity ROI Calculator (später!)
+**Nach Sprint 2.1.7.2 COMPLETE:**
+1. Sprint 2.1.7.5 starten (Opportunity Management KOMPLETT)
+2. User-Entscheidungen klären (Layout, Document Storage, Custom Views)
+3. Beide Tracks parallel bearbeiten möglich (Detail View + Filters)
 
 ---
 
 ## 📝 NOTES
 
-### **Design Decisions:**
+### **Warum Option C (BEIDES kombinieren)?**
 
-1. **Query-Object-Pattern (statt viele QueryParams):**
-   - Backend: OpportunityFilterRequest DTO
-   - Sauberere API (keine 10+ QueryParams)
-   - Einfacher erweiterbar
+**Ursprüngliche Planung:**
+- Sprint 2.1.7.5 = Advanced Filters & Analytics (13h) ⚠️ DEFERRED (YAGNI)
 
-2. **Advanced Search als Dialog (nicht Sidebar):**
-   - Weniger UI-Overhead im Kanban
-   - Fokus auf Standard-Filter (Active/Closed/Meine Deals)
-   - Advanced nur bei Bedarf (Power-User)
+**Problem:**
+- "Advanced Filters = YAGNI" war FALSCH!
+- DEV-SEED existiert (10 Opportunities)
+- Basic Filter existiert (Sprint 2.1.7.1)
+- Detail View fehlt komplett (größeres Gap!)
 
-3. **Custom Views als User-Präferenz (nicht global):**
-   - Jeder User hat eigene Views
-   - Keine "Global Views" (zu komplex für Start)
-   - Später: Team-Views (wenn Bedarf)
+**Neue Strategie:**
+- **Track 1:** Detail View (20-28h) - größeres Gap schließen
+- **Track 2:** Advanced Filters (13h) - logische Erweiterung
+- **Total:** 35-40h (~1 Woche)
 
-4. **Analytics als eigenes Dashboard (nicht im Kanban):**
-   - Kanban bleibt fokussiert (Arbeit!)
-   - Analytics ist für Manager/Geschäftsleitung
-   - Separater Menüpunkt: "Pipeline Analytics"
+**Business Value:**
+- Opportunity-Modul wird VOLLSTÄNDIG fertig
+- Keine halbe Lösung (CREATE ✅, READ/UPDATE ⚠️)
+- Manager haben Analytics (Pipeline-Health)
+- Vertriebler haben Filter (Priorisierung)
 
-### **Technical Debt:**
-- Query-Object: Aktuell keine Validierung (später: @Valid OpportunityFilterRequest)
+### **Technical Debt**
+- Document Storage: Start mit File System, später Migration zu S3 möglich
 - Analytics: Aktuell keine Caching (später: Redis für tägliche Aggregationen)
-- Custom Views: Aktuell nur Frontend-State (später: Backend-Persistierung)
-
-### **Warum NICHT jetzt?**
-1. **YAGNI-Prinzip:** Baue nur was WIRKLICH gebraucht wird
-2. **Keine Daten:** 10 DEV-SEED Opportunities sind kein realistischer Test
-3. **User-Feedback fehlt:** Wir raten nur, was Verkäufer brauchen
-4. **Time-to-Market:** Fokus auf Kern-Workflows (Sprint 2.1.7.1-3)
-
-### **Wann bauen?**
-- ✅ **Nach Go-Live:** Wenn 100+ Opportunities im System
-- ✅ **Nach User-Feedback:** "Ich brauche Filter X!"
-- ✅ **Nach Migration:** Wenn 500-1000 Opportunities aus altem System
+- Custom Views: Aktuell nur Predefined (später: User-Custom wenn Bedarf)
 
 ---
 
-**Sprint ist GEPLANT, aber NOCH NICHT READY FÜR KICKOFF!** ⏸️
+**✅ SPRINT STATUS: 📋 READY TO START - Nach Sprint 2.1.7.2 COMPLETE**
 
-**Nächster Schritt:**
-1. **Warten auf echte Daten** (Go-Live!)
-2. **User-Feedback sammeln** (Was brauchen Verkäufer wirklich?)
-3. **Dann erst:** Sprint 2.1.7.4 priorisieren
-
-**Aktuell:** Fokus auf Sprint 2.1.7.1 → 2.1.7.2 → 2.1.7.3 (Kern-Workflows!)
+**Letzte Aktualisierung:** 2025-10-19 (Option C: Detail View + Advanced Filters kombiniert)
