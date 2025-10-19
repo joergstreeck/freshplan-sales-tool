@@ -124,6 +124,22 @@ Saubere Status-Architektur für Lead → Customer Conversion mit klaren Lifecycl
 - [x] MockXentralOrderEventHandler Implementierung
 - [x] Documentation (Sprint 2.1.7.2 Preparation)
 
+**Xentral API Info:**
+→ `/docs/planung/artefakte/XENTRAL_API_INFO.md` (Zentrale Xentral-Dokumentation)
+
+**Interface-Definition:**
+```java
+void handleOrderDelivered(
+  String xentralCustomerId,  // z.B. "C-47236"
+  String orderNumber,        // Bestellnummer
+  LocalDate deliveryDate     // Lieferdatum
+);
+```
+
+**⚠️ OFFEN:** Order-Status-Feld für "Delivered" muss noch geklärt werden
+- Sprint 2.1.7.4: Interface-Definition (unabhängig von Xentral-Details)
+- Sprint 2.1.7.2: Echte Implementierung (benötigt Order-Status-Feld)
+
 **Tests:** 2 Tests (Mock Implementation)
 
 ---
