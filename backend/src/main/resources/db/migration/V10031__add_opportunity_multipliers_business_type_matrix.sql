@@ -26,11 +26,15 @@ CREATE TABLE opportunity_multipliers (
   -- Business Type (Customer.businessType)
   -- Values: RESTAURANT, HOTEL, CATERING, KANTINE, BILDUNG, GESUNDHEIT,
   --         GROSSHANDEL, LEH, SONSTIGES
-  business_type VARCHAR(50) NOT NULL,
+  business_type VARCHAR(50) NOT NULL
+    CHECK (business_type IN ('RESTAURANT', 'HOTEL', 'CATERING', 'KANTINE',
+                              'BILDUNG', 'GESUNDHEIT', 'GROSSHANDEL', 'LEH', 'SONSTIGES')),
 
   -- Opportunity Type (Opportunity.opportunityType)
   -- Values: NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG
-  opportunity_type VARCHAR(50) NOT NULL,
+  opportunity_type VARCHAR(50) NOT NULL
+    CHECK (opportunity_type IN ('NEUGESCHAEFT', 'SORTIMENTSERWEITERUNG',
+                                 'NEUER_STANDORT', 'VERLAENGERUNG')),
 
   -- Multiplier (0.00 - 1.00 for percentage-based calculation)
   multiplier NUMERIC(5,2) NOT NULL CHECK (multiplier >= 0 AND multiplier <= 10),

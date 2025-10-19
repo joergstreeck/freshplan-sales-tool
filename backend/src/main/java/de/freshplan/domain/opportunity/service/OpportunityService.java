@@ -965,6 +965,29 @@ public class OpportunityService {
     return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
   }
 
+  /**
+   * Finds all opportunities for a specific customer.
+   *
+   * <p>Returns all opportunities (regardless of stage) associated with a customer. Results are
+   * sorted by creation date descending (newest first) for UI display.
+   *
+   * @param customerId ID of the customer
+   * @return List of opportunities for the customer
+   * @since Sprint 2.1.7.3
+   */
+  public List<OpportunityResponse> findByCustomerId(UUID customerId) {
+    logger.debug("Finding opportunities for customer ID: {}", customerId);
+
+    List<Opportunity> opportunities =
+        opportunityRepository
+            .find("customer.id", Sort.by("createdAt").descending(), customerId)
+            .list();
+
+    logger.info("Found {} opportunities for customer ID: {}", opportunities.size(), customerId);
+
+    return opportunities.stream().map(opportunityMapper::toResponse).collect(Collectors.toList());
+  }
+
   // =====================================
   // ACTIVITY MANAGEMENT
   // =====================================

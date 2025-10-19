@@ -63,6 +63,10 @@ public class CustomerResource {
 
   @Inject @CurrentUser UserPrincipal currentUser;
 
+  @Inject
+  de.freshplan.domain.opportunity.service.OpportunityService
+      opportunityService; // For customer opportunities
+
   // ========== CRUD OPERATIONS ==========
 
   /**
@@ -404,5 +408,38 @@ public class CustomerResource {
       customer = customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
     }
     return Response.ok(customer).build();
+  }
+
+  // ========== OPPORTUNITY INTEGRATION ==========
+
+  /**
+   * Gets all opportunities for a specific customer.
+   *
+   * <p>Returns opportunities regardless of stage (Offen/Gewonnen/Verloren). Frontend groups them by
+   * status. Results sorted by creation date descending (newest first).
+   *
+   * @param customerId The customer ID
+   * @return 200 OK with list of opportunities
+   * @since Sprint 2.1.7.3 - Customer → Opportunity Workflow
+   */
+  @GET
+  @Path("/{customerId}/opportunities")
+  public Response getCustomerOpportunities(@PathParam("customerId") UUID customerId) {
+    log.debug("Fetching opportunities for customer: {}", customerId);
+
+    // Verify customer exists (will throw if not found)
+    if (cqrsEnabled) {
+      queryService.getCustomer(customerId);
+    } else {
+      customerService.getCustomer(customerId);
+    }
+
+    // Fetch opportunities via OpportunityService
+    List<de.freshplan.domain.opportunity.service.dto.OpportunityResponse> opportunities =
+        opportunityService.findByCustomerId(customerId);
+
+    log.info("Found {} opportunities for customer {}", opportunities.size(), customerId);
+
+    return Response.ok(opportunities).build();
   }
 }
