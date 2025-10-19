@@ -30,8 +30,8 @@ jobs:
         run: |
           echo "🔍 Prüfe Handover-Dokumente..."
 
-          # Finde alle Handover-Dateien (nur neue/geänderte)
-          HANDOVER_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep "docs/planung/claude-work.*HANDOVER.*\.md" || echo "")
+          # Finde alle Handover-Dateien (nur Added/Modified, NICHT Deleted)
+          HANDOVER_FILES=$(git diff --diff-filter=AM --name-only HEAD~1 HEAD 2>/dev/null | grep "docs/planung/claude-work.*HANDOVER.*\.md" || echo "")
 
           if [ -z "$HANDOVER_FILES" ]; then
             echo "ℹ️  Keine neuen Handover-Dokumente"
@@ -124,7 +124,7 @@ jobs:
         run: |
           echo "🔍 Prüfe Handover-Scripts..."
 
-          SCRIPT_FILES=$(git diff --name-only HEAD~1 HEAD 2>/dev/null | grep "scripts/create-handover.*\.sh" || echo "")
+          SCRIPT_FILES=$(git diff --diff-filter=AM --name-only HEAD~1 HEAD 2>/dev/null | grep "scripts/create-handover.*\.sh" || echo "")
 
           if [ -z "$SCRIPT_FILES" ]; then
             echo "ℹ️  Keine Script-Änderungen"
