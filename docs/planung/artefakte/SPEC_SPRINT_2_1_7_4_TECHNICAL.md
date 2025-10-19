@@ -24,6 +24,45 @@ Technische Spezifikation für Sprint 2.1.7.4 - Customer Status Architecture.
 
 ---
 
+## 📑 TABLE OF CONTENTS
+
+**Quick Navigation:**
+
+1. [Migration V10032: CustomerStatus Enum Cleanup + Seasonal Business](#1️⃣-migration-v10032-customerstatus-enum-cleanup--seasonal-business)
+   - [1.1 Migration SQL](#11-migration-sql)
+   - [1.2 Backend Enum Update](#12-backend-enum-update)
+   - [1.3 Backend Entity Update](#13-backend-entity-update)
+
+2. [LeadConvertService: PROSPECT statt AKTIV](#2️⃣-leadconvertservice-prospect-statt-aktiv)
+   - [2.1 Service Fix](#21-service-fix)
+
+3. [Auto-Conversion bei Opportunity WON](#3️⃣-auto-conversion-bei-opportunity-won)
+   - [3.1 OpportunityService.handleOpportunityWon()](#31-opportunityservicehandleopportunitywon)
+   - [3.2 OpportunityResource Integration](#32-opportunityresource-integration)
+
+4. [Manual Activation: "Als AKTIV markieren"](#4️⃣-manual-activation-als-aktiv-markieren)
+   - [4.1 Backend Endpoint](#41-backend-endpoint)
+   - [4.2 Frontend CustomerDetailPage](#42-frontend-customerdetailpage)
+
+5. [Dashboard KPI Updates](#5️⃣-dashboard-kpi-updates)
+   - [5.1 CustomerMetrics Service](#51-customermetrics-service)
+   - [5.2 Dashboard Widgets](#52-dashboard-widgets)
+
+6. [Xentral-Vorbereitung (Interface)](#6️⃣-xentral-vorbereitung-interface)
+   - [6.1 XentralOrderEventHandler Interface](#61-xentralordereventhandler-interface)
+   - [6.2 Mock Implementation](#62-mock-implementation)
+
+7. [Seasonal Business Support](#7️⃣-seasonal-business-support)
+   - [7.1 ChurnDetectionService](#71-churndetectionservice)
+   - [7.2 CustomerMetrics Extended](#72-customermetrics-extended)
+   - [7.3 CustomerResponse DTO](#73-customerresponse-dto)
+   - [7.4 Frontend - Seasonal Business Indicator](#74-frontend---seasonal-business-indicator)
+   - [7.5 Dashboard - Seasonal Widget](#75-dashboard---seasonal-widget)
+
+8. [Test Summary](#-test-summary)
+
+---
+
 ## 1️⃣ Migration V10032: CustomerStatus Enum Cleanup + Seasonal Business
 
 ### **1.1 Migration SQL**
