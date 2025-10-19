@@ -259,6 +259,13 @@ void handleOrderDelivered(
 - PROSPECT Lifecycle (Warnungen statt Auto-Archivierung)
 - Seasonal Pattern Implementation Strategy
 
+**Xentral API Info:**
+→ `/docs/planung/artefakte/XENTRAL_API_INFO.md`
+- Zentrale Xentral-Dokumentation (für Sprint 2.1.7.4 + 2.1.7.2)
+- Base-URL, Auth, Endpoints, Filter-Syntax
+- Polling-Frequenz Entscheidung (1x täglich)
+- ⚠️ Offene Punkte: Sales-Rep-Feld, Order-Status-Feld
+
 **Design System:**
 → `/docs/planung/grundlagen/DESIGN_SYSTEM.md`
 - Freshfoodz Color Palette (#94C456, #004F7B)
