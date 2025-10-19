@@ -1,12 +1,12 @@
 # 🚀 Sprint 2.1.7.3 - Bestandskunden-Workflow
 
 **Sprint-ID:** 2.1.7.3
-**Status:** ✅ COMPLETE (100%) - All Deliverables Done, Ready for PR
+**Status:** 🎉 MERGED TO MAIN (PR #142) - 19.10.2025
 **Priority:** P2 (Medium)
 **Estimated Effort:** 30-31h (3-4 Arbeitstage) → Actual: ~30h
 **Owner:** Claude
 **Created:** 2025-10-16
-**Updated:** 2025-10-19 (Final: Bug-Fixes + Activity-Types Complete)
+**Updated:** 2025-10-19 (MERGED: PR #142 - Customer → Opportunity Workflow COMPLETE)
 **Dependencies:** KEINE
 
 ---
@@ -196,17 +196,17 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ## 🎯 NÄCHSTE SCHRITTE
 
-**✅ SPRINT COMPLETE - Bereit für PR:**
-1. ✅ Feature-Branch: `feature/sprint-2-1-7-3-renewal-workflow`
+**🎉 SPRINT MERGED TO MAIN:**
+1. ✅ Feature-Branch: `feature/sprint-2-1-7-3-renewal-workflow` (MERGED & DELETED)
 2. ✅ Migration V10031 deployed
 3. ✅ 90 Tests GREEN
 4. ✅ OpportunityType Bug-Fix (Commit 95849c737)
 5. ✅ Activity-Tracking (Commit 95849c737)
 6. ✅ Documentation Refactoring (Commit 9d9495317)
 7. ✅ Admin Settings UI (Commit 60690a4df)
-8. ⏸️ E2E Testing (optional - deferred)
+8. ✅ CI Fixes: Spotless + Design System + CLAUDE.md + Handover Validation
 
-**PR #142:** Bereit für Erstellung und Merge
+**PR #142:** 🎉 MERGED TO MAIN (19.10.2025 21:46 UTC)
 
 ---
 
@@ -248,6 +248,6 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ---
 
-**✅ SPRINT STATUS: 100% COMPLETE - Ready for PR #142**
+**🎉 SPRINT STATUS: MERGED TO MAIN (PR #142)**
 
-**Letzte Aktualisierung:** 2025-10-19 (Final: Bug-Fixes + Activity-Types + Admin-UI + Docs Complete)
+**Letzte Aktualisierung:** 2025-10-19 (MERGED: Customer → Opportunity Workflow COMPLETE + CI Fixes)

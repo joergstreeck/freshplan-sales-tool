@@ -1428,6 +1428,18 @@
 **Migration:** Keine (Sprint 2.1.7.0 ist UI-only)
 **Nächste Migration:** V10029 (fortlaufend)
 
+### 2025-10-19 21:46 — Sprint 2.1.7.3: Customer → Opportunity Workflow MERGED (PR #142)
+- **Kontext:** Bestandskunden-Erweiterung + Epic Refactoring (Design System + Backend Parity)
+- **Erledigt:**
+  - Customer → Opportunity Button + Historie (90 Tests GREEN)
+  - Settings-Foundation: opportunity_multipliers (36 Multipliers, admin-editierbar)
+  - OpportunityType Backend-Validierung + Activity-Tracking erweitert
+  - **CI-Fixes:** Spotless (15 Dateien), Design System Guard (Chart-Warnings), CLAUDE.md (207→133 Zeilen), Handover Validation
+- **PR #142:** MERGED TO MAIN (19.10.2025 21:46 UTC) - Commit d1e90e18c
+- **Migration:** V10031 (opportunity_multipliers table)
+- **Tests:** Backend 1569/1569 GREEN, Frontend 1117/1161 GREEN (95.9%)
+- **Epic Refactoring:** 398 Files, 41 Commits, Design System + Backend Parity COMPLETE
+
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
@@ -1442,14 +1454,16 @@
   - **CI-Fixes:** ESLint (11), Mock Guard, PR Template, Prettier (12 files)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (status: complete)
 
-- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW (MERGED - 19.10.2025):**
-  - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 23f7b7ecd)
+- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW + EPIC REFACTORING (MERGED - 19.10.2025):**
+  - **Status:** 🎉 MERGED TO MAIN - Commit d1e90e18c (19.10.2025 21:46 UTC)
   - **PR #142:** https://github.com/joergstreeck/freshplan-sales-tool/pull/142 (MERGED)
-  - **Aufwand:** 36h (erweitert von 30h - Admin-UI hinzugefügt)
+  - **Aufwand:** 36h (erweitert von 30h - Admin-UI + Epic Refactoring)
   - **Migration:** V10031 (opportunity_multipliers - 36 entries)
-  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, OpportunitySettingsPage
-  - **Tests:** 90/90 GREEN ✅ (43 Backend + 47 Frontend)
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: complete)
+  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, OpportunitySettingsPage (admin-editierbar)
+  - **Tests:** Backend 1569/1569 GREEN, Frontend 1117/1161 GREEN (95.9%) ✅
+  - **Epic Refactoring:** 398 Files, 41 Commits, Design System + Backend Parity COMPLETE
+  - **CI-Fixes:** Spotless (15), Design System Guard (Chart-Warnings), CLAUDE.md (207→133 Zeilen), Handover Validation
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: merged)
 
 - **🎯 NÄCHSTER SPRINT - Sprint 2.1.7.4 (Customer Status Architecture) ⚡ ZUERST!**
   - **Status:** 📋 READY TO START
@@ -1920,14 +1934,16 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
   - **Tests:** 142 Tests GREEN ✅
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (status: complete)
 
-- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW (MERGED - 19.10.2025):**
-  - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 23f7b7ecd)
+- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW + EPIC REFACTORING (MERGED - 19.10.2025):**
+  - **Status:** 🎉 MERGED TO MAIN - Commit d1e90e18c (19.10.2025 21:46 UTC)
   - **PR #142:** https://github.com/joergstreeck/freshplan-sales-tool/pull/142 (MERGED)
-  - **Aufwand:** 36h (erweitert von 30h - Admin-UI hinzugefügt)
+  - **Aufwand:** 36h (erweitert von 30h - Admin-UI + Epic Refactoring)
   - **Migration:** V10031 (opportunity_multipliers - 36 entries)
-  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, OpportunitySettingsPage
-  - **Tests:** 90/90 GREEN ✅ (43 Backend + 47 Frontend)
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: complete)
+  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, OpportunitySettingsPage (admin-editierbar)
+  - **Tests:** Backend 1569/1569 GREEN, Frontend 1117/1161 GREEN (95.9%) ✅
+  - **Epic Refactoring:** 398 Files, 41 Commits, Design System + Backend Parity COMPLETE
+  - **CI-Fixes:** Spotless (15), Design System Guard (Chart-Warnings), CLAUDE.md (207→133 Zeilen), Handover Validation
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: merged)
 
 - **🎯 NÄCHSTER SPRINT - Sprint 2.1.7.4 (Customer Status Architecture) ⚡ ZUERST!**
   - **Status:** 📋 READY TO START
