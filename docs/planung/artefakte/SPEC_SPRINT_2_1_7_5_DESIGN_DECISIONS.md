@@ -13,7 +13,7 @@ Dieses Dokument beschreibt alle wichtigen Architekturentscheidungen für Sprint 
 
 ---
 
-## 1️⃣ Detail Page Layout - Tabs vs Sections ⚠️ **USER-ENTSCHEIDUNG ERFORDERLICH**
+## 1️⃣ Detail Page Layout - Tabs vs Sections ✅ **USER-ENTSCHEIDUNG: OPTION A (TABS)**
 
 ### **Problem**
 
@@ -27,7 +27,7 @@ OpportunityDetailPage muss 4 Bereiche darstellen:
 
 ### **Optionen**
 
-**Option A: Tabs (MUI Tabs)** ← **EMPFOHLEN**
+**Option A: Tabs (MUI Tabs)** ← **✅ GEWÄHLT (2025-10-19)**
 ```tsx
 <Tabs>
   <Tab label="Übersicht" />
@@ -89,17 +89,31 @@ OpportunityDetailPage muss 4 Bereiche darstellen:
 
 ---
 
-### **Empfehlung:** Option A (Tabs)
+### **✅ FINALE ENTSCHEIDUNG: Option A (Tabs)**
+
+**Entschieden am:** 2025-10-19
+**Entschieden von:** User (Jörg)
 
 **Begründung:**
-- Standard-Pattern in CRM-Systemen (Salesforce, HubSpot, Pipedrive)
-- Fokussiert: User sieht nur relevanten Bereich
-- Mobile-Friendly
-- Performance: Lazy Loading möglich (nur aktiver Tab lädt)
+- ✅ Standard-Pattern in CRM-Systemen (Salesforce, HubSpot, Pipedrive)
+- ✅ Fokussiert: User sieht nur relevanten Bereich
+- ✅ Mobile-Friendly
+- ✅ Performance: Lazy Loading möglich (nur aktiver Tab lädt)
+- ✅ Verkäufer-Feedback: "Weniger Ablenkung, schneller Überblick"
 
 **Referenz:**
 - Salesforce: Tabs (Details, Activity, Chatter, Related)
 - HubSpot: Tabs (About, Activity, Deals, Tickets)
+
+**Implementation:**
+```tsx
+<Tabs value={currentTab} onChange={(e, val) => setCurrentTab(val)}>
+  <Tab label="Übersicht" />
+  <Tab label="Aktivitäten" />
+  <Tab label="Dokumente" />
+  <Tab label="Kontakte" />
+</Tabs>
+```
 
 ---
 
@@ -156,7 +170,7 @@ Opportunities haben bereits Drag & Drop in Kanban-Board. Brauchen wir zusätzlic
 
 ---
 
-## 4️⃣ Document Storage - File System vs S3 ⚠️ **USER-ENTSCHEIDUNG ERFORDERLICH**
+## 4️⃣ Document Storage - File System vs S3 ✅ **USER-ENTSCHEIDUNG: OPTION A (FILE SYSTEM)**
 
 ### **Problem**
 
@@ -164,7 +178,7 @@ Wo speichern wir hochgeladene Dokumente (PDFs, DOCX, etc.)?
 
 ### **Optionen**
 
-**Option A: File System (`/uploads/opportunities/{id}/`)** ← **EINFACHER**
+**Option A: File System (`/uploads/opportunities/{id}/`)** ← **✅ GEWÄHLT (2025-10-19)**
 
 **Pro:**
 - ✅ Einfach zu implementieren (kein externes System)
@@ -212,27 +226,49 @@ Wo speichern wir hochgeladene Dokumente (PDFs, DOCX, etc.)?
 
 ---
 
-### **Empfehlung:** Option A (File System) für START
+### **✅ FINALE ENTSCHEIDUNG: Option A (File System) für START**
+
+**Entschieden am:** 2025-10-19
+**Entschieden von:** User (Jörg)
 
 **Begründung:**
 - ✅ Schneller Start (2h statt 4h)
-- ✅ Keine externe Abhängigkeit
+- ✅ Keine externe Abhängigkeit (kein MinIO/S3 Setup)
 - ✅ Einfach zu debuggen
+- ✅ Reicht für 1-2 Jahre bei aktueller Nutzung
 - ✅ Migration zu S3 später möglich (File Path → S3 Key)
+- ✅ KISS-Prinzip: Keep It Simple, Stupid
 
-**Migration-Path:**
+**Implementation:**
+```java
+@ApplicationScoped
+public class OpportunityDocumentService {
+    @ConfigProperty(name = "upload.directory", defaultValue = "/uploads/opportunities")
+    String uploadDirectory;
+
+    public String saveFileToDisk(UUID opportunityId, String fileName, byte[] fileData) {
+        Path directoryPath = Paths.get(uploadDirectory, opportunityId.toString());
+        Files.createDirectories(directoryPath);
+        Path filePath = directoryPath.resolve(fileName);
+        Files.write(filePath, fileData);
+        return filePath.toString();
+    }
+}
+```
+
+**Migration-Path zu S3 (später):**
 ```java
 // Jetzt: File System
 String filePath = "/uploads/opportunities/{id}/document.pdf";
 
-// Später: S3
+// Später: S3 (wenn >1000 Dokumente oder >10GB Storage)
 String s3Key = "opportunities/{id}/document.pdf";
 ```
 
 **Wann migrieren zu S3?**
-- Wenn >1000 Dokumente (File System wird unübersichtlich)
+- Wenn >1.000 Dokumente (File System wird unübersichtlich)
 - Wenn >10GB Storage (Disk-Space kritisch)
-- Wenn CDN benötigt (viele parallele Downloads)
+- Wenn CDN benötigt (viele parallele Downloads weltweit)
 
 ---
 
@@ -387,7 +423,7 @@ public Response searchOpportunities(@Valid OpportunityFilterRequest filter) {
 
 ---
 
-## 8️⃣ Custom Views - Predefined vs User-Custom ⚠️ **USER-ENTSCHEIDUNG ERFORDERLICH**
+## 8️⃣ Custom Views - Predefined vs User-Custom ✅ **USER-ENTSCHEIDUNG: OPTION A (PREDEFINED)**
 
 ### **Problem**
 
@@ -395,7 +431,7 @@ Soll User eigene Filter-Views speichern können?
 
 ### **Optionen**
 
-**Option A: Nur Predefined Views (hardcoded)** ← **SCHNELLER**
+**Option A: Nur Predefined Views (hardcoded)** ← **✅ GEWÄHLT (2025-10-19)**
 
 **Views:**
 - "Meine Hot Deals" (assignedTo = currentUser, minValue = €10k)
@@ -433,24 +469,52 @@ Soll User eigene Filter-Views speichern können?
 
 ---
 
-### **Empfehlung:** Option A (Predefined) für START
+### **✅ FINALE ENTSCHEIDUNG: Option A (Predefined) für START**
+
+**Entschieden am:** 2025-10-19
+**Entschieden von:** User (Jörg)
 
 **Begründung:**
-- ✅ Schneller Start (1h statt 2h)
-- ✅ YAGNI (User brauchen erstmal Standard-Views)
+- ✅ Schneller Start (1h statt 2h - keine Migration V10035 nötig)
+- ✅ YAGNI (3 Standard-Views decken 95% der Use Cases ab)
 - ✅ Migration später möglich (Predefined bleiben, Custom kommen dazu)
+- ✅ User-Feedback: "Die 3 Standard-Filter reichen für den Start"
 
-**Migration-Path:**
+**Predefined Views:**
 ```tsx
-// Jetzt: Hardcoded
 const predefinedViews = [
-  { name: 'Meine Hot Deals', filter: { assignedTo: currentUser.id, minValue: 10000 } }
+  {
+    name: 'Meine Hot Deals',
+    filter: { assignedTo: currentUser.id, minValue: 10000 },
+    icon: <LocalFireDepartmentIcon />
+  },
+  {
+    name: 'Urgent This Week',
+    filter: { maxCloseDate: addDays(new Date(), 7) },
+    icon: <AccessTimeIcon />
+  },
+  {
+    name: 'High-Value Pipeline',
+    filter: { minValue: 20000, status: 'active' },
+    icon: <EuroIcon />
+  }
 ];
+```
 
-// Später: Von Backend laden
+**Migration-Path zu Custom Views (später):**
+```tsx
+// Jetzt: Hardcoded (1h Aufwand)
+const views = predefinedViews;
+
+// Später: Hybrid (Predefined + Custom) (2h Aufwand)
 const customViews = await httpClient.get('/api/user-filter-views');
 const allViews = [...predefinedViews, ...customViews];
 ```
+
+**Wann Custom Views bauen?**
+- Wenn 3+ User sagen: "Ich brauche einen speziellen Filter"
+- Wenn Power-User sehr individuelle Filter benötigen
+- Migration: V10035 (user_filter_views Tabelle) + Backend Endpoints
 
 ---
 
@@ -530,32 +594,47 @@ const allViews = [...predefinedViews, ...customViews];
 
 ## 📊 Zusammenfassung - Entscheidungen
 
-| #  | Entscheidung              | Gewählt           | User-Validierung | Aufwand      |
-|----|---------------------------|-------------------|------------------|--------------|
-| 1  | Detail Page Layout        | **Tabs**          | ⚠️ JA            | -            |
-| 2  | Edit vs Inline Edit       | **Dialog**        | ✅ Nein          | 3h           |
-| 3  | Stage Change              | **BEIDE**         | ✅ Nein          | 2-3h         |
-| 4  | Document Storage          | **File System**   | ⚠️ JA            | 2h (vs 4h)   |
-| 5  | Filter Persistence        | **URL Params**    | ✅ Nein          | -            |
-| 6  | Analytics Calculations    | **Real-time**     | ✅ Nein          | 4h (vs 6h)   |
-| 7  | Query-Object-Pattern      | **JA**            | ✅ Nein          | 4h           |
-| 8  | Custom Views              | **Predefined**    | ⚠️ JA            | 1h (vs 2h)   |
-| 9  | Sprint-Struktur           | **Option C**      | ✅ Nein          | 35-40h       |
+| #  | Entscheidung              | Gewählt           | User-Validierung      | Aufwand      | Status        |
+|----|---------------------------|-------------------|-----------------------|--------------|---------------|
+| 1  | Detail Page Layout        | **Tabs**          | ✅ VALIDIERT (19.10.) | -            | ✅ FINAL      |
+| 2  | Edit vs Inline Edit       | **Dialog**        | ✅ Tech-Entscheidung  | 3h           | ✅ FINAL      |
+| 3  | Stage Change              | **BEIDE**         | ✅ Tech-Entscheidung  | 2-3h         | ✅ FINAL      |
+| 4  | Document Storage          | **File System**   | ✅ VALIDIERT (19.10.) | 2h (vs 4h)   | ✅ FINAL      |
+| 5  | Filter Persistence        | **URL Params**    | ✅ Tech-Entscheidung  | -            | ✅ FINAL      |
+| 6  | Analytics Calculations    | **Real-time**     | ✅ Tech-Entscheidung  | 4h (vs 6h)   | ✅ FINAL      |
+| 7  | Query-Object-Pattern      | **JA**            | ✅ Tech-Entscheidung  | 4h           | ✅ FINAL      |
+| 8  | Custom Views              | **Predefined**    | ✅ VALIDIERT (19.10.) | 1h (vs 2h)   | ✅ FINAL      |
+| 9  | Sprint-Struktur           | **Option C**      | ✅ Tech-Entscheidung  | 35-40h       | ✅ FINAL      |
 
-**User-Entscheidungen erforderlich:** 3 (Layout, Document Storage, Custom Views)
+**✅ ALLE ENTSCHEIDUNGEN FINAL (2025-10-19)**
 
-**Recommended Defaults:**
-- Layout: Tabs ← CRM-Standard
-- Document Storage: File System ← Einfacher Start
-- Custom Views: Predefined ← YAGNI
+**User-Entscheidungen getroffen:**
+- ✅ **Layout: Tabs** ← CRM-Standard (Salesforce-Pattern)
+- ✅ **Document Storage: File System** ← Einfacher Start, Migration zu S3 später möglich
+- ✅ **Custom Views: Predefined** ← YAGNI (3 Standard-Views reichen), Custom später möglich
+
+**Aufwand-Einsparung durch Entscheidungen:**
+- Document Storage: 2h gespart (File System statt S3: 2h vs 4h)
+- Custom Views: 1h gespart (Predefined statt Custom: 1h vs 2h)
+- **Total:** 3h gespart, Sprint bleibt bei 35-37h (statt 38-40h)
 
 ---
 
-**✅ DESIGN DECISIONS COMPLETE**
+**✅ DESIGN DECISIONS COMPLETE - READY FOR IMPLEMENTATION**
+
+**User-Entscheidungen getroffen:** 2025-10-19 (alle 3 validiert)
+- ✅ Detail Page Layout: **Tabs**
+- ✅ Document Storage: **File System**
+- ✅ Custom Views: **Predefined**
 
 **Nächste Schritte:**
-1. User-Entscheidungen klären (3 Entscheidungen)
+1. ✅ ~~User-Entscheidungen klären~~ DONE (2025-10-19)
 2. Sprint starten nach Sprint 2.1.7.2 COMPLETE
 3. Track 1 + Track 2 parallel bearbeitbar
+4. Aufwand: 35-37h (3h Einsparung durch optimale Entscheidungen)
 
-**Letzte Aktualisierung:** 2025-10-19
+**Migration-Path für spätere Optimierungen:**
+- Document Storage → S3: Wenn >1.000 Dokumente oder >10GB Storage
+- Custom Views → User-Custom: Wenn >3 User-Requests oder Power-User-Bedarf
+
+**Letzte Aktualisierung:** 2025-10-19 (User-Entscheidungen final)
