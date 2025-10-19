@@ -162,6 +162,14 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ## 📄 ARTEFAKTE
 
+**Sprint-Zusammenfassung (Detaillierte Analyse):**
+→ `/docs/planung/artefakte/SPRINT_2_1_7_3_SUMMARY.md`
+- Komplette Sprint-Analyse (41 Commits, 398 Dateien)
+- Epic Refactoring Report (Design System + Backend Parity)
+- Test Coverage Report (2686 Tests)
+- Code-Statistiken & Highlights
+- Lessons Learned & Next Steps
+
 **Technische Spezifikation:**
 → `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_3_TECHNICAL.md`
 - API Specifications
