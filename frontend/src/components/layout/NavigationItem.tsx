@@ -111,7 +111,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       <ListItemIcon
         sx={{
           minWidth: 40,
-          color: isActive ? '#94C456' : '#004F7B', // Freshfoodz Farben
+          color: isActive ? 'primary.main' : 'secondary.main', // Freshfoodz Farben
         }}
       >
         <Icon />
@@ -126,7 +126,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
                 fontSize: '0.95rem',
                 fontFamily: theme => theme.typography.body1.fontFamily,
                 fontWeight: isActive ? 500 : 400,
-                color: isActive ? '#94C456' : '#000',
+                color: isActive ? 'primary.main' : 'text.primary',
                 lineHeight: 1.3,
                 // Erlaubt Zeilenumbruch bei sehr langen Texten
                 whiteSpace: 'normal',

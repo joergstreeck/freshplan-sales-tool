@@ -8,6 +8,7 @@ import {
   Box,
   IconButton,
   Tooltip,
+  useTheme,
 } from '@mui/material';
 import {
   CalendarToday as CalendarIcon,
@@ -25,13 +26,6 @@ interface CustomerCardProps {
   selected?: boolean;
 }
 
-const statusColors: Record<string, string> = {
-  LEAD: '#004F7B', // Freshfoodz Blau
-  AKTIV: '#94C456', // Freshfoodz Grün
-  INAKTIV: theme.palette.grey[600],
-  GESPERRT: theme.palette.error.main,
-};
-
 const statusLabels: Record<string, string> = {
   LEAD: 'Lead',
   AKTIV: 'Aktiv',
@@ -39,17 +33,25 @@ const statusLabels: Record<string, string> = {
   GESPERRT: 'Gesperrt',
 };
 
-const getRiskColor = (score: number): string => {
-  if (score >= 70) return theme.palette.error.main; // Rot
-  if (score >= 40) return theme.palette.warning.main; // Orange
-  return theme.palette.success.main; // Grün
-};
-
 export const CustomerCard: React.FC<CustomerCardProps> = ({
   customer,
   onClick,
   selected = false,
 }) => {
+  const theme = useTheme();
+
+  const statusColors: Record<string, string> = {
+    LEAD: theme.palette.secondary.main, // Freshfoodz Blau
+    AKTIV: theme.palette.primary.main, // Freshfoodz Grün
+    INAKTIV: theme.palette.grey[600],
+    GESPERRT: theme.palette.error.main,
+  };
+
+  const getRiskColor = (score: number): string => {
+    if (score >= 70) return theme.palette.error.main; // Rot
+    if (score >= 40) return theme.palette.warning.main; // Orange
+    return theme.palette.success.main; // Grün
+  };
   const daysSinceContact = customer.lastContactDate
     ? daysSince(new Date(customer.lastContactDate))
     : null;

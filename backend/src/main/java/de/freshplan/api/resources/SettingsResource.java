@@ -110,7 +110,7 @@ public class SettingsResource {
    */
   @PUT
   @Path("/opportunity-multipliers/{id}")
-  @RolesAllowed("admin")
+  @RolesAllowed("ADMIN")
   @Transactional
   public Response updateMultiplier(@PathParam("id") UUID id, UpdateMultiplierRequest request) {
     logger.info(
