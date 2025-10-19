@@ -1,11 +1,12 @@
 # 🚀 Sprint 2.1.7.2 - Customer-Management + Xentral-Integration
 
 **Sprint-ID:** 2.1.7.2
-**Status:** 📋 PLANNING
+**Status:** 📋 PLANNING → 🚀 READY TO START
 **Priority:** P1 (High)
-**Estimated Effort:** 18h (2-3 Arbeitstage)
+**Estimated Effort:** 21h (2.5-3 Arbeitstage) *(+3h für Admin-UI)*
 **Owner:** TBD
 **Created:** 2025-10-16
+**Updated:** 2025-10-18 (Sales-Rep-Mapping-Strategie + Admin-UI + Hybrid-Ansatz)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE
 
 ---
@@ -52,6 +53,9 @@
 - ✅ XentralApiClient Integration (Umsatz + Zahlungsverhalten abrufen)
 - ✅ Customer-Dashboard mit echten Daten (keine Placeholders!)
 - ✅ Churn-Alarm mit variabler Schwelle (pro Kunde konfigurierbar)
+- ✅ **Admin-UI für Xentral-Einstellungen** (`/admin/integrations/xentral`)
+- ✅ **Admin-UI für Sales-Rep-Mapping** (`/admin/users` erweitert)
+- ✅ **Automatischer Sales-Rep-Sync-Job** (Email-basiert)
 
 ---
 
@@ -565,37 +569,53 @@ xentral.api.read-timeout=10000
 
 #### **2.3 User-Xentral-Mapping** (30 Min)
 
-**KRITISCH zu klären (vor Sprint-Start!):**
+**✅ IMPLEMENTED Strategy: Option A + Automatischer Sync**
 
-**Option A: User-Tabelle erweitern (empfohlen!):**
+**Strategie-Entscheidung (2025-10-18):**
+- **Option A gewählt:** User-Tabelle erweitern (einfach, performant)
+- **Auto-Sync-Job:** Email-basierte Synchronisation aus Xentral
+- **Admin-UI:** Manuelle Pflege möglich unter `/admin/users`
+
+**Migration V10031:** User-Tabelle erweitern
 ```sql
 -- Migration: V10031__add_xentral_sales_rep_id.sql
 ALTER TABLE app_user ADD COLUMN xentral_sales_rep_id VARCHAR(50);
 
 COMMENT ON COLUMN app_user.xentral_sales_rep_id IS
-'Xentral Sales Rep ID für API-Filtering (z.B. "SR-47")';
+'Xentral Sales Rep ID für API-Filtering (z.B. "SR-47") - wird automatisch aus Xentral synchronisiert via Email-Matching';
 
--- Beispiel-Daten:
-UPDATE app_user SET xentral_sales_rep_id = 'SR-47' WHERE username = 'max.mueller';
-UPDATE app_user SET xentral_sales_rep_id = 'SR-89' WHERE username = 'anna.schmidt';
+-- Initial: NULL (wird via Auto-Sync-Job befüllt)
+-- Beispiel nach Sync:
+-- max.mueller@freshfoodz.de → Xentral Sales Rep mit Email max.mueller@freshfoodz.de → SR-47
+-- anna.schmidt@freshfoodz.de → Xentral Sales Rep mit Email anna.schmidt@freshfoodz.de → SR-89
 ```
 
-**Option B: Mapping-Tabelle (falls komplexer):**
-```sql
-CREATE TABLE user_xentral_mapping (
-    freshfoodz_user_id UUID PRIMARY KEY REFERENCES app_user(id),
-    xentral_sales_rep_id VARCHAR(50) NOT NULL,
-    created_at TIMESTAMP DEFAULT NOW()
-);
-```
-
-**Option C: Username-basiert (falls möglich):**
+**Sync-Strategie:** Email-basierte Zuordnung
 ```java
-// Wenn FreshFoodz.username == Xentral.salesRepId
-String salesRepId = currentUser.getUsername(); // "max.mueller"
+// Xentral liefert: GET /api/v1/sales-reps
+// Response: [{ "id": "SR-47", "email": "max.mueller@freshfoodz.de", "name": "Max Müller" }, ...]
+
+// FreshPlan Auto-Sync-Job (täglich):
+// 1. Holt alle Sales Reps aus Xentral
+// 2. Matched via Email mit app_user.email
+// 3. Setzt xentral_sales_rep_id bei Match
+// 4. Loggt Unmatched Users für manuelle Review
+
+@Scheduled(cron = "0 0 2 * * ?") // Täglich 2:00 Uhr
+public void syncSalesRepIds() {
+    List<XentralSalesRep> salesReps = xentralApiClient.getAllSalesReps();
+
+    for (XentralSalesRep salesRep : salesReps) {
+        userRepository.findByEmail(salesRep.getEmail())
+            .ifPresent(user -> {
+                user.setXentralSalesRepId(salesRep.getId());
+                logger.info("Synced: {} → {}", user.getEmail(), salesRep.getId());
+            });
+    }
+}
 ```
 
-**→ Muss VOR Sprint geklärt werden!**
+**Fallback:** Manuelle Pflege via Admin-UI (siehe Deliverable 7)
 
 ---
 
@@ -1040,6 +1060,415 @@ Test Case 2: Churn-Alarm Konfiguration
 
 ---
 
+### **6. Admin-UI für Xentral-Einstellungen** (2-3h)
+
+**Neue Seite:** `/admin/integrations/xentral`
+
+#### **6.1 XentralIntegrationSettings Component** (2h)
+
+**Neue Datei:** `frontend/src/features/admin/pages/XentralIntegrationSettings.tsx`
+
+**Anforderungen:**
+- Admin-Seite für Xentral-API-Konfiguration
+- Nur für Admins zugänglich
+- Verschlüsselte Speicherung von API-Token
+
+**UI-Komponenten:**
+```tsx
+export function XentralIntegrationSettings() {
+  const [apiUrl, setApiUrl] = useState('');
+  const [apiToken, setApiToken] = useState('');
+  const [connectionStatus, setConnectionStatus] = useState<'UNCHECKED' | 'SUCCESS' | 'FAILED'>('UNCHECKED');
+  const [isSaving, setIsSaving] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
+
+  // Load existing settings on mount
+  useEffect(() => {
+    loadSettings();
+  }, []);
+
+  const loadSettings = async () => {
+    try {
+      const response = await httpClient.get('/api/admin/integrations/xentral/settings');
+      setApiUrl(response.data.apiUrl);
+      // Token wird NICHT zurückgegeben (Security!)
+    } catch (error) {
+      console.error('Failed to load Xentral settings:', error);
+    }
+  };
+
+  const handleTestConnection = async () => {
+    setIsTesting(true);
+    try {
+      await httpClient.post('/api/admin/integrations/xentral/test-connection', {
+        apiUrl,
+        apiToken
+      });
+      setConnectionStatus('SUCCESS');
+      toast.success('Verbindung erfolgreich! ✅');
+    } catch (error) {
+      setConnectionStatus('FAILED');
+      toast.error('Verbindung fehlgeschlagen! ❌');
+    } finally {
+      setIsTesting(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await httpClient.post('/api/admin/integrations/xentral/settings', {
+        apiUrl,
+        apiToken
+      });
+      toast.success('Einstellungen gespeichert! 🎉');
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast.error('Fehler beim Speichern');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Container maxWidth="md" sx={{ py: 4 }}>
+      <Paper sx={{ p: 3 }}>
+        <Stack spacing={3}>
+          {/* Header */}
+          <Box>
+            <Typography variant="h5" gutterBottom>
+              Xentral Integration
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Konfiguriere die Verbindung zum Xentral ERP-System
+            </Typography>
+          </Box>
+
+          <Divider />
+
+          {/* API URL Field */}
+          <TextField
+            label="Xentral API URL"
+            value={apiUrl}
+            onChange={(e) => setApiUrl(e.target.value)}
+            fullWidth
+            placeholder="https://xentral.freshfoodz.de/api/v1"
+            helperText="Basis-URL der Xentral REST API"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LinkIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          {/* API Token Field */}
+          <TextField
+            label="API Token"
+            type="password"
+            value={apiToken}
+            onChange={(e) => setApiToken(e.target.value)}
+            fullWidth
+            placeholder="Bearer Token eingeben"
+            helperText="Wird verschlüsselt gespeichert (AES-256)"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <KeyIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
+
+          {/* Connection Status */}
+          {connectionStatus !== 'UNCHECKED' && (
+            <Alert severity={connectionStatus === 'SUCCESS' ? 'success' : 'error'}>
+              {connectionStatus === 'SUCCESS'
+                ? 'Verbindung zu Xentral erfolgreich getestet! ✅'
+                : 'Verbindung fehlgeschlagen. Bitte prüfe URL und Token. ❌'}
+            </Alert>
+          )}
+
+          {/* Actions */}
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              onClick={handleTestConnection}
+              disabled={!apiUrl || !apiToken || isTesting}
+              startIcon={isTesting ? <CircularProgress size={16} /> : <TestIcon />}
+            >
+              {isTesting ? 'Teste...' : 'Verbindung testen'}
+            </Button>
+
+            <Button
+              variant="contained"
+              onClick={handleSave}
+              disabled={!apiUrl || !apiToken || isSaving}
+              startIcon={<SaveIcon />}
+            >
+              {isSaving ? 'Speichere...' : 'Einstellungen speichern'}
+            </Button>
+          </Stack>
+
+          <Divider />
+
+          {/* Info Box */}
+          <Alert severity="info" icon={<InfoIcon />}>
+            <Typography variant="body2" fontWeight="bold" gutterBottom>
+              Wie erhalte ich einen API-Token?
+            </Typography>
+            <Typography variant="caption">
+              1. In Xentral einloggen<br />
+              2. Einstellungen → API-Verwaltung<br />
+              3. Neuen Token generieren mit Berechtigung: "Kunden lesen", "Rechnungen lesen"<br />
+              4. Token hier einfügen und "Verbindung testen" klicken
+            </Typography>
+          </Alert>
+        </Stack>
+      </Paper>
+    </Container>
+  );
+}
+```
+
+#### **6.2 Backend: Settings Storage mit Encryption** (1h)
+
+**Neue Datei:** `backend/src/main/java/de/freshplan/infrastructure/config/XentralSettingsService.java`
+
+```java
+@ApplicationScoped
+public class XentralSettingsService {
+
+    @Inject
+    SettingsRepository settingsRepository;
+
+    @Inject
+    EncryptionService encryptionService;
+
+    private static final String XENTRAL_API_URL_KEY = "xentral.api.url";
+    private static final String XENTRAL_API_TOKEN_KEY = "xentral.api.token";
+
+    /**
+     * Speichert Xentral-Einstellungen (Token wird verschlüsselt!)
+     */
+    public void saveSettings(String apiUrl, String apiToken) {
+        // API URL (plain)
+        settingsRepository.upsert(XENTRAL_API_URL_KEY, apiUrl);
+
+        // API Token (encrypted!)
+        String encryptedToken = encryptionService.encrypt(apiToken);
+        settingsRepository.upsert(XENTRAL_API_TOKEN_KEY, encryptedToken);
+
+        logger.info("Xentral settings saved (Token encrypted)");
+    }
+
+    /**
+     * Lädt API URL (Token wird NICHT zurückgegeben!)
+     */
+    public String getApiUrl() {
+        return settingsRepository.findByKey(XENTRAL_API_URL_KEY)
+            .map(Setting::getValue)
+            .orElse(null);
+    }
+
+    /**
+     * Lädt API Token (entschlüsselt für API-Calls)
+     */
+    public String getApiToken() {
+        return settingsRepository.findByKey(XENTRAL_API_TOKEN_KEY)
+            .map(Setting::getValue)
+            .map(encryptionService::decrypt)
+            .orElse(null);
+    }
+
+    /**
+     * Testet Verbindung zu Xentral
+     */
+    public boolean testConnection(String apiUrl, String apiToken) {
+        try {
+            // Simple Test: GET /api/v1/health oder GET /api/v1/customers?limit=1
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(apiUrl + "/customers?limit=1"))
+                .header("Authorization", "Bearer " + apiToken)
+                .GET()
+                .build();
+
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+            return response.statusCode() == 200;
+
+        } catch (Exception e) {
+            logger.error("Xentral connection test failed", e);
+            return false;
+        }
+    }
+}
+```
+
+**REST Endpoint:**
+```java
+@Path("/api/admin/integrations/xentral")
+@RolesAllowed("admin")
+public class XentralSettingsResource {
+
+    @Inject
+    XentralSettingsService settingsService;
+
+    @GET
+    @Path("/settings")
+    public Response getSettings() {
+        String apiUrl = settingsService.getApiUrl();
+        // Token wird NICHT zurückgegeben (Security!)
+        return Response.ok(Map.of("apiUrl", apiUrl != null ? apiUrl : "")).build();
+    }
+
+    @POST
+    @Path("/settings")
+    public Response saveSettings(@Valid XentralSettingsRequest request) {
+        settingsService.saveSettings(request.getApiUrl(), request.getApiToken());
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/test-connection")
+    public Response testConnection(@Valid XentralSettingsRequest request) {
+        boolean success = settingsService.testConnection(request.getApiUrl(), request.getApiToken());
+
+        if (success) {
+            return Response.ok(Map.of("status", "SUCCESS")).build();
+        } else {
+            return Response.status(Response.Status.BAD_GATEWAY)
+                .entity(Map.of("status", "FAILED", "message", "Connection failed"))
+                .build();
+        }
+    }
+}
+```
+
+---
+
+### **7. Sales-Rep Mapping Auto-Sync + Admin-UI** (1h)
+
+#### **7.1 Auto-Sync-Job** (30 Min)
+
+**Neue Datei:** `backend/src/main/java/de/freshplan/infrastructure/jobs/SalesRepSyncJob.java`
+
+```java
+@ApplicationScoped
+public class SalesRepSyncJob {
+
+    private static final Logger logger = LoggerFactory.getLogger(SalesRepSyncJob.class);
+
+    @Inject
+    XentralApiClient xentralApiClient;
+
+    @Inject
+    UserRepository userRepository;
+
+    /**
+     * Synchronisiert Sales-Rep-IDs aus Xentral
+     * Läuft täglich um 2:00 Uhr
+     */
+    @Scheduled(cron = "0 0 2 * * ?")
+    public void syncSalesRepIds() {
+        logger.info("Starting Sales-Rep sync from Xentral...");
+
+        try {
+            // 1. Holt alle Sales Reps aus Xentral
+            List<XentralSalesRep> salesReps = xentralApiClient.getAllSalesReps();
+            logger.info("Fetched {} sales reps from Xentral", salesReps.size());
+
+            int syncedCount = 0;
+            int unmatchedCount = 0;
+
+            // 2. Matched via Email
+            for (XentralSalesRep salesRep : salesReps) {
+                Optional<User> userOpt = userRepository.findByEmail(salesRep.getEmail());
+
+                if (userOpt.isPresent()) {
+                    User user = userOpt.get();
+                    user.setXentralSalesRepId(salesRep.getId());
+                    userRepository.persist(user);
+
+                    logger.info("Synced: {} → {}", user.getEmail(), salesRep.getId());
+                    syncedCount++;
+                } else {
+                    logger.warn("Unmatched Xentral Sales Rep: {} ({})", salesRep.getEmail(), salesRep.getId());
+                    unmatchedCount++;
+                }
+            }
+
+            logger.info("Sales-Rep sync completed: {} synced, {} unmatched", syncedCount, unmatchedCount);
+
+        } catch (Exception e) {
+            logger.error("Sales-Rep sync failed", e);
+        }
+    }
+}
+```
+
+#### **7.2 Admin-UI Erweiterung für `/admin/users`** (30 Min)
+
+**Datei:** `frontend/src/features/admin/pages/UserManagementPage.tsx`
+
+**Neue Spalte in User-Table hinzufügen:**
+```tsx
+<TableHead>
+  <TableRow>
+    <TableCell>Name</TableCell>
+    <TableCell>Email</TableCell>
+    <TableCell>Role</TableCell>
+    <TableCell>Xentral Sales-Rep ID</TableCell> {/* NEU! */}
+    <TableCell>Actions</TableCell>
+  </TableRow>
+</TableHead>
+
+<TableBody>
+  {users.map((user) => (
+    <TableRow key={user.id}>
+      <TableCell>{user.name}</TableCell>
+      <TableCell>{user.email}</TableCell>
+      <TableCell>{user.role}</TableCell>
+      <TableCell>
+        {user.xentralSalesRepId ? (
+          <Chip label={user.xentralSalesRepId} size="small" color="success" />
+        ) : (
+          <Chip label="Nicht zugeordnet" size="small" color="default" />
+        )}
+      </TableCell>
+      <TableCell>
+        <IconButton size="small" onClick={() => openEditDialog(user)}>
+          <EditIcon />
+        </IconButton>
+      </TableCell>
+    </TableRow>
+  ))}
+</TableBody>
+```
+
+**Edit-Dialog erweitern:**
+```tsx
+<TextField
+  label="Xentral Sales-Rep ID"
+  value={xentralSalesRepId}
+  onChange={(e) => setXentralSalesRepId(e.target.value)}
+  fullWidth
+  placeholder="z.B. SR-47"
+  helperText="Wird normalerweise automatisch synchronisiert. Manuelle Pflege nur im Notfall."
+  InputProps={{
+    startAdornment: (
+      <InputAdornment position="start">
+        <SyncIcon />
+      </InputAdornment>
+    ),
+  }}
+/>
+```
+
+---
+
 ## ✅ DEFINITION OF DONE
 
 ### **Functional:**
@@ -1051,19 +1480,28 @@ Test Case 2: Churn-Alarm Konfiguration
 - [x] Xentral-Kunden-Dropdown zeigt nur Verkäufer-eigene Kunden
 
 ### **Technical:**
-- [x] Backend: XentralApiClient implementiert
+- [x] Backend: XentralApiClient implementiert (mit Mock-Modus!)
 - [x] Backend: GET /api/xentral/customers?salesRepId={id}
 - [x] Backend: GET /api/xentral/customers/{id}/revenue
 - [x] Backend: GET /api/xentral/customers/{id}/payment-behavior
 - [x] Backend: PATCH /api/customers/{id} (churnAlertDays)
+- [x] Backend: XentralSettingsService mit Encryption
+- [x] Backend: GET /api/admin/integrations/xentral/settings
+- [x] Backend: POST /api/admin/integrations/xentral/settings
+- [x] Backend: POST /api/admin/integrations/xentral/test-connection
+- [x] Backend: SalesRepSyncJob (@Scheduled)
 - [x] Frontend: ConvertToCustomerDialog mit Autocomplete
 - [x] Frontend: CustomerRevenueCard mit echten Daten
 - [x] Frontend: CustomerPaymentBehaviorCard mit Ampel
 - [x] Frontend: CustomerChurnMonitoring mit Settings
+- [x] Frontend: XentralIntegrationSettings Component
+- [x] Frontend: UserManagementPage erweitert (Xentral Sales-Rep ID Spalte)
 - [x] Migration: V10031 (xentral_sales_rep_id)
 - [x] Migration: V10032 (churn_alert_days)
 - [x] Unit Tests: XentralApiClient Mocks
 - [x] E2E Tests: Opportunity → Customer → Dashboard
+- [x] E2E Tests: Admin-UI Settings speichern & testen
+- [x] E2E Tests: Sales-Rep Sync Job
 
 ### **Quality:**
 - [x] Code Review: 1 Approval
@@ -1096,25 +1534,69 @@ Test Case 2: Churn-Alarm Konfiguration
 
 ## 🚀 PREREQUISITES
 
-### **KRITISCH zu klären VOR Sprint-Start:**
+### **✅ BEREITS GEKLÄRT (2025-10-18):**
 
-1. **Xentral Sales-Rep Mapping:**
-   - [ ] Wie heißt das Feld in Xentral? (`salesRepId`, `assignedTo`, `owner`?)
-   - [ ] Mapping-Strategie entscheiden (Option A/B/C)
-   - [ ] Migration V10031 vorbereiten
+1. **Sales-Rep Mapping Strategie:**
+   - ✅ **Option A gewählt:** User-Tabelle erweitern mit `xentral_sales_rep_id`
+   - ✅ **Auto-Sync-Job:** Email-basiertes Matching (täglich 2:00 Uhr)
+   - ✅ **Admin-UI:** Manuelle Pflege unter `/admin/users` möglich
+   - ✅ **Migration V10031:** Spezifikation fertig
 
-2. **Xentral-API Zugriff testen:**
-   - [ ] `GET /customers?salesRepId=???` funktioniert?
-   - [ ] `GET /customers/{id}/payment-summary` funktioniert?
-   - [ ] API-Token verfügbar?
+2. **Entwicklungs-Strategie:**
+   - ✅ **Mock-Enabled Development:** XentralApiClient mit Feature-Flag
+   - ✅ **Hybrid-Ansatz:** Foundation mit Mocks bauen, später echte API integrieren
+   - ✅ **Admin-UI:** Settings-Seite für API-Konfiguration unter `/admin/integrations/xentral`
 
-### **Ready to Start:**
+### **⏳ WARTEN AUF IT-TEAM (7-Punkt-Checklist gesendet):**
+
+**IT-Integration Checklist (gesendet 2025-10-18):**
+
+1. **Xentral API Endpoints:**
+   - `GET /api/v1/customers?salesRepId={id}` verfügbar?
+   - `GET /api/v1/invoices?customerId={id}` verfügbar?
+   - `GET /api/v1/customers/{id}/payment-summary` verfügbar?
+   - `GET /api/v1/sales-reps` verfügbar?
+
+2. **API Authentication:**
+   - Welches Token-Format? (Bearer Token?)
+   - Wie erhalte ich ein API-Token?
+   - Token-Berechtigungen: "Kunden lesen", "Rechnungen lesen"
+
+3. **Sales-Rep Mapping:**
+   - Feld-Name in Xentral? (`salesRepId`, `assignedTo`, `owner`?)
+   - Format? (z.B. "SR-47" oder numerisch?)
+   - Email-Feld in Sales-Reps verfügbar für Auto-Matching?
+
+4. **Rate Limits:**
+   - Max Requests pro Minute?
+   - Retry-Strategy bei 429?
+
+5. **Test-Zugang:**
+   - Test-API-Token verfügbar?
+   - Test-System oder nur Production?
+
+6. **Webhooks (Optional, später):**
+   - Sind Xentral-Webhooks verfügbar?
+   - Events: invoice.created, payment.received, customer.updated?
+
+7. **Support:**
+   - Ansprechpartner bei API-Problemen?
+   - Xentral-API-Dokumentation verfügbar?
+
+**→ Während wir warten: Foundation mit Mocks bauen (4-6h), dann entscheiden**
+
+### **✅ READY TO START (Foundation-Phase):**
 - ✅ Sprint 2.1.7.1 COMPLETE (Lead → Opportunity funktioniert)
-- ✅ Xentral-Dokumentation vorhanden (FC-005, FC-009)
-- ✅ Xentral läuft (Production-Ready)
+- ✅ Xentral-Dokumentation vorhanden (FC-005, FC-009 - 1151 Zeilen Specs!)
+- ✅ Sales-Rep Mapping Strategie festgelegt
+- ✅ Mock-Enabled Development Strategy definiert
+- ✅ Admin-UI Scope definiert (+3h)
 
-### **Blockers:**
-- ⚠️ Xentral Sales-Rep Mapping unklar (MUSS geklärt werden!)
+### **🚫 KEINE BLOCKER:**
+- ✅ Alle kritischen Entscheidungen getroffen
+- ✅ Können mit Foundation starten (Mocks)
+- ✅ IT-Response parallel abwarten
+- ✅ Später: Mocks → Echte API austauschen (1-2h)
 
 ---
 
@@ -1126,7 +1608,7 @@ Test Case 2: Churn-Alarm Konfiguration
   - OpportunityDetailPage Integration (1h)
   - Backend Xentral-Kunden-Endpoint (1h)
 - Xentral-API-Client Implementation (3h)
-  - XentralApiClient (2h)
+  - XentralApiClient mit Mock-Modus (2h)
   - Configuration + User-Mapping (1h)
 - Break + Setup (1h)
 
@@ -1141,11 +1623,26 @@ Test Case 2: Churn-Alarm Konfiguration
   - ChurnSettingsDialog (1h)
   - Backend API (30 Min)
 
-**Tag 3 (2h oder später):**
-- Testing & Bugfixes (2h)
-- Optional: Polish & Performance-Optimierung
+**Tag 3 (5h):**
+- Admin-UI für Xentral-Einstellungen (3h)
+  - XentralIntegrationSettings Component (2h)
+  - Backend Settings Service + Encryption (1h)
+- Sales-Rep Auto-Sync + Admin-UI (1h)
+  - SalesRepSyncJob (30 Min)
+  - UserManagementPage erweitern (30 Min)
+- Testing & Bugfixes (1h)
 
-**Total: 18h = 2-3 Arbeitstage** ✅
+**Optional (nach IT-Response):**
+- Mock → Echte API Integration (1-2h)
+- Webhooks statt Polling (2-3h)
+
+**Total: 21h = 2.5-3 Arbeitstage** ✅
+
+**Breakdown:**
+- Core Features (Customer Management): 15h
+- Admin-UI + Auto-Sync: 4h
+- Testing: 2h
+- **GESAMT:** 21h
 
 ---
 
@@ -1185,21 +1682,104 @@ Test Case 2: Churn-Alarm Konfiguration
    - Catering: 45 Tage (saisonale Schwankungen)
    - Hotel: 60 Tage (monatliche Sammelbestellungen)
 
+### **Neue Entscheidungen (2025-10-18):**
+
+5. **Sales-Rep Mapping: Option A + Auto-Sync ✅**
+   - **Entscheidung:** User-Tabelle erweitern mit `xentral_sales_rep_id` VARCHAR(50)
+   - **Auto-Sync-Job:** Täglich 2:00 Uhr via Email-Matching
+   - **Fallback:** Manuelle Pflege über Admin-UI (`/admin/users`)
+   - **Begründung:**
+     - Einfache Implementierung (keine Mapping-Tabelle)
+     - Performant (keine JOINs nötig)
+     - Automatisch (kein manueller Aufwand)
+     - Fehlertoleranz (manuelle Korrektur möglich)
+
+6. **Admin-UI für Xentral-Einstellungen ✅**
+   - **Location:** `/admin/integrations/xentral`
+   - **Features:**
+     - API URL Konfiguration
+     - API Token Eingabe (verschlüsselt mit AES-256)
+     - Connection Test Button
+     - Settings Speicherung in `settings` Tabelle
+   - **Security:** Token wird NIEMALS im Response zurückgegeben
+   - **Begründung:**
+     - Flexibilität (API-URL kann sich ändern)
+     - Security (Token nicht in application.properties hardcoded)
+     - User Experience (Admin kann selbst testen)
+
+7. **Mock-Enabled Development Strategy ✅**
+   - **Pattern:** Feature-Flag in XentralApiClient
+     ```java
+     @ConfigProperty(name = "xentral.api.mock-mode", defaultValue = "true")
+     boolean mockMode;
+     ```
+   - **Mock-Daten:** Realistische Testdaten für alle Endpoints
+   - **Switch-Over:** Nach IT-Response Feature-Flag auf `false` setzen
+   - **Begründung:**
+     - Parallele Arbeit (nicht blockiert durch IT)
+     - Testbarkeit (lokale Entwicklung ohne Xentral)
+     - Safety (Production-Rollout erst nach API-Validierung)
+
+8. **Hybrid-Ansatz: Foundation → Integration ✅**
+   - **Phase 1 (4-6h):** Foundation mit Mocks bauen
+     - ConvertToCustomerDialog
+     - Customer-Dashboard (mit Mock-Daten)
+     - Admin-UI
+     - Auto-Sync-Job (mit Mock getAllSalesReps)
+   - **Phase 2 (nach IT-Response):** Echte API integrieren
+     - Mock-Mode auf `false`
+     - Connection-Test durchführen
+     - Produktiv-Daten testen
+   - **Begründung:**
+     - Kein Zeitverlust (arbeiten parallel zu IT)
+     - Risikoarm (Mocks → Echte API ist low-effort Switch)
+     - Flexibel (können Sprint 2.1.7.3 vorziehen falls IT lange braucht)
+
+9. **IT-Integration Checklist (7-Punkt-Checkliste) ✅**
+   - **Gesendet am:** 2025-10-18
+   - **Status:** Warten auf Response
+   - **Inhalt:**
+     - API Endpoints (4 Endpoints)
+     - Authentication (Token-Format, Berechtigungen)
+     - Sales-Rep Mapping (Feld-Name, Format, Email)
+     - Rate Limits
+     - Test-Zugang
+     - Webhooks (optional)
+     - Support-Kontakt
+   - **Begründung:** Strukturierte Anfrage = schnellere klare Antwort
+
 ### **Technical Debt:**
 - Xentral-API Caching: Aktuell keine Caching-Strategie (später: Redis/Caffeine)
 - Error Recovery: Wenn Xentral down → Fallback-Daten? Retry-Logic?
 - Webhook-Integration: Aktuell Polling - später: Xentral-Webhooks für Real-Time Updates
+- Mock → Real Switch: Aktuell Feature-Flag - später: automatische Erkennung (API verfügbar → nutzen, sonst Fallback)
 
 ---
 
-**Sprint bereit für Kickoff (nach Xentral-Mapping-Klärung)!** 🚀
+**✅ Sprint READY TO START - Alle Entscheidungen getroffen!** 🚀
 
-**Nächster Schritt:**
-1. **VOR Sprint-Start:** Xentral-API testen (30 Min)
-   ```bash
-   curl -X GET "https://xentral/api/v1/customers?salesRepId=???" \
-     -H "Authorization: Bearer {token}"
-   ```
-2. **Migration V10031 erstellen:** User.xentralSalesRepId Feld
-3. Feature-Branch: `git checkout -b feature/sprint-2-1-7-2-customer-xentral`
-4. Los geht's! 💪
+**Nächster Schritt (3 Optionen):**
+
+### **Option A: HYBRID-ANSATZ (EMPFOHLEN) ✅**
+1. **Jetzt starten:** Foundation mit Mocks (4-6h)
+   - Feature-Branch: `git checkout -b feature/sprint-2-1-7-2-customer-xentral`
+   - Migration V10031, V10032 erstellen
+   - XentralApiClient mit `mock-mode=true`
+   - ConvertToCustomerDialog + Customer-Dashboard
+   - Admin-UI + Auto-Sync-Job
+
+2. **Dann entscheiden:**
+   - ✅ IT-Response da → Mock-Mode deaktivieren, echte API integrieren (1-2h)
+   - ⏸️ IT braucht länger → Sprint 2.1.7.3 vorziehen (Bestandskunden-Workflow)
+
+### **Option B: WARTEN AUF IT-RESPONSE**
+- Sprint 2.1.7.3 starten (Bestandskunden-Workflow)
+- Sprint 2.1.7.2 später fortsetzen (wenn IT antwortet)
+
+### **Option C: SPRINT 2.1.7.2 KOMPLETT (NUR mit IT-Response)**
+- Warten auf IT-Antwort (7-Punkt-Checklist)
+- Dann Sprint 2.1.7.2 MIT echten Xentral-APIs bauen
+- Vorteil: Kein Mock-Overhead
+- Nachteil: Zeitverlust durch Warten
+
+**Empfehlung:** Option A (Hybrid) - Beste Balance aus Geschwindigkeit & Sicherheit! 🎯

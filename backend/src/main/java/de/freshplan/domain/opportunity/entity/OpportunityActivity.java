@@ -89,7 +89,11 @@ public class OpportunityActivity {
     STAGE_CHANGED("Status geändert"),
     CALCULATOR_USED("Calculator verwendet"),
     DOCUMENT_SENT("Dokument gesendet"),
-    FOLLOW_UP("Nachfassung");
+    FOLLOW_UP("Nachfassung"),
+    // Bestandskunden-spezifische Activity Types (Sprint 2.1.7.3)
+    EXPANSION_CALL("Sortimentserweiterungs-Gespräch"),
+    PRODUCT_DEMO("Produktpräsentation"),
+    CONTRACT_RENEWAL("Vertragsverlängerungs-Verhandlung");
 
     private final String displayName;
 

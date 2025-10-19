@@ -8,6 +8,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.opportunity.entity.Opportunity;
 import de.freshplan.domain.opportunity.entity.OpportunityActivity;
 import de.freshplan.domain.opportunity.entity.OpportunityStage;
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.opportunity.service.command.OpportunityCommandService;
 import de.freshplan.domain.opportunity.service.dto.ConvertToCustomerRequest;
@@ -691,14 +692,27 @@ public class OpportunityService {
     // 8. Set customer FK
     opportunity.setCustomer(customer);
 
-    // 9. Set description (with opportunity type prefix if provided)
+    // 9. Set OpportunityType (with Bestandskunden default)
+    OpportunityType type = OpportunityType.SORTIMENTSERWEITERUNG; // Default for existing customers
+    if (request.getOpportunityType() != null && !request.getOpportunityType().isEmpty()) {
+      try {
+        type = OpportunityType.valueOf(request.getOpportunityType());
+      } catch (IllegalArgumentException e) {
+        logger.warn(
+            "Invalid opportunityType: {}, using default SORTIMENTSERWEITERUNG",
+            request.getOpportunityType());
+      }
+    }
+    opportunity.setOpportunityType(type);
+
+    // 10. Set description (with opportunity type for clarity)
     if (request.getOpportunityType() != null) {
       opportunityDescription =
           String.format("[%s] %s", request.getOpportunityType(), opportunityDescription);
     }
     opportunity.setDescription(opportunityDescription);
 
-    // 10. Set business fields
+    // 11. Set business fields
     if (request.getExpectedValue() != null) {
       opportunity.setExpectedValue(request.getExpectedValue());
     }
@@ -707,10 +721,10 @@ public class OpportunityService {
     }
     // Probability is automatically set by stage in Opportunity constructor
 
-    // 11. Persist opportunity
+    // 12. Persist opportunity
     opportunityRepository.persist(opportunity);
 
-    // 12. Create initial activity
+    // 13. Create initial activity
     User currentUser = getCurrentUser();
     String activityDescription =
         String.format(
@@ -727,7 +741,7 @@ public class OpportunityService {
             activityDescription);
     opportunity.addActivity(activity);
 
-    // 13. Audit Log
+    // 14. Audit Log
     try {
       auditService.logAsync(
           AuditContext.builder()
