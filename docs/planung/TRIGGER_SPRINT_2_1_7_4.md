@@ -182,6 +182,18 @@ void handleOrderDelivered(
 
 ---
 
+## 🚀 PREREQUISITES
+
+**Dependencies:**
+- ✅ Sprint 2.1.7.3 COMPLETE (Customer → Opportunity Workflow)
+
+**Xentral API:**
+→ `/docs/planung/artefakte/XENTRAL_API_INFO.md` (Zentrale Xentral-Dokumentation)
+- ✅ Interface-Definition unabhängig von Xentral-Details
+- ⚠️ Order-Status-Feld noch offen (für Sprint 2.1.7.2 Implementierung)
+
+---
+
 ## ✅ DEFINITION OF DONE
 
 ### **Functional**
