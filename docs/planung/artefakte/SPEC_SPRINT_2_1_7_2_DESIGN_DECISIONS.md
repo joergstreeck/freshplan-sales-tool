@@ -318,21 +318,45 @@ if (churnDetectionService.shouldCheckForChurn(customer)) {
 Wie erfahren wir von Xentral-Bestellungen?
 
 **Optionen:**
-1. **Option A: Polling** - Batch-Job jede Stunde (GET /invoices)
+1. **Option A: Polling** - Nightly Job 1x täglich (GET /invoices)
 2. **Option B: Webhook** - Real-Time (POST /webhook/order-delivered)
 3. **Option C: Hybrid** - Webhook + Fallback Polling
 
 ### **Lösung**
-**Option B: Webhook (mit Manual Activation Fallback)** ✅
+**Option A: Polling (Nightly Job 1x täglich)** ✅
+
+**User-Entscheidung (2025-10-19):**
+> "Option B" (1x täglich Nightly Job - User meinte meine Polling-Option B aus der Analyse)
+
+**Grund für Änderung (vs ursprüngliche Planung):**
+- ⚠️ **Webhooks in Beta:** Feature-Flag erforderlich, API-Kontakt nötig (api@xentral.com)
+- ✅ **Polling-Ansatz für Sprint 2.1.7.2:** Sofort umsetzbar, keine Abhängigkeiten
+- ✅ **Frequenz 1x täglich reicht:** Use Cases (Dashboard, Churn-Alarm) sind nicht zeitkritisch
 
 **Implementierung:**
 ```java
-// Sprint 2.1.7.2: Webhook Endpoint
-@POST
-@Path("/api/xentral/webhook/order-delivered")
-public Response handleOrderDelivered(XentralOrderDeliveredEvent event) {
-    // Sprint 2.1.7.4: XentralOrderEventHandler Interface!
-    orderEventHandler.handleOrderDelivered(
+// Sprint 2.1.7.2: Nightly Polling Job
+@Scheduled(cron = "0 0 2 * * ?") // Daily 2:00 AM
+public void syncXentralData() {
+    // 1. Sync Customers (mit Sales-Rep Filter)
+    List<User> salesReps = userRepository.findAllWithXentralSalesRepId();
+    for (User salesRep : salesReps) {
+        List<XentralCustomerDTO> customers = xentralApiClient.getCustomers(salesRep.getXentralSalesRepId());
+        // Update xentral_customer_id in customers table
+    }
+
+    // 2. Sync Invoices (für Umsatz + Zahlungsverhalten)
+    List<XentralInvoiceDTO> invoices = xentralApiClient.getInvoices();
+    // Berechne Umsatz + Zahlungsverhalten
+
+    // 3. Check for delivered orders (PROSPECT → AKTIV)
+    List<XentralInvoiceDTO> deliveredOrders = invoices.stream()
+        .filter(inv -> inv.status().equals("DELIVERED"))
+        .toList();
+
+    for (XentralInvoiceDTO order : deliveredOrders) {
+        // Sprint 2.1.7.4: XentralOrderEventHandler Interface!
+        orderEventHandler.handleOrderDelivered(
         event.customerId(),
         event.orderNumber(),
         event.deliveryDate()
@@ -416,7 +440,8 @@ private String xentralCustomerId; // ← NULLABLE!
 | **Zahlungsverhalten** | 4-Stufen-Ampel 🟢🟡🟠🔴 | B2B-Realität, einfach verständlich | Binär, Score 0-100 |
 | **Sprint-Reihenfolge** | 2.1.7.4 ZUERST, dann 2.1.7.2 | Vermeidet Refactoring, Interface Reuse | 2.1.7.2 zuerst (würde Sprint 2.1.7.4 Code ändern) |
 | **Status-Integration** | Sprint 2.1.7.4 Synergy | XentralOrderEventHandler Interface, ChurnDetectionService | Eigene Status-Logik |
-| **Webhook vs Polling** | Webhook (Real-Time) | PROSPECT → AKTIV sofort, performant | Polling (1h Delay) |
+| **Webhook vs Polling** | Polling (Nightly 1x täglich) | Sofort umsetzbar, Webhooks in Beta | Webhook (Beta), Hybrid (+2h) |
+| **Polling-Frequenz** | Nightly (1x täglich 02:00) | Use Cases nicht zeitkritisch, einfacher | Hybrid (Nightly + On-Demand) |
 | **Xentral-Verknüpfung** | Optional | Lead → Customer noch ohne Xentral-ID | Mandatory (Blocker) |
 
 ---
@@ -436,6 +461,27 @@ private String xentralCustomerId; // ← NULLABLE!
 
 **User-Quotes:**
 > "User-Tabelle erweitern mit `xentral_sales_rep_id` + Auto-Sync-Job"
+
+### **Session 2025-10-19 - Polling-Frequenz**
+
+**Kontext:** User fragte: "1x am Tag reicht doch aus, oder?"
+
+**Analyse präsentiert:**
+- Option A: Nightly (1x täglich) - Einfach, Dropdown kann 24h alt sein
+- Option B: Hybrid (Nightly + On-Demand) - Aktuelle Daten, +2h Aufwand
+
+**Ergebnis:**
+✅ **Option B (gemeint war: Nightly 1x täglich)**
+
+**Begründung User:**
+- Neue Xentral-Kunden werden selten angelegt
+- Verkäufer können 24h warten
+- Einfacher Ansatz bevorzugt
+
+**Technische Entscheidung:**
+- Nightly Job: 02:00 Uhr (Customers, Invoices, Churn-Check)
+- ConvertDialog: Zeigt gecachte Daten (max. 24h alt)
+- Migration zu Webhooks: Später, wenn Production-Ready
 
 > "Mock-Enabled Development mit Feature-Flag - später Switch auf echte API"
 
