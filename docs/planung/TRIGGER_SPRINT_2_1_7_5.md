@@ -1,13 +1,13 @@
 # 🚀 Sprint 2.1.7.5 - Opportunity Management KOMPLETT
 
 **Sprint-ID:** 2.1.7.5
-**Status:** 📋 READY TO START
+**Status:** 📋 READY TO START (User-Entscheidungen ✅ FINAL)
 **Priority:** P1 (High - Opportunity-Modul vervollständigen)
-**Estimated Effort:** 35-40h (5-6 Arbeitstage, ~1 Woche)
+**Estimated Effort:** 35-37h (5-6 Arbeitstage, ~1 Woche) ← 3h Einsparung durch optimale Entscheidungen
 **Owner:** TBD
 **Created:** 2025-10-19
-**Updated:** 2025-10-19 (Option C: Detail View + Advanced Filters kombiniert)
-**Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.2 COMPLETE, Sprint 2.1.7.3 COMPLETE, Sprint 2.1.7.4 COMPLETE
+**Updated:** 2025-10-19 (User-Entscheidungen final: Tabs, File System, Predefined Views)
+**Dependencies:** Sprint 2.1.7.1 COMPLETE ✅, Sprint 2.1.7.2 COMPLETE, Sprint 2.1.7.3 COMPLETE ✅, Sprint 2.1.7.4 COMPLETE
 
 ---
 
@@ -226,7 +226,7 @@
 - Code Review Fixes (1h)
 - Documentation (1h)
 
-**Total:** 35-40h (5-6 Arbeitstage, ~1 Woche)
+**Total:** 35-37h (5-6 Arbeitstage, ~1 Woche) ← **3h Einsparung durch optimale User-Entscheidungen**
 
 ---
 
@@ -242,13 +242,15 @@
 
 **Design Decisions:**
 → `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_5_DESIGN_DECISIONS.md`
-- Detail Page Layout (Tabs vs Sections) - **User-Entscheidung erforderlich!**
-- Edit vs Inline Edit
-- Stage Change (Dropdown vs Drag & Drop)
-- Document Storage (File System vs S3) - **User-Entscheidung erforderlich!**
-- Filter Persistence (URL vs LocalStorage)
-- Analytics Calculations (Real-time vs Cached)
-- Query-Object-Pattern (statt viele QueryParams)
+- ✅ Detail Page Layout: **Tabs** (User-Entscheidung 2025-10-19)
+- ✅ Edit vs Inline Edit: **Dialog** (Tech-Entscheidung)
+- ✅ Stage Change: **BEIDE** (Dropdown + Drag & Drop)
+- ✅ Document Storage: **File System** (User-Entscheidung 2025-10-19)
+- ✅ Filter Persistence: **URL Params** (Tech-Entscheidung)
+- ✅ Analytics Calculations: **Real-time** (Tech-Entscheidung)
+- ✅ Query-Object-Pattern: **JA** (Tech-Entscheidung)
+- ✅ Custom Views: **Predefined** (User-Entscheidung 2025-10-19)
+- **Status:** 🎯 ALLE ENTSCHEIDUNGEN FINAL - READY FOR IMPLEMENTATION
 
 **Design System:**
 → `/docs/planung/grundlagen/DESIGN_SYSTEM.md`
@@ -276,20 +278,20 @@
    - ✅ Sprint 2.1.7.4 COMPLETE (Customer Status Architecture)
    - ✅ Sprint 2.1.7.2 COMPLETE (Xentral Integration)
 
-### **⏳ USER-ENTSCHEIDUNGEN ERFORDERLICH:**
-1. **Detail Page Layout:**
-   - Option A: Tabs (Overview, Activities, Documents, Contacts) ← EMPFOHLEN
-   - Option B: Sections (Scroll-basiert, alle sichtbar)
-   - Option C: Accordion (Expandable Sections)
+### **✅ USER-ENTSCHEIDUNGEN GETROFFEN (2025-10-19):**
+1. **Detail Page Layout:** ✅ **Option A: Tabs** (Salesforce-Pattern)
+   - Begründung: CRM-Standard, fokussiert, mobile-friendly
+   - Implementation: MUI Tabs (Overview, Activities, Documents, Contacts)
 
-2. **Document Storage:**
-   - Option A: File System (`/uploads/opportunities/{id}/`) ← EINFACHER
-   - Option B: S3-kompatibel (MinIO für Start, später S3)
-   - Option C: Database BLOB (nicht empfohlen für >1MB)
+2. **Document Storage:** ✅ **Option A: File System** (`/uploads/opportunities/{id}/`)
+   - Begründung: Schneller Start (2h statt 4h), KISS-Prinzip, S3-Migration später möglich
+   - Migration-Path: Wenn >1.000 Dokumente oder >10GB Storage → S3
 
-3. **Custom Views:**
-   - Option A: Nur Predefined Views (hardcoded) ← SCHNELLER
-   - Option B: User-Custom Views (Datenbank-Persistierung)
+3. **Custom Views:** ✅ **Option A: Predefined Views** (hardcoded)
+   - Begründung: YAGNI (3 Standard-Views reichen), Custom-Migration später möglich
+   - Views: "Meine Hot Deals", "Urgent This Week", "High-Value Pipeline"
+
+**Aufwand-Einsparung:** 3h gespart durch optimale Entscheidungen (2h Document Storage + 1h Custom Views)
 
 ---
 
