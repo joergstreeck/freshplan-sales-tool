@@ -55,6 +55,22 @@ if [ -f "./scripts/pre-commit-migration-check.sh" ]; then
     fi
 fi
 
+# Backend/Frontend Field Parity Check
+if [ -f "./scripts/pre-commit-field-parity.sh" ]; then
+    ./scripts/pre-commit-field-parity.sh
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+fi
+
+# Design System Compliance Check
+if [ -f "./scripts/pre-commit-design-system.sh" ]; then
+    ./scripts/pre-commit-design-system.sh
+    if [ $? -ne 0 ]; then
+        exit 1
+    fi
+fi
+
 exit 0
 HOOKEOF
 
@@ -64,9 +80,11 @@ else
     cat > .git/hooks/pre-commit << 'HOOKEOF'
 #!/bin/bash
 # Auto-installed Pre-Commit Hook
-# Führt Migration Safety Check aus
+# Führt Migration Safety Check + Field Parity Check + Design System Check aus
 
 ./scripts/pre-commit-migration-check.sh || exit 1
+./scripts/pre-commit-field-parity.sh || exit 1
+./scripts/pre-commit-design-system.sh || exit 1
 
 exit 0
 HOOKEOF
