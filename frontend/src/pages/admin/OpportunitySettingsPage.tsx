@@ -1,3 +1,15 @@
+/**
+ * OpportunitySettingsPage - Business-Type-Matrix Konfiguration
+ *
+ * Sprint 2.1.7.3 - Admin-UI für Opportunity Multipliers
+ *
+ * Design System Compliance:
+ * - MainLayoutV2 mit maxWidth="full" (Tabellen-Pattern)
+ * - MUI Theme STRICT (KEINE hardcoded Farben!)
+ * - theme.palette.primary.main / secondary.main
+ * - Deutsche Labels
+ */
+
 import { useState } from 'react';
 import {
   Box,
@@ -19,20 +31,9 @@ import {
   Select,
   MenuItem,
 } from '@mui/material';
-import { Search as SearchIcon } from '@mui/icons-material';
-import { AdminLayout } from '@/components/layout/AdminLayout';
+import { Search as SearchIcon, TrendingUp as TrendingUpIcon } from '@mui/icons-material';
+import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
 import { useQuery } from '@tanstack/react-query';
-
-/**
- * OpportunitySettingsPage - Business-Type-Matrix Konfiguration
- *
- * Sprint 2.1.7.3 - Admin-UI für Opportunity Multipliers
- *
- * Features:
- * - Anzeige aller 36 Multipliers (9 BusinessTypes × 4 OpportunityTypes)
- * - Filter nach BusinessType und OpportunityType
- * - Read-Only (Bearbeitung in Modul 08)
- */
 
 interface OpportunityMultiplier {
   id: number;
@@ -50,8 +51,11 @@ export const OpportunitySettingsPage = () => {
   const [opportunityTypeFilter, setOpportunityTypeFilter] = useState<string>('ALL');
   const [searchTerm, setSearchTerm] = useState<string>('');
 
-  // Fetch multipliers from backend
-  const { data: multipliers, isLoading, error } = useQuery<OpportunityMultiplier[]>({
+  const {
+    data: multipliers,
+    isLoading,
+    error,
+  } = useQuery<OpportunityMultiplier[]>({
     queryKey: ['opportunity-multipliers'],
     queryFn: async () => {
       const response = await fetch('http://localhost:8080/api/settings/opportunity-multipliers');
@@ -62,7 +66,6 @@ export const OpportunitySettingsPage = () => {
     },
   });
 
-  // Filter multipliers
   const filteredMultipliers = multipliers?.filter(m => {
     const matchesBusinessType =
       businessTypeFilter === 'ALL' || m.businessType === businessTypeFilter;
@@ -76,7 +79,6 @@ export const OpportunitySettingsPage = () => {
     return matchesBusinessType && matchesOpportunityType && matchesSearch;
   });
 
-  // Extract unique values for filters
   const uniqueBusinessTypes = Array.from(
     new Set(multipliers?.map(m => m.businessType) || [])
   ).sort();
@@ -84,7 +86,6 @@ export const OpportunitySettingsPage = () => {
     new Set(multipliers?.map(m => m.opportunityType) || [])
   ).sort();
 
-  // German labels
   const businessTypeLabels: Record<string, string> = {
     GASTRONOMIE: 'Gastronomie',
     CATERING: 'Catering',
@@ -104,30 +105,26 @@ export const OpportunitySettingsPage = () => {
     VERTRAGSVERLAENGERUNG: 'Vertragsverlängerung',
   };
 
-  const getMultiplierColor = (multiplier: number): string => {
-    if (multiplier >= 1.5) return '#94C456'; // High potential - green
-    if (multiplier >= 1.0) return '#FFB74D'; // Medium potential - orange
-    return '#EF5350'; // Low potential - red
+  const getMultiplierColor = (multiplier: number): 'success' | 'warning' | 'error' => {
+    if (multiplier >= 1.5) return 'success'; // High potential
+    if (multiplier >= 1.0) return 'warning'; // Medium potential
+    return 'error'; // Low potential
   };
 
   return (
-    <AdminLayout>
-      <Box sx={{ maxWidth: 1400, mx: 'auto' }}>
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ pb: 4 }}>
         {/* Header */}
-        <Box sx={{ mb: 4 }}>
-          <Typography
-            variant="h4"
-            sx={{
-              fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold',
-              color: '#004F7B',
-              mb: 1,
-            }}
-          >
-            Opportunity Multipliers
-          </Typography>
-          <Typography variant="body1" color="text.secondary" sx={{ fontFamily: 'Poppins, sans-serif' }}>
-            Business-Type-Matrix für intelligente Umsatzschätzung (9 BusinessTypes × 4 OpportunityTypes = 36 Multipliers)
+        <Box sx={{ mb: 3 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <TrendingUpIcon color="secondary" sx={{ fontSize: 32 }} />
+            <Typography variant="h4" color="secondary">
+              Opportunity Multipliers
+            </Typography>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            Business-Type-Matrix für intelligente Umsatzschätzung (9 BusinessTypes × 4
+            OpportunityTypes = 36 Multipliers)
           </Typography>
         </Box>
 
@@ -141,10 +138,7 @@ export const OpportunitySettingsPage = () => {
 
         {/* Filters */}
         <Paper sx={{ p: 3, mb: 3 }}>
-          <Typography
-            variant="h6"
-            sx={{ mb: 2, fontFamily: 'Poppins, sans-serif', fontWeight: 600 }}
-          >
+          <Typography variant="h6" color="secondary" sx={{ mb: 2 }}>
             Filter
           </Typography>
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
@@ -194,121 +188,114 @@ export const OpportunitySettingsPage = () => {
           </Box>
         </Paper>
 
-        {/* Table */}
+        {/* Loading State */}
         {isLoading && (
           <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-            <CircularProgress />
+            <CircularProgress color="primary" />
           </Box>
         )}
 
+        {/* Error State */}
         {error && (
           <Alert severity="error" sx={{ mb: 3 }}>
-            Fehler beim Laden der Multipliers: {error instanceof Error ? error.message : 'Unbekannter Fehler'}
+            Fehler beim Laden der Multipliers:{' '}
+            {error instanceof Error ? error.message : 'Unbekannter Fehler'}
           </Alert>
         )}
 
+        {/* Table */}
         {!isLoading && !error && filteredMultipliers && (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow sx={{ bgcolor: '#f8f9fa' }}>
-                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Poppins, sans-serif' }}>
-                    Business Type
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Poppins, sans-serif' }}>
-                    Opportunity Type
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Poppins, sans-serif' }}>
-                    Multiplier
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Poppins, sans-serif' }}>
-                    Erstellt
-                  </TableCell>
-                  <TableCell sx={{ fontWeight: 600, fontFamily: 'Poppins, sans-serif' }}>
-                    Aktualisiert
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {filteredMultipliers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
-                      <Typography variant="body2" color="text.secondary">
-                        Keine Multipliers gefunden
-                      </Typography>
+          <>
+            <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow sx={{ bgcolor: 'grey.50' }}>
+                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                      Business Type
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                      Opportunity Type
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                      Multiplier
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                      Erstellt
+                    </TableCell>
+                    <TableCell sx={{ fontWeight: 600, color: 'secondary.main' }}>
+                      Aktualisiert
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredMultipliers.map(m => (
-                    <TableRow key={m.id} hover>
-                      <TableCell>
-                        <Chip
-                          label={businessTypeLabels[m.businessType] || m.businessType}
-                          size="small"
-                          sx={{ bgcolor: '#E3F2FD', color: '#004F7B', fontWeight: 500 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={opportunityTypeLabels[m.opportunityType] || m.opportunityType}
-                          size="small"
-                          sx={{ bgcolor: '#F3E5F5', color: '#6A1B9A', fontWeight: 500 }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Chip
-                          label={`${m.multiplier.toFixed(2)}x`}
-                          size="small"
-                          sx={{
-                            bgcolor: getMultiplierColor(m.multiplier),
-                            color: '#fff',
-                            fontWeight: 600,
-                          }}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {new Date(m.createdAt).toLocaleDateString('de-DE')}
-                          <br />
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            color="text.secondary"
-                          >
-                            von {m.createdBy}
-                          </Typography>
-                        </Typography>
-                      </TableCell>
-                      <TableCell>
-                        <Typography variant="body2" sx={{ fontFamily: 'Poppins, sans-serif' }}>
-                          {new Date(m.updatedAt).toLocaleDateString('de-DE')}
-                          <br />
-                          <Typography
-                            component="span"
-                            variant="caption"
-                            color="text.secondary"
-                          >
-                            von {m.updatedBy}
-                          </Typography>
+                </TableHead>
+                <TableBody>
+                  {filteredMultipliers.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
+                        <Typography variant="body2" color="text.secondary">
+                          Keine Multipliers gefunden
                         </Typography>
                       </TableCell>
                     </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
+                  ) : (
+                    filteredMultipliers.map(m => (
+                      <TableRow key={m.id} hover>
+                        <TableCell>
+                          <Chip
+                            label={businessTypeLabels[m.businessType] || m.businessType}
+                            size="small"
+                            variant="outlined"
+                            color="secondary"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={opportunityTypeLabels[m.opportunityType] || m.opportunityType}
+                            size="small"
+                            variant="outlined"
+                            color="primary"
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Chip
+                            label={`${m.multiplier.toFixed(2)}x`}
+                            size="small"
+                            color={getMultiplierColor(m.multiplier)}
+                          />
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {new Date(m.createdAt).toLocaleDateString('de-DE')}
+                            <br />
+                            <Typography component="span" variant="caption" color="text.secondary">
+                              von {m.createdBy}
+                            </Typography>
+                          </Typography>
+                        </TableCell>
+                        <TableCell>
+                          <Typography variant="body2">
+                            {new Date(m.updatedAt).toLocaleDateString('de-DE')}
+                            <br />
+                            <Typography component="span" variant="caption" color="text.secondary">
+                              von {m.updatedBy}
+                            </Typography>
+                          </Typography>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
 
-        {/* Stats */}
-        {!isLoading && !error && filteredMultipliers && (
-          <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
-            <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'Poppins, sans-serif' }}>
-              {filteredMultipliers.length} von {multipliers?.length || 0} Multipliers angezeigt
-            </Typography>
-          </Box>
+            {/* Stats Footer */}
+            <Box sx={{ mt: 2, display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
+              <Typography variant="body2" color="text.secondary">
+                {filteredMultipliers.length} von {multipliers?.length || 0} Multipliers angezeigt
+              </Typography>
+            </Box>
+          </>
         )}
       </Box>
-    </AdminLayout>
+    </MainLayoutV2>
   );
 };

@@ -31,7 +31,6 @@ import {
   AccountCircle as AccountIcon,
   Logout as LogoutIcon,
   Dashboard as DashboardIcon,
-  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -57,12 +56,6 @@ const menuItems: MenuItem[] = [
     icon: <SecurityIcon />,
     path: '/admin/audit',
     roles: ['admin', 'auditor'],
-  },
-  {
-    text: 'Opportunity Settings',
-    icon: <TrendingUpIcon />,
-    path: '/admin/settings/opportunities',
-    roles: ['admin'],
   },
   {
     text: 'Benutzerverwaltung',

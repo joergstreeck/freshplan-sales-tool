@@ -300,6 +300,12 @@ export const navigationConfig: NavigationItemType[] = [
         ],
       },
       {
+        label: 'Opportunity Settings',
+        path: '/admin/settings/opportunities',
+        permissions: ['admin.view'],
+        tooltip: 'Business-Type-Matrix Multipliers (Read-Only)',
+      },
+      {
         label: 'Compliance Reports',
         path: '/admin/reports',
         permissions: ['admin.view', 'auditor.view', 'manager.view'],
