@@ -82,6 +82,78 @@ Ich schreibe meine Updates **zwischen** diese Anker in MP5:
 14. **REPOSITORY SAUBER:** `./scripts/quick-cleanup.sh` vor jedem Push
 
 ## ⚠️ KRITISCHE GUARDRAILS
+
+### 🗄️ BACKEND/FRONTEND PARITY (ZERO TOLERANCE!)
+**REGEL:** Jedes Frontend-Feld MUSS im Backend existieren. Keine Exceptions!
+
+✅ **RICHTIG: Backend → API → Frontend**
+```typescript
+// 1. Backend: Customer.java
+private FinancingType primaryFinancing;
+
+// 2. EnumResource.java
+@GET @Path("/api/enums/financing-types")
+
+// 3. Frontend: fieldCatalog.json
+{"key": "primaryFinancing", "fieldType": "enum", "enumSource": "financing-types"}
+```
+
+❌ **FALSCH: Hardcoded Frontend-Felder**
+```json
+// NIEMALS hardcoded options ohne Backend-Enum!
+{"fieldType": "select", "options": [...]}
+```
+
+**Bei neuen Feldern:**
+1. Migration + Customer.java Entity-Feld hinzufügen
+2. Falls Enum: EnumResource.java Endpoint erstellen (`/api/enums/xyz`)
+3. fieldCatalog.json mit `enumSource` (NICHT `options`)
+
+**Automatische Guards (installiert):**
+- 🔒 Pre-commit Hook: `./scripts/setup-git-hooks.sh` (blockt Commits)
+- 🔒 CI Check: `.github/workflows/field-parity-check.yml` (blockt PRs)
+- 🔍 Manuell: `python3 scripts/check-field-parity.py`
+
+### 🎨 DESIGN SYSTEM COMPLIANCE (NO HARDCODING!)
+**REGEL:** Nutze MUI Theme System. Keine hardcoded Colors/Fonts. UI in Deutsch.
+
+✅ **RICHTIG: Theme System nutzen**
+```typescript
+// Colors: theme.palette verwenden
+sx={{ bgcolor: 'primary.main', color: 'text.primary' }}
+
+// Fonts: theme.typography verwenden
+<Typography variant="h4"> // Antonio Bold
+<Typography variant="body1"> // Poppins Regular
+
+// UI Text: Deutsch
+<Button>Speichern</Button>
+<Button>Löschen</Button>
+```
+
+❌ **FALSCH: Hardcoded Values**
+```typescript
+// NIEMALS direkte Hex-Colors!
+sx={{ bgcolor: '#94C456', color: '#004F7B' }}
+
+// NIEMALS direkte Font-Angaben!
+sx={{ fontFamily: 'Antonio, sans-serif' }}
+
+// NIEMALS englische UI-Texte!
+<Button>Save</Button>
+<Button>Delete</Button>
+```
+
+**Design System Referenz:**
+- **Farben:** Primärgrün #94C456, Dunkelblau #004F7B
+- **Fonts:** Antonio Bold (Headlines), Poppins (Body)
+- **Docs:** `docs/planung/grundlagen/DESIGN_SYSTEM.md`
+
+**Automatische Guards (installiert):**
+- 🔒 Pre-commit Hook: `./scripts/setup-git-hooks.sh` (blockt Commits)
+- 🔒 CI Check: `.github/workflows/design-system-check.yml` (blockt PRs)
+- 🔍 Manuell: `python3 scripts/check-design-system.py`
+
 ### 🔢 Migration-Nummern (2-Sequenzen-Modell)
 **NIEMALS hardcoden! IMMER `./scripts/get-next-migration.sh` nutzen!**
 
