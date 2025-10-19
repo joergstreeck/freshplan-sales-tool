@@ -1407,41 +1407,50 @@
   - **Aufwand:** ~18h (2.5 Tage) + 2h CI-Fixes
   - **Migration:** V10030 (OpportunityType Enum - auf main)
   - **Deliverables:** 6/6 COMPLETE (OpportunityCard, CreateDialog, LeadDetailPage, LeadOpportunitiesList, Filter-UI, Drag & Drop Fix)
-  - **Tests:** 45/45 GREEN ✅
+  - **Tests:** 142 Tests GREEN ✅
   - **CI-Fixes:** ESLint (11), Mock Guard, PR Template, Prettier (12 files)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (status: complete)
 
-- **🎯 NÄCHSTER SPRINT - OPTIONEN:**
-  - **Option 1:** Sprint 2.1.7.2 - Opportunity Detail View Enhancement + Real Auth Context
-  - **Option 2:** Sprint 2.1.8 - Team Management & Test Infrastructure
-  - **Option 3:** Technische Schulden - Mock-Daten durch echte APIs ersetzen
-  - **Empfehlung:** Mit Product Owner abstimmen
-
-- **📋 SPRINT 2.1.7.2 - OPPORTUNITY DETAIL VIEW ENHANCEMENT (READY TO START):**
-  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard (ZUSAMMEN - sonst wertlos!)
-  - **KRITISCH:** Xentral-API testen BEVOR Start!
-  - **Aufwand:** 18h = 2-3 Tage
-  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
-
-- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW (COMPLETE - 19.10.2025):**
-  - **Status:** ✅ 95% COMPLETE - Core deliverables done (Commit affe5985a)
-  - **Branch:** feature/sprint-2-1-7-3-renewal-workflow (9 commits)
-  - **Aufwand:** ~28h (statt 8h) - erweitert um Business-Type-Matrix + Settings-System
+- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW (MERGED - 19.10.2025):**
+  - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 23f7b7ecd)
+  - **PR #142:** https://github.com/joergstreeck/freshplan-sales-tool/pull/142 (MERGED)
+  - **Aufwand:** 36h (erweitert von 30h - Admin-UI hinzugefügt)
   - **Migration:** V10031 (opportunity_multipliers - 36 entries)
-  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, CustomerDetailPage Integration
-  - **Tests:** 64/64 GREEN ✅ (43 Backend + 21 Frontend)
+  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, OpportunitySettingsPage
+  - **Tests:** 90/90 GREEN ✅ (43 Backend + 47 Frontend)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: complete)
 
-- **📋 SPRINT 2.1.7.4 - CUSTOMER STATUS ARCHITECTURE (PLANNING):**
-  - **SCOPE:** CustomerStatus.LEAD entfernen, PROSPECT/AKTIV Logik implementieren
-  - **Key Deliverables:** Auto-Conversion bei Opportunity WON, Manual Activation Button, Dashboard KPIs
-  - **Business Rule:** PROSPECT (Opportunity gewonnen) → AKTIV (erste Bestellung geliefert)
-  - **Aufwand:** ~10h (1.5 Arbeitstage)
-  - **Migration:** V10032 (CustomerStatus Enum Cleanup - LEAD entfernen)
-  - **Tests:** 39 Tests (26 Backend + 13 Frontend)
-  - **Prerequisites:** Sprint 2.1.7.3 COMPLETE
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md` (status: planning)
+- **🎯 NÄCHSTER SPRINT - Sprint 2.1.7.4 (Customer Status Architecture) ⚡ ZUERST!**
+  - **Status:** 📋 READY TO START
+  - **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik + Seasonal Business
+  - **Business Rule:** PROSPECT → AKTIV bei erster gelieferter Bestellung
+  - **Aufwand:** 14h = 2 Arbeitstage
+  - **Migration:** V10032 (CustomerStatus Cleanup + Seasonal Business Columns)
+  - **Tests:** 46 Tests (32 Backend + 14 Frontend)
+  - **Prerequisites:** Sprint 2.1.7.3 COMPLETE ✅
+  - **Deliverables:** 8 Deliverables (Migration, LeadConvert Fix, Auto-Conversion, XentralOrderEventHandler Interface, Manual Activation, ChurnDetectionService, Dashboard KPIs, Frontend Components)
+  - **Artefakte:**
+    - [SPEC_SPRINT_2_1_7_4_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_4_TECHNICAL.md) (TOC: 8 Kapitel)
+    - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md`
+  - **⚡ WICHTIG:** Muss VOR Sprint 2.1.7.2 implementiert werden (Interface-Dependency!)
+
+- **📋 SPRINT 2.1.7.2 - CUSTOMER-MANAGEMENT + XENTRAL-INTEGRATION ⏳ NACH 2.1.7.4!**
+  - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE
+  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Webhook Integration
+  - **Aufwand:** 23h = 3 Arbeitstage (+2h Webhook Integration)
+  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_threshold_days - aus Sprint 2.1.7.4)
+  - **Tests:** 72 Tests (46 Backend + 26 Frontend)
+  - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ⚡
+  - **Deliverables:** 8 Deliverables (ConvertDialog mit PROSPECT Status Info, XentralApiClient, Customer-Dashboard, Churn-Alarm, Admin-UI, Sales-Rep Auto-Sync, Testing, Xentral Webhook → PROSPECT aktivieren)
+  - **Integration mit Sprint 2.1.7.4:**
+    - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
+    - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
+    - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
+  - **Artefakte:**
+    - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (TOC: 8 Kapitel)
+    - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
 
 - **⚠️ SPRINT 2.1.7.5 - ADVANCED FILTERS (DEFERRED!):**
   - **STATUS:** NOCH NICHT READY FÜR KICKOFF!
@@ -1865,45 +1874,56 @@ MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
   - **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141 (Merged 18.10.2025 19:02:28Z)
   - **Deliverables:** 6/6 COMPLETE (OpportunityCard, CreateDialog, LeadDetailPage, LeadOpportunitiesList, Filter-UI, Drag & Drop Fix)
   - **Migration:** V10030 (OpportunityType Enum - auf main)
-  - **Tests:** 45/45 GREEN (27 Backend + 18 Frontend)
+  - **Tests:** 142 Tests GREEN ✅
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_1.md` (status: complete)
 
-- **🎯 NÄCHSTER SPRINT - OPTIONEN (USER-ENTSCHEIDUNG AUSSTEHEND):**
+- **✅ SPRINT 2.1.7.3 - CUSTOMER → OPPORTUNITY WORKFLOW (MERGED - 19.10.2025):**
+  - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 23f7b7ecd)
+  - **PR #142:** https://github.com/joergstreeck/freshplan-sales-tool/pull/142 (MERGED)
+  - **Aufwand:** 36h (erweitert von 30h - Admin-UI hinzugefügt)
+  - **Migration:** V10031 (opportunity_multipliers - 36 entries)
+  - **Deliverables:** Business-Type-Matrix, CreateOpportunityForCustomerDialog, CustomerOpportunitiesList, OpportunitySettingsPage
+  - **Tests:** 90/90 GREEN ✅ (43 Backend + 47 Frontend)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: complete)
 
-  **Option 1 - Sprint 2.1.7.2 - Opportunity → Customer + Xentral-Dashboard** ← 🎯 EMPFOHLEN
-  - **Branch:** `feature/sprint-2-1-7-2-customer-xentral`
-  - **Aufwand:** ~18h (2-3 Tage)
-  - **SCOPE:** ConvertToCustomerDialog + XentralApiClient + Customer-Dashboard (2 KPIs) + Churn-Alarm
-  - **⚠️ KRITISCH:** Xentral-API testen BEVOR Start! (Sales-Rep Mapping validieren)
-  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
-  - **Tests:** 12 Backend + 8 Frontend = 20 Tests
+- **🎯 NÄCHSTER SPRINT - Sprint 2.1.7.4 (Customer Status Architecture) ⚡ ZUERST!**
+  - **Status:** 📋 READY TO START
+  - **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik + Seasonal Business
+  - **Business Rule:** PROSPECT → AKTIV bei erster gelieferter Bestellung
+  - **Aufwand:** 14h = 2 Arbeitstage
+  - **Migration:** V10032 (CustomerStatus Cleanup + Seasonal Business Columns)
+  - **Tests:** 46 Tests (32 Backend + 14 Frontend)
+  - **Prerequisites:** Sprint 2.1.7.3 COMPLETE ✅
+  - **Deliverables:** 8 Deliverables (Migration, LeadConvert Fix, Auto-Conversion, XentralOrderEventHandler Interface, Manual Activation, ChurnDetectionService, Dashboard KPIs, Frontend Components)
+  - **Artefakte:**
+    - [SPEC_SPRINT_2_1_7_4_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_4_TECHNICAL.md) (TOC: 8 Kapitel)
+    - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md`
+  - **⚡ WICHTIG:** Muss VOR Sprint 2.1.7.2 implementiert werden (Interface-Dependency!)
+
+- **📋 SPRINT 2.1.7.2 - CUSTOMER-MANAGEMENT + XENTRAL-INTEGRATION ⏳ NACH 2.1.7.4!**
+  - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE
+  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Webhook Integration
+  - **Aufwand:** 23h = 3 Arbeitstage (+2h Webhook Integration)
+  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_threshold_days - aus Sprint 2.1.7.4)
+  - **Tests:** 72 Tests (46 Backend + 26 Frontend)
+  - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ⚡
+  - **Deliverables:** 8 Deliverables (ConvertDialog mit PROSPECT Status Info, XentralApiClient, Customer-Dashboard, Churn-Alarm, Admin-UI, Sales-Rep Auto-Sync, Testing, Xentral Webhook → PROSPECT aktivieren)
+  - **Integration mit Sprint 2.1.7.4:**
+    - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
+    - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
+    - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
+  - **Artefakte:**
+    - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (TOC: 8 Kapitel)
+    - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
-  - **Referenz:** FC-005, FC-009 (Xentral-Dokumentation vollständig)
-  - **Business Context:** Dashboard ohne Xentral-Daten wäre wertlos → beides ZUSAMMEN!
 
-  **Option 2 - Sprint 2.1.8 - Team Management & Test Infrastructure**
-  - **Branch:** `feature/sprint-2-1-8-team-management`
+- **📋 SPRINT 2.1.8 - TEAM MANAGEMENT & TEST INFRASTRUCTURE (SPÄTER):**
   - **Aufwand:** ~40h (1 Woche)
   - **SCOPE (Track 1 Business):** Lead-Transfer, Fuzzy-Matching, RLS, Team Management
   - **SCOPE (Track 2 Test Infra):** CRM Szenario-Builder, Faker-Integration, Test-Patterns
   - **Migrations:** V260 (lead_transfers), V261 (RLS policies), V262 (teams + team_members)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_8.md`
-  - **Strategic:** Quality Investment für Sprint 2.2+ Velocity
-
-  **Option 3 - Tech Debt - Mock-Daten durch echte APIs ersetzen**
-  - **Branch:** `feature/tech-debt-mock-to-real-apis`
-  - **Aufwand:** ~8h (1 Tag)
-  - **SCOPE:** KanbanBoardDndKit currentUser/teamMembers → Real Auth Context
-  - **Benefit:** Entfernt hardcoded Mock-Daten aus Production-Code
-  - **Context:** Sprint 2.1.7.2 benötigt echte User-API
-
-- **📋 EMPFEHLUNG:** Option 1 (Sprint 2.1.7.2)
-  - Logische Fortsetzung: Lead → Opportunity → Customer (durchgängiger Flow)
-  - Xentral-Dokumentation bereits vollständig vorhanden
-  - Überschaubarer Aufwand (18h vs 40h)
-  - Kritische Business-Value-Delivery (Customer-Conversion)
-
-- **⏳ WARTEND AUF:** User-Entscheidung für Sprint-Auswahl
 <!-- MP5:NEXT_STEPS:END -->
 
 ## 🎯 Critical Success Metrics

@@ -213,20 +213,7 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
      - [SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md](artefakte/SPRINT_2_1_7_1_COMPLETE_ANALYSIS.md) (5,900 Zeilen, 46 Commits)
      - [PR_SPRINT_2_1_7_1.md](artefakte/PR_SPRINT_2_1_7_1.md) (499 Zeilen, German PR Template)
    - **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141
-   - Status: ✅ COMPLETE (18.10.2025) - PR #141 READY FOR REVIEW → Sprint 2.1.7.2 Ready
-
-📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (16.10.2025)
-   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard (ZUSAMMEN!)
-   - **Phase 1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert)
-   - **Phase 2:** XentralApiClient (GET /customers, GET /invoices/{customerId}, GET /payments/{customerId})
-   - **Phase 3:** Customer-Dashboard (2 KPIs: Umsatz + Zahlungsverhalten - GETRENNT!)
-   - **Phase 4:** Churn-Alarm (variable Threshold 7/14/30/45/60/90 Tage)
-   - **Aufwand:** 18h = 2-3 Arbeitstage
-   - **KRITISCH:** Dashboard OHNE Xentral-Daten ist wertlos → beides ZUSAMMEN implementieren!
-   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE + Xentral Sales-Rep Mapping geklärt
-   - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days)
-   - **Tests:** 12 Backend (XentralApiClient) + 8 Frontend (Dashboard) = 20 Tests
-   - Status: 📋 PLANNING - Xentral-API-Test erforderlich vor Start!
+   - Status: ✅ COMPLETE (18.10.2025) - PR #141 READY FOR REVIEW
 
 ✅ TRIGGER_SPRINT_2_1_7_3.md - Bestandskunden-Workflow (✅ COMPLETE - 19.10.2025) - **PR #142**
    - **SCOPE:** Customer → Opportunity Flow mit Business-Type-Matrix
@@ -238,21 +225,53 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Aufwand:** 36h (erweitert von 30h - Admin-UI hinzugefügt)
    - **Tests:** 90/90 GREEN (Backend 43, Frontend 47)
    - **Migrations:** V10031 (opportunity_multipliers mit CHECK constraints)
-   - Status: ✅ COMPLETE (PR #142 ready)
+   - Status: ✅ COMPLETE (PR #142 MERGED TO MAIN - 19.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_4.md - Customer Status Architecture (19.10.2025)
-   - **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik
-   - **Phase 1:** Migration V10032 (LEAD → PROSPECT, Enum Cleanup)
-   - **Phase 2:** LeadConvertService: PROSPECT statt AKTIV setzen
-   - **Phase 3:** Auto-Conversion bei Opportunity WON (Lead → Customer)
-   - **Phase 4:** Manual Activation Button ("Erste Bestellung geliefert")
-   - **Phase 5:** Dashboard KPIs (PROSPECT-Zähler, Conversion Rate)
-   - **Aufwand:** 10h = 1.5 Arbeitstage
-   - **Business Rule:** PROSPECT (Opportunity gewonnen) → AKTIV (erste Bestellung)
-   - **Prerequisites:** Sprint 2.1.7.3 COMPLETE
-   - **Migrations:** V10032 (CustomerStatus Cleanup)
-   - **Tests:** 39 Tests (26 Backend + 13 Frontend)
-   - Status: 📋 PLANNING - Ready to start
+📋 TRIGGER_SPRINT_2_1_7_4.md - Customer Status Architecture (19.10.2025) ⚡ **ZUERST!**
+   - **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik + Seasonal Business
+   - **8 Deliverables:**
+     - **D1:** Migration V10032 (LEAD → PROSPECT, Seasonal Business Columns)
+     - **D2:** LeadConvertService: PROSPECT statt AKTIV setzen
+     - **D3:** Auto-Conversion bei Opportunity WON (Lead → Customer)
+     - **D4:** XentralOrderEventHandler Interface (für Webhook-Integration)
+     - **D5:** Manual Activation Button + customerService.activateCustomer()
+     - **D6:** ChurnDetectionService mit Seasonal Business Support
+     - **D7:** Dashboard KPIs (PROSPECT-Zähler, Conversion Rate)
+     - **D8:** Frontend CustomerStatusBadge + ActivateCustomerButton
+   - **Aufwand:** 14h = 2 Arbeitstage
+   - **Business Rule:** PROSPECT → AKTIV bei erster gelieferter Bestellung
+   - **Prerequisites:** Sprint 2.1.7.3 COMPLETE ✅
+   - **Migrations:** V10032 (CustomerStatus Cleanup + Seasonal Business)
+   - **Tests:** 46 Tests (32 Backend + 14 Frontend)
+   - **Artefakte:**
+     - [SPEC_SPRINT_2_1_7_4_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_4_TECHNICAL.md) (TOC: 8 Kapitel)
+     - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
+   - Status: 📋 READY TO START ⚡
+
+📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (19.10.2025) ⏳ **NACH 2.1.7.4!**
+   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Webhook Integration
+   - **8 Deliverables:**
+     - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
+     - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
+     - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
+     - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
+     - **D5:** Admin-UI für Xentral-Einstellungen
+     - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
+     - **D7:** Testing & Integration Tests (72 Tests)
+     - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren ⚡
+   - **Aufwand:** 23h = 3 Arbeitstage (+2h Webhook Integration)
+   - **KRITISCH:** Nutzt Sprint 2.1.7.4 XentralOrderEventHandler Interface!
+   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ⚡
+   - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_threshold_days - Sprint 2.1.7.4)
+   - **Tests:** 72 Tests (46 Backend + 26 Frontend)
+   - **Integration mit Sprint 2.1.7.4:**
+     - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
+     - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
+     - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
+   - **Artefakte:**
+     - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (TOC: 8 Kapitel)
+     - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
+   - Status: 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE ⏳
 
 📋 TRIGGER_SPRINT_2_1_7_5.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
    - **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
