@@ -1,12 +1,12 @@
 # 🚀 Sprint 2.1.7.3 - Bestandskunden-Workflow
 
 **Sprint-ID:** 2.1.7.3
-**Status:** ✅ COMPLETE (95%) - Core Deliverables Done, Bug-Fixes Pending
+**Status:** ✅ COMPLETE (100%) - All Deliverables Done, Ready for PR
 **Priority:** P2 (Medium)
-**Estimated Effort:** 30-31h (3-4 Arbeitstage)
+**Estimated Effort:** 30-31h (3-4 Arbeitstage) → Actual: ~30h
 **Owner:** Claude
 **Created:** 2025-10-16
-**Updated:** 2025-10-19
+**Updated:** 2025-10-19 (Final: Bug-Fixes + Activity-Types Complete)
 **Dependencies:** KEINE
 
 ---
@@ -33,7 +33,7 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ## 📦 DELIVERABLES
 
-### **Core Features (95% COMPLETE)**
+### **Core Features (100% COMPLETE)**
 
 - [x] **1. Customer → Opportunity Button** (2h) ✅ COMPLETE
   - [x] CustomerDetailPage Integration
@@ -54,15 +54,17 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
   - [x] OpportunityMultiplier Entity + Service
   - [x] GET /api/settings/opportunity-multipliers (39 Tests GREEN)
 
-### **Bug-Fixes & Extensions (5% PENDING)**
+### **Bug-Fixes & Extensions (100% COMPLETE)**
 
-- [ ] **4. OpportunityType Backend-Validierung** (30 Min) ❌ PENDING
-  - **BUG:** `createForCustomer()` setzt OpportunityType NICHT!
-  - **Fix:** `opportunity.setOpportunityType(type)` hinzufügen
+- [x] **4. OpportunityType Backend-Validierung** (30 Min) ✅ COMPLETE
+  - **FIX:** `opportunity.setOpportunityType(type)` hinzugefügt + Default SORTIMENTSERWEITERUNG
+  - **Tests:** 8/8 GREEN (OpportunityServiceCreateForCustomerTest)
+  - **Commit:** 95849c737
 
-- [ ] **5. Activity-Tracking** (1h) ❌ PENDING
-  - [ ] ActivityType Enum erweitern (3 neue: EXPANSION_CALL, PRODUCT_DEMO, CONTRACT_RENEWAL)
-  - [ ] ActivityDialog Frontend erweitern
+- [x] **5. Activity-Tracking** (1h) ✅ COMPLETE
+  - [x] ActivityType Enum erweitert (3 neue: EXPANSION_CALL, PRODUCT_DEMO, CONTRACT_RENEWAL)
+  - [x] ActivityDialog Frontend erweitert (mit Icons 📈📊🔁)
+  - **Commit:** 95849c737
 
 ---
 
@@ -82,6 +84,8 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - 87cf9d65f - Migration V10031 CHECK constraints fix
 - e4d1f1304 - findByCustomerId Integration Tests (4 tests)
 - 3a1e84f36 - CustomerDetailPage Integration
+- 9d9495317 - Documentation Refactoring (TRIGGER → 3-Dokumente-Struktur)
+- 95849c737 - Bug-Fixes: OpportunityType + Activity-Types (COMPLETE)
 
 ---
 
@@ -91,8 +95,8 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - [x] Customer kann neue Opportunity erstellen (< 3 Klicks)
 - [x] expectedValue wird intelligent geschätzt (Business-Type-Matrix)
 - [x] Customer-Opportunity-Historie gruppiert (Offen/Gewonnen/Verloren)
-- [ ] OpportunityType-Logik korrekt (Backend-Bug fix pending)
-- [ ] Activity-Typen erweitert (3 neue für Bestandskunden)
+- [x] OpportunityType-Logik korrekt (Backend-Bug FIXED - Commit 95849c737)
+- [x] Activity-Typen erweitert (3 neue für Bestandskunden - Commit 95849c737)
 
 ### **Technical**
 - [x] Backend: GET /api/customers/{id}/opportunities
@@ -100,8 +104,9 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - [x] Frontend: CreateOpportunityForCustomerDialog
 - [x] Frontend: CustomerOpportunitiesList
 - [x] Migration: V10031 (opportunity_multipliers mit CHECK constraints)
-- [ ] Backend: createForCustomer() setzt OpportunityType
-- [ ] Backend: ActivityType Enum erweitert
+- [x] Backend: createForCustomer() setzt OpportunityType (FIXED)
+- [x] Backend: ActivityType Enum erweitert (3 neue Typen)
+- [x] Frontend: ActivityDialog erweitert (3 neue Typen mit Icons)
 
 ### **Quality**
 - [x] Tests: 90/90 GREEN (Backend 43, Frontend 47)
@@ -125,12 +130,13 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - CustomerOpportunitiesList Tests
 - CustomerDetailPage Integration
 
-**Tag 4 (6h):** ❌ PENDING
-- OpportunityType Backend-Validierung (Bug-Fix)
-- Activity-Tracking (3 neue Typen)
-- E2E Testing (optional)
+**Tag 4 (6h):** ✅ COMPLETE
+- OpportunityType Backend-Validierung (Bug-Fix) ✅
+- Activity-Tracking (3 neue Typen) ✅
+- Documentation Refactoring (TRIGGER → 3-Dokumente) ✅
+- E2E Testing (optional - deferred)
 
-**Total:** ~30h / 30-31h estimated (95% COMPLETE)
+**Total:** ~30h / 30-31h estimated (100% COMPLETE)
 
 ---
 
@@ -162,15 +168,16 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ## 🎯 NÄCHSTE SCHRITTE
 
-**Bereit für Completion:**
+**✅ SPRINT COMPLETE - Bereit für PR:**
 1. ✅ Feature-Branch: `feature/sprint-2-1-7-3-renewal-workflow`
 2. ✅ Migration V10031 deployed
 3. ✅ 90 Tests GREEN
-4. ⏳ **PENDING:** OpportunityType Bug-Fix (30 Min)
-5. ⏳ **PENDING:** Activity-Tracking (1h)
-6. ⏳ **OPTIONAL:** E2E Testing (1-2h)
+4. ✅ OpportunityType Bug-Fix (Commit 95849c737)
+5. ✅ Activity-Tracking (Commit 95849c737)
+6. ✅ Documentation Refactoring (Commit 9d9495317)
+7. ⏸️ E2E Testing (optional - deferred)
 
-**PR Ready:** Nach Bug-Fixes (Deliverables 4 + 5)
+**PR #142:** Bereit für Erstellung und Merge
 
 ---
 
@@ -193,9 +200,9 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ### **Technical Debt**
 
-- **OpportunityType Backend-Validierung:** Critical Bug - createForCustomer() setzt Feld NICHT
-- **Activity-Tracking:** 3 neue Typen fehlen (EXPANSION_CALL, PRODUCT_DEMO, CONTRACT_RENEWAL)
-- **E2E Testing:** Manuelles Browser-Testing ausstehend (optional)
+- ✅ **OpportunityType Backend-Validierung:** RESOLVED (Commit 95849c737)
+- ✅ **Activity-Tracking:** RESOLVED (Commit 95849c737)
+- ⏸️ **E2E Testing:** Deferred (optional - kann bei Bedarf nachgeholt werden)
 
 ---
 
@@ -212,6 +219,6 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 ---
 
-**✅ SPRINT STATUS: 95% COMPLETE - Bereit für Bug-Fixes & PR**
+**✅ SPRINT STATUS: 100% COMPLETE - Ready for PR #142**
 
-**Letzte Aktualisierung:** 2025-10-19 (Dokumentations-Refactoring)
+**Letzte Aktualisierung:** 2025-10-19 (Final: Bug-Fixes + Activity-Types + Docs Complete)
