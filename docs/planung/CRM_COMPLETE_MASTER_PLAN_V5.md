@@ -1361,6 +1361,37 @@
 - ✅ **Single Source of Truth**: BusinessType Enum → GET /api/enums/business-types → Lead + Customer Forms (identisches Pattern)
 - ✅ **Best Practice 100%**: Keine hardcoded Enum-Values mehr, Lead + Customer verwenden denselben Hook
 - **Docs**: HARMONIZATION_COMPLETE.md, MIGRATIONS.md aktualisiert
+
+### 2025-10-19 17:00 - Sprint 2.1.7.5 Planning Complete - Opportunity Management KOMPLETT (Option C)
+
+**Kontext:** Sprint 2.1.7.3 MERGED (PR #142), Sprint 2.1.7.5 Planung erstellt (Detail View + Advanced Filters kombiniert), Sprint-Reihenfolge aktualisiert (Sprint 2.1.7.4 VOR 2.1.7.2)
+
+**Erledigt:**
+- ✅ **SPRINT 2.1.7.5 PLANUNG COMPLETE:**
+  - TRIGGER_SPRINT_2_1_7_5.md erstellt (358 Zeilen - compact)
+  - Track 1: Detail View & Management (20-28h) - 5 Deliverables
+  - Track 2: Advanced Filters & Analytics (13-15h) - 4 Deliverables
+  - Total: 35-40h (~1 Woche), 58 Tests (36 Track 1 + 22 Track 2)
+- ✅ **ARTEFAKTE ERSTELLT (3-Dokumente-Struktur):**
+  - SPEC_SPRINT_2_1_7_5_TECHNICAL.md (~8.500 Zeilen mit TOC, 11 Hauptkapitel)
+  - SPEC_SPRINT_2_1_7_5_DESIGN_DECISIONS.md (600 Zeilen, 9 Design-Entscheidungen)
+  - 3 User-Validierung erforderlich: Detail Page Layout, Document Storage, Custom Views
+- ✅ **SPRINT-REIHENFOLGE AKTUALISIERT:**
+  - TRIGGER_INDEX.md: Sprint 2.1.7.4 ⚡ ZUERST, dann 2.1.7.2
+  - CRM_COMPLETE_MASTER_PLAN_V5.md: NEXT_STEPS aktualisiert
+  - PRODUCTION_ROADMAP_2025.md: Current Sprint Status aktualisiert
+- ✅ **SPRINT 2.1.7.2-2.1.7.4 REFACTORED:**
+  - 3-Dokumente-Struktur für Sprint 2.1.7.2, 2.1.7.3, 2.1.7.4
+  - TRIGGER kompakt (250-400 Zeilen), SPEC_TECHNICAL (Code), SPEC_DESIGN_DECISIONS (Rationale)
+  - Sprint 2.1.7.6 Customer Lifecycle erstellt (RISIKO/INAKTIV/ARCHIVIERT States)
+
+**Commits:**
+- 9e0b72eda docs: Sprint 2.1.7.2 3-Dokumente-Struktur + Sprint 2.1.7.4 Integration
+- 60d57d66a docs: Sprint-Reihenfolge aktualisiert - 2.1.7.4 ZUERST, dann 2.1.7.2
+- 609ca4ca7 docs: Sprint 2.1.7.5 NEU - Opportunity Management KOMPLETT (Option C)
+
+**Migration**: Keine (nur Planung), **Tests**: Planung für 58 Tests (32 Backend + 26 Frontend)
+
 ### 2025-10-14 18:30 - Sprint 2.1.7.0 Planung Complete - Design System Migration (SmartLayout)
 
 **Kontext:** Sprint 2.1.7 erfolgreich merged (PR #139), CI-Fehler behoben (Prettier + Race Condition), CRM_AI_CONTEXT_SCHNELL.md umstrukturiert (thematisch statt chronologisch), Sprint 2.1.7.0 vollständig geplant (Design System Migration).
@@ -1452,9 +1483,21 @@
     - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
 
-- **⚠️ SPRINT 2.1.7.5 - ADVANCED FILTERS (DEFERRED!):**
-  - **STATUS:** NOCH NICHT READY FÜR KICKOFF!
-  - **Grund:** YAGNI - keine echten Daten vorhanden (erst nach Go-Live mit 100 realen Leads bauen)
+- **📋 SPRINT 2.1.7.5 - OPPORTUNITY MANAGEMENT KOMPLETT ⏳ NACH 2.1.7.2!**
+  - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.2 COMPLETE
+  - **SCOPE:** Opportunity Detail View + Advanced Filters (Option C: BEIDES kombinieren!)
+  - **Track 1:** Detail View & Management (OpportunityDetailPage, Edit, Stage-Änderungen, Activity Timeline UI, Dokumente & Kontakte)
+  - **Track 2:** Advanced Filters & Analytics (High-Value Filter, Urgent Filter, Advanced Search Dialog, Pipeline-Analytics Dashboard)
+  - **Aufwand:** 35-40h = 1 Woche (20-28h Track 1 + 13-15h Track 2)
+  - **Migrations:** V10033 (opportunity_documents), V10034 (opportunity_stage_history), V10035 (user_filter_views)
+  - **Tests:** 58 Tests (36 Track 1 + 22 Track 2)
+  - **Prerequisites:** Sprint 2.1.7.2 COMPLETE
+  - **Deliverables:** 9 Deliverables (OpportunityDetailPage, EditDialog, StageChange, ActivityTimeline, Documents/Contacts, High-Value Filter, Advanced Search, Analytics, Custom Views)
+  - **Business Impact:** Opportunity-Modul VOLLSTÄNDIG fertig (CREATE ✅ + READ ✅ + UPDATE ✅ + Analytics ✅)
+  - **User-Entscheidungen erforderlich:** 3 Design-Entscheidungen (Detail Page Layout, Document Storage, Custom Views)
+  - **Artefakte:**
+    - [SPEC_SPRINT_2_1_7_5_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_5_TECHNICAL.md) (TOC: 11 Kapitel)
+    - [SPEC_SPRINT_2_1_7_5_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_5_DESIGN_DECISIONS.md)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_5.md`
 
 - **✅ SPRINT 2.1.7.0 - DESIGN SYSTEM MIGRATION COMPLETE (15.10.2025 - PR #140 MERGED):**
