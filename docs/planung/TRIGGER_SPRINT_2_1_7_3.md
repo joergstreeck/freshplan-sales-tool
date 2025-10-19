@@ -1,13 +1,14 @@
 # 🚀 Sprint 2.1.7.3 - Bestandskunden-Workflow (SORTIMENTSERWEITERUNG/VERLAENGERUNG)
 
 **Sprint-ID:** 2.1.7.3
-**Status:** 📋 PLANNING
+**Status:** 🚧 IN PROGRESS → ~85% COMPLETE
 **Priority:** P2 (Medium)
-**Estimated Effort:** 16h (2 Arbeitstage)
+**Estimated Effort:** 30-31h (3-4 Arbeitstage) - erweitert um Business-Type-Matrix + Settings
 **Owner:** TBD
 **Created:** 2025-10-16
-**Updated:** 2025-10-18 (OpportunityDetailPage Features hinzugefügt)
-**Dependencies:** Sprint 2.1.7.2 COMPLETE
+**Updated:** 2025-10-19 (Business-Type-Matrix + Settings-System + Xentral-Fallback)
+**Last Update:** 2025-10-19 02:15 - Backend + Frontend Components COMPLETE, CustomerDetailPage Integration pending
+**Dependencies:** KEINE - Sprint kann ohne Sprint 2.1.7.2 gestartet werden!
 
 ---
 
@@ -52,9 +53,9 @@
 
 ## 📦 DELIVERABLES
 
-### **1. "Neue Opportunity für Customer" Button** (2h)
+### **1. "Neue Opportunity für Customer" Button** (2h) ⏳ PENDING (CustomerDetailPage Integration)
 
-#### **1.1 CustomerDetailPage Integration** (1h)
+#### **1.1 CustomerDetailPage Integration** (1h) ⏳ PENDING
 
 **Datei:** `frontend/src/pages/CustomerDetailPage.tsx`
 
@@ -115,7 +116,7 @@
 />
 ```
 
-#### **1.2 CreateOpportunityForCustomerDialog Component** (1h)
+#### **1.2 CreateOpportunityForCustomerDialog Component** (1h) ✅ COMPLETE (Commits: 753a95245, a7f7944ef)
 
 **Neue Datei:** `frontend/src/features/opportunity/components/CreateOpportunityForCustomerDialog.tsx`
 
@@ -190,9 +191,9 @@ const handleCreate = async () => {
 
 ---
 
-### **2. Customer-Opportunity-Historie** (3h)
+### **2. Customer-Opportunity-Historie** (3h) ✅ COMPLETE (Backend + Frontend)
 
-#### **2.1 CustomerOpportunitiesList Component** (2h)
+#### **2.1 CustomerOpportunitiesList Component** (2h) ✅ COMPLETE (Commit: 6b8e8ed28)
 
 **Neue Datei:** `frontend/src/features/customers/components/CustomerOpportunitiesList.tsx`
 
@@ -294,7 +295,7 @@ export function CustomerOpportunitiesList({ customerId }: Props) {
 }
 ```
 
-#### **2.2 OpportunityHistoryCard Component** (1h)
+#### **2.2 OpportunityHistoryCard Component** (1h) ✅ INTEGRATED in CustomerOpportunitiesList (OpportunityCard Sub-Component)
 
 **Neue Datei:** `frontend/src/features/customers/components/OpportunityHistoryCard.tsx`
 
@@ -380,9 +381,9 @@ export function OpportunityHistoryCard({ opportunity }: Props) {
 
 ---
 
-### **3. Backend-Erweiterung** (1h)
+### **3. Backend-Erweiterung** (1h) ✅ COMPLETE (Commits: 87cf9d65f, e4d1f1304)
 
-#### **3.1 CustomerResource: Opportunities-Endpoint** (30 Min)
+#### **3.1 CustomerResource: Opportunities-Endpoint** (30 Min) ✅ COMPLETE
 
 **Datei:** `backend/src/main/java/de/freshplan/api/resources/CustomerResource.java`
 
@@ -411,7 +412,7 @@ public Response getCustomerOpportunities(@PathParam("id") UUID customerId) {
 }
 ```
 
-#### **3.2 OpportunityService: findByCustomerId()** (30 Min)
+#### **3.2 OpportunityService: findByCustomerId()** (30 Min) ✅ COMPLETE + 4 Integration Tests
 
 **Datei:** `backend/src/main/java/de/freshplan/domain/opportunity/service/OpportunityService.java`
 
@@ -1039,9 +1040,391 @@ Test Case 6: Activity Timeline
 
 ---
 
+## 🎯 PLANUNGS-ENTSCHEIDUNGEN (2025-10-19)
+
+### **1. Business-Type-Matrix für Intelligente Schätzung** ⭐
+
+**Problem:** Wie schätzen wir `expectedValue` für neue Opportunities aus bestehenden Kunden?
+
+**Lösung:** Business-Type-Matrix mit konfigurierbaren Multiplikatoren
+
+**Architektur:**
+```typescript
+// Formel
+expectedValue = baseVolume × multiplier[businessType][opportunityType]
+
+// Beispiel: Restaurant mit Sortimentserweiterung
+baseVolume = 50.000€ (actualAnnualVolume aus Xentral)
+multiplier = 0.25 (RESTAURANT × SORTIMENTSERWEITERUNG)
+expectedValue = 12.500€
+```
+
+**Multiplier-Matrix (ALLE 9 BusinessTypes):**
+| BusinessType | NEUGESCHAEFT | SORTIMENTSERWEITERUNG | NEUER_STANDORT | VERLAENGERUNG |
+|--------------|--------------|------------------------|----------------|---------------|
+| **RESTAURANT**   | 100%     | **25%**                | 80%            | 95%           |
+| **HOTEL**        | 100%     | **65%**                | 90%            | 90%           |
+| **CATERING**     | 100%     | **50%**                | 75%            | 85%           |
+| **KANTINE**      | 100%     | **30%**                | 60%            | 95%           |
+| **BILDUNG**      | 100%     | **20%**                | 50%            | 90%           |
+| **GESUNDHEIT**   | 100%     | **35%**                | 70%            | 95%           |
+| **GROSSHANDEL**  | 100%     | **40%**                | 55%            | 80%           |
+| **LEH**          | 100%     | **45%**                | 60%            | 85%           |
+| **SONSTIGES**    | 100%     | **15%**                | 40%            | 70%           |
+
+**Begründung Branchenlogik:**
+- **Gastro/Hotellerie (Haupt-Zielgruppe):** RESTAURANT (25%), HOTEL (65%), CATERING (50%)
+  - Hotel = höchstes Potential (große Küchen, mehrere Standorte, hohe Budgets)
+  - Catering = mittleres Potential (Event-basiert, saisonales Wachstum)
+  - Restaurant = konservativ (Einzelbetriebe, kleinere Budgets)
+
+- **Institutionell:** KANTINE (30%), BILDUNG (20%), GESUNDHEIT (35%)
+  - Gesundheit = höchstes Potential (Krankenhäuser, Pflegeheime, hohe Standards)
+  - Kantine = mittel (Betriebsküchen, stabile Verträge)
+  - Bildung = niedrig (Schulen/Unis, enge Budgets, lange Entscheidungswege)
+
+- **B2B-Handel:** GROSSHANDEL (40%), LEH (45%)
+  - LEH = Lebensmitteleinzelhandel (größere Ketten, mittleres Wachstum)
+  - Großhandel = B2B-Intermediäre (hohe Volumen, aber weniger Sortimentswachstum)
+
+- **Sonstiges:** SONSTIGES (15%)
+  - Konservativ (unbekannte Branche, niedrigstes Risiko)
+
+**⚠️ WICHTIG:** Lead.businessType = Customer.businessType (gleicher Enum `de.freshplan.domain.shared.BusinessType`)
+→ 1:1 Übernahme bei Konvertierung, KEINE Mapping-Probleme! ✅
+
+**Begründung:**
+- ✅ **Datenbasiert statt Bauchgefühl** - Verkäufer müssen nicht raten
+- ✅ **Business-Type-spezifisch** - Hotel ≠ Restaurant (unterschiedliche Wachstumspotenziale)
+- ✅ **OpportunityType-spezifisch** - Sortimentserweiterung ≠ Neuer Standort (unterschiedliche Deal-Größen)
+- ✅ **Konfigurierbar** - Settings in Datenbank (nicht hardcoded)
+
+---
+
+### **2. 3-Tier Fallback für Base Volume** 🎯
+
+**Problem:** Woher kommt `baseVolume` für die Berechnung?
+
+**Lösung:** Priorisierte Fallback-Strategie
+
+```typescript
+function getBaseVolume(customer: Customer): number {
+  // TIER 1: Xentral Actual Revenue (BESTE Quelle - enthält territoriale Realität!)
+  if (customer.actualAnnualVolume && customer.actualAnnualVolume > 0) {
+    return customer.actualAnnualVolume; // ← Echte Umsatzdaten aus Xentral (Sprint 2.1.7.2)
+  }
+
+  // TIER 2: Lead Estimation (OK für neue Kunden ohne Xentral-Daten)
+  if (customer.expectedAnnualVolume && customer.expectedAnnualVolume > 0) {
+    return customer.expectedAnnualVolume; // ← Schätzung aus Lead-Erfassung
+  }
+
+  // TIER 3: Manual Entry (FALLBACK für Edge Cases)
+  return 0; // ← Verkäufer muss manuell schätzen
+}
+```
+
+**Warum das brillant ist:** ⭐⭐⭐⭐⭐
+- ✅ **Xentral-Daten sind präziseste Quelle** (echte Umsätze statt Schätzungen)
+- ✅ **Territoriale Unterschiede automatisch enthalten** (Hamburg-Restaurant ≠ München-Restaurant)
+- ✅ **Eliminiert komplexe Territory-Override-Logik** (keine separaten Multiplier pro Region)
+- ✅ **Nur beim Lead-Erstkontakt "Bauchgefühl"** - danach immer datenbasiert
+- ✅ **Zukunftssicher** - je länger ein Kunde dabei ist, desto genauer die Schätzungen
+
+**User-Einsicht (2025-10-19):**
+> "wie wäre es denn wenn wir die echten Umsatzzahlen aus Xentral zur weiteren Schätzung heranziehen.
+> Die sind doch am genauesten. So haben wir nur beim Erstkontakt eine Schätzung aus dem bauch heraus.
+> Darin wären dann auch automatisch die territorialen Unterschiede enthalten."
+
+→ **Validiert!** Diese Strategie ist optimal. ✅
+
+---
+
+### **3. Settings-System (Simplified Architecture)** 🛠️
+
+**User-Entscheidung:** "Settings ohne Territory-Overrides. Alles andere machen wir in Sprint 2.1.7.3"
+
+**Scope:**
+- ✅ **Database Settings Table** - `opportunity_multipliers`
+- ✅ **Backend READ-API** - GET /api/settings/opportunity-multipliers
+- ✅ **Frontend Integration** - Dialog lädt Multipliers beim Öffnen
+- ❌ **Admin-UI** - NICHT in diesem Sprint (Modul 08 - Admin-Dashboard)
+- ❌ **Territory-Overrides** - NICHT in diesem Sprint (zu komplex, Xentral löst das!)
+- ❌ **Audit-Log** - NICHT in diesem Sprint (später bei Admin-UI)
+
+**Migration V10032 (oder nächste verfügbare):**
+```sql
+CREATE TABLE opportunity_multipliers (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  business_type VARCHAR(50) NOT NULL,      -- RESTAURANT, HOTEL, CATERING
+  opportunity_type VARCHAR(50) NOT NULL,   -- NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG
+  multiplier NUMERIC(5,2) NOT NULL,        -- 0.25, 0.65, 0.50
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(business_type, opportunity_type)
+);
+
+-- Seed Data (Freshfoodz Default Multipliers - ALLE 9 BusinessTypes)
+INSERT INTO opportunity_multipliers (business_type, opportunity_type, multiplier) VALUES
+  -- RESTAURANT (Hauptzielgruppe Gastro)
+  ('RESTAURANT', 'NEUGESCHAEFT', 1.00),
+  ('RESTAURANT', 'SORTIMENTSERWEITERUNG', 0.25),
+  ('RESTAURANT', 'NEUER_STANDORT', 0.80),
+  ('RESTAURANT', 'VERLAENGERUNG', 0.95),
+
+  -- HOTEL (Hauptzielgruppe Hotellerie - höchstes Potential)
+  ('HOTEL', 'NEUGESCHAEFT', 1.00),
+  ('HOTEL', 'SORTIMENTSERWEITERUNG', 0.65),
+  ('HOTEL', 'NEUER_STANDORT', 0.90),
+  ('HOTEL', 'VERLAENGERUNG', 0.90),
+
+  -- CATERING (Hauptzielgruppe Event-Catering)
+  ('CATERING', 'NEUGESCHAEFT', 1.00),
+  ('CATERING', 'SORTIMENTSERWEITERUNG', 0.50),
+  ('CATERING', 'NEUER_STANDORT', 0.75),
+  ('CATERING', 'VERLAENGERUNG', 0.85),
+
+  -- KANTINE (Betriebsgastronomie - stabile Verträge)
+  ('KANTINE', 'NEUGESCHAEFT', 1.00),
+  ('KANTINE', 'SORTIMENTSERWEITERUNG', 0.30),
+  ('KANTINE', 'NEUER_STANDORT', 0.60),
+  ('KANTINE', 'VERLAENGERUNG', 0.95),
+
+  -- BILDUNG (Schulen/Unis - enge Budgets)
+  ('BILDUNG', 'NEUGESCHAEFT', 1.00),
+  ('BILDUNG', 'SORTIMENTSERWEITERUNG', 0.20),
+  ('BILDUNG', 'NEUER_STANDORT', 0.50),
+  ('BILDUNG', 'VERLAENGERUNG', 0.90),
+
+  -- GESUNDHEIT (Krankenhäuser/Pflegeheime - hohe Standards)
+  ('GESUNDHEIT', 'NEUGESCHAEFT', 1.00),
+  ('GESUNDHEIT', 'SORTIMENTSERWEITERUNG', 0.35),
+  ('GESUNDHEIT', 'NEUER_STANDORT', 0.70),
+  ('GESUNDHEIT', 'VERLAENGERUNG', 0.95),
+
+  -- GROSSHANDEL (B2B-Intermediäre)
+  ('GROSSHANDEL', 'NEUGESCHAEFT', 1.00),
+  ('GROSSHANDEL', 'SORTIMENTSERWEITERUNG', 0.40),
+  ('GROSSHANDEL', 'NEUER_STANDORT', 0.55),
+  ('GROSSHANDEL', 'VERLAENGERUNG', 0.80),
+
+  -- LEH (Lebensmitteleinzelhandel - größere Ketten)
+  ('LEH', 'NEUGESCHAEFT', 1.00),
+  ('LEH', 'SORTIMENTSERWEITERUNG', 0.45),
+  ('LEH', 'NEUER_STANDORT', 0.60),
+  ('LEH', 'VERLAENGERUNG', 0.85),
+
+  -- SONSTIGES (Unbekannte Branchen - konservativ)
+  ('SONSTIGES', 'NEUGESCHAEFT', 1.00),
+  ('SONSTIGES', 'SORTIMENTSERWEITERUNG', 0.15),
+  ('SONSTIGES', 'NEUER_STANDORT', 0.40),
+  ('SONSTIGES', 'VERLAENGERUNG', 0.70);
+```
+
+**Änderungen via SQL (temporär):**
+```sql
+-- Beispiel: RESTAURANT SORTIMENTSERWEITERUNG von 25% auf 30% erhöhen
+UPDATE opportunity_multipliers
+SET multiplier = 0.30, updated_at = CURRENT_TIMESTAMP
+WHERE business_type = 'RESTAURANT' AND opportunity_type = 'SORTIMENTSERWEITERUNG';
+```
+
+**Admin-UI kommt später** (Modul 08 - Admin-Dashboard, nicht in diesem Sprint!)
+
+---
+
+### **4. Admin Route Empfehlung** 🗺️
+
+**Bestehende Struktur:**
+```
+/admin
+  /system (SystemDashboard - technische Settings)
+  /integrations (IntegrationsDashboard - Xentral, APIs)
+  /settings (Placeholder - Business Settings!)
+  /users (UserManagement)
+  /audit (AuditLog)
+```
+
+**Empfehlung:** `/admin/settings/opportunities`
+
+**Begründung:**
+- ✅ **Business Settings** (nicht System/Technical) - Multiplier = Business-Regel
+- ✅ **Konsistent** mit /admin/settings Kategorie
+- ✅ **Erweiterbar** - später: /admin/settings/territories, /admin/settings/products
+
+**Alternative:** `/admin/system/opportunities` (falls Settings für System-Config reserviert ist)
+
+**Route implementieren in Sprint 2.1.7.3?**
+→ **NEIN!** Nur Backend READ-API. Admin-UI kommt in Modul 08.
+
+---
+
+### **5. OpportunityType als VARCHAR (Harmonisiert)** ✅
+
+**User-Entscheidung:** "Das sollte schon alles harmonisiert sein, wir verwenden VARCHAR"
+
+**Bedeutung:**
+- ✅ `CreateOpportunityForCustomerRequest.opportunityType` ist **String** (nicht Enum!)
+- ✅ Backend konvertiert String → Enum intern
+- ✅ Frontend sendet String-Values ("NEUGESCHAEFT", "SORTIMENTSERWEITERUNG", etc.)
+- ✅ Keine separaten Enum-Typen in DTO (Harmonisierung mit Lead-Conversion-Flow)
+
+**Bereits umgesetzt in Sprint 2.1.7.1:**
+```java
+// CreateOpportunityForCustomerRequest.java
+public class CreateOpportunityForCustomerRequest {
+  private String opportunityType;  // ← VARCHAR, not OpportunityType Enum!
+}
+
+// OpportunityService.java
+OpportunityType type = OpportunityType.valueOf(request.getOpportunityType());
+```
+
+**Keine Änderungen nötig!** ✅
+
+---
+
+### **6. Scope-Update: 16h → 30-31h** 📊
+
+**Ursprünglicher Scope (Zeilen 6):**
+- 16h (2 Arbeitstage)
+
+**Erweiterter Scope (mit Business-Type-Matrix + Settings):**
+- **30-31h** (3-4 Arbeitstage)
+
+**Neue Deliverables:**
+- ✅ Migration V10032: `opportunity_multipliers` Tabelle (1h)
+- ✅ Backend: OpportunityMultiplierRepository + Service (2h)
+- ✅ Backend: GET /api/settings/opportunity-multipliers (1h)
+- ✅ Frontend: Dialog lädt Multipliers + berechnet expectedValue (2h)
+- ✅ Testing: Business-Type-Matrix Logic (2h)
+- ✅ Testing: 3-Tier Fallback Strategie (1h)
+
+**Total Overhead:** +9h (16h → 25h Basis + 5h Puffer = 30h)
+
+**Realistische Schätzung:** 30-31h
+
+---
+
+### **7. Zusammenfassung: Was ändert sich?** 📝
+
+**VORHER (Original TRIGGER_SPRINT_2_1_7_3.md):**
+- ✅ Customer → Opportunity Flow (manuell expectedValue eingeben)
+- ✅ Historie, Activity-Tracking, OpportunityType
+- ⏱️ 16h Aufwand
+
+**NACHHER (mit Entscheidungen 2025-10-19):**
+- ✅ Customer → Opportunity Flow (intelligente Schätzung via Business-Type-Matrix!)
+- ✅ Historie, Activity-Tracking, OpportunityType
+- ✅ Settings-System (Database-driven, konfigurierbar)
+- ✅ 3-Tier Fallback (Xentral > Lead > Manual)
+- ⏱️ 30-31h Aufwand
+
+**Business Value Upgrade:**
+- ✅ **Datengetriebene Schätzung** statt Bauchgefühl
+- ✅ **Xentral-Integration vorbereitet** (Tier 1 Fallback ready)
+- ✅ **Zukunftssicher** (Settings anpassbar ohne Code-Änderung)
+- ✅ **Territoriale Unterschiede automatisch** (in Xentral-Daten enthalten)
+- ✅ **ALLE 9 BusinessTypes unterstützt** (Lead.businessType = Customer.businessType, gleicher Enum!)
+- ✅ **36 Seed-Einträge** (9 BusinessTypes × 4 OpportunityTypes)
+
+---
+
+## 🎯 NÄCHSTE SCHRITTE
+
+**Bereit für Sprint-Start:**
+1. ✅ Feature-Branch: `git checkout -b feature/sprint-2-1-7-3-renewal-workflow`
+2. ✅ Migration V10031: opportunity_multipliers Tabelle mit 36 Seed-Einträgen
+3. ✅ TodoWrite: Sprint-Deliverables als Tasks anlegen
+4. ✅ **Backend COMPLETE (Commit 90b385945):**
+   - OpportunityMultiplier Entity (Panache + Static Helpers)
+   - OpportunityMultiplierService (READ-only)
+   - OpportunityMultiplierResponse DTO
+   - SettingsResource: GET /api/settings/opportunity-multipliers
+5. ⬜ **PENDING:** Frontend: CreateOpportunityForCustomerDialog mit Business-Type-Matrix
+6. ✅ **Testing COMPLETE (39 Tests, 0 Failures):**
+   - OpportunityMultiplierServiceTest (14 Tests)
+   - SettingsResourceTest (11 Tests)
+   - OpportunityMultiplierEntityTest (14 Tests)
+
+**User-Freigabe erforderlich:** ✅ ERTEILT (2025-10-19)
+- "settings ohne Territory-Overrides. Alles andere machen wir in Sprint 2.1.7.3"
+
+---
+
+## ✅ BACKEND PHASE 1 COMPLETE (2025-10-19)
+
+**Status:** Business-Type-Matrix Backend implementiert & getestet
+
+**Deliverables:**
+- Migration V10031: `opportunity_multipliers` Tabelle (9 BusinessTypes × 4 OpportunityTypes = 36 Einträge)
+- OpportunityMultiplier.java - Entity mit `findByTypes()`, `getMultiplierValue()` Panache Helpers
+- OpportunityMultiplierService.java - Service-Layer (READ-only, Admin CRUD in Modul 08)
+- OpportunityMultiplierResponse.java - DTO für REST API
+- SettingsResource.java - GET /api/settings/opportunity-multipliers (@RolesAllowed: USER/MANAGER/ADMIN)
+
+**Enterprise-Level Tests (100% Pass):**
+- 39 Tests total (14 + 11 + 14)
+- Service-Layer Tests: getAllMultipliers(), getMultipliersByBusinessType(), findMultiplier()
+- REST API Tests: Authentication, Response Structure, Specific Values, Performance (<500ms)
+- Entity Tests: Panache Queries, Null-Handling, Business Logic Validation
+
+**Commit:** `90b385945` - 8 Files, 1532 LOC
+
+**Nächste Phase:** Frontend-Implementierung (CreateOpportunityForCustomerDialog)
+
+---
+
 **Sprint bereit für Kickoff!** 🚀
 
 **Nächster Schritt:**
-1. Feature-Branch: `git checkout -b feature/sprint-2-1-7-3-renewal-workflow`
-2. Migration erstellen: `MIGRATION=$(./scripts/get-next-migration.sh | tail -1)`
-3. Los geht's! 💪
+1. Feature-Branch: `git checkout -b feature/sprint-2-1-7-3-renewal-workflow` ✅ DONE
+2. Migration erstellen: `MIGRATION=$(./scripts/get-next-migration.sh | tail -1)` ✅ DONE (V10031)
+3. Los geht's! 💪 ✅ IN PROGRESS
+
+---
+
+## 🎯 SPRINT STATUS - 2025-10-19 02:15
+
+### ✅ COMPLETE (85%)
+
+**Backend Complete:**
+- ✅ Migration V10031: opportunity_multipliers (36 entries, CHECK constraints)
+- ✅ OpportunityMultiplier Entity + Service + REST API
+- ✅ GET /api/settings/opportunity-multipliers
+- ✅ OpportunityService.findByCustomerId()
+- ✅ GET /api/customers/{customerId}/opportunities
+- ✅ 43 Integration Tests (39 Business-Type-Matrix + 4 findByCustomerId)
+
+**Frontend Complete:**
+- ✅ CreateOpportunityForCustomerDialog (Business-Type-Matrix Integration)
+  - 3-Tier Fallback (Xentral → Lead → Manual)
+  - Auto-Calculation: expectedValue = baseVolume × multiplier
+  - 21 Unit Tests (100% pass)
+- ✅ CustomerOpportunitiesList (Accordion Grouping: Offen/Gewonnen/Verloren)
+  - OpportunityCard sub-component (Click → Detail)
+  - Sorting: newest first
+  - Empty/Loading/Error states
+
+**Commits:**
+- 90b385945 - Backend Business-Type-Matrix (39 tests)
+- 753a95245 - CreateOpportunityForCustomerDialog
+- a7f7944ef - Tests CreateOpportunityForCustomerDialog (21 tests)
+- 6b8e8ed28 - CustomerOpportunitiesList
+- 87cf9d65f - Migration V10031 CHECK constraints fix + API endpoint
+- e4d1f1304 - findByCustomerId Integration Tests (4 tests)
+
+### ⏳ PENDING (15%)
+
+**CustomerDetailPage Integration:**
+- ⏳ "Neue Opportunity erstellen" Button hinzufügen
+- ⏳ Opportunities Accordion Section integrieren
+- ⏳ Dialog State Management (open/close)
+- ⏳ Reload Opportunities after creation
+
+**E2E Testing:**
+- ⏳ Customer → Opportunity Flow
+- ⏳ Business-Type-Matrix Calculation Validation
+- ⏳ Historie Gruppierung Validation
+
+**Total Effort:** ~28h / 30-31h estimated (90%)
