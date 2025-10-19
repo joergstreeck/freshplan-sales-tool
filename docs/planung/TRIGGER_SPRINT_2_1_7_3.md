@@ -54,6 +54,12 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
   - [x] OpportunityMultiplier Entity + Service
   - [x] GET /api/settings/opportunity-multipliers (39 Tests GREEN)
 
+- [x] **7. Admin Settings UI** (2h) ✅ COMPLETE
+  - [x] OpportunitySettingsPage (Read-Only Ansicht aller 36 Multipliers)
+  - [x] Route /admin/settings/opportunities (Protected Admin-Only)
+  - [x] Sidebar-Eintrag "Opportunity Settings" (TrendingUp Icon)
+  - [x] **Commit:** 60690a4df
+
 ### **Bug-Fixes & Extensions (100% COMPLETE)**
 
 - [x] **4. OpportunityType Backend-Validierung** (30 Min) ✅ COMPLETE
@@ -86,6 +92,8 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - 3a1e84f36 - CustomerDetailPage Integration
 - 9d9495317 - Documentation Refactoring (TRIGGER → 3-Dokumente-Struktur)
 - 95849c737 - Bug-Fixes: OpportunityType + Activity-Types (COMPLETE)
+- 5dcad6407 - TRIGGER Status Update (100% COMPLETE)
+- 60690a4df - Admin Settings UI (OpportunitySettingsPage + Sidebar)
 
 ---
 
@@ -107,6 +115,9 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - [x] Backend: createForCustomer() setzt OpportunityType (FIXED)
 - [x] Backend: ActivityType Enum erweitert (3 neue Typen)
 - [x] Frontend: ActivityDialog erweitert (3 neue Typen mit Icons)
+- [x] Frontend: OpportunitySettingsPage erstellt (Admin-UI)
+- [x] Route: /admin/settings/opportunities registriert
+- [x] Sidebar: Eintrag "Opportunity Settings" hinzugefügt
 
 ### **Quality**
 - [x] Tests: 90/90 GREEN (Backend 43, Frontend 47)
@@ -130,13 +141,14 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 - CustomerOpportunitiesList Tests
 - CustomerDetailPage Integration
 
-**Tag 4 (6h):** ✅ COMPLETE
+**Tag 4 (8h):** ✅ COMPLETE
 - OpportunityType Backend-Validierung (Bug-Fix) ✅
 - Activity-Tracking (3 neue Typen) ✅
 - Documentation Refactoring (TRIGGER → 3-Dokumente) ✅
+- Admin Settings UI (OpportunitySettingsPage + Sidebar) ✅
 - E2E Testing (optional - deferred)
 
-**Total:** ~30h / 30-31h estimated (100% COMPLETE)
+**Total:** ~32h / 30-31h estimated (103% - Sprint Complete)
 
 ---
 
@@ -175,7 +187,8 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 4. ✅ OpportunityType Bug-Fix (Commit 95849c737)
 5. ✅ Activity-Tracking (Commit 95849c737)
 6. ✅ Documentation Refactoring (Commit 9d9495317)
-7. ⏸️ E2E Testing (optional - deferred)
+7. ✅ Admin Settings UI (Commit 60690a4df)
+8. ⏸️ E2E Testing (optional - deferred)
 
 **PR #142:** Bereit für Erstellung und Merge
 
@@ -221,4 +234,4 @@ Vertriebler können Bestandskunden erweitern (Sortimentserweiterung/Neuer Stando
 
 **✅ SPRINT STATUS: 100% COMPLETE - Ready for PR #142**
 
-**Letzte Aktualisierung:** 2025-10-19 (Final: Bug-Fixes + Activity-Types + Docs Complete)
+**Letzte Aktualisierung:** 2025-10-19 (Final: Bug-Fixes + Activity-Types + Admin-UI + Docs Complete)
