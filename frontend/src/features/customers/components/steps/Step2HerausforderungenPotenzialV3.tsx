@@ -18,37 +18,66 @@ import { RevenueExpectationSectionV2 } from '../sections/RevenueExpectationSecti
 import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection';
 import { isFieldDefinition } from '../../types/field.types';
 
-// Pain Point Solutions Mapping (unverändert)
+// Pain Point Solutions Mapping (100% Lead Parity - Sprint 2.1.7.2)
+// Field names match Lead entity exactly for seamless Lead→Customer conversion
 const PAIN_POINT_SOLUTIONS = {
-  hasStaffingIssues: {
+  // OPERATIONAL PAINS (5 fields)
+  painStaffShortage: {
     title: 'Personalmangel',
     solution: 'Cook&Fresh® - Keine Fachkräfte nötig!',
     products: ['Convenience Line', 'Ready-to-Serve'],
     impact: '30% weniger Personalkosten',
+    points: 10,
   },
-  hasQualityIssues: {
-    title: 'Schwankende Qualität',
-    solution: 'Immer gleiche Premium-Qualität',
-    products: ['Standardisierte Rezepturen'],
-    impact: 'Konstante Gästezufriedenheit',
+  painHighCosts: {
+    title: 'Hoher Kostendruck',
+    solution: 'Kalkulierbare Kosten, weniger Personal',
+    products: ['Efficiency Line'],
+    impact: 'Transparente Preisgestaltung',
+    points: 7,
   },
-  hasFoodWasteIssues: {
+  painFoodWaste: {
     title: 'Lebensmittelverschwendung',
     solution: '40 Tage Haltbarkeit ohne Qualitätsverlust',
     products: ['Cook&Fresh® Verfahren'],
     impact: 'Bis zu 50% weniger Abfall',
+    points: 7,
   },
-  hasCostPressure: {
-    title: 'Kostendruck',
-    solution: 'Kalkulierbare Kosten, weniger Personal',
-    products: ['Efficiency Line'],
-    impact: 'Transparente Preisgestaltung',
+  painQualityInconsistency: {
+    title: 'Schwankende Qualität',
+    solution: 'Immer gleiche Premium-Qualität',
+    products: ['Standardisierte Rezepturen'],
+    impact: 'Konstante Gästezufriedenheit',
+    points: 6,
   },
-  hasFlexibilityIssues: {
-    title: 'Schwankende Gästezahlen',
-    solution: 'Portionsgenaue Bestellung möglich',
-    products: ['Flexible Packaging'],
-    impact: 'Keine Überproduktion',
+  painTimePressure: {
+    title: 'Zeitdruck / Effizienz-Probleme',
+    solution: 'Schnelle Zubereitung, weniger Arbeitsschritte',
+    products: ['Ready-to-Serve'],
+    impact: 'Schnellerer Service',
+    points: 5,
+  },
+  // SWITCHING PAINS (3 fields)
+  painSupplierQuality: {
+    title: 'Qualitätsprobleme beim Lieferanten',
+    solution: 'Kontrollierte Premium-Qualität',
+    products: ['Qualitätssicherung'],
+    impact: 'Verlässliche Qualität',
+    points: 10,
+  },
+  painUnreliableDelivery: {
+    title: 'Unzuverlässige Lieferzeiten',
+    solution: 'Pünktliche Lieferung garantiert',
+    products: ['Logistics Excellence'],
+    impact: 'Planbare Verfügbarkeit',
+    points: 8,
+  },
+  painPoorService: {
+    title: 'Schlechter Service / Support',
+    solution: 'Persönlicher Ansprechpartner',
+    products: ['Premium Support'],
+    impact: 'Schnelle Problemlösung',
+    points: 3,
   },
 };
 

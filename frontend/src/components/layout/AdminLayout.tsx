@@ -118,7 +118,7 @@ export const AdminLayout: React.FC = () => {
         sx={{
           width: { md: `calc(100% - ${drawerOpen ? drawerWidth : 0}px)` },
           ml: { md: `${drawerOpen ? drawerWidth : 0}px` },
-          bgcolor: '#004F7B',
+          bgcolor: 'secondary.main',
           transition: theme.transitions.create(['margin', 'width'], {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
@@ -140,7 +140,7 @@ export const AdminLayout: React.FC = () => {
             variant="h6"
             noWrap
             sx={{
-              fontFamily: 'Antonio, sans-serif',
+              fontFamily: theme => theme.typography.h4.fontFamily,
               fontWeight: 'bold',
               letterSpacing: '0.5px',
               flexGrow: 1,
@@ -162,13 +162,13 @@ export const AdminLayout: React.FC = () => {
                 sx={{
                   mr: 1,
                   display: { xs: 'none', sm: 'block' },
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: theme => theme.typography.body1.fontFamily,
                 }}
               >
                 {username || email || 'Admin'}
               </Typography>
               <IconButton onClick={handleUserMenuOpen} size="small" sx={{ ml: 1 }} color="inherit">
-                <Avatar sx={{ width: 32, height: 32, bgcolor: '#94C456' }}>
+                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}>
                   {username?.charAt(0) || email?.charAt(0) || 'A'}
                 </Avatar>
               </IconButton>
@@ -217,7 +217,7 @@ export const AdminLayout: React.FC = () => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            bgcolor: '#f8f9fa',
+            bgcolor: 'grey.50',
             borderRight: '1px solid #e0e0e0',
             transition: theme.transitions.create('width', {
               easing: theme.transitions.easing.sharp,
@@ -260,7 +260,7 @@ export const AdminLayout: React.FC = () => {
                   >
                     <ListItemIcon
                       sx={{
-                        color: isActive ? '#94C456' : '#004F7B',
+                        color: isActive ? 'primary.main' : 'secondary.main',
                         minWidth: 40,
                       }}
                     >
@@ -275,10 +275,10 @@ export const AdminLayout: React.FC = () => {
                     <ListItemText
                       primary={item.text}
                       primaryTypographyProps={{
-                        fontFamily: 'Poppins, sans-serif',
+                        fontFamily: theme => theme.typography.body1.fontFamily,
                         fontSize: '14px',
                         fontWeight: isActive ? 600 : 500,
-                        color: isActive ? '#004F7B' : 'text.primary',
+                        color: isActive ? 'secondary.main' : 'text.primary',
                       }}
                     />
                   </ListItemButton>
@@ -293,7 +293,7 @@ export const AdminLayout: React.FC = () => {
         component="main"
         sx={{
           flexGrow: 1,
-          bgcolor: '#f5f5f5',
+          bgcolor: 'grey.100',
           p: 3,
           width: { md: `calc(100% - ${drawerOpen ? drawerWidth : 0}px)` },
           ml: { md: drawerOpen ? `${drawerWidth}px` : 0 },

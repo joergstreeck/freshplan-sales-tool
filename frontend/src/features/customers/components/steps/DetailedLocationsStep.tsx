@@ -234,8 +234,8 @@ const BatchAddDialog: React.FC<BatchAddDialogProps> = ({
           onClick={handleSave}
           variant="contained"
           sx={{
-            bgcolor: '#94C456',
-            '&:hover': { bgcolor: '#7BA345' },
+            bgcolor: 'primary.main',
+            '&:hover': { bgcolor: 'primary.dark' },
           }}
         >
           Hinzufügen

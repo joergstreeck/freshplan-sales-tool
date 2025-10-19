@@ -275,7 +275,7 @@ class CustomerSearchServiceTest {
     assertThat(result).isNotNull();
     assertThat(result.getContent()).hasSize(2);
     assertThat(result.getContent())
-        .allMatch(customer -> "HOTEL".equals(customer.industry().toString()));
+        .allMatch(customer -> "HOTEL".equals(customer.businessType().toString()));
   }
 
   @Test

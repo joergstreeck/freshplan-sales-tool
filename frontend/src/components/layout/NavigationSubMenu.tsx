@@ -177,9 +177,9 @@ export const NavigationSubMenu: React.FC<NavigationSubMenuProps> = ({ items, onI
         {hasSubItems && (
           <Box sx={{ ml: 1, display: 'flex', alignItems: 'center' }}>
             {isExpanded ? (
-              <ExpandLessIcon sx={{ fontSize: 16, color: '#94C456' }} />
+              <ExpandLessIcon sx={{ fontSize: 16, color: 'primary.main' }} />
             ) : (
-              <ExpandMoreIcon sx={{ fontSize: 16, color: '#004F7B' }} />
+              <ExpandMoreIcon sx={{ fontSize: 16, color: 'secondary.main' }} />
             )}
           </Box>
         )}

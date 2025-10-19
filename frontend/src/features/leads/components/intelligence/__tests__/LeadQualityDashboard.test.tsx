@@ -7,7 +7,8 @@
 
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { freshfoodzTheme } from '@/theme/freshfoodz';
 import { LeadQualityDashboard } from '../LeadQualityDashboard';
 import { vi } from 'vitest';
 
@@ -32,10 +33,8 @@ vi.mock('recharts', () => ({
   CartesianGrid: () => <div data-testid="cartesian-grid" />,
 }));
 
-const theme = createTheme();
-
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+  return render(<ThemeProvider theme={freshfoodzTheme}>{component}</ThemeProvider>);
 };
 
 describe('LeadQualityDashboard', () => {

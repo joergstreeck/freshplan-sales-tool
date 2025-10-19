@@ -102,8 +102,8 @@ export function useThemeSettings(): {
 
   // FreshFoodz brand colors as defaults
   const DEFAULT_THEME = {
-    primary: '#94C456', // FreshFoodz Green
-    secondary: '#004F7B', // FreshFoodz Blue
+    primary: theme.palette.primary.main, // FreshFoodz Green
+    secondary: theme.palette.secondary.main, // FreshFoodz Blue
   };
 
   // Type-safe theme merging

@@ -23,13 +23,15 @@ NC='\033[0m' # No Color
 
 echo ""
 echo -e "${GREEN}┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓${NC}"
-echo -e "${GREEN}┃  📋 MIGRATIONS-STRATEGIE (Oktober 2025 + DEV-SEED)            ┃${NC}"
+echo -e "${GREEN}┃  📋 MIGRATIONS-STRATEGIE (2-Sequenzen-Modell)                 ┃${NC}"
 echo -e "${GREEN}┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫${NC}"
-echo -e "${GREEN}┃  • Alle Migrationen fortlaufend: V10025, V10026, V10027...   ┃${NC}"
-echo -e "${GREEN}┃  • Trennung durch ORDNER (nicht durch Nummern):              ┃${NC}"
-echo -e "${GREEN}┃    - Production:  db/migration/      (Schema, V1-V89999)     ┃${NC}"
-echo -e "${GREEN}┃    - Test-Migs:   db/dev-migration/  (Test-Only, V1-V89999)  ┃${NC}"
-echo -e "${GREEN}┃    - DEV-SEED:    db/dev-seed/       (Dev-Only, V90001+)     ┃${NC}"
+echo -e "${GREEN}┃  SEQUENZ 1 (Prod+Test GEMEINSAM): V1-V89999 fortlaufend      ┃${NC}"
+echo -e "${GREEN}┃    - Production:  db/migration/      (Schema, alle Envs)      ┃${NC}"
+echo -e "${GREEN}┃    - Test-Migs:   db/dev-migration/  (Test-Only, %test)       ┃${NC}"
+echo -e "${GREEN}┃    → GLEICHE Nummern-Sequenz! Test kann später zu Prod.      ┃${NC}"
+echo -e "${GREEN}┃                                                               ┃${NC}"
+echo -e "${GREEN}┃  SEQUENZ 2 (SEED EIGENE): V90001+ für Dev-Daten              ┃${NC}"
+echo -e "${GREEN}┃    - DEV-SEED:    db/dev-seed/       (Dev-Only, %dev)        ┃${NC}"
 echo -e "${GREEN}┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛${NC}"
 echo ""
 
@@ -105,12 +107,15 @@ done
 
 echo ""
 
-# Ermittle höchste Nummer PRO Ordner (getrennt!)
+# Ermittle höchste Nummer nach 2-Sequenzen-Modell!
+# Sequenz 1: Production + Test GEMEINSAM (V1-V89999)
+# Sequenz 2: SEED EIGENE Sequenz (V90001+)
+
 HIGHEST_PROD=$(find "$MIGRATION_DIR" -name "V*.sql" 2>/dev/null | \
-  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
+  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | awk '$1 < 90000' | sort -n | tail -1)
 
 HIGHEST_TEST=$(find "$DEV_MIGRATION_DIR" -name "V*.sql" 2>/dev/null | \
-  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
+  sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | awk '$1 < 90000' | sort -n | tail -1)
 
 HIGHEST_SEED=$(find "$DEV_SEED_DIR" -name "V*.sql" 2>/dev/null | \
   sed 's/.*V\([0-9]*\)__.*/\1/' | grep -E '^[0-9]+$' | sort -n | tail -1)
@@ -118,13 +123,20 @@ HIGHEST_SEED=$(find "$DEV_SEED_DIR" -name "V*.sql" 2>/dev/null | \
 # Defaults für leere Ordner
 if [ -z "$HIGHEST_PROD" ]; then HIGHEST_PROD=0; fi
 if [ -z "$HIGHEST_TEST" ]; then HIGHEST_TEST=0; fi
-if [ -z "$HIGHEST_SEED" ]; then HIGHEST_SEED=0; fi
+if [ -z "$HIGHEST_SEED" ]; then HIGHEST_SEED=90000; fi
 
-# Zeige höchste Nummern PRO Ordner
-echo -e "${GREEN}📊 Höchste Nummern (pro Ordner):${NC}"
-echo -e "${BLUE}   Production:  V$HIGHEST_PROD (migration/)${NC}"
-echo -e "${BLUE}   Test-Migs:   V$HIGHEST_TEST (dev-migration/)${NC}"
-echo -e "${BLUE}   DEV-SEED:    V$HIGHEST_SEED (dev-seed/)${NC}"
+# KRITISCH: Sequenz 1 = MAX aus Production UND Test!
+HIGHEST_SEQUENTIAL=$HIGHEST_PROD
+if [ "$HIGHEST_TEST" -gt "$HIGHEST_SEQUENTIAL" ]; then
+    HIGHEST_SEQUENTIAL=$HIGHEST_TEST
+fi
+
+# Zeige höchste Nummern (2-Sequenzen-Modell)
+echo -e "${GREEN}📊 Höchste Nummern (2-Sequenzen-Modell):${NC}"
+echo -e "${BLUE}   Sequential (Prod+Test GEMEINSAM): V$HIGHEST_SEQUENTIAL${NC}"
+echo -e "${BLUE}     → Production:  V$HIGHEST_PROD (migration/)${NC}"
+echo -e "${BLUE}     → Test-Migs:   V$HIGHEST_TEST (dev-migration/)${NC}"
+echo -e "${BLUE}   SEED (EIGENE Sequenz):            V$HIGHEST_SEED (dev-seed/)${NC}"
 echo ""
 
 # Frage nach Ordner-Auswahl (JETZT 3 OPTIONEN!)
@@ -157,11 +169,15 @@ if [ "$CHOICE" = "1" ]; then
     TARGET_TYPE="Production"
     RECOMMENDED_RANGE="V1-V89999"
 
-    # Berechne NEXT aus Production-Ordner
-    NEXT=$((HIGHEST_PROD + 1))
+    # Berechne NEXT aus SEQUENTIAL (Prod+Test gemeinsam!)
+    NEXT=$((HIGHEST_SEQUENTIAL + 1))
 
     echo -e "${GREEN}✅ Production-Migration in db/migration/${NC}"
-    echo -e "${GREEN}   Nächste Nummer: V${NEXT} (basierend auf V${HIGHEST_PROD})${NC}"
+    echo -e "${GREEN}   Nächste Nummer: V${NEXT} (Sequential: V${HIGHEST_SEQUENTIAL})${NC}"
+    if [ "$HIGHEST_TEST" -gt "$HIGHEST_PROD" ]; then
+        echo -e "${YELLOW}   ⚠️  Hinweis: Test-Migration V${HIGHEST_TEST} ist höher als Production V${HIGHEST_PROD}${NC}"
+        echo -e "${YELLOW}       → 2-Sequenzen-Modell: Nächste ist V${NEXT} (beide Ordner gemeinsam)${NC}"
+    fi
 
     # Warnung wenn Nummer > 89999
     if [ "$NEXT" -ge 90000 ]; then
@@ -179,11 +195,15 @@ elif [ "$CHOICE" = "2" ]; then
     TARGET_TYPE="Test-Migration"
     RECOMMENDED_RANGE="V1-V89999"
 
-    # Berechne NEXT aus Test-Ordner
-    NEXT=$((HIGHEST_TEST + 1))
+    # Berechne NEXT aus SEQUENTIAL (Prod+Test gemeinsam!)
+    NEXT=$((HIGHEST_SEQUENTIAL + 1))
 
     echo -e "${YELLOW}✅ Test-Migration in db/dev-migration/${NC}"
-    echo -e "${YELLOW}   Nächste Nummer: V${NEXT} (basierend auf V${HIGHEST_TEST})${NC}"
+    echo -e "${YELLOW}   Nächste Nummer: V${NEXT} (Sequential: V${HIGHEST_SEQUENTIAL})${NC}"
+    if [ "$HIGHEST_PROD" -gt "$HIGHEST_TEST" ]; then
+        echo -e "${CYAN}   💡 Hinweis: Production V${HIGHEST_PROD} ist höher als Test V${HIGHEST_TEST}${NC}"
+        echo -e "${CYAN}       → 2-Sequenzen-Modell: Nächste ist V${NEXT} (beide Ordner gemeinsam)${NC}"
+    fi
 
     # Warnung wenn Nummer > 89999
     if [ "$NEXT" -ge 90000 ]; then

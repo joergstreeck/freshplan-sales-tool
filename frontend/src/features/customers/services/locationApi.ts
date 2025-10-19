@@ -9,13 +9,13 @@
  */
 
 import { apiClient } from './api-client';
-import {
+import type {
   CreateLocationRequest,
   UpdateLocationRequest,
   LocationResponse,
   PaginatedResponse,
 } from '../types/api.types';
-import {
+import type {
   LocationWithFields,
   DetailedLocation,
   DetailedLocationBatch,

@@ -580,8 +580,8 @@ export function CustomersPageV2({
                         // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                         navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                       } else {
-                        // Customer context - keep old behavior for now
-                        setEditDialogOpen(true);
+                        // Customer context - navigate to customer detail page
+                        navigate(`/customers/${customer.id}`);
                       }
                     }}
                     onDelete={customer => {

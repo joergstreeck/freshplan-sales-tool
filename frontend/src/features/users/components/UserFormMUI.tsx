@@ -237,8 +237,8 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
               variant="contained"
               disabled={isSubmitting}
               sx={{
-                bgcolor: '#94C456',
-                '&:hover': { bgcolor: '#7aa845' },
+                bgcolor: 'primary.main',
+                '&:hover': { bgcolor: 'primary.dark' },
               }}
             >
               {isSubmitting ? (

@@ -6,7 +6,6 @@ import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.CustomerTimelineEvent;
 import de.freshplan.domain.customer.entity.EventCategory;
 import de.freshplan.domain.customer.entity.ImportanceLevel;
-import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.dto.CustomerResponseBuilder;
@@ -337,20 +336,6 @@ public class CustomerService {
         customers.stream().map(this::mapToResponse).collect(Collectors.toList());
 
     log.debug("Found {} customers with status {}", totalElements, status);
-
-    return CustomerListResponse.of(customerResponses, page, size, totalElements);
-  }
-
-  /** Filters customers by industry. */
-  public CustomerListResponse getCustomersByIndustry(Industry industry, int page, int size) {
-    Page pageRequest = Page.of(page, size);
-    List<Customer> customers = customerRepository.findByIndustry(industry, pageRequest);
-
-    // Count manually since we don't have countByIndustry method
-    long totalElements = customers.size();
-
-    List<CustomerResponse> customerResponses =
-        customers.stream().map(this::mapToResponse).collect(Collectors.toList());
 
     return CustomerListResponse.of(customerResponses, page, size, totalElements);
   }

@@ -2,6 +2,7 @@ package de.freshplan.domain.customer.entity;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.KitchenSize;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -79,6 +80,53 @@ public class Customer extends PanacheEntityBase {
   @Enumerated(EnumType.STRING)
   @Column(name = "classification", length = 10)
   private Classification classification;
+
+  // Lead Parity Fields (Sprint 2.1.7.2 - V10032)
+  // These fields exist in Lead entity and are needed for seamless Lead→Customer conversion
+
+  /**
+   * Kitchen size classification (100% Lead parity).
+   *
+   * @since 2.1.7.2
+   */
+  @Enumerated(EnumType.STRING)
+  @Column(name = "kitchen_size", length = 20)
+  private KitchenSize kitchenSize;
+
+  /**
+   * Number of employees (100% Lead parity).
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "employee_count")
+  private Integer employeeCount;
+
+  /**
+   * Number of branches/locations (100% Lead parity). Note: Redundant with totalLocationsEU but kept
+   * for Lead conversion compatibility.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "branch_count")
+  private Integer branchCount = 1;
+
+  /**
+   * Chain/franchise flag (100% Lead parity). Note: Redundant with totalLocationsEU &gt; 1 check but
+   * kept for Lead conversion compatibility.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "is_chain")
+  private Boolean isChain = false;
+
+  /**
+   * Estimated purchase volume (100% Lead parity). Note: Complements expectedAnnualVolume - Lead has
+   * estimatedVolume, Customer had expectedAnnualVolume.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "estimated_volume", precision = 12, scale = 2)
+  private BigDecimal estimatedVolume;
 
   // Hierarchy Support
   @ManyToOne(fetch = FetchType.LAZY)
@@ -425,6 +473,48 @@ public class Customer extends PanacheEntityBase {
 
   public void setClassification(Classification classification) {
     this.classification = classification;
+  }
+
+  // Lead Parity Fields Getters/Setters (Sprint 2.1.7.2 - V10032)
+
+  public KitchenSize getKitchenSize() {
+    return kitchenSize;
+  }
+
+  public void setKitchenSize(KitchenSize kitchenSize) {
+    this.kitchenSize = kitchenSize;
+  }
+
+  public Integer getEmployeeCount() {
+    return employeeCount;
+  }
+
+  public void setEmployeeCount(Integer employeeCount) {
+    this.employeeCount = employeeCount;
+  }
+
+  public Integer getBranchCount() {
+    return branchCount;
+  }
+
+  public void setBranchCount(Integer branchCount) {
+    this.branchCount = branchCount;
+  }
+
+  public Boolean getIsChain() {
+    return isChain;
+  }
+
+  public void setIsChain(Boolean isChain) {
+    this.isChain = isChain;
+  }
+
+  public BigDecimal getEstimatedVolume() {
+    return estimatedVolume;
+  }
+
+  public void setEstimatedVolume(BigDecimal estimatedVolume) {
+    this.estimatedVolume = estimatedVolume;
   }
 
   public Customer getParentCustomer() {

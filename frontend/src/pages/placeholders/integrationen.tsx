@@ -21,7 +21,7 @@ export const KIAnbindungen = () => (
       'Claude API für Datenanalyse',
       'Automatische E-Mail-Antworten mit KI',
     ]}
-    icon={<SmartToyIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<SmartToyIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -36,7 +36,7 @@ export const XentralIntegration = () => (
       'Automatischer Auftragsimport',
       'Lagerbestands-Abgleich',
     ]}
-    icon={<InventoryIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<InventoryIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -47,7 +47,7 @@ export const EmailServices = () => (
     description="Verbinden Sie SMTP-Server, Outlook oder Gmail für nahtlose E-Mail-Kommunikation."
     expectedDate="Q1 2025"
     features={['SMTP-Server Konfiguration', 'Microsoft 365 Integration', 'Gmail API Anbindung']}
-    icon={<EmailIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<EmailIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -58,7 +58,7 @@ export const PaymentProvider = () => (
     description="Integrieren Sie Stripe, PayPal und andere Zahlungsanbieter."
     expectedDate="Q3 2025"
     features={['Stripe Integration', 'PayPal Checkout', 'SEPA-Lastschrift']}
-    icon={<PaymentIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<PaymentIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -69,7 +69,7 @@ export const Webhooks = () => (
     description="Konfigurieren Sie Webhooks für Echtzeit-Benachrichtigungen an externe Systeme."
     expectedDate="Q2 2025"
     features={['Webhook-Endpunkte verwalten', 'Event-Filter konfigurieren', 'Retry-Mechanismen']}
-    icon={<WebhookIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<WebhookIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -80,7 +80,7 @@ export const NeueIntegration = () => (
     description="Assistent zum Hinzufügen und Konfigurieren neuer Integrationen."
     expectedDate="Q2 2025"
     features={['Integration-Wizard', 'OAuth 2.0 Setup', 'API-Key Management']}
-    icon={<AddCircleIcon sx={{ fontSize: 80, color: '#94C456' }} />}
+    icon={<AddCircleIcon sx={{ fontSize: 80, color: 'primary.main' }} />}
   />
 );
 
@@ -92,7 +92,7 @@ export const Performance = () => (
     description="Detaillierte Performance-Metriken und Optimierungsvorschläge."
     expectedDate="Q2 2025"
     features={['Response-Time Monitoring', 'Database Query Analyzer', 'Resource-Auslastung']}
-    icon={<SpeedIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<SpeedIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );
 
@@ -103,6 +103,6 @@ export const BackupRecovery = () => (
     description="Automatische Backups und schnelle Wiederherstellung im Notfall."
     expectedDate="Q2 2025"
     features={['Automatische Backups', 'Point-in-Time Recovery', 'Backup-Verschlüsselung']}
-    icon={<BackupIcon sx={{ fontSize: 80, color: '#004F7B' }} />}
+    icon={<BackupIcon sx={{ fontSize: 80, color: 'secondary.main' }} />}
   />
 );

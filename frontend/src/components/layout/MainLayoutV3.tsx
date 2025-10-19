@@ -41,7 +41,7 @@ export const MainLayoutV3: React.FC<MainLayoutV3Props> = ({
   hideHeader = false,
   forceContentWidth,
   noPaper = false,
-  contentBackground = '#FAFAFA',
+  contentBackground = theme.palette.grey[50],
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));

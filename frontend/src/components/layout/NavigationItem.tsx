@@ -96,10 +96,10 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
             backgroundColor: 'rgba(148, 196, 86, 0.18)',
           },
           '& .MuiListItemIcon-root': {
-            color: '#94C456',
+            color: 'primary.main',
           },
           '& .MuiListItemText-primary': {
-            color: '#94C456',
+            color: 'primary.main',
             fontWeight: 700,
           },
         },
@@ -111,7 +111,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
       <ListItemIcon
         sx={{
           minWidth: 40,
-          color: isActive ? '#94C456' : '#004F7B', // Freshfoodz Farben
+          color: isActive ? 'primary.main' : 'secondary.main', // Freshfoodz Farben
         }}
       >
         <Icon />
@@ -124,9 +124,9 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
               mr: item.subItems ? 1 : 0,
               '& .MuiListItemText-primary': {
                 fontSize: '0.95rem',
-                fontFamily: 'Poppins, sans-serif',
+                fontFamily: theme => theme.typography.body1.fontFamily,
                 fontWeight: isActive ? 500 : 400,
-                color: isActive ? '#94C456' : '#000',
+                color: isActive ? 'primary.main' : 'text.primary',
                 lineHeight: 1.3,
                 // Erlaubt Zeilenumbruch bei sehr langen Texten
                 whiteSpace: 'normal',
@@ -146,11 +146,11 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
               }}
             >
               {isLoading ? (
-                <CircularProgress size={16} sx={{ color: '#94C456' }} />
+                <CircularProgress size={16} sx={{ color: 'primary.main' }} />
               ) : isExpanded ? (
-                <ExpandLessIcon sx={{ fontSize: 20, color: '#94C456' }} />
+                <ExpandLessIcon sx={{ fontSize: 20, color: 'primary.main' }} />
               ) : (
-                <ExpandMoreIcon sx={{ fontSize: 20, color: '#94C456' }} />
+                <ExpandMoreIcon sx={{ fontSize: 20, color: 'primary.main' }} />
               )}
             </Box>
           )}

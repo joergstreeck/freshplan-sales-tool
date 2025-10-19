@@ -197,27 +197,14 @@ class CustomerQueryServiceIntegrationTest {
   }
 
   // ========== TEST: getCustomersByIndustry() ==========
+  // DISABLED: getCustomersByIndustry() methods removed - use findByFilters() instead
 
-  @Test
-  @TestTransaction
-  void getCustomersByIndustry_shouldReturnIdenticalResults() {
-    setupTestData();
-    // Given: Create customers with different industries
-    createCustomerWithIndustry(Industry.HOTEL, "Hotel Company 1");
-    createCustomerWithIndustry(Industry.HOTEL, "Hotel Company 2");
-    createCustomerWithIndustry(Industry.RESTAURANT, "Restaurant Company");
-
-    // When: Query for HOTEL industry
-    CustomerListResponse fromOriginal =
-        originalService.getCustomersByIndustry(Industry.HOTEL, 0, 10);
-    CustomerListResponse fromQuery = queryService.getCustomersByIndustry(Industry.HOTEL, 0, 10);
-
-    // Then: Must return same customers
-    assertThat(fromQuery.content()).hasSize(3); // Original + 2 new hotel companies
-    assertThat(fromQuery.content())
-        .usingRecursiveFieldByFieldElementComparator()
-        .containsExactlyInAnyOrderElementsOf(fromOriginal.content());
-  }
+  // @Test
+  // @TestTransaction
+  // void getCustomersByIndustry_shouldReturnIdenticalResults() {
+  //   // Test disabled - getCustomersByIndustry() method removed from services
+  //   // Use findByFilters() with businessType parameter instead
+  // }
 
   // ========== TEST: getCustomerHierarchy() ==========
 

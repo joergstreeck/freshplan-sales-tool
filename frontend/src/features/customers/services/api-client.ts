@@ -7,7 +7,7 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-api-integration.md
  */
 
-import { ApiError } from '../types/api.types';
+import type { ApiError } from '../types/api.types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
 

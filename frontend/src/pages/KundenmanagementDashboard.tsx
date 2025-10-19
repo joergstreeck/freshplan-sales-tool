@@ -246,7 +246,7 @@ export function KundenmanagementDashboard() {
                         variant="h6"
                         sx={{
                           mb: 1,
-                          fontFamily: 'Antonio, sans-serif',
+                          fontFamily: theme => theme.typography.h4.fontFamily,
                           color: theme.palette.secondary.main,
                         }}
                       >
@@ -285,7 +285,10 @@ export function KundenmanagementDashboard() {
               >
                 <Typography
                   variant="h6"
-                  sx={{ fontFamily: 'Antonio, sans-serif', color: theme.palette.secondary.main }}
+                  sx={{
+                    fontFamily: theme => theme.typography.h4.fontFamily,
+                    color: theme.palette.secondary.main,
+                  }}
                 >
                   Top Kunden nach Umsatz
                 </Typography>
@@ -366,7 +369,7 @@ export function KundenmanagementDashboard() {
                 variant="h6"
                 sx={{
                   mb: 2,
-                  fontFamily: 'Antonio, sans-serif',
+                  fontFamily: theme => theme.typography.h4.fontFamily,
                   color: theme.palette.secondary.main,
                 }}
               >
@@ -434,7 +437,7 @@ export function KundenmanagementDashboard() {
                 variant="h6"
                 sx={{
                   mb: 2,
-                  fontFamily: 'Antonio, sans-serif',
+                  fontFamily: theme => theme.typography.h4.fontFamily,
                   color: theme.palette.secondary.main,
                 }}
               >

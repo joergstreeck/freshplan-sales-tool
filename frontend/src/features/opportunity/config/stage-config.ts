@@ -17,8 +17,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.NEW_LEAD,
     label: 'Lead',
-    color: '#1976D2',
-    bgColor: '#E3F2FD',
+    color: 'info.main',
+    bgColor: 'info.light',
     description: 'Neuer, unqualifizierter Lead',
     allowedNextStages: [OpportunityStage.QUALIFICATION, OpportunityStage.CLOSED_LOST],
     defaultProbability: 10,
@@ -29,8 +29,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.QUALIFICATION,
     label: 'Qualifizierung',
-    color: '#388E3C',
-    bgColor: '#E8F5E9',
+    color: 'success.dark',
+    bgColor: 'success.light',
     description: 'Lead wird qualifiziert',
     allowedNextStages: [OpportunityStage.NEEDS_ANALYSIS, OpportunityStage.CLOSED_LOST],
     defaultProbability: 20,
@@ -41,8 +41,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.NEEDS_ANALYSIS,
     label: 'Bedarfsanalyse',
-    color: '#689F38',
-    bgColor: '#F1F8E9',
+    color: 'success.main',
+    bgColor: 'success.lighter',
     description: 'Bedarfsanalyse läuft',
     allowedNextStages: [OpportunityStage.PROPOSAL, OpportunityStage.CLOSED_LOST],
     defaultProbability: 40,
@@ -53,8 +53,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.PROPOSAL,
     label: 'Angebot',
-    color: '#F57C00',
-    bgColor: '#FFF3E0',
+    color: 'warning.dark',
+    bgColor: 'warning.lighter',
     description: 'Angebot wurde erstellt',
     allowedNextStages: [OpportunityStage.NEGOTIATION, OpportunityStage.CLOSED_LOST],
     defaultProbability: 60,
@@ -65,8 +65,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.NEGOTIATION,
     label: 'Verhandlung',
-    color: '#7B1FA2',
-    bgColor: '#F3E5F5',
+    color: 'secondary.dark',
+    bgColor: 'secondary.lighter',
     description: 'In Verhandlung',
     allowedNextStages: [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST],
     defaultProbability: 80,
@@ -77,8 +77,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.CLOSED_WON,
     label: 'Gewonnen',
-    color: '#2E7D32',
-    bgColor: '#C8E6C9',
+    color: 'success.dark',
+    bgColor: 'success.light',
     description: 'Erfolgreich abgeschlossen',
     allowedNextStages: [OpportunityStage.RENEWAL],
     defaultProbability: 100,
@@ -89,8 +89,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.CLOSED_LOST,
     label: 'Verloren',
-    color: '#D32F2F',
-    bgColor: '#FFCDD2',
+    color: 'error.dark',
+    bgColor: 'error.lighter',
     description: 'Verloren',
     allowedNextStages: [],
     defaultProbability: 0,
@@ -101,8 +101,8 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.RENEWAL,
     label: 'Verlängerung',
-    color: '#FF9800',
-    bgColor: '#FFF3E0',
+    color: 'warning.main',
+    bgColor: 'warning.lighter',
     description: 'Vertragsverlängerung in Verhandlung',
     allowedNextStages: [OpportunityStage.CLOSED_WON, OpportunityStage.CLOSED_LOST],
     defaultProbability: 75,
@@ -158,7 +158,7 @@ export function getStageConfigSafe(
   return {
     stage,
     label: fallback?.label || 'Unknown',
-    color: fallback?.color || '#757575',
+    color: fallback?.color || 'grey.600',
     bgColor: fallback?.bgColor || '#F5F5F5',
     description: fallback?.description || 'Unknown stage',
     allowedNextStages: fallback?.allowedNextStages || [],
@@ -256,7 +256,7 @@ export function validateStage(stage: unknown): IStageValidationResult {
  * @returns {string} Hex color code
  */
 export function getStageColor(stage: OpportunityStage): string {
-  return getStageConfig(stage)?.color || '#757575';
+  return getStageConfig(stage)?.color || 'grey.600';
 }
 
 /**

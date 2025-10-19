@@ -147,7 +147,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
               edge="start"
               onClick={onMenuClick || toggleSidebar}
               sx={{
-                color: '#004F7B',
+                color: 'secondary.main',
                 display: { md: 'none' },
               }}
             >
@@ -204,7 +204,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <SearchIcon sx={{ color: '#94C456' }} />
+                      <SearchIcon sx={{ color: 'primary.main' }} />
                     </InputAdornment>
                   ),
                   endAdornment: searchValue && (
@@ -215,16 +215,16 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                     </InputAdornment>
                   ),
                   sx: {
-                    backgroundColor: isSearchFocused ? '#FAFAFA' : '#F5F5F5',
+                    backgroundColor: isSearchFocused ? 'grey.50' : 'grey.100',
                     borderRadius: 2,
                     '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: isSearchFocused ? '#94C456' : 'transparent',
+                      borderColor: isSearchFocused ? 'primary.main' : 'transparent',
                     },
                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#94C456',
+                      borderColor: 'primary.main',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#94C456',
+                      borderColor: 'primary.main',
                       borderWidth: 2,
                     },
                   },
@@ -237,7 +237,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
           <Tooltip title="Benachrichtigungen">
             <IconButton
               sx={{
-                color: '#004F7B',
+                color: 'secondary.main',
                 flexShrink: 0,
               }}
             >
@@ -263,7 +263,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                 sx={{
                   width: 36,
                   height: 36,
-                  bgcolor: '#94C456',
+                  bgcolor: 'primary.main',
                   fontSize: '0.875rem',
                   fontWeight: 600,
                   mr: 1,
@@ -278,7 +278,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                       variant="body2"
                       sx={{
                         fontWeight: 500,
-                        color: '#004F7B',
+                        color: 'secondary.main',
                         lineHeight: 1.2,
                       }}
                     >
@@ -294,7 +294,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                       {user?.roles?.[0] || 'Vertrieb'}
                     </Typography>
                   </Box>
-                  <ArrowDownIcon sx={{ color: '#004F7B' }} />
+                  <ArrowDownIcon sx={{ color: 'secondary.main' }} />
                 </>
               )}
             </IconButton>
@@ -372,7 +372,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ color: '#94C456' }} />
+                    <SearchIcon sx={{ color: 'primary.main' }} />
                   </InputAdornment>
                 ),
                 endAdornment: searchValue && (
@@ -383,16 +383,16 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                   </InputAdornment>
                 ),
                 sx: {
-                  backgroundColor: '#F5F5F5',
+                  backgroundColor: 'grey.100',
                   borderRadius: 2,
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'transparent',
                   },
                   '&:hover .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#94C456',
+                    borderColor: 'primary.main',
                   },
                   '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                    borderColor: '#94C456',
+                    borderColor: 'primary.main',
                     borderWidth: 2,
                   },
                 },

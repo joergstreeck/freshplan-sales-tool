@@ -260,7 +260,7 @@ const SwipeInstructions: React.FC<{
 
             <Box sx={{ my: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <EmailIcon sx={{ fontSize: 40, color: '#2196F3', mr: 2 }} />
+                <EmailIcon sx={{ fontSize: 40, color: 'info.main', mr: 2 }} />
                 <Typography variant="body1">👈 Nach links für E-Mail</Typography>
               </Box>
 
@@ -268,7 +268,7 @@ const SwipeInstructions: React.FC<{
                 <Typography variant="body1" sx={{ mr: 2 }}>
                   Nach rechts für Anruf 👉
                 </Typography>
-                <PhoneIcon sx={{ fontSize: 40, color: '#4CAF50' }} />
+                <PhoneIcon sx={{ fontSize: 40, color: 'success.main' }} />
               </Box>
             </Box>
 

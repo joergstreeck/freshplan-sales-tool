@@ -19,6 +19,7 @@ import type { Contact, ContactValidationError, CreateContactDTO } from '../types
 import { validateField, validateFields } from '../validation';
 import { getVisibleFields } from '../utils/conditionEvaluator';
 import type { LocationServiceData } from './customerOnboardingStore.extensions';
+import { customerApi } from '../services/customerApi';
 
 interface CustomerOnboardingState {
   // ===== Wizard State =====
@@ -30,6 +31,8 @@ interface CustomerOnboardingState {
   lastSaved: Date | null;
   /** Current draft ID */
   draftId: string | null;
+  /** Customer ID for edit mode */
+  customerId: string | null;
   /** Loading state */
   isLoading: boolean;
   /** Saving state */
@@ -109,9 +112,11 @@ interface CustomerOnboardingState {
   /** Load draft */
   loadDraft: (draftId: string) => Promise<void>;
   /** Finalize customer */
-  finalizeCustomer: () => Promise<void>;
+  finalizeCustomer: () => Promise<unknown>;
   /** Reset store */
   reset: () => void;
+  /** Set initial data for edit mode */
+  setInitialData: (data: Partial<Record<string, unknown>>, customerId?: string) => void;
   /** Set field definitions */
   setFieldDefinitions: (
     customerFields: FieldDefinition[],
@@ -165,6 +170,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
       isDirty: false,
       lastSaved: null,
       draftId: null,
+      customerId: null,
       isLoading: false,
       isSaving: false,
       customerData: {},
@@ -526,11 +532,44 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           draft.isSaving = true;
         });
 
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+          // Edit mode: Update existing customer
+          if (state.customerId) {
+            const updatedCustomer = await customerApi.updateCustomer(
+              state.customerId,
+              state.customerData
+            );
 
-        // Reset after successful save
-        get().reset();
+            // Update local state with returned data
+            set(draft => {
+              draft.customerData = updatedCustomer.fieldValues || {};
+              draft.isDirty = false;
+              draft.lastSaved = new Date();
+              draft.isSaving = false;
+            });
+
+            return updatedCustomer;
+          }
+
+          // Create mode: Finalize draft
+          if (!state.draftId) {
+            throw new Error('No draft ID found');
+          }
+
+          const customer = await customerApi.finalizeDraft(state.draftId, {
+            fieldValues: state.customerData,
+          });
+
+          // Reset after successful creation
+          get().reset();
+
+          return customer;
+        } catch (error) {
+          set(draft => {
+            draft.isSaving = false;
+          });
+          throw error;
+        }
       },
 
       reset: () => {
@@ -539,6 +578,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           state.isDirty = false;
           state.lastSaved = null;
           state.draftId = null;
+          state.customerId = null;
           state.isLoading = false;
           state.isSaving = false;
           state.customerData = {};
@@ -553,6 +593,14 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
           state.applyToAllLocations = false;
           state.locationServices = {};
           state.completedLocationIds = [];
+        });
+      },
+
+      setInitialData: (data, customerId) => {
+        set(state => {
+          state.customerData = { ...state.customerData, ...data };
+          state.customerId = customerId || null;
+          state.isDirty = false;
         });
       },
 

@@ -406,12 +406,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 sx={{
                   mt: 2,
                   p: 1.5,
-                  bgcolor: ['MESSE', 'TELEFON'].includes(formData.source) ? '#FFF3E0' : '#E3F2FD',
+                  bgcolor: ['MESSE', 'TELEFON'].includes(formData.source)
+                    ? 'warning.lighter'
+                    : 'info.lighter',
                   borderRadius: 1,
                   border: '1px solid',
                   borderColor: ['MESSE', 'TELEFON'].includes(formData.source)
-                    ? '#FF9800'
-                    : '#2196F3',
+                    ? 'warning.main'
+                    : 'info.main',
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 600, mb: 0.5 }}>

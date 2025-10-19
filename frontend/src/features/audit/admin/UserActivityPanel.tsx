@@ -149,10 +149,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                   sx={{
                     '& .MuiOutlinedInput-root': {
                       '&:hover fieldset': {
-                        borderColor: '#94C456',
+                        borderColor: 'primary.main',
                       },
                       '&.Mui-focused fieldset': {
-                        borderColor: '#94C456',
+                        borderColor: 'primary.main',
                       },
                     },
                   }}
@@ -161,7 +161,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
               <Grid size={{ xs: 12, md: 6 }}>
                 <Box sx={{ display: 'flex', gap: 2, justifyContent: 'flex-end' }}>
                   <Box sx={{ textAlign: 'center' }}>
-                    <Typography variant="h4" sx={{ fontFamily: 'Antonio, sans-serif' }}>
+                    <Typography
+                      variant="h4"
+                      sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}
+                    >
                       {filteredUsers.length}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -171,7 +174,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography
                       variant="h4"
-                      sx={{ fontFamily: 'Antonio, sans-serif', color: '#ff9800' }}
+                      sx={{
+                        fontFamily: theme => theme.typography.h4.fontFamily,
+                        color: 'warning.main',
+                      }}
                     >
                       {filteredUsers.filter(u => u.riskScore > 50).length}
                     </Typography>
@@ -182,7 +188,10 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                   <Box sx={{ textAlign: 'center' }}>
                     <Typography
                       variant="h4"
-                      sx={{ fontFamily: 'Antonio, sans-serif', color: '#f44336' }}
+                      sx={{
+                        fontFamily: theme => theme.typography.h4.fontFamily,
+                        color: 'error.main',
+                      }}
                     >
                       {filteredUsers.reduce((sum, u) => sum + u.criticalActions, 0)}
                     </Typography>
@@ -202,7 +211,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
             <TableContainer>
               <Table sx={{ minWidth: 650 }}>
                 <TableHead>
-                  <TableRow sx={{ bgcolor: '#f5f5f5' }}>
+                  <TableRow sx={{ bgcolor: 'grey.100' }}>
                     <TableCell>Benutzer</TableCell>
                     <TableCell>Rolle</TableCell>
                     <TableCell>Abteilung</TableCell>
@@ -221,7 +230,7 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                       <TableRow key={user.userId} sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
                         <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Avatar sx={{ bgcolor: '#004F7B', width: 32, height: 32 }}>
+                            <Avatar sx={{ bgcolor: 'secondary.main', width: 32, height: 32 }}>
                               {user.userName.charAt(0)}
                             </Avatar>
                             <Typography variant="body2" fontWeight={500}>
@@ -294,13 +303,13 @@ export const UserActivityPanel: React.FC<UserActivityPanelProps> = ({ dateRange:
                         <TableCell align="center">
                           <Box>
                             <Tooltip title="Details anzeigen">
-                              <IconButton size="small" sx={{ color: '#004F7B' }}>
+                              <IconButton size="small" sx={{ color: 'secondary.main' }}>
                                 <ViewIcon fontSize="small" />
                               </IconButton>
                             </Tooltip>
                             {user.status === 'active' && (
                               <Tooltip title="Benutzer blockieren">
-                                <IconButton size="small" sx={{ color: '#f44336' }}>
+                                <IconButton size="small" sx={{ color: 'error.main' }}>
                                   <BlockIcon fontSize="small" />
                                 </IconButton>
                               </Tooltip>

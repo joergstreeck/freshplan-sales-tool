@@ -1,0 +1,48 @@
+name: Design System Compliance Check
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/src/**/*.tsx'
+      - 'frontend/src/**/*.ts'
+      - 'frontend/src/**/*.jsx'
+      - 'frontend/src/**/*.js'
+      - 'scripts/check-design-system.py'
+
+jobs:
+  design-system-check:
+    name: Design System Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Design System Compliance Check
+        run: |
+          echo "🎨 Validating Design System Compliance..."
+          echo ""
+          echo "Checking for:"
+          echo "  • Hardcoded colors (use theme.palette) - STRICT for normal files"
+          echo "  • Hardcoded fonts (use theme.typography)"
+          echo "  • English UI text (use German)"
+          echo ""
+          echo "NOTE: Chart files use RELAXED rules (Recharts colors allowed)"
+          echo ""
+          python3 scripts/check-design-system.py
+
+      - name: Report Summary
+        if: failure()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "❌ Design System violations detected!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Please fix violations before merging."
+          echo "Reference: docs/planung/grundlagen/DESIGN_SYSTEM.md"
+          exit 1

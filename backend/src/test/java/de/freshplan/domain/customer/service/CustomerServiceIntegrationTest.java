@@ -6,6 +6,7 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.*;
+import de.freshplan.domain.shared.BusinessType;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
@@ -79,7 +80,7 @@ class CustomerServiceIntegrationTest {
             "Updated Trading Name",
             "GmbH",
             CustomerType.UNTERNEHMEN,
-            Industry.HOTEL,
+            BusinessType.HOTEL,
             Classification.A_KUNDE,
             null, // parentCustomerId
             CustomerHierarchyType.STANDALONE,

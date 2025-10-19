@@ -93,7 +93,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           title: 'Gesamt-Events',
           value: formatNumber(stats.totalEvents),
           icon: <StorageIcon />,
-          color: '#004F7B',
+          color: 'secondary.main',
           subtitle: dateRange
             ? `${format(dateRange.from, 'dd.MM.')} - ${format(dateRange.to, 'dd.MM.yyyy')}`
             : 'Letzten 7 Tage',
@@ -102,7 +102,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           title: 'Kritische Events',
           value: formatNumber(stats.criticalEvents),
           icon: <WarningIcon />,
-          color: stats.criticalEvents > 0 ? '#f44336' : '#4caf50',
+          color: stats.criticalEvents > 0 ? 'error.main' : 'success.main',
           severity:
             stats.criticalEvents > 10 ? 'error' : stats.criticalEvents > 5 ? 'warning' : 'success',
           subtitle: 'DELETE, BULK_DELETE, PERMISSION_CHANGE',
@@ -111,14 +111,14 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           title: 'DSGVO-Relevant',
           value: formatNumber(stats.dsgvoRelevantEvents),
           icon: <SecurityIcon />,
-          color: '#2196f3',
+          color: 'info.main',
           subtitle: 'Personenbezogene Daten',
         },
         {
           title: 'Aktive Benutzer',
           value: formatNumber(stats.activeUsers),
           icon: <PeopleIcon />,
-          color: '#94C456',
+          color: 'primary.main',
           subtitle: 'Unique Users im Zeitraum',
         },
         {
@@ -127,10 +127,10 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           icon: <AssessmentIcon />,
           color:
             getComplianceColor(stats.complianceScore) === 'success'
-              ? '#4caf50'
+              ? 'success.main'
               : getComplianceColor(stats.complianceScore) === 'warning'
-                ? '#ff9800'
-                : '#f44336',
+                ? 'warning.main'
+                : 'error.main',
           severity: getComplianceColor(stats.complianceScore),
           subtitle: stats.complianceScore < 80 ? 'Maßnahmen erforderlich!' : 'Gut',
         },
@@ -138,7 +138,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           title: 'Sicherheits-Alerts',
           value: stats.openSecurityAlerts,
           icon: stats.openSecurityAlerts > 0 ? <WarningIcon /> : <CheckCircleIcon />,
-          color: stats.openSecurityAlerts > 0 ? '#f44336' : '#4caf50',
+          color: stats.openSecurityAlerts > 0 ? 'error.main' : 'success.main',
           severity: stats.openSecurityAlerts > 0 ? 'error' : 'success',
           subtitle: stats.openSecurityAlerts > 0 ? 'Sofortige Prüfung!' : 'Keine offenen Alerts',
         },
@@ -146,7 +146,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           title: 'Hash-Chain Status',
           value: stats.integrityValid ? 'Intakt' : 'Kompromittiert',
           icon: stats.integrityValid ? <CheckCircleIcon /> : <WarningIcon />,
-          color: stats.integrityValid ? '#4caf50' : '#f44336',
+          color: stats.integrityValid ? 'success.main' : 'error.main',
           severity: stats.integrityValid ? 'success' : 'error',
           subtitle: stats.integrityValid
             ? 'Audit-Integrität gewährleistet'
@@ -157,7 +157,9 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
           value: stats.averageResponseTime ? `${stats.averageResponseTime}ms` : '-',
           icon: <SpeedIcon />,
           color:
-            stats.averageResponseTime && stats.averageResponseTime < 200 ? '#4caf50' : '#ff9800',
+            stats.averageResponseTime && stats.averageResponseTime < 200
+              ? 'success.main'
+              : 'warning.main',
           subtitle: 'API Performance',
         },
       ]
@@ -225,7 +227,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                     gutterBottom
                     variant="caption"
                     sx={{
-                      fontFamily: 'Poppins, sans-serif',
+                      fontFamily: theme => theme.typography.body1.fontFamily,
                       fontWeight: 500,
                       textTransform: 'uppercase',
                       letterSpacing: '0.5px',
@@ -238,7 +240,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                     variant="h4"
                     component="div"
                     sx={{
-                      fontFamily: 'Antonio, sans-serif',
+                      fontFamily: theme => theme.typography.h4.fontFamily,
                       fontWeight: 'bold',
                       color:
                         card.severity === 'error'
@@ -260,7 +262,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                       color="text.secondary"
                       sx={{
                         display: 'block',
-                        fontFamily: 'Poppins, sans-serif',
+                        fontFamily: theme => theme.typography.body1.fontFamily,
                         fontSize: '0.7rem',
                       }}
                     >
@@ -330,10 +332,7 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
               <Typography
                 variant="h6"
                 gutterBottom
-                sx={{
-                  fontFamily: 'Antonio, sans-serif',
-                  fontWeight: 'bold',
-                }}
+                sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
               >
                 Event-Verteilung nach Typ
               </Typography>
@@ -344,14 +343,14 @@ export const AuditStatisticsCards: React.FC<AuditStatisticsCardsProps> = ({
                       <Typography
                         variant="caption"
                         color="text.secondary"
-                        sx={{ fontFamily: 'Poppins, sans-serif' }}
+                        sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
                       >
                         {type}
                       </Typography>
                       <Typography
                         variant="h6"
                         sx={{
-                          fontFamily: 'Antonio, sans-serif',
+                          fontFamily: theme => theme.typography.h4.fontFamily,
                           fontWeight: 'bold',
                         }}
                       >

@@ -92,9 +92,9 @@ const MOCK_PROTECTION_DATA = {
 // Farben für Schutzfristen-Status (FreshFoodz CI)
 const STATUS_COLORS = {
   active: '#94C456', // FreshFoodz Grün
-  expiring: '#FF9800', // Orange
-  expired: '#F44336', // Rot
-  forgotten: '#B71C1C', // Dunkelrot
+  expiring: 'warning.main', // Orange
+  expired: 'error.main', // Rot
+  forgotten: 'error.dark', // Dunkelrot
 };
 
 interface MetricCardProps {
@@ -167,7 +167,11 @@ export const LeadProtectionManager: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, color: '#004F7B', fontWeight: 'bold' }}>
+      <Typography
+        variant="h5"
+        gutterBottom
+        sx={{ mb: 3, color: 'secondary.main', fontWeight: 'bold' }}
+      >
         Schutzfristen-Verwaltung
       </Typography>
 
@@ -179,7 +183,7 @@ export const LeadProtectionManager: React.FC = () => {
             value={data.protectionStatus.active}
             subtitle="Innerhalb 60 Tage"
             color="#94C456"
-            icon={<CheckCircle sx={{ fontSize: 40, color: '#94C456' }} />}
+            icon={<CheckCircle sx={{ fontSize: 40, color: 'primary.main' }} />}
           />
         </Grid>
 
@@ -188,8 +192,8 @@ export const LeadProtectionManager: React.FC = () => {
             title="Laufen bald ab"
             value={data.protectionStatus.expiring}
             subtitle="<10 Tage verbleibend"
-            color="#FF9800"
-            icon={<Warning sx={{ fontSize: 40, color: '#FF9800' }} />}
+            color="warning.main"
+            icon={<Warning sx={{ fontSize: 40, color: 'warning.main' }} />}
             onClick={() => setSelectedStatus('expiring')}
           />
         </Grid>
@@ -199,8 +203,8 @@ export const LeadProtectionManager: React.FC = () => {
             title="Abgelaufene Schutzfristen"
             value={data.protectionStatus.expired}
             subtitle="Aktion erforderlich"
-            color="#F44336"
-            icon={<Error sx={{ fontSize: 40, color: '#F44336' }} />}
+            color="error.main"
+            icon={<Error sx={{ fontSize: 40, color: 'error.main' }} />}
             onClick={() => setSelectedStatus('expired')}
           />
         </Grid>
@@ -210,8 +214,8 @@ export const LeadProtectionManager: React.FC = () => {
             title="Vergessene Leads"
             value={data.protectionStatus.forgotten}
             subtitle=">90 Tage kein Kontakt"
-            color="#B71C1C"
-            icon={<TrendingDown sx={{ fontSize: 40, color: '#B71C1C' }} />}
+            color="error.dark"
+            icon={<TrendingDown sx={{ fontSize: 40, color: 'error.dark' }} />}
             onClick={() => setSelectedStatus('forgotten')}
           />
         </Grid>
@@ -222,7 +226,7 @@ export const LeadProtectionManager: React.FC = () => {
         {/* Pie Chart */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#004F7B' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Schutzfristen-Verteilung
             </Typography>
             <ResponsiveContainer width="100%" height={300}>
@@ -251,7 +255,7 @@ export const LeadProtectionManager: React.FC = () => {
         {/* Statistiken */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 2, height: '100%' }}>
-            <Typography variant="h6" gutterBottom sx={{ color: '#004F7B' }}>
+            <Typography variant="h6" gutterBottom sx={{ color: 'secondary.main' }}>
               Kennzahlen
             </Typography>
             <Box sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 3 }}>
@@ -268,7 +272,7 @@ export const LeadProtectionManager: React.FC = () => {
                   sx={{
                     height: 10,
                     borderRadius: 5,
-                    backgroundColor: '#E0E0E0',
+                    backgroundColor: 'grey.300',
                     '& .MuiLinearProgress-bar': { backgroundColor: '#94C456' },
                   }}
                 />

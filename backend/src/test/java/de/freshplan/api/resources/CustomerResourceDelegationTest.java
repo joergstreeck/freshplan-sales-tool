@@ -123,7 +123,7 @@ class CustomerResourceDelegationTest {
     when(customerService.getAllCustomers(anyInt(), anyInt())).thenReturn(null);
 
     // When
-    customerResource.getAllCustomers(0, 20, null, null);
+    customerResource.getAllCustomers(0, 20, null);
 
     // Then
     verify(customerService).getAllCustomers(0, 20);
@@ -139,7 +139,7 @@ class CustomerResourceDelegationTest {
     when(customerService.getAllCustomers(anyInt(), anyInt())).thenReturn(null);
 
     // When
-    customerResource.getAllCustomers(0, 20, null, null);
+    customerResource.getAllCustomers(0, 20, null);
 
     // Then
     verify(customerService).getAllCustomers(0, 20);
@@ -156,7 +156,7 @@ class CustomerResourceDelegationTest {
     when(customerService.getAllCustomers(anyInt(), anyInt())).thenReturn(null);
 
     // When
-    customerResource.getAllCustomers(0, 20, null, null);
+    customerResource.getAllCustomers(0, 20, null);
 
     // Then - Uses legacy for list while other operations use CQRS
     verify(customerService).getAllCustomers(0, 20);
@@ -172,7 +172,7 @@ class CustomerResourceDelegationTest {
     when(queryService.getAllCustomers(anyInt(), anyInt())).thenReturn(null);
 
     // When
-    customerResource.getAllCustomers(0, 20, null, null);
+    customerResource.getAllCustomers(0, 20, null);
 
     // Then
     verify(queryService).getAllCustomers(0, 20);
@@ -204,7 +204,7 @@ class CustomerResourceDelegationTest {
     when(customerService.getCustomersByStatus(any(), anyInt(), anyInt())).thenReturn(null);
 
     // When
-    customerResource.getAllCustomers(0, 20, CustomerStatus.AKTIV, null);
+    customerResource.getAllCustomers(0, 20, CustomerStatus.AKTIV);
 
     // Then
     verify(customerService).getCustomersByStatus(CustomerStatus.AKTIV, 0, 20);

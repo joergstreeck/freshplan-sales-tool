@@ -51,7 +51,7 @@ const MeasureSpan = styled('span')({
   visibility: 'hidden',
   whiteSpace: 'pre',
   fontSize: '14px',
-  fontFamily: 'Roboto, Helvetica, Arial, sans-serif',
+  fontFamily: theme => theme.typography.body1.fontFamily,
   padding: '0 32px', // Extra padding für Komfort
   pointerEvents: 'none',
   zIndex: -1,
@@ -137,7 +137,7 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
   return (
     <Box sx={{ width: '100%' }}>
       {/* Title */}
-      <Typography variant="h5" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+      <Typography variant="h5" sx={{ mb: 2, fontFamily: theme => theme.typography.h4.fontFamily }}>
         {isEditMode ? 'Benutzer bearbeiten' : 'Neuen Benutzer erstellen'}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
@@ -150,7 +150,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
 
       <form onSubmit={handleSubmit(onSubmit)}>
         {/* Personal Information Section */}
-        <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, fontFamily: theme => theme.typography.h4.fontFamily }}
+        >
           Persönliche Daten
         </Typography>
 
@@ -194,7 +197,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
         </Box>
 
         {/* Account Information Section */}
-        <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, fontFamily: theme => theme.typography.h4.fontFamily }}
+        >
           Kontodaten
         </Typography>
 
@@ -239,7 +245,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
         </Box>
 
         {/* Roles Section */}
-        <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, fontFamily: theme => theme.typography.h4.fontFamily }}
+        >
           Berechtigungen
         </Typography>
 
@@ -256,9 +265,9 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
                       checked={watchedRoles.includes(role)}
                       onChange={() => handleRoleToggle(role)}
                       sx={{
-                        color: '#94C456',
+                        color: 'primary.main',
                         '&.Mui-checked': {
-                          color: '#94C456',
+                          color: 'primary.main',
                         },
                       }}
                     />
@@ -286,7 +295,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
         </FormControl>
 
         {/* Status Section */}
-        <Typography variant="h6" sx={{ mb: 2, fontFamily: 'Antonio, sans-serif' }}>
+        <Typography
+          variant="h6"
+          sx={{ mb: 2, fontFamily: theme => theme.typography.h4.fontFamily }}
+        >
           Status
         </Typography>
 
@@ -302,10 +314,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
                     checked={field.value}
                     sx={{
                       '& .MuiSwitch-switchBase.Mui-checked': {
-                        color: '#94C456',
+                        color: 'primary.main',
                       },
                       '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
-                        backgroundColor: '#94C456',
+                        backgroundColor: 'primary.main',
                       },
                     }}
                   />
@@ -342,10 +354,10 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
               onClick={onCancel}
               disabled={isPending}
               sx={{
-                borderColor: '#004F7B',
-                color: '#004F7B',
+                borderColor: 'secondary.main',
+                color: 'secondary.main',
                 '&:hover': {
-                  borderColor: '#003A5A',
+                  borderColor: 'secondary.dark',
                 },
               }}
             >
@@ -358,13 +370,13 @@ export const UserFormMUI = ({ user, onSuccess, onCancel }: UserFormProps) => {
             disabled={!isValid || isPending}
             startIcon={isPending && <CircularProgress size={20} />}
             sx={{
-              backgroundColor: '#94C456',
+              backgroundColor: 'primary.main',
               color: 'white',
               '&:hover': {
-                backgroundColor: '#7BA347',
+                backgroundColor: 'primary.dark',
               },
               '&:disabled': {
-                backgroundColor: '#cccccc',
+                backgroundColor: 'grey.400',
               },
             }}
           >

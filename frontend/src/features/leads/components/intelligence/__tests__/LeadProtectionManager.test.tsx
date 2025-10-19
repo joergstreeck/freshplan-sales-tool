@@ -7,7 +7,8 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
+import { freshfoodzTheme } from '@/theme/freshfoodz';
 import { LeadProtectionManager } from '../LeadProtectionManager';
 import { vi } from 'vitest';
 
@@ -29,10 +30,8 @@ vi.mock('recharts', () => ({
 const mockAlert = vi.fn();
 global.alert = mockAlert;
 
-const theme = createTheme();
-
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider theme={theme}>{component}</ThemeProvider>);
+  return render(<ThemeProvider theme={freshfoodzTheme}>{component}</ThemeProvider>);
 };
 
 describe('LeadProtectionManager', () => {

@@ -116,7 +116,7 @@ export const HelpTour: React.FC = () => {
       callback={handleJoyrideCallback}
       styles={{
         options: {
-          primaryColor: '#1976d2',
+          primaryColor: theme.palette.info.main,
           zIndex: 10000,
           width: 400,
         },

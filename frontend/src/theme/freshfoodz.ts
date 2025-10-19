@@ -12,6 +12,7 @@ import { createTheme } from '@mui/material/styles';
 // Font Family Constants (Copilot Code Review)
 const ANTONIO_FONT = 'Antonio, sans-serif';
 const POPPINS_FONT = 'Poppins, sans-serif';
+const MONOSPACE_FONT = '"Courier New", Courier, monospace';
 
 declare module '@mui/material/styles' {
   interface Palette {
@@ -457,5 +458,8 @@ export const freshfoodzTheme = createTheme({
     },
   },
 });
+
+// Export font constants for components that need direct access
+export { ANTONIO_FONT, POPPINS_FONT, MONOSPACE_FONT };
 
 export default freshfoodzTheme;

@@ -29,7 +29,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles = [
               severity="error"
               sx={{
                 '& .MuiAlert-icon': {
-                  color: '#d32f2f',
+                  color: 'error.dark',
                 },
               }}
             >
@@ -53,7 +53,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles = [
           minHeight: '100vh',
         }}
       >
-        <CircularProgress sx={{ color: '#94C456' }} />
+        <CircularProgress sx={{ color: 'primary.main' }} />
       </Box>
     );
   }
@@ -70,7 +70,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles = [
             severity="error"
             sx={{
               '& .MuiAlert-icon': {
-                color: '#d32f2f',
+                color: 'error.dark',
               },
             }}
           >

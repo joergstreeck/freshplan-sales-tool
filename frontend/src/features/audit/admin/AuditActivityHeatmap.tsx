@@ -144,10 +144,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
         <Typography
           variant="h6"
-          sx={{
-            fontFamily: 'Antonio, sans-serif',
-            fontWeight: 'bold',
-          }}
+          sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
         >
           Aktivitäts-Heatmap
         </Typography>
@@ -203,7 +200,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
             label={`Max: ${maxValue} Events`}
             size="small"
             variant="outlined"
-            sx={{ fontFamily: 'Poppins, sans-serif' }}
+            sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
           />
         </Box>
       </Box>
@@ -371,10 +368,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
           </Typography>
           <Typography
             variant="h6"
-            sx={{
-              fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold',
-            }}
+            sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
           >
             {data.reduce((sum, d) => sum + d.value, 0).toLocaleString('de-DE')}
           </Typography>
@@ -386,10 +380,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
           </Typography>
           <Typography
             variant="h6"
-            sx={{
-              fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold',
-            }}
+            sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
           >
             {data.length > 0 &&
               format(data.reduce((max, d) => (d.value > max.value ? d : max)).timestamp, 'HH:mm', {
@@ -404,10 +395,7 @@ export const AuditActivityHeatmap: React.FC<AuditActivityHeatmapProps> = ({
           </Typography>
           <Typography
             variant="h6"
-            sx={{
-              fontFamily: 'Antonio, sans-serif',
-              fontWeight: 'bold',
-            }}
+            sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
           >
             {Math.round(data.reduce((sum, d) => sum + d.value, 0) / Math.max(data.length, 1))}
           </Typography>

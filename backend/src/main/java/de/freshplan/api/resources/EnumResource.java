@@ -1,5 +1,6 @@
 package de.freshplan.api.resources;
 
+import de.freshplan.domain.customer.entity.FinancingType;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
@@ -125,6 +126,29 @@ public class EnumResource {
   public List<EnumValue> getActivityOutcomes() {
     return Arrays.stream(ActivityOutcome.values())
         .map(outcome -> new EnumValue(outcome.name(), outcome.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all FinancingType enum values.
+   *
+   * <p>Used for: CustomerWizard, CustomerForm
+   *
+   * <p>Sprint 2.1.7.2: Lead→Customer Parity - Enum API consistency
+   *
+   * @return List of FinancingType values with display names
+   */
+  @GET
+  @Path("/financing-types")
+  @PermitAll
+  @Operation(summary = "Get all Financing Type enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Financing Type values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getFinancingTypes() {
+    return Arrays.stream(FinancingType.values())
+        .map(type -> new EnumValue(type.name(), type.getDisplayName()))
         .toList();
   }
 

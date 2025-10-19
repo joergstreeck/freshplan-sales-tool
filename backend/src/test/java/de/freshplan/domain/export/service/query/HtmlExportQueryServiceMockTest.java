@@ -84,7 +84,7 @@ class HtmlExportQueryServiceMockTest {
     // Given
     ExportRequest request = new ExportRequest();
     request.setStatus(Arrays.asList("AKTIV"));
-    request.setIndustry("IT");
+    request.setBusinessType("IT");
 
     when(customerRepository.findByFilters(anyList(), anyString()))
         .thenReturn(Arrays.asList(testCustomer1));
@@ -129,7 +129,7 @@ class HtmlExportQueryServiceMockTest {
   void generateCustomersHtml_withXssAttempt_shouldEscapeHtml() {
     // Given
     testCustomer1.setCompanyName("<script>alert('XSS')</script>");
-    testCustomer1.setIndustry(null);
+    testCustomer1.setBusinessType(null);
 
     ExportRequest request = new ExportRequest();
     when(customerRepository.findByFilters(any(), any())).thenReturn(Arrays.asList(testCustomer1));
@@ -164,7 +164,7 @@ class HtmlExportQueryServiceMockTest {
   void generateCustomersHtml_withNullValues_shouldHandleGracefully() {
     // Given
     testCustomer1.setStatus(null);
-    testCustomer1.setIndustry(null);
+    testCustomer1.setBusinessType(null);
     testCustomer1.setLastContactDate(null);
     testCustomer1.setContacts(null);
 
@@ -202,7 +202,7 @@ class HtmlExportQueryServiceMockTest {
     // Given
     ExportRequest request = new ExportRequest();
     request.setStatus(Arrays.asList("AKTIV", "LEAD"));
-    request.setIndustry("IT");
+    request.setBusinessType("IT");
 
     when(customerRepository.findByFilters(any(), any())).thenReturn(Collections.emptyList());
 

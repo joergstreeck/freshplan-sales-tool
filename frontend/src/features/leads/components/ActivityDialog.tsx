@@ -50,6 +50,10 @@ export function ActivityDialog({ open, onClose, leadId, onSave }: ActivityDialog
     { value: 'NOTE', label: 'Notiz' },
     { value: 'SAMPLE_SENT', label: 'Muster versendet' },
     { value: 'PROPOSAL_SENT', label: 'Angebot versendet' },
+    // Bestandskunden-spezifische Activity Types (Sprint 2.1.7.3)
+    { value: 'EXPANSION_CALL', label: '📈 Sortimentserweiterungs-Gespräch' },
+    { value: 'PRODUCT_DEMO', label: '📊 Produktpräsentation' },
+    { value: 'CONTRACT_RENEWAL', label: '🔁 Vertragsverlängerungs-Verhandlung' },
   ];
 
   const handleSubmit = async () => {

@@ -1,7 +1,7 @@
 <!-- CLAUDE_SLIM_BEGIN -->
 # 🤖 Claude Meta-Prompt für FreshPlan Sales Tool
 
-**📅 Dokumentstand: 2025-10-02** *(Claude sieht aktuelles Datum in `<env>Today's date`)*
+**📅 Dokumentstand: 2025-10-18** *(Claude sieht aktuelles Datum in `<env>Today's date`)*
 
 ## ⚡ SINGLE SOURCE OF TRUTH
 **Master Plan V5:** `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
@@ -82,16 +82,23 @@ Ich schreibe meine Updates **zwischen** diese Anker in MP5:
 14. **REPOSITORY SAUBER:** `./scripts/quick-cleanup.sh` vor jedem Push
 
 ## ⚠️ KRITISCHE GUARDRAILS
-### 🔢 Migration-Nummern (NIEMALS hardcoden!)
-```bash
-MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
-# Fallback: ls -la backend/src/main/resources/db/migration/ | tail -3
-```
+### 🗄️ Backend/Frontend Parity (ZERO TOLERANCE)
+**Jedes Frontend-Feld MUSS im Backend existieren!**
+- Backend Entity → EnumResource (`/api/enums/xyz`) → fieldCatalog.json `enumSource`
+- NIEMALS hardcoded `options` ohne Backend-Enum
+- Guards: Pre-commit Hook, CI Check, `python3 scripts/check-field-parity.py`
 
-### 🔧 CI-Auto-Fix Limits
-- **NUR Feature-Branches** (niemals main!)
-- **Required Reviews bleiben** bestehen
-- **Token-Scope minimal** (read:repo, write:packages falls nötig)
+### 🎨 Design System (NO HARDCODING)
+**MUI Theme System nutzen! Keine hex-colors/fonts. UI Deutsch.**
+- ✅ `sx={{ bgcolor: 'primary.main' }}`, `<Typography variant="h4">`
+- ❌ `sx={{ bgcolor: '#94C456' }}`, `fontFamily: 'Antonio'`
+- Guards: Pre-commit Hook, CI Check, `python3 scripts/check-design-system.py`
+- Docs: `docs/planung/grundlagen/DESIGN_SYSTEM.md`
+
+### 🔢 Migrationen (NIEMALS hardcoden!)
+**IMMER `./scripts/get-next-migration.sh` nutzen!**
+- Sequenz 1 (Production/Test): V1-V89999 (gemeinsamer Counter)
+- Sequenz 2 (Seed): V90001+ (nur %dev Profile)
 
 ### 🚫 GIT PUSH POLICY (KRITISCH!)
 - **NIEMALS `git push` ohne explizite User-Erlaubnis!**

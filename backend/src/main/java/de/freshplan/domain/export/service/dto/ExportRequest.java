@@ -24,7 +24,7 @@ public class ExportRequest {
   private boolean includeContacts;
   private String groupBy;
   private String format;
-  private String industry;
+  private String businessType;
   private List<String> status;
   private int page;
   private int size;
@@ -92,8 +92,8 @@ public class ExportRequest {
       return this;
     }
 
-    public Builder industry(String industry) {
-      request.industry = industry;
+    public Builder businessType(String businessType) {
+      request.businessType = businessType;
       return this;
     }
 
@@ -162,8 +162,8 @@ public class ExportRequest {
     return format;
   }
 
-  public String getIndustry() {
-    return industry;
+  public String getBusinessType() {
+    return businessType;
   }
 
   public List<String> getStatus() {
@@ -223,8 +223,8 @@ public class ExportRequest {
     this.format = format;
   }
 
-  public void setIndustry(String industry) {
-    this.industry = industry;
+  public void setBusinessType(String businessType) {
+    this.businessType = businessType;
   }
 
   public void setStatus(List<String> status) {
@@ -247,7 +247,7 @@ public class ExportRequest {
     if (dateTo != null) map.put("dateTo", dateTo);
     if (userId != null) map.put("userId", userId);
     if (eventType != null) map.put("eventType", eventType);
-    if (industry != null) map.put("industry", industry);
+    if (businessType != null) map.put("businessType", businessType);
     if (status != null) map.put("status", status);
     if (format != null) map.put("format", format);
     if (groupBy != null) map.put("groupBy", groupBy);

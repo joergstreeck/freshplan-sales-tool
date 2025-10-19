@@ -190,7 +190,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                   <Typography
                     variant="caption"
                     color="text.secondary"
-                    sx={{ fontFamily: 'monospace' }}
+                    sx={{ fontFamily: '"Courier New", Courier, monospace' }}
                   >
                     Fehler-ID: {errorId}
                   </Typography>
@@ -203,9 +203,9 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                   startIcon={<RefreshIcon />}
                   onClick={this.resetError}
                   sx={{
-                    bgcolor: '#94C456',
+                    bgcolor: 'primary.main',
                     '&:hover': {
-                      bgcolor: '#7BA646',
+                      bgcolor: 'primary.dark',
                     },
                   }}
                 >
@@ -237,7 +237,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                       variant="body2"
                       component="pre"
                       sx={{
-                        fontFamily: 'monospace',
+                        fontFamily: '"Courier New", Courier, monospace',
                         fontSize: '0.875rem',
                         whiteSpace: 'pre-wrap',
                         wordBreak: 'break-word',
@@ -250,7 +250,7 @@ export class ErrorBoundary extends Component<IErrorBoundaryProps, IErrorBoundary
                         variant="caption"
                         component="pre"
                         sx={{
-                          fontFamily: 'monospace',
+                          fontFamily: '"Courier New", Courier, monospace',
                           fontSize: '0.75rem',
                           opacity: 0.8,
                         }}

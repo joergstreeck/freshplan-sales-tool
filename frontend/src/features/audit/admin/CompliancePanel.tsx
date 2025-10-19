@@ -76,7 +76,11 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         {/* Compliance Score Overview */}
         <Grid size={{ xs: 12 }}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h5" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif', mb: 3 }}>
+            <Typography
+              variant="h5"
+              gutterBottom
+              sx={{ fontFamily: theme => theme.typography.h4.fontFamily, mb: 3 }}
+            >
               DSGVO Compliance Übersicht
             </Typography>
 
@@ -86,11 +90,11 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
                   <Typography
                     variant="h2"
                     sx={{
-                      fontFamily: 'Antonio, sans-serif',
+                      fontFamily: theme => theme.typography.h4.fontFamily,
                       color:
                         metrics?.retentionCompliance && metrics.retentionCompliance >= 80
-                          ? '#94C456'
-                          : '#ff9800',
+                          ? 'primary.main'
+                          : 'warning.main',
                     }}
                   >
                     {metrics?.retentionCompliance || 0}%
@@ -203,7 +207,11 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         {/* Retention Policies */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}
+            >
               Aufbewahrungsrichtlinien
             </Typography>
 
@@ -239,7 +247,11 @@ export const CompliancePanel: React.FC<CompliancePanelProps> = ({
         {/* Report Generation */}
         <Grid size={{ xs: 12, md: 6 }}>
           <Paper sx={{ p: 3 }}>
-            <Typography variant="h6" gutterBottom sx={{ fontFamily: 'Antonio, sans-serif' }}>
+            <Typography
+              variant="h6"
+              gutterBottom
+              sx={{ fontFamily: theme => theme.typography.h4.fontFamily }}
+            >
               Compliance Reports
             </Typography>
 

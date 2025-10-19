@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.*;
 import de.freshplan.api.resources.CustomerResource;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.CustomerType;
-import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
+import de.freshplan.domain.shared.BusinessType;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
@@ -64,7 +64,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("[TEST] CQRS Test Company" + uniqueSuffix)
             .customerType(CustomerType.NEUKUNDE)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.valueOf(100000))
             .build();
   }
@@ -131,7 +131,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("[TEST] Duplicate Test Company" + uniqueSuffix)
             .customerType(CustomerType.NEUKUNDE)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.valueOf(100000))
             .build();
 
@@ -244,7 +244,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("CQRS Test Company 1" + uniqueSuffix)
             .customerType(CustomerType.UNTERNEHMEN)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
@@ -252,12 +252,12 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("CQRS Test Company 2" + uniqueSuffix)
             .customerType(CustomerType.INSTITUTION)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
     // Get all with proper parameters (page, size, status, industry)
-    var response = customerResource.getAllCustomers(0, 10, null, null);
+    var response = customerResource.getAllCustomers(0, 10, null);
     assertThat(response.getStatus()).isEqualTo(200);
 
     CustomerListResponse listResponse = (CustomerListResponse) response.getEntity();
@@ -281,7 +281,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("Lead Customer")
             .customerType(CustomerType.NEUKUNDE)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
@@ -289,15 +289,15 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("Active Customer")
             .customerType(CustomerType.UNTERNEHMEN)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
     // Query by status using getAllCustomers with status filter
-    var leadResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.LEAD, null);
+    var leadResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.LEAD);
     CustomerListResponse leadList = (CustomerListResponse) leadResponse.getEntity();
 
-    var activeResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.AKTIV, null);
+    var activeResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.AKTIV);
     CustomerListResponse activeList = (CustomerListResponse) activeResponse.getEntity();
 
     // Verify filtering
@@ -325,7 +325,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("Low Risk Customer" + uniqueSuffix)
             .customerType(CustomerType.UNTERNEHMEN)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
@@ -334,7 +334,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("High Risk Customer" + uniqueSuffix)
             .customerType(CustomerType.NEUKUNDE)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build();
 
@@ -376,7 +376,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("Dashboard Test 1")
             .customerType(CustomerType.UNTERNEHMEN)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(new BigDecimal("50000"))
             .build());
 
@@ -384,7 +384,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("Dashboard Test 2")
             .customerType(CustomerType.NEUKUNDE)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(new BigDecimal("75000"))
             .build());
 
@@ -457,7 +457,7 @@ class CustomerCQRSIntegrationTest {
             CreateCustomerRequest.builder()
                 .companyName("Risk Test 1")
                 .customerType(CustomerType.UNTERNEHMEN)
-                .industry(Industry.SONSTIGE)
+                .businessType(BusinessType.SONSTIGES)
                 .expectedAnnualVolume(BigDecimal.ZERO)
                 .build());
     CustomerResponse customer1 = (CustomerResponse) response1.getEntity();
@@ -467,7 +467,7 @@ class CustomerCQRSIntegrationTest {
             CreateCustomerRequest.builder()
                 .companyName("Risk Test 2")
                 .customerType(CustomerType.NEUKUNDE)
-                .industry(Industry.SONSTIGE)
+                .businessType(BusinessType.SONSTIGES)
                 .expectedAnnualVolume(BigDecimal.ZERO)
                 .build());
     CustomerResponse customer2 = (CustomerResponse) response2.getEntity();
@@ -486,7 +486,7 @@ class CustomerCQRSIntegrationTest {
             .build());
 
     // Get all customers and verify risk scores updated
-    var listResponse = customerResource.getAllCustomers(0, 100, null, null);
+    var listResponse = customerResource.getAllCustomers(0, 100, null);
     CustomerListResponse customers = (CustomerListResponse) listResponse.getEntity();
 
     // Verify status updates are reflected
@@ -508,7 +508,7 @@ class CustomerCQRSIntegrationTest {
             CreateCustomerRequest.builder()
                 .companyName("[TEST] Source Company" + uniqueSuffix)
                 .customerType(CustomerType.UNTERNEHMEN)
-                .industry(Industry.SONSTIGE)
+                .businessType(BusinessType.SONSTIGES)
                 .expectedAnnualVolume(new BigDecimal("50000"))
                 .build());
     CustomerResponse source = (CustomerResponse) sourceResponse.getEntity();
@@ -520,7 +520,7 @@ class CustomerCQRSIntegrationTest {
             CreateCustomerRequest.builder()
                 .companyName("[TEST] Target Company" + uniqueSuffix)
                 .customerType(CustomerType.UNTERNEHMEN)
-                .industry(Industry.SONSTIGE)
+                .businessType(BusinessType.SONSTIGES)
                 .expectedAnnualVolume(new BigDecimal("75000"))
                 .build());
     CustomerResponse target = (CustomerResponse) targetResponse.getEntity();
@@ -577,7 +577,7 @@ class CustomerCQRSIntegrationTest {
         CreateCustomerRequest.builder()
             .companyName("Duplicate Test Company")
             .customerType(CustomerType.UNTERNEHMEN)
-            .industry(Industry.SONSTIGE)
+            .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.ZERO)
             .build());
 
@@ -613,48 +613,14 @@ class CustomerCQRSIntegrationTest {
   // ADDITIONAL QUERY TESTS
   // =====================================
 
-  @Test
-  @TestTransaction
-  @DisplayName("Get customers by industry should filter correctly")
-  void getCustomersByIndustry_inCQRSMode_shouldFilterCorrectly() {
-    // Create customers with different industries
-    customerResource.createCustomer(
-        CreateCustomerRequest.builder()
-            .companyName("Healthcare Company")
-            .customerType(CustomerType.UNTERNEHMEN)
-            .industry(Industry.GESUNDHEITSWESEN)
-            .expectedAnnualVolume(BigDecimal.ZERO)
-            .build());
-
-    customerResource.createCustomer(
-        CreateCustomerRequest.builder()
-            .companyName("Education Company")
-            .customerType(CustomerType.INSTITUTION)
-            .industry(Industry.BILDUNG)
-            .expectedAnnualVolume(BigDecimal.ZERO)
-            .build());
-
-    // Query by industry
-    var healthcareResponse =
-        customerResource.getAllCustomers(0, 100, null, Industry.GESUNDHEITSWESEN);
-    CustomerListResponse healthcareList = (CustomerListResponse) healthcareResponse.getEntity();
-
-    var educationResponse = customerResource.getAllCustomers(0, 100, null, Industry.BILDUNG);
-    CustomerListResponse educationList = (CustomerListResponse) educationResponse.getEntity();
-
-    // Verify filtering
-    if (!healthcareList.content().isEmpty()) {
-      assertThat(healthcareList.content())
-          .extracting(CustomerResponse::industry)
-          .containsOnly(Industry.GESUNDHEITSWESEN);
-    }
-
-    if (!educationList.content().isEmpty()) {
-      assertThat(educationList.content())
-          .extracting(CustomerResponse::industry)
-          .containsOnly(Industry.BILDUNG);
-    }
-  }
+  // DISABLED: Industry filtering removed - use businessType via Export/Filter endpoints instead
+  // @Test
+  // @TestTransaction
+  // @DisplayName("Get customers by industry should filter correctly")
+  // void getCustomersByIndustry_inCQRSMode_shouldFilterCorrectly() {
+  //   // Test disabled - industry parameter removed from getAllCustomers()
+  //   // Use Export endpoints with businessType filter instead
+  // }
 
   @Test
   @TestTransaction
@@ -668,17 +634,17 @@ class CustomerCQRSIntegrationTest {
           CreateCustomerRequest.builder()
               .companyName("Pagination Test " + i + uniqueSuffix)
               .customerType(CustomerType.UNTERNEHMEN)
-              .industry(Industry.SONSTIGE)
+              .businessType(BusinessType.SONSTIGES)
               .expectedAnnualVolume(BigDecimal.ZERO)
               .build());
     }
 
     // Get first page
-    var page1Response = customerResource.getAllCustomers(0, 5, null, null);
+    var page1Response = customerResource.getAllCustomers(0, 5, null);
     CustomerListResponse page1 = (CustomerListResponse) page1Response.getEntity();
 
     // Get second page
-    var page2Response = customerResource.getAllCustomers(1, 5, null, null);
+    var page2Response = customerResource.getAllCustomers(1, 5, null);
     CustomerListResponse page2 = (CustomerListResponse) page2Response.getEntity();
 
     // Verify pagination

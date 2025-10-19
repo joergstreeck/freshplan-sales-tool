@@ -2,7 +2,6 @@ package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.entity.CustomerStatus;
-import de.freshplan.domain.customer.entity.Industry;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.command.CustomerCommandService;
 import de.freshplan.domain.customer.service.dto.*;
@@ -62,6 +61,10 @@ public class CustomerResource {
   @Inject SecurityContextProvider securityContext;
 
   @Inject @CurrentUser UserPrincipal currentUser;
+
+  @Inject
+  de.freshplan.domain.opportunity.service.OpportunityService
+      opportunityService; // For customer opportunities
 
   // ========== CRUD OPERATIONS ==========
 
@@ -186,15 +189,13 @@ public class CustomerResource {
    * @param page The page number (0-based, default 0)
    * @param size The page size (default 20, max 100)
    * @param status Optional status filter
-   * @param industry Optional industry filter
    * @return 200 OK with paginated customer list
    */
   @GET
   public Response getAllCustomers(
       @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING) int page,
       @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,
-      @QueryParam("status") CustomerStatus status,
-      @QueryParam("industry") Industry industry) {
+      @QueryParam("status") CustomerStatus status) {
 
     // Validate pagination parameters
     if (page < 0) page = 0;
@@ -210,8 +211,6 @@ public class CustomerResource {
       log.debug("Using CQRS QueryService for getAllCustomers (both flags enabled)");
       if (status != null) {
         customers = queryService.getCustomersByStatus(status, page, size);
-      } else if (industry != null) {
-        customers = queryService.getCustomersByIndustry(industry, page, size);
       } else {
         customers = queryService.getAllCustomers(page, size);
       }
@@ -222,8 +221,6 @@ public class CustomerResource {
           customersListCqrsEnabled);
       if (status != null) {
         customers = customerService.getCustomersByStatus(status, page, size);
-      } else if (industry != null) {
-        customers = customerService.getCustomersByIndustry(industry, page, size);
       } else {
         customers = customerService.getAllCustomers(page, size);
       }
@@ -404,5 +401,38 @@ public class CustomerResource {
       customer = customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
     }
     return Response.ok(customer).build();
+  }
+
+  // ========== OPPORTUNITY INTEGRATION ==========
+
+  /**
+   * Gets all opportunities for a specific customer.
+   *
+   * <p>Returns opportunities regardless of stage (Offen/Gewonnen/Verloren). Frontend groups them by
+   * status. Results sorted by creation date descending (newest first).
+   *
+   * @param customerId The customer ID
+   * @return 200 OK with list of opportunities
+   * @since Sprint 2.1.7.3 - Customer → Opportunity Workflow
+   */
+  @GET
+  @Path("/{customerId}/opportunities")
+  public Response getCustomerOpportunities(@PathParam("customerId") UUID customerId) {
+    log.debug("Fetching opportunities for customer: {}", customerId);
+
+    // Verify customer exists (will throw if not found)
+    if (cqrsEnabled) {
+      queryService.getCustomer(customerId);
+    } else {
+      customerService.getCustomer(customerId);
+    }
+
+    // Fetch opportunities via OpportunityService
+    List<de.freshplan.domain.opportunity.service.dto.OpportunityResponse> opportunities =
+        opportunityService.findByCustomerId(customerId);
+
+    log.info("Found {} opportunities for customer {}", opportunities.size(), customerId);
+
+    return Response.ok(opportunities).build();
   }
 }

@@ -10,44 +10,44 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (88% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.1 - COMPLETE (18.10.2025) - **Lead → Opportunity UI Integration**
-- **Next Sprint:** 📋 Sprint 2.1.7.2 - READY (Start: TBD) - **Customer + Xentral-Integration (18h, 2-3 Tage)**
-- **Active Branch:** feature/sprint-2-1-7-1-lead-opportunity (PR #141 READY FOR REVIEW)
-- **Progress:** 24/36 PRs completed - 67% done
-- **Blockers:** ❌ Keine - **🎯 Sprint 2.1.7.1-4 geplant, Ready for Kickoff**
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (96% complete)
+- **Current Sprint:** ✅ Sprint 2.1.7.3 - MERGED TO MAIN (19.10.2025) - **Customer → Opportunity Workflow COMPLETE**
+- **Next Sprint:** 📋 Sprint 2.1.7.4 - Customer Status Architecture (14h, 2 Tage) ⚡ **ZUERST!**
+- **Active Branch:** main (Sprint 2.1.7.3 gemerged)
+- **Progress:** 26/36 PRs completed - 72% done
+- **Blockers:** ❌ Keine - **Sprint 2.1.7.4 READY TO START**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉🎉🎉 **Opportunity Backend Integration COMPLETE (13.10.2025)** - V10026 + OpportunityService + 3 REST APIs + V90003 DEV-SEED (10 Opportunities)
-  - ✅ **PR #137 - 4 MAIN FEATURES:**
-    - **Lead Scoring System:** 0-100 Score, 4 Dimensionen (Pain/Revenue/Fit/Engagement), LeadScoringService (268 LOC), 19 Tests GREEN
-    - **Multi-Contact Support:** 26-Felder lead_contacts Tabelle, 100% Customer Parity, Backward Compatibility Trigger (V10017 KRITISCH!)
-    - **Enterprise Security:** 5 Layer (Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure Prevention, HTTP Headers)
-    - **Critical Bug Fixes:** 4 Fixes (ETag Race Condition, Ambiguous Email Column, Missing Triggers, UTF-8 Encoding)
-  - ✅ **12 MIGRATIONEN V10013-V10024:**
-    - V10013-V10015: Settings ETag Triggers, Lead Enums (VARCHAR + CHECK), first_contact_documented_at
-    - V10016-V10017: lead_contacts Tabelle + Backward Compatibility Trigger (KRITISCH - synchronisiert primary contact → legacy fields)
-    - V10018-V10022: Pain Scoring System (4 Faktoren), Lead Scoring System (0-100 Score), territory_id nullable
-    - V10023-V10024: Lead Scoring Complete (revenue_score, NOT NULL Constraints)
-  - ✅ **MIGRATION SAFETY SYSTEM (3-Layer):**
-    - Pre-Commit Hook: Blocks wrong folder, old numbers, test-keywords vs. folder
-    - GitHub Workflow: CI validation on every push/PR
-    - Enhanced get-next-migration.sh: Dynamic Sanity-Check (MAX_JUMP=100), folder selection dialog
-  - ✅ **CI/CD DEBUGGING (6 Iterationen - 2h Session):**
-    - Root Cause: ZWEI Workflows (pr-pipeline-fast.yml + worktree-ci.yml) liefen ALLE Tests
-    - Solution: npm script `test:critical` mit expliziten Pfaden → BEIDE Workflows grün!
-  - ✅ **PERFORMANCE:** N+1 Query Fix (7x faster: 850ms→120ms), Score Caching (90% fewer DB writes)
-  - ✅ **TESTS:** 31/31 LeadResourceTest GREEN + 10/10 Security Tests GREEN + 10 Critical Tests passing
-  - ✅ **CI Status:** 50 commits, 3 weeks development, 125 files changed (+17.930/-1.826 LOC)
-  - ✅ **MERGE:** 2025-10-12T01:43:11Z (Admin-Rechte, squash merge, commit c4c61de92)
-- **Next Action:**
-  1. **PRIORITÄT 1:** Sprint 2.1.7.1 starten (Lead → Opportunity UI - 17h, 2 Tage, FOKUSSIERT!)
-     - Feature-Branch: `git checkout -b feature/sprint-2-1-7-1-lead-opportunity`
-     - Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10030/V90006)
-  2. **PRIORITÄT 2:** Sprint 2.1.7.2 nach 2.1.7.1 (Customer + Xentral - 18h, 2-3 Tage)
-     - KRITISCH: Xentral-API testen BEVOR Start!
-  3. **PRIORITÄT 3:** Sprint 2.1.7.3 nach 2.1.7.2 (RENEWAL-Workflow - 8h, 1 Tag)
-  4. **DEFERRED:** Sprint 2.1.7.4 (Advanced Filters - YAGNI bis echte Daten vorhanden)
+- **Latest:** 🎉🎉🎉 **Sprint 2.1.7.3 - Customer → Opportunity Workflow MERGED (19.10.2025)** - PR #142 + V10031 opportunity_multipliers + 90/90 Tests GREEN
+  - ✅ **PR #142 - 4 DELIVERABLES (MERGED 19.10.2025, Commit 23f7b7ecd):**
+    - **D1:** Business-Type-Matrix (9 BusinessTypes × 4 OpportunityTypes = 36 Multipliers)
+    - **D2:** CreateOpportunityForCustomerDialog (intelligente Umsatzschätzung)
+    - **D3:** CustomerOpportunitiesList (Accordion: Offen/Gewonnen/Verloren)
+    - **D4:** OpportunitySettingsPage (Admin-UI für Multiplier-Verwaltung)
+  - ✅ **MIGRATION V10031:** opportunity_multipliers mit CHECK constraints
+  - ✅ **TESTS:** 90/90 Tests GREEN (43 Backend + 47 Frontend) - 100% Coverage ✅
+  - ✅ **DESIGN SYSTEM:** 100% FreshFoodz CI V2 Compliance
+  - ✅ **MERGE:** 2025-10-19 (squash merge, commit 23f7b7ecd)
+- **Next Action:** 🎯 **SPRINT 2.1.7.4 STARTEN** - Customer Status Architecture
+
+  **WICHTIG:** Sprint-Reihenfolge geändert! Sprint 2.1.7.4 MUSS VOR Sprint 2.1.7.2 implementiert werden!
+
+  **Sprint 2.1.7.4 - Customer Status Architecture (14h, 2 Tage):**
+  - CustomerStatus.LEAD entfernen → PROSPECT
+  - XentralOrderEventHandler Interface (für Sprint 2.1.7.2!)
+  - ChurnDetectionService mit Seasonal Business Support
+  - PROSPECT → AKTIV bei erster Bestellung
+  - Migration V10032 (CustomerStatus Cleanup + Seasonal Business)
+
+  **DANACH Sprint 2.1.7.2 - Xentral Integration (23h, 3 Tage):**
+  - Nutzt XentralOrderEventHandler aus Sprint 2.1.7.4
+  - Webhook Integration → PROSPECT automatisch aktivieren
+  - Customer-Dashboard mit echten Xentral-Daten
+
+  **Nächste Schritte:**
+  1. Feature-Branch anlegen: `git checkout -b feature/sprint-2-1-7-4-customer-status-architecture`
+  2. Migration-Check: `./scripts/get-next-migration.sh` (nächste: V10032 Sequential / V90007 SEED)
+  3. Sprint-Trigger ausführen: `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md`
 
 **🔗 WICHTIGE REFERENZEN:**
 - **Arbeitsregeln:** [CLAUDE.md](./CLAUDE.md)
@@ -283,33 +283,64 @@ Sprint 2.1.7.1: Lead → Opportunity UI ✅ COMPLETE (18.10.2025) - **Lead Conve
                                       → **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_1.md](TRIGGER_SPRINT_2_1_7_1.md)
 
-Sprint 2.1.7.2: Customer + Xentral   📋 PLANNING (16.10.2025) - Aufwand: 18h (2-3 Tage)
-                                      → **SCOPE:** Opportunity → Customer + Xentral-Dashboard ZUSAMMEN (Dashboard ohne Daten wäre wertlos!)
-                                      → **Phase 1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown (verkäufer-gefiltert, kein manuelles Tippen!) (5h)
-                                      → **Phase 2:** XentralApiClient (GET /customers, GET /invoices/{customerId}, GET /payments/{customerId}) (4h)
-                                      → **Phase 3:** Customer-Dashboard (2 KPIs: Umsatz + Zahlungsverhalten GETRENNT!) (6h)
-                                      → **Phase 4:** Churn-Alarm (variable Threshold 7/14/30/45/60/90 Tage - customer-specific) (3h)
-                                      → **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_alert_days DEFAULT 30)
-                                      → **Tests:** 12 Backend (XentralApiClient) + 8 Frontend (Dashboard) = 20 Tests
-                                      → **KRITISCH:** Xentral-API testen BEVOR Start! (Sales-Rep Mapping validieren)
+Sprint 2.1.7.3: RENEWAL-Workflow     ✅ COMPLETE (19.10.2025) - PR #142 - Aufwand: 36h (erweitert)
+                                      → **SCOPE:** Bestandskunden-Opportunities mit Business-Type-Matrix
+                                      → **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage) ✅
+                                      → **Phase 2:** CreateOpportunityForCustomerDialog (intelligente Umsatzschätzung) ✅
+                                      → **Phase 3:** CustomerOpportunitiesList (Accordion: Offen/Gewonnen/Verloren) ✅
+                                      → **Phase 4:** OpportunitySettingsPage (Admin-UI für Multiplier-Verwaltung) ✅
+                                      → **Business-Type-Matrix:** 9 BusinessTypes × 4 OpportunityTypes = 36 Multipliers
+                                      → **Migration:** V10031 (opportunity_multipliers mit CHECK constraints)
+                                      → **Tests:** 90/90 GREEN ✅ (43 Backend + 47 Frontend)
+                                      → **Business Context:** B2B-Food CRM = Ongoing Relationships (nicht Single Sales), Provision = Akquise + Bestandspflege
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.1 COMPLETE
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_3.md](TRIGGER_SPRINT_2_1_7_3.md)
+                                      → **Status:** ✅ MERGED TO MAIN (19.10.2025, Commit 23f7b7ecd)
+
+Sprint 2.1.7.4: Customer Status Arch  📋 READY TO START (19.10.2025) - Aufwand: 14h (2 Tage) ⚡ **ZUERST!**
+                                      → **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik + Seasonal Business
+                                      → **Deliverable 1:** Migration V10032 (LEAD → PROSPECT, Seasonal Business Columns)
+                                      → **Deliverable 2:** LeadConvertService: PROSPECT statt AKTIV setzen
+                                      → **Deliverable 3:** Auto-Conversion bei Opportunity WON (Lead → Customer)
+                                      → **Deliverable 4:** XentralOrderEventHandler Interface (für Webhook-Integration)
+                                      → **Deliverable 5:** Manual Activation Button + customerService.activateCustomer()
+                                      → **Deliverable 6:** ChurnDetectionService mit Seasonal Business Support
+                                      → **Deliverable 7:** Dashboard KPIs (PROSPECT-Zähler, Conversion Rate)
+                                      → **Deliverable 8:** Frontend CustomerStatusBadge + ActivateCustomerButton
+                                      → **Business Rule:** PROSPECT → AKTIV bei erster gelieferter Bestellung
+                                      → **Migration:** V10032 (CustomerStatus Cleanup + Seasonal Business)
+                                      → **Tests:** 46 Tests (32 Backend + 14 Frontend)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.3 COMPLETE
+                                      → **Artefakte:**
+                                        - [SPEC_SPRINT_2_1_7_4_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_4_TECHNICAL.md)
+                                        - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_4.md](TRIGGER_SPRINT_2_1_7_4.md)
+                                      → **⚡ WICHTIG:** Muss VOR Sprint 2.1.7.2 implementiert werden!
+
+Sprint 2.1.7.2: Customer + Xentral   📋 READY TO START - NACH 2.1.7.4! (19.10.2025) - Aufwand: 23h (3 Tage)
+                                      → **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Webhook Integration
+                                      → **Deliverable 1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
+                                      → **Deliverable 2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
+                                      → **Deliverable 3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
+                                      → **Deliverable 4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
+                                      → **Deliverable 5:** Admin-UI für Xentral-Einstellungen
+                                      → **Deliverable 6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
+                                      → **Deliverable 7:** Testing & Integration Tests (72 Tests)
+                                      → **Deliverable 8:** Xentral Webhook → PROSPECT automatisch aktivieren ⚡
+                                      → **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_threshold_days - aus Sprint 2.1.7.4)
+                                      → **Tests:** 72 Tests (46 Backend + 26 Frontend)
+                                      → **Integration mit Sprint 2.1.7.4:**
+                                        - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
+                                        - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
+                                        - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.1 COMPLETE + ⚡ Sprint 2.1.7.4 COMPLETE
+                                      → **Artefakte:**
+                                        - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md)
+                                        - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
                                       → **API-Referenz:** [FC-005 Xentral Integration](features-neu/08_administration/phase-2-integrations/analyse/03_XENTRAL_ALLIANZ_INTEGRATION_FINDINGS.md)
-                                      → **Prerequisites:** ✅ Sprint 2.1.7.1 COMPLETE, ✅ Xentral Sales-Rep Mapping geklärt
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_2.md](TRIGGER_SPRINT_2_1_7_2.md)
 
-Sprint 2.1.7.3: RENEWAL-Workflow     📋 PLANNING (16.10.2025) - Aufwand: 8h (1 Tag)
-                                      → **SCOPE:** Bestandskunden-Opportunities (Upsell/Cross-sell für Ongoing Business)
-                                      → **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage) (2h)
-                                      → **Phase 2:** CreateOpportunityForCustomerDialog (stage: NEEDS_ANALYSIS, skip NEW_LEAD) (2h)
-                                      → **Phase 3:** CustomerOpportunitiesList (gruppiert: Offen/Gewonnen/Verloren) (2h)
-                                      → **Phase 4:** RENEWAL-Stage ENTFERNEN (Migration V10033: RENEWAL → NEEDS_ANALYSIS + opportunityType field) (2h)
-                                      → **ARCHITEKTUR:** RENEWAL wird opportunityType (NICHT stage) - Customer-Opportunities starten bei NEEDS_ANALYSIS
-                                      → **Migration:** V10033 (migrate existing RENEWAL stages + add opportunityType column)
-                                      → **Tests:** 6 Backend + 4 Frontend = 10 Tests
-                                      → **Business Context:** B2B-Food CRM = Ongoing Relationships (nicht Single Sales), Provision = Akquise + Bestandspflege
-                                      → **Prerequisites:** ✅ Sprint 2.1.7.2 COMPLETE
-                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_3.md](TRIGGER_SPRINT_2_1_7_3.md)
-
-Sprint 2.1.7.4: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h (wenn benötigt)
+Sprint 2.1.7.5: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h (wenn benötigt)
                                       → **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
                                       → **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate) (4h)
                                       → **Phase 2:** Advanced Search Dialog (Multi-Criteria: Stage+Owner+DateRange+Value) (4h)
@@ -318,8 +349,8 @@ Sprint 2.1.7.4: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h
                                       → **KRITISCHE ENTSCHEIDUNG:** ⚠️ NICHT JETZT! YAGNI-Prinzip (You Ain't Gonna Need It)
                                       → **Begründung:** Keine echten Daten vorhanden - Filter-Bedarf unklar - erst nach Go-Live mit 100 realen Leads bauen
                                       → **Migrations:** Keine (nur Frontend-State)
-                                      → **Prerequisites:** ✅ Sprint 2.1.7.1-3 COMPLETE, ✅ Go-Live mit realen Daten, ✅ User-Feedback zu Filter-Bedarf
-                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_4.md](TRIGGER_SPRINT_2_1_7_4.md)
+                                      → **Prerequisites:** ✅ Sprint 2.1.7.1-4 COMPLETE, ✅ Go-Live mit realen Daten, ✅ User-Feedback zu Filter-Bedarf
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_7_5.md](TRIGGER_SPRINT_2_1_7_5.md)
                                       → **Status:** NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
 Sprint 2.1.8: Team Mgmt & Test Infra 📅 VERSCHOBEN (19-25.10.2025) - VORMALS Sprint 2.1.7

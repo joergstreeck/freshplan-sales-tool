@@ -78,6 +78,11 @@ const HelpConfigDashboard = lazy(() =>
 const HelpSystemDemoPageV2 = lazy(() =>
   import('./pages/HelpSystemDemoPageV2').then(m => ({ default: m.HelpSystemDemoPageV2 }))
 );
+const OpportunitySettingsPage = lazy(() =>
+  import('./pages/admin/OpportunitySettingsPage').then(m => ({
+    default: m.OpportunitySettingsPage,
+  }))
+);
 // Dashboards für Hauptmenüpunkte
 const NeukundengewinnungDashboard = lazy(() =>
   import('./pages/NeukundengewinnungDashboard').then(m => ({
@@ -151,7 +156,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                       toastOptions={{
                         duration: 4000,
                         style: {
-                          background: '#363636',
+                          background: '#424242',
                           color: '#fff',
                         },
                         success: {
@@ -161,7 +166,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                         },
                         error: {
                           style: {
-                            background: '#ef5350',
+                            background: '#EF5350',
                           },
                         },
                       }}
@@ -324,6 +329,14 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <Placeholders.AdminSettings />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/settings/opportunities"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <OpportunitySettingsPage />
                               </ProtectedRoute>
                             }
                           />

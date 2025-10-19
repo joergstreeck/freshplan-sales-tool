@@ -30,15 +30,15 @@ export const leadStatusLabels: Record<LeadStatus, string> = {
 
 // Sprint 2.1.6 Phase 4: Lead Status Colors
 export const leadStatusColors: Record<LeadStatus, string> = {
-  REGISTERED: '#2196F3', // Blue
-  ACTIVE: '#4CAF50', // Green
-  REMINDER: '#FFC107', // Amber (Warning)
-  GRACE_PERIOD: '#FF9800', // Orange (Urgent Warning)
-  QUALIFIED: '#00BCD4', // Cyan
-  CONVERTED: '#9C27B0', // Purple
-  LOST: '#F44336', // Red
-  EXPIRED: '#795548', // Brown (Inactive)
-  DELETED: '#9E9E9E', // Gray
+  REGISTERED: 'info.main', // Blue
+  ACTIVE: 'success.main', // Green
+  REMINDER: 'warning.light', // Amber (Warning)
+  GRACE_PERIOD: 'warning.main', // Orange (Urgent Warning)
+  QUALIFIED: 'info.light', // Cyan
+  CONVERTED: 'secondary.light', // Purple
+  LOST: 'error.main', // Red
+  EXPIRED: 'grey.700', // Brown (Inactive)
+  DELETED: 'grey.500', // Gray
 };
 
 // Sprint 2.1.6: Harmonized with Customer.industry (9 values instead of 5)
@@ -352,10 +352,10 @@ export const urgencyLevelLabels: Record<UrgencyLevel, string> = {
 };
 
 export const urgencyLevelColors: Record<UrgencyLevel, string> = {
-  NORMAL: '#9E9E9E', // Gray
-  MEDIUM: '#2196F3', // Blue
-  HIGH: '#FF9800', // Orange
-  EMERGENCY: '#F44336', // Red
+  NORMAL: 'grey.500', // Gray
+  MEDIUM: 'info.main', // Blue
+  HIGH: 'warning.main', // Orange
+  EMERGENCY: 'error.main', // Red
 };
 
 /**

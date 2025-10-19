@@ -297,7 +297,7 @@ export function NeukundengewinnungDashboard() {
                     variant="h6"
                     sx={{
                       mb: 2,
-                      fontFamily: 'Antonio, sans-serif',
+                      fontFamily: theme => theme.typography.h4.fontFamily,
                       color: theme.palette.secondary.main,
                     }}
                   >
@@ -390,7 +390,7 @@ export function NeukundengewinnungDashboard() {
                 variant="h6"
                 sx={{
                   mb: 2,
-                  fontFamily: 'Antonio, sans-serif',
+                  fontFamily: theme => theme.typography.h4.fontFamily,
                   color: theme.palette.secondary.main,
                 }}
               >
@@ -443,7 +443,7 @@ export function NeukundengewinnungDashboard() {
                 variant="h6"
                 sx={{
                   mb: 2,
-                  fontFamily: 'Antonio, sans-serif',
+                  fontFamily: theme => theme.typography.h4.fontFamily,
                   color: theme.palette.secondary.main,
                 }}
               >

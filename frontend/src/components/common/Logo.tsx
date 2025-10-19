@@ -72,7 +72,7 @@ export const Logo: React.FC<LogoProps> = ({
           width: logoHeight,
           height: logoHeight,
           borderRadius: '50%',
-          backgroundColor: '#94C456',
+          backgroundColor: 'primary.main',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -90,9 +90,9 @@ export const Logo: React.FC<LogoProps> = ({
         <Typography
           variant="h5"
           sx={{
-            fontFamily: 'Antonio, sans-serif',
+            fontFamily: theme => theme.typography.h4.fontFamily,
             fontWeight: 700,
-            color: '#004F7B',
+            color: 'secondary.main',
             fontSize: { xs: '1.25rem', sm: '1.5rem' },
             letterSpacing: '-0.02em',
           }}

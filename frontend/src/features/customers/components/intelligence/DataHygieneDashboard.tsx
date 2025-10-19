@@ -62,8 +62,8 @@ const MetricCard: React.FC<MetricCardProps> = ({
 }) => {
   const getTrendIcon = () => {
     if (!trend) return null;
-    if (trend > 0) return <TrendingUp sx={{ color: '#4caf50' }} />;
-    if (trend < 0) return <TrendingDown sx={{ color: '#f44336' }} />;
+    if (trend > 0) return <TrendingUp sx={{ color: 'success.main' }} />;
+    if (trend < 0) return <TrendingDown sx={{ color: 'error.main' }} />;
     return null;
   };
 
@@ -103,12 +103,12 @@ const _getQualityColor = (score: number): string => {
 
 const getQualityLabel = (quality: string): { label: string; color: string } => {
   const map: Record<string, { label: string; color: string }> = {
-    EXCELLENT: { label: 'Exzellent', color: '#4caf50' },
+    EXCELLENT: { label: 'Exzellent', color: 'success.main' },
     GOOD: { label: 'Gut', color: '#8bc34a' },
-    FAIR: { label: 'Befriedigend', color: '#ff9800' },
+    FAIR: { label: 'Befriedigend', color: 'warning.main' },
     POOR: { label: 'Mangelhaft', color: '#ff5722' },
-    CRITICAL: { label: 'Kritisch', color: '#f44336' },
-    UNKNOWN: { label: 'Unbekannt', color: '#9e9e9e' },
+    CRITICAL: { label: 'Kritisch', color: 'error.main' },
+    UNKNOWN: { label: 'Unbekannt', color: 'grey.500' },
   };
   return map[quality] || map.UNKNOWN;
 };
@@ -205,7 +205,7 @@ export const DataHygieneDashboard: React.FC = () => {
             title="Kontakte mit Interaktionen"
             value={`${Math.round(metrics.interactionCoverage || 0)}%`}
             subtitle={`${metrics.contactsWithInteractions} von ${metrics.totalContacts}`}
-            color={metrics.interactionCoverage! >= 50 ? '#4caf50' : '#ff9800'}
+            color={metrics.interactionCoverage! >= 50 ? 'success.main' : 'warning.main'}
           />
         </Grid>
 
@@ -214,7 +214,7 @@ export const DataHygieneDashboard: React.FC = () => {
             title="Ø Interaktionen"
             value={metrics.averageInteractionsPerContact?.toFixed(1) || '0'}
             subtitle="pro Kontakt"
-            icon={<Schedule sx={{ color: '#1976d2' }} />}
+            icon={<Schedule sx={{ color: 'info.main' }} />}
           />
         </Grid>
 

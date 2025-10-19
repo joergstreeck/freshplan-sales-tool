@@ -1,4 +1,4 @@
-import { Box, LinearProgress, Typography, Tooltip } from '@mui/material';
+import { Box, LinearProgress, Typography, Tooltip, useTheme } from '@mui/material';
 import { TrendingUp, TrendingDown, TrendingFlat } from '@mui/icons-material';
 
 interface LeadScoreIndicatorProps {
@@ -14,7 +14,7 @@ interface LeadScoreIndicatorProps {
  * Visualisiert Lead-Qualität 0-100 Punkte:
  * - 0-39: Niedrig (rot)
  * - 40-69: Mittel (gelb)
- * - 70-100: Hoch (grün #94C456 - FreshFoodz CI)
+ * - 70-100: Hoch (grün - FreshFoodz CI)
  *
  * Berechnung (Backend):
  * - Umsatzpotenzial: 25%
@@ -28,6 +28,8 @@ export default function LeadScoreIndicator({
   showLabel = true,
   showTrend = false,
 }: LeadScoreIndicatorProps) {
+  const theme = useTheme();
+
   if (score === undefined || score === null) {
     return (
       <Box display="flex" alignItems="center" gap={1}>
@@ -40,9 +42,9 @@ export default function LeadScoreIndicator({
 
   // Score-basierte Farbe
   const getScoreColor = (value: number): string => {
-    if (value < 40) return '#f44336'; // Rot
-    if (value < 70) return '#ff9800'; // Orange
-    return '#94C456'; // FreshFoodz Grün
+    if (value < 40) return theme.palette.error.main; // Rot
+    if (value < 70) return theme.palette.warning.main; // Orange
+    return theme.palette.primary.main; // FreshFoodz Grün
   };
 
   // Score-basiertes Label
@@ -55,9 +57,9 @@ export default function LeadScoreIndicator({
   // Trend-Icon (optional, für spätere Erweiterung)
   const getTrendIcon = () => {
     // Placeholder: könnte später mit historischen Daten verglichen werden
-    if (score >= 70) return <TrendingUp fontSize="small" sx={{ color: '#94C456' }} />;
-    if (score < 40) return <TrendingDown fontSize="small" sx={{ color: '#f44336' }} />;
-    return <TrendingFlat fontSize="small" sx={{ color: '#ff9800' }} />;
+    if (score >= 70) return <TrendingUp fontSize="small" sx={{ color: 'primary.main' }} />;
+    if (score < 40) return <TrendingDown fontSize="small" sx={{ color: 'error.main' }} />;
+    return <TrendingFlat fontSize="small" sx={{ color: 'warning.main' }} />;
   };
 
   const scoreColor = getScoreColor(score);
@@ -105,7 +107,7 @@ export default function LeadScoreIndicator({
             sx={{
               height: progressHeight,
               borderRadius: 1,
-              backgroundColor: '#e0e0e0',
+              backgroundColor: 'grey.300',
               '& .MuiLinearProgress-bar': {
                 backgroundColor: scoreColor,
                 borderRadius: 1,

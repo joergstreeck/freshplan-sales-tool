@@ -1,0 +1,195 @@
+name: Handover Validation
+# Validiert Handover-Dokumente bei jedem Push
+# Erstellt: 2025-10-18
+# Stellt sicher, dass Übergaben vollständig und korrekt sind
+
+on:
+  push:
+    branches: ['**']
+    paths:
+      - 'docs/planung/claude-work/**/*.md'
+      - 'scripts/create-handover*.sh'
+  pull_request:
+    branches: ['**']
+    paths:
+      - 'docs/planung/claude-work/**/*.md'
+      - 'scripts/create-handover*.sh'
+
+jobs:
+  validate-handovers:
+    name: Validate Handover Documents
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Volle History für Vergleiche
+
+      - name: Check Handover Structure
+        run: |
+          echo "🔍 Prüfe Handover-Dokumente..."
+
+          # Finde alle Handover-Dateien (nur Added/Modified, NICHT Deleted)
+          HANDOVER_FILES=$(git diff --diff-filter=AM --name-only HEAD~1 HEAD 2>/dev/null | grep "docs/planung/claude-work.*HANDOVER.*\.md" || echo "")
+
+          if [ -z "$HANDOVER_FILES" ]; then
+            echo "ℹ️  Keine neuen Handover-Dokumente"
+            exit 0
+          fi
+
+          echo "📄 Gefundene Handover-Dokumente:"
+          echo "$HANDOVER_FILES"
+          echo ""
+
+          ERROR=0
+
+          for FILE in $HANDOVER_FILES; do
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "🔍 Validiere: $(basename $FILE)"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+            if [ ! -f "$FILE" ]; then
+              echo "❌ Datei nicht gefunden: $FILE"
+              ERROR=1
+              continue
+            fi
+
+            # Prüfe Required Sections
+            REQUIRED_SECTIONS=(
+              "WAS WURDE GEMACHT"
+              "BEKANNTE PROBLEME"
+              "NÄCHSTER SCHRITT"
+              "TODO-STATUS"
+              "TECHNISCHE DETAILS"
+            )
+
+            MISSING=0
+            for SECTION in "${REQUIRED_SECTIONS[@]}"; do
+              if ! grep -qi "$SECTION" "$FILE"; then
+                echo "❌ Fehlende Section: $SECTION"
+                MISSING=1
+              else
+                echo "✅ Section vorhanden: $SECTION"
+              fi
+            done
+
+            if [ $MISSING -eq 1 ]; then
+              ERROR=1
+              echo ""
+              echo "❌ FEHLER: Handover unvollständig!"
+              echo "   Datei: $FILE"
+              echo "   Nutze: scripts/create-handover.sh"
+              continue
+            fi
+
+            # Prüfe auf MANUAL-Platzhalter (darf nicht committed werden)
+            if grep -q "\[MANUAL:" "$FILE"; then
+              echo "❌ FEHLER: Handover enthält MANUAL-Platzhalter!"
+              echo "   Handover muss vollständig ausgefüllt werden!"
+              ERROR=1
+              continue
+            fi
+
+            # Prüfe auf PENDING-Marker
+            if grep -qi "MP5-Status.*PENDING" "$FILE"; then
+              echo "⚠️  WARNUNG: MP5-Status ist PENDING"
+              echo "   MP5 QUICK UPDATE sollte vor Commit durchgeführt werden"
+              # Kein Error, nur Warnung
+            fi
+
+            # Prüfe Migration-Referenz
+            if ! grep -qiE "(Migration:|V[0-9]+|n/a)" "$FILE"; then
+              echo "⚠️  WARNUNG: Keine Migration-Referenz gefunden"
+              # Kein Error, nur Warnung
+            fi
+
+            echo ""
+            echo "✅ Handover-Struktur validiert!"
+            echo ""
+          done
+
+          if [ $ERROR -eq 1 ]; then
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "❌ Handover Validation FEHLGESCHLAGEN!"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            exit 1
+          fi
+
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ Alle Handover-Dokumente validiert!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+      - name: Check Handover Script
+        run: |
+          echo "🔍 Prüfe Handover-Scripts..."
+
+          SCRIPT_FILES=$(git diff --diff-filter=AM --name-only HEAD~1 HEAD 2>/dev/null | grep "scripts/create-handover.*\.sh" || echo "")
+
+          if [ -z "$SCRIPT_FILES" ]; then
+            echo "ℹ️  Keine Script-Änderungen"
+            exit 0
+          fi
+
+          for SCRIPT in $SCRIPT_FILES; do
+            echo "🔍 Prüfe Script: $(basename $SCRIPT)"
+
+            if [ ! -f "$SCRIPT" ]; then
+              echo "❌ Script nicht gefunden: $SCRIPT"
+              exit 1
+            fi
+
+            if [ ! -x "$SCRIPT" ]; then
+              echo "❌ Script nicht ausführbar: $SCRIPT"
+              echo "   Fix: chmod +x $SCRIPT"
+              exit 1
+            fi
+
+            # Prüfe auf kritische Funktionen
+            if ! grep -q "find_project_root\|PROJECT_ROOT" "$SCRIPT"; then
+              echo "⚠️  WARNUNG: Script fehlt project-root Erkennung"
+            fi
+
+            if ! grep -q "migration\|Migration\|MIGRATION" "$SCRIPT"; then
+              echo "⚠️  WARNUNG: Script fehlt Migration-Handling"
+            fi
+
+            echo "✅ Script-Prüfung OK"
+          done
+
+      - name: Check Daily Work Structure
+        run: |
+          echo "🔍 Prüfe daily-work Ordner-Struktur..."
+
+          # Prüfe ob Ordner-Struktur existiert
+          if [ ! -d "docs/planung/claude-work/daily-work" ]; then
+            echo "❌ Ordner nicht gefunden: docs/planung/claude-work/daily-work"
+            exit 1
+          fi
+
+          # Prüfe auf korrekte Datum-Ordner (YYYY-MM-DD)
+          INVALID_FOLDERS=$(find docs/planung/claude-work/daily-work -mindepth 1 -maxdepth 1 -type d | \
+            grep -v "/[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}$" || echo "")
+
+          if [ ! -z "$INVALID_FOLDERS" ]; then
+            echo "❌ FEHLER: Ungültige Ordner-Namen gefunden!"
+            echo "$INVALID_FOLDERS"
+            echo ""
+            echo "Korrekt: YYYY-MM-DD (z.B. 2025-10-18)"
+            exit 1
+          fi
+
+          echo "✅ Ordner-Struktur korrekt!"
+
+      - name: Summary
+        if: success()
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "🎉 Handover Validation BESTANDEN!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "Alle Prüfungen erfolgreich:"
+          echo "  ✅ Handover-Struktur vollständig"
+          echo "  ✅ Keine MANUAL-Platzhalter"
+          echo "  ✅ Scripts ausführbar"
+          echo "  ✅ Ordner-Struktur korrekt"

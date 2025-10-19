@@ -9,8 +9,8 @@
  */
 
 import { apiClient } from './api-client';
-import { GetFieldDefinitionsRequest, FieldDefinitionsResponse } from '../types/api.types';
-import { FieldDefinition, EntityType } from '../types/field.types';
+import type { GetFieldDefinitionsRequest, FieldDefinitionsResponse } from '../types/api.types';
+import type { FieldDefinition, EntityType } from '../types/field.types';
 
 export class FieldDefinitionApi {
   private readonly basePath = '/api/field-definitions';

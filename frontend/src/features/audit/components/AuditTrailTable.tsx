@@ -160,7 +160,10 @@ export const AuditTrailTable: React.FC<AuditTrailTableProps> = ({ filters }) => 
                 }}
               >
                 <TableCell>
-                  <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontFamily: '"Courier New", Courier, monospace' }}
+                  >
                     {formatDateTime(log.occurredAt)}
                   </Typography>
                 </TableCell>

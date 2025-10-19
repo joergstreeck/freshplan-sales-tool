@@ -25,6 +25,7 @@ import {
   LocationOn as LocationIcon,
   Category as CategoryIcon,
   PersonAdd as PersonAddIcon,
+  TrendingUp as TrendingUpIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,8 +36,11 @@ import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery } from '@tanstack/react-query';
 import { customerApi } from '../features/customer/api/customerApi';
-import type { CustomerContact } from '../features/customer/types';
+import type { Customer, CustomerContact } from '../features/customer/types/customer.types';
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
+import CreateOpportunityForCustomerDialog from '../features/opportunity/components/CreateOpportunityForCustomerDialog';
+import { CustomerOpportunitiesList } from '../features/customers/components/CustomerOpportunitiesList';
+import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -73,6 +77,13 @@ export function CustomerDetailPage() {
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuth();
   const navigate = useNavigate();
+
+  // Opportunity Dialog State
+  const [showOpportunityDialog, setShowOpportunityDialog] = useState(false);
+  const [opportunityCount, setOpportunityCount] = useState(0);
+
+  // Edit Dialog State
+  const [showEditWizard, setShowEditWizard] = useState(false);
 
   // Get highlightContact parameter for deep-linking
   const highlightContactId = searchParams.get('highlightContact');
@@ -219,10 +230,20 @@ export function CustomerDetailPage() {
               >
                 Zurück
               </Button>
+              {customer.status === 'AKTIV' && (
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<TrendingUpIcon />}
+                  onClick={() => setShowOpportunityDialog(true)}
+                >
+                  Neue Opportunity erstellen
+                </Button>
+              )}
               <Button
                 variant="contained"
                 startIcon={<EditIcon />}
-                onClick={() => navigate(`/customers/${customerId}/edit`)}
+                onClick={() => setShowEditWizard(true)}
               >
                 Bearbeiten
               </Button>
@@ -242,17 +263,23 @@ export function CustomerDetailPage() {
             <Tab label="Übersicht" icon={<InfoIcon />} iconPosition="start" {...a11yProps(0)} />
             <Tab label="Kontakte" icon={<ContactsIcon />} iconPosition="start" {...a11yProps(1)} />
             <Tab
+              label={`Verkaufschancen${opportunityCount > 0 ? ` (${opportunityCount})` : ''}`}
+              icon={<TrendingUpIcon />}
+              iconPosition="start"
+              {...a11yProps(2)}
+            />
+            <Tab
               label="Aktivitäten"
               icon={<AssessmentIcon />}
               iconPosition="start"
-              {...a11yProps(2)}
+              {...a11yProps(3)}
             />
             {canViewAudit && (
               <Tab
                 label="Änderungshistorie"
                 icon={<TimelineIcon />}
                 iconPosition="start"
-                {...a11yProps(3)}
+                {...a11yProps(4)}
               />
             )}
           </Tabs>
@@ -267,11 +294,18 @@ export function CustomerDetailPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
+            <CustomerOpportunitiesList
+              customerId={customerId!}
+              onCountChange={setOpportunityCount}
+            />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={3}>
             <CustomerActivities customerId={customerId!} />
           </TabPanel>
 
           {canViewAudit && (
-            <TabPanel value={activeTab} index={3}>
+            <TabPanel value={activeTab} index={4}>
               <EntityAuditTimeline
                 entityType="customer"
                 entityId={customerId!}
@@ -282,6 +316,32 @@ export function CustomerDetailPage() {
             </TabPanel>
           )}
         </Paper>
+
+        {/* Create Opportunity Dialog */}
+        <CreateOpportunityForCustomerDialog
+          open={showOpportunityDialog}
+          onClose={() => setShowOpportunityDialog(false)}
+          customer={customer}
+          onSuccess={() => {
+            setShowOpportunityDialog(false);
+            // Switch to Opportunities tab to show the new opportunity
+            setActiveTab(2);
+          }}
+        />
+
+        {/* Edit Customer Wizard Modal */}
+        <CustomerOnboardingWizardModal
+          open={showEditWizard}
+          onClose={() => setShowEditWizard(false)}
+          onComplete={() => {
+            setShowEditWizard(false);
+            // Refresh customer data - useCustomerDetails should auto-refetch
+            window.location.reload(); // Simple refresh for now, can be optimized with query invalidation
+          }}
+          customerId={customerId}
+          initialData={customer}
+          editMode={true}
+        />
       </Box>
     </MainLayoutV2>
   );

@@ -1,12 +1,12 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-18
+**📅 Letzte Aktualisierung:** 2025-10-19
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
-**📊 Ansatz:** Thematisch strukturiert - Strategie → Architektur → Implementation → Codebase
+**📊 Ansatz:** Kompakt - 80% Vision + 20% Reality (Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
 
 **⚠️ Codebase-Validierung Disclaimer:**
-Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 18.10.2025).
+Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 19.10.2025).
 **Single Source of Truth für Migrations:** `/docs/planung/MIGRATIONS.md` (wird aktiv gepflegt!)
 **Immer gegen Codebase validieren** wenn konkrete LOC-Zahlen oder Feature-Status kritisch sind!
 
@@ -37,11 +37,9 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **NIEMALS Nummern hardcoden!** `./scripts/get-next-migration.sh` nutzen!
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
-### Latest Implementation
-- **Lead → Opportunity UI (18.10.2025):** Complete Workflow - Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI ✅ COMPLETE
-- **Design System (15.10.2025):** FreshFoodz CI V2 Migration ✅ COMPLETE
-- **Opportunity Backend (14.10.2025):** Lead→Opportunity→Customer Workflows ✅ COMPLETE
-- **Xentral-Integration:** ERP-Integration für Umsatz + Zahlungsverhalten geplant
+### Next Steps
+- **JETZT:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle)
+- **DANACH:** Sprint 2.1.7.2 (Xentral-ERP-Integration - Umsatz + Zahlungsverhalten)
 
 ---
 
@@ -69,27 +67,25 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 ---
 
-## 🚨 KNOWN GAPS (Stand: 2025-10-18)
+## 🚨 KNOWN GAPS (Stand: 2025-10-19)
 
 **Wichtige fehlende Features, die neue KIs kennen sollten:**
 
 ### Frontend-UI Gaps
-- ✅ **Lead → Opportunity UI** - COMPLETE (Lead-Conversion, Kanban Pipeline, Drag & Drop, Filter-UI) ✅
-- 🔶 **Opportunity → Customer UI** - Backend ready, UI geplant (Customer-Akquise bei CLOSED_WON)
-- ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant, nicht implementiert)
-
-### Layout & Design
-- ❌ **SmartLayout** - Component existiert (Auto-Detection), aber 0 Pages nutzen es (MainLayoutV2 ist Standard)
+- ✅ **Lead/Customer → Opportunity UI** - COMPLETE (Sprint 2.1.7.1 + 2.1.7.3) ✅
+- ❌ **Opportunity → Customer Conversion UI** - Backend ready (Sprint 2.1.7.4 geplant), UI fehlt
+- ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant)
 
 ### Business Features
-- ⏳ **Team Management** - Kollaboratoren + Lead-Transfer (in Planung, nicht implementiert)
-- ⏳ **Advanced Seasonal Rules** - Spargel/Oktoberfest/Weihnachten (Basic Rules vorhanden, Advanced Logic fehlt)
+- ⏳ **Customer Status Lifecycle** - PROSPECT→AKTIV (Sprint 2.1.7.4 in Planung)
+- ⏳ **Xentral-ERP-Integration** - Umsatz + Zahlungsverhalten (Sprint 2.1.7.2 geplant)
+- ⏳ **Team Management** - Kollaboratoren + Lead-Transfer (in Planung)
 
 ### Infrastructure
 - ⏳ **KEDA Autoscaling** - Territory + Seasonal-aware (99% Planning, Deployment pending)
 - ⏳ **Production Monitoring** - Prometheus + Grafana Dashboards (Setup pending)
 
-**Hinweis:** Diese Gaps sind normal! Backend-First-Development ist unsere Strategie. Frontend-UIs folgen, wenn Backend stabil ist.
+**Hinweis:** Backend-First-Development ist unsere Strategie. Frontend-UIs folgen, wenn Backend stabil ist.
 
 ---
 
@@ -104,10 +100,9 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 ### 📚 HAUPT-SEKTIONEN
 1. [🎯 Strategischer Kontext](#sektion-1-strategischer-kontext) - Business-Mission, ROI, Competitive Advantage
 2. [🏗️ System-Architektur](#sektion-2-system-architektur) - Module, Infrastructure, Security
-3. [💻 Technical Implementation](#sektion-3-technical-implementation) - Tech-Stack, Patterns, Database
-4. [🎨 Frontend & Design](#sektion-4-frontend-design) - Theme V2, Components, UX-Patterns
-5. [🔧 Development-Standards](#sektion-5-development-standards) - Code-Standards, Testing, CI/CD
-6. [📦 Codebase-Reality](#sektion-6-codebase-reality) - Aktuelle Implementation, Migrations, Tests
+3. [💻 Technical Implementation](#sektion-3-technical-implementation) - Tech-Stack (Backend + Frontend), Patterns, Database
+4. [🔧 Development-Standards](#sektion-5-development-standards) - Code-Standards, Testing, CI/CD
+5. [📦 Codebase-Reality](#sektion-6-codebase-reality) - Latest Implementation, Modul-Status, Tests
 
 ### 🎯 THEMEN-INDEX
 - [🗄️ Database Migrations (Consolidated)](#database-migrations) - Alle Migrations thematisch gruppiert
@@ -118,7 +113,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 ---
 
 <a id="system-status"></a>
-## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-10-14)
+## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-10-19)
 
 ### 🏗️ Architecture Flags (Production-Ready Features)
 
@@ -216,10 +211,10 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - ROI-Calculator für Business-Value-Demonstration
 
 **Opportunity-Management (B2B-Food CRM Pattern):**
-- **Lead → Opportunity → Customer Workflow** (V10026 Backend ready, UI in Sprint 2.1.7.1-3)
+- **Lead → Opportunity → Customer Workflow** (V10026 Backend ready, UI Sprint 2.1.7.1-3 COMPLETE)
 - **Opportunity = Customer Acquisition** (NICHT einzelne Orders!)
   - Im B2B-Food-Geschäft: Opportunities = Neukunden gewinnen
-  - Nach CLOSED_WON → Customer (ongoing relationship)
+  - Nach CLOSED_WON → Auto-Convert Lead → Customer (Status: PROSPECT)
   - Orders laufen über ERP-System (Xentral)
 - **RENEWAL-Opportunities für Bestandskunden:**
   - opportunityType field differenziert zwischen "New Business" und "Renewal"
@@ -228,16 +223,37 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **Pipeline-Stages:** 7 Stages (NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST)
   - RENEWAL als separate Stage wird durch opportunityType ersetzt (Migration pending - Sprint 2.1.7.1)
 
+**Customer Status Lifecycle (Sprint 2.1.7.4 Architecture):**
+- **PROSPECT:** Opportunity gewonnen (CLOSED_WON), wartet auf erste gelieferte Bestellung
+  - Lead → Opportunity → Customer Conversion setzt Status: PROSPECT (NICHT AKTIV!)
+  - ⚠️ **WICHTIG:** CustomerStatus.LEAD wird entfernt (konzeptionell falsch - Leads gehören in leads Tabelle!)
+- **AKTIV:** Hat mindestens 1 gelieferte Bestellung (echter Kunde!)
+  - Automatisch: Xentral-Webhook "Order Delivered" (Sprint 2.1.7.2)
+  - Manuell: "Als AKTIV markieren" Button (Fallback für manuelle Aktivierung)
+- **Seasonal Business Support:** Eisdielen, Biergärten, Ski-Hütten (Food-Branche!)
+  - Felder: is_seasonal_business, seasonal_months[], seasonal_pattern
+  - ChurnDetectionService: Saisonbetriebe NICHT als RISIKO markieren während Off-Season
+- **RISIKO/INAKTIV:** Lifecycle-Management (Sprint 2.1.7.6)
+  - Churn-Detection mit variablen Thresholds (14-365 Tage pro Kunde)
+  - Seasonal-Aware: Keine falschen Alarme bei Saisonbetrieben
+
 **Customer-Relationship-Management:**
 - Multi-Location-Kunden mit verschiedenen Standorten
 - CHEF/BUYER parallele Kommunikation + Workflow-Management
 - Seasonal Campaign-Management (Spargel/Oktoberfest/Weihnachten)
 - Sample-Management + Feedback-Integration
-- **Xentral-ERP-Integration** (FC-005 + FC-009 dokumentiert):
+- **Customer Status Lifecycle (Sprint 2.1.7.4 Architecture):**
+  - PROSPECT: Wartet auf erste Bestellung (nach Opportunity CLOSED_WON)
+  - AKTIV: Hat gelieferte Bestellung (via Xentral-Webhook oder Manual Activation)
+  - Seasonal Business Support: Keine falschen Churn-Alarme bei Saisonbetrieben
+  - ⚠️ CustomerStatus.LEAD entfernt (Leads gehören in leads Tabelle, NICHT customers!)
+- **Xentral-ERP-Integration** (Sprint 2.1.7.2 Planning):
+  - Polling-Ansatz: Nightly Job 1x täglich (02:00 Uhr) - Webhooks in Beta
   - Umsatz-Dashboard (30/90/365 Tage Rechnungsdaten)
-  - Zahlungsverhalten-Monitoring (Ampel-System)
-  - Churn-Alarm (variable Threshold pro Kunde: 7-90 Tage)
+  - Zahlungsverhalten-Monitoring (Ampel-System: 🟢🟡🟠🔴)
+  - Churn-Alarm (variable Threshold pro Kunde: 14-365 Tage, Seasonal-Aware)
   - Provision-Modell: Akquise + Bestandspflege (basiert auf Zahlungseingang, nicht Rechnungsstellung)
+  - Sales-Rep Auto-Sync: Email-basiertes Mapping (User.xentral_sales_rep_id)
 
 **Business-Intelligence + Performance:**
 - Real-time Business-KPIs + Territory-Performance (Hot-Projections)
@@ -587,9 +603,12 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 **Frontend:**
 - Framework: React 18 + TypeScript + Vite (Bundle <200KB Target)
-- UI-Library: MUI v7 (Material-UI) mit FreshFoodz Corporate Design
+- UI-Library: MUI v7 (Material-UI)
+- Design System: FreshFoodz CI V2 (#94C456 Green, #004F7B Blue, Antonio Bold, Poppins)
+- Layout: MainLayoutV2 mit expliziter Breiten-Steuerung (`maxWidth` prop)
 - State: React Query + Context (KEIN Redux - zu heavy für unsere Needs)
 - Testing: Vitest + React Testing Library + >80% Coverage-Target
+- **Details:** `/docs/planung/grundlagen/DESIGN_SYSTEM.md` (verbindliche Spec)
 
 **Infrastructure:**
 - Containerization: Docker + Kubernetes mit KEDA-Autoscaling
@@ -640,103 +659,24 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Performance SLO: listen_notify_lag_ms < 10000
 
 <a id="database-migrations"></a>
-### 🗄️ Database Migrations (Consolidated - Thematisch gruppiert)
+### 🗄️ Database Migrations (Kompakt)
 
-#### Lead-Management Migrations
-**Normalization & Data Quality:**
-- **V247:** Lead Normalization (email_normalized, phone_e164, company_name_normalized)
-- **V10012:** CI-only Indexes (non-CONCURRENTLY für schnelle Tests)
-- **V251-V254:** Idempotency-Fixes, Events published column
+**Migration-Hygiene (KRITISCH!):**
+- **V10xxx:** Production Migrations | **V90xxx:** DEV-SEED Data | **R__:** Repeatable
+- **NIEMALS Nummern hardcoden!** → `MIGRATION=$(./scripts/get-next-migration.sh | tail -1)`
+- **3-Layer Safety:** Pre-Commit Hook + GitHub Workflow + Enhanced Script
+- **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
-**Lead Enums & Business-Types:**
-- **V263:** Lead.businessType + CHECK constraint (9 values: RESTAURANT, HOTEL, CATERING, KANTINE, GROSSHANDEL, LEH, BILDUNG, GESUNDHEIT, SONSTIGES)
-- **V10013-V10015:** Settings ETag Triggers, Lead Enums (VARCHAR + CHECK Pattern), first_contact_documented_at
+**Key Migration-Bereiche:**
+- **Lead-Management:** V247 (Normalization), V263 (BusinessType), V10016-V10017 (Multi-Contact), V10018-V10024 (Lead Scoring), V10027 (ActivityOutcome)
+- **Customer-Management:** V264 (BusinessType), V10028 (Customer Number Sequence - race-condition-safe), V261 (original_lead_id)
+- **Opportunity-Management:** V10026 (lead_id/customer_id FKs), V10030 (OpportunityType Enum)
 
-**Multi-Contact Support:**
-- **V10016:** lead_contacts Table (26 Felder, 100% Customer Parity)
-- **V10017:** Backward Compatibility Trigger (KRITISCH! Synchronisiert primary contact → legacy fields)
-
-**Lead Scoring & Pain Analysis:**
-- **V10018-V10022:** Pain Scoring (4 Faktoren: Dringlichkeit, Budget, Problem, Entscheidungsmacht), Lead Scoring (0-100), territory_id nullable
-- **V10023-V10024:** Lead Scoring Complete (revenue_score, NOT NULL Constraints)
-
-**Activity Outcome:**
-- **V10027:** activity_outcome VARCHAR(30) + CHECK Constraint (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED)
-
-#### Customer-Management Migrations
-**BusinessType Harmonization:**
-- **V264:** Customer.businessType + Data Migration (Industry → BusinessType) + CHECK constraint
-
-**Customer Number Sequence (PRODUCTION-KRITISCH!):**
-- **V10028:** customer_number_seq (PostgreSQL Sequence, race-condition-safe, Format: KD-00001, KD-00002, ...)
-- **Kritisch:** Eliminates `count() + 1` race condition bei high concurrency
-
-**Lead-to-Customer Conversion:**
-- **V261:** customer.original_lead_id (BIGINT NULL, Soft Reference, Partial Index)
-
-#### Opportunity-Management Migrations
-**Backend Integration:**
-- **V10026:** Opportunity lead_id + customer_id Foreign Keys (Lead→Opportunity→Customer relationships)
-
-**DEV-SEED Data:**
-- **V90003:** DEV-SEED Opportunities (10 realistische Opportunities, IDs 90001-90010, Total Value €163,000, 4 from Leads + 6 from Customers)
-
-#### Migration-Hygiene (WICHTIG!)
-**Naming Convention:**
-- **V-prefix:** Production Migrations
-- **V10xxx:** Production-Relevant
-- **V90xxx:** DEV-SEED Data
-- **R__:** Repeatable Migrations
-- **📋 Details:** `/docs/planung/MIGRATIONS.md`
-
-**Safety-System (3-Layer):**
-1. **Pre-Commit Hook:** Blocks wrong folder, old numbers, test-keywords vs. folder
-2. **GitHub Workflow:** CI validation on every push/PR
-3. **Enhanced get-next-migration.sh:** Dynamic Sanity-Check (MAX_JUMP=100), folder selection dialog
-
-**Migration Script (PFLICHT):**
-```bash
-# NIEMALS Nummern hardcoden!
-MIGRATION=$(./scripts/get-next-migration.sh | tail -1)
-```
-
-#### Enum Migration Pattern (Architektur-Entscheidung)
-
-**WICHTIG für alle zukünftigen Enums im System:**
-
-**Pattern:** `VARCHAR(30) + CHECK CONSTRAINT` (NIEMALS PostgreSQL ENUM Type!)
-
-**Begründung:**
-- ✅ **JPA-Standard:** `@Enumerated(STRING)` funktioniert direkt (kein Custom Converter nötig)
-- ✅ **Schema-Evolution einfach:** CHECK Constraint ändern = 2 Zeilen SQL (vs. ALTER TYPE CASCADE = komplex)
-- ✅ **Performance:** Nur ~5% langsamer als PostgreSQL ENUM bei B-Tree Index
-- ✅ **Type-Safety:** Compiler-Validierung verhindert Runtime-Errors
-
-**Beispiel (ActivityOutcome):**
-```sql
--- Migration V10027
-ALTER TABLE activities
-  ADD COLUMN activity_outcome VARCHAR(30);
-
-ALTER TABLE activities
-  ADD CONSTRAINT activity_outcome_check
-  CHECK (activity_outcome IN (
-    'SUCCESSFUL', 'UNSUCCESSFUL', 'NO_ANSWER',
-    'CALLBACK_REQUESTED', 'INFO_SENT',
-    'QUALIFIED', 'DISQUALIFIED'
-  ));
-
-CREATE INDEX idx_activities_outcome ON activities(activity_outcome);
-```
-
-**Java:**
-```java
-@Enumerated(EnumType.STRING)  // JPA-Standard, kein Custom Converter!
-@Column(name = "activity_outcome", length = 30)
-private ActivityOutcome outcome;
-```
-
-**Anwendung:** Betrifft LeadSource, BusinessType, KitchenSize, ActivityOutcome, OpportunityStatus, PaymentMethod, DeliveryMethod
+**Enum Pattern (Architektur-Entscheidung):**
+- **Pattern:** `VARCHAR(30) + CHECK CONSTRAINT` (NIEMALS PostgreSQL ENUM Type!)
+- **Begründung:** JPA-Standard, einfache Schema-Evolution, nur ~5% langsamer
+- **Beispiel:** ActivityOutcome, BusinessType, OpportunityType
+- **Java:** `@Enumerated(EnumType.STRING)` direkt nutzbar (kein Custom Converter)
 
 ### 📁 Codebase-Structure (Modular-Monolith)
 
@@ -798,95 +738,6 @@ private ActivityOutcome outcome;
 
 ---
 
-<a id="sektion-4-frontend-design"></a>
-## 🎨 SEKTION 4: FRONTEND & DESIGN
-
-### 🎨 FreshFoodz Theme V2 (Corporate Identity)
-
-**Corporate-Design:**
-- **Primary-Colors:**
-  - Main-Green: #94C456 (FreshFoodz Green - Primary Brand Color)
-  - Corporate-Blue: #004F7B (Vertrauenswürdig, Professional)
-
-- **Typography:**
-  - Headlines: Antonio Bold (Impactful, Modern, Attention-grabbing)
-  - Body-Text: Poppins (Readable, Professional, Web-optimiert)
-
-**UI-Pattern-Usage:**
-- Buttons-Primary: #94C456 (Call-to-Action)
-- Navigation: #004F7B (Header, Sidebar)
-- Alerts-Success: #94C456 (Lead converted, Sample shipped)
-- Alerts-Info: #004F7B (Follow-up reminder, Territory info)
-
-**Accessibility (WCAG 2.1 AA+):**
-- Contrast-Ratio: AAA-Standard - alle Text-/Background-Kombinationen
-- Font-Sizes: Minimum 14px Body, 16px+ Interactive Elements
-- Mobile-First: Responsive Design für Außendienst-Nutzung
-
-**Styling-Tech-Stack:**
-- UI-Framework: MUI v7 (Material-UI) - Primary Component Library
-- CSS-Engine: Emotion (CSS-in-JS) - @emotion/react + @emotion/styled
-- Utilities:
-  - tailwind-merge (KEIN Tailwind CSS! Nur className merge utility)
-  - class-variance-authority (Component Variants Pattern)
-  - clsx (Conditional Classes)
-- Icon-System:
-  - @mui/icons-material (Primary Icons)
-  - lucide-react (Secondary Icon Set)
-
-**Theme-Customization:**
-- Location: `/frontend/src/theme/freshfoodz-theme.ts`
-- Pattern: MUI createTheme() mit FreshFoodz-Overrides
-- Colors: MUI Palette Override für primary/secondary
-- Components: MUI Component-Overrides für Buttons/Cards/Navigation
-
-**Color-Specifics (RGB für KI-Genauigkeit):**
-- Primary-Green: #94C456 → rgb(148, 196, 86)
-- Corporate-Blue: #004F7B → rgb(0, 79, 123)
-- Hover-States:
-  - Primary-Hover: #7BA945 (dunklerer Grünton)
-  - Secondary-Hover: #003A5C (dunkleres Blau)
-- Status-Colors:
-  - Success: #94C456 (FreshFoodz Green)
-  - Error: #DC3545 (Standard Red)
-  - Warning: #FFC107 (Amber)
-
-**CSS-Design-Tokens (Verbindlich):**
-- Layout:
-  - Header-Height: 64px (weiß, shadow: 0 2px 4px rgba(0,0,0,0.08))
-  - Content-Margin-Top: 8px (Abstand Header → Content)
-  - Content-Padding: 16px
-- Shadows:
-  - Header: 0 2px 4px rgba(0,0,0,0.08)
-  - Paper: 0 1px 3px rgba(0,0,0,0.05)
-  - Card: 0 1px 2px rgba(0,0,0,0.04)
-
-**SmartLayout-System (Intelligente Content-Breiten):**
-- Tables/Lists: 100% Breite (Auto-Detect: `<Table>`, `<DataGrid>`, `data-wide="true"`)
-- Forms: 800px max (Auto-Detect: `<form>`, mehrere `<TextField>`)
-- Text/Articles: 1200px max (Auto-Detect: hauptsächlich `<Typography>`)
-- Dashboard: 100% Breite (Grid mit Cards)
-- Cockpit: 100% Breite, 0 Padding (Spezial-Layout)
-
-**UI-Sprache (DEUTSCH, kein Denglisch):**
-- Dashboard → Übersicht | Save → Speichern | Cancel → Abbrechen
-- Delete → Löschen | Edit → Bearbeiten | Settings → Einstellungen
-- Stil: "Sie"-Form, höflich, keine Abkürzungen
-
-**Logo-Verwendung:**
-- File: `/frontend/public/freshplan-logo.png` (19 KB PNG, @2x Retina)
-- Component: `<Logo>` aus `@/components/common/Logo`
-- Desktop: 40px Höhe | Mobile: 32px Höhe
-- Variants: "full" (mit Text) | "icon" (nur Icon)
-- Schutzzone: min. 16px Freiraum
-- Nur auf weißem/hellem Hintergrund!
-- Fallback: Automatisches FreshPlan Icon + Text (bei fehlenden Dateien)
-
-**Implementation-Reference:**
-- Design-System-Spec: `/docs/planung/grundlagen/DESIGN_SYSTEM.md` (verbindlich!)
-- Theme-Config: `/frontend/src/theme/freshfoodz-theme.ts`
-- Components: FreshFoodz-branded Header, CTA-Buttons, Status-Badges
-- Storybook: Component-Katalog mit FreshFoodz CI (`npm run storybook`)
 
 ---
 
@@ -983,6 +834,23 @@ private ActivityOutcome outcome;
 <a id="codebase-navigation"></a>
 <a id="sektion-6-codebase-reality"></a>
 ## 📦 SEKTION 6: CODEBASE-REALITY
+
+### 📊 Latest Implementation (Stand: 2025-10-19)
+
+**Completed Sprints:**
+- ✅ **Sprint 2.1.7.3** (19.10.2025): Customer → Opportunity UI - Business-Type-Matrix, OpportunitySettingsPage, Admin-UI
+- ✅ **Sprint 2.1.7.1** (18.10.2025): Lead → Opportunity UI - Complete Workflow, Kanban Pipeline, Drag & Drop, Filter-UI
+- ✅ **Sprint 2.1.7.0** (15.10.2025): Design System - FreshFoodz CI V2 Migration (97 Violations behoben)
+- ✅ **Sprint 2.1.6.1** (14.10.2025): Opportunity Backend - Lead→Opportunity→Customer Workflows
+
+**Active Planning:**
+- 📋 **Sprint 2.1.7.4** (NEXT): Customer Status Architecture - PROSPECT→AKTIV Lifecycle, Seasonal Business Support, CustomerStatus.LEAD Removal
+- 📋 **Sprint 2.1.7.2** (AFTER 2.1.7.4): Xentral-ERP-Integration - Umsatz + Zahlungsverhalten, Nightly Polling (1x täglich)
+
+**Test Status:**
+- Backend: Tests GREEN (100% Coverage) - LeadResourceTest, Security Tests, FollowUpAutomationServiceTest
+- Frontend: Tests GREEN - ActivityDialog Tests, ESLint passed
+- CI: Performance optimiert (JUnit parallel, ValidatorFactory optimization)
 
 ### 🎖️ Modul-Status-Matrix (Implementierungs-Stand)
 

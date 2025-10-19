@@ -161,7 +161,7 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
             size="small"
             color={customer.status === 'AKTIV' ? 'success' : 'default'}
             sx={{
-              backgroundColor: customer.status === 'AKTIV' ? '#94C456' : undefined,
+              backgroundColor: customer.status === 'AKTIV' ? 'primary.main' : undefined,
               color: customer.status === 'AKTIV' ? '#fff' : undefined,
             }}
           />
@@ -184,10 +184,10 @@ export function FocusListColumnMUI({ onCustomerSelect }: FocusListColumnMUIProps
                 borderRadius: '50%',
                 backgroundColor:
                   customer.riskScore > 70
-                    ? '#f44336'
+                    ? 'error.main'
                     : customer.riskScore > 40
-                      ? '#ff9800'
-                      : '#4caf50',
+                      ? 'warning.main'
+                      : 'success.main',
               }}
             />
             <Typography variant="body2">{customer.riskScore}%</Typography>

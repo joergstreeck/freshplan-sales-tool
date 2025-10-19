@@ -1,6 +1,7 @@
 package de.freshplan.domain.customer.service.dto;
 
 import de.freshplan.domain.customer.entity.*;
+import de.freshplan.domain.shared.BusinessType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,7 +25,7 @@ public record CustomerResponse(
 
     // Classification
     CustomerType customerType,
-    Industry industry,
+    BusinessType businessType,
     Classification classification,
 
     // Hierarchy
@@ -84,7 +85,7 @@ public record CustomerResponse(
       String companyName,
       CustomerStatus status,
       CustomerType customerType,
-      Industry industry,
+      BusinessType businessType,
       Integer riskScore,
       LocalDateTime createdAt) {
 
@@ -95,7 +96,7 @@ public record CustomerResponse(
         null,
         null,
         customerType,
-        industry,
+        businessType,
         null,
         null,
         null,

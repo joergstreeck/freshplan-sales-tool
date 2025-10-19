@@ -93,12 +93,26 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({
           variant={variant}
           sx={{
             backgroundColor:
-              variant === 'default' ? (isExpiringSoon ? '#FF9800' : '#94C456') : undefined,
-            borderColor: isExpiringSoon ? '#FF9800' : '#94C456',
-            color: variant === 'default' ? '#fff' : isExpiringSoon ? '#FF9800' : '#94C456',
+              variant === 'default'
+                ? isExpiringSoon
+                  ? 'warning.main'
+                  : 'primary.main'
+                : undefined,
+            borderColor: isExpiringSoon ? 'warning.main' : 'primary.main',
+            color:
+              variant === 'default'
+                ? 'common.white'
+                : isExpiringSoon
+                  ? 'warning.main'
+                  : 'primary.main',
             fontWeight: 600,
             '& .MuiChip-icon': {
-              color: variant === 'default' ? '#fff' : isExpiringSoon ? '#FF9800' : '#94C456',
+              color:
+                variant === 'default'
+                  ? 'common.white'
+                  : isExpiringSoon
+                    ? 'warning.main'
+                    : 'primary.main',
             },
           }}
         />
@@ -138,12 +152,12 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({
           size={size}
           variant={variant}
           sx={{
-            backgroundColor: variant === 'default' ? '#F44336' : undefined,
-            borderColor: '#F44336',
-            color: variant === 'default' ? '#fff' : '#F44336',
+            backgroundColor: variant === 'default' ? 'error.main' : undefined,
+            borderColor: 'error.main',
+            color: variant === 'default' ? 'common.white' : 'error.main',
             fontWeight: 600,
             '& .MuiChip-icon': {
-              color: variant === 'default' ? '#fff' : '#F44336',
+              color: variant === 'default' ? 'common.white' : 'error.main',
             },
           }}
         />
@@ -176,12 +190,12 @@ const PreClaimBadge: React.FC<PreClaimBadgeProps> = ({
         size={size}
         variant={variant}
         sx={{
-          backgroundColor: variant === 'default' ? '#FF9800' : undefined,
-          borderColor: '#FF9800',
-          color: variant === 'default' ? '#fff' : '#FF9800',
+          backgroundColor: variant === 'default' ? 'warning.main' : undefined,
+          borderColor: 'warning.main',
+          color: variant === 'default' ? 'common.white' : 'warning.main',
           fontWeight: 600,
           '& .MuiChip-icon': {
-            color: variant === 'default' ? '#fff' : '#FF9800',
+            color: variant === 'default' ? 'common.white' : 'warning.main',
           },
         }}
       />

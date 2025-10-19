@@ -300,6 +300,12 @@ export const navigationConfig: NavigationItemType[] = [
         ],
       },
       {
+        label: 'Verkaufschancen-Einstellungen',
+        path: '/admin/settings/opportunities',
+        permissions: ['admin.view'],
+        tooltip: 'Multiplikatoren für Umsatzschätzung',
+      },
+      {
         label: 'Compliance Reports',
         path: '/admin/reports',
         permissions: ['admin.view', 'auditor.view', 'manager.view'],

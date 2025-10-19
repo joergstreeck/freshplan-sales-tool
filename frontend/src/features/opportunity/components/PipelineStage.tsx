@@ -154,7 +154,7 @@ export const PipelineStage: React.FC<PipelineStageProps> = React.memo(
               variant="h6"
               sx={{
                 color: config.color,
-                fontFamily: 'Antonio, sans-serif',
+                fontFamily: theme => theme.typography.h4.fontFamily,
                 fontWeight: 700,
                 fontSize: '1.1rem',
               }}

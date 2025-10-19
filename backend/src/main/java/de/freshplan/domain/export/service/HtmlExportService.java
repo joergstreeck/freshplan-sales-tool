@@ -188,9 +188,9 @@ public class HtmlExportService {
         .append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")))
         .append(" Uhr</p>\n");
 
-    if (request.getIndustry() != null) {
+    if (request.getBusinessType() != null) {
       html.append("<p><strong>Branche:</strong> ")
-          .append(escapeHtml(request.getIndustry()))
+          .append(escapeHtml(request.getBusinessType()))
           .append("</p>\n");
     }
 
@@ -203,7 +203,7 @@ public class HtmlExportService {
 
     // Fetch customers
     List<Customer> customers =
-        customerRepository.findByFilters(request.getStatus(), request.getIndustry());
+        customerRepository.findByFilters(request.getStatus(), request.getBusinessType());
 
     // Statistics
     long activeCount =
@@ -260,7 +260,7 @@ public class HtmlExportService {
           .append(escapeHtml(status))
           .append("</td>\n");
 
-      html.append("  <td>").append(escapeHtml(customer.getIndustry())).append("</td>\n");
+      html.append("  <td>").append(escapeHtml(customer.getBusinessType())).append("</td>\n");
 
       // Contact count and primary contact
       int contactCount = customer.getContacts() != null ? customer.getContacts().size() : 0;

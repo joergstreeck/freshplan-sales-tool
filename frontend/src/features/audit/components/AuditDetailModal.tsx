@@ -115,16 +115,13 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
             {audit && getActionIcon(audit.action)}
             <Typography
               variant="h6"
-              sx={{
-                fontFamily: 'Antonio, sans-serif',
-                fontWeight: 'bold',
-              }}
+              sx={{ fontFamily: theme => theme.typography.h4.fontFamily, fontWeight: 'bold' }}
             >
               Audit Log Details
             </Typography>
           </Box>
           <Box>
-            <Tooltip title="Export">
+            <Tooltip title="Exportieren">
               <span>
                 <IconButton onClick={exportAuditLog} size="small" disabled={!audit}>
                   <DownloadIcon />
@@ -153,7 +150,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                 variant="subtitle2"
                 gutterBottom
                 color="text.secondary"
-                sx={{ fontFamily: 'Poppins, sans-serif' }}
+                sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
               >
                 Grundinformationen
               </Typography>
@@ -192,7 +189,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                       label={audit.action}
                       size="small"
                       color={audit.action === 'DELETE' ? 'error' : 'primary'}
-                      sx={{ fontFamily: 'Poppins, sans-serif' }}
+                      sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
                     />
                   </Box>
                 </Grid>
@@ -213,7 +210,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                 variant="subtitle2"
                 gutterBottom
                 color="text.secondary"
-                sx={{ fontFamily: 'Poppins, sans-serif' }}
+                sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
               >
                 Benutzerinformationen
               </Typography>
@@ -258,7 +255,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                   variant="subtitle2"
                   gutterBottom
                   color="text.secondary"
-                  sx={{ fontFamily: 'Poppins, sans-serif' }}
+                  sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
                 >
                   Änderungsdetails
                 </Typography>
@@ -281,7 +278,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                       <pre
                         style={{
                           fontSize: '0.875rem',
-                          fontFamily: 'monospace',
+                          fontFamily: '"Courier New", Courier, monospace',
                           margin: 0,
                           whiteSpace: 'pre-wrap',
                           wordBreak: 'break-word',
@@ -311,7 +308,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                       <pre
                         style={{
                           fontSize: '0.875rem',
-                          fontFamily: 'monospace',
+                          fontFamily: '"Courier New", Courier, monospace',
                           margin: 0,
                           whiteSpace: 'pre-wrap',
                           wordBreak: 'break-word',
@@ -341,7 +338,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                       <pre
                         style={{
                           fontSize: '0.875rem',
-                          fontFamily: 'monospace',
+                          fontFamily: '"Courier New", Courier, monospace',
                           margin: 0,
                           whiteSpace: 'pre-wrap',
                           wordBreak: 'break-word',
@@ -361,7 +358,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                 variant="subtitle2"
                 gutterBottom
                 color="text.secondary"
-                sx={{ fontFamily: 'Poppins, sans-serif' }}
+                sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
               >
                 Sicherheit & Integrität
               </Typography>
@@ -427,7 +424,7 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
                   variant="subtitle2"
                   gutterBottom
                   color="text.secondary"
-                  sx={{ fontFamily: 'Poppins, sans-serif' }}
+                  sx={{ fontFamily: theme => theme.typography.body1.fontFamily }}
                 >
                   Compliance & Retention
                 </Typography>
@@ -499,8 +496,8 @@ export const AuditDetailModal: React.FC<AuditDetailModalProps> = ({ auditId, ope
           onClick={onClose}
           variant="contained"
           sx={{
-            bgcolor: '#004F7B',
-            '&:hover': { bgcolor: '#003d62' },
+            bgcolor: 'secondary.main',
+            '&:hover': { bgcolor: 'secondary.dark' },
           }}
         >
           Schließen

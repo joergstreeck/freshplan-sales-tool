@@ -126,9 +126,9 @@ export async function getThemeSettings(
 function getDefaultTheme(): Record<string, unknown> {
   return {
     mode: 'light',
-    primaryColor: '#94C456',
-    secondaryColor: '#004F7B',
-    fontFamily: 'Poppins, sans-serif',
+    primaryColor: 'primary.main',
+    secondaryColor: 'secondary.main',
+    fontFamily: theme => theme.typography.body1.fontFamily,
   };
 }
 
