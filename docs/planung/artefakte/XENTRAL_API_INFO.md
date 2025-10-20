@@ -368,6 +368,133 @@ public PaymentBehavior calculatePaymentBehavior(Invoice invoice) {
 
 ---
 
+## 3️⃣.1 LEGACY RECHNUNGS-API ✅ KOMPLETT (20.10.2025)
+
+### **⚠️ VOLLSTÄNDIGE Zahlungsfelder nur in Legacy API!**
+
+**Analog zur Kunden-Legacy-API** gibt es auch für Rechnungen Legacy-Endpoints mit **allen Feldern** im XML-Format.
+
+### **Legacy Rechnungs-Endpoints**
+
+**Rechnungs-Verwaltung:**
+```bash
+# Rechnung abrufen (GET)
+GET /api/RechnungGet?id={invoiceId}
+
+# Rechnung erstellen (POST)
+POST /api/RechnungCreate
+
+# Rechnung bearbeiten (PUT)
+PUT /api/RechnungEdit
+```
+
+### **Zahlungsfelder (XML - Feldnamen verifiziert)**
+
+**Quelle:** User-Info + Screenshot #3 (Rechnung → Mahnwesen)
+
+**Kritische Felder:**
+- `<zahlungsstatus>` - "offen" oder "bezahlt" (Dropdown)
+- `<soll>` - Rechnungsbetrag (Decimal)
+- `<ist>` - Bereits bezahlter Betrag (Decimal)
+- `<mahnstufe>` - Mahnstufe (z.B. 1, 2, 3)
+- `<mahndatum>` - Datum der letzten Mahnung (Date)
+- `<zahlungsziel_tage>` - Zahlungsziel in Tagen (Integer, z.B. 14, 30)
+
+**Zusätzlich (aus Screenshot verifiziert):**
+- `<datum>` - Rechnungsdatum
+- `<bezahlt_am>` - Datum der Zahlung (NULL wenn offen)
+- `<lieferdatum>` - Lieferdatum
+
+### **Legacy API Response Format (XML) - Rechnung**
+
+**Test-Call:**
+```bash
+curl -s -H 'Authorization: Bearer 344|AVV7...' \
+'https://644b6ff97320d.xentral.biz/api/RechnungGet?id={invoiceId}'
+```
+
+**Erwartete Response (XML):**
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <id>12171</id>
+  <kunde>55509</kunde>                              <!-- Kundennummer (5-stellig) -->
+  <projekt>JBX-ORDER-TRANSFER</projekt>
+  <auftrag>XFJ867</auftrag>
+  <lieferschein>XFJ719</lieferschein>
+  <datum>2025-10-20</datum>                          <!-- Rechnungsdatum -->
+  <lieferdatum>2025-10-20</lieferdatum>
+
+  <!-- Zahlungsfelder -->
+  <zahlungsstatus>offen</zahlungsstatus>             <!-- ✅ "offen" oder "bezahlt" -->
+  <soll>912.92</soll>                                <!-- ✅ Rechnungsbetrag -->
+  <ist>0.00</ist>                                    <!-- ✅ Bezahlter Betrag -->
+  <bezahlt_am></bezahlt_am>                          <!-- ✅ NULL wenn offen -->
+  <mahnstufe></mahnstufe>                            <!-- ✅ Mahnstufe (leer = keine Mahnung) -->
+  <mahndatum>2025-10-20</mahndatum>                  <!-- ✅ Mahndatum -->
+  <zahlungsziel_tage>30</zahlungsziel_tage>          <!-- ✅ Zahlungsziel (z.B. 30 Tage) -->
+
+  <status>versendet</status>                         <!-- Rechnungsstatus (versendet/entwurf) -->
+  <!-- ... weitere Felder ... -->
+</root>
+```
+
+### **Zahlungsverhalten Berechnung (mit Legacy API Feldern)**
+
+```java
+// Sprint 2.1.7.2 - Payment Behavior Calculation
+public class PaymentBehaviorService {
+
+    public PaymentBehavior calculateFromLegacyApi(String invoiceXml) {
+        Document doc = parseXml(invoiceXml);
+
+        // Felder extrahieren
+        String zahlungsstatus = doc.selectFirst("zahlungsstatus").text(); // "offen" oder "bezahlt"
+        BigDecimal soll = new BigDecimal(doc.selectFirst("soll").text());
+        BigDecimal ist = new BigDecimal(doc.selectFirst("ist").text());
+        LocalDate datum = LocalDate.parse(doc.selectFirst("datum").text());
+        String bezahltAmText = doc.selectFirst("bezahlt_am").text();
+        int zahlungszielTage = Integer.parseInt(doc.selectFirst("zahlungsziel_tage").text());
+
+        // 1. Check: Noch offen?
+        if (zahlungsstatus.equals("offen")) {
+            LocalDate dueDate = datum.plusDays(zahlungszielTage);
+            long daysOverdue = ChronoUnit.DAYS.between(dueDate, LocalDate.now());
+
+            if (daysOverdue <= 0) return PaymentBehavior.PENDING_GREEN;  // Noch nicht fällig
+            if (daysOverdue <= 7) return PaymentBehavior.PENDING_YELLOW; // 1-7 Tage überfällig
+            if (daysOverdue <= 30) return PaymentBehavior.PENDING_ORANGE; // 8-30 Tage überfällig
+            return PaymentBehavior.PENDING_RED; // >30 Tage überfällig
+        }
+
+        // 2. Bezahlt: Wie pünktlich?
+        LocalDate bezahltAm = LocalDate.parse(bezahltAmText);
+        LocalDate dueDate = datum.plusDays(zahlungszielTage);
+        long daysOverdue = ChronoUnit.DAYS.between(dueDate, bezahltAm);
+
+        // Ampel-Logik
+        if (daysOverdue <= 0) return PaymentBehavior.GREEN;   // Pünktlich/früher
+        if (daysOverdue <= 7) return PaymentBehavior.YELLOW;  // 1-7 Tage zu spät
+        if (daysOverdue <= 30) return PaymentBehavior.ORANGE; // 8-30 Tage zu spät
+        return PaymentBehavior.RED; // >30 Tage zu spät
+    }
+}
+```
+
+### **Warum Legacy Rechnungs-API?**
+
+**Vorteile:**
+- ✅ ALLE Zahlungsfelder verfügbar (zahlungsstatus, soll, ist, mahnstufe, mahndatum, zahlungsziel_tage)
+- ✅ Feldnamen aus Xentral UI verifiziert (Screenshot #3)
+- ✅ Konsistent mit Legacy Kunden-API
+
+**Entscheidung für Sprint 2.1.7.2:**
+✅ **Nutze Legacy API (`/api/RechnungGet`) für Zahlungsverhalten-Tracking**
+- Alle benötigten Felder vorhanden
+- Später: Migration zu New API, wenn verfügbar
+
+---
+
 ## 4️⃣ ZAHLUNGSVERHALTEN ✅ KOMPLETT
 
 ### **Payment-Summary Endpoint**
@@ -482,9 +609,10 @@ Später zu Webhooks wechselbar, wenn Production-Ready
 
 ### **✅ Für Sprint 2.1.7.2 (DANACH) - ALLES BEREIT!**
 1. ✅ Sales-Rep-Feld geklärt: **Legacy API `/api/AdresseGet`** nutzen (XML: `<vertrieb>`, `<innendienst>`)
-2. ✅ Order-Status-Feld für "Delivered" geklärt: `Status = "VERSENDET"` (gleiche Info wie 2.1.7.4)
-3. ✅ Nightly Job implementieren (Polling 1x täglich 02:00 Uhr)
-4. ✅ API-Token funktioniert: `344|AVV7locnqoJLXmvJsOgNINcfDm2j5b7J6GoEq1Jw`
+2. ✅ Zahlungsverhalten-Felder geklärt: **Legacy API `/api/RechnungGet`** nutzen (XML: `<zahlungsstatus>`, `<soll>`, `<ist>`, `<mahnstufe>`, `<mahndatum>`, `<zahlungsziel_tage>`)
+3. ✅ Order-Status-Feld für "Delivered" geklärt: `Status = "VERSENDET"` (gleiche Info wie 2.1.7.4)
+4. ✅ Nightly Job implementieren (Polling 1x täglich 02:00 Uhr)
+5. ✅ API-Token funktioniert: `344|AVV7locnqoJLXmvJsOgNINcfDm2j5b7J6GoEq1Jw`
 
 **Status:** 🟢 Kann nach 2.1.7.4 starten - alle Informationen vorhanden!
 
@@ -496,11 +624,17 @@ Document doc = parseXml(xml);
 String vertriebId = doc.selectFirst("vertrieb").text();
 String innendienstId = doc.selectFirst("innendienst").text();
 
-// 2. Lieferschein-Polling für PROSPECT → AKTIV
-GET /api/v1/delivery-notes?filter[0][key]=status&filter[0][op]=equals&filter[0][value]=VERSENDET
+// 2. Legacy API für Zahlungsverhalten nutzen
+String invoiceXml = xentralClient.get("/api/RechnungGet?id=" + invoiceId);
+Document invoiceDoc = parseXml(invoiceXml);
+String zahlungsstatus = invoiceDoc.selectFirst("zahlungsstatus").text(); // "offen" / "bezahlt"
+BigDecimal soll = new BigDecimal(invoiceDoc.selectFirst("soll").text());
+BigDecimal ist = new BigDecimal(invoiceDoc.selectFirst("ist").text());
+int zahlungszielTage = Integer.parseInt(invoiceDoc.selectFirst("zahlungsziel_tage").text());
 
-// 3. Rechnungs-Polling für Zahlungsverhalten
-GET /api/v1/invoices?filter[0][key]=zahlungsstatus&filter[0][op]=in&filter[0][value][]=offen&filter[0][value][]=bezahlt
+// 3. Lieferschein-Polling für PROSPECT → AKTIV
+// (noch unklar ob Legacy oder New API - noch zu testen)
+GET /api/v1/delivery-notes?filter[0][key]=status&filter[0][op]=equals&filter[0][value]=VERSENDET
 ```
 
 ---
@@ -512,9 +646,10 @@ GET /api/v1/invoices?filter[0][key]=zahlungsstatus&filter[0][op]=in&filter[0][va
 | **Base-URL** | ✅ KOMPLETT | `https://644b6ff97320d.xentral.biz/api/v1` |
 | **Auth** | ✅ KOMPLETT | Personal Access Token (Bearer) |
 | **Kunden-API (New)** | ⚠️ LIMITIERT | Endpoint ✅, Kundennummer ✅ (5-stellig), Sales-Rep ❌ (fehlt!) |
-| **Kunden-API (Legacy)** | ✅ KOMPLETT | Endpoint ✅, Kundennummer ✅, Sales-Rep ✅ (XML: `<vertrieb>`, `<innendienst>`) |
+| **Kunden-API (Legacy)** | ✅ KOMPLETT | `/api/AdresseGet` ✅, Sales-Rep ✅ (XML: `<vertrieb>`, `<innendienst>`) |
 | **Lieferschein-API** | ✅ KOMPLETT | Endpoint ✅, Status ✅ (`VERSENDET` = Trigger) |
-| **Rechnungs-API** | ✅ KOMPLETT | Endpoint ✅, Zahlungsfelder ✅ (zahlungsstatus, bezahlt_am, etc.) |
+| **Rechnungs-API (New)** | ⚠️ UNBEKANNT | `/api/v1/invoices` (noch nicht getestet für alle Felder) |
+| **Rechnungs-API (Legacy)** | ✅ KOMPLETT | `/api/RechnungGet` ✅, Zahlungsfelder ✅ (XML: `<zahlungsstatus>`, `<soll>`, `<ist>`, etc.) |
 | **Filter-Syntax** | ✅ KOMPLETT | Query-Object-Pattern dokumentiert |
 | **Rate Limits** | ✅ KOMPLETT | 10-20 req/min, Timeout 10s |
 | **Testumgebung** | ✅ KOMPLETT | Test-Projekt mit `project.id` |
@@ -525,11 +660,11 @@ GET /api/v1/invoices?filter[0][key]=zahlungsstatus&filter[0][op]=in&filter[0][va
 
 **Alle kritischen Informationen aus Screenshots + API-Tests verifiziert:**
 - ✅ Kundennummer-Format (5-stellig ohne Präfix)
-- ✅ Sales-Rep-Feld (`Vertrieb` + Fallback `Innendienst`) - **NUR Legacy API!**
+- ✅ Sales-Rep-Felder (`<vertrieb>` + Fallback `<innendienst>`) - **NUR Legacy API `/api/AdresseGet`!**
 - ✅ Lieferstatus-Detection (`Status = VERSENDET`)
-- ✅ Zahlungsverhalten-Felder (zahlungsstatus, bezahlt_am, mahndatum, zahlungsziel_tage)
+- ✅ Zahlungsverhalten-Felder (`<zahlungsstatus>`, `<soll>`, `<ist>`, `<mahnstufe>`, `<mahndatum>`, `<zahlungsziel_tage>`) - **NUR Legacy API `/api/RechnungGet`!**
 - ✅ Business-Logik definiert (siehe `XENTRAL_SCREENSHOTS_FINDINGS.md`)
-- ✅ Legacy API XML-Format dokumentiert (inkl. Code-Beispiele)
+- ✅ Legacy API XML-Format dokumentiert (Kunden + Rechnungen, inkl. Code-Beispiele)
 
 **✅ API-Token Status:**
 - Token `344|AVV7locnqoJLXmvJsOgNINcfDm2j5b7J6GoEq1Jw` validiert: **FUNKTIONIERT**
