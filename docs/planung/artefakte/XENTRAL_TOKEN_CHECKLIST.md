@@ -3,7 +3,12 @@
 **Erstellt:** 2025-10-20
 **Quelle:** https://help.xentral.com/hc/de/articles/22627542067740-Personal-Access-Tokens-PAT-in-Xentral
 **Für:** Sprint 2.1.7.2 - Xentral Integration
-**Status:** ⚠️ Token muss neu erstellt werden (alter Token: keine Scopes)
+**Status:** ⚠️ Token muss neu erstellt werden
+
+**⚠️ WICHTIGER HINWEIS (2025-10-20):**
+Die im Xentral Help-Artikel beschriebenen **Scopes/CRUD-Rechte sind noch NICHT verfügbar** (Early Access/Beta).
+Aktuell: **Token = volle User-Rechte** (alle API-Bereiche des Benutzers).
+Rechte-Steuerung erfolgt über **Benutzerprofil**, nicht über Token selbst.
 
 ---
 
@@ -50,38 +55,37 @@ Verantwortlich: Jörg Streeck
 
 ---
 
-### **3. Scopes (Zugriffsbereiche)** ⚠️ KRITISCH!
+### **3. Scopes/CRUD-Rechte** ⚠️ AKTUELL NICHT VERFÜGBAR!
 
-**Minimalprinzip:** Nur aktivieren was wir wirklich brauchen!
+**⚠️ WICHTIGE KORREKTUR (2025-10-20):**
 
-#### **Für Sprint 2.1.7.2 + 2.1.7.4 (Read-Only):**
+Die im Xentral Help-Artikel beschriebenen **granularen Scopes und CRUD-Rechte sind bei den meisten Xentral-Installationen noch NICHT verfügbar**.
 
-| Scope | Benötigt | Begründung |
-|-------|----------|------------|
-| **CRM - Customers** | ✅ JA (Read) | Customer-Daten lesen (Sales-Rep, Kundennummer) |
-| **Verkauf - Delivery-Notes** | ✅ JA (Read) | Lieferschein-Status prüfen (`VERSENDET`) |
-| **Buchhaltung - Invoices** | ✅ JA (Read) | Rechnungen + Zahlungsverhalten lesen |
-| **Admin read** | ❌ NEIN | Zu viele Rechte (Security) |
-| **Admin** | ❌ NEIN | Zu viele Rechte (Security) |
+**Aktueller Stand:**
+- ❌ Scope-Auswahl (CRM, Verkauf, Buchhaltung) = **Early Access/Beta**
+- ❌ CRUD-Rechte (Read, Create, Update, Delete) = **Early Access/Beta**
+- ✅ **Token = volle User-Rechte** (alle API-Bereiche)
 
-**⚠️ WICHTIG:** Keine Create/Update/Delete Rechte für erste Phase!
+**Was das bedeutet:**
+```
+Token-Rechte = Alle Rechte des Benutzers (Jörg Streeck)
+→ Zugriff auf: Customers, Delivery-Notes, Invoices, alle anderen Module
+→ Operationen: Read, Create, Update, Delete (je nach User-Berechtigung)
+```
 
----
+**Rechte-Steuerung erfolgt über:**
+- ✅ **Benutzerprofil** (Jörgs Account-Rechte in Xentral)
+- ❌ NICHT über Token selbst (kein granulares Scoping möglich)
 
-### **4. CRUD-Rechte (feingranular)** ⚠️ KRITISCH!
+**Sicherheits-Implikation:**
+⚠️ **Token hat ALLE Rechte des Users!**
+→ Besonders wichtig: Token sicher aufbewahren (Passwort-Manager)
+→ Keine Read-Only-Beschränkung möglich (würde User-Rechte erfordern)
 
-**Für jede aktivierte Ressource:**
-
-| Ressource | Create | Read | Update | Delete | Begründung |
-|-----------|--------|------|--------|--------|------------|
-| **Customers** | ❌ | ✅ | ❌ | ❌ | Nur Lesen (kein Schreiben!) |
-| **Delivery-Notes** | ❌ | ✅ | ❌ | ❌ | Nur Status prüfen |
-| **Invoices** | ❌ | ✅ | ❌ | ❌ | Nur Zahlungsdaten lesen |
-
-**Minimalprinzip:**
-> "Ein Reporting-Tool benötigt oft nur Leserechte"
-
-→ **Wir brauchen für Phase 1 NUR Read-Rechte!**
+**Zukünftig (Early Access/Beta):**
+- Xentral rollt granulare Token-Scopes aus
+- Dann: Pro Token Scopes + CRUD-Rechte konfigurierbar
+- Bis dahin: Token = volle User-Rechte
 
 ---
 
@@ -96,14 +100,21 @@ Verantwortlich: Jörg Streeck
    - **Name:** Xentral-API-FreshPlan-Production
    - **URL:** https://644b6ff97320d.xentral.biz/api/v1
    - **Token:** (generierter Wert)
-   - **Notiz:** Scopes + CRUD + Ablaufdatum
+   - **Notiz:** User-Rechte (Jörg Streeck), Ablaufdatum, volle API-Rechte
 4. ✅ Token Claude geben für Sprint 2.1.7.2
 
-**⚠️ Sicherheitsmaßnahmen:**
+**⚠️ KRITISCHE Sicherheitsmaßnahmen (Token hat VOLLE User-Rechte!):**
 - ❌ NIEMALS per E-Mail/Chat unverschlüsselt versenden
 - ❌ NIEMALS in Git-Repository committen
 - ❌ NIEMALS in Frontend-Code einbetten
+- ❌ NIEMALS mit anderen Personen teilen
 - ✅ Nur in Backend Environment-Variable (`XENTRAL_API_TOKEN`)
+- ✅ Besonders sicher aufbewahren (volle Schreibrechte!)
+
+**⚠️ WICHTIG:** Da Token ALLE User-Rechte hat (inkl. Create/Update/Delete):
+- Backend muss Read-Only-Logik selbst implementieren
+- Nie direkt User-Input in Write-APIs durchreichen
+- Validation + Sanitization auf Backend-Seite
 
 ---
 
@@ -115,21 +126,26 @@ Verantwortlich: Jörg Streeck
 
 **Name:** FreshPlan-CRM-Sync-Production
 **Erstellt:** 2025-10-20
-**Ersteller:** Jörg Streeck
+**Ersteller:** Jörg Streeck (User-Account)
 **Ablaufdatum:** 2026-10-20 (365 Tage)
 **Zweck:** FreshPlan CRM Integration (Sprint 2.1.7.2 + 2.1.7.4)
 
-**Scopes:**
-- CRM - Customers (Read)
-- Verkauf - Delivery-Notes (Read)
-- Buchhaltung - Invoices (Read)
+**Rechte:**
+- ⚠️ **VOLLE User-Rechte** (Jörg Streeck Account)
+- Zugriff: Alle API-Bereiche (CRM, Verkauf, Buchhaltung, etc.)
+- Operationen: Read, Create, Update, Delete (je nach User-Berechtigung)
+- Granulare Scopes: Nicht verfügbar (Early Access/Beta)
 
-**CRUD-Rechte:**
-- Alle Ressourcen: Read-Only (keine Create/Update/Delete)
+**Verwendung in FreshPlan:**
+- Phase 1 (Sprint 2.1.7.2/2.1.7.4): Nur Read-Operationen
+- Read-Only Logik: Im Backend implementiert (nicht Token-Ebene)
+- Write-Operationen: Für später (Phase 2+)
 
 **Sicherheit:**
+- ⚠️ Token hat Schreibrechte → besonders kritisch!
 - Token in 1Password gespeichert
 - Nur Backend hat Zugriff (Environment-Variable)
+- Keine Weitergabe an Dritte
 - Review: alle 6 Monate
 ```
 
@@ -180,16 +196,22 @@ curl -s -H 'Authorization: Bearer {TOKEN}' \
 ## ⚠️ HÄUFIGE FEHLER
 
 ### **Problem 1: Redirect auf /login**
-**Ursache:** Keine Scopes vergeben oder falsche Scopes
-**Lösung:** Token neu erstellen mit korrekten Scopes (siehe Checkliste)
+**Ursache:** User hat keine API-Berechtigung oder Token ist ungültig
+**Lösung:**
+- Prüfe ob User API-Zugriff hat (Admin-Rechte meist nötig)
+- Token neu erstellen
+- Richtige Base-URL verwenden (`/api/v1` nicht `/customerlistv2`)
 
 ### **Problem 2: 401 Unauthorized**
 **Ursache:** Token abgelaufen (nach 180/365 Tagen)
 **Lösung:** Laufzeit verlängern oder neuen Token erstellen
 
 ### **Problem 3: 403 Forbidden**
-**Ursache:** CRUD-Rechte fehlen (z.B. Read-Recht nicht aktiviert)
-**Lösung:** Token neu erstellen mit Read-Rechten für alle benötigten Ressourcen
+**Ursache:** User hat keine Berechtigung für diese Ressource
+**Lösung:**
+- Prüfe Benutzer-Rechte in Xentral (nicht Token-Rechte!)
+- Jörg braucht Zugriff auf CRM, Verkauf, Buchhaltung Module
+- Token übernimmt User-Rechte automatisch
 
 ### **Problem 4: Token versehentlich gelöscht**
 **Ursache:** Token wurde nach 180 Tagen Inaktivität auto-gelöscht
@@ -243,12 +265,14 @@ Admins können Tokens sperren (z.B. bei Sicherheitsvorfällen)
 - [ ] Namensschema definiert
 - [ ] Beschreibung geschrieben (Zweck, Verantwortlicher, Sprint)
 - [ ] Laufzeit festgelegt (365 Tage empfohlen)
-- [ ] Benötigte Scopes identifiziert (siehe Tabelle)
-- [ ] CRUD-Rechte definiert (Read-Only für Phase 1)
+- [ ] User-Rechte geprüft (Jörg hat Admin/API-Zugriff?)
+- [ ] Verstanden: Token = volle User-Rechte (keine Scopes)
 
 **Bei Token-Erstellung:**
-- [ ] Scopes aktiviert (CRM-Customers, Delivery-Notes, Invoices)
-- [ ] CRUD auf Read-Only gesetzt
+- [ ] Name + Beschreibung eingegeben
+- [ ] Laufzeit gesetzt (365 Tage)
+- [ ] ~~Scopes aktiviert~~ (nicht verfügbar - Token hat volle User-Rechte)
+- [ ] ~~CRUD gesetzt~~ (nicht verfügbar - Token hat volle User-Rechte)
 - [ ] Token sofort kopiert (wird nicht mehr angezeigt!)
 - [ ] Token in Passwort-Manager gespeichert
 
@@ -274,8 +298,12 @@ Admins können Tokens sperren (z.B. bei Sicherheitsvorfällen)
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-20 (nach Xentral Help-Center Review)
-**Erstellt von:** Claude + Jörg (Xentral Help-Artikel)
+**Letzte Aktualisierung:** 2025-10-20 23:45 (KORREKTUR: Scopes nicht verfügbar)
+**Erstellt von:** Claude + Jörg (Xentral Help-Artikel + Community-Feedback)
 **Status:** ✅ Ready für Token-Erstellung vor Sprint 2.1.7.2
+
+**⚠️ KORREKTUR (2025-10-20):**
+Granulare Scopes/CRUD-Rechte sind noch **NICHT verfügbar** (Early Access/Beta).
+Token = volle User-Rechte. Dokumentation entsprechend angepasst.
 
 **⚠️ AKTION:** Token vor Sprint 2.1.7.2 Start (in ~3-5 Tagen) neu erstellen!
