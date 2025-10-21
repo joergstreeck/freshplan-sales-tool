@@ -21,6 +21,7 @@ Dieses Dokument konsolidiert **alle Architektur- und Design-Entscheidungen** fü
 7. Seasonal Pattern Implementation Strategy
 8. **LeadConvertService Komplett-Fix** (100% Datenübernahme)
 9. **Umsatz-Konzept Harmonisierung** (estimatedVolume → expectedAnnualVolume)
+10. **Multi-Location Management Architektur** (DEFERRED → Sprint 2.1.7.7)
 
 ---
 
@@ -603,6 +604,235 @@ opportunity.setExpectedValue(baseVolume.multiply(multiplier));
 
 ---
 
+## 🔟 Multi-Location Management Architektur (DEFERRED → Sprint 2.1.7.7)
+
+### **Problem**
+
+**User-Anforderung (2025-10-21):**
+> "Wir haben oft Filialbetriebe, besonders Hotelketten"
+
+**Kritische Fragen:**
+1. **Customer-Anlage:** Wie legt Vertriebler Filialbetriebe nutzerfreundlich an?
+2. **Lead-Conversion:** Ist der konvertierte Lead Hauptbetrieb oder Filiale?
+3. **Xentral-Umsatz:** Wie ordnen wir Umsatz pro Filiale zu?
+4. **Opportunities:** Pro Filiale oder pro Kette?
+
+**Xentral-Realität:**
+- ❌ **KEINE Filial-ID** in Xentral
+- ✅ **Gleiche Kundennummer** für alle Filialen (z.B. `56037`)
+- ✅ **Unterscheidung:** Nur über **Lieferadresse** (String-Matching!)
+
+### **Status Quo - Was existiert bereits?**
+
+#### ✅ **SEHR GUTE Basis-Infrastruktur!**
+
+**1. Customer-Hierarchie (Customer.java:131-142):**
+```java
+// Parent-Child Relationship
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "parent_customer_id")
+private Customer parentCustomer;  // ← Zentrale/Hauptbetrieb
+
+@OneToMany(mappedBy = "parentCustomer", cascade = CascadeType.ALL)
+private List<Customer> childCustomers = new ArrayList<>();  // ← Filialen
+
+@Enumerated(EnumType.STRING)
+@Column(name = "hierarchy_type", length = 20)
+private CustomerHierarchyType hierarchyType = CustomerHierarchyType.STANDALONE;
+```
+
+**CustomerHierarchyType Enum:**
+- `HEADQUARTER` - Zentrale/Hauptsitz
+- `FILIALE` - Filiale/Zweigstelle
+- `ABTEILUNG` - Abteilung
+- `FRANCHISE` - Franchise-Nehmer
+- `STANDALONE` - Einzelbetrieb
+
+**2. CustomerLocation Support (Customer.java:300-304):**
+```java
+@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+private List<CustomerLocation> locations = new ArrayList<>();
+```
+
+**CustomerLocation.java Features:**
+- `locationName`, `locationCode`, `category`
+- `isMainLocation` Flag
+- `isShippingLocation` Flag
+- **Multiple Adressen pro Location** (CustomerAddress)
+- Business-Methoden: `getPrimaryShippingAddress()`, etc.
+
+**3. Chain Structure Fields (Customer.java:175-192):**
+```java
+@Column(name = "total_locations_eu")
+private Integer totalLocationsEU = 0;
+
+@Column(name = "locations_germany")
+private Integer locationsGermany = 0;
+// ... Austria, Switzerland, Rest EU
+```
+
+**4. Lead Parity (Customer.java:110-120):**
+```java
+@Column(name = "branch_count")
+private Integer branchCount = 1;
+
+@Column(name = "is_chain")
+private Boolean isChain = false;
+```
+
+### **Lücken - Was fehlt?**
+
+#### ❌ **1. Opportunity → Location Verknüpfung**
+
+```java
+// Opportunity.java:52-53 (AKTUELL)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "customer_id")
+private Customer customer;  // ← NUR Customer, KEINE Location!
+```
+
+**Impact:**
+- Opportunity kann nicht einer **spezifischen Filiale** zugeordnet werden
+- Upselling/Cross-Selling pro Filiale schwer zu tracken
+
+#### ❌ **2. Lead → Location Konzept**
+
+```java
+// Lead.java (AKTUELL)
+@Column(name = "branch_count")
+public Integer branchCount = 1;  // ← Nur Zahl, keine Locations
+
+@Column(name = "is_chain")
+public Boolean isChain = false;  // ← Boolean Flag, keine Details
+```
+
+**Impact:**
+- Lead kann nicht "Filiale XY von Kette Z" sein
+- Lead→Customer Conversion: Kann nicht spezifische Filiale zuordnen
+
+#### ❌ **3. Xentral Filial-Mapping UNGEKLÄRT**
+
+**Problem:**
+- Xentral: Gleiche Kundennummer (`56037`) für alle Filialen
+- Unterscheidung NUR über Lieferadresse-String
+- Rechnung/Lieferschein → Welche Filiale? (Address-Matching fragil!)
+
+### **Best Practice - 3 Architektur-Modelle**
+
+#### **MODELL A: Separate Customers pro Filiale**
+
+```
+Hauptbetrieb: Customer #1 (hierarchyType = HEADQUARTER)
+  ├─ Filiale Berlin:  Customer #2 (hierarchyType = FILIALE, parentCustomer = #1)
+  ├─ Filiale München: Customer #3 (hierarchyType = FILIALE, parentCustomer = #1)
+  └─ Filiale Hamburg: Customer #4 (hierarchyType = FILIALE, parentCustomer = #1)
+```
+
+**✅ Vorteile:**
+- Separate Opportunities pro Filiale möglich
+- Separate Umsatz-Tracking (Xentral-Sync einfach)
+- Separate Contacts pro Filiale (Filialleiter)
+- Lead→Customer Conversion klar (Lead = spezifische Filiale)
+
+**❌ Nachteile:**
+- Viele Customer-Einträge (100 Filialen = 101 Customers)
+- Gesamt-Umsatz = Aggregation über alle Children
+- Dashboard-Filter "Nur Hauptbetriebe" nötig
+
+#### **MODELL B: Locations innerhalb Customer**
+
+```
+Customer #1 (Bäckerei Müller GmbH)
+  ├─ Location "Zentrale Hamburg" (isMainLocation = true)
+  ├─ Location "Filiale Berlin"
+  ├─ Location "Filiale München"
+  └─ Location "Filiale Köln"
+```
+
+**✅ Vorteile:**
+- 1 Customer-Eintrag (übersichtlich)
+- Gesamt-Umsatz einfach (Customer-Level)
+- Dashboard-KPIs einfach (Anzahl Customers = Anzahl Unternehmen)
+
+**❌ Nachteile:**
+- ⚠️ **Opportunity OHNE Location-Link** (Migration nötig!)
+- Umsatz-Tracking pro Filiale komplex (Address-Matching)
+- Lead→Customer: Lead wird zu Haupt-Customer (nicht Filiale)
+
+#### **MODELL C: HYBRID (EMPFOHLEN)**
+
+**Phase 1 (Sprint 2.1.7.4 - AKTUELL):**
+```java
+// LeadConvertService - MINIMAL-SUPPORT
+Customer customer = new Customer();
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.PROSPECT);
+
+// Branch-Infos als Metadaten
+customer.setBranchCount(lead.branchCount);
+customer.setIsChain(lead.isChain);
+
+// Hierarchy Type bestimmen
+if (lead.isChain != null && lead.isChain) {
+    customer.setHierarchyType(CustomerHierarchyType.HEADQUARTER);
+} else {
+    customer.setHierarchyType(CustomerHierarchyType.STANDALONE);
+}
+
+// ❌ KEIN automatisches Filial-Splitting
+// ❌ KEIN Opportunity→Location Link
+```
+
+**Phase 2 (Sprint 2.1.7.7 - SPÄTER):**
+- "Filialen verwalten" UI (Customer-DetailPage)
+- "Neue Filiale anlegen" (Separate Customer ODER Location)
+- Opportunity→Location Link (Migration + Field)
+- Xentral-Filial-Mapping (Address-Matching-Service)
+
+### **Lösung für Sprint 2.1.7.4**
+
+**✅ MINIMAL-SUPPORT (EMPFOHLEN):**
+
+**Was implementieren:**
+1. ✅ Lead→Customer Conversion mit `hierarchyType`
+2. ✅ `branchCount`, `isChain` kopieren (Metadaten)
+3. ✅ `totalLocationsEU`, `locationsGermany` kopieren
+4. ❌ **KEIN** automatisches Filial-Splitting
+5. ❌ **KEIN** Opportunity→Location Link
+
+**User-Workflow (Interim):**
+```
+1. Lead erfassen: "Bäckerei Müller GmbH" (branchCount = 10, isChain = true)
+2. Opportunity WON → Auto-Convert
+3. Customer erstellt: hierarchyType = HEADQUARTER, branchCount = 10
+4. SPÄTER: Vertriebler kann manuell Filialen anlegen (Sprint 2.1.7.7)
+```
+
+**Offene Punkte (für Sprint 2.1.7.7):**
+1. **Filial-Anlage UI:** Wie legt User Filialen an? (Separate Customer oder Location?)
+2. **Opportunity→Filiale:** Migration `opportunity.location_id` hinzufügen?
+3. **Xentral-Sync:** Address-Matching-Service (Lieferadresse → Location)
+4. **Umsatz-Tracking:** Pro Filiale oder aggregiert?
+
+### **Empfehlung: Sprint 2.1.7.7 anlegen**
+
+**Sprint 2.1.7.7: Multi-Location Management & Xentral Filial-Sync**
+
+**Scope:**
+- Filial-Anlage UI (Customer-DetailPage)
+- Entscheidung: Separate Customer vs. Location
+- Opportunity→Location Link (Migration + UI)
+- Xentral Address-Matching-Service
+- Umsatz-Tracking pro Filiale
+
+**Effort:** 12-15h (2 Tage)
+
+**Dependencies:**
+- Sprint 2.1.7.4 COMPLETE (hierarchyType Foundation)
+- Sprint 2.1.7.2 COMPLETE (Xentral Integration)
+
+---
+
 ## 🛠️ TECHNICAL DEBT
 
 ### **Temporäre Lösungen (werden in Folge-Sprints ersetzt)**
@@ -652,4 +882,4 @@ Diese Features bleiben wie implementiert:
 
 **✅ DESIGN DECISIONS STATUS: 📋 FINAL - User-Validated**
 
-**Letzte Aktualisierung:** 2025-10-19 (Initial Creation nach User-Diskussion)
+**Letzte Aktualisierung:** 2025-10-21 (Multi-Location Management Architektur hinzugefügt - DEFERRED zu Sprint 2.1.7.7)
