@@ -15,9 +15,10 @@
 4. [Frontend: Create Branch Dialog](#4-frontend-create-branch-dialog)
 5. [Frontend: Hierarchy Dashboard](#5-frontend-hierarchy-dashboard)
 6. [Frontend: Hierarchy Tree View](#6-frontend-hierarchy-tree-view)
-7. [Migration: Opportunity Location Link (Optional)](#7-migration-opportunity-location-link-optional)
-8. [API Endpoints](#8-api-endpoints)
-9. [Test Specifications](#9-test-specifications)
+7. [CustomerDetailPage Integration](#7-customerdetailpage-integration)
+8. [Migration: Opportunity Location Link (Optional)](#8-migration-opportunity-location-link-optional)
+9. [API Endpoints](#9-api-endpoints)
+10. [Test Specifications](#10-test-specifications)
 
 ---
 
@@ -910,7 +911,120 @@ const HierarchyNodeLabel: React.FC<HierarchyNodeLabelProps> = ({
 
 ---
 
-## 7️⃣ Migration: Opportunity Location Link (Optional)
+## 7️⃣ CustomerDetailPage Integration
+
+### **User-Workflow: Filial-Management**
+
+**Wo wird CreateBranchDialog aufgerufen?**
+
+```
+CustomerDetailPage (Hauptbetrieb)
+  ↓
+Tab "Filialen" (NEU - nur wenn hierarchyType = HEADQUARTER)
+  ↓
+HierarchyDashboard Component
+  ↓
+Button "Neue Filiale anlegen"
+  ↓
+CreateBranchDialog opens
+```
+
+### **CustomerDetailPage.tsx (Erweiterung)**
+
+**NEU: Tab "Filialen" hinzufügen**
+
+```tsx
+// CustomerDetailPage.tsx (bestehende Datei erweitern)
+
+import React, { useState } from 'react';
+import { Tabs, Tab, Box } from '@mui/material';
+import { HierarchyDashboard } from '../features/customers/components/HierarchyDashboard';
+import { CreateBranchDialog } from '../features/customers/components/CreateBranchDialog';
+import { useCustomer } from '../features/customers/hooks/useCustomer';
+
+export const CustomerDetailPage: React.FC = () => {
+  const { customerId } = useParams<{ customerId: string }>();
+  const { data: customer } = useCustomer(customerId);
+  const [currentTab, setCurrentTab] = useState(0);
+  const [branchDialogOpen, setBranchDialogOpen] = useState(false);
+
+  if (!customer) return <LoadingScreen />;
+
+  // Nur Filialen-Tab zeigen wenn HEADQUARTER
+  const showBranchesTab = customer.hierarchyType === 'HEADQUARTER';
+
+  return (
+    <Box>
+      {/* Header mit Customer-Info */}
+      <CustomerHeader customer={customer} />
+
+      {/* Tabs */}
+      <Tabs value={currentTab} onChange={(e, v) => setCurrentTab(v)}>
+        <Tab label="Übersicht" />
+        <Tab label="Opportunities" />
+        <Tab label="Kontakte" />
+        {showBranchesTab && <Tab label="Filialen" />}
+        <Tab label="Dokumente" />
+      </Tabs>
+
+      {/* Tab Content */}
+      <Box sx={{ py: 3 }}>
+        {currentTab === 0 && <CustomerOverview customer={customer} />}
+        {currentTab === 1 && <CustomerOpportunities customerId={customer.id} />}
+        {currentTab === 2 && <CustomerContacts customerId={customer.id} />}
+
+        {/* NEU: Filialen-Tab */}
+        {showBranchesTab && currentTab === 3 && (
+          <HierarchyDashboard
+            parent={customer}
+            onCreateBranch={() => setBranchDialogOpen(true)}
+          />
+        )}
+
+        {currentTab === (showBranchesTab ? 4 : 3) && (
+          <CustomerDocuments customerId={customer.id} />
+        )}
+      </Box>
+
+      {/* CreateBranchDialog */}
+      <CreateBranchDialog
+        open={branchDialogOpen}
+        onClose={() => setBranchDialogOpen(false)}
+        parentCustomer={customer}
+      />
+    </Box>
+  );
+};
+```
+
+### **Conditional Rendering (Wichtig!)**
+
+**Tab "Filialen" nur zeigen wenn:**
+- `customer.hierarchyType === 'HEADQUARTER'`
+- ODER `customer.isChain === true`
+- ODER `customer.totalLocationsEU > 1`
+
+**Für STANDALONE/FILIALE Customers:**
+- ❌ Kein Tab "Filialen"
+- Tab-Reihenfolge: Übersicht, Opportunities, Kontakte, Dokumente
+
+**Für FILIALE Customers (Child):**
+- ✅ Link zu Parent anzeigen: "Teil von: [NH Hotels Deutschland GmbH]"
+- ❌ Kein CreateBranch Button (nur Parent kann Branches anlegen)
+
+### **Code-Änderungen:**
+
+**Dateien:**
+1. `frontend/src/pages/CustomerDetailPage.tsx` (erweitern)
+2. `frontend/src/features/customers/components/HierarchyDashboard.tsx` (NEU)
+3. `frontend/src/features/customers/components/CreateBranchDialog.tsx` (NEU)
+
+**Tests:**
+- `CustomerDetailPage.test.tsx` erweitern (Tab-Visibility, Conditional Rendering)
+
+---
+
+## 8️⃣ Migration: Opportunity Location Link (Optional)
 
 **NOTE:** Migration V10036 ist **OPTIONAL** und nur nötig wenn Option B (Locations) gewählt wird. Bei Option A (Separate Customers) wird diese Migration **NICHT** benötigt!
 
@@ -934,7 +1048,7 @@ const HierarchyNodeLabel: React.FC<HierarchyNodeLabelProps> = ({
 
 ---
 
-## 8️⃣ API Endpoints
+## 9️⃣ API Endpoints
 
 ### **CustomerResource.java (erweitert)**
 
@@ -1002,7 +1116,7 @@ public class CustomerResource {
 
 ---
 
-## 9️⃣ Test Specifications
+## 🔟 Test Specifications
 
 ### **Backend Tests (29 Tests)**
 
