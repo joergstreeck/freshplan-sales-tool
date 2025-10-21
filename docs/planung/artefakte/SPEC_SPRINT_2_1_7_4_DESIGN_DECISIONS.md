@@ -19,6 +19,8 @@ Dieses Dokument konsolidiert **alle Architektur- und Design-Entscheidungen** fü
 5. Seasonal Business Support (Food-Branche kritisch!)
 6. PROSPECT Lifecycle - Warnungen statt Auto-Archivierung
 7. Seasonal Pattern Implementation Strategy
+8. **LeadConvertService Komplett-Fix** (100% Datenübernahme)
+9. **Umsatz-Konzept Harmonisierung** (estimatedVolume → expectedAnnualVolume)
 
 ---
 
@@ -403,6 +405,184 @@ Wie implementieren wir Seasonal Patterns? All-in-one oder schrittweise?
 > "NICHT automatisch archivieren! Warnungen statt Auto-Action."
 
 > "Seasonal Pattern: Start mit Monats-Arrays (Sprint 2.1.7.4), Advanced UI später (Sprint 2.1.7.6)"
+
+---
+
+## 8️⃣ LeadConvertService Komplett-Fix (100% Datenübernahme) ⭐
+
+### **Problem**
+**Aktueller Code kopiert nur 3 Felder bei Lead→Customer Conversion!**
+
+```java
+// LeadConvertService.convertToCustomer() - AKTUELL (Zeile 78-86):
+Customer customer = new Customer();
+customer.setCustomerNumber(customerNumber);
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.AKTIV); // ❌ Auch falsch!
+customer.setOriginalLeadId(leadId);
+// ... Location/Address/Contact werden erstellt
+// ❌ ABER: 15+ Felder NICHT kopiert!
+```
+
+**Was FEHLT:**
+- `kitchenSize` ❌ (vorhanden seit V10032)
+- `employeeCount` ❌
+- `estimatedVolume` ❌ **KRITISCH!**
+- `branchCount`, `isChain` ❌
+- `businessType` ❌
+- **Pain Scoring (8 Felder)** ❌
+- `painStaffShortage`, `painHighCosts`, `painFoodWaste`, etc.
+
+**Impact:**
+- Vertriebler verliert alle Lead-Qualifikationsdaten
+- Opportunity-Kalkulation hat keine Basis (kein Volumen!)
+- Pain Points müssen neu eingegeben werden
+
+---
+
+### **Lösung**
+**100% Datenübernahme bei Lead→Customer Conversion** ✅
+
+**Alle Felder kopieren:**
+
+```java
+// NACHHER (Sprint 2.1.7.4):
+Customer customer = new Customer();
+customer.setCustomerNumber(customerNumber);
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.PROSPECT); // ✅ KORREKT!
+customer.setOriginalLeadId(leadId);
+
+// Umsatz-Felder (KRITISCH!)
+if (lead.estimatedVolume != null) {
+    customer.setExpectedAnnualVolume(lead.estimatedVolume); // ✅ NEU!
+}
+
+// Business-Felder (Lead Parity - V10032)
+customer.setKitchenSize(lead.kitchenSize);
+customer.setEmployeeCount(lead.employeeCount);
+customer.setBranchCount(lead.branchCount);
+customer.setIsChain(lead.isChain);
+customer.setBusinessType(lead.businessType);
+
+// Pain Scoring (8 Boolean Felder - Sprint 2.1.6 Harmonization)
+customer.setPainStaffShortage(lead.painStaffShortage);
+customer.setPainHighCosts(lead.painHighCosts);
+customer.setPainFoodWaste(lead.painFoodWaste);
+customer.setPainQualityInconsistency(lead.painQualityInconsistency);
+customer.setPainTimePressure(lead.painTimePressure);
+customer.setPainSupplierQuality(lead.painSupplierQuality);
+customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
+customer.setPainPoorService(lead.painPoorService);
+customer.setPainNotes(lead.painNotes);
+
+// ... (rest bleibt wie vorher: Location, Address, Contact)
+```
+
+---
+
+### **Begründung**
+- ✅ **Keine Datenverluste:** Vertriebler-Arbeit wird nicht verschwendet
+- ✅ **Opportunity-Basis:** expectedAnnualVolume ist sofort verfügbar
+- ✅ **Pain Points erhalten:** Für Retention/Upsell wichtig
+- ✅ **100% Parity:** Lead und Customer haben gleiche Datenqualität
+
+### **Alternativen (verworfen)**
+❌ **Nur Status-Fix (ohne Felder):** Datenverlust bleibt
+❌ **Separater Sprint:** Zu spät - Lead→Customer Conversions passieren JETZT
+❌ **Manuell nachpflegen:** Zu viel Arbeit, fehleranfällig
+
+---
+
+## 9️⃣ Umsatz-Konzept Harmonisierung (estimatedVolume → expectedAnnualVolume) 💰
+
+### **Problem**
+**3 Umsatzfelder = Verwirrung!**
+
+| Feld | Wo? | Quelle | Zweck | Problem |
+|------|-----|--------|-------|---------|
+| `estimatedVolume` | Lead | Manuell | Qualifizierung | ✅ OK |
+| `estimatedVolume` | Customer | ❌ NICHT kopiert | Sollte aus Lead kommen | ⚠️ Leer! |
+| `expectedAnnualVolume` | Customer | Manuell | Prognose | ❓ Woher? |
+| `actualAnnualVolume` | Customer | Xentral | ERP-Daten | 🔜 Sprint 2.1.7.2 |
+
+**Fragen:**
+1. Warum hat Customer ZWEI Volumen-Felder?
+2. Wird `estimatedVolume` aus Lead übernommen? **NEIN!** ❌
+3. Wie hängt `Opportunity.expectedValue` damit zusammen?
+
+---
+
+### **Lösung**
+**3-Phasen-Modell mit klarem Data Flow** ✅
+
+**Phase 1: LEAD**
+```
+Lead.estimatedVolume = 100.000€ (Vertriebler-Schätzung)
+```
+
+**Phase 2: CUSTOMER (Opportunity WON)**
+```
+Customer.expectedAnnualVolume = Lead.estimatedVolume (automatisch kopiert!)
+Customer.actualAnnualVolume = NULL (noch keine Xentral-Daten)
+```
+
+**Phase 3: CUSTOMER (nach Sprint 2.1.7.2 - Xentral Sync)**
+```
+Customer.actualAnnualVolume = 87.450€ (Xentral - ECHTE Rechnungen!)
+Customer.expectedAnnualVolume = 100.000€ (bleibt als Referenz)
+```
+
+**OpportunityMultiplier Nutzung:**
+```java
+// Opportunity.expectedValue Berechnung (automatisch!):
+BigDecimal baseVolume = customer.actualAnnualVolume != null
+    ? customer.actualAnnualVolume      // PREFER: Xentral Real Data
+    : customer.expectedAnnualVolume;   // FALLBACK: Lead Estimate
+
+BigDecimal multiplier = OpportunityMultiplier.getMultiplierValue(
+    "HOTEL", "SORTIMENTSERWEITERUNG", BigDecimal.valueOf(0.65)
+); // Returns: 0.65
+
+opportunity.setExpectedValue(baseVolume.multiply(multiplier));
+// Result: 87.450€ × 0.65 = 56.842€ (intelligenter Vorschlag!)
+```
+
+---
+
+### **Entscheidungen**
+
+**Decision 1: estimatedVolume → expectedAnnualVolume kopieren?**
+- ✅ **JA** - Automatisch bei Lead→Customer Conversion
+- Rationale: Lead-Schätzung ist wertvoll (Vertriebler kennt den Kunden)
+
+**Decision 2: Customer.estimatedVolume Feld entfernen?**
+- ❌ **NEIN** - Feld bleibt, aber wird NICHT genutzt
+- Rationale: Backend-Parity (V10032 hat es angelegt), später evtl. Use-Case
+
+**Decision 3: actualAnnualVolume überschreibt expectedAnnualVolume?**
+- ❌ **NEIN** - Beide Felder parallel
+- Rationale: Vertriebler sieht Abweichung (Expected: 100k€, Actual: 50k€)
+
+**Decision 4: OpportunityMultiplier automatisch nutzen?**
+- ✅ **JA** - Automatischer Vorschlag, manuell überschreibbar
+- Rationale: Intelligente Hilfe für Vertriebler
+
+---
+
+### **Begründung**
+- ✅ **Klarheit:** Jedes Feld hat klaren Zweck
+- ✅ **Automation:** OpportunityMultiplier schlägt Wert vor
+- ✅ **Flexibilität:** Vertriebler kann anpassen
+- ✅ **Xentral-Ready:** actualAnnualVolume ersetzt expected (Sprint 2.1.7.2)
+
+### **Alternativen (verworfen)**
+❌ **Nur expectedAnnualVolume nutzen:** Verlust von Xentral-Realität
+❌ **Keine Harmonisierung:** Verwirrung bleibt
+❌ **Separates Dokument:** Wird nicht gelesen
+
+**Artefakt:**
+→ Siehe `/docs/planung/artefakte/UMSATZ_KONZEPT_DECISION.md` (vollständige Doku)
 
 ---
 

@@ -3,10 +3,10 @@
 **Sprint-ID:** 2.1.7.4
 **Status:** 📋 PLANNING
 **Priority:** P1 (High - Architektur-Fix)
-**Estimated Effort:** 12h (1.5 Arbeitstage)
+**Estimated Effort:** 15h (2 Arbeitstage)
 **Owner:** Claude
 **Created:** 2025-10-19
-**Updated:** 2025-10-19 (Seasonal Business hinzugefügt)
+**Updated:** 2025-10-20 (LeadConvertService Fix + Umsatz-Konzept hinzugefügt)
 **Dependencies:** Sprint 2.1.7.3 COMPLETE
 
 ---
@@ -27,6 +27,8 @@ Saubere Status-Architektur für Lead → Customer Conversion mit klaren Lifecycl
 - Manual Activation: "Erste Bestellung geliefert"
 - Dashboard KPIs aktualisiert (PROSPECT-Zähler, Conversion Rate)
 - Seasonal Business Support (keine falschen Churn-Alarme!)
+- **LeadConvertService Komplett-Fix** (100% Datenübernahme)
+- **Umsatz-Konzept Dokumentation** (estimatedVolume → expectedAnnualVolume)
 
 **Business Impact:**
 - Klarheit über Kundenlebenszyklus
@@ -54,16 +56,24 @@ Saubere Status-Architektur für Lead → Customer Conversion mit klaren Lifecycl
 
 ---
 
-### **2. LeadConvertService: PROSPECT statt AKTIV** (1h)
+### **2. LeadConvertService: KOMPLETT-FIX** (3h)
 
-**Ziel:** Lead → Customer Conversion setzt PROSPECT (nicht AKTIV!)
+**Ziel:** Lead → Customer Conversion mit 100% Datenübernahme
 
 **Tasks:**
 - [x] LeadConvertService.convertToCustomer() anpassen
 - [x] Status von AKTIV → PROSPECT ändern
-- [x] Unit Tests aktualisieren
+- [x] **ALLE Lead-Felder kopieren:**
+  - [x] kitchen_size, employee_count, branch_count, is_chain
+  - [x] estimatedVolume → expectedAnnualVolume
+  - [x] businessType (falls noch nicht kopiert)
+  - [x] Pain Scoring (8 Boolean Felder)
+- [x] Unit Tests erweitern (Feldübernahme validieren)
+- [x] Integration Tests erweitern
 
-**Tests:** 3 Tests (LeadConvertServiceTest)
+**Tests:** 8 Tests (5 neue für Feldübernahme)
+
+**Impact:** ✅ Keine Datenverluste mehr bei Lead→Customer Conversion!
 
 ---
 
@@ -162,17 +172,37 @@ void handleOrderDelivered(
 
 ---
 
+### **8. Umsatz-Konzept Dokumentation & Harmonisierung** (1h)
+
+**Ziel:** Klarheit über Umsatzfelder im gesamten Lead→Customer→Opportunity Flow
+
+**Tasks:**
+- [x] Umsatz-Konzept Entscheidungs-Dokument erstellen
+- [x] Field-Mapping dokumentieren:
+  - Lead.estimatedVolume → Customer.expectedAnnualVolume
+  - Customer.actualAnnualVolume ← Xentral (Sprint 2.1.7.2)
+  - Opportunity.expectedValue ← OpportunityMultiplier Berechnung
+- [x] OpportunityMultiplier Nutzung validieren
+- [x] Dokumentation in DESIGN_DECISIONS aktualisieren
+
+**Artefakt:** `UMSATZ_KONZEPT_DECISION.md`
+
+**Impact:** ✅ Klarheit für Vertriebler: Welches Feld wofür?
+
+---
+
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
-- Backend: 34 Tests (26 original + 8 seasonal)
+- Backend: 42 Tests (34 original + 8 LeadConvertService)
 - Frontend: 16 Tests (13 original + 3 seasonal)
-- **Total: 50 Tests**
+- **Total: 58 Tests**
 
 **Code Changes:**
-- 1 Migration (V10032)
-- 6 Backend-Dateien (Service, Resource, Entity, Metrics)
+- 1 Migration (V10033)
+- 8 Backend-Dateien (LeadConvertService, OpportunityService, Entity, Metrics)
 - 4 Frontend-Dateien (CustomerDetailPage, Dashboard, API)
+- 1 Dokumentations-Artefakt (UMSATZ_KONZEPT_DECISION.md)
 
 **Business Impact:**
 - Klare Lead → Customer Conversion
@@ -224,18 +254,20 @@ void handleOrderDelivered(
 
 ## 📅 TIMELINE
 
-**Tag 1 (7h):**
-- Migration V10032 mit Seasonal Business (3h)
-- LeadConvertService Fix (1h)
-- Auto-Conversion (3h)
+**Tag 1 (8h):**
+- Migration V10033 mit Seasonal Business (3h)
+- LeadConvertService KOMPLETT-FIX (3h) ← NEU!
+- Auto-Conversion (2h)
 
-**Tag 2 (5h):**
+**Tag 2 (7h):**
+- Auto-Conversion Finalisierung (1h)
 - Manual Activation Button (2h)
 - Dashboard Updates (1h)
 - Xentral Interface (1h)
 - Seasonal Business Logic (1h)
+- Umsatz-Konzept Dokumentation (1h) ← NEU!
 
-**Total:** 12h (1.5 Arbeitstage)
+**Total:** 15h (2 Arbeitstage)
 
 ---
 
