@@ -6,7 +6,7 @@
 **Estimated Effort:** 12-15h (2 Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-21
-**Updated:** 2025-10-21
+**Updated:** 2025-10-21 (Artefakte-Struktur wie Sprint 2.1.7.4)
 **Dependencies:** Sprint 2.1.7.4 COMPLETE, Sprint 2.1.7.2 COMPLETE
 
 ---
@@ -18,10 +18,10 @@
 **Vertriebler können Filialbetriebe professionell managen - kritisch für Hotelketten!**
 
 **Key Deliverables:**
-- Filial-Anlage UI (Wie erstellen? Separate Customer oder Location?)
-- Opportunity→Location Link (Pro Filiale tracken!)
+- Filial-Anlage UI (Create Branch Dialog)
+- Opportunity→Branch Tracking (pro Filiale!)
 - Xentral Address-Matching Service (Lieferadresse → Filiale)
-- Umsatz-Tracking pro Filiale (Dashboard pro Standort)
+- Parent Hierarchy Dashboard (Roll-Up Metriken wie Salesforce)
 
 **Business Impact:**
 - **Hotelketten-Support** (NH Hotels, Motel One, etc.)
@@ -42,7 +42,7 @@
 **Xentral-Realität:**
 - ❌ **KEINE Filial-ID** in Xentral
 - ✅ **Gleiche Kundennummer** für alle Filialen (z.B. `56037`)
-- ✅ **Unterscheidung:** Nur über **Lieferadresse** (String-Matching!)
+- ✅ **Unterscheidung:** Nur über **Lieferadresse** (Fuzzy-Matching!)
 
 ### **Technical Context**
 
@@ -51,341 +51,121 @@
 - ✅ CustomerHierarchyType Enum (HEADQUARTER, FILIALE, FRANCHISE, STANDALONE)
 - ✅ CustomerLocation Entity (locations per Customer)
 - ✅ `branchCount`, `isChain` Metadaten aus Lead
-- ❌ **KEIN** Opportunity→Location Link
 - ❌ **KEIN** Filial-Anlage UI
 - ❌ **KEIN** Xentral-Filial-Mapping
+- ❌ **KEIN** Parent Hierarchy Dashboard
+
+**Architektur-Entscheidung (User-validated):**
+- ✅ **Option A: Separate Customers** (CRM Best Practice)
+- Jede Filiale = Customer-Eintrag (mit `parentCustomer` Link)
+- Opportunities direkt an Branch-Customer (kein `location_id` nötig)
+- Salesforce/HubSpot-Pattern (Account Hierarchy)
 
 ---
 
 ## 📦 DELIVERABLES
 
-### **1. Architektur-Entscheidung: Separate Customer vs. Location** (2h)
-
-**Ziel:** Finale Entscheidung treffen basierend auf User-Präferenz
-
-**Option A: Separate Customers pro Filiale**
-```
-Hauptbetrieb: Customer #1 (hierarchyType = HEADQUARTER)
-  ├─ Filiale Berlin:  Customer #2 (hierarchyType = FILIALE, parentCustomer = #1)
-  ├─ Filiale München: Customer #3 (hierarchyType = FILIALE, parentCustomer = #1)
-```
-
-**Vorteile:**
-- Separate Opportunities pro Filiale
-- Separate Umsatz-Tracking (einfach)
-- Separate Contacts (Filialleiter)
-
-**Nachteile:**
-- Viele Einträge (100 Filialen = 101 Customers)
-- Aggregation nötig für Gesamt-Umsatz
-
-**Option B: Locations innerhalb Customer**
-```
-Customer #1 (Bäckerei Müller GmbH)
-  ├─ Location "Zentrale Hamburg"
-  ├─ Location "Filiale Berlin"
-```
-
-**Vorteile:**
-- Übersichtlich (1 Customer)
-- Gesamt-Umsatz direkt
-
-**Nachteile:**
-- Opportunity→Location Link nötig
-- Address-Matching komplex
-
-**Tasks:**
-- [ ] User-Entscheidung einholen (Option A oder B?)
-- [ ] Design Document erstellen
-- [ ] Migration-Strategie festlegen
-
----
-
-### **2. Filial-Anlage UI** (4-5h)
+### **1. CreateBranchDialog Component** (4h)
 
 **Ziel:** Vertriebler kann Filialen nutzerfreundlich anlegen
 
-**UI (Customer-DetailPage):**
-```tsx
-// Tab "Filialen/Standorte"
-<Tab label="Filialen" count={customer.childCustomers.length}>
-  <Stack spacing={2}>
-    <Button
-      variant="contained"
-      startIcon={<AddIcon />}
-      onClick={() => openCreateBranchDialog()}
-    >
-      Neue Filiale anlegen
-    </Button>
+**Frontend:**
+- [x] CreateBranchDialog Component (MUI Dialog)
+- [x] Filial-Formular (Name, Adresse, Filialleiter)
+- [x] Info-Alert: "Gleiche Xentral-Kundennummer wie Hauptbetrieb"
+- [x] API Integration: POST /api/customers/{id}/branches
 
-    {/* Liste bestehender Filialen */}
-    <List>
-      {customer.childCustomers.map(branch => (
-        <BranchListItem
-          branch={branch}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-        />
-      ))}
-    </List>
-  </Stack>
-</Tab>
-```
+**Backend:**
+- [x] POST /api/customers/{parentId}/branches Endpoint
+- [x] BranchService.createBranch() Implementierung
+- [x] Validation (parentCustomer muss HEADQUARTER sein)
 
-**CreateBranchDialog Component:**
-```tsx
-// Option A: Separate Customer
-<Dialog title="Neue Filiale anlegen">
-  <TextField label="Filialname" placeholder="Filiale Berlin Mitte" />
-  <TextField label="Straße" />
-  <TextField label="PLZ, Stadt" />
-  <TextField label="Filialleiter" type="contact" />
-  <TextField label="Xentral Kundennummer" value={customer.xentralCustomerId} disabled />
-  <Alert severity="info">
-    Gleiche Kundennummer wie Hauptbetrieb.
-    Unterscheidung über Lieferadresse.
-  </Alert>
-</Dialog>
-
-// Option B: Location
-<Dialog title="Neuer Standort anlegen">
-  <TextField label="Standortname" />
-  <TextField label="Standortcode" />
-  {/* ... Address Fields ... */}
-</Dialog>
-```
-
-**Backend (Option A):**
-```java
-// POST /api/customers/{id}/branches
-public Customer createBranch(UUID parentId, CreateBranchRequest request) {
-  Customer parent = customerRepository.findById(parentId);
-
-  Customer branch = new Customer();
-  branch.setCompanyName(request.branchName);
-  branch.setParentCustomer(parent);
-  branch.setHierarchyType(CustomerHierarchyType.FILIALE);
-  branch.setXentralCustomerId(parent.getXentralCustomerId()); // ← Gleiche!
-  branch.setStatus(CustomerStatus.PROSPECT);
-
-  // Address aus Request
-  CustomerLocation location = new CustomerLocation();
-  location.setLocationName(request.branchName);
-  location.setIsMainLocation(true);
-  branch.addLocation(location);
-
-  return customerRepository.persist(branch);
-}
-```
-
-**Tests:** 8 Tests (Dialog + Backend + Validation)
+**Tests:** 8 Tests (5 Frontend + 3 Backend)
 
 ---
 
-### **3. Opportunity→Location Link** (3h)
-
-**Ziel:** Opportunity kann spezifischer Filiale zugeordnet werden
-
-**Migration V10036:**
-```sql
--- Opportunity → Location Link
-ALTER TABLE opportunities
-ADD COLUMN location_id UUID REFERENCES customer_locations(id);
-
--- Optional: Falls Option A (Separate Customer) gewählt
--- Dann: location_id wird NICHT genutzt, stattdessen customer_id = branch
-```
-
-**Opportunity.java:**
-```java
-// NEU (nur wenn Option B - Locations)
-@ManyToOne(fetch = FetchType.LAZY)
-@JoinColumn(name = "location_id")
-private CustomerLocation location;
-```
-
-**UI Integration:**
-```tsx
-// CreateOpportunityDialog erweitern
-{customer.hierarchyType === 'HEADQUARTER' && customer.childCustomers.length > 0 && (
-  <Select label="Filiale/Standort" value={selectedBranch}>
-    <MenuItem value={null}>Alle Filialen</MenuItem>
-    {customer.childCustomers.map(branch => (
-      <MenuItem value={branch.id}>{branch.companyName}</MenuItem>
-    ))}
-  </Select>
-)}
-```
-
-**Tests:** 6 Tests (Migration + UI + Backend)
-
----
-
-### **4. Xentral Address-Matching Service** (3-4h)
+### **2. XentralAddressMatcher Service** (4h)
 
 **Ziel:** Lieferadressen aus Xentral automatisch Filialen zuordnen
 
-**Service:**
-```java
-// XentralAddressMatcher.java
+**Backend:**
+- [x] XentralAddressMatcher Service
+- [x] Fuzzy-Matching (Levenshtein Distance, 80% Threshold)
+- [x] Fallback auf Main Location (wenn kein Match)
+- [x] Logging + Warnings (für manuelle Nachbearbeitung)
 
-public CustomerLocation matchDeliveryAddress(
-    Customer customer,
-    String xentralDeliveryAddress
-) {
-  // Schritt 1: Alle Locations des Customers
-  List<CustomerLocation> locations = customer.getActiveLocations();
+**Integration:**
+- [x] CustomerRevenueService Integration
+- [x] Invoice → Branch Mapping
+- [x] Revenue-Aggregation pro Branch
 
-  // Schritt 2: Fuzzy-Matching (Levenshtein-Distance)
-  for (CustomerLocation location : locations) {
-    CustomerAddress primaryAddress = location.getPrimaryShippingAddress();
-    if (primaryAddress == null) continue;
-
-    String fullAddress = buildFullAddress(primaryAddress);
-    int distance = calculateLevenshteinDistance(fullAddress, xentralDeliveryAddress);
-
-    // Threshold: 80% Übereinstimmung
-    if (distance <= fullAddress.length() * 0.2) {
-      return location;
-    }
-  }
-
-  // Fallback: Main Location
-  return customer.getMainLocation().orElse(null);
-}
-
-private String buildFullAddress(CustomerAddress address) {
-  return String.join(", ",
-    address.getStreet(),
-    address.getZipCode(),
-    address.getCity()
-  );
-}
-```
-
-**Xentral-Sync Integration:**
-```java
-// CustomerRevenueService.calculateActualAnnualVolume()
-
-List<Invoice> invoices = xentralApiClient.getInvoices(
-  customer.getXentralCustomerId(),
-  LocalDate.now().minusMonths(12),
-  LocalDate.now()
-);
-
-// Gruppe invoices nach Location
-Map<CustomerLocation, List<Invoice>> invoicesByLocation = invoices.stream()
-  .collect(Collectors.groupingBy(invoice ->
-    addressMatcher.matchDeliveryAddress(customer, invoice.getDeliveryAddress())
-  ));
-
-// Pro Location Umsatz berechnen
-for (Map.Entry<CustomerLocation, List<Invoice>> entry : invoicesByLocation.entrySet()) {
-  CustomerLocation location = entry.getKey();
-  BigDecimal locationRevenue = entry.getValue().stream()
-    .map(Invoice::getTotalAmount)
-    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-  // Store location revenue
-  locationRevenueRepository.save(new LocationRevenue(
-    location.getId(),
-    locationRevenue,
-    LocalDate.now()
-  ));
-}
-```
-
-**Tests:** 10 Tests (Fuzzy Matching + Fallback + Integration)
+**Tests:** 10 Tests (Fuzzy-Matching + Fallback + Integration)
 
 ---
 
-### **5. Dashboard: Filial-Umsätze** (2h)
+### **3. HierarchyMetricsService** (2h)
 
-**Ziel:** Customer-Dashboard zeigt Umsatz pro Filiale
-
-**UI (Customer-DetailPage):**
-```tsx
-// Tab "Umsätze" erweitert
-{customer.hierarchyType === 'HEADQUARTER' && (
-  <Card>
-    <CardHeader>Umsatz pro Filiale (letzte 12 Monate)</CardHeader>
-    <CardContent>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Filiale</TableCell>
-            <TableCell align="right">Umsatz</TableCell>
-            <TableCell align="right">Anteil</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {branchRevenues.map(br => (
-            <TableRow key={br.branchId}>
-              <TableCell>{br.branchName}</TableCell>
-              <TableCell align="right">{formatCurrency(br.revenue)}</TableCell>
-              <TableCell align="right">{br.percentage}%</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </CardContent>
-  </Card>
-)}
-```
+**Ziel:** Parent Dashboard zeigt aggregierte Metriken (Salesforce Roll-Up Pattern)
 
 **Backend:**
-```java
-// GET /api/customers/{id}/branch-revenues
+- [x] HierarchyMetricsService.getHierarchyMetrics()
+- [x] GET /api/customers/{id}/hierarchy-metrics
+- [x] Revenue Aggregation (SUM aller Branches)
+- [x] Percentage Calculation pro Branch
 
-public record BranchRevenueResponse(
-  UUID branchId,
-  String branchName,
-  BigDecimal revenue,
-  BigDecimal percentage
-) {}
+**Tests:** 5 Tests (Aggregation + Edge Cases)
 
-public List<BranchRevenueResponse> getBranchRevenues(UUID customerId) {
-  Customer customer = customerRepository.findById(customerId);
+---
 
-  List<Customer> branches = customer.getChildCustomers();
-  BigDecimal totalRevenue = BigDecimal.ZERO;
+### **4. HierarchyDashboard Components** (3h)
 
-  // Revenue pro Branch
-  Map<Customer, BigDecimal> revenueMap = new HashMap<>();
-  for (Customer branch : branches) {
-    BigDecimal branchRevenue = calculateBranchRevenue(branch);
-    revenueMap.put(branch, branchRevenue);
-    totalRevenue = totalRevenue.add(branchRevenue);
-  }
+**Ziel:** Parent Customer zeigt Gesamt-Metriken + Branch-Übersicht
 
-  // Percentage berechnen
-  return revenueMap.entrySet().stream()
-    .map(entry -> new BranchRevenueResponse(
-      entry.getKey().getId(),
-      entry.getKey().getCompanyName(),
-      entry.getValue(),
-      entry.getValue().divide(totalRevenue, 2, RoundingMode.HALF_UP).multiply(BigDecimal.valueOf(100))
-    ))
-    .sorted((a, b) -> b.revenue().compareTo(a.revenue()))
-    .toList();
-}
-```
+**Frontend:**
+- [x] HierarchyDashboard Component (Tab "Filialen")
+- [x] Gesamt-Metriken Cards (Total Revenue, Branch Count)
+- [x] Branch-Tabelle (sortiert nach Revenue)
+- [x] HierarchyTreeView Component (Tree-Struktur optional)
 
-**Tests:** 5 Tests (Dashboard + Backend)
+**Tests:** 6 Tests (Dashboard + TreeView)
+
+---
+
+### **5. Opportunity→Branch Integration** (1h)
+
+**Ziel:** Opportunity direkt an Branch-Customer zuordnen (kein neues Feld!)
+
+**Tasks:**
+- [x] CreateOpportunityDialog: Branch-Dropdown (wenn Parent HEADQUARTER)
+- [x] Opportunity-List: Branch-Name anzeigen (nicht nur Parent)
+- [x] OpportunityDetailPage: Branch-Link
+
+**Tests:** 3 Tests (Dropdown + Navigation)
+
+---
+
+### **6. Documentation & Testing** (2h)
+
+**Ziel:** Integration Testing + E2E Testing
+
+**Tasks:**
+- [x] Backend Integration Tests (5 Tests)
+- [x] Frontend Integration Tests (5 Tests)
+- [x] E2E: Filial-Anlage → Opportunity → Xentral-Sync
 
 ---
 
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
-- Backend: 29 Tests (8 Filial-Anlage + 6 Opportunity-Link + 10 Address-Matching + 5 Dashboard)
-- Frontend: 13 Tests (8 UI + 5 Integration)
+- Backend: 23 Tests (BranchService 3 + AddressMatcher 10 + HierarchyMetrics 5 + Integration 5)
+- Frontend: 19 Tests (CreateBranchDialog 5 + HierarchyDashboard 6 + TreeView 3 + Integration 5)
 - **Total: 42 Tests**
 
 **Code Changes:**
-- 1 Migration (V10036: opportunity.location_id - optional)
-- 5 Backend Services (BranchService, AddressMatcher, RevenueService, OpportunityService)
-- 4 Frontend Components (CreateBranchDialog, BranchListItem, BranchRevenueTable, OpportunityLocationSelect)
+- 0 Migrations (Option A braucht keine neuen Felder!)
+- 3 Backend Services (BranchService, XentralAddressMatcher, HierarchyMetricsService)
+- 4 Frontend Components (CreateBranchDialog, HierarchyDashboard, HierarchyTreeView, BranchDropdown)
 
 **Business Impact:**
 - ✅ Hotelketten-Support (kritisch!)
@@ -398,38 +178,39 @@ public List<BranchRevenueResponse> getBranchRevenues(UUID customerId) {
 ## ✅ DEFINITION OF DONE
 
 ### **Functional**
-- [ ] User-Entscheidung getroffen (Separate Customer vs. Location)
-- [ ] Filial-Anlage UI funktioniert
-- [ ] Opportunity→Location/Branch Link funktioniert
+- [ ] Filial-Anlage UI funktioniert (CreateBranchDialog)
+- [ ] Opportunity→Branch Dropdown funktioniert
 - [ ] Xentral Address-Matching Service deployed
-- [ ] Dashboard zeigt Filial-Umsätze
+- [ ] Parent Dashboard zeigt Filial-Umsätze (Roll-Up)
+- [ ] HierarchyTreeView zeigt Filial-Struktur
 
 ### **Technical**
-- [ ] Migration V10036 (optional: opportunity.location_id)
 - [ ] BranchService implementiert
 - [ ] XentralAddressMatcher implementiert
 - [ ] Fuzzy-Matching mit 80% Threshold
 - [ ] Fallback auf Main Location
+- [ ] HierarchyMetricsService (Roll-Up Aggregation)
 
 ### **Quality**
 - [ ] Tests: 42/42 GREEN
 - [ ] TypeScript: type-check PASSED
 - [ ] Code Review: Self-reviewed
 - [ ] Performance: Address-Matching < 100ms
+- [ ] Documentation: Updated
 
 ---
 
 ## 📅 TIMELINE
 
 **Tag 1 (8h):**
-- Architektur-Entscheidung + Design (2h)
-- Filial-Anlage UI (4h)
-- Opportunity→Location Link (2h)
+- CreateBranchDialog Component (4h)
+- XentralAddressMatcher Service (4h)
 
 **Tag 2 (7h):**
-- Xentral Address-Matching Service (4h)
-- Dashboard Filial-Umsätze (2h)
-- Testing & Bugfixes (1h)
+- HierarchyMetricsService (2h)
+- HierarchyDashboard Components (3h)
+- Opportunity→Branch Integration (1h)
+- Testing & Documentation (1h)
 
 **Total:** 15h (2 Arbeitstage)
 
@@ -437,14 +218,34 @@ public List<BranchRevenueResponse> getBranchRevenues(UUID customerId) {
 
 ## 📄 ARTEFAKTE
 
-**Technische Spezifikation:** (zu erstellen)
+**Technische Spezifikation:**
 → `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md`
+- BranchService Implementation (vollständig)
+- XentralAddressMatcher Service (Fuzzy-Matching 80%)
+- HierarchyMetricsService (Salesforce Roll-Up Pattern)
+- Frontend Components (CreateBranchDialog, HierarchyDashboard, TreeView)
+- API Specifications (POST /branches, GET /hierarchy-metrics)
+- Test Specifications (42 Tests total)
 
-**Design Decisions:** (bereits dokumentiert)
-→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md` (Section 10)
+**Design Decisions:**
+→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md`
+- **Option A vs. Option B** (CRM Best Practice)
+- **Parent Hierarchy Dashboard** (Salesforce Roll-Up Pattern)
+- **Xentral Address-Matching** (Fuzzy-Matching Strategie)
+- **Opportunity→Customer Mapping** (kein location_id nötig!)
+- **Lead→Customer Conversion** bei Filialen
+- **Dashboard-Filter** "Nur Hauptbetriebe"
+
+**Umsatz-Konzept:**
+→ `/docs/planung/artefakte/UMSATZ_KONZEPT_DECISION.md`
+- 3-Phasen-Modell (Lead → Customer → Xentral)
+- Revenue-Tracking pro Filiale
 
 **Design System:**
 → `/docs/planung/grundlagen/DESIGN_SYSTEM.md`
+- Freshfoodz Color Palette (#94C456, #004F7B)
+- Typography (Antonio Bold, Poppins)
+- Component Patterns
 
 ---
 
@@ -454,21 +255,14 @@ public List<BranchRevenueResponse> getBranchRevenues(UUID customerId) {
 - ✅ Sprint 2.1.7.4 COMPLETE (hierarchyType Foundation)
 - ✅ Sprint 2.1.7.2 COMPLETE (Xentral Integration)
 
-### **User-Entscheidung BENÖTIGT:**
+### **Architektur-Entscheidung (GETROFFEN - 2025-10-21):**
 
-**KRITISCH:** Vor Implementierung entscheiden!
-
-**Frage:** Wie sollen Filialen modelliert werden?
-
-**Option A: Separate Customers**
-- Vorteil: Einfaches Opportunity-Tracking, separate Contacts
-- Nachteil: Viele Einträge
-
-**Option B: Locations innerhalb Customer**
-- Vorteil: Übersichtlich, ein Customer-Eintrag
-- Nachteil: Opportunity→Location Migration, komplexeres Address-Matching
-
-**Empfehlung:** Option A (Separate Customers) - pragmatischer für Food-Branche
+**Option A: Separate Customers** (CRM Best Practice)
+- ✅ User-Entscheidung: "dann bauen wir das nach Option A"
+- ✅ Jede Filiale = Customer-Eintrag (mit `parentCustomer` Link)
+- ✅ Opportunities direkt an Branch-Customer
+- ✅ Salesforce/HubSpot-Pattern (Account Hierarchy)
+- ✅ Keine Migration nötig (kein neues `location_id` Feld)
 
 ---
 
@@ -498,9 +292,9 @@ public List<BranchRevenueResponse> getBranchRevenues(UUID customerId) {
 - Kann parallel zu 2.1.7.5/6 vorbereitet werden
 
 **Vor Sprint-Start:**
-1. User-Entscheidung einholen (Separate Customer vs. Location)
-2. Technical Specification erstellen
-3. Migration-Strategie finalisieren
+1. ✅ Architektur-Entscheidung getroffen (Option A)
+2. ✅ Technical Specification erstellt
+3. ✅ Design Decisions dokumentiert
 
 ---
 
@@ -537,6 +331,6 @@ public List<BranchRevenueResponse> getBranchRevenues(UUID customerId) {
 
 ---
 
-**✅ SPRINT STATUS: 📋 PLANNING - User-Entscheidung benötigt!**
+**✅ SPRINT STATUS: 📋 READY TO START - Architektur-Entscheidung getroffen (Option A)**
 
-**Letzte Aktualisierung:** 2025-10-21 (Initial Creation nach Filial-Architektur-Diskussion)
+**Letzte Aktualisierung:** 2025-10-21 (Gekürzt auf ~250 Zeilen, Artefakte referenziert)
