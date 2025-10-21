@@ -438,6 +438,349 @@ Akzeptanzkriterien:
 
 ---
 
-**Status:** ✅ FINAL - Ready für Implementation
-**Letzte Aktualisierung:** 2025-10-20 (Initial Creation)
+## 🎨 UX-DECISIONS: Dashboard-Anzeige (Sprint 2.1.7.2)
+
+### **User-Entscheidungen (2025-10-20 23:30):**
+
+Alle UX-Decisions für das Customer-Dashboard wurden getroffen und sind in Sprint 2.1.7.2 geplant.
+
+---
+
+### **Decision 1: Wann wird expectedAnnualVolume "abgelöst"?**
+
+**✅ GEWÄHLT: Option B - Beide zeigen mit Ampel-System**
+
+**Rationale:**
+- Vertriebler sieht Qualität seiner Lead-Schätzungen
+- Lernt daraus für zukünftige Leads
+- Dashboard kann "Top/Flop Prognosen" Widget zeigen
+
+**Implementation (Sprint 2.1.7.2):**
+```tsx
+// CustomerDetailPage - Revenue Section
+<Card>
+  <CardHeader>Jahresumsatz (letzte 12 Monate)</CardHeader>
+  <CardContent>
+    <Stack spacing={2}>
+      {/* Tatsächlicher Umsatz (Xentral) */}
+      <Box>
+        <Typography variant="h4">
+          {formatCurrency(actualAnnualVolume)}
+        </Typography>
+        <Typography variant="caption" color="text.secondary">
+          Tatsächlicher Umsatz (Xentral-Daten)
+        </Typography>
+      </Box>
+
+      {/* Abweichung von Prognose */}
+      <Divider />
+      <Box>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Typography variant="body2">
+            Urspr. Schätzung: {formatCurrency(expectedAnnualVolume)}
+          </Typography>
+          <Chip
+            label={formatDeviation(deviation)}
+            color={getDeviationColor(deviation)}
+            size="small"
+          />
+        </Stack>
+      </Box>
+    </Stack>
+  </CardContent>
+</Card>
+```
+
+**Ampel-System:**
+```typescript
+function getDeviationColor(deviation: number): ChipColor {
+  const absDeviation = Math.abs(deviation);
+  if (absDeviation < 5) return 'success';   // 🟢 < 5%: Schätzung war gut
+  if (absDeviation < 15) return 'warning';  // 🟡 5-15%: Kleine Abweichung
+  if (absDeviation < 30) return 'warning';  // 🟠 15-30%: Große Abweichung
+  return 'error';                           // 🔴 > 30%: Komplett falsch
+}
+```
+
+---
+
+### **Decision 2: Wie zeigen bei PROSPECT (noch keine Xentral-Daten)?**
+
+**✅ GEWÄHLT: Option A - Nur Schätzung zeigen**
+
+**Rationale:**
+- PROSPECT-Phase: Keine echten Daten verfügbar (noch keine Bestellung)
+- Placeholder verwirrt User ("--" sieht nach Fehler aus)
+- Klare Info: "Xentral-Daten nach erster Bestellung"
+
+**Implementation (Sprint 2.1.7.2):**
+```tsx
+// CustomerDetailPage - PROSPECT Status
+{customer.status === 'PROSPECT' && (
+  <Card>
+    <CardHeader>Umsatzprognose</CardHeader>
+    <CardContent>
+      <Stack spacing={2}>
+        <Box>
+          <Typography variant="h4">
+            {formatCurrency(expectedAnnualVolume)}
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Geschätztes Jahresvolumen (aus Lead-Qualifizierung)
+          </Typography>
+        </Box>
+
+        <Alert severity="info">
+          <AlertTitle>Xentral-Daten noch nicht verfügbar</AlertTitle>
+          Tatsächlicher Umsatz wird nach der ersten Bestellung angezeigt.
+        </Alert>
+      </Stack>
+    </CardContent>
+  </Card>
+)}
+```
+
+---
+
+### **Decision 3: Hochrechnung bei < 12 Monaten?**
+
+**✅ GEWÄHLT: Option A - Linear hochrechnen**
+
+**Rationale:**
+- Einfach verständlich für Vertriebler
+- "6 Monate → ×2" ist nachvollziehbar
+- Seasonal Business: Hochrechnung deaktiviert (separates Flag)
+- Hinweis zeigen: "Vorläufig, basiert auf X Monaten"
+
+**Implementation (Sprint 2.1.7.2):**
+```typescript
+// Backend: CustomerService.calculateActualAnnualVolume()
+public BigDecimal calculateActualAnnualVolume(UUID customerId) {
+  Customer customer = customerRepository.findById(customerId);
+
+  // Xentral: Rechnungen der letzten 12 Monate
+  List<Invoice> invoices = xentralApiClient.getInvoices(
+    customer.getXentralCustomerId(),
+    LocalDate.now().minusMonths(12),
+    LocalDate.now()
+  );
+
+  LocalDate firstInvoiceDate = invoices.stream()
+    .map(Invoice::getDate)
+    .min(LocalDate::compareTo)
+    .orElse(null);
+
+  if (firstInvoiceDate == null) {
+    return BigDecimal.ZERO; // Noch keine Rechnungen
+  }
+
+  long monthsActive = ChronoUnit.MONTHS.between(firstInvoiceDate, LocalDate.now());
+  BigDecimal totalRevenue = invoices.stream()
+    .map(Invoice::getTotalAmount)
+    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+  if (monthsActive < 12 && !customer.isSeasonalBusiness()) {
+    // Linear hochrechnen
+    BigDecimal monthlyAvg = totalRevenue.divide(
+      BigDecimal.valueOf(monthsActive),
+      2,
+      RoundingMode.HALF_UP
+    );
+    return monthlyAvg.multiply(BigDecimal.valueOf(12));
+  }
+
+  // Seasonal Business oder >= 12 Monate: Nicht hochrechnen
+  return totalRevenue;
+}
+```
+
+**Frontend-Anzeige:**
+```tsx
+{monthsActive < 12 && !customer.isSeasonalBusiness && (
+  <Alert severity="info">
+    <AlertTitle>Vorläufige Hochrechnung</AlertTitle>
+    Basierend auf {monthsActive} Monaten.
+    Vollständige Jahresauswertung ab {firstInvoiceDate.plusYears(1)}.
+  </Alert>
+)}
+```
+
+---
+
+### **Decision 4: Wo zeigen? CustomerDetailPage vs. Dashboard?**
+
+**✅ GEWÄHLT: Option B - Beides**
+
+**Rationale:**
+- CustomerDetailPage: Vertriebler will Details zu DIESEM Kunden
+- Dashboard: Manager will Überblick über ALLE Abweichungen
+- Beide Perspektiven wichtig!
+
+**Implementation (Sprint 2.1.7.2):**
+
+**A) CustomerDetailPage - Volle Details:**
+```tsx
+// CustomerDetailPage.tsx
+<Grid container spacing={3}>
+  {/* Umsatz-Section */}
+  <Grid item xs={12} md={6}>
+    <RevenueMetricsCard
+      expectedAnnualVolume={customer.expectedAnnualVolume}
+      actualAnnualVolume={customer.actualAnnualVolume}
+      monthsActive={customer.monthsActive}
+      isSeasonalBusiness={customer.isSeasonalBusiness}
+    />
+  </Grid>
+
+  {/* Zahlungsverhalten */}
+  <Grid item xs={12} md={6}>
+    <PaymentBehaviorCard
+      paymentBehavior={customer.paymentBehavior}
+      overdueInvoices={customer.overdueInvoices}
+    />
+  </Grid>
+</Grid>
+```
+
+**B) Dashboard Widget - Abweichungen-Übersicht:**
+```tsx
+// Dashboard: "Umsatz-Prognose Abweichungen" Widget
+<Card>
+  <CardHeader>
+    <Stack direction="row" justifyContent="space-between">
+      <Typography variant="h6">Umsatz-Prognose Abweichungen</Typography>
+      <Chip
+        label={`${customersWithDeviation.length} Kunden > 15%`}
+        color="warning"
+      />
+    </Stack>
+  </CardHeader>
+  <CardContent>
+    <List>
+      {customersWithDeviation.map(customer => (
+        <ListItem key={customer.id}>
+          <ListItemText
+            primary={customer.companyName}
+            secondary={
+              <Stack direction="row" spacing={1}>
+                <Typography variant="caption">
+                  Geschätzt: {formatCurrency(customer.expectedAnnualVolume)}
+                </Typography>
+                <Typography variant="caption">
+                  Tatsächlich: {formatCurrency(customer.actualAnnualVolume)}
+                </Typography>
+                <Chip
+                  label={formatDeviation(customer.deviation)}
+                  size="small"
+                  color={getDeviationColor(customer.deviation)}
+                />
+              </Stack>
+            }
+          />
+          <ListItemSecondaryAction>
+            {customer.deviation > 0 ? (
+              <Tooltip title="Upsell-Chance prüfen">
+                <IconButton color="success">
+                  <TrendingUpIcon />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Tooltip title="Nachfassen: Warum weniger?">
+                <IconButton color="warning">
+                  <TrendingDownIcon />
+                </IconButton>
+              </Tooltip>
+            )}
+          </ListItemSecondaryAction>
+        </ListItem>
+      ))}
+    </List>
+  </CardContent>
+</Card>
+```
+
+**Dashboard-Widget Logik:**
+```typescript
+// Backend: GET /api/metrics/customers/revenue-deviations
+interface RevenueDeviationMetrics {
+  customersWithDeviation: CustomerDeviation[];
+  averageDeviation: number;
+  topUnderestimated: CustomerDeviation[]; // Upsell-Chancen
+  topOverestimated: CustomerDeviation[];  // Risiko-Kunden
+}
+
+interface CustomerDeviation {
+  id: UUID;
+  companyName: string;
+  expectedAnnualVolume: BigDecimal;
+  actualAnnualVolume: BigDecimal;
+  deviation: number; // Prozent (-30.5 = 30.5% weniger)
+  monthsActive: number;
+}
+```
+
+---
+
+## 📊 SPRINT 2.1.7.2 - ERWEITERTE DELIVERABLES
+
+### **Deliverable 3 (erweitert): Customer-Dashboard mit Umsatz-Details** (8h statt 6h)
+
+**Backend (4h):**
+- [x] CustomerService.getRevenueMetrics() mit Hochrechnungs-Logik
+- [x] GET /api/customers/{id}/revenue-metrics
+- [x] GET /api/metrics/customers/revenue-deviations (Dashboard Widget)
+- [x] Ampel-Berechnung (Deviation Thresholds)
+
+**Frontend (4h):**
+- [x] RevenueMetricsCard Component (CustomerDetailPage)
+  - Expected vs. Actual Anzeige
+  - Ampel-System (Chip mit Color)
+  - Hochrechnungs-Hinweis (< 12 Monate)
+  - PROSPECT-Phase Handling (nur Expected)
+- [x] Dashboard Widget: RevenueForecastDeviationsWidget
+  - Top 10 Abweichungen
+  - Upsell-Chancen (positive Deviation)
+  - Risiko-Kunden (negative Deviation)
+  - Quick-Actions (Nachfassen/Upsell)
+
+**Tests (8 Tests):**
+- [x] Hochrechnungs-Logik (< 12 Monate)
+- [x] Seasonal Business Exception (keine Hochrechnung)
+- [x] Ampel-Berechnung (4 Thresholds)
+- [x] PROSPECT-Phase Rendering
+- [x] Dashboard Widget Filtering
+- [x] Deviation Sorting (höchste zuerst)
+
+**Aufwand:** +2h (Sprint 2.1.7.2: 23h → 25h)
+
+---
+
+## ✅ CHECKLIST - Sprint 2.1.7.2 UX
+
+**CustomerDetailPage:**
+- [ ] RevenueMetricsCard Component
+- [ ] Expected vs. Actual Anzeige (beide Felder)
+- [ ] Ampel-System (Deviation Color Coding)
+- [ ] Hochrechnungs-Hinweis (< 12 Monate)
+- [ ] PROSPECT-Phase: Nur Expected + Info-Alert
+- [ ] Seasonal Business: Kein Hochrechnungs-Hinweis
+
+**Dashboard:**
+- [ ] RevenueForecastDeviationsWidget
+- [ ] Top 10 Abweichungen (sortiert)
+- [ ] Upsell-Chancen Highlighting (positive Deviation)
+- [ ] Risiko-Kunden Highlighting (negative Deviation)
+- [ ] Quick-Actions: Nachfassen/Upsell Buttons
+
+**Backend:**
+- [ ] Hochrechnungs-Logik (linear, monthsActive < 12)
+- [ ] Seasonal Business Exception
+- [ ] Deviation-Berechnung (Prozent)
+- [ ] Dashboard-Endpoint: /api/metrics/customers/revenue-deviations
+- [ ] Ampel-Thresholds: 5%/15%/30%
+
+---
+
+**Status:** ✅ FINAL - Ready für Implementation (Sprint 2.1.7.2)
+**Letzte Aktualisierung:** 2025-10-20 23:30 (UX-Decisions hinzugefügt)
 **Owner:** Jörg + Claude

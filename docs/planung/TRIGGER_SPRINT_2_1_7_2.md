@@ -3,10 +3,10 @@
 **Sprint-ID:** 2.1.7.2
 **Status:** 📋 PLANNING → 🚀 READY TO START
 **Priority:** P1 (High)
-**Estimated Effort:** 23h (3 Arbeitstage)
+**Estimated Effort:** 25h (3+ Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-16
-**Updated:** 2025-10-19 (Status-Architektur Integration + 3-Dokumente-Struktur)
+**Updated:** 2025-10-20 (UX-Decisions für Revenue Dashboard hinzugefügt)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.4 COMPLETE
 
 ---
@@ -188,9 +188,9 @@
 - **Total: 72 Tests**
 
 **Code Changes:**
-- 2 Migrations (V10031: xentral_sales_rep_id, V10032: churn_threshold_days)
-- 8 Backend-Dateien (XentralApiClient, Services, Webhook, Admin)
-- 6 Frontend-Dateien (ConvertDialog, Dashboard, Admin-UI)
+- 2 Migrations (V10034: xentral_customer_id, V10035: months_active)
+- 10 Backend-Dateien (XentralApiClient, Services, Webhook, Admin, Metrics)
+- 8 Frontend-Dateien (ConvertDialog, RevenueMetricsCard, DeviationsWidget, Dashboard, Admin-UI)
 
 **Business Impact:**
 - Vertriebler haben Self-Service-Dashboard
@@ -236,9 +236,9 @@
 - Xentral-API-Client Implementation (3h)
 - Admin-UI für Xentral-Einstellungen (1h)
 
-**Tag 2 (8h):**
-- Customer-Dashboard mit echten Daten (6h)
-- Churn-Alarm Konfiguration (2h)
+**Tag 2 (9h):**
+- Customer-Dashboard mit echten Daten (8h) ← erweitert mit UX
+- Churn-Alarm Konfiguration (1h)
 
 **Tag 3 (7h):**
 - Sales-Rep Mapping Auto-Sync (1h)
@@ -246,7 +246,7 @@
 - Testing & Bugfixes (3h)
 - Documentation (1h)
 
-**Total:** 23h (3 Arbeitstage)
+**Total:** 25h (3+ Arbeitstage)
 
 ---
 
