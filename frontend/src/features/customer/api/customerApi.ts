@@ -91,4 +91,13 @@ export const customerApi = {
     );
     return response.data;
   },
+
+  // Activate customer: PROSPECT → AKTIV (Sprint 2.1.7.4)
+  activateCustomer: async (customerId: string, orderNumber?: string): Promise<CustomerResponse> => {
+    const response = await httpClient.put<CustomerResponse>(
+      `/api/customers/${customerId}/activate`,
+      { orderNumber: orderNumber || null }
+    );
+    return response.data;
+  },
 };
