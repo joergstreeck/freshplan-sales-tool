@@ -17,9 +17,9 @@
 --
 -- Test Scenarios:
 --   KD-DEV-001: Premium Restaurant (AKTIV, Happy Path)
---   KD-DEV-002: Hotel Lead (LEAD, Qualification Phase)
+--   KD-DEV-002: Hotel Prospect (PROSPECT, Qualification Phase)
 --   KD-DEV-003: Catering Multi-Location (AKTIV, DE+CH)
---   KD-DEV-004: Incomplete Kantine (LEAD, NULL Volume - Edge Case)
+--   KD-DEV-004: Incomplete Kantine (PROSPECT, NULL Volume - Edge Case)
 --   KD-DEV-005: Archived Großhandel (ARCHIVIERT, Old Contact)
 -- ============================================================================
 
@@ -63,6 +63,13 @@ INSERT INTO customers (
     pain_poor_service,
     pain_notes,
     primary_financing,
+    -- NEW: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+    kitchen_size,
+    employee_count,
+    branch_count,
+    is_chain,
+    estimated_volume,
+    -- End of new fields
     is_deleted,
     is_test_data,
     created_at,
@@ -110,6 +117,13 @@ INSERT INTO customers (
     FALSE,
     'Personalmangel besonders in Stoßzeiten, Suche nach zuverlässigen Lieferanten für Frischware',
     'PRIVATE',
+    -- NEW: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+    'MITTEL',      -- kitchen_size (5 Standorte → mittelgroße Küchen)
+    22,            -- employee_count (durchschnittlich pro Standort)
+    5,             -- branch_count (5 Standorte)
+    TRUE,          -- is_chain (Multi-Location Restaurant)
+    180000.00,     -- estimated_volume (= expected_annual_volume)
+    -- End of new fields
     FALSE,
     FALSE,  -- is_test_data
     NOW() - INTERVAL '18 months',
@@ -119,7 +133,7 @@ INSERT INTO customers (
 ),
 
 -- ============================================================================
--- KD-DEV-002: Hotel Nordwind Hamburg (LEAD, Qualification)
+-- KD-DEV-002: Hotel Nordwind Hamburg (PROSPECT, Qualification)
 -- Use Case: Lead Management, Qualification Phase, Follow-up Testing
 -- Characteristics: Single location, moderate volume, quality issues
 -- ============================================================================
@@ -132,7 +146,7 @@ INSERT INTO customers (
     'UNTERNEHMEN',
     NULL,
     'HOTEL',
-    'LEAD',
+    'PROSPECT',
     'ACQUISITION',
     'KEIN_PARTNER',
     95000.00,
@@ -158,6 +172,13 @@ INSERT INTO customers (
     FALSE,
     'Frühstücksbuffet: hoher Food Waste, inkonsistente Qualität bei Backwaren',
     'MIXED',
+    -- NEW: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+    'GROSS',       -- kitchen_size (4-Sterne Hotel, 120 Zimmer)
+    85,            -- employee_count (Hotel-Personal inkl. F&B)
+    1,             -- branch_count (Single Location)
+    FALSE,         -- is_chain (Einzelhotel, kein Ketten-Hotel)
+    95000.00,      -- estimated_volume (= expected_annual_volume)
+    -- End of new fields
     FALSE,
     FALSE,  -- is_test_data
     NOW() - INTERVAL '3 weeks',
@@ -206,6 +227,13 @@ INSERT INTO customers (
     FALSE,
     'Event-Catering mit engen Zeitfenstern, Cross-Border Logistik CH kritisch',
     'PRIVATE',
+    -- NEW: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+    'GROSS',       -- kitchen_size (Event-Catering, große Produktionsküche)
+    65,            -- employee_count (Event-Catering-Personal)
+    2,             -- branch_count (Berlin + Zürich)
+    TRUE,          -- is_chain (Multi-Location Catering)
+    420000.00,     -- estimated_volume (= expected_annual_volume)
+    -- End of new fields
     FALSE,
     FALSE,  -- is_test_data
     NOW() - INTERVAL '2 years',
@@ -215,7 +243,7 @@ INSERT INTO customers (
 ),
 
 -- ============================================================================
--- KD-DEV-004: Betriebsgastronomie TechPark Frankfurt (LEAD, Edge Case)
+-- KD-DEV-004: Betriebsgastronomie TechPark Frankfurt (PROSPECT, Edge Case)
 -- Use Case: Edge Case Testing, Incomplete Data (NULL Volume)
 -- Characteristics: New lead, minimal data, no pain points yet
 -- ============================================================================
@@ -228,7 +256,7 @@ INSERT INTO customers (
     'UNTERNEHMEN',
     NULL,
     'KANTINE',
-    'LEAD',
+    'PROSPECT',
     'ACQUISITION',
     'KEIN_PARTNER',
     NULL,  -- Edge Case: NULL Volume
@@ -254,6 +282,13 @@ INSERT INTO customers (
     FALSE,
     NULL,
     'PUBLIC',
+    -- NEW: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+    'MITTEL',      -- kitchen_size (Betriebskantine, ca. 800 Mitarbeiter)
+    12,            -- employee_count (Kantinen-Personal)
+    1,             -- branch_count (Single Location)
+    FALSE,         -- is_chain (Einzelkantine)
+    NULL,          -- estimated_volume (Edge Case: NULL Volume)
+    -- End of new fields
     FALSE,
     FALSE,  -- is_test_data
     NOW() - INTERVAL '1 week',
@@ -302,6 +337,13 @@ INSERT INTO customers (
     FALSE,
     'Wechsel zu Wettbewerber aufgrund Lieferqualität, Re-Aktivierung möglich',
     'PRIVATE',
+    -- NEW: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+    'KLEIN',       -- kitchen_size (Großhandel, kleinere Produktionsküche)
+    18,            -- employee_count (Depot-Personal)
+    2,             -- branch_count (2 Standorte)
+    FALSE,         -- is_chain (Kleiner Großhandel, keine Kette)
+    120000.00,     -- estimated_volume (= expected_annual_volume)
+    -- End of new fields
     FALSE,
     FALSE,  -- is_test_data
     NOW() - INTERVAL '3 years',
@@ -908,10 +950,57 @@ ON CONFLICT (id) DO NOTHING;
 
 
 -- ============================================================================
+-- UPDATE: Lead Parity Fields (Sprint 2.1.7.4, V10032)
+-- ============================================================================
+-- Purpose: Update existing SEED customers with new fields from V10032
+-- Reason: ON CONFLICT DO NOTHING prevents INSERT from updating existing rows
+-- ============================================================================
+
+UPDATE customers SET
+    kitchen_size = 'MITTEL',
+    employee_count = 22,
+    branch_count = 5,
+    is_chain = TRUE,
+    estimated_volume = 180000.00
+WHERE customer_number = 'KD-DEV-001';
+
+UPDATE customers SET
+    kitchen_size = 'GROSS',
+    employee_count = 85,
+    branch_count = 1,
+    is_chain = FALSE,
+    estimated_volume = 95000.00
+WHERE customer_number = 'KD-DEV-002';
+
+UPDATE customers SET
+    kitchen_size = 'GROSS',
+    employee_count = 65,
+    branch_count = 2,
+    is_chain = TRUE,
+    estimated_volume = 420000.00
+WHERE customer_number = 'KD-DEV-003';
+
+UPDATE customers SET
+    kitchen_size = 'MITTEL',
+    employee_count = 12,
+    branch_count = 1,
+    is_chain = FALSE,
+    estimated_volume = NULL
+WHERE customer_number = 'KD-DEV-004';
+
+UPDATE customers SET
+    kitchen_size = 'KLEIN',
+    employee_count = 18,
+    branch_count = 2,
+    is_chain = FALSE,
+    estimated_volume = 120000.00
+WHERE customer_number = 'KD-DEV-005';
+
+-- ============================================================================
 -- END OF V90001
 -- ============================================================================
 -- Summary:
---   ✅ 5 Customers (AKTIV, LEAD, ARCHIVIERT scenarios)
+--   ✅ 5 Customers (AKTIV, PROSPECT, ARCHIVIERT scenarios)
 --   ✅ 6 Locations (including multi-location KD-DEV-003)
 --   ✅ 6 Addresses (realistic German addresses)
 --   ✅ 8 Contacts (Primary + Secondary decision makers)
@@ -919,4 +1008,5 @@ ON CONFLICT (id) DO NOTHING;
 --   ✅ Fixed UUIDs for consistency
 --   ✅ ON CONFLICT DO NOTHING for idempotency
 --   ✅ Realistic German B2B food industry scenarios
+--   ✅ Lead Parity Fields updated (kitchen_size, employee_count, branch_count, is_chain, estimated_volume)
 -- ============================================================================
