@@ -20,7 +20,7 @@
 --          expectedValue = 100.000€ × 0.65 = 65.000€
 -- ============================================================================
 
-CREATE TABLE opportunity_multipliers (
+CREATE TABLE IF NOT EXISTS opportunity_multipliers (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
   -- Business Type (Customer.businessType)
@@ -48,7 +48,7 @@ CREATE TABLE opportunity_multipliers (
 );
 
 -- Index for fast lookups by business_type + opportunity_type combination
-CREATE INDEX idx_opportunity_multipliers_lookup
+CREATE INDEX IF NOT EXISTS idx_opportunity_multipliers_lookup
   ON opportunity_multipliers(business_type, opportunity_type);
 
 -- ============================================================================
@@ -132,7 +132,8 @@ INSERT INTO opportunity_multipliers (business_type, opportunity_type, multiplier
   ('SONSTIGES', 'NEUGESCHAEFT', 1.00),
   ('SONSTIGES', 'SORTIMENTSERWEITERUNG', 0.15),
   ('SONSTIGES', 'NEUER_STANDORT', 0.40),
-  ('SONSTIGES', 'VERLAENGERUNG', 0.70);
+  ('SONSTIGES', 'VERLAENGERUNG', 0.70)
+ON CONFLICT (business_type, opportunity_type) DO NOTHING;
 
 -- ============================================================================
 -- COMMENTS

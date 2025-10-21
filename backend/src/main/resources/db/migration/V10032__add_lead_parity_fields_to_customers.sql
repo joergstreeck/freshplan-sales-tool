@@ -25,44 +25,51 @@
 
 -- Add kitchen_size field (KitchenSize enum as VARCHAR with CHECK constraint)
 ALTER TABLE customers
-ADD COLUMN kitchen_size VARCHAR(20);
+ADD COLUMN IF NOT EXISTS kitchen_size VARCHAR(20);
 
--- Add CHECK constraint for kitchen_size enum values
-ALTER TABLE customers
-ADD CONSTRAINT customers_kitchen_size_check
-CHECK (kitchen_size IN ('KLEIN', 'MITTEL', 'GROSS', 'SEHR_GROSS'));
+-- Add CHECK constraint for kitchen_size enum values (only if not exists)
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'customers_kitchen_size_check'
+    ) THEN
+        ALTER TABLE customers
+        ADD CONSTRAINT customers_kitchen_size_check
+        CHECK (kitchen_size IN ('KLEIN', 'MITTEL', 'GROSS', 'SEHR_GROSS'));
+    END IF;
+END $$;
 
 COMMENT ON COLUMN customers.kitchen_size IS 'Küchengröße-Klassifizierung (100% Lead Parity)';
 
 -- Add employee_count field
 ALTER TABLE customers
-ADD COLUMN employee_count INTEGER;
+ADD COLUMN IF NOT EXISTS employee_count INTEGER;
 
 COMMENT ON COLUMN customers.employee_count IS 'Anzahl Mitarbeiter (100% Lead Parity)';
 
 -- Add branch_count field (redundant with total_locations_eu, but needed for Lead parity)
 ALTER TABLE customers
-ADD COLUMN branch_count INTEGER DEFAULT 1;
+ADD COLUMN IF NOT EXISTS branch_count INTEGER DEFAULT 1;
 
 COMMENT ON COLUMN customers.branch_count IS 'Anzahl Filialen/Standorte (100% Lead Parity, redundant zu total_locations_eu)';
 
 -- Add is_chain field (redundant logic, but needed for Lead parity)
 ALTER TABLE customers
-ADD COLUMN is_chain BOOLEAN DEFAULT false;
+ADD COLUMN IF NOT EXISTS is_chain BOOLEAN DEFAULT false;
 
 COMMENT ON COLUMN customers.is_chain IS 'Kettenbetrieb ja/nein (100% Lead Parity, redundant zu total_locations_eu check)';
 
 -- Add estimated_volume field (complements expected_annual_volume)
 ALTER TABLE customers
-ADD COLUMN estimated_volume NUMERIC(12, 2);
+ADD COLUMN IF NOT EXISTS estimated_volume NUMERIC(12, 2);
 
 COMMENT ON COLUMN customers.estimated_volume IS 'Geschätztes Einkaufsvolumen (100% Lead Parity, ergänzt expected_annual_volume)';
 
 -- Create index for kitchen_size filtering (common filter in queries)
-CREATE INDEX idx_customers_kitchen_size ON customers(kitchen_size) WHERE kitchen_size IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_customers_kitchen_size ON customers(kitchen_size) WHERE kitchen_size IS NOT NULL;
 
 -- Create index for employee_count range queries
-CREATE INDEX idx_customers_employee_count ON customers(employee_count) WHERE employee_count IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_customers_employee_count ON customers(employee_count) WHERE employee_count IS NOT NULL;
 
 -- =====================================================================================
 -- Migration Summary

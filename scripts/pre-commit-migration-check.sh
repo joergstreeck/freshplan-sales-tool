@@ -1,7 +1,7 @@
 #!/bin/bash
 # Pre-Commit Hook: Migration Safety Check
 # Prüft Migrations-Dateien vor jedem Commit
-# Update: 2025-10-12 - DEV-SEED Support (3-Ordner-Struktur)
+# Update: 2025-10-21 - Idempotenz-Prüfung hinzugefügt (CHECK 4)
 
 echo "🔍 Migration Safety Check..."
 
@@ -162,6 +162,71 @@ for FILE in $MIGRATION_FILES; do
         else
             echo -e "   ✅ Production-Migration ohne Test-Keywords"
         fi
+    fi
+
+    # CHECK 4: Idempotenz-Prüfung (KRITISCH!)
+    echo -e "${YELLOW}   🔍 Idempotenz-Prüfung...${NC}"
+
+    IDEMPOTENT=1
+    NON_IDEMPOTENT_ISSUES=()
+
+    # Prüfe CREATE TABLE ohne IF NOT EXISTS
+    if grep -qE "^[[:space:]]*CREATE[[:space:]]+TABLE[[:space:]]+[^I]" "$FILE"; then
+        if ! grep -qE "CREATE[[:space:]]+TABLE[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS" "$FILE"; then
+            NON_IDEMPOTENT_ISSUES+=("CREATE TABLE ohne 'IF NOT EXISTS' gefunden")
+            IDEMPOTENT=0
+        fi
+    fi
+
+    # Prüfe ALTER TABLE ADD COLUMN ohne IF NOT EXISTS
+    if grep -qE "ALTER[[:space:]]+TABLE.*ADD[[:space:]]+COLUMN[[:space:]]+[^I]" "$FILE"; then
+        if ! grep -qE "ADD[[:space:]]+COLUMN[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS" "$FILE"; then
+            NON_IDEMPOTENT_ISSUES+=("ALTER TABLE ADD COLUMN ohne 'IF NOT EXISTS' gefunden")
+            IDEMPOTENT=0
+        fi
+    fi
+
+    # Prüfe CREATE INDEX ohne IF NOT EXISTS
+    if grep -qE "^[[:space:]]*CREATE[[:space:]]+INDEX[[:space:]]+[^I]" "$FILE"; then
+        if ! grep -qE "CREATE[[:space:]]+INDEX[[:space:]]+IF[[:space:]]+NOT[[:space:]]+EXISTS" "$FILE"; then
+            NON_IDEMPOTENT_ISSUES+=("CREATE INDEX ohne 'IF NOT EXISTS' gefunden")
+            IDEMPOTENT=0
+        fi
+    fi
+
+    # Prüfe INSERT ohne ON CONFLICT
+    if grep -qE "^[[:space:]]*INSERT[[:space:]]+INTO" "$FILE"; then
+        if ! grep -qE "ON[[:space:]]+CONFLICT.*DO[[:space:]]+(NOTHING|UPDATE)" "$FILE"; then
+            NON_IDEMPOTENT_ISSUES+=("INSERT ohne 'ON CONFLICT DO NOTHING' gefunden")
+            IDEMPOTENT=0
+        fi
+    fi
+
+    # Prüfe ALTER TABLE ADD CONSTRAINT ohne DO-Block
+    if grep -qE "ALTER[[:space:]]+TABLE.*ADD[[:space:]]+CONSTRAINT[[:space:]]+[^I]" "$FILE"; then
+        if ! grep -qE "DO[[:space:]]*\$\$.*IF[[:space:]]+NOT[[:space:]]+EXISTS.*pg_constraint" "$FILE"; then
+            NON_IDEMPOTENT_ISSUES+=("ALTER TABLE ADD CONSTRAINT ohne DO-Block (pg_constraint check)")
+            IDEMPOTENT=0
+        fi
+    fi
+
+    if [ $IDEMPOTENT -eq 0 ]; then
+        echo -e "${RED}   ❌ NICHT IDEMPOTENT!${NC}"
+        echo -e "${RED}   Probleme:${NC}"
+        for issue in "${NON_IDEMPOTENT_ISSUES[@]}"; do
+            echo -e "${RED}     - $issue${NC}"
+        done
+        echo ""
+        echo -e "${YELLOW}   💡 Idempotente Migration-Patterns:${NC}"
+        echo -e "${YELLOW}      CREATE TABLE IF NOT EXISTS ...${NC}"
+        echo -e "${YELLOW}      ALTER TABLE ... ADD COLUMN IF NOT EXISTS ...${NC}"
+        echo -e "${YELLOW}      CREATE INDEX IF NOT EXISTS ...${NC}"
+        echo -e "${YELLOW}      INSERT INTO ... ON CONFLICT DO NOTHING${NC}"
+        echo -e "${YELLOW}      Constraints: DO \$\$ BEGIN IF NOT EXISTS (...) THEN ... END IF; END \$\$;${NC}"
+        echo ""
+        ERROR=1
+    else
+        echo -e "   ${GREEN}✅ Migration ist idempotent${NC}"
     fi
 
     echo ""
