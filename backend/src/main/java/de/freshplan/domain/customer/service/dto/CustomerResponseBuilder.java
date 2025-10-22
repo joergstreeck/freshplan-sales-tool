@@ -65,6 +65,11 @@ public final class CustomerResponseBuilder {
   private FinancingType primaryFinancing;
   private List<String> painPoints = new ArrayList<>();
 
+  // Seasonal Business - NEW for Sprint 2.1.7.4
+  private Boolean isSeasonalBusiness;
+  private List<Integer> seasonalMonths;
+  private String seasonalPattern;
+
   // Contact Information
   private Integer contactsCount;
 
@@ -281,6 +286,22 @@ public final class CustomerResponseBuilder {
     return this;
   }
 
+  // Seasonal Business - NEW for Sprint 2.1.7.4
+  public CustomerResponseBuilder isSeasonalBusiness(Boolean isSeasonalBusiness) {
+    this.isSeasonalBusiness = isSeasonalBusiness;
+    return this;
+  }
+
+  public CustomerResponseBuilder seasonalMonths(List<Integer> seasonalMonths) {
+    this.seasonalMonths = seasonalMonths;
+    return this;
+  }
+
+  public CustomerResponseBuilder seasonalPattern(String seasonalPattern) {
+    this.seasonalPattern = seasonalPattern;
+    return this;
+  }
+
   /**
    * Builds a CustomerResponse from a Customer entity. This is a convenience method that populates
    * all fields from the entity.
@@ -338,6 +359,11 @@ public final class CustomerResponseBuilder {
     this.primaryFinancing = customer.getPrimaryFinancing();
     this.painPoints = customer.getPainPoints();
 
+    // Seasonal Business - NEW for Sprint 2.1.7.4
+    this.isSeasonalBusiness = customer.getIsSeasonalBusiness();
+    this.seasonalMonths = customer.getSeasonalMonths();
+    this.seasonalPattern = customer.getSeasonalPattern();
+
     // Contact Information
     this.contactsCount = customer.getActiveContactsCount();
 
@@ -382,6 +408,11 @@ public final class CustomerResponseBuilder {
         // Business Model - NEW for Sprint 2
         primaryFinancing,
         painPoints,
+
+        // Seasonal Business - NEW for Sprint 2.1.7.4
+        isSeasonalBusiness,
+        seasonalMonths,
+        seasonalPattern,
 
         // Contact Information
         contactsCount,

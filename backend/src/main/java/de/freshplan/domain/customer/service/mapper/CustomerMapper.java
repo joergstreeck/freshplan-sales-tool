@@ -87,6 +87,11 @@ public class CustomerMapper {
         customer.getPrimaryFinancing(),
         customer.getPainPoints(),
 
+        // Seasonal Business - NEW for Sprint 2.1.7.4
+        customer.getIsSeasonalBusiness(),
+        customer.getSeasonalMonths(),
+        customer.getSeasonalPattern(),
+
         // Contact Information
         customer.getActiveContactsCount(),
         customer.getCreatedAt(),
@@ -144,6 +149,9 @@ public class CustomerMapper {
         null, // expansionPlanned
         null, // primaryFinancing
         List.of(), // painPoints
+        null, // isSeasonalBusiness
+        null, // seasonalMonths
+        null, // seasonalPattern
 
         // Contact Information - NEEDED FOR FILTERS
         customer.getActiveContactsCount(),
