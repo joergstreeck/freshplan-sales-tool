@@ -54,11 +54,11 @@ class XentralV1V2ApiAdapterTest {
 
   @InjectMock @RestClient XentralEmployeesV1Client employeesV1Client;
 
-  @InjectMock XentralV2CustomerMapper customerMapper;
+  @Inject XentralV2CustomerMapper customerMapper;
 
-  @InjectMock XentralV1InvoiceMapper invoiceMapper;
+  @Inject XentralV1InvoiceMapper invoiceMapper;
 
-  @InjectMock FinancialMetricsCalculator financialCalculator;
+  @Inject FinancialMetricsCalculator financialCalculator;
 
   private static final String AUTH_HEADER_PREFIX = "Bearer ";
 
@@ -92,76 +92,11 @@ class XentralV1V2ApiAdapterTest {
     when(customersV2Client.getCustomers(anyString(), eq(1), eq(100)))
         .thenReturn(customersResponse);
 
-    // Mock mapper: v2 customer → base DTO (without financial data)
-    var baseDTO1 =
-        new XentralCustomerDTO(
-            "CUST-001", "ACME Corp", "info@acme.com", "+49-123-456", null, null, null, "SALES-001");
-    var baseDTO2 =
-        new XentralCustomerDTO(
-            "CUST-002",
-            "TechStart GmbH",
-            "contact@techstart.de",
-            "+49-987-654",
-            null,
-            null,
-            null,
-            "SALES-002");
-
-    when(customerMapper.toDTO(v2Customer1)).thenReturn(baseDTO1);
-    when(customerMapper.toDTO(v2Customer2)).thenReturn(baseDTO2);
-
-    // Mock invoices + financial metrics
-    var invoiceResponse1 = new XentralV1InvoiceResponse(List.of(), null);
-    var invoiceResponse2 = new XentralV1InvoiceResponse(List.of(), null);
-
+    // Mock invoices (empty = no financial data enrichment)
     when(invoicesV1Client.getInvoicesByCustomer(anyString(), eq("CUST-001"), eq(1), eq(100)))
-        .thenReturn(invoiceResponse1);
+        .thenReturn(new XentralV1InvoiceResponse(List.of(), null));
     when(invoicesV1Client.getInvoicesByCustomer(anyString(), eq("CUST-002"), eq(1), eq(100)))
-        .thenReturn(invoiceResponse2);
-
-    var metrics1 =
-        new FinancialMetrics(
-            new BigDecimal("50000.00"), 25, LocalDate.of(2024, 10, 15));
-    var metrics2 =
-        new FinancialMetrics(
-            new BigDecimal("30000.00"), 30, LocalDate.of(2024, 9, 20));
-
-    when(financialCalculator.calculate(any(), any())).thenReturn(metrics1, metrics2);
-
-    // Mock enrichment
-    var enrichedDTO1 =
-        new XentralCustomerDTO(
-            "CUST-001",
-            "ACME Corp",
-            "info@acme.com",
-            "+49-123-456",
-            new BigDecimal("50000.00"),
-            25,
-            LocalDate.of(2024, 10, 15),
-            "SALES-001");
-    var enrichedDTO2 =
-        new XentralCustomerDTO(
-            "CUST-002",
-            "TechStart GmbH",
-            "contact@techstart.de",
-            "+49-987-654",
-            new BigDecimal("30000.00"),
-            30,
-            LocalDate.of(2024, 9, 20),
-            "SALES-002");
-
-    when(customerMapper.enrichWithFinancialData(
-            eq(baseDTO1),
-            eq(new BigDecimal("50000.00")),
-            eq(25),
-            eq(LocalDate.of(2024, 10, 15))))
-        .thenReturn(enrichedDTO1);
-    when(customerMapper.enrichWithFinancialData(
-            eq(baseDTO2),
-            eq(new BigDecimal("30000.00")),
-            eq(30),
-            eq(LocalDate.of(2024, 9, 20))))
-        .thenReturn(enrichedDTO2);
+        .thenReturn(new XentralV1InvoiceResponse(List.of(), null));
 
     // When
     List<XentralCustomerDTO> customers = adapter.getCustomers();
@@ -169,9 +104,11 @@ class XentralV1V2ApiAdapterTest {
     // Then
     assertThat(customers).hasSize(2);
     assertThat(customers.get(0).xentralId()).isEqualTo("CUST-001");
-    assertThat(customers.get(0).totalRevenue()).isEqualByComparingTo("50000.00");
+    assertThat(customers.get(0).companyName()).isEqualTo("ACME Corp");
+    assertThat(customers.get(0).totalRevenue()).isNull(); // No invoices = no revenue
     assertThat(customers.get(1).xentralId()).isEqualTo("CUST-002");
-    assertThat(customers.get(1).totalRevenue()).isEqualByComparingTo("30000.00");
+    assertThat(customers.get(1).companyName()).isEqualTo("TechStart GmbH");
+    assertThat(customers.get(1).totalRevenue()).isNull(); // No invoices = no revenue
 
     verify(customersV2Client, times(1)).getCustomers(anyString(), eq(1), eq(100));
   }
@@ -220,19 +157,9 @@ class XentralV1V2ApiAdapterTest {
     when(customersV2Client.getCustomerById(anyString(), eq("CUST-123")))
         .thenReturn(customerResponse);
 
-    var baseDTO =
-        new XentralCustomerDTO(
-            "CUST-123", "Test GmbH", "test@example.com", "", null, null, null, null);
-    when(customerMapper.toDTO(v2Customer)).thenReturn(baseDTO);
-
-    // Mock invoices
+    // Mock invoices (empty = no financial data)
     when(invoicesV1Client.getInvoicesByCustomer(anyString(), eq("CUST-123"), anyInt(), anyInt()))
         .thenReturn(new XentralV1InvoiceResponse(List.of(), null));
-
-    when(financialCalculator.calculate(any(), any()))
-        .thenReturn(new FinancialMetrics(BigDecimal.ZERO, null, null));
-
-    when(customerMapper.enrichWithFinancialData(any(), any(), any(), any())).thenReturn(baseDTO);
 
     // When
     XentralCustomerDTO customer = adapter.getCustomerById("CUST-123");
@@ -240,6 +167,7 @@ class XentralV1V2ApiAdapterTest {
     // Then
     assertThat(customer).isNotNull();
     assertThat(customer.xentralId()).isEqualTo("CUST-123");
+    assertThat(customer.companyName()).isEqualTo("Test GmbH");
     verify(customersV2Client, times(1)).getCustomerById(anyString(), eq("CUST-123"));
   }
 
@@ -282,23 +210,8 @@ class XentralV1V2ApiAdapterTest {
     when(customersV2Client.getCustomers(anyString(), anyInt(), anyInt()))
         .thenReturn(customersResponse);
 
-    var dto1 =
-        new XentralCustomerDTO(
-            "CUST-001", "ACME Corp", "", "", null, null, null, "SALES-123");
-    var dto2 =
-        new XentralCustomerDTO("CUST-002", "TechCorp", "", "", null, null, null, "SALES-456");
-
-    when(customerMapper.toDTO(v2Customer1)).thenReturn(dto1);
-    when(customerMapper.toDTO(v2Customer2)).thenReturn(dto2);
-
     when(invoicesV1Client.getInvoicesByCustomer(anyString(), anyString(), anyInt(), anyInt()))
         .thenReturn(new XentralV1InvoiceResponse(List.of(), null));
-
-    when(financialCalculator.calculate(any(), any()))
-        .thenReturn(new FinancialMetrics(BigDecimal.ZERO, null, null));
-
-    when(customerMapper.enrichWithFinancialData(any(), any(), any(), any()))
-        .thenAnswer(inv -> inv.getArgument(0));
 
     // When
     List<XentralCustomerDTO> customers = adapter.getCustomersBySalesRep("SALES-123");
@@ -306,6 +219,7 @@ class XentralV1V2ApiAdapterTest {
     // Then: only CUST-001 matches
     assertThat(customers).hasSize(1);
     assertThat(customers.get(0).xentralId()).isEqualTo("CUST-001");
+    assertThat(customers.get(0).companyName()).isEqualTo("ACME Corp");
     assertThat(customers.get(0).salesRepId()).isEqualTo("SALES-123");
   }
 
@@ -354,39 +268,17 @@ class XentralV1V2ApiAdapterTest {
     when(invoicesV1Client.getInvoiceBalance(anyString(), eq("INV-001"))).thenReturn(balance1);
     when(invoicesV1Client.getInvoiceBalance(anyString(), eq("INV-002"))).thenReturn(balance2);
 
-    // Mock mapper
-    var invoiceDTO1 =
-        new XentralInvoiceDTO(
-            "INV-001",
-            "RE-2024-001",
-            "CUST-123",
-            new BigDecimal("1000.00"),
-            LocalDate.of(2024, 9, 1),
-            LocalDate.of(2024, 10, 1),
-            LocalDate.of(2024, 9, 15),
-            "paid");
-
-    var invoiceDTO2 =
-        new XentralInvoiceDTO(
-            "INV-002",
-            "RE-2024-002",
-            "CUST-123",
-            new BigDecimal("2000.00"),
-            LocalDate.of(2024, 10, 1),
-            LocalDate.of(2024, 11, 1),
-            null,
-            "open");
-
-    when(invoiceMapper.toDTO(invoice1, balance1)).thenReturn(invoiceDTO1);
-    when(invoiceMapper.toDTO(invoice2, balance2)).thenReturn(invoiceDTO2);
-
     // When
     List<XentralInvoiceDTO> invoices = adapter.getInvoicesByCustomer("CUST-123");
 
     // Then
     assertThat(invoices).hasSize(2);
     assertThat(invoices.get(0).invoiceId()).isEqualTo("INV-001");
+    assertThat(invoices.get(0).invoiceNumber()).isEqualTo("RE-2024-001");
+    assertThat(invoices.get(0).status()).isEqualTo("paid"); // balance.isFullyPaid() = true
     assertThat(invoices.get(1).invoiceId()).isEqualTo("INV-002");
+    assertThat(invoices.get(1).invoiceNumber()).isEqualTo("RE-2024-002");
+    assertThat(invoices.get(1).status()).isEqualTo("open"); // invoice.status fallback
 
     verify(invoicesV1Client, times(1))
         .getInvoicesByCustomer(anyString(), eq("CUST-123"), anyInt(), anyInt());
