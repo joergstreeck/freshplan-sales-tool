@@ -360,6 +360,36 @@ public class SalesCockpitQueryService {
         customerRepository.countActiveCustomersWithoutRecentContact(recentContactThreshold);
     stats.setOpenTasks((int) customersNeedingContact);
 
+    // Sprint 2.1.7.4 - NEW: Seasonal Business Support
+    int currentMonth = LocalDate.now().getMonthValue();
+
+    // Seasonal paused (out of season - NOT at risk!)
+    long seasonalPaused =
+        customerRepository
+            .find("status = ?1 AND isSeasonalBusiness = TRUE", CustomerStatus.AKTIV)
+            .stream()
+            .filter(
+                c ->
+                    c.getSeasonalMonths() != null
+                        && !c.getSeasonalMonths().isEmpty()
+                        && !c.getSeasonalMonths().contains(currentMonth))
+            .count();
+
+    // Seasonal active (in season)
+    long seasonalActive =
+        customerRepository
+            .find("status = ?1 AND isSeasonalBusiness = TRUE", CustomerStatus.AKTIV)
+            .stream()
+            .filter(
+                c ->
+                    c.getSeasonalMonths() != null
+                        && !c.getSeasonalMonths().isEmpty()
+                        && c.getSeasonalMonths().contains(currentMonth))
+            .count();
+
+    stats.setSeasonalPaused((int) seasonalPaused);
+    stats.setSeasonalActive((int) seasonalActive);
+
     return stats;
   }
 

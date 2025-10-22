@@ -110,6 +110,28 @@ class SalesCockpitQueryServiceTest {
     return customer;
   }
 
+  /**
+   * Sprint 2.1.7.4 - Helper method to create seasonal business customers.
+   *
+   * @param companyName Company name
+   * @param activeMonths List of active months (1-12)
+   * @return Persisted seasonal customer
+   */
+  private Customer createSeasonalCustomer(String companyName, List<Integer> activeMonths) {
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName(companyName)
+            .withCustomerNumber("KD-" + System.nanoTime() % 1000000)
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
+    customer.setIsSeasonalBusiness(true);
+    customer.setSeasonalMonths(activeMonths);
+    customer.setSeasonalPattern("CUSTOM");
+    customer.setCreatedAt(LocalDateTime.now().minusDays(30));
+    customer.persist();
+    return customer;
+  }
+
   @TestTransaction
   @Test
   void testGetDashboardData_withValidUser_shouldReturnDashboard() {
@@ -316,5 +338,88 @@ class SalesCockpitQueryServiceTest {
         customerCountBefore,
         customerCountAfter,
         "Query service should not create, update, or delete any customers");
+  }
+
+  /**
+   * Sprint 2.1.7.4 - Test seasonal business metrics.
+   *
+   * <p>Verifies that seasonal customers are correctly counted as "active" (in-season) or "paused"
+   * (out-of-season) based on the current month.
+   */
+  @TestTransaction
+  @Test
+  void testStatistics_shouldIncludeSeasonalMetrics() {
+    // GIVEN: Seasonal customers - 1 in-season, 1 out-of-season
+    int currentMonth = java.time.LocalDate.now().getMonthValue();
+    int nextMonth = (currentMonth % 12) + 1; // Guaranteed different from current month
+
+    // Seasonal customer IN-SEASON (active months include current month)
+    createSeasonalCustomer("Eiscafé Sommer GmbH", List.of(currentMonth));
+
+    // Seasonal customer OUT-OF-SEASON (active months do NOT include current month)
+    createSeasonalCustomer("Biergarten Winter KG", List.of(nextMonth));
+
+    // Regular non-seasonal customer (should not affect seasonal counts)
+    createAndPersistTestCustomer("Regular Restaurant AG", CustomerStatus.AKTIV);
+
+    // Count before
+    long customerCountBefore = customerRepository.count();
+
+    // WHEN: getDashboardData()
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
+
+    // THEN: Verify seasonal metrics
+    DashboardStatistics stats = result.getStatistics();
+    assertNotNull(stats, "Statistics should not be null");
+
+    assertEquals(
+        1,
+        stats.getSeasonalActive(),
+        "Should have 1 seasonal customer in-season (current month: " + currentMonth + ")");
+    assertEquals(
+        1,
+        stats.getSeasonalPaused(),
+        "Should have 1 seasonal customer out-of-season (next month: " + nextMonth + ")");
+
+    // Verify NO write operations
+    long customerCountAfter = customerRepository.count();
+    assertEquals(customerCountBefore, customerCountAfter, "Query service should not modify data");
+  }
+
+  /**
+   * Sprint 2.1.7.4 - Test seasonal business with empty active months list.
+   *
+   * <p>Verifies that seasonal customers with empty active months are NOT counted as paused.
+   */
+  @TestTransaction
+  @Test
+  void testStatistics_seasonalWithEmptyMonths_shouldNotBeCounted() {
+    // GIVEN: Seasonal customer with empty active months list
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Seasonal No Months GmbH")
+            .withCustomerNumber("KD-" + System.nanoTime() % 1000000)
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
+    customer.setIsSeasonalBusiness(true);
+    customer.setSeasonalMonths(List.of()); // Empty list
+    customer.setCreatedAt(LocalDateTime.now().minusDays(30));
+    customer.persist();
+
+    // WHEN: getDashboardData()
+    SalesCockpitDashboard result = queryService.getDashboardData(TEST_USER_ID);
+
+    // THEN: Should not be counted in seasonal metrics (edge case)
+    DashboardStatistics stats = result.getStatistics();
+    assertNotNull(stats, "Statistics should not be null");
+
+    assertEquals(
+        0,
+        stats.getSeasonalActive(),
+        "Seasonal customer with empty months should not be counted as active");
+    assertEquals(
+        0,
+        stats.getSeasonalPaused(),
+        "Seasonal customer with empty months should not be counted as paused");
   }
 }
