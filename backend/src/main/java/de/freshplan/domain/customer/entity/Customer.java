@@ -239,6 +239,20 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "pain_notes", columnDefinition = "TEXT")
   private String painNotes;
 
+  // Seasonal Business Support (Sprint 2.1.7.4 - V10033/V10034)
+  // Allows marking customers with seasonal business patterns
+  // to exclude them from churn detection during off-season
+
+  @Column(name = "is_seasonal_business")
+  private Boolean isSeasonalBusiness = false;
+
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "seasonal_months", columnDefinition = "jsonb")
+  private List<Integer> seasonalMonths = new ArrayList<>(); // Months 1-12
+
+  @Column(name = "seasonal_pattern", length = 50)
+  private String seasonalPattern; // e.g. 'SUMMER', 'WINTER', 'CUSTOM'
+
   // Risk Management
   @Column(name = "risk_score")
   private Integer riskScore = 0;
@@ -878,6 +892,32 @@ public class Customer extends PanacheEntityBase {
 
   public void setPainNotes(String painNotes) {
     this.painNotes = painNotes;
+  }
+
+  // Seasonal Business Support (Sprint 2.1.7.4)
+
+  public Boolean getIsSeasonalBusiness() {
+    return isSeasonalBusiness;
+  }
+
+  public void setIsSeasonalBusiness(Boolean isSeasonalBusiness) {
+    this.isSeasonalBusiness = isSeasonalBusiness;
+  }
+
+  public List<Integer> getSeasonalMonths() {
+    return seasonalMonths;
+  }
+
+  public void setSeasonalMonths(List<Integer> seasonalMonths) {
+    this.seasonalMonths = seasonalMonths;
+  }
+
+  public String getSeasonalPattern() {
+    return seasonalPattern;
+  }
+
+  public void setSeasonalPattern(String seasonalPattern) {
+    this.seasonalPattern = seasonalPattern;
   }
 
   // Business methods for relationships
