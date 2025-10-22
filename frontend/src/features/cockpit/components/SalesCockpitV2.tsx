@@ -10,6 +10,8 @@ import GroupIcon from '@mui/icons-material/Group';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TaskIcon from '@mui/icons-material/Task';
 import ErrorIcon from '@mui/icons-material/Error';
+import NaturePeopleIcon from '@mui/icons-material/NaturePeople';
+import PauseCircleIcon from '@mui/icons-material/PauseCircle';
 // Feature-Komponenten importieren (MUI Versionen) - mit Lazy Loading
 const MyDayColumnMUI = React.lazy(() =>
   import('./MyDayColumnMUI').then(m => ({ default: m.MyDayColumnMUI }))
@@ -177,6 +179,46 @@ export function SalesCockpitV2() {
                 sx={{ lineHeight: 1, fontSize: '0.7rem' }}
               >
                 Risiko-Kunden
+              </Typography>
+            </Box>
+          </StatsCard>
+
+          <StatsCard>
+            <NaturePeopleIcon sx={{ fontSize: 20, color: 'success.main' }} />
+            <Box>
+              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
+                {isLoading ? (
+                  <Skeleton width={30} />
+                ) : (
+                  dashboardData?.statistics?.seasonalActive || 0
+                )}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ lineHeight: 1, fontSize: '0.7rem' }}
+              >
+                Saisonal Aktiv
+              </Typography>
+            </Box>
+          </StatsCard>
+
+          <StatsCard>
+            <PauseCircleIcon sx={{ fontSize: 20, color: 'info.main' }} />
+            <Box>
+              <Typography variant="body1" sx={{ lineHeight: 1, fontWeight: 600 }}>
+                {isLoading ? (
+                  <Skeleton width={30} />
+                ) : (
+                  dashboardData?.statistics?.seasonalPaused || 0
+                )}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                sx={{ lineHeight: 1, fontSize: '0.7rem' }}
+              >
+                Saisonal Pausiert
               </Typography>
             </Box>
           </StatsCard>
