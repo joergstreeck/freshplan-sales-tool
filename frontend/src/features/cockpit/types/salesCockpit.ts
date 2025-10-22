@@ -50,6 +50,8 @@ export type RiskLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 
 /**
  * Dashboard-Statistiken
+ *
+ * Sprint 2.1.7.4: Added prospects + conversionRate
  */
 export interface DashboardStatistics {
   totalCustomers: number;
@@ -57,6 +59,8 @@ export interface DashboardStatistics {
   customersAtRisk: number;
   openTasks: number;
   overdueItems: number;
+  prospects: number; // NEW: Status = PROSPECT
+  conversionRate: number; // NEW: PROSPECT → AKTIV %
 }
 
 /**
