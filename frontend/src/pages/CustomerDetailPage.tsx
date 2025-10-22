@@ -35,6 +35,7 @@ import {
   TrendingUp as TrendingUpIcon,
   HourglassEmpty as HourglassEmptyIcon,
   CheckCircle as CheckCircleIcon,
+  NaturePeople as NaturePeopleIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useAuth } from '../contexts/AuthContext';
@@ -78,6 +79,32 @@ function a11yProps(index: number) {
     id: `customer-tab-${index}`,
     'aria-controls': `customer-tabpanel-${index}`,
   };
+}
+
+// Helper function for seasonal pattern display (Sprint 2.1.7.4)
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mär',
+  'Apr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Okt',
+  'Nov',
+  'Dez',
+];
+
+function getSeasonalPatternLabel(
+  pattern: string | null | undefined,
+  months: number[] | null | undefined
+): string {
+  if (!months || months.length === 0) return 'Nicht konfiguriert';
+
+  const monthNames = months.map(m => MONTH_NAMES[m - 1]).join(', ');
+  return monthNames;
 }
 
 export function CustomerDetailPage() {
@@ -331,6 +358,20 @@ export function CustomerDetailPage() {
                 (Wird automatisch via Xentral-Integration erfolgen - Sprint 2.1.7.2)
               </Typography>
             </Stack>
+          </Alert>
+        )}
+
+        {/* Seasonal Business Indicator (Sprint 2.1.7.4) */}
+        {customer.isSeasonalBusiness && (
+          <Alert severity="info" icon={<NaturePeopleIcon />} sx={{ mb: 2 }}>
+            <AlertTitle>Saisonbetrieb</AlertTitle>
+            <Typography variant="body2">
+              Aktive Monate:{' '}
+              {getSeasonalPatternLabel(customer.seasonalPattern, customer.seasonalMonths)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Churn-Monitoring ist außerhalb der Saison pausiert
+            </Typography>
           </Alert>
         )}
 
