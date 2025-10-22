@@ -86,6 +86,7 @@ Technische Spezifikation für Sprint 2.1.7.2 - Customer-Management + Xentral-Int
    - [3.2 Frontend: CustomerDetailPage](#32-frontend-customerdetailpage)
    - [3.3 RevenueMetricsWidget Component](#33-revenuemetricswidget-component)
    - [3.4 PaymentBehaviorIndicator](#34-paymentbehaviorindicator)
+   - [3.5 Kundenmanagement Dashboard KPIs](#35-kundenmanagement-dashboard-kpis-integration) **(NEU - Sprint 2.1.7.4 Vorbereitung)**
 
 4. [Churn-Alarm Konfiguration](#4️⃣-churn-alarm-konfiguration)
    - [4.1 Migration: churn_threshold_days](#41-migration-churn_threshold_days)
@@ -1521,6 +1522,374 @@ export const PaymentBehaviorIndicator: React.FC<PaymentBehaviorIndicatorProps> =
   );
 };
 ```
+
+---
+
+### **3.5 Kundenmanagement Dashboard KPIs (Integration)**
+
+**Route:** `/customer-management` (`KundenmanagementDashboard.tsx`)
+
+**Problem:** Dashboard zeigt aktuell Hardcoded Mock-Daten für alle KPIs.
+
+**Lösung:** In Sprint 2.1.7.2 werden ALLE KPIs auf einmal an echte Backend-Daten angebunden (gemeinsam mit Xentral-Daten).
+
+---
+
+#### **3.5.1 Backend: CustomerManagementMetrics Service (NEU)**
+
+**Datei:** `backend/src/main/java/de/freshplan/domain/cockpit/service/CustomerManagementMetricsService.java`
+
+```java
+@ApplicationScoped
+public class CustomerManagementMetricsService {
+
+    @Inject
+    CustomerRepository customerRepository;
+
+    @Inject
+    OpportunityRepository opportunityRepository;
+
+    /**
+     * Berechnet KPIs für Kundenmanagement Dashboard
+     *
+     * Sprint 2.1.7.2: Alle KPIs auf einmal anbinden
+     */
+    public CustomerManagementMetrics getMetrics() {
+        CustomerManagementMetrics metrics = new CustomerManagementMetrics();
+
+        // 1. Aktive Kunden (aus DashboardStatistics)
+        int activeCustomers = (int) customerRepository.countByStatus(CustomerStatus.AKTIV);
+        metrics.setActiveCustomers(activeCustomers);
+
+        // 2. Neue Kunden (letzten 30 Tage)
+        LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
+        int newCustomers = (int) customerRepository.count(
+            "status = ?1 AND createdAt >= ?2",
+            CustomerStatus.AKTIV, thirtyDaysAgo
+        );
+        metrics.setNewCustomers(newCustomers);
+
+        // 3. Pipeline Wert (Summe aller offenen Opportunities)
+        List<Opportunity> openOpportunities = opportunityRepository.list(
+            "status IN ('OFFEN', 'IN_PROGRESS')"
+        );
+        double pipelineValue = openOpportunities.stream()
+            .mapToDouble(opp -> opp.getEstimatedRevenue() != null ? opp.getEstimatedRevenue() : 0.0)
+            .sum();
+        metrics.setPipelineValue(pipelineValue);
+        metrics.setOpportunityCount(openOpportunities.size());
+
+        // 4. MRR (Monthly Recurring Revenue - aus Xentral)
+        // TODO Sprint 2.1.7.2: Von Xentral API laden
+        // double mrr = xentralApiService.calculateMRR();
+        // metrics.setMrr(mrr);
+        metrics.setMrr(0.0); // Placeholder
+
+        // 5. Kundenzufriedenheit / NPS
+        // TODO: Zukünftiges Feature (Customer Feedback System)
+        metrics.setCustomerSatisfaction(0.0); // Placeholder
+        metrics.setNpsScore(0); // Placeholder
+
+        // 6. Durchschnittliche Bestellungen pro Kunde
+        // TODO Sprint 2.1.7.2: Aus Xentral-Invoices berechnen
+        metrics.setAverageOrdersPerCustomer(0.0); // Placeholder
+
+        // 7. Risiko-Kunden (aus ChurnDetectionService)
+        // TODO Sprint 2.1.7.4: ChurnDetectionService.getAtRiskCustomers().size()
+        metrics.setCustomersAtRisk(0); // Placeholder
+
+        // 8. Retention Rate
+        // TODO Sprint 2.1.7.2: Aus historischen Daten berechnen
+        metrics.setRetentionRate(0.0); // Placeholder
+
+        return metrics;
+    }
+}
+```
+
+---
+
+#### **3.5.2 DTO: CustomerManagementMetrics**
+
+**Datei:** `backend/src/main/java/de/freshplan/domain/cockpit/service/dto/CustomerManagementMetrics.java`
+
+```java
+/**
+ * DTO für Kundenmanagement Dashboard KPIs
+ *
+ * Sprint 2.1.7.2: Alle KPIs für /customer-management Route
+ */
+public class CustomerManagementMetrics {
+
+    // Kunden-KPIs
+    private int activeCustomers;           // Aktive Kunden (Status = AKTIV)
+    private int newCustomers;              // Neue Kunden (letzten 30 Tage)
+    private int customersAtRisk;           // Risiko-Kunden (ChurnDetectionService)
+
+    // Opportunity-KPIs
+    private double pipelineValue;          // Summe aller offenen Opportunities
+    private int opportunityCount;          // Anzahl offener Opportunities
+
+    // Umsatz-KPIs (Xentral)
+    private double mrr;                    // Monthly Recurring Revenue
+    private double averageOrdersPerCustomer; // Ø Bestellungen pro Kunde
+
+    // Zufriedenheit-KPIs (Zukünftiges Feature)
+    private double customerSatisfaction;   // Kundenzufriedenheit (0-100%)
+    private int npsScore;                  // Net Promoter Score (-100 bis +100)
+
+    // Performance-KPIs
+    private double retentionRate;          // Kundenbindungsrate (0-100%)
+
+    // Getters + Setters
+    // ...
+}
+```
+
+---
+
+#### **3.5.3 REST Endpoint**
+
+**Datei:** `backend/src/main/java/de/freshplan/api/resources/CustomerManagementResource.java`
+
+```java
+@Path("/api/customer-management")
+@ApplicationScoped
+public class CustomerManagementResource {
+
+    @Inject
+    CustomerManagementMetricsService metricsService;
+
+    @GET
+    @Path("/metrics")
+    @RolesAllowed({"admin", "manager", "sales"})
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getMetrics() {
+        CustomerManagementMetrics metrics = metricsService.getMetrics();
+        return Response.ok(metrics).build();
+    }
+}
+```
+
+---
+
+#### **3.5.4 Frontend: KundenmanagementDashboard Integration**
+
+**Datei:** `frontend/src/pages/KundenmanagementDashboard.tsx`
+
+**Aktueller Stand (Sprint 2.1.7.4):**
+```tsx
+// ❌ Hardcoded Mock-Daten
+<Typography variant="h4">1.247</Typography>
+<Typography variant="body2">Aktive Kunden</Typography>
+
+<Typography variant="h4">€2.3M</Typography>
+<Typography variant="body2">Pipeline Wert</Typography>
+
+<Typography variant="h4">89%</Typography>
+<Typography variant="body2">Kundenzufriedenheit</Typography>
+
+<Typography variant="h4">€145k</Typography>
+<Typography variant="body2">MRR</Typography>
+```
+
+**Sprint 2.1.7.2 Änderungen:**
+```tsx
+// ✅ API Integration mit React Query
+import { useQuery } from '@tanstack/react-query';
+import { httpClient } from '../services/httpClient';
+
+export function KundenmanagementDashboard() {
+  const navigate = useNavigate();
+  const theme = useTheme();
+
+  // ✅ Fetch echte Daten vom Backend
+  const { data: metrics, isLoading } = useQuery({
+    queryKey: ['customer-management-metrics'],
+    queryFn: async () => {
+      const response = await httpClient.get('/api/customer-management/metrics');
+      return response.data;
+    },
+    refetchInterval: 60000, // Refresh alle 60 Sekunden
+  });
+
+  if (isLoading) {
+    return <CircularProgress />;
+  }
+
+  return (
+    <MainLayoutV2 maxWidth="full">
+      <Box sx={{ py: 4 }}>
+        {/* KPI Cards - Jetzt mit echten Daten */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+                {metrics.activeCustomers.toLocaleString()}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Aktive Kunden
+              </Typography>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                +{metrics.newCustomers} diesen Monat
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+                €{(metrics.pipelineValue / 1000000).toFixed(1)}M
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Pipeline Wert
+              </Typography>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                {metrics.opportunityCount} Opportunities
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+                {metrics.customerSatisfaction > 0 ? `${metrics.customerSatisfaction.toFixed(0)}%` : '-'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Kundenzufriedenheit
+              </Typography>
+              <Typography variant="caption" color="text.secondary">
+                {metrics.npsScore > 0 ? `NPS Score: ${metrics.npsScore}` : 'Noch nicht verfügbar'}
+              </Typography>
+            </Paper>
+          </Grid>
+
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+            <Paper sx={{ p: 3, textAlign: 'center' }}>
+              <Typography variant="h4" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+                {metrics.mrr > 0 ? `€${(metrics.mrr / 1000).toFixed(0)}k` : '-'}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                MRR
+              </Typography>
+              <Typography variant="caption" sx={{ color: theme.palette.primary.main }}>
+                {metrics.mrr > 0 ? 'Aus Xentral-Daten' : 'Xentral-Integration ausstehend'}
+              </Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+
+        {/* Quick Stats - Sidebar */}
+        <Paper sx={{ p: 3, mb: 3 }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            Quick Stats
+          </Typography>
+          <Grid container spacing={2}>
+            <Grid size={6}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+                  {metrics.newCustomers}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Neue Kunden (30T)
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid size={6}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="h5" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+                  {metrics.averageOrdersPerCustomer > 0 ? metrics.averageOrdersPerCustomer.toFixed(1) : '-'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Ø Bestellungen/Kunde
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid size={6}>
+              <Box sx={{ textAlign: 'center', mt: 2 }}>
+                <Typography variant="h5" sx={{ color: theme.palette.secondary.main, fontWeight: 'bold' }}>
+                  {metrics.customersAtRisk}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Risiko-Kunden
+                </Typography>
+              </Box>
+            </Grid>
+            <Grid size={6}>
+              <Box sx={{ textAlign: 'center', mt: 2 }}>
+                <Typography variant="h5" sx={{ color: theme.palette.primary.main, fontWeight: 'bold' }}>
+                  {metrics.retentionRate > 0 ? `${metrics.retentionRate.toFixed(0)}%` : '-'}
+                </Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Retention Rate
+                </Typography>
+              </Box>
+            </Grid>
+          </Grid>
+        </Paper>
+      </Box>
+    </MainLayoutV2>
+  );
+}
+```
+
+---
+
+#### **3.5.5 Implementierungs-Reihenfolge**
+
+**Sprint 2.1.7.2 - Phase 1 (Sofort verfügbar):**
+1. ✅ **Aktive Kunden** - `customerRepository.countByStatus(AKTIV)`
+2. ✅ **Neue Kunden** - `createdAt >= thirtyDaysAgo`
+3. ✅ **Pipeline Wert** - Summe aus `opportunities` Tabelle
+4. ✅ **Opportunity Count** - Count aus `opportunities` Tabelle
+
+**Sprint 2.1.7.2 - Phase 2 (Nach Xentral-Integration):**
+5. ✅ **MRR** - Aus Xentral Invoice API berechnen
+6. ✅ **Ø Bestellungen/Kunde** - Aus Xentral Invoice Count / Customers
+
+**Sprint 2.1.7.2 - Phase 3 (Nach ChurnDetection-Integration):**
+7. ✅ **Risiko-Kunden** - `ChurnDetectionService.getAtRiskCustomers().size()`
+8. ✅ **Retention Rate** - Historische Berechnung aus Xentral-Daten
+
+**Zukünftige Features (später):**
+9. ⏸️ **Kundenzufriedenheit** - Braucht Customer Feedback System
+10. ⏸️ **NPS Score** - Braucht Customer Feedback System
+
+---
+
+#### **3.5.6 Test Plan**
+
+**Backend Tests:** `CustomerManagementMetricsServiceTest.java`
+- ✅ `testGetMetrics_withActiveCustomers()`
+- ✅ `testGetMetrics_withOpportunities()`
+- ✅ `testGetMetrics_withNoData()`
+- ✅ `testGetMetrics_withXentralData()` (Sprint 2.1.7.2 Phase 2)
+
+**Frontend Tests:** `KundenmanagementDashboard.test.tsx`
+- ✅ `should render loading state`
+- ✅ `should render metrics from API`
+- ✅ `should handle API errors gracefully`
+- ✅ `should refresh metrics every 60 seconds`
+
+---
+
+#### **3.5.7 Notizen**
+
+**Warum alles auf einmal in Sprint 2.1.7.2?**
+- ✅ **Konsistenz:** Alle Daten kommen aus einer API-Integration
+- ✅ **Effizienz:** Xentral-Daten werden eh geladen, dann auch MRR berechnen
+- ✅ **User Experience:** Dashboard ist dann "komplett" statt "teilweise Mock"
+- ✅ **Testing:** Eine Integration = ein Test-Plan
+
+**Aktueller Stand (Sprint 2.1.7.4):**
+- ❌ Alle KPIs sind Hardcoded Mock-Daten
+- ✅ Routen sind verdrahtet (`/customer-management` funktioniert)
+- ✅ UI ist fertig (Layout, Cards, Sidebar)
+
+**Sprint 2.1.7.2 Aufgabe:**
+- ✅ Backend Service + DTO + REST Endpoint erstellen
+- ✅ Frontend React Query Integration
+- ✅ Phase 1-3 schrittweise implementieren (siehe 3.5.5)
 
 ---
 
