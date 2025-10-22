@@ -1,6 +1,6 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-19
+**📅 Letzte Aktualisierung:** 2025-10-22
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** Kompakt - 80% Vision + 20% Reality (Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
@@ -38,7 +38,8 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
 ### Next Steps
-- **JETZT:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle)
+- **COMPLETE:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle + Seasonal Business Support) ✅
+- **JETZT:** Sprint 2.1.7.7 (Multi-Location Management - Filialen + Hierarchie)
 - **DANACH:** Sprint 2.1.7.2 (Xentral-ERP-Integration - Umsatz + Zahlungsverhalten)
 
 ---
@@ -77,7 +78,8 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant)
 
 ### Business Features
-- ⏳ **Customer Status Lifecycle** - PROSPECT→AKTIV (Sprint 2.1.7.4 in Planung)
+- ✅ **Customer Status Lifecycle** - PROSPECT→AKTIV→RISIKO→INAKTIV (Sprint 2.1.7.4 COMPLETE, OPERATIONAL)
+- ✅ **Seasonal Business Support** - Food-Branche Seasonal Patterns (Sprint 2.1.7.4 COMPLETE, Eisdielen/Biergärten/Ski-Hütten)
 - ⏳ **Xentral-ERP-Integration** - Umsatz + Zahlungsverhalten (Sprint 2.1.7.2 geplant)
 - ⏳ **Team Management** - Kollaboratoren + Lead-Transfer (in Planung)
 
@@ -137,7 +139,8 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 **SECURITY & QUALITY:**
 - ✅ **Enterprise Security 5-Layer** - Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure Prevention, HTTP Headers
-- ✅ **Migration Safety System 3-Layer** - Pre-Commit Hook, GitHub Workflow, Enhanced get-next-migration.sh
+- ✅ **Migration Safety System 3-Layer** - Pre-Commit Hook (CHECK 4: Idempotency enforcement), GitHub Workflow, Enhanced get-next-migration.sh
+- ✅ **Idempotent Migrations enforced** - CREATE IF NOT EXISTS, ADD COLUMN IF NOT EXISTS, INSERT ... ON CONFLICT DO NOTHING (Sprint 2.1.7.4)
 - ✅ **CI Performance optimiert** - Parallel Testing, ValidatorFactory Optimization
 
 **FRONTEND & DESIGN SYSTEM:**
@@ -198,6 +201,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 **Competitive-Differentiators:**
 - **CAR-Strategy Help-System** (Calibrated Assistive Rollout) - weltweit einzigartig
+- **Seasonal Business Intelligence** - Eisdielen/Biergärten/Ski-Hütten Support mit ChurnDetectionService (KEIN Gebietsschutz bei Off-Season!)
 - **Territory + Seasonal-aware Autoscaling** für B2B-Food-Patterns (KEDA + Prometheus)
 - **5-Level Settings-Hierarchie** für komplexe Gastronomiebetrieb-Requirements (GLOBAL→TENANT→TERRITORY→ACCOUNT→CONTACT_ROLE)
 - **CQRS Light Architecture** für Performance + Cost-Efficiency (One-Database, <200ms P95)
@@ -669,7 +673,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 **Key Migration-Bereiche:**
 - **Lead-Management:** V247 (Normalization), V263 (BusinessType), V10016-V10017 (Multi-Contact), V10018-V10024 (Lead Scoring), V10027 (ActivityOutcome)
-- **Customer-Management:** V264 (BusinessType), V10028 (Customer Number Sequence - race-condition-safe), V261 (original_lead_id)
+- **Customer-Management:** V264 (BusinessType), V10028 (Customer Number Sequence), V10032 (Lead Parity Fields), V10033 (Status Cleanup + Seasonal Business), V261 (original_lead_id), V90008 (DEV-SEED Seasonal Customers)
 - **Opportunity-Management:** V10026 (lead_id/customer_id FKs), V10030 (OpportunityType Enum)
 
 **Enum Pattern (Architektur-Entscheidung):**
@@ -835,21 +839,22 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 <a id="sektion-6-codebase-reality"></a>
 ## 📦 SEKTION 6: CODEBASE-REALITY
 
-### 📊 Latest Implementation (Stand: 2025-10-19)
+### 📊 Latest Implementation (Stand: 2025-10-22)
 
 **Completed Sprints:**
+- ✅ **Sprint 2.1.7.4** (22.10.2025): Customer Status Architecture - PROSPECT→AKTIV Lifecycle + Seasonal Business Support (PR #143 MERGED)
 - ✅ **Sprint 2.1.7.3** (19.10.2025): Customer → Opportunity UI - Business-Type-Matrix, OpportunitySettingsPage, Admin-UI
 - ✅ **Sprint 2.1.7.1** (18.10.2025): Lead → Opportunity UI - Complete Workflow, Kanban Pipeline, Drag & Drop, Filter-UI
 - ✅ **Sprint 2.1.7.0** (15.10.2025): Design System - FreshFoodz CI V2 Migration (97 Violations behoben)
 - ✅ **Sprint 2.1.6.1** (14.10.2025): Opportunity Backend - Lead→Opportunity→Customer Workflows
 
 **Active Planning:**
-- 📋 **Sprint 2.1.7.4** (NEXT): Customer Status Architecture - PROSPECT→AKTIV Lifecycle, Seasonal Business Support, CustomerStatus.LEAD Removal
-- 📋 **Sprint 2.1.7.2** (AFTER 2.1.7.4): Xentral-ERP-Integration - Umsatz + Zahlungsverhalten, Nightly Polling (1x täglich)
+- 📋 **Sprint 2.1.7.7** (NEXT): Multi-Location Management - Filialen + Hierarchie
+- 📋 **Sprint 2.1.7.2** (AFTER 2.1.7.7): Xentral-ERP-Integration - Umsatz + Zahlungsverhalten, Nightly Polling (1x täglich)
 
 **Test Status:**
-- Backend: Tests GREEN (100% Coverage) - LeadResourceTest, Security Tests, FollowUpAutomationServiceTest
-- Frontend: Tests GREEN - ActivityDialog Tests, ESLint passed
+- Backend: 1617 Tests GREEN ✅ - ChurnDetectionService NPE-fix, Lead Parity fields, Seasonal Business Support
+- Frontend: Tests GREEN ✅ - Seasonal Business Integration Tests, CustomerDetailPage Tests, ESLint passed
 - CI: Performance optimiert (JUnit parallel, ValidatorFactory optimization)
 
 ### 🎖️ Modul-Status-Matrix (Implementierungs-Stand)
