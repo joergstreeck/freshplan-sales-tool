@@ -30,6 +30,8 @@ class LeadContactTest {
   @Transactional
   void setup() {
     // Cleanup for test isolation (order matters: FK constraints!)
+    // Sprint 2.1.7.4: DELETE Opportunities FIRST (FK to leads + chk_opportunity_has_source)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate(); // FK to leads
     em.createQuery("DELETE FROM Lead").executeUpdate();
