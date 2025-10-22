@@ -64,25 +64,6 @@ function App() {
 
             <Card>
               <CardHeader>
-                <CardTitle>FreshPlan Verkaufstool</CardTitle>
-                <CardDescription>Komplette Verwaltung für Kunden und Angebote</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="card-actions">
-                  <p className="card-text">
-                    Kundendaten, Standorte, Kalkulator - Alles in einem Tool
-                  </p>
-                  <div className="card-button-wrapper">
-                    <Button asChild>
-                      <Link to="/legacy-tool">FreshPlan Tool öffnen</Link>
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
                 <CardTitle>Kundenverwaltung</CardTitle>
                 <CardDescription>Verwalten Sie Ihre Kunden und Partner</CardDescription>
               </CardHeader>

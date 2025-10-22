@@ -75,14 +75,25 @@
 
 **Ziel:** XentralApiClient für Umsatz- und Zahlungsdaten
 
+**⚡ WICHTIG:** Verwendet **Neue Xentral API (v25.39+)** - NICHT Legacy v1 REST API!
+
+**🚨 KRITISCH:** **READ-ONLY Integration** (User-Requirement!)
+- ❌ **KEINE** POST/PUT/PATCH/DELETE Operations auf Xentral!
+- ✅ **NUR** GET-Requests (Daten lesen)
+- Grund: PAT hat WRITE-Rechte, Xentral kann nicht einschränken
+- Schutz: 5-Layer Security (Code + Hook + Review + Tests + Doku)
+
 **Tasks:**
-- [x] XentralApiClient Service (Quarkus REST Client)
-- [x] GET /api/v1/customers?salesRepId={id}
-- [x] GET /api/v1/invoices?customerId={id}
-- [x] GET /api/v1/customers/{id}/payment-summary
-- [x] GET /api/v1/sales-reps (für Auto-Sync)
+- [x] XentralApiClient Service (Quarkus REST Client + JSON:API)
+- [x] GET /api/customers (filter by salesRep.id) - JSON:API Format
+- [x] GET /api/customers/{id} (includes financial data - 2025 Feature!)
+- [x] GET /api/invoices (filter by customer.id) - JSON:API Format
+- [x] GET /api/employees (filter by role=sales) - JSON:API Format
+- [x] JSON:API Response Parsing (meta, data, links → Simple DTOs)
+- [x] Personal Access Token (PAT) Authentication
 - [x] Feature-Flag: mock-mode=true (Hybrid-Ansatz)
 - [x] Error Handling (Xentral down → Fallback)
+- [x] **Security Guardrails: READ-ONLY Enforcement** (5 Layers)
 
 **Tests:** 10 Tests (Mock + Integration)
 
@@ -292,20 +303,32 @@
    - ✅ Hybrid-Ansatz: Foundation mit Mocks, später echte API
    - ✅ Admin-UI: Settings-Seite für API-Konfiguration
 
-### **⏳ WARTEN AUF IT-TEAM:**
+### **✅ IT-TEAM ANTWORT (2025-10-21):**
 
-**IT-Integration Checklist (7-Punkt-Checkliste gesendet 2025-10-18):**
-1. Xentral API Endpoints (4 Endpoints)
-2. API Authentication (Token-Format)
-3. Sales-Rep Mapping (Feld-Name, Email)
-4. Rate Limits
-5. Test-Zugang
-6. Webhooks
-7. Support-Kontakt
+**Xentral-Version:** v25.39.5 PRO ✅
+**API-Zugang:** Personal Access Token (PAT) vorhanden ✅
+**Entscheidung:** **Neue Xentral API verwenden** (NICHT Legacy v1 REST API!)
+
+**Warum neue API?**
+- ✅ v1 REST API ist in Maintenance Mode (keine neuen Features)
+- ✅ Neue API (v25.39+) ist aktiv entwickelt
+- ✅ JSON:API Standard (RFC 7159)
+- ✅ 2025 Feature: Customer Financial Data inkludiert!
+- ✅ Webhooks (BETA) verfügbar
+- ✅ Zukunftssicher (v1 wird irgendwann abgeschaltet)
+
+**IT-Integration Checklist (GEKLÄRT):**
+1. ✅ Xentral API Endpoints: Neue API (v25.39+) - 4 Endpoints verfügbar
+2. ✅ API Authentication: Personal Access Token (PAT)
+3. ✅ Sales-Rep Mapping: Email-basiert (automatischer Sync)
+4. ⏳ Rate Limits: Mit IT klären
+5. ✅ Test-Zugang: PAT vorhanden
+6. ⚠️ Webhooks: BETA-Feature in v25.39 (Manual Setup in Xentral Admin erforderlich)
+7. ✅ Support-Kontakt: api@xentral.com
 
 **Hybrid-Ansatz ermöglicht:**
-- ✅ Start ohne IT-Response (Mock-Mode)
-- ✅ Später: Mock-Mode deaktivieren (1-2h Switch)
+- ✅ Start ohne Webhooks (Mock-Mode + Manual Activation Button)
+- ✅ Später: Webhooks aktivieren (BETA-Feature konfigurieren)
 
 ---
 

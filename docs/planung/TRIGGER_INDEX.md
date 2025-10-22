@@ -248,30 +248,66 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
      - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
    - Status: 📋 READY TO START ⚡
 
-📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (19.10.2025) ⏳ **NACH 2.1.7.4!**
-   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Webhook Integration
-   - **8 Deliverables:**
+📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management COMPLETE (21.10.2025) ⏳ **NACH 2.1.7.4!**
+   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Multi-Location Prep (Option A)
+   - **10 Deliverables (erweitert von 8):**
      - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
      - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
      - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
      - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
      - **D5:** Admin-UI für Xentral-Einstellungen
      - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
-     - **D7:** Testing & Integration Tests (72 Tests)
+     - **D7:** Testing & Integration Tests (162 Tests)
      - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren ⚡
-   - **Aufwand:** 23h = 3 Arbeitstage (+2h Webhook Integration)
+     - **D8:** Unified Communication System (Lead + Customer) ⭐ NEU!
+     - **D9:** Customer UX Polish (Wizard + Dashboard Review) ⭐ NEU!
+     - **D10:** Multi-Location Vorbereitung (UI disabled) ⭐ NEU!
+   - **Aufwand:** 36h = 4-5 Arbeitstage (erweitert von 25h - **Option A Vorbereitung!**)
+   - **Aufwands-Verteilung:**
+     - Original 8 Deliverables: 25h (Xentral Integration)
+     - **D8 Unified Communication:** +6h (Migration V10033 lead_activities → activities)
+     - **D9 Customer UX Polish:** +4h (Wizard/Dashboard Review + Fixes)
+     - **D10 Multi-Location Prep:** +1h (hierarchyType UI disabled vorbereiten)
    - **KRITISCH:** Nutzt Sprint 2.1.7.4 XentralOrderEventHandler Interface!
+   - **ARCHITEKTUR-ENTSCHEIDUNG (Option A):** Sprint 2.1.7.7 danach = **-5h Gesamt-Einsparung**
    - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ⚡
-   - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_threshold_days - Sprint 2.1.7.4)
-   - **Tests:** 72 Tests (46 Backend + 26 Frontend)
+   - **Migrations:** V10033 (Unified Activity), V10034 (xentral_customer_id), V10035 (months_active)
+   - **Tests:** 162 Tests (90 Backend + 72 Frontend)
    - **Integration mit Sprint 2.1.7.4:**
      - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
      - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
      - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
    - **Artefakte:**
-     - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (TOC: 8 Kapitel)
+     - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (10 Kapitel, 2,966 Zeilen)
      - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
    - Status: 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE ⏳
+
+📋 TRIGGER_SPRINT_2_1_7_7.md - Multi-Location Management (21.10.2025) ⚡ **NACH 2.1.7.2!**
+   - **SCOPE:** Parent-Child Hierarchie für Filialisten (Option A - Aktivierung statt Neubau)
+   - **WHY NOW:** Sprint 2.1.7.2 hat UI bereits vorbereitet → Nur Aktivierung + Backend!
+   - **7 Deliverables + UI-Aktivierung:**
+     - **D0:** UI-Aktivierung (FILIALE enabled + Parent-Selection Autocomplete) ⭐ 1h statt 6h!
+     - **D1:** Backend BranchService (createBranch, validateParent)
+     - **D2:** Backend Address-Matching Service (Xentral-Integration)
+     - **D3:** Backend Hierarchy Metrics Service (Roll-up Umsätze)
+     - **D4:** Frontend CreateBranchDialog Component
+     - **D5:** Frontend HierarchyDashboard (Branch-Übersicht)
+     - **D6:** Frontend HierarchyTreeView (Visuelle Hierarchie)
+     - **D7:** CustomerDetailPage Integration (Tab "Filialen")
+   - **Aufwand:** 30h = 3-4 Arbeitstage (reduziert von 36h - **Option A spart 6h!**)
+   - **Aufwands-Reduktion:**
+     - Original-Planung: 36h (komplett neu inkl. UI)
+     - **Option A (JETZT): 30h** (-6h durch Sprint 2.1.7.2 Vorbereitung!)
+     - **Net Savings gesamt: -5h** (Sprint 2.1.7.2 +1h, Sprint 2.1.7.7 -6h)
+   - **Architecture Pattern:** Parent-Child in Customer-Table (HierarchyType: STANDALONE/HEADQUARTER/FILIALE)
+   - **Prerequisites:** Sprint 2.1.7.2 COMPLETE ✅ (hierarchyType UI-Vorbereitung!)
+   - **Migrations:** Keine (hierarchyType existiert bereits aus Sprint 2.1.7.4)
+   - **Tests:** 48 Tests (28 Backend + 20 Frontend)
+   - **Artefakte:**
+     - [SPEC_SPRINT_2_1_7_7_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md) (10 Sections, 1,598 Zeilen)
+     - [SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md)
+   - **Sprint-Reihenfolge (Option A):** 2.1.7.4 → 2.1.7.2 → **2.1.7.7** → 2.1.7.6 → 2.1.7.5
+   - Status: 📋 READY TO START - Nach Sprint 2.1.7.2 COMPLETE ⏳
 
 📋 TRIGGER_SPRINT_2_1_7_5.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
    - **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)

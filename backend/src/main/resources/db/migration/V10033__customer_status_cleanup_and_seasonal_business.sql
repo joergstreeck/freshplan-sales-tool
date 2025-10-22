@@ -25,24 +25,22 @@
 -- PART 1: CustomerStatus Enum Cleanup
 -- =====================================================================================
 
--- Step 1: Migrate all LEAD customers to PROSPECT
--- Business Rule: LEAD customers are qualified leads that haven't made first order yet
-UPDATE customers
-SET status = 'PROSPECT',
-    updated_at = CURRENT_TIMESTAMP
-WHERE status = 'LEAD';
+-- Step 1: Keep LEAD status (used by auto-conversion from Lead table)
+-- Business Rule: When Lead → Customer conversion happens, status = LEAD initially
+-- Manual activation: LEAD → PROSPECT → AKTIV
+-- (No migration needed - LEAD status is valid)
 
 -- Step 2: Remove old CHECK constraint (if exists)
 ALTER TABLE customers
 DROP CONSTRAINT IF EXISTS customer_status_check;
 
--- Step 3: Add new CHECK constraint (without LEAD)
--- New lifecycle: PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
+-- Step 3: Add new CHECK constraint (WITH LEAD - needed for auto-conversion)
+-- Full lifecycle: LEAD → PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
 ALTER TABLE customers
 ADD CONSTRAINT customer_status_check
-CHECK (status IN ('PROSPECT', 'AKTIV', 'RISIKO', 'INAKTIV', 'ARCHIVIERT'));
+CHECK (status IN ('LEAD', 'PROSPECT', 'AKTIV', 'RISIKO', 'INAKTIV', 'ARCHIVIERT'));
 
-COMMENT ON CONSTRAINT customer_status_check ON customers IS 'Sprint 2.1.7.4: LEAD removed, PROSPECT → AKTIV lifecycle';
+COMMENT ON CONSTRAINT customer_status_check ON customers IS 'Sprint 2.1.7.4: Full lifecycle LEAD → PROSPECT → AKTIV (auto-conversion support)';
 
 -- =====================================================================================
 -- PART 2: Seasonal Business Support
@@ -91,15 +89,19 @@ WHERE is_seasonal_business = TRUE;
 -- =====================================================================================
 -- Migration Summary
 -- =====================================================================================
--- ✅ Migrated all LEAD → PROSPECT customers
--- ✅ Removed LEAD from CustomerStatus enum (CHECK constraint updated)
+-- ✅ Updated CustomerStatus CHECK constraint (includes LEAD for auto-conversion)
 -- ✅ Added is_seasonal_business flag
 -- ✅ Added seasonal_months array (JSONB with GIN index)
 -- ✅ Added seasonal_pattern enum (VARCHAR with CHECK constraint)
 -- ✅ Created performance index for seasonal businesses
 --
--- New Customer Lifecycle:
---   PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
+-- Full Customer Lifecycle (Sprint 2.1.7.4):
+--   LEAD → PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
+--
+-- Auto-Conversion Flow:
+--   Lead (leads table) --[Opportunity WON]--> Customer (status=PROSPECT)
+--   Customer (PROSPECT) --[Manual Activation]--> Customer (status=AKTIV)
+--   Customer (PROSPECT) --[First Order]--> Customer (status=AKTIV)
 --
 -- Seasonal Business Patterns:
 --   SUMMER: März-Oktober (Eisdielen, Biergärten)

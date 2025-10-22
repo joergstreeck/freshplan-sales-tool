@@ -161,6 +161,122 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-21 17:00 - Xentral API-Entscheidung - Neue API statt Legacy v1 REST API
+
+**Kontext:** User-IT meldete, dass Legacy v1 REST API Probleme verursachen wird. Empfehlung: Neue Xentral API (v25.39+) verwenden.
+
+**Erledigt:**
+- ✅ **ARCHITEKTUR-ENTSCHEIDUNG: Neue Xentral API (v25.39.5 PRO)**
+  - ❌ NICHT Legacy v1 REST API (Maintenance Mode, keine neuen Features)
+  - ✅ Neue API: JSON:API Standard (RFC 7159), aktiv entwickelt
+  - ✅ 2025 Feature: Customer Financial Data inkludiert in GET /api/customers/{id}
+  - ✅ Webhooks BETA verfügbar (Manual Setup in Xentral Admin)
+  - ✅ Personal Access Token (PAT) Authentication
+
+- ✅ **SPEC_SPRINT_2_1_7_2_TECHNICAL.md aktualisiert:**
+  - Section 2.1: XentralApiClient komplett neu (4 Endpoints, JSON:API Format)
+  - Section 2.2: DTOs erweitert (JSON:API Response Wrapper + Simplified DTOs)
+  - Section 7: Xentral Webhook (BETA-Feature dokumentiert)
+  - Endpoint-Pfade: `/api/v1/` → `/api/` (neue API)
+  - Filter-Syntax: `filter[salesRep.id]`, `filter[customer.id]`
+  - Pagination: `page[number]`, `page[size]`
+
+- ✅ **TRIGGER_SPRINT_2_1_7_2.md aktualisiert:**
+  - Deliverable 2: API Endpoints aktualisiert (neue API)
+  - Prerequisites: IT-Antwort dokumentiert (v25.39.5 PRO, PAT vorhanden)
+
+- ✅ **SPEC_SPRINT_2_1_7_4_TECHNICAL.md geprüft:**
+  - Keine Änderungen nötig (Interface ist API-agnostisch)
+
+**Migration:** Keine (nur Endpoint-Pfade geändert)
+**Aufwand:** Sprint 2.1.7.2 bleibt 36h (JSON:API Parsing +1h, aber Financial Data Feature -1h)
+**Status:** ✅ Dokumentation komplett aktualisiert - Ready für Sprint 2.1.7.4 Start
+
+---
+
+### 2025-10-21 17:30 - KRITISCHE SECURITY-ANFORDERUNG: Xentral READ-ONLY
+
+**Kontext:** User meldete kritisches Security-Requirement: Xentral PAT kann nicht auf READ-ONLY beschränkt werden. Application-Level Security erforderlich!
+
+**Erledigt:**
+- ✅ **SECURITY-ENTSCHEIDUNG: 5-Layer READ-ONLY Enforcement**
+  - Layer 1: Code-Level (Interface Contract - nur @GET erlaubt)
+  - Layer 2: Pre-Commit Hook (automatischer Check, blockiert @POST/@PUT/@PATCH/@DELETE)
+  - Layer 3: Code Review Checklist (PR Template erweitert)
+  - Layer 4: Integration Tests (Runtime-Verification)
+  - Layer 5: Documentation (README.md Warning)
+
+- ✅ **SPEC_SPRINT_2_1_7_2_TECHNICAL.md erweitert:**
+  - Section 2.1: Security-Warnung in XentralApiClient Javadoc
+  - Section 2.3: Komplett neue Section "Security Guardrails" (166 Zeilen)
+  - Pre-Commit Hook Script dokumentiert (31 Zeilen Bash)
+  - Integration Test dokumentiert (28 Zeilen Java)
+  - README.md Template dokumentiert
+
+- ✅ **TRIGGER_SPRINT_2_1_7_2.md aktualisiert:**
+  - Deliverable 2: Security Guardrails hinzugefügt (5 Layers)
+  - Kritische Warnung: KEINE POST/PUT/PATCH/DELETE auf Xentral!
+
+**Problem gelöst:**
+- PAT hat WRITE-Rechte, aber Code kann NUR lesen
+- 5 unabhängige Schutz-Layer verhindern versehentliche Daten-Änderungen
+- Zero-Tolerance für WRITE-Operations
+
+**Migration:** Keine (nur Security-Layer hinzugefügt)
+**Aufwand:** Sprint 2.1.7.2 +0.5h (Pre-Commit Hook + Integration Test)
+**Status:** ✅ READ-ONLY Security komplett spezifiziert
+
+---
+
+### 2025-10-21 15:30 - Option A Architektur-Entscheidung - Multi-Location + Unified Communication
+
+**Kontext:** Architektur-Diskussion zu Multi-Location Management + Unified Communication System. User entschied sich für **Option A** (Vorbereitung in Sprint 2.1.7.2, Aktivierung in Sprint 2.1.7.7).
+
+**Erledigt:**
+- ✅ **ARCHITEKTUR-ENTSCHEIDUNG OPTION A:**
+  - Sprint 2.1.7.2 bereitet UI vor (hierarchyType Dropdown disabled, Activity-System unified)
+  - Sprint 2.1.7.7 aktiviert UI (disabled entfernen, Backend hinzufügen)
+  - **Net Savings: -5h** (Sprint 2.1.7.2: +11h, Sprint 2.1.7.7: -6h)
+  - Sprint-Reihenfolge: 2.1.7.4 → 2.1.7.2 → 2.1.7.7 → 2.1.7.6 → 2.1.7.5
+
+- ✅ **DELIVERABLES ERWEITERT (Sprint 2.1.7.2: 8 → 10):**
+  - **D8:** Unified Communication System (Migration V10033: lead_activities → activities, +6h)
+  - **D9:** Customer UX Polish (Wizard/Dashboard Review-Checklist, +4h)
+  - **D10:** Multi-Location Vorbereitung (hierarchyType UI disabled, +1h)
+
+- ✅ **UNIFIED ACTIVITY SYSTEM (CRM Best Practice):**
+  - Polymorphic Pattern: entity_type (LEAD/CUSTOMER) + entity_id (UUID)
+  - Migration V10033: lead_activities → activities (entity_type='LEAD')
+  - Kontinuierliche Timeline: Lead-History + Customer-History nach Conversion
+  - Verwendet von Salesforce, HubSpot, Dynamics CRM
+
+- ✅ **SPRINT 2.1.7.7 GEPLANT:**
+  - **Aufwand:** 30h (reduziert von 36h durch Sprint 2.1.7.2 Vorbereitung)
+  - **Section 0:** UI-Aktivierung (1h statt 6h - disabled entfernen + Parent-Selection Autocomplete)
+  - **Backend:** BranchService, AddressMatching, HierarchyMetrics
+  - **Frontend:** CreateBranchDialog, HierarchyDashboard, HierarchyTreeView
+  - **Tests:** 48 Tests (28 Backend + 20 Frontend)
+
+**Dokumentations-Updates:**
+- ✅ [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (8 → 10 Kapitel, 2,966 Zeilen)
+  - Deliverable 8: Unified Communication System (~800 Zeilen)
+  - Deliverable 9: Customer UX Polish (~300 Zeilen)
+  - Deliverable 10: Multi-Location Vorbereitung (~300 Zeilen)
+  - Quick Overview Navigation + Review-Checklist (36 Checkboxen)
+- ✅ [SPEC_SPRINT_2_1_7_7_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md) (10 Sections, 1,598 Zeilen)
+  - Section 0: UI-Aktivierung (WHY NOW? Aktivierung statt Neubau!)
+  - Aufwand: 36h → 30h reduziert
+- ✅ [TRIGGER_INDEX.md](TRIGGER_INDEX.md)
+  - Sprint 2.1.7.2: 23h → 36h (10 Deliverables)
+  - Sprint 2.1.7.7: 30h NEU (Option A dokumentiert)
+  - Sprint-Reihenfolge: 2.1.7.4 → 2.1.7.2 → 2.1.7.7
+
+**Migration:** V10033 (activities table - Unified Communication)
+**Tests:** Sprint 2.1.7.2: 160 → 162 Tests, Sprint 2.1.7.7: 48 Tests
+**Status:** ✅ Option A vollständig dokumentiert - Bereit für Sprint 2.1.7.4 Start
+
+---
+
 ### 2025-10-19 02:50 - Sprint 2.1.7.3 COMPLETE - Customer → Opportunity Workflow (Bestandskunden)
 
 **Kontext:** Sprint 2.1.7.3 vollständig abgeschlossen - Business-Type-Matrix für intelligente expectedValue-Schätzung + Complete Customer → Opportunity Integration.
@@ -1490,32 +1606,77 @@
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md`
   - **⚡ WICHTIG:** Muss VOR Sprint 2.1.7.2 implementiert werden (Interface-Dependency!)
 
-- **📋 SPRINT 2.1.7.2 - CUSTOMER-MANAGEMENT + XENTRAL-INTEGRATION ⏳ NACH 2.1.7.4!**
+- **📋 SPRINT 2.1.7.2 - CUSTOMER-MANAGEMENT COMPLETE + OPTION A VORBEREITUNG ⏳ NACH 2.1.7.4!**
   - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE
-  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Webhook Integration
-  - **Aufwand:** 23h = 3 Arbeitstage (+2h Webhook Integration)
-  - **Migrations:** V10031 (xentral_sales_rep_id), V10032 (churn_threshold_days - aus Sprint 2.1.7.4)
-  - **Tests:** 72 Tests (46 Backend + 26 Frontend)
+  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Multi-Location Prep (Option A)
+  - **Aufwand:** 36h = 4-5 Arbeitstage (erweitert von 25h - **Option A Vorbereitung!**)
+  - **Aufwands-Verteilung:**
+    - Original 8 Deliverables: 25h (Xentral Integration)
+    - **D8 Unified Communication:** +6h (Migration V10033 lead_activities → activities)
+    - **D9 Customer UX Polish:** +4h (Wizard/Dashboard Review + Fixes)
+    - **D10 Multi-Location Prep:** +1h (hierarchyType UI disabled vorbereiten)
+  - **ARCHITEKTUR-ENTSCHEIDUNG (Option A):** Sprint 2.1.7.7 danach = **-5h Gesamt-Einsparung**
+  - **Migrations:** V10033 (Unified Activity), V10034 (xentral_customer_id), V10035 (months_active)
+  - **Tests:** 162 Tests (90 Backend + 72 Frontend)
   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ⚡
-  - **Deliverables:** 8 Deliverables (ConvertDialog mit PROSPECT Status Info, XentralApiClient, Customer-Dashboard, Churn-Alarm, Admin-UI, Sales-Rep Auto-Sync, Testing, Xentral Webhook → PROSPECT aktivieren)
+  - **Deliverables:** 10 Deliverables (erweitert von 8)
+    - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
+    - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
+    - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
+    - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
+    - **D5:** Admin-UI für Xentral-Einstellungen
+    - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
+    - **D7:** Testing & Integration Tests (162 Tests)
+    - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren ⚡
+    - **D8:** Unified Communication System (Lead + Customer) ⭐ NEU!
+    - **D9:** Customer UX Polish (Wizard + Dashboard Review) ⭐ NEU!
+    - **D10:** Multi-Location Vorbereitung (UI disabled) ⭐ NEU!
   - **Integration mit Sprint 2.1.7.4:**
     - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
     - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
     - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
   - **Artefakte:**
-    - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (TOC: 8 Kapitel)
+    - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (10 Kapitel, 2,966 Zeilen)
     - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
 
-- **📋 SPRINT 2.1.7.5 - OPPORTUNITY MANAGEMENT KOMPLETT ⏳ NACH 2.1.7.2!**
+- **📋 SPRINT 2.1.7.7 - MULTI-LOCATION MANAGEMENT ⚡ NACH 2.1.7.2!**
   - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.2 COMPLETE
+  - **SCOPE:** Parent-Child Hierarchie für Filialisten (Option A - Aktivierung statt Neubau)
+  - **WHY NOW:** Sprint 2.1.7.2 hat UI bereits vorbereitet → Nur Aktivierung + Backend!
+  - **Aufwand:** 30h = 3-4 Arbeitstage (reduziert von 36h - **Option A spart 6h!**)
+  - **Aufwands-Reduktion:**
+    - Original-Planung: 36h (komplett neu inkl. UI)
+    - **Option A (JETZT): 30h** (-6h durch Sprint 2.1.7.2 Vorbereitung!)
+    - **Net Savings gesamt: -5h** (Sprint 2.1.7.2 +1h, Sprint 2.1.7.7 -6h)
+  - **Architecture Pattern:** Parent-Child in Customer-Table (HierarchyType: STANDALONE/HEADQUARTER/FILIALE)
+  - **Prerequisites:** Sprint 2.1.7.2 COMPLETE ✅ (hierarchyType UI-Vorbereitung!)
+  - **Migrations:** Keine (hierarchyType existiert bereits aus Sprint 2.1.7.4)
+  - **Tests:** 48 Tests (28 Backend + 20 Frontend)
+  - **Deliverables:** 7 Deliverables + UI-Aktivierung
+    - **D0:** UI-Aktivierung (FILIALE enabled + Parent-Selection Autocomplete) ⭐ 1h statt 6h!
+    - **D1:** Backend BranchService (createBranch, validateParent)
+    - **D2:** Backend Address-Matching Service (Xentral-Integration)
+    - **D3:** Backend Hierarchy Metrics Service (Roll-up Umsätze)
+    - **D4:** Frontend CreateBranchDialog Component
+    - **D5:** Frontend HierarchyDashboard (Branch-Übersicht)
+    - **D6:** Frontend HierarchyTreeView (Visuelle Hierarchie)
+    - **D7:** CustomerDetailPage Integration (Tab "Filialen")
+  - **Artefakte:**
+    - [SPEC_SPRINT_2_1_7_7_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md) (10 Sections, 1,598 Zeilen)
+    - [SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md)
+  - **Sprint-Reihenfolge (Option A):** 2.1.7.4 → 2.1.7.2 → **2.1.7.7** → 2.1.7.6 → 2.1.7.5
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_7.md` (zu erstellen)
+
+- **📋 SPRINT 2.1.7.5 - OPPORTUNITY MANAGEMENT KOMPLETT ⏳ NACH 2.1.7.7!**
+  - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.7 COMPLETE (Sprint-Reihenfolge: 2.1.7.4 → 2.1.7.2 → 2.1.7.7 → 2.1.7.6 → 2.1.7.5)
   - **SCOPE:** Opportunity Detail View + Advanced Filters (Option C: BEIDES kombinieren!)
   - **Track 1:** Detail View & Management (OpportunityDetailPage, Edit, Stage-Änderungen, Activity Timeline UI, Dokumente & Kontakte)
   - **Track 2:** Advanced Filters & Analytics (High-Value Filter, Urgent Filter, Advanced Search Dialog, Pipeline-Analytics Dashboard)
   - **Aufwand:** 35-40h = 1 Woche (20-28h Track 1 + 13-15h Track 2)
-  - **Migrations:** V10033 (opportunity_documents), V10034 (opportunity_stage_history), V10035 (user_filter_views)
+  - **Migrations:** V10036+ (opportunity_documents), V10037+ (opportunity_stage_history), V10038+ (user_filter_views) - Nummern angepasst nach Sprint 2.1.7.2 Migrationen
   - **Tests:** 58 Tests (36 Track 1 + 22 Track 2)
-  - **Prerequisites:** Sprint 2.1.7.2 COMPLETE
+  - **Prerequisites:** Sprint 2.1.7.7 COMPLETE ✅ (Unified Activity System + Multi-Location vorbereitet)
   - **Deliverables:** 9 Deliverables (OpportunityDetailPage, EditDialog, StageChange, ActivityTimeline, Documents/Contacts, High-Value Filter, Advanced Search, Analytics, Custom Views)
   - **Business Impact:** Opportunity-Modul VOLLSTÄNDIG fertig (CREATE ✅ + READ ✅ + UPDATE ✅ + Analytics ✅)
   - **User-Entscheidungen erforderlich:** 3 Design-Entscheidungen (Detail Page Layout, Document Storage, Custom Views)

@@ -57,15 +57,18 @@ class OpportunityServiceTest {
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
+    em.createQuery("DELETE FROM Territory").executeUpdate();
 
-    // Ensure territory exists
-    testTerritory = Territory.findByCode("DE");
-    if (testTerritory == null) {
-      testTerritory = Territory.getDefault();
-      if (testTerritory.id == null) {
-        testTerritory.persist();
-      }
-    }
+    // Create test territory (always fresh for each test)
+    testTerritory = new Territory();
+    testTerritory.id = "DE";
+    testTerritory.name = "Deutschland";
+    testTerritory.countryCode = "DE";
+    testTerritory.currencyCode = "EUR";
+    testTerritory.languageCode = "de-DE";
+    testTerritory.taxRate = new BigDecimal("19.00");
+    testTerritory.active = true;
+    testTerritory.persist();
 
     // Ensure test user exists
     testUser =

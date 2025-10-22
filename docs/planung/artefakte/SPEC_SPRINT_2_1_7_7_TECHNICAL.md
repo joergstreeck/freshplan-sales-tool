@@ -2,23 +2,195 @@
 
 **Sprint-ID:** 2.1.7.7
 **Created:** 2025-10-21
+**Updated:** 2025-10-21 (Option A: UI bereits in Sprint 2.1.7.2 vorbereitet)
 **Status:** 📋 PLANNING
 **Owner:** TBD
+**Estimated Effort:** 30h (reduziert von 36h durch Sprint 2.1.7.2 Vorbereitung)
+**Dependencies:** Sprint 2.1.7.2 COMPLETE (UI-Vorbereitung!)
+
+---
+
+## 🎯 WHY NOW? Aktivierung statt Neubau!
+
+**Sprint 2.1.7.2 hat bereits vorbereitet:**
+- ✅ ConvertToCustomerDialog: hierarchyType UI existiert (FILIALE disabled)
+- ✅ CustomerOnboardingWizard: hierarchyType Dropdown existiert
+- ✅ Backend: hierarchyType wird bereits gespeichert
+
+**Dieser Sprint aktiviert nur:**
+- 🔓 FILIALE Option enabled (disabled entfernen)
+- ➕ Parent-Selection Autocomplete hinzufügen (50 Zeilen Code)
+- 🏢 BranchService + CreateBranchDialog (neu)
+- 📊 HierarchyDashboard (neu)
+
+**Aufwands-Reduktion:**
+- Original-Planung: 36h (komplett neu)
+- **Option A (JETZT): 30h** (-6h durch Vorbereitung!)
+- UI-Grundlage existiert bereits → Nur Feature-Aktivierung
 
 ---
 
 ## 📋 INHALTSVERZEICHNIS
 
-1. [Backend: Branch Service](#1-backend-branch-service)
-2. [Backend: Address-Matching Service](#2-backend-address-matching-service)
-3. [Backend: Hierarchy Metrics Service](#3-backend-hierarchy-metrics-service)
-4. [Frontend: Create Branch Dialog](#4-frontend-create-branch-dialog)
-5. [Frontend: Hierarchy Dashboard](#5-frontend-hierarchy-dashboard)
-6. [Frontend: Hierarchy Tree View](#6-frontend-hierarchy-tree-view)
-7. [CustomerDetailPage Integration](#7-customerdetailpage-integration)
-8. [Migration: Opportunity Location Link (Optional)](#8-migration-opportunity-location-link-optional)
-9. [API Endpoints](#9-api-endpoints)
-10. [Test Specifications](#10-test-specifications)
+**0️⃣ [UI-Aktivierung](#0️⃣-ui-aktivierung-sprint-2172-vorbereitung-nutzen)** (Sprint 2.1.7.2 → 2.1.7.7)
+   - [0.1 ConvertDialog FILIALE aktivieren](#01-convertdialog-filiale-aktivieren)
+   - [0.2 Parent-Selection Autocomplete](#02-parent-selection-autocomplete)
+
+**1️⃣-7️⃣ Neue Features:**
+1. [Backend: Branch Service](#1️⃣-backend-branch-service)
+2. [Backend: Address-Matching Service](#2️⃣-backend-address-matching-service)
+3. [Backend: Hierarchy Metrics Service](#3️⃣-backend-hierarchy-metrics-service)
+4. [Frontend: Create Branch Dialog](#4️⃣-frontend-create-branch-dialog)
+5. [Frontend: Hierarchy Dashboard](#5️⃣-frontend-hierarchy-dashboard)
+6. [Frontend: Hierarchy Tree View](#6️⃣-frontend-hierarchy-tree-view)
+7. [CustomerDetailPage Integration](#7️⃣-customerdetailpage-integration)
+
+**8️⃣-10 Optional/Testing:**
+8. [Migration: Opportunity Location Link (Optional)](#8️⃣-migration-opportunity-location-link-optional)
+9. [API Endpoints](#9️⃣-api-endpoints)
+10. [Test Specifications](#🔟-test-specifications)
+
+---
+
+## 0️⃣ UI-Aktivierung (Sprint 2.1.7.2 Vorbereitung nutzen)
+
+**Aufwand dieser Section: 1h** (statt 6h - UI existiert bereits!)
+
+### **0.1 ConvertDialog FILIALE aktivieren**
+
+**Datei:** `frontend/src/features/opportunity/components/ConvertToCustomerDialog.tsx`
+
+**Status:** 📋 ENHANCEMENT (Sprint 2.1.7.2 vorbereitet!)
+
+**Was existiert bereits (Sprint 2.1.7.2):**
+```tsx
+// ✅ hierarchyType State existiert
+const [hierarchyType, setHierarchyType] = useState<HierarchyType>('STANDALONE');
+
+// ✅ Dropdown existiert
+<Select value={hierarchyType} onChange={...}>
+  <MenuItem value="STANDALONE">Einzelbetrieb</MenuItem>
+  <MenuItem value="HEADQUARTER">Zentrale/Hauptbetrieb</MenuItem>
+  <MenuItem value="FILIALE" disabled> {/* ← Nur disabled entfernen! */}
+    Filiale (gehört zu Zentrale)
+  </MenuItem>
+</Select>
+```
+
+**Was wir JETZT machen (5 min!):**
+```tsx
+// VORHER (Sprint 2.1.7.2):
+<MenuItem value="FILIALE" disabled>
+  Filiale (gehört zu Zentrale)
+</MenuItem>
+
+// NACHHER (Sprint 2.1.7.7):
+<MenuItem value="FILIALE"> {/* ← disabled entfernt! */}
+  Filiale (gehört zu Zentrale)
+</MenuItem>
+```
+
+**Aufwand:** 5 Minuten (1 Zeile ändern!)
+
+---
+
+### **0.2 Parent-Selection Autocomplete**
+
+**Datei:** `frontend/src/features/opportunity/components/ConvertToCustomerDialog.tsx`
+
+**Status:** 📋 ENHANCEMENT
+
+**Implementierung:**
+```tsx
+// State für Parent-Selection (Sprint 2.1.7.2 vorbereitet!)
+const [parentCustomer, setParentCustomer] = useState<Customer | null>(null);
+
+// Fetch HEADQUARTER customers
+const { data: headquarterCustomers } = useQuery(
+  ['customers-headquarter'],
+  () => httpClient.get('/api/customers?hierarchyType=HEADQUARTER')
+);
+
+return (
+  <Dialog open={open} onClose={onClose}>
+    <DialogContent>
+      {/* Existing: hierarchyType Dropdown */}
+      {/* ... */}
+
+      {/* NEU: Parent-Selection (nur wenn FILIALE gewählt) */}
+      {hierarchyType === 'FILIALE' && (
+        <Autocomplete
+          options={headquarterCustomers || []}
+          getOptionLabel={(option) => option.companyName}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label="Gehört zu (Hauptbetrieb)"
+              required
+              helperText="Wählen Sie den Hauptbetrieb aus, zu dem diese Filiale gehört"
+            />
+          )}
+          renderOption={(props, option) => (
+            <Box component="li" {...props}>
+              <Stack>
+                <Typography variant="body1">{option.companyName}</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  {option.city} • {option.businessType}
+                </Typography>
+              </Stack>
+            </Box>
+          )}
+          onChange={(event, value) => setParentCustomer(value)}
+          value={parentCustomer}
+          sx={{ mb: 2 }}
+        />
+      )}
+
+      {/* Info-Alert aktualisieren (Sprint 2.1.7.2 → 2.1.7.7) */}
+      {hierarchyType === 'FILIALE' && !parentCustomer && (
+        <Alert severity="warning" sx={{ mb: 2 }}>
+          Bitte wählen Sie den Hauptbetrieb aus.
+        </Alert>
+      )}
+
+      {/* Button disabled-Logik aktualisieren */}
+      <Button
+        variant="contained"
+        onClick={handleConvert}
+        disabled={
+          !companyName ||
+          (hierarchyType === 'FILIALE' && !parentCustomer) // ← NEU!
+        }
+      >
+        Customer anlegen
+      </Button>
+    </DialogContent>
+  </Dialog>
+);
+```
+
+**Backend Integration:**
+```java
+// OpportunityService.convertToCustomer() erweitern
+
+if (request.hierarchyType() == CustomerHierarchyType.FILIALE) {
+    // Jetzt aktiv (Sprint 2.1.7.2 war disabled)
+    Customer parent = customerRepository.findById(request.parentCustomerId());
+    customer.setParentCustomer(parent);
+    customer.setXentralCustomerId(parent.getXentralCustomerId()); // Gleiche!
+}
+```
+
+**Tests:**
+- Component Test: Parent-Selection shows when FILIALE selected
+- Component Test: Only HEADQUARTER customers in dropdown
+- Integration Test: FILIALE customer created with parent_id
+
+**Aufwand:** 1h (50 Zeilen Code + Tests)
+
+---
+
+**Section 0 Total: 1h** (statt 6h - Vorbereitung spart 5h!)
 
 ---
 

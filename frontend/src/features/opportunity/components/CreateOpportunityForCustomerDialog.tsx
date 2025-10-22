@@ -159,56 +159,10 @@ export default function CreateOpportunityForCustomerDialog({
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
   /**
-   * Load Business-Type-Matrix Multipliers beim Dialog-Öffnen
-   * GET /api/settings/opportunity-multipliers
-   */
-  useEffect(() => {
-    if (open) {
-      loadMultipliers();
-    }
-  }, [open, loadMultipliers]);
-
-  /**
-   * Calculate expectedValue when opportunityType changes
-   */
-  useEffect(() => {
-    if (multipliers.length > 0) {
-      calculateExpectedValue();
-    }
-  }, [opportunityType, multipliers, calculateExpectedValue]);
-
-  /**
-   * Update description when opportunityType changes
-   */
-  useEffect(() => {
-    setDescription(generateDefaultDescription(customer, opportunityType));
-  }, [opportunityType, customer]);
-
-  const loadMultipliers = useCallback(async () => {
-    setIsLoadingMultipliers(true);
-    setMultipliersError(null);
-
-    try {
-      const response = await httpClient.get<OpportunityMultiplierResponse[]>(
-        '/api/settings/opportunity-multipliers'
-      );
-      setMultipliers(response.data);
-
-      // Auto-calculate expectedValue with loaded multipliers
-      calculateExpectedValue();
-    } catch (err) {
-      console.error('Failed to load opportunity multipliers:', err);
-      setMultipliersError(
-        'Multipliers konnten nicht geladen werden. Manuelle Eingabe erforderlich.'
-      );
-    } finally {
-      setIsLoadingMultipliers(false);
-    }
-  }, [calculateExpectedValue]);
-
-  /**
    * Calculate expectedValue using Business-Type-Matrix
    * Formula: expectedValue = baseVolume × multiplier
+   *
+   * WICHTIG: Muss VOR loadMultipliers definiert werden (Dependency)
    */
   const calculateExpectedValue = useCallback(() => {
     const baseVolume = getBaseVolume(customer);
