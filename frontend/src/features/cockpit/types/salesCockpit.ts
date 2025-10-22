@@ -51,7 +51,7 @@ export type RiskLevel = 'HIGH' | 'MEDIUM' | 'LOW';
 /**
  * Dashboard-Statistiken
  *
- * Sprint 2.1.7.4: Added prospects + conversionRate
+ * Sprint 2.1.7.4: Added prospects + conversionRate + seasonal metrics
  */
 export interface DashboardStatistics {
   totalCustomers: number;
@@ -61,6 +61,8 @@ export interface DashboardStatistics {
   overdueItems: number;
   prospects: number; // NEW: Status = PROSPECT
   conversionRate: number; // NEW: PROSPECT → AKTIV %
+  seasonalActive: number; // NEW Sprint 2.1.7.4: Seasonal businesses in-season
+  seasonalPaused: number; // NEW Sprint 2.1.7.4: Seasonal businesses out-of-season
 }
 
 /**

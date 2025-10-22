@@ -75,6 +75,14 @@ export function DashboardStats({ statistics, loading, error }: DashboardStatsPro
       color: 'orange',
     },
     {
+      key: 'seasonalPaused',
+      label: 'Saisonal Pausiert',
+      value: statistics.seasonalPaused,
+      icon: '🌿',
+      color: 'blue',
+      subtitle: 'Außerhalb Saison (normal)',
+    },
+    {
       key: 'openTasks',
       label: 'Offene Aufgaben',
       value: statistics.openTasks,
