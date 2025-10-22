@@ -11,8 +11,14 @@ public enum PaymentTerms {
   /** Payment within 14 days. */
   NETTO_14,
 
+  /** Payment within 15 days (English variant). */
+  NET_15,
+
   /** Payment within 30 days. */
   NETTO_30,
+
+  /** Payment within 30 days (English variant). */
+  NET_30,
 
   /** Payment within 60 days. */
   NETTO_60,
