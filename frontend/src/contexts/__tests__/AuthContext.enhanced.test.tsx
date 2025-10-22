@@ -2,8 +2,11 @@
  * Enhanced tests for AuthContext - comprehensive coverage for FC-008 Security Foundation
  */
 import { render, screen } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { AuthProvider, useAuth } from '../AuthContext';
+
+// Disable auth bypass mode for tests
+vi.stubEnv('VITE_AUTH_BYPASS', 'false');
 
 // Mock the entire KeycloakContext module
 const mockKeycloakContext = {
