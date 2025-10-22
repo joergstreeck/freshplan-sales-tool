@@ -64,6 +64,11 @@ public record CustomerResponse(
     FinancingType primaryFinancing,
     List<String> painPoints,
 
+    // Seasonal Business - NEW for Sprint 2.1.7.4
+    Boolean isSeasonalBusiness,
+    List<Integer> seasonalMonths,
+    String seasonalPattern,
+
     // Contact Information
     Integer contactsCount,
 
@@ -126,6 +131,11 @@ public record CustomerResponse(
         // Business Model - NEW for Sprint 2 (null for minimal)
         null,
         List.of(),
+
+        // Seasonal Business - NEW for Sprint 2.1.7.4 (null for minimal)
+        null,
+        null,
+        null,
 
         // Contact Information (null for minimal)
         null,

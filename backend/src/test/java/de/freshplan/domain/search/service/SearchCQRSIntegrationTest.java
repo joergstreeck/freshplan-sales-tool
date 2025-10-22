@@ -83,7 +83,7 @@ class SearchCQRSIntegrationTest {
             "SRCH-R1",
             "[TEST] Restaurant Search",
             CustomerType.NEUKUNDE,
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             Industry.RESTAURANT);
 
     customerRepository.flush();
@@ -172,7 +172,7 @@ class SearchCQRSIntegrationTest {
       Customer c =
           CustomerTestDataFactory.builder()
               .withCompanyName("[TEST] Performance Test " + i)
-              .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.LEAD)
+              .withStatus(i % 3 == 0 ? CustomerStatus.AKTIV : CustomerStatus.PROSPECT)
               .withIndustry(Industry.values()[i % Industry.values().length])
               .withExpectedAnnualVolume(new BigDecimal(100000 + i * 1000))
               .build();

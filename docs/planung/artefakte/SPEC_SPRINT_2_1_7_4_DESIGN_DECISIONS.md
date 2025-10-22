@@ -19,6 +19,9 @@ Dieses Dokument konsolidiert **alle Architektur- und Design-Entscheidungen** fü
 5. Seasonal Business Support (Food-Branche kritisch!)
 6. PROSPECT Lifecycle - Warnungen statt Auto-Archivierung
 7. Seasonal Pattern Implementation Strategy
+8. **LeadConvertService Komplett-Fix** (100% Datenübernahme)
+9. **Umsatz-Konzept Harmonisierung** (estimatedVolume → expectedAnnualVolume)
+10. **Multi-Location Management Architektur** (DEFERRED → Sprint 2.1.7.7)
 
 ---
 
@@ -406,6 +409,184 @@ Wie implementieren wir Seasonal Patterns? All-in-one oder schrittweise?
 
 ---
 
+## 8️⃣ LeadConvertService Komplett-Fix (100% Datenübernahme) ⭐
+
+### **Problem**
+**Aktueller Code kopiert nur 3 Felder bei Lead→Customer Conversion!**
+
+```java
+// LeadConvertService.convertToCustomer() - AKTUELL (Zeile 78-86):
+Customer customer = new Customer();
+customer.setCustomerNumber(customerNumber);
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.AKTIV); // ❌ Auch falsch!
+customer.setOriginalLeadId(leadId);
+// ... Location/Address/Contact werden erstellt
+// ❌ ABER: 15+ Felder NICHT kopiert!
+```
+
+**Was FEHLT:**
+- `kitchenSize` ❌ (vorhanden seit V10032)
+- `employeeCount` ❌
+- `estimatedVolume` ❌ **KRITISCH!**
+- `branchCount`, `isChain` ❌
+- `businessType` ❌
+- **Pain Scoring (8 Felder)** ❌
+- `painStaffShortage`, `painHighCosts`, `painFoodWaste`, etc.
+
+**Impact:**
+- Vertriebler verliert alle Lead-Qualifikationsdaten
+- Opportunity-Kalkulation hat keine Basis (kein Volumen!)
+- Pain Points müssen neu eingegeben werden
+
+---
+
+### **Lösung**
+**100% Datenübernahme bei Lead→Customer Conversion** ✅
+
+**Alle Felder kopieren:**
+
+```java
+// NACHHER (Sprint 2.1.7.4):
+Customer customer = new Customer();
+customer.setCustomerNumber(customerNumber);
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.PROSPECT); // ✅ KORREKT!
+customer.setOriginalLeadId(leadId);
+
+// Umsatz-Felder (KRITISCH!)
+if (lead.estimatedVolume != null) {
+    customer.setExpectedAnnualVolume(lead.estimatedVolume); // ✅ NEU!
+}
+
+// Business-Felder (Lead Parity - V10032)
+customer.setKitchenSize(lead.kitchenSize);
+customer.setEmployeeCount(lead.employeeCount);
+customer.setBranchCount(lead.branchCount);
+customer.setIsChain(lead.isChain);
+customer.setBusinessType(lead.businessType);
+
+// Pain Scoring (8 Boolean Felder - Sprint 2.1.6 Harmonization)
+customer.setPainStaffShortage(lead.painStaffShortage);
+customer.setPainHighCosts(lead.painHighCosts);
+customer.setPainFoodWaste(lead.painFoodWaste);
+customer.setPainQualityInconsistency(lead.painQualityInconsistency);
+customer.setPainTimePressure(lead.painTimePressure);
+customer.setPainSupplierQuality(lead.painSupplierQuality);
+customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
+customer.setPainPoorService(lead.painPoorService);
+customer.setPainNotes(lead.painNotes);
+
+// ... (rest bleibt wie vorher: Location, Address, Contact)
+```
+
+---
+
+### **Begründung**
+- ✅ **Keine Datenverluste:** Vertriebler-Arbeit wird nicht verschwendet
+- ✅ **Opportunity-Basis:** expectedAnnualVolume ist sofort verfügbar
+- ✅ **Pain Points erhalten:** Für Retention/Upsell wichtig
+- ✅ **100% Parity:** Lead und Customer haben gleiche Datenqualität
+
+### **Alternativen (verworfen)**
+❌ **Nur Status-Fix (ohne Felder):** Datenverlust bleibt
+❌ **Separater Sprint:** Zu spät - Lead→Customer Conversions passieren JETZT
+❌ **Manuell nachpflegen:** Zu viel Arbeit, fehleranfällig
+
+---
+
+## 9️⃣ Umsatz-Konzept Harmonisierung (estimatedVolume → expectedAnnualVolume) 💰
+
+### **Problem**
+**3 Umsatzfelder = Verwirrung!**
+
+| Feld | Wo? | Quelle | Zweck | Problem |
+|------|-----|--------|-------|---------|
+| `estimatedVolume` | Lead | Manuell | Qualifizierung | ✅ OK |
+| `estimatedVolume` | Customer | ❌ NICHT kopiert | Sollte aus Lead kommen | ⚠️ Leer! |
+| `expectedAnnualVolume` | Customer | Manuell | Prognose | ❓ Woher? |
+| `actualAnnualVolume` | Customer | Xentral | ERP-Daten | 🔜 Sprint 2.1.7.2 |
+
+**Fragen:**
+1. Warum hat Customer ZWEI Volumen-Felder?
+2. Wird `estimatedVolume` aus Lead übernommen? **NEIN!** ❌
+3. Wie hängt `Opportunity.expectedValue` damit zusammen?
+
+---
+
+### **Lösung**
+**3-Phasen-Modell mit klarem Data Flow** ✅
+
+**Phase 1: LEAD**
+```
+Lead.estimatedVolume = 100.000€ (Vertriebler-Schätzung)
+```
+
+**Phase 2: CUSTOMER (Opportunity WON)**
+```
+Customer.expectedAnnualVolume = Lead.estimatedVolume (automatisch kopiert!)
+Customer.actualAnnualVolume = NULL (noch keine Xentral-Daten)
+```
+
+**Phase 3: CUSTOMER (nach Sprint 2.1.7.2 - Xentral Sync)**
+```
+Customer.actualAnnualVolume = 87.450€ (Xentral - ECHTE Rechnungen!)
+Customer.expectedAnnualVolume = 100.000€ (bleibt als Referenz)
+```
+
+**OpportunityMultiplier Nutzung:**
+```java
+// Opportunity.expectedValue Berechnung (automatisch!):
+BigDecimal baseVolume = customer.actualAnnualVolume != null
+    ? customer.actualAnnualVolume      // PREFER: Xentral Real Data
+    : customer.expectedAnnualVolume;   // FALLBACK: Lead Estimate
+
+BigDecimal multiplier = OpportunityMultiplier.getMultiplierValue(
+    "HOTEL", "SORTIMENTSERWEITERUNG", BigDecimal.valueOf(0.65)
+); // Returns: 0.65
+
+opportunity.setExpectedValue(baseVolume.multiply(multiplier));
+// Result: 87.450€ × 0.65 = 56.842€ (intelligenter Vorschlag!)
+```
+
+---
+
+### **Entscheidungen**
+
+**Decision 1: estimatedVolume → expectedAnnualVolume kopieren?**
+- ✅ **JA** - Automatisch bei Lead→Customer Conversion
+- Rationale: Lead-Schätzung ist wertvoll (Vertriebler kennt den Kunden)
+
+**Decision 2: Customer.estimatedVolume Feld entfernen?**
+- ❌ **NEIN** - Feld bleibt, aber wird NICHT genutzt
+- Rationale: Backend-Parity (V10032 hat es angelegt), später evtl. Use-Case
+
+**Decision 3: actualAnnualVolume überschreibt expectedAnnualVolume?**
+- ❌ **NEIN** - Beide Felder parallel
+- Rationale: Vertriebler sieht Abweichung (Expected: 100k€, Actual: 50k€)
+
+**Decision 4: OpportunityMultiplier automatisch nutzen?**
+- ✅ **JA** - Automatischer Vorschlag, manuell überschreibbar
+- Rationale: Intelligente Hilfe für Vertriebler
+
+---
+
+### **Begründung**
+- ✅ **Klarheit:** Jedes Feld hat klaren Zweck
+- ✅ **Automation:** OpportunityMultiplier schlägt Wert vor
+- ✅ **Flexibilität:** Vertriebler kann anpassen
+- ✅ **Xentral-Ready:** actualAnnualVolume ersetzt expected (Sprint 2.1.7.2)
+
+### **Alternativen (verworfen)**
+❌ **Nur expectedAnnualVolume nutzen:** Verlust von Xentral-Realität
+❌ **Keine Harmonisierung:** Verwirrung bleibt
+❌ **Separates Dokument:** Wird nicht gelesen
+
+**Artefakt:**
+→ Siehe `/docs/planung/artefakte/UMSATZ_KONZEPT_DECISION.md` (vollständige Doku)
+
+---
+
 ## 🔗 EXTERNAL ANALYSIS
 
 **Source:** Externe KI-Diskussion (2025-10-19)
@@ -420,6 +601,235 @@ Wie implementieren wir Seasonal Patterns? All-in-one oder schrittweise?
 - ✅ **Pragmatisch:** Sofort einsetzbar
 - ✅ **Ausbaufähig:** Xentral Integration nachholbar
 - ✅ **Business-fokussiert:** Food-Branche Saisonalität berücksichtigt
+
+---
+
+## 🔟 Multi-Location Management Architektur (DEFERRED → Sprint 2.1.7.7)
+
+### **Problem**
+
+**User-Anforderung (2025-10-21):**
+> "Wir haben oft Filialbetriebe, besonders Hotelketten"
+
+**Kritische Fragen:**
+1. **Customer-Anlage:** Wie legt Vertriebler Filialbetriebe nutzerfreundlich an?
+2. **Lead-Conversion:** Ist der konvertierte Lead Hauptbetrieb oder Filiale?
+3. **Xentral-Umsatz:** Wie ordnen wir Umsatz pro Filiale zu?
+4. **Opportunities:** Pro Filiale oder pro Kette?
+
+**Xentral-Realität:**
+- ❌ **KEINE Filial-ID** in Xentral
+- ✅ **Gleiche Kundennummer** für alle Filialen (z.B. `56037`)
+- ✅ **Unterscheidung:** Nur über **Lieferadresse** (String-Matching!)
+
+### **Status Quo - Was existiert bereits?**
+
+#### ✅ **SEHR GUTE Basis-Infrastruktur!**
+
+**1. Customer-Hierarchie (Customer.java:131-142):**
+```java
+// Parent-Child Relationship
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "parent_customer_id")
+private Customer parentCustomer;  // ← Zentrale/Hauptbetrieb
+
+@OneToMany(mappedBy = "parentCustomer", cascade = CascadeType.ALL)
+private List<Customer> childCustomers = new ArrayList<>();  // ← Filialen
+
+@Enumerated(EnumType.STRING)
+@Column(name = "hierarchy_type", length = 20)
+private CustomerHierarchyType hierarchyType = CustomerHierarchyType.STANDALONE;
+```
+
+**CustomerHierarchyType Enum:**
+- `HEADQUARTER` - Zentrale/Hauptsitz
+- `FILIALE` - Filiale/Zweigstelle
+- `ABTEILUNG` - Abteilung
+- `FRANCHISE` - Franchise-Nehmer
+- `STANDALONE` - Einzelbetrieb
+
+**2. CustomerLocation Support (Customer.java:300-304):**
+```java
+@OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+private List<CustomerLocation> locations = new ArrayList<>();
+```
+
+**CustomerLocation.java Features:**
+- `locationName`, `locationCode`, `category`
+- `isMainLocation` Flag
+- `isShippingLocation` Flag
+- **Multiple Adressen pro Location** (CustomerAddress)
+- Business-Methoden: `getPrimaryShippingAddress()`, etc.
+
+**3. Chain Structure Fields (Customer.java:175-192):**
+```java
+@Column(name = "total_locations_eu")
+private Integer totalLocationsEU = 0;
+
+@Column(name = "locations_germany")
+private Integer locationsGermany = 0;
+// ... Austria, Switzerland, Rest EU
+```
+
+**4. Lead Parity (Customer.java:110-120):**
+```java
+@Column(name = "branch_count")
+private Integer branchCount = 1;
+
+@Column(name = "is_chain")
+private Boolean isChain = false;
+```
+
+### **Lücken - Was fehlt?**
+
+#### ❌ **1. Opportunity → Location Verknüpfung**
+
+```java
+// Opportunity.java:52-53 (AKTUELL)
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "customer_id")
+private Customer customer;  // ← NUR Customer, KEINE Location!
+```
+
+**Impact:**
+- Opportunity kann nicht einer **spezifischen Filiale** zugeordnet werden
+- Upselling/Cross-Selling pro Filiale schwer zu tracken
+
+#### ❌ **2. Lead → Location Konzept**
+
+```java
+// Lead.java (AKTUELL)
+@Column(name = "branch_count")
+public Integer branchCount = 1;  // ← Nur Zahl, keine Locations
+
+@Column(name = "is_chain")
+public Boolean isChain = false;  // ← Boolean Flag, keine Details
+```
+
+**Impact:**
+- Lead kann nicht "Filiale XY von Kette Z" sein
+- Lead→Customer Conversion: Kann nicht spezifische Filiale zuordnen
+
+#### ❌ **3. Xentral Filial-Mapping UNGEKLÄRT**
+
+**Problem:**
+- Xentral: Gleiche Kundennummer (`56037`) für alle Filialen
+- Unterscheidung NUR über Lieferadresse-String
+- Rechnung/Lieferschein → Welche Filiale? (Address-Matching fragil!)
+
+### **Best Practice - 3 Architektur-Modelle**
+
+#### **MODELL A: Separate Customers pro Filiale**
+
+```
+Hauptbetrieb: Customer #1 (hierarchyType = HEADQUARTER)
+  ├─ Filiale Berlin:  Customer #2 (hierarchyType = FILIALE, parentCustomer = #1)
+  ├─ Filiale München: Customer #3 (hierarchyType = FILIALE, parentCustomer = #1)
+  └─ Filiale Hamburg: Customer #4 (hierarchyType = FILIALE, parentCustomer = #1)
+```
+
+**✅ Vorteile:**
+- Separate Opportunities pro Filiale möglich
+- Separate Umsatz-Tracking (Xentral-Sync einfach)
+- Separate Contacts pro Filiale (Filialleiter)
+- Lead→Customer Conversion klar (Lead = spezifische Filiale)
+
+**❌ Nachteile:**
+- Viele Customer-Einträge (100 Filialen = 101 Customers)
+- Gesamt-Umsatz = Aggregation über alle Children
+- Dashboard-Filter "Nur Hauptbetriebe" nötig
+
+#### **MODELL B: Locations innerhalb Customer**
+
+```
+Customer #1 (Bäckerei Müller GmbH)
+  ├─ Location "Zentrale Hamburg" (isMainLocation = true)
+  ├─ Location "Filiale Berlin"
+  ├─ Location "Filiale München"
+  └─ Location "Filiale Köln"
+```
+
+**✅ Vorteile:**
+- 1 Customer-Eintrag (übersichtlich)
+- Gesamt-Umsatz einfach (Customer-Level)
+- Dashboard-KPIs einfach (Anzahl Customers = Anzahl Unternehmen)
+
+**❌ Nachteile:**
+- ⚠️ **Opportunity OHNE Location-Link** (Migration nötig!)
+- Umsatz-Tracking pro Filiale komplex (Address-Matching)
+- Lead→Customer: Lead wird zu Haupt-Customer (nicht Filiale)
+
+#### **MODELL C: HYBRID (EMPFOHLEN)**
+
+**Phase 1 (Sprint 2.1.7.4 - AKTUELL):**
+```java
+// LeadConvertService - MINIMAL-SUPPORT
+Customer customer = new Customer();
+customer.setCompanyName(lead.companyName);
+customer.setStatus(CustomerStatus.PROSPECT);
+
+// Branch-Infos als Metadaten
+customer.setBranchCount(lead.branchCount);
+customer.setIsChain(lead.isChain);
+
+// Hierarchy Type bestimmen
+if (lead.isChain != null && lead.isChain) {
+    customer.setHierarchyType(CustomerHierarchyType.HEADQUARTER);
+} else {
+    customer.setHierarchyType(CustomerHierarchyType.STANDALONE);
+}
+
+// ❌ KEIN automatisches Filial-Splitting
+// ❌ KEIN Opportunity→Location Link
+```
+
+**Phase 2 (Sprint 2.1.7.7 - SPÄTER):**
+- "Filialen verwalten" UI (Customer-DetailPage)
+- "Neue Filiale anlegen" (Separate Customer ODER Location)
+- Opportunity→Location Link (Migration + Field)
+- Xentral-Filial-Mapping (Address-Matching-Service)
+
+### **Lösung für Sprint 2.1.7.4**
+
+**✅ MINIMAL-SUPPORT (EMPFOHLEN):**
+
+**Was implementieren:**
+1. ✅ Lead→Customer Conversion mit `hierarchyType`
+2. ✅ `branchCount`, `isChain` kopieren (Metadaten)
+3. ✅ `totalLocationsEU`, `locationsGermany` kopieren
+4. ❌ **KEIN** automatisches Filial-Splitting
+5. ❌ **KEIN** Opportunity→Location Link
+
+**User-Workflow (Interim):**
+```
+1. Lead erfassen: "Bäckerei Müller GmbH" (branchCount = 10, isChain = true)
+2. Opportunity WON → Auto-Convert
+3. Customer erstellt: hierarchyType = HEADQUARTER, branchCount = 10
+4. SPÄTER: Vertriebler kann manuell Filialen anlegen (Sprint 2.1.7.7)
+```
+
+**Offene Punkte (für Sprint 2.1.7.7):**
+1. **Filial-Anlage UI:** Wie legt User Filialen an? (Separate Customer oder Location?)
+2. **Opportunity→Filiale:** Migration `opportunity.location_id` hinzufügen?
+3. **Xentral-Sync:** Address-Matching-Service (Lieferadresse → Location)
+4. **Umsatz-Tracking:** Pro Filiale oder aggregiert?
+
+### **Empfehlung: Sprint 2.1.7.7 anlegen**
+
+**Sprint 2.1.7.7: Multi-Location Management & Xentral Filial-Sync**
+
+**Scope:**
+- Filial-Anlage UI (Customer-DetailPage)
+- Entscheidung: Separate Customer vs. Location
+- Opportunity→Location Link (Migration + UI)
+- Xentral Address-Matching-Service
+- Umsatz-Tracking pro Filiale
+
+**Effort:** 12-15h (2 Tage)
+
+**Dependencies:**
+- Sprint 2.1.7.4 COMPLETE (hierarchyType Foundation)
+- Sprint 2.1.7.2 COMPLETE (Xentral Integration)
 
 ---
 
@@ -472,4 +882,4 @@ Diese Features bleiben wie implementiert:
 
 **✅ DESIGN DECISIONS STATUS: 📋 FINAL - User-Validated**
 
-**Letzte Aktualisierung:** 2025-10-19 (Initial Creation nach User-Diskussion)
+**Letzte Aktualisierung:** 2025-10-21 (Multi-Location Management Architektur hinzugefügt - DEFERRED zu Sprint 2.1.7.7)

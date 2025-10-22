@@ -230,9 +230,9 @@ class TestDataCommandServiceMockTest {
 
     List<Customer> customers = customerCaptor.getAllValues();
 
-    // Verify modulo logic: i=1 -> should be LEAD
+    // Verify modulo logic: i=1 -> should be PROSPECT (Sprint 2.1.7.4: LEAD removed from lifecycle)
     Customer customer1 = customers.get(0);
-    assertThat(customer1.getStatus()).isEqualTo(CustomerStatus.LEAD);
+    assertThat(customer1.getStatus()).isEqualTo(CustomerStatus.PROSPECT);
 
     // Verify modulo logic: i=4 -> should be AKTIV
     Customer customer4 = customers.get(3);
@@ -343,7 +343,8 @@ class TestDataCommandServiceMockTest {
 
     List<Customer> customers = customerCaptor.getAllValues();
 
-    boolean hasLeadStatus = customers.stream().anyMatch(c -> c.getStatus() == CustomerStatus.LEAD);
+    boolean hasLeadStatus =
+        customers.stream().anyMatch(c -> c.getStatus() == CustomerStatus.PROSPECT);
     boolean hasAktivStatus =
         customers.stream().anyMatch(c -> c.getStatus() == CustomerStatus.AKTIV);
     boolean hasRisikoStatus =

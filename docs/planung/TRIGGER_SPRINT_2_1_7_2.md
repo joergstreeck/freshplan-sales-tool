@@ -3,10 +3,10 @@
 **Sprint-ID:** 2.1.7.2
 **Status:** 📋 PLANNING → 🚀 READY TO START
 **Priority:** P1 (High)
-**Estimated Effort:** 23h (3 Arbeitstage)
+**Estimated Effort:** 25h (3+ Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-16
-**Updated:** 2025-10-19 (Status-Architektur Integration + 3-Dokumente-Struktur)
+**Updated:** 2025-10-20 (UX-Decisions für Revenue Dashboard hinzugefügt)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.4 COMPLETE
 
 ---
@@ -75,14 +75,25 @@
 
 **Ziel:** XentralApiClient für Umsatz- und Zahlungsdaten
 
+**⚡ WICHTIG:** Verwendet **Neue Xentral API (v25.39+)** - NICHT Legacy v1 REST API!
+
+**🚨 KRITISCH:** **READ-ONLY Integration** (User-Requirement!)
+- ❌ **KEINE** POST/PUT/PATCH/DELETE Operations auf Xentral!
+- ✅ **NUR** GET-Requests (Daten lesen)
+- Grund: PAT hat WRITE-Rechte, Xentral kann nicht einschränken
+- Schutz: 5-Layer Security (Code + Hook + Review + Tests + Doku)
+
 **Tasks:**
-- [x] XentralApiClient Service (Quarkus REST Client)
-- [x] GET /api/v1/customers?salesRepId={id}
-- [x] GET /api/v1/invoices?customerId={id}
-- [x] GET /api/v1/customers/{id}/payment-summary
-- [x] GET /api/v1/sales-reps (für Auto-Sync)
+- [x] XentralApiClient Service (Quarkus REST Client + JSON:API)
+- [x] GET /api/customers (filter by salesRep.id) - JSON:API Format
+- [x] GET /api/customers/{id} (includes financial data - 2025 Feature!)
+- [x] GET /api/invoices (filter by customer.id) - JSON:API Format
+- [x] GET /api/employees (filter by role=sales) - JSON:API Format
+- [x] JSON:API Response Parsing (meta, data, links → Simple DTOs)
+- [x] Personal Access Token (PAT) Authentication
 - [x] Feature-Flag: mock-mode=true (Hybrid-Ansatz)
 - [x] Error Handling (Xentral down → Fallback)
+- [x] **Security Guardrails: READ-ONLY Enforcement** (5 Layers)
 
 **Tests:** 10 Tests (Mock + Integration)
 
@@ -188,9 +199,9 @@
 - **Total: 72 Tests**
 
 **Code Changes:**
-- 2 Migrations (V10031: xentral_sales_rep_id, V10032: churn_threshold_days)
-- 8 Backend-Dateien (XentralApiClient, Services, Webhook, Admin)
-- 6 Frontend-Dateien (ConvertDialog, Dashboard, Admin-UI)
+- 2 Migrations (V10034: xentral_customer_id, V10035: months_active)
+- 10 Backend-Dateien (XentralApiClient, Services, Webhook, Admin, Metrics)
+- 8 Frontend-Dateien (ConvertDialog, RevenueMetricsCard, DeviationsWidget, Dashboard, Admin-UI)
 
 **Business Impact:**
 - Vertriebler haben Self-Service-Dashboard
@@ -236,9 +247,9 @@
 - Xentral-API-Client Implementation (3h)
 - Admin-UI für Xentral-Einstellungen (1h)
 
-**Tag 2 (8h):**
-- Customer-Dashboard mit echten Daten (6h)
-- Churn-Alarm Konfiguration (2h)
+**Tag 2 (9h):**
+- Customer-Dashboard mit echten Daten (8h) ← erweitert mit UX
+- Churn-Alarm Konfiguration (1h)
 
 **Tag 3 (7h):**
 - Sales-Rep Mapping Auto-Sync (1h)
@@ -246,7 +257,7 @@
 - Testing & Bugfixes (3h)
 - Documentation (1h)
 
-**Total:** 23h (3 Arbeitstage)
+**Total:** 25h (3+ Arbeitstage)
 
 ---
 
@@ -292,20 +303,32 @@
    - ✅ Hybrid-Ansatz: Foundation mit Mocks, später echte API
    - ✅ Admin-UI: Settings-Seite für API-Konfiguration
 
-### **⏳ WARTEN AUF IT-TEAM:**
+### **✅ IT-TEAM ANTWORT (2025-10-21):**
 
-**IT-Integration Checklist (7-Punkt-Checkliste gesendet 2025-10-18):**
-1. Xentral API Endpoints (4 Endpoints)
-2. API Authentication (Token-Format)
-3. Sales-Rep Mapping (Feld-Name, Email)
-4. Rate Limits
-5. Test-Zugang
-6. Webhooks
-7. Support-Kontakt
+**Xentral-Version:** v25.39.5 PRO ✅
+**API-Zugang:** Personal Access Token (PAT) vorhanden ✅
+**Entscheidung:** **Neue Xentral API verwenden** (NICHT Legacy v1 REST API!)
+
+**Warum neue API?**
+- ✅ v1 REST API ist in Maintenance Mode (keine neuen Features)
+- ✅ Neue API (v25.39+) ist aktiv entwickelt
+- ✅ JSON:API Standard (RFC 7159)
+- ✅ 2025 Feature: Customer Financial Data inkludiert!
+- ✅ Webhooks (BETA) verfügbar
+- ✅ Zukunftssicher (v1 wird irgendwann abgeschaltet)
+
+**IT-Integration Checklist (GEKLÄRT):**
+1. ✅ Xentral API Endpoints: Neue API (v25.39+) - 4 Endpoints verfügbar
+2. ✅ API Authentication: Personal Access Token (PAT)
+3. ✅ Sales-Rep Mapping: Email-basiert (automatischer Sync)
+4. ⏳ Rate Limits: Mit IT klären
+5. ✅ Test-Zugang: PAT vorhanden
+6. ⚠️ Webhooks: BETA-Feature in v25.39 (Manual Setup in Xentral Admin erforderlich)
+7. ✅ Support-Kontakt: api@xentral.com
 
 **Hybrid-Ansatz ermöglicht:**
-- ✅ Start ohne IT-Response (Mock-Mode)
-- ✅ Später: Mock-Mode deaktivieren (1-2h Switch)
+- ✅ Start ohne Webhooks (Mock-Mode + Manual Activation Button)
+- ✅ Später: Webhooks aktivieren (BETA-Feature konfigurieren)
 
 ---
 

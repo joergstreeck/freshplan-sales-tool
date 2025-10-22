@@ -106,7 +106,7 @@ class CustomerServiceIntegrationTest {
     assertThat(result).isNotNull();
     assertThat(result.companyName()).contains("Test Hotel GmbH");
     assertThat(result.customerType()).isEqualTo(CustomerType.UNTERNEHMEN);
-    assertThat(result.status()).isEqualTo(CustomerStatus.LEAD);
+    assertThat(result.status()).isEqualTo(CustomerStatus.PROSPECT);
     assertThat(result.lifecycleStage()).isEqualTo(CustomerLifecycleStage.ACQUISITION);
     assertThat(result.customerNumber()).startsWith("KD-");
   }
@@ -153,7 +153,7 @@ class CustomerServiceIntegrationTest {
     assertThat(result).isNotNull();
     assertThat(result.companyName()).contains("Minimal Company");
     assertThat(result.customerType()).isEqualTo(CustomerType.UNTERNEHMEN);
-    assertThat(result.status()).isEqualTo(CustomerStatus.LEAD);
+    assertThat(result.status()).isEqualTo(CustomerStatus.PROSPECT);
     assertThat(result.lifecycleStage()).isEqualTo(CustomerLifecycleStage.ACQUISITION);
   }
 

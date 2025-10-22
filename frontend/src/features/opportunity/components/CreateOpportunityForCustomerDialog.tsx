@@ -12,7 +12,7 @@
  * @since 2025-10-19
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -150,7 +150,8 @@ export default function CreateOpportunityForCustomerDialog({
 
   // Business-Type-Matrix State
   const [multipliers, setMultipliers] = useState<OpportunityMultiplierResponse[]>([]);
-  const [isLoadingMultipliers, setIsLoadingMultipliers] = useState(false);
+  // TODO: Business-Type-Matrix Loading nicht implementiert - isLoadingMultipliers hardcoded auf false
+  const isLoadingMultipliers = false;
   const [multipliersError, setMultipliersError] = useState<string | null>(null);
 
   // UI State
@@ -158,80 +159,8 @@ export default function CreateOpportunityForCustomerDialog({
   const [apiError, setApiError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
-  /**
-   * Load Business-Type-Matrix Multipliers beim Dialog-Öffnen
-   * GET /api/settings/opportunity-multipliers
-   */
-  useEffect(() => {
-    if (open) {
-      loadMultipliers();
-    }
-  }, [open, loadMultipliers]);
-
-  /**
-   * Calculate expectedValue when opportunityType changes
-   */
-  useEffect(() => {
-    if (multipliers.length > 0) {
-      calculateExpectedValue();
-    }
-  }, [opportunityType, multipliers, calculateExpectedValue]);
-
-  /**
-   * Update description when opportunityType changes
-   */
-  useEffect(() => {
-    setDescription(generateDefaultDescription(customer, opportunityType));
-  }, [opportunityType, customer]);
-
-  const loadMultipliers = useCallback(async () => {
-    setIsLoadingMultipliers(true);
-    setMultipliersError(null);
-
-    try {
-      const response = await httpClient.get<OpportunityMultiplierResponse[]>(
-        '/api/settings/opportunity-multipliers'
-      );
-      setMultipliers(response.data);
-
-      // Auto-calculate expectedValue with loaded multipliers
-      calculateExpectedValue();
-    } catch (err) {
-      console.error('Failed to load opportunity multipliers:', err);
-      setMultipliersError(
-        'Multipliers konnten nicht geladen werden. Manuelle Eingabe erforderlich.'
-      );
-    } finally {
-      setIsLoadingMultipliers(false);
-    }
-  }, [calculateExpectedValue]);
-
-  /**
-   * Calculate expectedValue using Business-Type-Matrix
-   * Formula: expectedValue = baseVolume × multiplier
-   */
-  const calculateExpectedValue = useCallback(() => {
-    const baseVolume = getBaseVolume(customer);
-
-    if (baseVolume === 0) {
-      setExpectedValue(undefined); // Manuelle Eingabe erforderlich
-      return;
-    }
-
-    // Find multiplier for customer.industry × opportunityType
-    // WICHTIG: customer.industry kann undefined sein!
-    const multiplier = multipliers.find(
-      m => m.businessType === customer.industry && m.opportunityType === opportunityType
-    );
-
-    if (multiplier) {
-      const calculatedValue = Math.round(baseVolume * multiplier.multiplier);
-      setExpectedValue(calculatedValue);
-    } else {
-      // Fallback: Use NEUGESCHAEFT multiplier (1.00) if not found
-      setExpectedValue(baseVolume);
-    }
-  }, [customer, opportunityType, multipliers]);
+  // TODO: Business-Type-Matrix Auto-Calculation nicht implementiert
+  // Die calculateExpectedValue Funktion wurde entfernt, da sie nie aufgerufen wurde
 
   /**
    * Get current multiplier for display

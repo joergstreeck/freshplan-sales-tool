@@ -52,11 +52,35 @@ export function DashboardStats({ statistics, loading, error }: DashboardStatsPro
       color: 'green',
     },
     {
+      key: 'prospects',
+      label: 'Prospects',
+      value: statistics.prospects,
+      icon: '⏳',
+      color: 'orange',
+      subtitle: 'Warten auf erste Bestellung',
+    },
+    {
+      key: 'conversionRate',
+      label: 'Conversion Rate',
+      value: `${statistics.conversionRate.toFixed(1)}%`,
+      icon: '📈',
+      color: 'blue',
+      subtitle: 'PROSPECT → AKTIV',
+    },
+    {
       key: 'customersAtRisk',
       label: 'Risiko-Kunden',
       value: statistics.customersAtRisk,
       icon: '⚠️',
       color: 'orange',
+    },
+    {
+      key: 'seasonalPaused',
+      label: 'Saisonal Pausiert',
+      value: statistics.seasonalPaused,
+      icon: '🌿',
+      color: 'blue',
+      subtitle: 'Außerhalb Saison (normal)',
     },
     {
       key: 'openTasks',
@@ -84,6 +108,9 @@ export function DashboardStats({ statistics, loading, error }: DashboardStatsPro
             <div className="stat-content">
               <div className="stat-value">{item.value}</div>
               <div className="stat-label">{item.label}</div>
+              {'subtitle' in item && item.subtitle && (
+                <div className="stat-subtitle">{item.subtitle}</div>
+              )}
             </div>
           </div>
         ))}

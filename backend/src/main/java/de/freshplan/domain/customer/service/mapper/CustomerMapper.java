@@ -87,6 +87,11 @@ public class CustomerMapper {
         customer.getPrimaryFinancing(),
         customer.getPainPoints(),
 
+        // Seasonal Business - NEW for Sprint 2.1.7.4
+        customer.getIsSeasonalBusiness(),
+        customer.getSeasonalMonths(),
+        customer.getSeasonalPattern(),
+
         // Contact Information
         customer.getActiveContactsCount(),
         customer.getCreatedAt(),
@@ -144,6 +149,9 @@ public class CustomerMapper {
         null, // expansionPlanned
         null, // primaryFinancing
         List.of(), // painPoints
+        null, // isSeasonalBusiness
+        null, // seasonalMonths
+        null, // seasonalPattern
 
         // Contact Information - NEEDED FOR FILTERS
         customer.getActiveContactsCount(),
@@ -241,10 +249,11 @@ public class CustomerMapper {
     }
 
     // Status & Lifecycle with defaults
+    // Sprint 2.1.7.4: Default changed from LEAD to PROSPECT (LEAD removed from lifecycle)
     customer.setStatus(
         request.status() != null
             ? request.status()
-            : de.freshplan.domain.customer.entity.CustomerStatus.LEAD);
+            : de.freshplan.domain.customer.entity.CustomerStatus.PROSPECT);
     customer.setLifecycleStage(
         request.lifecycleStage() != null
             ? request.lifecycleStage()

@@ -8,11 +8,18 @@ import {
   Typography,
   Skeleton,
   Alert,
+  AlertTitle,
   Breadcrumbs,
   Link,
   Chip,
   Button,
   Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
+  Stack,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -26,6 +33,9 @@ import {
   Category as CategoryIcon,
   PersonAdd as PersonAddIcon,
   TrendingUp as TrendingUpIcon,
+  HourglassEmpty as HourglassEmptyIcon,
+  CheckCircle as CheckCircleIcon,
+  NaturePeople as NaturePeopleIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useAuth } from '../contexts/AuthContext';
@@ -34,7 +44,7 @@ import { EntityAuditTimeline } from '../features/audit/components/EntityAuditTim
 import { ContactGridContainer } from '../features/customers/components/contacts/ContactGridContainer';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { customerApi } from '../features/customer/api/customerApi';
 import type { Customer, CustomerContact } from '../features/customer/types/customer.types';
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
@@ -71,12 +81,39 @@ function a11yProps(index: number) {
   };
 }
 
+// Helper function for seasonal pattern display (Sprint 2.1.7.4)
+const MONTH_NAMES = [
+  'Jan',
+  'Feb',
+  'Mär',
+  'Apr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Okt',
+  'Nov',
+  'Dez',
+];
+
+function getSeasonalPatternLabel(
+  pattern: string | null | undefined,
+  months: number[] | null | undefined
+): string {
+  if (!months || months.length === 0) return 'Nicht konfiguriert';
+
+  const monthNames = months.map(m => MONTH_NAMES[m - 1]).join(', ');
+  return monthNames;
+}
+
 export function CustomerDetailPage() {
   const { customerId } = useParams<{ customerId: string }>();
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(0);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Opportunity Dialog State
   const [showOpportunityDialog, setShowOpportunityDialog] = useState(false);
@@ -84,6 +121,12 @@ export function CustomerDetailPage() {
 
   // Edit Dialog State
   const [showEditWizard, setShowEditWizard] = useState(false);
+
+  // Activation Dialog State (Sprint 2.1.7.4)
+  const [showActivateDialog, setShowActivateDialog] = useState(false);
+  const [orderNumber, setOrderNumber] = useState('');
+  const [activationSuccess, setActivationSuccess] = useState(false);
+  const [activationError, setActivationError] = useState<string | null>(null);
 
   // Get highlightContact parameter for deep-linking
   const highlightContactId = searchParams.get('highlightContact');
@@ -109,6 +152,30 @@ export function CustomerDetailPage() {
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
+  };
+
+  // Handle customer activation (Sprint 2.1.7.4)
+  const handleActivateCustomer = async () => {
+    if (!customerId) return;
+
+    try {
+      setActivationError(null);
+      await customerApi.activateCustomer(customerId, orderNumber || undefined);
+
+      // Success! Refresh customer data
+      queryClient.invalidateQueries({ queryKey: ['customer', customerId] });
+
+      // Show success message
+      setActivationSuccess(true);
+      setShowActivateDialog(false);
+      setOrderNumber('');
+
+      // Hide success message after 5 seconds
+      setTimeout(() => setActivationSuccess(false), 5000);
+    } catch (err) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setActivationError(error.response?.data?.message || 'Fehler beim Aktivieren des Kunden');
+    }
   };
 
   // Loading state
@@ -251,6 +318,63 @@ export function CustomerDetailPage() {
           </Box>
         </Paper>
 
+        {/* Success Message (Sprint 2.1.7.4) */}
+        {activationSuccess && (
+          <Alert severity="success" sx={{ mb: 3 }} onClose={() => setActivationSuccess(false)}>
+            <AlertTitle>Kunde erfolgreich aktiviert!</AlertTitle>
+            Der Kundenstatus wurde von PROSPECT → AKTIV geändert.
+          </Alert>
+        )}
+
+        {/* PROSPECT Status Alert (Sprint 2.1.7.4) */}
+        {customer.status === 'PROSPECT' && (
+          <Alert severity="info" sx={{ mb: 3 }}>
+            <AlertTitle>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <HourglassEmptyIcon />
+                Kunde wartet auf erste Bestellung
+              </Box>
+            </AlertTitle>
+
+            <Typography variant="body2" sx={{ mb: 2 }}>
+              <strong>{customer.companyName}</strong> wurde aus einer gewonnenen Opportunity
+              konvertiert.
+              <br />
+              Sobald die erste Bestellung geliefert wurde, können Sie den Kunden als AKTIV
+              markieren.
+            </Typography>
+
+            <Stack direction="row" spacing={2} alignItems="center">
+              <Button
+                variant="contained"
+                color="success"
+                startIcon={<CheckCircleIcon />}
+                onClick={() => setShowActivateDialog(true)}
+              >
+                Erste Bestellung geliefert → AKTIV markieren
+              </Button>
+
+              <Typography variant="caption" color="text.secondary">
+                (Wird automatisch via Xentral-Integration erfolgen - Sprint 2.1.7.2)
+              </Typography>
+            </Stack>
+          </Alert>
+        )}
+
+        {/* Seasonal Business Indicator (Sprint 2.1.7.4) */}
+        {customer.isSeasonalBusiness && (
+          <Alert severity="info" icon={<NaturePeopleIcon />} sx={{ mb: 2 }}>
+            <AlertTitle>Saisonbetrieb</AlertTitle>
+            <Typography variant="body2">
+              Aktive Monate:{' '}
+              {getSeasonalPatternLabel(customer.seasonalPattern, customer.seasonalMonths)}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Churn-Monitoring ist außerhalb der Saison pausiert
+            </Typography>
+          </Alert>
+        )}
+
         {/* Tabs */}
         <Paper>
           <Tabs
@@ -342,6 +466,78 @@ export function CustomerDetailPage() {
           initialData={customer}
           editMode={true}
         />
+
+        {/* Activation Dialog (Sprint 2.1.7.4) */}
+        <Dialog
+          open={showActivateDialog}
+          onClose={() => {
+            setShowActivateDialog(false);
+            setActivationError(null);
+            setOrderNumber('');
+          }}
+          maxWidth="sm"
+          fullWidth
+        >
+          <DialogTitle>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <CheckCircleIcon color="success" />
+              Kunde als AKTIV markieren
+            </Box>
+          </DialogTitle>
+
+          <DialogContent>
+            <Typography sx={{ mb: 2 }}>
+              Wurde die erste Bestellung für <strong>{customer.companyName}</strong> erfolgreich
+              geliefert?
+            </Typography>
+
+            <TextField
+              fullWidth
+              label="Bestellnummer (optional)"
+              value={orderNumber}
+              onChange={e => setOrderNumber(e.target.value)}
+              helperText="Für Audit-Trail - wird im System protokolliert"
+              sx={{ mt: 2 }}
+            />
+
+            {activationError && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {activationError}
+              </Alert>
+            )}
+
+            <Alert severity="success" sx={{ mt: 2 }}>
+              <AlertTitle>Was passiert:</AlertTitle>
+              <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>
+                <li>
+                  Status wird von <strong>PROSPECT</strong> → <strong>AKTIV</strong> geändert
+                </li>
+                <li>Kunde erscheint in Dashboard als "Aktiver Kunde"</li>
+                <li>Aktion wird im Audit-Log protokolliert</li>
+              </ul>
+            </Alert>
+          </DialogContent>
+
+          <DialogActions sx={{ px: 3, pb: 2 }}>
+            <Button
+              onClick={() => {
+                setShowActivateDialog(false);
+                setActivationError(null);
+                setOrderNumber('');
+              }}
+            >
+              Abbrechen
+            </Button>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleActivateCustomer}
+              startIcon={<CheckCircleIcon />}
+            >
+              Ja, als AKTIV markieren
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </MainLayoutV2>
   );

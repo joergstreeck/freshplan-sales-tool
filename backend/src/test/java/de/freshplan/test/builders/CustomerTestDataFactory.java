@@ -75,7 +75,8 @@ public class CustomerTestDataFactory {
     // Note: companyName is lazy-initialized in build() to use correct generator instance
     private String companyName;
     private String customerNumber; // wird automatisch generiert
-    private CustomerStatus status = CustomerStatus.LEAD;
+    private CustomerStatus status =
+        CustomerStatus.PROSPECT; // Sprint 2.1.7.4: LEAD removed from lifecycle
     private Industry industry = Industry.SONSTIGE;
     private String website;
     private String phone;
@@ -362,7 +363,9 @@ public class CustomerTestDataFactory {
 
     /** Build a minimal test customer. Convenience method for common test case. */
     public Customer buildMinimal() {
-      return withCompanyName("Test Company GmbH").withStatus(CustomerStatus.LEAD).build();
+      return withCompanyName("Test Company GmbH")
+          .withStatus(CustomerStatus.PROSPECT)
+          .build(); // Sprint 2.1.7.4: LEAD removed
     }
 
     /**

@@ -695,6 +695,8 @@ class CustomerRepositoryTest {
   @TestTransaction
   void getMaxCustomerNumberForYear_shouldReturnNullForNoCustomers() {
     // Delete all customers for year 2026
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM Customer WHERE customerNumber LIKE 'KD-2026-%'").executeUpdate();
     em.flush();
 
@@ -712,7 +714,7 @@ class CustomerRepositoryTest {
     Customer customer =
         CustomerTestDataFactory.builder()
             .withCompanyName(companyName)
-            .withStatus(CustomerStatus.LEAD)
+            .withStatus(CustomerStatus.PROSPECT)
             .build(); // build() not persist() - tests handle persistence
 
     // Override the auto-generated values for test compatibility
@@ -730,7 +732,7 @@ class CustomerRepositoryTest {
     Customer customer =
         CustomerTestDataFactory.builder()
             .withCompanyName(companyName)
-            .withStatus(CustomerStatus.LEAD)
+            .withStatus(CustomerStatus.PROSPECT)
             .build(); // build() not persist() - tests handle persistence
 
     // Override with specific customer number and name

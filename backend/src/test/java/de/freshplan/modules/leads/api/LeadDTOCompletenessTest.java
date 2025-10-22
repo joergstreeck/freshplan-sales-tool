@@ -42,6 +42,8 @@ class LeadDTOCompletenessTest {
   @Transactional
   void setup() {
     // Cleanup for test isolation
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();

@@ -85,7 +85,7 @@ class HtmlExportCQRSIntegrationTest {
             "EXP-R1",
             "[TEST] Export Restaurant",
             CustomerType.NEUKUNDE,
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             Industry.RESTAURANT);
 
     customerRepository.flush();
@@ -130,7 +130,7 @@ class HtmlExportCQRSIntegrationTest {
             "EXP-L1",
             "[TEST] Lead Customer",
             CustomerType.NEUKUNDE,
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             Industry.RESTAURANT);
 
     customerRepository.flush();
@@ -257,7 +257,7 @@ class HtmlExportCQRSIntegrationTest {
         "EXP-S2",
         "[TEST] Stats Customer 2",
         CustomerType.NEUKUNDE,
-        CustomerStatus.LEAD,
+        CustomerStatus.PROSPECT,
         Industry.RESTAURANT);
 
     customerRepository.flush();
@@ -407,7 +407,7 @@ class HtmlExportCQRSIntegrationTest {
     ExportRequest filteredRequest =
         ExportRequest.builder()
             .entityType("customer")
-            .status(Arrays.asList("AKTIV", "LEAD"))
+            .status(Arrays.asList("AKTIV", "PROSPECT"))
             .businessType("HOTEL")
             .includeDetails(true)
             .includeStats(true)

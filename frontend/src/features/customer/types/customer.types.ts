@@ -26,6 +26,12 @@ export interface CustomerResponse {
   atRisk: boolean;
   lastContactDate?: string;
   nextFollowUpDate?: string;
+
+  // Seasonal Business - NEW for Sprint 2.1.7.4
+  isSeasonalBusiness?: boolean;
+  seasonalMonths?: number[];
+  seasonalPattern?: string;
+
   contactsCount?: number;
   createdAt: string;
   createdBy: string;
@@ -175,3 +181,6 @@ export const getCustomerStatusColor = (status: CustomerStatus, theme: Theme): st
       return theme.palette.grey[500];
   }
 };
+
+// Type alias for convenience (Sprint 2.1.7.4)
+export type Customer = CustomerResponse;

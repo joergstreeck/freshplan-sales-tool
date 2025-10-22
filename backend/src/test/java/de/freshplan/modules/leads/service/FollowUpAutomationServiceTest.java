@@ -55,6 +55,8 @@ class FollowUpAutomationServiceTest {
     TestTx.committed(
         () -> {
           // Clean up - IMPORTANT: Delete in correct order (FK constraints!)
+          // Sprint 2.1.7.4: DELETE Opportunities FIRST (FK to leads + chk_opportunity_has_source)
+          em.createQuery("DELETE FROM Opportunity").executeUpdate();
           em.createQuery("DELETE FROM LeadContact").executeUpdate();
           em.createQuery("DELETE FROM LeadActivity").executeUpdate();
           em.createQuery("DELETE FROM Lead").executeUpdate();

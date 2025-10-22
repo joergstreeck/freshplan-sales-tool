@@ -66,7 +66,7 @@ class CustomerTestDataFactoryTest {
     // Note: Only uncommented Customer entity fields are tested
     assertThat(customer.getCompanyName()).isNotBlank().startsWith("[TEST] ");
     assertThat(customer.getCustomerNumber()).isNotBlank().startsWith("TST-");
-    assertThat(customer.getStatus()).isEqualTo(CustomerStatus.LEAD);
+    assertThat(customer.getStatus()).isEqualTo(CustomerStatus.PROSPECT);
     assertThat(customer.getIsTestData()).isTrue();
     assertThat(customer.getCreatedBy()).isEqualTo("test-system");
     assertThat(customer.getCreatedAt()).isNotNull();
@@ -146,7 +146,7 @@ class CustomerTestDataFactoryTest {
 
     // Then
     assertThat(customer.getCompanyName()).isEqualTo("Test Company GmbH");
-    assertThat(customer.getStatus()).isEqualTo(CustomerStatus.LEAD);
+    assertThat(customer.getStatus()).isEqualTo(CustomerStatus.PROSPECT);
     assertThat(customer.getCustomerNumber()).isNotBlank();
     assertThat(customer.getIsTestData()).isTrue();
   }

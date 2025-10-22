@@ -288,6 +288,49 @@ public class SalesCockpitService {
         customerRepository.countActiveCustomersWithoutRecentContact(recentContactThreshold);
     stats.setOpenTasks((int) customersNeedingContact);
 
+    // Sprint 2.1.7.4 - NEW: PROSPECT count + Conversion Rate
+    int prospects = (int) customerRepository.countByStatus(CustomerStatus.PROSPECT);
+    stats.setProspects(prospects);
+
+    // Conversion Rate: (Aktive / (Aktive + Prospects)) * 100
+    // Zeigt wie viele Prospects zu aktiven Kunden wurden
+    int active = stats.getActiveCustomers();
+    double conversionRate =
+        (active + prospects > 0) ? ((double) active / (active + prospects)) * 100.0 : 0.0;
+    stats.setConversionRate(conversionRate);
+
+    // Sprint 2.1.7.4 - NEW: Seasonal Business Support
+    int currentMonth = LocalDate.now().getMonthValue();
+
+    // TODO: PERFORMANCE - In-memory JSONB filtering (Gemini Code Review)
+    //  Current: Load all seasonal customers, then filter seasonalMonths array in Java Stream API
+    //  Better: Use PostgreSQL JSONB operators in query (e.g., `jsonb_array_element(seasonal_months)
+    //  @> to_jsonb(?)`)
+    //  Tradeoff: Requires native query (Panache/Hibernate doesn't support JSONB operators easily)
+    //  Impact: Low for <100 seasonal customers, but should be optimized for scale
+    //  Ticket: Create performance optimization ticket if seasonal customer count exceeds 100
+    // Performance optimized: Single DB query + partitioningBy (Gemini #1)
+    java.util.Map<Boolean, Long> seasonalStats =
+        customerRepository
+            .find("status = ?1 AND isSeasonalBusiness = TRUE", CustomerStatus.AKTIV)
+            .stream()
+            .filter(
+                c ->
+                    c.getSeasonalMonths() != null
+                        && !c.getSeasonalMonths().isEmpty()) // Valid data only
+            .collect(
+                java.util.stream.Collectors.partitioningBy(
+                    c ->
+                        c.getSeasonalMonths()
+                            .contains(currentMonth), // true = in season, false = out of season
+                    java.util.stream.Collectors.counting()));
+
+    long seasonalActive = seasonalStats.getOrDefault(true, 0L); // In season
+    long seasonalPaused = seasonalStats.getOrDefault(false, 0L); // Out of season (NOT at risk!)
+
+    stats.setSeasonalPaused((int) seasonalPaused);
+    stats.setSeasonalActive((int) seasonalActive);
+
     return stats;
   }
 

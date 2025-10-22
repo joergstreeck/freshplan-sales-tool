@@ -71,7 +71,7 @@ class SearchServiceMockTest {
         createTestCustomer(
             "KD-2025-00002",
             "Metzgerei Müller",
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             LocalDateTime.now().minusDays(45));
 
     inactiveCustomer =
@@ -299,7 +299,7 @@ class SearchServiceMockTest {
         createTestCustomer(
             "KD-2025-00002",
             "Bäckerei Schmidt GmbH", // Contains query
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             LocalDateTime.now().minusDays(60) // Older contact
             );
 

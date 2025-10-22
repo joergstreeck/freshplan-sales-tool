@@ -42,6 +42,8 @@ public class LeadResourceSecurityTest {
   @Transactional
   void setup() {
     // Clean up test data
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();

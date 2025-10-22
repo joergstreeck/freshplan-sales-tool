@@ -500,6 +500,15 @@ private String xentralCustomerId; // ← NULLABLE!
 **User-Quotes:**
 > "User-Tabelle erweitern mit `xentral_sales_rep_id` + Auto-Sync-Job"
 
+**Existierende UI-Struktur:**
+⚠️ **WICHTIG:** Die Admin-UI Route `/admin/integrations/xentral` existiert bereits als Placeholder!
+- **Dateien:**
+  - `frontend/src/pages/placeholders/integrationen.tsx:28-41` (Placeholder)
+  - `frontend/src/providers.tsx:374-379` (Route mit Admin-Schutz)
+- **Status:** Placeholder-Seite mit "Voraussichtlich verfügbar: Q1 2025"
+- **Sprint 2.1.7.2 TODO:** Placeholder durch `XentralSettingsPage` ersetzen
+- **Details:** Siehe SPEC_SPRINT_2_1_7_2_TECHNICAL.md Section 5.3
+
 ### **Session 2025-10-19 - Polling-Frequenz**
 
 **Kontext:** User fragte: "1x am Tag reicht doch aus, oder?"

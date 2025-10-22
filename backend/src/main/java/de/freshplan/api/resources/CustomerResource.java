@@ -435,4 +435,67 @@ public class CustomerResource {
 
     return Response.ok(opportunities).build();
   }
+
+  // ========== SPRINT 2.1.7.4: MANUAL ACTIVATION ==========
+
+  /**
+   * Activates a PROSPECT customer to AKTIV status.
+   *
+   * <p>Sprint 2.1.7.4: Manual Activation Button
+   *
+   * <p>Business Rule: PROSPECT → AKTIV when first order delivered
+   *
+   * <p>This endpoint allows manual activation until Xentral webhook integration is available
+   * (Sprint 2.1.7.2).
+   *
+   * <p><strong>Authorization:</strong> Roles {@code admin}, {@code manager}, {@code sales} are
+   * authorized. These are the actual role names used in the application (lowercase), not
+   * placeholder constants. This was verified during code review to match the security
+   * configuration.
+   *
+   * @param customerId Customer UUID
+   * @param request Activation request with optional order number
+   * @return 200 OK with updated customer, 400 if not PROSPECT, 404 if not found
+   */
+  @PUT
+  @Path("/{id}/activate")
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response activateCustomer(
+      @PathParam("id") UUID customerId, @Valid ActivateCustomerRequest request) {
+
+    log.info("Activating customer {} (order: {})", customerId, request.orderNumber());
+
+    // Validate: Customer must exist
+    CustomerResponse customer = customerService.getCustomer(customerId);
+
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // Validate: Customer must be PROSPECT
+    if (customer.status() != CustomerStatus.PROSPECT) {
+      log.warn("Customer {} is not PROSPECT (current status: {})", customerId, customer.status());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(
+              new ErrorResponse(
+                  "Customer must be PROSPECT to activate. Current status: " + customer.status(),
+                  "INVALID_STATUS"))
+          .build();
+    }
+
+    // Activate: PROSPECT → AKTIV
+    CustomerResponse updatedCustomer =
+        customerService.changeStatus(customerId, CustomerStatus.AKTIV, currentUser.getUsername());
+
+    log.info(
+        "Customer {} activated: PROSPECT → AKTIV (order: {})", customerId, request.orderNumber());
+
+    return Response.ok(updatedCustomer).build();
+  }
+
+  /** Simple error response DTO for API errors. */
+  private record ErrorResponse(String message, String errorCode) {}
 }

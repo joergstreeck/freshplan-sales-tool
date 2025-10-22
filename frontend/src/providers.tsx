@@ -20,9 +20,6 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Lazy load heavy pages to reduce initial bundle size
 const UsersPage = lazy(() => import('./pages/UsersPage').then(m => ({ default: m.UsersPage })));
-const LegacyToolPage = lazy(() =>
-  import('./pages/LegacyToolPage').then(m => ({ default: m.LegacyToolPage }))
-);
 const IntegrationTestPage = lazy(() =>
   import('./pages/IntegrationTestPage').then(m => ({ default: m.IntegrationTestPage }))
 );
@@ -199,7 +196,6 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/customer-management/activities"
                             element={<Placeholders.Aktivitaeten />}
                           />
-                          <Route path="/legacy-tool" element={<LegacyToolPage />} />
 
                           {/* Help Center Routes */}
                           <Route path="/help" element={<HilfeDashboard />} />

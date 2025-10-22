@@ -37,6 +37,8 @@ class LeadImportServiceTest {
   @Transactional
   void setup() {
     // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
@@ -265,7 +267,10 @@ class LeadImportServiceTest {
     lead.ownerUserId = "existing-user";
     lead.createdBy = "system";
     lead.updatedBy = "system";
-    lead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
+    lead.registeredAt =
+        LocalDateTime.now()
+            .minusSeconds(
+                1); // Fix: 1s buffer for DB check constraint (chk_leads_registered_at_not_future)
     lead.persist();
   }
 }
