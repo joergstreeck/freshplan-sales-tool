@@ -49,10 +49,7 @@ public class XentralApiService {
 
   @Inject MockXentralApiClient mockClient;
 
-  // TODO: Inject real XentralApiClient when implemented
-  // @Inject
-  // @RestClient
-  // XentralApiClient realClient;
+  @Inject XentralV1V2ApiAdapter realAdapter;
 
   /**
    * Get customers by sales rep ID
@@ -68,23 +65,10 @@ public class XentralApiService {
       return mockClient.getCustomersBySalesRep(salesRepId);
     }
 
-    // TODO: Real API implementation
-    logger.warn(
-        "Real API mode enabled but not implemented yet - falling back to mock data (salesRepId={})",
-        salesRepId);
-    return mockClient.getCustomersBySalesRep(salesRepId);
-
-    /*
-    // Real API implementation (TODO: Sprint 2.1.7.2 later)
+    // Real API implementation
     try {
-      logger.debug("Real-API-Mode: Calling Xentral API");
-      XentralCustomerListResponse response = realClient.getCustomers(salesRepId, 1, 50);
-
-      // Parse JSON:API response
-      List<XentralCustomerDTO> customers = response.data().stream()
-          .map(this::mapToCustomerDTO)
-          .collect(Collectors.toList());
-
+      logger.debug("Real-API-Mode: Calling Xentral v1/v2 API");
+      List<XentralCustomerDTO> customers = realAdapter.getCustomersBySalesRep(salesRepId);
       logger.info("Real API: Found {} customers for salesRepId={}", customers.size(), salesRepId);
       return customers;
 
@@ -92,7 +76,6 @@ public class XentralApiService {
       logger.error("Xentral API failed - fallback to mock data", e);
       return mockClient.getCustomersBySalesRep(salesRepId);
     }
-    */
   }
 
   /**
@@ -107,11 +90,17 @@ public class XentralApiService {
       return mockClient.getCustomerById(xentralCustomerId);
     }
 
-    // TODO: Real API implementation
-    logger.warn(
-        "Real API mode enabled but not implemented yet - falling back to mock data (xentralCustomerId={})",
-        xentralCustomerId);
-    return mockClient.getCustomerById(xentralCustomerId);
+    // Real API implementation
+    try {
+      logger.debug("Real-API-Mode: Calling Xentral v1/v2 API");
+      XentralCustomerDTO customer = realAdapter.getCustomerById(xentralCustomerId);
+      logger.info("Real API: Found customer xentralCustomerId={}", xentralCustomerId);
+      return customer;
+
+    } catch (Exception e) {
+      logger.error("Xentral API failed - fallback to mock data", e);
+      return mockClient.getCustomerById(xentralCustomerId);
+    }
   }
 
   /**
@@ -126,11 +115,17 @@ public class XentralApiService {
       return mockClient.getInvoicesByCustomer(xentralCustomerId);
     }
 
-    // TODO: Real API implementation
-    logger.warn(
-        "Real API mode enabled but not implemented yet - falling back to mock data (xentralCustomerId={})",
-        xentralCustomerId);
-    return mockClient.getInvoicesByCustomer(xentralCustomerId);
+    // Real API implementation
+    try {
+      logger.debug("Real-API-Mode: Calling Xentral v1 Invoices API");
+      List<XentralInvoiceDTO> invoices = realAdapter.getInvoicesByCustomer(xentralCustomerId);
+      logger.info("Real API: Found {} invoices for xentralCustomerId={}", invoices.size(), xentralCustomerId);
+      return invoices;
+
+    } catch (Exception e) {
+      logger.error("Xentral API failed - fallback to mock data", e);
+      return mockClient.getInvoicesByCustomer(xentralCustomerId);
+    }
   }
 
   /**
@@ -144,9 +139,17 @@ public class XentralApiService {
       return mockClient.getAllSalesReps();
     }
 
-    // TODO: Real API implementation
-    logger.warn("Real API mode enabled but not implemented yet - falling back to mock data");
-    return mockClient.getAllSalesReps();
+    // Real API implementation
+    try {
+      logger.debug("Real-API-Mode: Calling Xentral v1 Employees API");
+      List<XentralEmployeeDTO> salesReps = realAdapter.getSalesReps();
+      logger.info("Real API: Found {} sales reps", salesReps.size());
+      return salesReps;
+
+    } catch (Exception e) {
+      logger.error("Xentral API failed - fallback to mock data", e);
+      return mockClient.getAllSalesReps();
+    }
   }
 
   /**
@@ -162,9 +165,17 @@ public class XentralApiService {
       return mockClient.testConnection();
     }
 
-    // TODO: Real API implementation
-    logger.warn("Real API mode enabled but not implemented yet - mock connection test");
-    return mockClient.testConnection();
+    // Real API implementation
+    try {
+      logger.debug("Real-API-Mode: Testing Xentral API connection");
+      boolean success = realAdapter.testConnection();
+      logger.info("Real API: Connection test {}", success ? "SUCCESSFUL" : "FAILED");
+      return success;
+
+    } catch (Exception e) {
+      logger.error("Xentral API connection test failed", e);
+      return false;
+    }
   }
 
   /**
