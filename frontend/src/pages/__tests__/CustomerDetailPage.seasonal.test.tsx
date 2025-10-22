@@ -7,11 +7,24 @@ import { describe, it, expect } from 'vitest';
 
 // Helper function tests (from CustomerDetailPage.tsx)
 const MONTH_NAMES = [
-  'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
-  'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'
+  'Jan',
+  'Feb',
+  'Mär',
+  'Apr',
+  'Mai',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Okt',
+  'Nov',
+  'Dez',
 ];
 
-function getSeasonalPatternLabel(pattern: string | null | undefined, months: number[] | null | undefined): string {
+function getSeasonalPatternLabel(
+  pattern: string | null | undefined,
+  months: number[] | null | undefined
+): string {
   if (!months || months.length === 0) return 'Nicht konfiguriert';
 
   const monthNames = months.map(m => MONTH_NAMES[m - 1]).join(', ');

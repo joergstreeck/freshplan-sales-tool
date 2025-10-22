@@ -149,10 +149,7 @@ describe('Seasonal Business - Integration Tests', () => {
 
     // WHEN: Calculating seasonalPaused
     const seasonalPaused = customers.filter(
-      (c) =>
-        c.isSeasonalBusiness &&
-        c.seasonalMonths &&
-        !c.seasonalMonths.includes(currentMonth)
+      c => c.isSeasonalBusiness && c.seasonalMonths && !c.seasonalMonths.includes(currentMonth)
     ).length;
 
     // THEN: Only customers 1 and 3 are out-of-season
