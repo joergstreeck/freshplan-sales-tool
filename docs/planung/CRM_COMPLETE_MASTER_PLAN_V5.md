@@ -161,6 +161,37 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-22 22:15 - Sprint 2.1.7.4 POST-PR-FIXES - LEAD Status vollständig entfernt
+
+**Kontext:** NACH PR #143-Erstellung: LEAD Status vollständig aus CustomerStatus Enum entfernt (Option A) + 106 Test-Fehler behoben.
+
+**Erledigt:**
+- ✅ **COMMIT e69bedbf7 (LOKAL, NICHT GEPUSHT):**
+  - fix: Sprint 2.1.7.4 - LEAD Status komplett entfernt + 106 Test-Fixes + AI-Optimierungen
+  - 24 Dateien geändert, 179 insertions(+), 116 deletions(-)
+
+- ✅ **106 TEST-FEHLER BEHOBEN:**
+  - **52 LEAD-Status-Fehler:** CustomerMapper.java defaultete zu LEAD statt PROSPECT (ROOT CAUSE)
+  - **105 Leads-Timing-Bugs:** LocalDateTime.now() vs PostgreSQL NOW() Mikrosekundenunterschiede
+    - Fix: `.minusSeconds(1)` Buffer in 4 Test-Dateien
+    - LeadConvertServiceTest.java:67, LeadImportServiceTest.java:270, LeadScoringServicePerformanceTest.java:308+333
+  - **1 TestDataCommandService:** Modulo-Logik LEAD → PROSPECT + 5 Helper-Methods
+  - **2 ChurnDetectionService:** Gemini JSONB Optimization REVERTIERT (Hibernate ::jsonb nicht supported)
+
+- ✅ **MIGRATION V10033 ERWEITERT:**
+  - Step 4 hinzugefügt: `ALTER TABLE customers ALTER COLUMN status SET DEFAULT 'PROSPECT';`
+  - CHECK constraint: LEAD aus customer_status_check entfernt
+
+- ✅ **PRE-COMMIT HOOK ERWEITERT:**
+  - CHECK 4: Idempotenz-Prüfung für Migrationen (CREATE TABLE IF NOT EXISTS, etc.)
+
+**Migration:** V10033 (Step 4 hinzugefügt)
+**Tests:** 1617/1617 passing ✅ (Build: 4:48 min)
+**Branch:** feature/sprint-2-1-7-4-customer-status-architecture
+**Status:** ⚠️ 1 Commit ahead (e69bedbf7 NICHT GEPUSHT) - **git push benötigt User-Bestätigung**
+
+---
+
 ### 2025-10-22 19:30 - Sprint 2.1.7.4 COMPLETE - Customer Status Architecture (PR #143)
 
 **Kontext:** Sprint 2.1.7.4 vollständig abgeschlossen - Customer Status Architecture mit Lead Parity, Manual Activation, Auto-Conversion, und Seasonal Business Support.
@@ -1633,15 +1664,16 @@
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_3.md` (status: merged)
 
 - **✅ SPRINT 2.1.7.4 - CUSTOMER STATUS ARCHITECTURE (PR #143 CREATED - 22.10.2025):**
-  - **Status:** ✅ COMPLETE - PR #143 created, ready for review
+  - **Status:** ✅ COMPLETE - PR #143 created + ⚠️  **1 zusätzlicher Commit lokal (e69bedbf7)**
   - **PR #143:** https://github.com/joergstreeck/freshplan-sales-tool/pull/143
   - **SCOPE:** CustomerStatus Architecture + Lead Parity + Manual Activation + Seasonal Business
-  - **Aufwand:** ~14h = 2 Arbeitstage (wie geplant)
-  - **Migrations:** V10032 (Lead Parity fields), V10033 (Status Cleanup + Seasonal), V90008 (DEV-SEED)
-  - **Tests:** 1617/1617 GREEN ✅ (Build: 05:07 min)
+  - **Aufwand:** ~14h = 2 Arbeitstage (wie geplant) + ~4h Post-PR-Fixes (LEAD Removal)
+  - **Migrations:** V10032 (Lead Parity fields), V10033 (Status Cleanup + Seasonal + Step 4: DEFAULT PROSPECT), V90008 (DEV-SEED)
+  - **Tests:** 1617/1617 GREEN ✅ (Build: 4:48 min)
   - **Prerequisites:** Sprint 2.1.7.3 COMPLETE ✅
-  - **Commits:** 37 commits analyzed
-  - **Deliverables:** 8/8 COMPLETE
+  - **Commits:** 37 commits (PR #143) + **1 commit lokal** (e69bedbf7 - LEAD Status Removal + 106 Test-Fixes)
+  - **⚠️  GIT PUSH PENDING:** Commit e69bedbf7 ist lokal, nicht in PR #143 - **User-Bestätigung benötigt für git push**
+  - **Deliverables:** 8/8 COMPLETE + **Option A** (LEAD Status vollständig entfernt)
     1. ✅ Customer Status Architecture (LEAD → PROSPECT → AKTIV lifecycle)
     2. ✅ 100% Lead Parity (ALL business fields copied)
     3. ✅ Manual Activation (PUT /api/customers/{id}/activate + Frontend Button)
