@@ -1,6 +1,7 @@
 #!/bin/bash
 # Pre-Commit Hook: Migration Safety Check
 # Prüft Migrations-Dateien vor jedem Commit
+# Update: 2025-10-22 - Datentyp-Standards hinzugefügt (CHECK 5)
 # Update: 2025-10-21 - Idempotenz-Prüfung hinzugefügt (CHECK 4)
 
 echo "🔍 Migration Safety Check..."
@@ -227,6 +228,68 @@ for FILE in $MIGRATION_FILES; do
         ERROR=1
     else
         echo -e "   ${GREEN}✅ Migration ist idempotent${NC}"
+    fi
+
+    # CHECK 5: Projekt-Datentyp-Standards (KRITISCH!)
+    echo -e "${YELLOW}   🔍 Projekt-Datentyp-Standards...${NC}"
+
+    DATATYPE_VALID=1
+    DATATYPE_ISSUES=()
+
+    # CHECK 5a: Keine PostgreSQL Array-Typen (nur JSONB erlaubt!)
+    # Projekt-Standard: Arrays als JSONB speichern (siehe pain_points, seasonal_months)
+    if grep -qiE "(INTEGER\[\]|TEXT\[\]|VARCHAR\[\]|BIGINT\[\]|BOOLEAN\[\])" "$FILE"; then
+        DATATYPE_ISSUES+=("PostgreSQL Array-Typ gefunden (INTEGER[], TEXT[], etc.)")
+        DATATYPE_ISSUES+=("  → Projekt-Standard: JSONB für Arrays verwenden!")
+        DATATYPE_ISSUES+=("  → Beispiel: ADD COLUMN my_array JSONB DEFAULT '[]'::jsonb")
+        DATATYPE_VALID=0
+    fi
+
+    # CHECK 5b: Native PostgreSQL ENUM verboten (VARCHAR + CHECK verwenden!)
+    # Projekt-Standard: VARCHAR(50) + CHECK CONSTRAINT für Enums
+    if grep -qiE "CREATE[[:space:]]+TYPE.*AS[[:space:]]+ENUM" "$FILE"; then
+        DATATYPE_ISSUES+=("Native PostgreSQL ENUM gefunden (CREATE TYPE ... AS ENUM)")
+        DATATYPE_ISSUES+=("  → Projekt-Standard: VARCHAR(50) + CHECK CONSTRAINT verwenden!")
+        DATATYPE_ISSUES+=("  → Beispiel: status VARCHAR(50) CHECK (status IN ('AKTIV', 'INAKTIV'))")
+        DATATYPE_VALID=0
+    fi
+
+    # CHECK 5c: JSONB Columns sollten GIN Index haben (Performance!)
+    if grep -qiE "ADD[[:space:]]+COLUMN.*JSONB" "$FILE"; then
+        # Prüfe, ob GIN Index vorhanden ist
+        if ! grep -qiE "CREATE[[:space:]]+INDEX.*USING[[:space:]]+GIN" "$FILE"; then
+            DATATYPE_ISSUES+=("JSONB Column ohne GIN Index gefunden")
+            DATATYPE_ISSUES+=("  → Performance-Best-Practice: GIN Index für JSONB hinzufügen!")
+            DATATYPE_ISSUES+=("  → Beispiel: CREATE INDEX IF NOT EXISTS idx_table_column_gin ON table USING GIN (column);")
+            # Nur Warnung, kein Error
+        fi
+    fi
+
+    # CHECK 5d: VARCHAR Columns für Enums sollten CHECK Constraint haben
+    if grep -qiE "ADD[[:space:]]+COLUMN.*status[[:space:]]+VARCHAR" "$FILE"; then
+        if ! grep -qiE "CHECK[[:space:]]*\(.*status.*IN[[:space:]]*\(" "$FILE"; then
+            DATATYPE_ISSUES+=("VARCHAR Column 'status' ohne CHECK Constraint gefunden")
+            DATATYPE_ISSUES+=("  → Best-Practice: CHECK Constraint für Enum-ähnliche Columns!")
+            DATATYPE_ISSUES+=("  → Beispiel: ADD CONSTRAINT check_status CHECK (status IN ('AKTIV', 'INAKTIV'));")
+            # Nur Warnung, kein Error für diesen Check
+        fi
+    fi
+
+    if [ $DATATYPE_VALID -eq 0 ]; then
+        echo -e "${RED}   ❌ DATENTYP-STANDARDS VERLETZT!${NC}"
+        echo -e "${RED}   Probleme:${NC}"
+        for issue in "${DATATYPE_ISSUES[@]}"; do
+            echo -e "${RED}     $issue${NC}"
+        done
+        echo ""
+        echo -e "${YELLOW}   📚 FreshPlan Datentyp-Standards:${NC}"
+        echo -e "${YELLOW}      Arrays:  JSONB + GIN Index (NICHT INTEGER[], TEXT[])${NC}"
+        echo -e "${YELLOW}      Enums:   VARCHAR(50) + CHECK Constraint (NICHT native ENUM)${NC}"
+        echo -e "${YELLOW}      Referenz: pain_points (JSONB), CustomerStatus (VARCHAR+CHECK)${NC}"
+        echo ""
+        ERROR=1
+    else
+        echo -e "   ${GREEN}✅ Datentyp-Standards eingehalten${NC}"
     fi
 
     echo ""
