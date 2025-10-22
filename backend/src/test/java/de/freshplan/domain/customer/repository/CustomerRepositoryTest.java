@@ -695,6 +695,8 @@ class CustomerRepositoryTest {
   @TestTransaction
   void getMaxCustomerNumberForYear_shouldReturnNullForNoCustomers() {
     // Delete all customers for year 2026
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM Customer WHERE customerNumber LIKE 'KD-2026-%'").executeUpdate();
     em.flush();
 

@@ -32,6 +32,8 @@ class LeadBackdatingResourceTest {
   @Transactional
   void setup() {
     // IMPORTANT: Delete LeadContact BEFORE Lead (Hibernate bulk delete doesn't trigger CASCADE)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();

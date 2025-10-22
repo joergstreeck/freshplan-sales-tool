@@ -37,6 +37,8 @@ class LeadImportServiceTest {
   @Transactional
   void setup() {
     // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
