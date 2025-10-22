@@ -410,6 +410,441 @@ export const ConvertToCustomerDialog: React.FC<ConvertToCustomerDialogProps> = (
 
 [↑ Back to Overview](#🗺️-quick-overview-2590-zeilen) | [← Prev: Conversion](#1️⃣-opportunity--customer-conversion) | [→ Next: Customer-Dashboard](#3️⃣-customer-dashboard-mit-echten-daten)
 
+---
+
+### **2.0 Data Model Requirements - 3 Pflicht-Felder**
+
+**⚠️ WICHTIG:** Ohne diese 3 Felder funktioniert die Xentral-Integration NICHT!
+
+Bevor wir die Xentral-API-Integration implementieren, brauchen wir 3 neue Felder in der Datenbank:
+
+---
+
+#### **Feld 1: `users.xentral_sales_rep_id` (Xentral Employee ID)**
+
+**Warum brauchen wir das?**
+
+Die Xentral API liefert zu jedem Kunden die **Xentral-ID des zugeordneten Verkäufers**.
+
+```json
+// Xentral API Response (v2/customers)
+{
+  "id": "123",
+  "general": { "name": "Restaurant Silbertanne" },
+  "sales_rep": {
+    "id": "456",              // ← Diese ID!
+    "name": "Max Mustermann",
+    "email": "max@freshplan.de"
+  }
+}
+```
+
+**Problem:** FreshPlan kennt seine eigenen User (id, name, email), aber NICHT deren Xentral-IDs!
+
+**Lösung:** Feld `xentral_sales_rep_id` speichert die Verbindung:
+
+| FreshPlan User | xentral_sales_rep_id | Bedeutung |
+|---|---|---|
+| Max Mustermann (id=1, email=max@freshplan.de) | "456" | Max = Xentral-Mitarbeiter 456 |
+| Lisa Müller (id=2, email=lisa@freshplan.de) | "789" | Lisa = Xentral-Mitarbeiter 789 |
+
+**Wie wird das Feld befüllt?**
+
+**AUTOMATISCH** durch den **Nightly Sales-Rep Sync Job** (D6):
+1. Job läuft täglich um 2:00 Uhr
+2. Holt alle Xentral-Mitarbeiter: `GET /api/v1/employees`
+3. Matcht via Email: Xentral-Email = FreshPlan-User-Email
+4. Schreibt die Xentral-ID in `User.xentralSalesRepId`
+
+**Beispiel:**
+```
+Xentral liefert: { id: "456", email: "max@freshplan.de" }
+FreshPlan findet: User(id=1, email="max@freshplan.de")
+FreshPlan schreibt: User.xentralSalesRepId = "456"
+```
+
+**Verwendung:**
+
+1. **RLS Security (Zugriffsrechte):**
+   - Sales: Hole von Xentral alle Kunden mit `filter[salesRep.id]=456`
+   - User sieht NUR seine Kunden
+
+2. **Customer-Dashboard:**
+   - Zeige Revenue-Daten des Verkäufers
+   - Filter: Nur Kunden von diesem Sales Rep
+
+3. **ConvertToCustomerDialog:**
+   - Dropdown: Zeige nur Xentral-Kunden dieses Verkäufers
+
+**DB-Schema:**
+```sql
+ALTER TABLE users
+ADD COLUMN xentral_sales_rep_id VARCHAR(50);
+
+CREATE INDEX idx_users_xentral_sales_rep_id
+ON users(xentral_sales_rep_id);
+
+COMMENT ON COLUMN users.xentral_sales_rep_id IS
+  'Xentral Employee ID - Auto-synced via Nightly Job (Email-Matching)';
+```
+
+**Java Entity:**
+```java
+@Column(name = "xentral_sales_rep_id", length = 50)
+private String xentralSalesRepId;
+
+public String getXentralSalesRepId() { return xentralSalesRepId; }
+public void setXentralSalesRepId(String xentralSalesRepId) {
+  this.xentralSalesRepId = xentralSalesRepId;
+}
+```
+
+**Frontend (Benutzerverwaltung):**
+- **READ-ONLY Anzeige** mit Info-Icon
+- Tooltip: "Wird automatisch synchronisiert (täglich 2:00 Uhr)"
+- Nicht editierbar (nur Sync-Job darf schreiben!)
+
+---
+
+#### **Feld 2: `customers.xentral_customer_id` (Xentral Customer ID)**
+
+**Warum brauchen wir das?**
+
+FreshPlan-Kunden müssen mit Xentral-Kunden **verknüpft** werden.
+
+**Beispiel-Szenario:**
+
+1. Xentral hat Kunde "Silbertanne" (Xentral-ID = "123")
+2. Sales-Rep wandelt Opportunity → Customer um (ConvertToCustomerDialog)
+3. Dialog zeigt: "Mit welchem Xentral-Kunden verknüpfen?"
+4. User wählt: "Silbertanne (Xentral-ID: 123)"
+5. FreshPlan speichert: `Customer.xentralCustomerId = "123"`
+
+**Verwendung:**
+
+1. **Revenue-Daten holen:**
+   ```java
+   // Hole Xentral-Daten für FreshPlan-Kunden
+   String xentralId = customer.getXentralCustomerId();
+   XentralCustomerDTO xentralData = xentralApiService.getCustomerById(xentralId);
+   BigDecimal revenue = xentralData.totalRevenue();
+   ```
+
+2. **RLS Security:**
+   ```java
+   // Sales: Hole nur Kunden, die in Xentral diesem Rep zugeordnet sind
+   List<XentralCustomerDTO> xentralCustomers =
+     xentralApiService.getCustomersBySalesRep(currentUser.getXentralSalesRepId());
+
+   Set<String> xentralIds = xentralCustomers.stream()
+     .map(XentralCustomerDTO::xentralId)
+     .collect(Collectors.toSet());
+
+   // Filtere FreshPlan-Kunden
+   return customerRepository.findByXentralCustomerIdIn(xentralIds);
+   ```
+
+3. **Webhook Integration (D8):**
+   ```java
+   // Xentral Webhook: "Order Delivered für Customer 123"
+   Customer customer = Customer.findByXentralCustomerId("123");
+   if (customer.getStatus() == PROSPECT) {
+     customer.setStatus(AKTIV); // Auto-Aktivierung
+   }
+   ```
+
+**DB-Schema:**
+```sql
+ALTER TABLE customers
+ADD COLUMN xentral_customer_id VARCHAR(50);
+
+CREATE INDEX idx_customers_xentral_customer_id
+ON customers(xentral_customer_id);
+
+COMMENT ON COLUMN customers.xentral_customer_id IS
+  'Xentral Customer ID - Set manually in ConvertToCustomerDialog or via API sync';
+```
+
+**Java Entity:**
+```java
+@Column(name = "xentral_customer_id", length = 50)
+private String xentralCustomerId;
+
+public String getXentralCustomerId() { return xentralCustomerId; }
+public void setXentralCustomerId(String xentralCustomerId) {
+  this.xentralCustomerId = xentralCustomerId;
+}
+```
+
+**Frontend (ConvertToCustomerDialog):**
+- Autocomplete Dropdown: Xentral-Kunden
+- Display: "Silbertanne (Xentral-ID: 123)"
+- Value: `xentralCustomerId = "123"`
+
+---
+
+#### **Feld 3: `users.manager_id` (Vorgesetzter - Team-Hierarchie)**
+
+**Warum brauchen wir das?**
+
+**Manager** sollen **alle Kunden ihres Teams** sehen können!
+
+**Beispiel-Szenario:**
+
+Team-Chef Peter hat 3 Verkäufer:
+- Max (xentralSalesRepId = "456")
+- Lisa (xentralSalesRepId = "789")
+- Paul (xentralSalesRepId = "101")
+
+**Problem:** Woher weiß FreshPlan, dass Max, Lisa, Paul zu Peters Team gehören?
+
+**Lösung:** Jeder User hat Feld `managerId` → Referenz auf seinen Chef!
+
+| User | managerId | Team-Zuordnung |
+|---|---|---|
+| Peter (id=1) | NULL | Chef (hat keinen Vorgesetzten) |
+| Max (id=2) | 1 | Gehört zu Peters Team |
+| Lisa (id=3) | 1 | Gehört zu Peters Team |
+| Paul (id=4) | 1 | Gehört zu Peters Team |
+
+**Verwendung (RLS Security für Manager-Role):**
+
+```java
+// User "Peter" (Role=MANAGER) loggt sich ein
+User currentUser = getCurrentUser();
+
+if (currentUser.hasRole("manager")) {
+  // Finde alle Team-Member
+  List<User> teamMembers = userRepository.findByManagerId(currentUser.getId());
+  // → [Max, Lisa, Paul]
+
+  // Hole deren Xentral Sales-Rep-IDs
+  List<String> teamSalesRepIds = teamMembers.stream()
+    .map(User::getXentralSalesRepId)
+    .filter(Objects::nonNull)
+    .toList();
+  // → ["456", "789", "101"]
+
+  // Hole von Xentral ALLE Kunden dieser Sales Reps
+  List<XentralCustomerDTO> teamCustomers = new ArrayList<>();
+  for (String salesRepId : teamSalesRepIds) {
+    teamCustomers.addAll(xentralApiService.getCustomersBySalesRep(salesRepId));
+  }
+
+  // Filtere FreshPlan-Kunden
+  Set<String> xentralIds = teamCustomers.stream()
+    .map(XentralCustomerDTO::xentralId)
+    .collect(Collectors.toSet());
+
+  return customerRepository.findByXentralCustomerIdIn(xentralIds);
+}
+```
+
+**DB-Schema:**
+```sql
+ALTER TABLE users
+ADD COLUMN manager_id UUID REFERENCES users(id) ON DELETE SET NULL;
+
+CREATE INDEX idx_users_manager_id
+ON users(manager_id);
+
+COMMENT ON COLUMN users.manager_id IS
+  'Vorgesetzter (für Team-Hierarchie) - Manager sehen alle Kunden ihres Teams';
+```
+
+**Java Entity:**
+```java
+@ManyToOne(fetch = FetchType.LAZY)
+@JoinColumn(name = "manager_id")
+private User manager;
+
+@OneToMany(mappedBy = "manager")
+private List<User> teamMembers = new ArrayList<>();
+
+public User getManager() { return manager; }
+public void setManager(User manager) { this.manager = manager; }
+public List<User> getTeamMembers() { return teamMembers; }
+```
+
+**Frontend (Benutzerverwaltung `/admin/users`):**
+- Neue Spalte: "Vorgesetzter"
+- Edit-Dialog: Dropdown mit allen Usern (Role=MANAGER oder ADMIN)
+- Display: "Peter Müller (Manager)"
+
+---
+
+#### **Feld 4: `users.can_see_unassigned_customers` (Manager Unassigned-Privilege)**
+
+**Warum brauchen wir das?**
+
+**User-Anforderung:** Manager sollen flexibel entscheiden können, ob sie **zusätzlich** zu ihrem Team auch **Kunden ohne Verkäufer** sehen.
+
+**Use Cases:**
+
+1. **Manager Peter**: Team (Max, Lisa, Paul) + **Unassigned-Kunden**
+   - Sieht: Alle Kunden von Max + Lisa + Paul + Kunden ohne Sales Rep
+   - Nutzen: Kann neue Kunden verteilen, die noch keinen Verkäufer haben
+
+2. **Manager Maria**: **NUR Unassigned-Kunden**
+   - Hat kein Team (manager_id = NULL für alle anderen User)
+   - Sieht: Nur Kunden die keinem Verkäufer zugeordnet sind
+   - Nutzen: Zuständig für Kundenverteilung
+
+3. **Manager Klaus**: **NUR Team** (ohne Unassigned)
+   - Flag = false (Default)
+   - Sieht: Nur Kunden von seinen Team-Members
+   - Nutzen: Standard-Manager-Rolle
+
+**Was sind "Unassigned-Kunden"?**
+
+Kunden die in **mindestens einer** dieser Bedingungen zutreffen:
+- `Customer.xentralCustomerId IS NULL` (noch nicht mit Xentral verknüpft)
+- Xentral-Kunde hat `salesRep.id = null` (in Xentral keinem Verkäufer zugeordnet)
+
+**DB-Schema:**
+```sql
+ALTER TABLE app_user
+ADD COLUMN can_see_unassigned_customers BOOLEAN DEFAULT false;
+
+CREATE INDEX idx_app_user_can_see_unassigned
+ON app_user(can_see_unassigned_customers)
+WHERE can_see_unassigned_customers = true;
+
+COMMENT ON COLUMN app_user.can_see_unassigned_customers IS
+  'Manager Privilege: Can see customers without assigned sales rep. Default: false.';
+```
+
+**Java Entity:**
+```java
+@Column(name = "can_see_unassigned_customers")
+private Boolean canSeeUnassignedCustomers = false;
+
+public Boolean canSeeUnassignedCustomers() { return canSeeUnassignedCustomers; }
+public void setCanSeeUnassignedCustomers(Boolean value) {
+  this.canSeeUnassignedCustomers = value;
+}
+```
+
+**Verwendung (RLS Security für Manager):**
+
+```java
+if (currentUser.hasRole("manager")) {
+  // 1. Hole Team-Kunden (wie bisher)
+  List<Customer> customers = getTeamCustomers(currentUser);
+
+  // 2. ZUSÄTZLICH: Wenn Flag gesetzt, hole Unassigned
+  if (currentUser.canSeeUnassignedCustomers()) {
+    customers.addAll(getUnassignedCustomers());
+  }
+
+  return customers;
+}
+
+private List<Customer> getUnassignedCustomers() {
+  // Kunden ohne xentralCustomerId
+  List<Customer> unlinked = customerRepository.findByXentralCustomerIdIsNull();
+
+  // Kunden mit xentralCustomerId ABER in Xentral ohne Sales Rep
+  List<XentralCustomerDTO> xentralUnassigned =
+    xentralApiService.getCustomersWithoutSalesRep();
+
+  Set<String> unassignedIds = xentralUnassigned.stream()
+    .map(XentralCustomerDTO::xentralId)
+    .collect(Collectors.toSet());
+
+  List<Customer> xentralUnlinked =
+    customerRepository.findByXentralCustomerIdIn(unassignedIds);
+
+  // Merge beide Listen
+  Set<Customer> result = new HashSet<>(unlinked);
+  result.addAll(xentralUnlinked);
+  return new ArrayList<>(result);
+}
+```
+
+**Frontend (Benutzerverwaltung `/admin/users`):**
+- Neue Spalte: "Unassigned-Privilege" (Checkbox-Icon)
+- Edit-Dialog: Checkbox "Darf Kunden ohne Verkäufer sehen"
+- Tooltip: "Manager sieht zusätzlich zu Team-Kunden auch Kunden ohne zugeordneten Verkäufer"
+- Default: `false` (nur für spezielle Manager aktivieren)
+
+**🔮 Erweiterbarkeit (Future):**
+
+Wenn später mehr Flexibilität benötigt wird (z.B. "DACH-Team", "Premium-Kunden"):
+
+**Migration zu Gruppen-System:**
+```sql
+-- Phase 1: Gruppen-Tabelle
+CREATE TABLE customer_groups (
+  id UUID PRIMARY KEY,
+  name VARCHAR(100), -- "Unassigned", "DACH", "Premium"
+  description TEXT
+);
+
+-- Phase 2: User ↔ Gruppen
+CREATE TABLE user_group_assignments (
+  user_id UUID REFERENCES app_user(id),
+  group_id UUID REFERENCES customer_groups(id),
+  PRIMARY KEY (user_id, group_id)
+);
+
+-- Phase 3: Customer ↔ Gruppen (optional)
+ALTER TABLE customers
+ADD COLUMN customer_group_id UUID REFERENCES customer_groups(id);
+
+-- Phase 4: Migration der bestehenden Daten
+INSERT INTO customer_groups (id, name, description)
+VALUES (gen_random_uuid(), 'Unassigned', 'Customers without sales rep');
+
+INSERT INTO user_group_assignments (user_id, group_id)
+SELECT id, (SELECT id FROM customer_groups WHERE name = 'Unassigned')
+FROM app_user
+WHERE can_see_unassigned_customers = true;
+
+-- Phase 5: Altes Feld deprecaten (später entfernen)
+-- ALTER TABLE app_user DROP COLUMN can_see_unassigned_customers;
+```
+
+**Vorteil der aktuellen Lösung:**
+- ✅ Einfach zu implementieren (1 Boolean)
+- ✅ Deckt 90% der Use Cases ab
+- ✅ Sauber migrierbar zu Gruppen-System
+- ✅ Keine Premature Optimization
+
+---
+
+#### **📊 Zusammenfassung: Verwendung der 4 Felder**
+
+| Feld | Wird befüllt durch | Verwendung |
+|---|---|---|
+| `User.xentralSalesRepId` | **Nightly Sync Job** (Auto) | RLS Security, Customer-Filter, Dashboard |
+| `Customer.xentralCustomerId` | **ConvertToCustomerDialog** (Manuell) | Revenue-Daten, Webhook, RLS Security |
+| `User.managerId` | **Admin in Benutzerverwaltung** (Manuell) | Team-Hierarchie, Manager-Zugriffsrechte |
+| `User.canSeeUnassignedCustomers` | **Admin in Benutzerverwaltung** (Manuell) | Manager-Privilege für Unassigned-Kunden |
+
+**RLS Security Matrix:**
+
+| User-Role | Sieht Kunden | Logik |
+|---|---|---|
+| **SALES** | Nur eigene | `xentralApiService.getCustomersBySalesRep(user.xentralSalesRepId)` |
+| **MANAGER** | Ganzes Team | Über `teamMembers = findByManagerId(user.id)` → deren `xentralSalesRepId` |
+| **MANAGER** (mit Flag) | **Team + Unassigned** | Team-Kunden + `getUnassignedCustomers()` |
+| **ADMIN** | Alle | `customerRepository.findAll()` (keine Filter) |
+
+**Frontend UI-Platzierung (User-Empfehlung):**
+
+| Feld | Admin-UI Seite | Editierbar? | Anzeige |
+|---|---|---|---|
+| `xentralSalesRepId` | `/admin/users` (Benutzerverwaltung) | ❌ Nein (READ-ONLY) | Badge mit Info-Icon |
+| `xentralSalesRepId` | `/admin/integrations/xentral` | ❌ Nein | Sync-Status-Table |
+| `canSeeUnassignedCustomers` | `/admin/users` (Benutzerverwaltung) | ✅ Ja (Checkbox) | "Unassigned"-Spalte (Icon) |
+| `managerId` | `/admin/users` (Benutzerverwaltung) | ✅ Ja (Dropdown) | "Vorgesetzter"-Spalte |
+| `xentralCustomerId` | ConvertToCustomerDialog | ✅ Ja (Autocomplete) | Xentral-Dropdown |
+
+**Migration:** `V10035__add_xentral_integration_fields.sql ✅ ERSTELLT
+
+---
+
 ### **2.1 XentralApiClient Service**
 
 **Datei:** `backend/src/main/java/de/freshplan/infrastructure/xentral/XentralApiClient.java`
@@ -1245,6 +1680,311 @@ public void testXentralApiClient_isReadOnly() {
 | 5 | Documentation | README warning |
 
 **Result:** **Zero-Tolerance** für WRITE-Operations auf Xentral API!
+
+---
+
+### **2.6 Xentral v1/v2 Real API Adapter** ⭐ **UPDATED 2025-10-23**
+
+**Status:** 📋 PLANNING → 🚀 IN PROGRESS
+
+**Kontext:** Live-Test gegen echte Xentral API v25.40.2 PRO durchgeführt.
+
+#### **🔍 API-DISCOVERY ERGEBNIS:**
+
+**Xentral API-Version:**
+- System: v25.40.2 PRO
+- API Base URL: `https://644b6ff97320d.xentral.biz`
+- API Endpoints: 183 verfügbar (analysiert via OpenAPI Spec)
+
+**Verwendete API-Versionen:**
+- ✅ `/api/v2/customers` (Neuere Customer API!)
+- ✅ `/api/v1/invoices` (Invoice API mit Balance)
+- ✅ `/api/v1/employees` (Sales-Rep Matching)
+
+**❌ PROBLEM: Financial Data NICHT direkt verfügbar!**
+
+Die v1/v2 API enthält **NICHT** direkt:
+- `totalRevenue` (Gesamtumsatz)
+- `averageDaysToPay` (Zahlungsverhalten)
+- `lastOrderDate` (Letzte Bestellung)
+
+**✅ LÖSUNG: API Adapter mit Financial Calculation**
+
+---
+
+#### **🏗️ ADAPTER-ARCHITEKTUR:**
+
+```
+XentralApiService (Facade)
+    ↓
+  [mockMode flag]
+    ↓
+    ├─→ MockXentralApiClient (Development) ✅ EXISTS
+    └─→ XentralV1V2ApiAdapter (Production) ⭐ NEW
+            ↓
+        ┌─────────────────────────────────────┐
+        │ Quarkus REST Clients                │
+        ├─────────────────────────────────────┤
+        │ - XentralCustomersV2Client          │
+        │   GET /api/v2/customers             │
+        │   GET /api/v2/customers/{id}        │
+        │                                     │
+        │ - XentralInvoicesV1Client           │
+        │   GET /api/v1/invoices              │
+        │   GET /api/v1/invoices/{id}/balance │
+        │                                     │
+        │ - XentralEmployeesV1Client          │
+        │   GET /api/v1/employees             │
+        └─────────────────────────────────────┘
+            ↓
+        ┌─────────────────────────────────────┐
+        │ Financial Calculation Service       │
+        ├─────────────────────────────────────┤
+        │ AGGREGATE:                          │
+        │ - totalRevenue = SUM(invoices)      │
+        │ - avgDaysToPay = AVG(paymentDays)   │
+        │ - lastOrderDate = MAX(invoice.date) │
+        └─────────────────────────────────────┘
+            ↓
+        XentralCustomerDTO (SAME as Mock!)
+```
+
+---
+
+#### **📊 XENTRAL API MAPPING:**
+
+**1. Customer Data (v2 API):**
+
+Xentral Response:
+```json
+{
+  "data": [{
+    "id": "4",
+    "type": "company",
+    "general": {
+      "number": "55038",
+      "name": "MediClin á la carte GmbH",
+      "email": "ja.streeck@freshfoodz.de",
+      "phone": "03094052961",
+      "address": {
+        "street": "Lerchenfeld 1",
+        "zip": "06869",
+        "city": "Coswig (Anhalt)",
+        "country": "DE"
+      }
+    },
+    "project": {
+      "id": "3",
+      "name": "Gastro"
+    }
+  }],
+  "extra": {
+    "totalCount": 3166
+  }
+}
+```
+
+Mapping → XentralCustomerDTO:
+```java
+xentralId = data.id
+companyName = data.general.name
+email = data.general.email
+phone = data.general.phone
+// Financial data via Invoice aggregation ↓
+```
+
+**2. Invoice Data (v1 API):**
+
+Request:
+```
+GET /api/v1/invoices?filter[customer.id]=4&page[size]=100
+```
+
+Response:
+```json
+{
+  "data": [{
+    "id": "123",
+    "number": "RE-2025-001",
+    "customer": {"id": "4", "name": "..."},
+    "total": 1250.00,
+    "date": "2025-01-15",
+    "dueDate": "2025-02-15",
+    "status": "PAID"
+  }]
+}
+```
+
+**3. Invoice Balance (v1 API):**
+
+Request:
+```
+GET /api/v1/invoices/123/balance
+```
+
+Response:
+```json
+{
+  "total": 1250.00,
+  "paid": 1250.00,
+  "open": 0.00,
+  "paymentDate": "2025-01-20"
+}
+```
+
+**Financial Calculation:**
+```java
+// totalRevenue
+invoices.stream()
+    .map(inv -> getInvoiceBalance(inv.id).paid)
+    .reduce(BigDecimal.ZERO, BigDecimal::add)
+
+// averageDaysToPay
+invoices.stream()
+    .filter(inv -> balance.paymentDate != null)
+    .mapToLong(inv -> DAYS.between(inv.date, balance.paymentDate))
+    .average()
+
+// lastOrderDate
+invoices.stream()
+    .map(inv -> inv.date)
+    .max(Comparator.naturalOrder())
+```
+
+---
+
+#### **📦 IMPLEMENTATION FILES:**
+
+**1. Response DTOs (v1/v2 Format):**
+```
+backend/src/main/java/de/freshplan/modules/xentral/dto/v2/
+├── XentralV2CustomerResponse.java
+├── XentralV2Customer.java
+└── XentralV2CustomerMapper.java
+
+backend/src/main/java/de/freshplan/modules/xentral/dto/v1/
+├── XentralV1InvoiceResponse.java
+├── XentralV1Invoice.java
+├── XentralV1InvoiceBalance.java
+└── XentralV1InvoiceMapper.java
+```
+
+**2. Quarkus REST Clients:**
+```
+backend/src/main/java/de/freshplan/modules/xentral/client/
+├── XentralCustomersV2Client.java (@RegisterRestClient)
+├── XentralInvoicesV1Client.java (@RegisterRestClient)
+└── XentralEmployeesV1Client.java (@RegisterRestClient)
+```
+
+**3. Adapter + Calculation:**
+```
+backend/src/main/java/de/freshplan/modules/xentral/adapter/
+├── XentralV1V2ApiAdapter.java (Aggregation Logic)
+└── XentralFinancialCalculationService.java (Revenue, Payment)
+```
+
+**4. Integration:**
+```
+backend/src/main/java/de/freshplan/modules/xentral/service/
+└── XentralApiService.java (updated with Real API mode)
+```
+
+---
+
+#### **⚙️ CONFIGURATION:**
+
+**application.properties:**
+```properties
+# --- Xentral API Integration (Sprint 2.1.7.2) ---
+# Feature-Flag: Mock-Mode vs Real API
+xentral.api.mock-mode=true
+
+# Real Xentral API Configuration (v1/v2 Hybrid)
+# IMPORTANT: Only used when xentral.api.mock-mode=false
+%prod.xentral.api.base-url=https://644b6ff97320d.xentral.biz
+%prod.xentral.api.token=${XENTRAL_API_TOKEN:MUST_BE_CONFIGURED_IN_PROD}
+
+# API Timeouts
+xentral.api.connect-timeout=5000
+xentral.api.read-timeout=10000
+
+# Quarkus REST Client Config (v2 Customers)
+quarkus.rest-client."xentral-customers-v2".url=${xentral.api.base-url}
+quarkus.rest-client."xentral-customers-v2".scope=jakarta.enterprise.context.ApplicationScoped
+
+# Quarkus REST Client Config (v1 Invoices)
+quarkus.rest-client."xentral-invoices-v1".url=${xentral.api.base-url}
+quarkus.rest-client."xentral-invoices-v1".scope=jakarta.enterprise.context.ApplicationScoped
+
+# Quarkus REST Client Config (v1 Employees)
+quarkus.rest-client."xentral-employees-v1".url=${xentral.api.base-url}
+quarkus.rest-client."xentral-employees-v1".scope=jakarta.enterprise.context.ApplicationScoped
+```
+
+---
+
+#### **🧪 TESTING STRATEGY:**
+
+**Unit Tests:**
+- XentralV1V2ApiAdapter Test (Mapping Logic)
+- XentralFinancialCalculationService Test (Aggregation)
+
+**Integration Tests:**
+- XentralCustomersV2Client Test (Mock Server)
+- XentralInvoicesV1Client Test (Mock Server)
+- End-to-End Financial Calculation Test
+
+**Live API Tests (Manual):**
+- Connection Test against real Xentral
+- Customer List Retrieval
+- Invoice Aggregation Validation
+
+---
+
+#### **🔄 SWITCH: MOCK → REAL API:**
+
+**Development (Mock-Mode):**
+```properties
+xentral.api.mock-mode=true
+```
+→ Nutzt `MockXentralApiClient` (Food-Industry Mock-Daten)
+
+**Production (Real API):**
+```properties
+xentral.api.mock-mode=false
+xentral.api.base-url=https://644b6ff97320d.xentral.biz
+xentral.api.token=344|AVV7...
+```
+→ Nutzt `XentralV1V2ApiAdapter` (Echte Xentral-Daten)
+
+**Code bleibt GLEICH!**
+- Frontend: `GET /api/xentral/customers?salesRepId={id}`
+- Backend: `XentralApiService` delegiert automatisch
+- DTOs: `XentralCustomerDTO` (keine Änderung!)
+
+---
+
+#### **📋 IMPLEMENTATION CHECKLIST:**
+
+- [ ] XentralV2Customer Response DTOs (v2 Format)
+- [ ] XentralV1Invoice Response DTOs (v1 Format)
+- [ ] XentralV1InvoiceBalance DTO
+- [ ] XentralCustomersV2Client (@RegisterRestClient)
+- [ ] XentralInvoicesV1Client (@RegisterRestClient)
+- [ ] XentralEmployeesV1Client (@RegisterRestClient)
+- [ ] XentralV1V2ApiAdapter (Aggregation Logic)
+- [ ] XentralFinancialCalculationService (Revenue, Payment)
+- [ ] Integration in XentralApiService (Real API Mode)
+- [ ] Unit Tests (Mapper + Calculation)
+- [ ] Integration Tests (REST Clients)
+- [ ] application.properties Config
+- [ ] Manual Live API Test
+- [ ] Documentation Update (README)
+
+**Aufwand:** +4-6h (Adapter + Tests)
+
+**Status:** 🚀 IN PROGRESS (Dokumentation ✅, Implementation läuft)
 
 ---
 
