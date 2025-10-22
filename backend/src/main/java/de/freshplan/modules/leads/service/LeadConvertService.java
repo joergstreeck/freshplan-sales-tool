@@ -78,8 +78,71 @@ public class LeadConvertService {
     Customer customer = new Customer();
     customer.setCustomerNumber(customerNumber);
     customer.setCompanyName(lead.companyName);
-    customer.setStatus(CustomerStatus.AKTIV); // New customer starts as AKTIV
+
+    // Sprint 2.1.7.4: Set PROSPECT (not AKTIV!) - waiting for first order
+    customer.setStatus(CustomerStatus.PROSPECT);
+
     customer.setOriginalLeadId(leadId); // Track Lead → Customer conversion (V261)
+
+    // Sprint 2.1.7.4: 100% Lead Parity - Copy ALL business fields
+    // Classification fields (V10032)
+    if (lead.businessType != null) {
+      customer.setBusinessType(lead.businessType);
+    }
+    if (lead.kitchenSize != null) {
+      customer.setKitchenSize(lead.kitchenSize);
+    }
+    if (lead.employeeCount != null) {
+      customer.setEmployeeCount(lead.employeeCount);
+    }
+
+    // Chain/Branch fields (V10032)
+    if (lead.branchCount != null) {
+      customer.setBranchCount(lead.branchCount);
+      // Sync to totalLocationsEU for consistency
+      customer.setTotalLocationsEU(lead.branchCount);
+    }
+    if (lead.isChain != null) {
+      customer.setIsChain(lead.isChain);
+    }
+
+    // Volume fields (V10032)
+    if (lead.estimatedVolume != null) {
+      customer.setEstimatedVolume(lead.estimatedVolume);
+      // Also set expectedAnnualVolume for consistency
+      customer.setExpectedAnnualVolume(lead.estimatedVolume);
+    }
+
+    // Pain Scoring System V3 - 8 Boolean fields (V279)
+    if (lead.painStaffShortage != null) {
+      customer.setPainStaffShortage(lead.painStaffShortage);
+    }
+    if (lead.painHighCosts != null) {
+      customer.setPainHighCosts(lead.painHighCosts);
+    }
+    if (lead.painFoodWaste != null) {
+      customer.setPainFoodWaste(lead.painFoodWaste);
+    }
+    if (lead.painQualityInconsistency != null) {
+      customer.setPainQualityInconsistency(lead.painQualityInconsistency);
+    }
+    if (lead.painTimePressure != null) {
+      customer.setPainTimePressure(lead.painTimePressure);
+    }
+    if (lead.painSupplierQuality != null) {
+      customer.setPainSupplierQuality(lead.painSupplierQuality);
+    }
+    if (lead.painUnreliableDelivery != null) {
+      customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
+    }
+    if (lead.painPoorService != null) {
+      customer.setPainPoorService(lead.painPoorService);
+    }
+    if (lead.painNotes != null) {
+      customer.setPainNotes(lead.painNotes);
+    }
+
+    // Audit fields
     customer.setCreatedBy(currentUserId);
     customer.setCreatedAt(LocalDateTime.now(clock));
     customer.setUpdatedBy(currentUserId);

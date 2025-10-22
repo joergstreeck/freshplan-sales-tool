@@ -72,6 +72,11 @@ public class OpportunityService {
 
   @Inject OpportunityQueryService queryService;
 
+  // Sprint 2.1.7.4: Auto-Conversion Dependencies
+  @Inject de.freshplan.modules.leads.service.LeadConvertService leadConvertService;
+
+  @Inject de.freshplan.modules.leads.events.LeadEventPublisher leadEventPublisher;
+
   // Feature Flag für CQRS
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;
@@ -1141,6 +1146,115 @@ public class OpportunityService {
 
     opportunityRepository.delete(opportunity);
     logger.info("Successfully deleted opportunity: {}", id);
+  }
+
+  // =====================================
+  // SPRINT 2.1.7.4: AUTO-CONVERSION
+  // =====================================
+
+  /**
+   * Handle Opportunity WON - Auto-Convert Lead to Customer (PROSPECT)
+   *
+   * <p>Sprint 2.1.7.4: Auto-Conversion Workflow
+   *
+   * <p>Business Rule: When Opportunity → CLOSED_WON and has Lead:
+   *
+   * <ol>
+   *   <li>Auto-convert Lead → Customer (status = PROSPECT)
+   *   <li>Link Opportunity → Customer
+   *   <li>Clear Lead FK (audit trail preserved in customer.originalLeadId)
+   *   <li>Publish LeadConvertedEvent
+   * </ol>
+   *
+   * @param opportunityId Opportunity UUID
+   * @return Created Customer (PROSPECT status) or null if no Lead
+   * @throws OpportunityNotFoundException if opportunity not found
+   * @since Sprint 2.1.7.4
+   */
+  @Transactional
+  public Customer handleOpportunityWon(UUID opportunityId) {
+    logger.info("handleOpportunityWon() called for opportunity {}", opportunityId);
+
+    Opportunity opp =
+        opportunityRepository
+            .findByIdOptional(opportunityId)
+            .orElseThrow(() -> new OpportunityNotFoundException(opportunityId));
+
+    // Check: Hat die Opp einen Lead?
+    if (opp.getLead() != null) {
+      de.freshplan.modules.leads.domain.Lead lead = opp.getLead();
+
+      logger.info(
+          "Opportunity {} has Lead {} - triggering auto-conversion", opportunityId, lead.id);
+
+      // NUTZE LeadConvertService (Single Source of Truth!)
+      // Profitiert automatisch von Sprint 2.1.7.4 Fix (100% Datenübernahme + PROSPECT status)
+      de.freshplan.modules.leads.api.admin.dto.LeadConvertRequest request =
+          new de.freshplan.modules.leads.api.admin.dto.LeadConvertRequest();
+      request.customerNumber = null; // auto-generate
+      request.keepLeadRecord = true; // audit trail
+      request.conversionNotes = "Auto-converted from Opportunity WON";
+
+      de.freshplan.modules.leads.api.admin.dto.LeadConvertResponse response =
+          leadConvertService.convertToCustomer(lead.id, request, getCurrentUserId());
+
+      // Load Customer
+      Customer customer =
+          customerRepository
+              .findByIdOptional(response.customerId)
+              .orElseThrow(
+                  () ->
+                      new RuntimeException(
+                          "Customer not found after conversion: " + response.customerId));
+
+      // Link Opportunity → Customer
+      opp.setCustomer(customer);
+      opp.setLead(null); // Clear Lead FK (originalLeadId ist in Customer gespeichert!)
+      opportunityRepository.persist(opp);
+
+      logger.info(
+          "Auto-converted Lead {} to Customer {} (status: PROSPECT) via Opportunity WON {}",
+          lead.id,
+          customer.getId(),
+          opportunityId);
+
+      // Publish LeadConvertedEvent
+      try {
+        de.freshplan.modules.leads.events.LeadConvertedEvent event =
+            de.freshplan.modules.leads.events.LeadConvertedEvent.of(
+                lead.id, customer.getId(), opportunityId);
+
+        // Publish via LeadEventPublisher (PostgreSQL NOTIFY)
+        leadEventPublisher.publishCrossModuleEvent(
+            "LEAD_CONVERTED_TO_CUSTOMER",
+            String.format(
+                "{\"leadId\":%d,\"customerId\":\"%s\",\"opportunityId\":\"%s\"}",
+                event.leadId(), event.customerId(), event.opportunityId()));
+
+        logger.debug("Published LeadConvertedEvent for lead {}", lead.id);
+      } catch (Exception e) {
+        logger.warn("Failed to publish LeadConvertedEvent (non-critical)", e);
+        // Don't fail the conversion if event publishing fails
+      }
+
+      return customer;
+    }
+
+    logger.debug("Opportunity {} has no Lead - skipping auto-conversion", opportunityId);
+    return null; // Opp hatte schon Customer oder keinen Lead
+  }
+
+  /**
+   * Get current user ID as String.
+   *
+   * @return username or "system" for background tasks
+   */
+  private String getCurrentUserId() {
+    try {
+      return securityIdentity.getPrincipal().getName();
+    } catch (Exception e) {
+      return "system"; // Fallback for background tasks
+    }
   }
 
   // =====================================

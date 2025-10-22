@@ -445,8 +445,8 @@ public class CustomerResource {
    *
    * <p>Business Rule: PROSPECT → AKTIV when first order delivered
    *
-   * <p>This endpoint allows manual activation until Xentral webhook integration is available (Sprint
-   * 2.1.7.2).
+   * <p>This endpoint allows manual activation until Xentral webhook integration is available
+   * (Sprint 2.1.7.2).
    *
    * @param customerId Customer UUID
    * @param request Activation request with optional order number
@@ -472,8 +472,7 @@ public class CustomerResource {
 
     // Validate: Customer must be PROSPECT
     if (customer.status() != CustomerStatus.PROSPECT) {
-      log.warn(
-          "Customer {} is not PROSPECT (current status: {})", customerId, customer.status());
+      log.warn("Customer {} is not PROSPECT (current status: {})", customerId, customer.status());
       return Response.status(Response.Status.BAD_REQUEST)
           .entity(
               new ErrorResponse(
@@ -484,13 +483,10 @@ public class CustomerResource {
 
     // Activate: PROSPECT → AKTIV
     CustomerResponse updatedCustomer =
-        customerService.changeStatus(
-            customerId, CustomerStatus.AKTIV, currentUser.getUsername());
+        customerService.changeStatus(customerId, CustomerStatus.AKTIV, currentUser.getUsername());
 
     log.info(
-        "Customer {} activated: PROSPECT → AKTIV (order: {})",
-        customerId,
-        request.orderNumber());
+        "Customer {} activated: PROSPECT → AKTIV (order: {})", customerId, request.orderNumber());
 
     return Response.ok(updatedCustomer).build();
   }
