@@ -128,6 +128,21 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "estimated_volume", precision = 12, scale = 2)
   private BigDecimal estimatedVolume;
 
+  // ============================================================================
+  // Xentral Integration Field (Sprint 2.1.7.2 - Migration V10035)
+  // ============================================================================
+
+  /**
+   * Xentral Customer ID - Maps FreshPlan Customer to Xentral Customer.
+   *
+   * <p>Set manually in ConvertToCustomerDialog (user selects from Xentral dropdown) or via API
+   * sync. Used to fetch revenue data from Xentral and for RLS Security filtering.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "xentral_customer_id", length = 50)
+  private String xentralCustomerId;
+
   // Hierarchy Support
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_customer_id")
@@ -529,6 +544,18 @@ public class Customer extends PanacheEntityBase {
 
   public void setEstimatedVolume(BigDecimal estimatedVolume) {
     this.estimatedVolume = estimatedVolume;
+  }
+
+  // ============================================================================
+  // Xentral Integration Field Accessor (Sprint 2.1.7.2)
+  // ============================================================================
+
+  public String getXentralCustomerId() {
+    return xentralCustomerId;
+  }
+
+  public void setXentralCustomerId(String xentralCustomerId) {
+    this.xentralCustomerId = xentralCustomerId;
   }
 
   public Customer getParentCustomer() {
