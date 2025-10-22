@@ -56,8 +56,7 @@ class CustomerResponseBuilderTest {
     assertEquals("SUMMER", response.seasonalPattern(), "seasonalPattern should match builder");
 
     // THEN: Other fields should also be present
-    assertEquals(
-        "550e8400-e29b-41d4-a716-446655440000", response.id(), "ID should match builder");
+    assertEquals("550e8400-e29b-41d4-a716-446655440000", response.id(), "ID should match builder");
     assertEquals(
         "KD-SEASONAL-001", response.customerNumber(), "Customer number should match builder");
     assertEquals("Eiscafé Venezia", response.companyName(), "Company name should match builder");
@@ -93,22 +92,16 @@ class CustomerResponseBuilderTest {
     // THEN: Response should contain all seasonal fields from entity
     assertNotNull(response, "CustomerResponse should not be null");
     assertEquals(
-        true,
-        response.isSeasonalBusiness(),
-        "isSeasonalBusiness should be copied from entity");
+        true, response.isSeasonalBusiness(), "isSeasonalBusiness should be copied from entity");
     assertNotNull(response.seasonalMonths(), "seasonalMonths should not be null");
     assertEquals(
-        List.of(9, 10),
-        response.seasonalMonths(),
-        "seasonalMonths should be copied from entity");
+        List.of(9, 10), response.seasonalMonths(), "seasonalMonths should be copied from entity");
     assertEquals(
         "AUTUMN", response.seasonalPattern(), "seasonalPattern should be copied from entity");
 
     // THEN: Other essential fields should also be mapped
     assertEquals(
-        "660e8400-e29b-41d4-a716-446655440000",
-        response.id(),
-        "ID should be copied from entity");
+        "660e8400-e29b-41d4-a716-446655440000", response.id(), "ID should be copied from entity");
     assertEquals(
         "KD-SEASONAL-002",
         response.customerNumber(),
@@ -117,7 +110,6 @@ class CustomerResponseBuilderTest {
         "Biergarten Oktoberfest",
         response.companyName(),
         "Company name should be copied from entity");
-    assertEquals(
-        CustomerStatus.AKTIV, response.status(), "Status should be copied from entity");
+    assertEquals(CustomerStatus.AKTIV, response.status(), "Status should be copied from entity");
   }
 }

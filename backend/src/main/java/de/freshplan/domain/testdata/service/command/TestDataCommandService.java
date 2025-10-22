@@ -239,7 +239,9 @@ public class TestDataCommandService {
                 ? CustomerStatus.AKTIV
                 : i % 3 == 0
                     ? CustomerStatus.RISIKO
-                    : i % 2 == 0 ? CustomerStatus.INAKTIV : CustomerStatus.PROSPECT); // Sprint 2.1.7.4: LEAD removed from lifecycle
+                    : i % 2 == 0
+                        ? CustomerStatus.INAKTIV
+                        : CustomerStatus.PROSPECT); // Sprint 2.1.7.4: LEAD removed from lifecycle
         customer.setIndustry(
             i % 5 == 0
                 ? Industry.HOTEL

@@ -12,7 +12,7 @@
  * @since 2025-10-19
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -150,7 +150,8 @@ export default function CreateOpportunityForCustomerDialog({
 
   // Business-Type-Matrix State
   const [multipliers, setMultipliers] = useState<OpportunityMultiplierResponse[]>([]);
-  const [isLoadingMultipliers, setIsLoadingMultipliers] = useState(false);
+  // TODO: Business-Type-Matrix Loading nicht implementiert - isLoadingMultipliers hardcoded auf false
+  const isLoadingMultipliers = false;
   const [multipliersError, setMultipliersError] = useState<string | null>(null);
 
   // UI State
@@ -158,34 +159,8 @@ export default function CreateOpportunityForCustomerDialog({
   const [apiError, setApiError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
 
-  /**
-   * Calculate expectedValue using Business-Type-Matrix
-   * Formula: expectedValue = baseVolume × multiplier
-   *
-   * WICHTIG: Muss VOR loadMultipliers definiert werden (Dependency)
-   */
-  const calculateExpectedValue = useCallback(() => {
-    const baseVolume = getBaseVolume(customer);
-
-    if (baseVolume === 0) {
-      setExpectedValue(undefined); // Manuelle Eingabe erforderlich
-      return;
-    }
-
-    // Find multiplier for customer.industry × opportunityType
-    // WICHTIG: customer.industry kann undefined sein!
-    const multiplier = multipliers.find(
-      m => m.businessType === customer.industry && m.opportunityType === opportunityType
-    );
-
-    if (multiplier) {
-      const calculatedValue = Math.round(baseVolume * multiplier.multiplier);
-      setExpectedValue(calculatedValue);
-    } else {
-      // Fallback: Use NEUGESCHAEFT multiplier (1.00) if not found
-      setExpectedValue(baseVolume);
-    }
-  }, [customer, opportunityType, multipliers]);
+  // TODO: Business-Type-Matrix Auto-Calculation nicht implementiert
+  // Die calculateExpectedValue Funktion wurde entfernt, da sie nie aufgerufen wurde
 
   /**
    * Get current multiplier for display

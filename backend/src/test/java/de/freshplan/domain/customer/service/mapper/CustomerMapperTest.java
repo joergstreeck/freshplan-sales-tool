@@ -66,9 +66,7 @@ class CustomerMapperTest {
 
     // THEN: Seasonal fields should be correctly mapped
     assertEquals(
-        true,
-        response.isSeasonalBusiness(),
-        "isSeasonalBusiness should be mapped from entity");
+        true, response.isSeasonalBusiness(), "isSeasonalBusiness should be mapped from entity");
     assertNotNull(response.seasonalMonths(), "seasonalMonths should not be null");
     assertEquals(
         List.of(5, 6, 7, 8, 9),
@@ -115,7 +113,8 @@ class CustomerMapperTest {
     assertNotNull(response, "CustomerResponse should not be null");
 
     // THEN: Seasonal fields should be null (not throwing exceptions)
-    assertNull(response.isSeasonalBusiness(), "isSeasonalBusiness should be null for regular customer");
+    assertNull(
+        response.isSeasonalBusiness(), "isSeasonalBusiness should be null for regular customer");
     assertNull(response.seasonalMonths(), "seasonalMonths should be null for regular customer");
     assertNull(response.seasonalPattern(), "seasonalPattern should be null for regular customer");
 
@@ -196,7 +195,6 @@ class CustomerMapperTest {
 
     // THEN: Response should be null (defensive programming)
     assertNull(
-        minimalResponse,
-        "toMinimalResponse() should return null when input customer is null");
+        minimalResponse, "toMinimalResponse() should return null when input customer is null");
   }
 }

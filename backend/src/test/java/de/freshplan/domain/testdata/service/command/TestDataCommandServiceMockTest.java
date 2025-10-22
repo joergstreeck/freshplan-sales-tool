@@ -343,7 +343,8 @@ class TestDataCommandServiceMockTest {
 
     List<Customer> customers = customerCaptor.getAllValues();
 
-    boolean hasLeadStatus = customers.stream().anyMatch(c -> c.getStatus() == CustomerStatus.PROSPECT);
+    boolean hasLeadStatus =
+        customers.stream().anyMatch(c -> c.getStatus() == CustomerStatus.PROSPECT);
     boolean hasAktivStatus =
         customers.stream().anyMatch(c -> c.getStatus() == CustomerStatus.AKTIV);
     boolean hasRisikoStatus =

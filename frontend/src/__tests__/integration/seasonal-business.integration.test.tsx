@@ -6,10 +6,9 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient } from '@tanstack/react-query';
 import { customerApi } from '../../features/customer/api/customerApi';
+import type { CustomerResponse } from '../../features/customer/types/customer.types';
 
 // Mock API
 vi.mock('../../features/customer/api/customerApi');
@@ -34,14 +33,14 @@ describe('Seasonal Business - Integration Tests', () => {
     const mockCustomer = {
       id: 'test-id',
       customerNumber: 'KD-SEASONAL-001',
-      companyName: 'EiscafÈ Venezia',
+      companyName: 'EiscafÔøΩ Venezia',
       status: 'AKTIV',
       isSeasonalBusiness: true,
       seasonalMonths: [5, 6, 7, 8, 9], // May-September
       seasonalPattern: 'SUMMER',
     };
 
-    vi.mocked(customerApi.getCustomer).mockResolvedValue(mockCustomer as any);
+    vi.mocked(customerApi.getCustomer).mockResolvedValue(mockCustomer as CustomerResponse);
 
     // WHEN: API is called
     const result = await customerApi.getCustomer('test-id');
@@ -70,7 +69,7 @@ describe('Seasonal Business - Integration Tests', () => {
         prospects: 15,
         conversionRate: 75.0,
         seasonalActive: 8,
-        seasonalPaused: 3, // ê NEW metric
+        seasonalPaused: 3, // ÔøΩ NEW metric
       },
       alerts: [],
     };

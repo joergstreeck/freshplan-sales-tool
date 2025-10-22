@@ -197,9 +197,7 @@ class SalesCockpitServiceTest {
         "Total seasonal customers (active + paused) should be 3 (all test seasonal customers)");
 
     // THEN: Verify seasonal metrics are non-negative
-    assertTrue(
-        stats.getSeasonalActive() >= 0, "Seasonal active count should never be negative");
-    assertTrue(
-        stats.getSeasonalPaused() >= 0, "Seasonal paused count should never be negative");
+    assertTrue(stats.getSeasonalActive() >= 0, "Seasonal active count should never be negative");
+    assertTrue(stats.getSeasonalPaused() >= 0, "Seasonal paused count should never be negative");
   }
 }

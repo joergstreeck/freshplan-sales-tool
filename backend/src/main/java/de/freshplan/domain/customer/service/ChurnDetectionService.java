@@ -83,7 +83,8 @@ public class ChurnDetectionService {
     // Find all AKTIV customers with no contact in last 90 days
     LocalDateTime thresholdDateTime = LocalDateTime.now().minusDays(CHURN_THRESHOLD_DAYS);
     // Fetch all AKTIV customers with old lastContactDate
-    // REVERTED: Gemini #3 JSONB optimization caused Hibernate parsing errors (::jsonb not supported)
+    // REVERTED: Gemini #3 JSONB optimization caused Hibernate parsing errors (::jsonb not
+    // supported)
     // Seasonal filtering now done in Java (more reliable, minimal performance impact)
     List<Customer> atRiskCustomers =
         customerRepository
@@ -92,24 +93,25 @@ public class ChurnDetectionService {
 
     // Filter out seasonal businesses that are currently off-season (Sprint 2.1.7.4)
     int currentMonth = LocalDate.now().getMonthValue();
-    List<Customer> filteredCustomers = atRiskCustomers.stream()
-        .filter(
-            customer -> {
-              // Include non-seasonal businesses
-              if (!customer.getIsSeasonalBusiness()) {
-                return true;
-              }
+    List<Customer> filteredCustomers =
+        atRiskCustomers.stream()
+            .filter(
+                customer -> {
+                  // Include non-seasonal businesses
+                  if (!customer.getIsSeasonalBusiness()) {
+                    return true;
+                  }
 
-              // Include seasonal if no months configured
-              List<Integer> seasonalMonths = customer.getSeasonalMonths();
-              if (seasonalMonths == null || seasonalMonths.isEmpty()) {
-                return true;
-              }
+                  // Include seasonal if no months configured
+                  List<Integer> seasonalMonths = customer.getSeasonalMonths();
+                  if (seasonalMonths == null || seasonalMonths.isEmpty()) {
+                    return true;
+                  }
 
-              // Include seasonal if current month is in season
-              return seasonalMonths.contains(currentMonth);
-            })
-        .collect(Collectors.toList());
+                  // Include seasonal if current month is in season
+                  return seasonalMonths.contains(currentMonth);
+                })
+            .collect(Collectors.toList());
 
     logger.debug(
         "Churn Detection: Found {} at-risk customers (seasonal filtering applied in Java)",

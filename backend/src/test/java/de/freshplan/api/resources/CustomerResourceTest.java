@@ -373,6 +373,7 @@ class CustomerResourceTest {
     UUID customerId = createSeasonalCustomerInDb("Biergarten Oktoberfest", List.of(9, 10));
 
     // When/Then: GET /api/customers/search returns seasonal fields
+    // FIX: Don't assume content[0] is our customer - use find() to locate it in the list
     given()
         .queryParam("page", 0)
         .queryParam("size", 10)
@@ -382,12 +383,20 @@ class CustomerResourceTest {
         .then()
         .statusCode(200)
         .body("content", hasSize(greaterThan(0)))
-        .body("content[0].id", equalTo(customerId.toString()))
-        .body("content[0].companyName", equalTo("[TEST-ACTIVATION] Biergarten Oktoberfest"))
+        // Find our specific customer in the list (non-deterministic order)
+        .body(
+            "content.find { it.id == '" + customerId.toString() + "' }.companyName",
+            equalTo("[TEST-ACTIVATION] Biergarten Oktoberfest"))
         // Sprint 2.1.7.4 - Search returns full response (not minimal)
-        .body("content[0].isSeasonalBusiness", equalTo(true))
-        .body("content[0].seasonalMonths", hasItems(9, 10))
-        .body("content[0].seasonalPattern", equalTo("SUMMER"));
+        .body(
+            "content.find { it.id == '" + customerId.toString() + "' }.isSeasonalBusiness",
+            equalTo(true))
+        .body(
+            "content.find { it.id == '" + customerId.toString() + "' }.seasonalMonths",
+            hasItems(9, 10))
+        .body(
+            "content.find { it.id == '" + customerId.toString() + "' }.seasonalPattern",
+            equalTo("SUMMER"));
   }
 
   // ========== HELPER METHODS ==========
