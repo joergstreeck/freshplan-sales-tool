@@ -54,12 +54,16 @@ ADD COLUMN IF NOT EXISTS is_seasonal_business BOOLEAN DEFAULT FALSE;
 
 COMMENT ON COLUMN customers.is_seasonal_business IS 'Saisonbetrieb ja/nein (z.B. Eisdiele, Ski-Hütte, Biergarten)';
 
--- Step 5: Add seasonal_months array (PostgreSQL INTEGER[])
+-- Step 5: Add seasonal_months array (JSONB - project standard)
 -- Example: [3,4,5,6,7,8,9,10] = März-Oktober für Eisdielen
 ALTER TABLE customers
-ADD COLUMN IF NOT EXISTS seasonal_months INTEGER[];
+ADD COLUMN IF NOT EXISTS seasonal_months JSONB DEFAULT '[]'::jsonb;
 
-COMMENT ON COLUMN customers.seasonal_months IS 'Aktive Monate (1-12) für Saisonbetriebe, z.B. [3,4,5,6,7,8,9,10] = März-Oktober';
+COMMENT ON COLUMN customers.seasonal_months IS 'Aktive Monate (1-12) für Saisonbetriebe als JSONB Array, z.B. [3,4,5,6,7,8,9,10] = März-Oktober';
+
+-- Add GIN index for JSONB queries (consistent with pain_points)
+CREATE INDEX IF NOT EXISTS idx_customers_seasonal_months_gin
+ON customers USING GIN (seasonal_months);
 
 -- Step 6: Add seasonal_pattern (pre-defined patterns)
 -- Patterns: SUMMER, WINTER, SPRING, AUTUMN, CHRISTMAS, CUSTOM
@@ -90,7 +94,7 @@ WHERE is_seasonal_business = TRUE;
 -- ✅ Migrated all LEAD → PROSPECT customers
 -- ✅ Removed LEAD from CustomerStatus enum (CHECK constraint updated)
 -- ✅ Added is_seasonal_business flag
--- ✅ Added seasonal_months array (INTEGER[])
+-- ✅ Added seasonal_months array (JSONB with GIN index)
 -- ✅ Added seasonal_pattern enum (VARCHAR with CHECK constraint)
 -- ✅ Created performance index for seasonal businesses
 --
