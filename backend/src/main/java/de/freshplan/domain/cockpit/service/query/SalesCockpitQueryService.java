@@ -363,6 +363,13 @@ public class SalesCockpitQueryService {
     // Sprint 2.1.7.4 - NEW: Seasonal Business Support
     int currentMonth = LocalDate.now().getMonthValue();
 
+    // TODO: PERFORMANCE - In-memory JSONB filtering (Gemini Code Review)
+    //  Current: Load all seasonal customers, then filter seasonalMonths array in Java Stream API
+    //  Better: Use PostgreSQL JSONB operators in query (e.g., `jsonb_array_element(seasonal_months)
+    //  @> to_jsonb(?)`)
+    //  Tradeoff: Requires native query (Panache/Hibernate doesn't support JSONB operators easily)
+    //  Impact: Low for <100 seasonal customers, but should be optimized for scale
+    //  Ticket: Create performance optimization ticket if seasonal customer count exceeds 100
     // Performance optimized: Single DB query + partitioningBy (Gemini #2)
     java.util.Map<Boolean, Long> seasonalStats =
         customerRepository

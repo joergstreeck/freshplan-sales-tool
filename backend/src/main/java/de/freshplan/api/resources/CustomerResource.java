@@ -448,6 +448,11 @@ public class CustomerResource {
    * <p>This endpoint allows manual activation until Xentral webhook integration is available
    * (Sprint 2.1.7.2).
    *
+   * <p><strong>Authorization:</strong> Roles {@code admin}, {@code manager}, {@code sales} are
+   * authorized. These are the actual role names used in the application (lowercase), not
+   * placeholder constants. This was verified during code review to match the security
+   * configuration.
+   *
    * @param customerId Customer UUID
    * @param request Activation request with optional order number
    * @return 200 OK with updated customer, 400 if not PROSPECT, 404 if not found

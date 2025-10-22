@@ -24,6 +24,8 @@ import de.freshplan.domain.opportunity.service.mapper.OpportunityMapper;
 import de.freshplan.domain.opportunity.service.query.OpportunityQueryService;
 import de.freshplan.domain.user.entity.User;
 import de.freshplan.domain.user.repository.UserRepository;
+import de.freshplan.modules.leads.events.LeadEventPublisher;
+import de.freshplan.modules.leads.service.LeadConvertService;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -73,9 +75,9 @@ public class OpportunityService {
   @Inject OpportunityQueryService queryService;
 
   // Sprint 2.1.7.4: Auto-Conversion Dependencies
-  @Inject de.freshplan.modules.leads.service.LeadConvertService leadConvertService;
+  @Inject LeadConvertService leadConvertService;
 
-  @Inject de.freshplan.modules.leads.events.LeadEventPublisher leadEventPublisher;
+  @Inject LeadEventPublisher leadEventPublisher;
 
   // Feature Flag für CQRS
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
@@ -1204,7 +1206,7 @@ public class OpportunityService {
               .findByIdOptional(response.customerId)
               .orElseThrow(
                   () ->
-                      new RuntimeException(
+                      new IllegalStateException(
                           "Customer not found after conversion: " + response.customerId));
 
       // Link Opportunity → Customer

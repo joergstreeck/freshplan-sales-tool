@@ -98,7 +98,9 @@ public class ChurnDetectionService {
             .filter(
                 customer -> {
                   // Include non-seasonal businesses
-                  if (!customer.getIsSeasonalBusiness()) {
+                  // FIX (Gemini): Use Boolean.TRUE.equals() to prevent NPE when isSeasonalBusiness
+                  // is null
+                  if (!Boolean.TRUE.equals(customer.getIsSeasonalBusiness())) {
                     return true;
                   }
 

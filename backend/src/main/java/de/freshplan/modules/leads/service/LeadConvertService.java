@@ -84,6 +84,13 @@ public class LeadConvertService {
 
     customer.setOriginalLeadId(leadId); // Track Lead → Customer conversion (V261)
 
+    // TODO: CODE QUALITY - Manual field mapping boilerplate (Gemini Code Review)
+    //  Current: ~57 lines of manual if-null-checks and setter calls (lines 87-143)
+    //  Better: Use MapStruct for declarative mapping: @Mapper(componentModel = "cdi")
+    //  Benefits: Type-safe, compile-time generated, reduces boilerplate by ~80%
+    //  Tradeoff: Adds dependency (org.mapstruct:mapstruct), requires annotation processor setup
+    //  Priority: LOW - current code is functional, MapStruct useful when >3 similar mappings exist
+    //  Example: See CustomerMapper.java in domain/customer/service/mapper/ (already uses MapStruct)
     // Sprint 2.1.7.4: 100% Lead Parity - Copy ALL business fields
     // Classification fields (V10032)
     if (lead.businessType != null) {
