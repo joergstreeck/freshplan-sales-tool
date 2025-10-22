@@ -288,6 +288,17 @@ public class SalesCockpitService {
         customerRepository.countActiveCustomersWithoutRecentContact(recentContactThreshold);
     stats.setOpenTasks((int) customersNeedingContact);
 
+    // Sprint 2.1.7.4 - NEW: PROSPECT count + Conversion Rate
+    int prospects = (int) customerRepository.countByStatus(CustomerStatus.PROSPECT);
+    stats.setProspects(prospects);
+
+    // Conversion Rate: (Aktive / (Aktive + Prospects)) * 100
+    // Zeigt wie viele Prospects zu aktiven Kunden wurden
+    int active = stats.getActiveCustomers();
+    double conversionRate =
+        (active + prospects > 0) ? ((double) active / (active + prospects)) * 100.0 : 0.0;
+    stats.setConversionRate(conversionRate);
+
     return stats;
   }
 

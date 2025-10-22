@@ -330,6 +330,17 @@ public class SalesCockpitQueryService {
     stats.setTotalCustomers((int) customerRepository.count());
     stats.setActiveCustomers((int) customerRepository.countByStatus(CustomerStatus.AKTIV));
 
+    // Sprint 2.1.7.4 - NEW: PROSPECT count + Conversion Rate
+    int prospects = (int) customerRepository.countByStatus(CustomerStatus.PROSPECT);
+    stats.setProspects(prospects);
+
+    // Conversion Rate: (Aktive / (Aktive + Prospects)) * 100
+    // Zeigt wie viele Prospects zu aktiven Kunden wurden
+    int active = stats.getActiveCustomers();
+    double conversionRate =
+        (active + prospects > 0) ? ((double) active / (active + prospects)) * 100.0 : 0.0;
+    stats.setConversionRate(conversionRate);
+
     // Risiko-Kunden basierend auf verschiedenen Schwellwerten
     LocalDateTime riskThreshold = LocalDateTime.now().minusDays(RISK_THRESHOLD_LOW_DAYS);
     stats.setCustomersAtRisk(

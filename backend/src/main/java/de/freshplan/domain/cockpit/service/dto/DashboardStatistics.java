@@ -3,6 +3,8 @@ package de.freshplan.domain.cockpit.service.dto;
 /**
  * DTO für Dashboard-Statistiken im Sales Cockpit.
  *
+ * <p>Sprint 2.1.7.4: Added prospects + conversionRate
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -13,6 +15,9 @@ public class DashboardStatistics {
   private int openTasks;
   private int overdueItems;
   private int customersAtRisk;
+  // Sprint 2.1.7.4 - Customer Status Architecture
+  private int prospects; // NEW: Status = PROSPECT
+  private double conversionRate; // NEW: PROSPECT → AKTIV %
 
   public DashboardStatistics() {}
 
@@ -54,5 +59,23 @@ public class DashboardStatistics {
 
   public void setCustomersAtRisk(int customersAtRisk) {
     this.customersAtRisk = customersAtRisk;
+  }
+
+  // Sprint 2.1.7.4 - New Getters/Setters
+
+  public int getProspects() {
+    return prospects;
+  }
+
+  public void setProspects(int prospects) {
+    this.prospects = prospects;
+  }
+
+  public double getConversionRate() {
+    return conversionRate;
+  }
+
+  public void setConversionRate(double conversionRate) {
+    this.conversionRate = conversionRate;
   }
 }
