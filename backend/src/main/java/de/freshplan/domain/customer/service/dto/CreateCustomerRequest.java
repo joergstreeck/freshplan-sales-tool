@@ -31,7 +31,7 @@ public record CreateCustomerRequest(
     CustomerHierarchyType hierarchyType,
 
     // Status & Lifecycle
-    CustomerStatus status, // Defaults to LEAD if not provided
+    CustomerStatus status, // Defaults to PROSPECT if not provided
     CustomerLifecycleStage lifecycleStage, // Defaults to ACQUISITION if not provided
 
     // Financial Information
@@ -62,7 +62,7 @@ public record CreateCustomerRequest(
         null, // classification
         null, // parentCustomerId
         null, // hierarchyType
-        null, // status - will default to LEAD
+        null, // status - will default to PROSPECT
         null, // lifecycleStage - will default to ACQUISITION
         null, // expectedAnnualVolume
         null, // actualAnnualVolume

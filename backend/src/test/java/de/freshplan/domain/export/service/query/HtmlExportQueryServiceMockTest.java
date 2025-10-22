@@ -73,7 +73,7 @@ class HtmlExportQueryServiceMockTest {
         CustomerTestDataFactory.builder()
             .withCustomerNumber("KD-2025-00002")
             .withCompanyName("Lead Company")
-            .withStatus(CustomerStatus.LEAD)
+            .withStatus(CustomerStatus.PROSPECT)
             .withIndustry(Industry.EINZELHANDEL)
             .build();
     testCustomer2.setId(UUID.randomUUID());

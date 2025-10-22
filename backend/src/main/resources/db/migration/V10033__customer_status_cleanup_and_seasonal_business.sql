@@ -25,28 +25,37 @@
 -- PART 1: CustomerStatus Enum Cleanup
 -- =====================================================================================
 
--- Step 1: Keep LEAD status (used by auto-conversion from Lead table)
--- Business Rule: When Lead → Customer conversion happens, status = LEAD initially
--- Manual activation: LEAD → PROSPECT → AKTIV
--- (No migration needed - LEAD status is valid)
+-- Step 1: Migrate any remaining LEAD customers → PROSPECT
+-- Business Rule: Customers should NEVER have LEAD status (Leads belong in leads table)
+-- Auto-conversion: Lead → Customer with status=PROSPECT (not LEAD!)
+UPDATE customers
+SET status = 'PROSPECT', updated_at = CURRENT_TIMESTAMP
+WHERE status = 'LEAD';
 
 -- Step 2: Remove old CHECK constraint (if exists)
 ALTER TABLE customers
 DROP CONSTRAINT IF EXISTS customer_status_check;
 
--- Step 3: Add new CHECK constraint (WITH LEAD - needed for auto-conversion)
--- Full lifecycle: LEAD → PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
+-- Step 3: Add new CHECK constraint (WITHOUT LEAD - clean architecture!)
+-- Full lifecycle: PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
 ALTER TABLE customers
 ADD CONSTRAINT customer_status_check
-CHECK (status IN ('LEAD', 'PROSPECT', 'AKTIV', 'RISIKO', 'INAKTIV', 'ARCHIVIERT'));
+CHECK (status IN ('PROSPECT', 'AKTIV', 'RISIKO', 'INAKTIV', 'ARCHIVIERT'));
 
-COMMENT ON CONSTRAINT customer_status_check ON customers IS 'Sprint 2.1.7.4: Full lifecycle LEAD → PROSPECT → AKTIV (auto-conversion support)';
+COMMENT ON CONSTRAINT customer_status_check ON customers IS 'Sprint 2.1.7.4: Clean lifecycle PROSPECT → AKTIV (LEAD removed - belongs in leads table only)';
+
+-- Step 4: Change DEFAULT value for status column from 'LEAD' to 'PROSPECT'
+-- This fixes test failures where customers are created without explicit status
+ALTER TABLE customers
+ALTER COLUMN status SET DEFAULT 'PROSPECT';
+
+COMMENT ON COLUMN customers.status IS 'Customer lifecycle status: PROSPECT (new) → AKTIV (active) → RISIKO (at risk) → INAKTIV (inactive) → ARCHIVIERT (archived). Default: PROSPECT';
 
 -- =====================================================================================
 -- PART 2: Seasonal Business Support
 -- =====================================================================================
 
--- Step 4: Add is_seasonal_business flag
+-- Step 5: Add is_seasonal_business flag
 ALTER TABLE customers
 ADD COLUMN IF NOT EXISTS is_seasonal_business BOOLEAN DEFAULT FALSE;
 
@@ -89,14 +98,15 @@ WHERE is_seasonal_business = TRUE;
 -- =====================================================================================
 -- Migration Summary
 -- =====================================================================================
--- ✅ Updated CustomerStatus CHECK constraint (includes LEAD for auto-conversion)
+-- ✅ Migrated any LEAD customers → PROSPECT (clean architecture)
+-- ✅ Updated CustomerStatus CHECK constraint (WITHOUT LEAD - belongs in leads table only)
 -- ✅ Added is_seasonal_business flag
 -- ✅ Added seasonal_months array (JSONB with GIN index)
 -- ✅ Added seasonal_pattern enum (VARCHAR with CHECK constraint)
 -- ✅ Created performance index for seasonal businesses
 --
 -- Full Customer Lifecycle (Sprint 2.1.7.4):
---   LEAD → PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
+--   PROSPECT → AKTIV → RISIKO → INAKTIV → ARCHIVIERT
 --
 -- Auto-Conversion Flow:
 --   Lead (leads table) --[Opportunity WON]--> Customer (status=PROSPECT)

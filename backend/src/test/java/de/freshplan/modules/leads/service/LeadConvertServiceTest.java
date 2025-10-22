@@ -64,7 +64,7 @@ class LeadConvertServiceTest {
     testLead.createdBy = TEST_USER;
     testLead.updatedBy = TEST_USER;
     testLead.status = LeadStatus.QUALIFIED;
-    testLead.registeredAt = LocalDateTime.now(); // Variante B: IMMER gesetzt
+    testLead.registeredAt = LocalDateTime.now().minusSeconds(1); // Fix: 1s buffer for DB check constraint (chk_leads_registered_at_not_future)
     testLead.persist();
   }
 

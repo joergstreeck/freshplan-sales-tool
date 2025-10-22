@@ -239,7 +239,7 @@ public class TestDataCommandService {
                 ? CustomerStatus.AKTIV
                 : i % 3 == 0
                     ? CustomerStatus.RISIKO
-                    : i % 2 == 0 ? CustomerStatus.INAKTIV : CustomerStatus.LEAD);
+                    : i % 2 == 0 ? CustomerStatus.INAKTIV : CustomerStatus.PROSPECT); // Sprint 2.1.7.4: LEAD removed from lifecycle
         customer.setIndustry(
             i % 5 == 0
                 ? Industry.HOTEL
@@ -404,7 +404,7 @@ public class TestDataCommandService {
         createTestCustomer(
             "MIN-001",
             "[TEST] A", // Minimal 1 Zeichen
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             LocalDateTime.now().minusDays(1),
             Industry.SONSTIGE);
     customers.add(minimal);
@@ -415,7 +415,7 @@ public class TestDataCommandService {
         createTestCustomer(
             "MAX-001",
             maxName,
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             LocalDateTime.now().minusDays(1),
             Industry.SONSTIGE);
     customers.add(maximal);
@@ -443,7 +443,7 @@ public class TestDataCommandService {
         createTestCustomer(
             "ZERO-001",
             "[TEST] Zero Values Test Company",
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             LocalDateTime.now().minusDays(1),
             Industry.SONSTIGE);
     zeroCustomer.setExpectedAnnualVolume(BigDecimal.ZERO);
@@ -504,7 +504,7 @@ public class TestDataCommandService {
         createTestCustomer(
             "FUTURE-001",
             "[TEST] Future Dates Test Company",
-            CustomerStatus.LEAD,
+            CustomerStatus.PROSPECT,
             now.minusDays(1),
             Industry.SONSTIGE);
     futureCustomer.setNextFollowUpDate(now.plusYears(1)); // 1 Jahr in Zukunft
@@ -534,7 +534,7 @@ public class TestDataCommandService {
           createTestCustomer(
               "TYPE-" + String.format("%03d", counter++),
               "[TEST] Test Company for " + type.name(),
-              CustomerStatus.LEAD,
+              CustomerStatus.PROSPECT,
               LocalDateTime.now().minusDays(1),
               Industry.SONSTIGE);
       customer.setCustomerType(type);

@@ -94,7 +94,7 @@ class CustomerCQRSIntegrationTest {
     assertThat(customer.customerNumber()).startsWith("KD-");
     assertThat(customer.companyName()).isEqualTo(validCreateRequest.companyName());
     assertThat(customer.customerType()).isEqualTo(CustomerType.NEUKUNDE);
-    assertThat(customer.status()).isEqualTo(CustomerStatus.LEAD);
+    assertThat(customer.status()).isEqualTo(CustomerStatus.PROSPECT);
 
     // Store for other tests
     createdCustomerId = UUID.fromString(customer.id());
@@ -294,7 +294,7 @@ class CustomerCQRSIntegrationTest {
             .build());
 
     // Query by status using getAllCustomers with status filter
-    var leadResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.LEAD);
+    var leadResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.PROSPECT);
     CustomerListResponse leadList = (CustomerListResponse) leadResponse.getEntity();
 
     var activeResponse = customerResource.getAllCustomers(0, 100, CustomerStatus.AKTIV);
@@ -304,7 +304,7 @@ class CustomerCQRSIntegrationTest {
     if (!leadList.content().isEmpty()) {
       assertThat(leadList.content())
           .extracting(CustomerResponse::status)
-          .containsOnly(CustomerStatus.LEAD);
+          .containsOnly(CustomerStatus.PROSPECT);
     }
 
     if (!activeList.content().isEmpty()) {

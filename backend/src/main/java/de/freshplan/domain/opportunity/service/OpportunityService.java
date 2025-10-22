@@ -1225,11 +1225,14 @@ public class OpportunityService {
                 lead.id, customer.getId(), opportunityId);
 
         // Publish via LeadEventPublisher (PostgreSQL NOTIFY)
-        leadEventPublisher.publishCrossModuleEvent(
-            "LEAD_CONVERTED_TO_CUSTOMER",
-            String.format(
-                "{\"leadId\":%d,\"customerId\":\"%s\",\"opportunityId\":\"%s\"}",
-                event.leadId(), event.customerId(), event.opportunityId()));
+        // Use Vert.x JsonObject for safe JSON serialization (Gemini #7)
+        String payload =
+            new io.vertx.core.json.JsonObject()
+                .put("leadId", event.leadId())
+                .put("customerId", event.customerId().toString())
+                .put("opportunityId", event.opportunityId().toString())
+                .encode();
+        leadEventPublisher.publishCrossModuleEvent("LEAD_CONVERTED_TO_CUSTOMER", payload);
 
         logger.debug("Published LeadConvertedEvent for lead {}", lead.id);
       } catch (Exception e) {

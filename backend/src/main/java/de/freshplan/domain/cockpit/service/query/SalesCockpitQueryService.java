@@ -363,29 +363,20 @@ public class SalesCockpitQueryService {
     // Sprint 2.1.7.4 - NEW: Seasonal Business Support
     int currentMonth = LocalDate.now().getMonthValue();
 
-    // Seasonal paused (out of season - NOT at risk!)
-    long seasonalPaused =
+    // Performance optimized: Single DB query + partitioningBy (Gemini #2)
+    java.util.Map<Boolean, Long> seasonalStats =
         customerRepository
             .find("status = ?1 AND isSeasonalBusiness = TRUE", CustomerStatus.AKTIV)
             .stream()
             .filter(
-                c ->
-                    c.getSeasonalMonths() != null
-                        && !c.getSeasonalMonths().isEmpty()
-                        && !c.getSeasonalMonths().contains(currentMonth))
-            .count();
+                c -> c.getSeasonalMonths() != null && !c.getSeasonalMonths().isEmpty()) // Valid data only
+            .collect(
+                java.util.stream.Collectors.partitioningBy(
+                    c -> c.getSeasonalMonths().contains(currentMonth), // true = in season, false = out of season
+                    java.util.stream.Collectors.counting()));
 
-    // Seasonal active (in season)
-    long seasonalActive =
-        customerRepository
-            .find("status = ?1 AND isSeasonalBusiness = TRUE", CustomerStatus.AKTIV)
-            .stream()
-            .filter(
-                c ->
-                    c.getSeasonalMonths() != null
-                        && !c.getSeasonalMonths().isEmpty()
-                        && c.getSeasonalMonths().contains(currentMonth))
-            .count();
+    long seasonalActive = seasonalStats.getOrDefault(true, 0L);   // In season
+    long seasonalPaused = seasonalStats.getOrDefault(false, 0L);  // Out of season (NOT at risk!)
 
     stats.setSeasonalPaused((int) seasonalPaused);
     stats.setSeasonalActive((int) seasonalActive);

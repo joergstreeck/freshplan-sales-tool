@@ -7,7 +7,7 @@ import { describe, it, expect } from 'vitest';
 
 // Helper function tests (from CustomerDetailPage.tsx)
 const MONTH_NAMES = [
-  'Jan', 'Feb', 'Maer', 'Apr', 'Mai', 'Jun',
+  'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
   'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'
 ];
 

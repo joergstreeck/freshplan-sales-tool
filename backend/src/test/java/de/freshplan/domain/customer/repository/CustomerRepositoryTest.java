@@ -714,7 +714,7 @@ class CustomerRepositoryTest {
     Customer customer =
         CustomerTestDataFactory.builder()
             .withCompanyName(companyName)
-            .withStatus(CustomerStatus.LEAD)
+            .withStatus(CustomerStatus.PROSPECT)
             .build(); // build() not persist() - tests handle persistence
 
     // Override the auto-generated values for test compatibility
@@ -732,7 +732,7 @@ class CustomerRepositoryTest {
     Customer customer =
         CustomerTestDataFactory.builder()
             .withCompanyName(companyName)
-            .withStatus(CustomerStatus.LEAD)
+            .withStatus(CustomerStatus.PROSPECT)
             .build(); // build() not persist() - tests handle persistence
 
     // Override with specific customer number and name

@@ -84,7 +84,7 @@ class ContactInteractionResourceIT {
         CustomerTestDataFactory.builder()
             .withCompanyName("[" + testMarker + "] Test Company GmbH")
             .withCustomerNumber(testMarker)
-            .withStatus(CustomerStatus.LEAD)
+            .withStatus(CustomerStatus.PROSPECT)
             .asTestData(true)
             .buildAndPersist(customerRepository);
 
