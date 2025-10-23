@@ -1,6 +1,5 @@
 package de.freshplan.modules.xentral.api;
 
-import de.freshplan.modules.xentral.config.XentralApiConfig;
 import de.freshplan.modules.xentral.dto.ConnectionTestResponse;
 import de.freshplan.modules.xentral.dto.XentralSettingsDTO;
 import de.freshplan.modules.xentral.service.XentralSettingsService;
@@ -11,6 +10,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Optional;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,16 @@ public class XentralSettingsResource {
 
   @Inject XentralSettingsService service;
 
-  @Inject XentralApiConfig config;
+  // Xentral Connect API (2024/25) - Token-based authentication
+  // Only Base URL and Personal Access Token needed
+  @ConfigProperty(name = "xentral.api.base-url")
+  String baseUrl;
+
+  @ConfigProperty(name = "xentral.api.token")
+  String token;
+
+  @ConfigProperty(name = "xentral.api.mock-mode", defaultValue = "true")
+  boolean mockMode;
 
   /**
    * Get Xentral settings.
@@ -67,8 +76,7 @@ public class XentralSettingsResource {
     } else {
       logger.info("No Xentral settings in database - returning application.properties defaults");
       // Return defaults from application.properties
-      XentralSettingsDTO defaultDto =
-          new XentralSettingsDTO(config.baseUrl(), config.token(), config.mockMode());
+      XentralSettingsDTO defaultDto = new XentralSettingsDTO(baseUrl, token, mockMode);
       return Response.ok(defaultDto).build();
     }
   }

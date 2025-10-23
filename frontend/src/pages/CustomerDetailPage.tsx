@@ -411,21 +411,21 @@ export function CustomerDetailPage() {
               <>
                 {/* Revenue Cards */}
                 <Grid container spacing={2} sx={{ mb: 2 }}>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <RevenueMetricsWidget
                       title="Umsatz (30 Tage)"
                       value={revenueMetrics.revenue30Days}
                       color="success"
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <RevenueMetricsWidget
                       title="Umsatz (90 Tage)"
                       value={revenueMetrics.revenue90Days}
                       color="info"
                     />
                   </Grid>
-                  <Grid item xs={12} md={4}>
+                  <Grid size={{ xs: 12, md: 4 }}>
                     <RevenueMetricsWidget
                       title="Umsatz (365 Tage)"
                       value={revenueMetrics.revenue365Days}

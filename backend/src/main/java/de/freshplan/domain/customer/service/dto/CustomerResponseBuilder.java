@@ -18,6 +18,7 @@ public final class CustomerResponseBuilder {
   // Identifier
   private String id;
   private String customerNumber;
+  private String xentralCustomerId; // Sprint 2.1.7.2 - Xentral Integration
 
   // Basic Information
   private String companyName;
@@ -97,6 +98,11 @@ public final class CustomerResponseBuilder {
 
   public CustomerResponseBuilder customerNumber(String customerNumber) {
     this.customerNumber = customerNumber;
+    return this;
+  }
+
+  public CustomerResponseBuilder xentralCustomerId(String xentralCustomerId) {
+    this.xentralCustomerId = xentralCustomerId;
     return this;
   }
 
@@ -315,6 +321,7 @@ public final class CustomerResponseBuilder {
   public CustomerResponseBuilder fromEntity(Customer customer) {
     this.id = customer.getId().toString();
     this.customerNumber = customer.getCustomerNumber();
+    this.xentralCustomerId = customer.getXentralCustomerId(); // Sprint 2.1.7.2
     this.companyName = customer.getCompanyName();
     this.tradingName = customer.getTradingName();
     this.legalForm = customer.getLegalForm();
@@ -381,6 +388,7 @@ public final class CustomerResponseBuilder {
     return new CustomerResponse(
         id,
         customerNumber,
+        xentralCustomerId, // Sprint 2.1.7.2 - Xentral Integration
         companyName,
         tradingName,
         legalForm,
