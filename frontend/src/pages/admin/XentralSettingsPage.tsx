@@ -307,3 +307,6 @@ export const XentralSettingsPage: React.FC = () => {
     </MainLayoutV2>
   );
 };
+
+// Default export for lazy loading
+export default XentralSettingsPage;
