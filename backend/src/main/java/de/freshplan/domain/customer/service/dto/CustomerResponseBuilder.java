@@ -52,6 +52,7 @@ public final class CustomerResponseBuilder {
   private boolean atRisk;
   private LocalDateTime lastContactDate;
   private LocalDateTime nextFollowUpDate;
+  private Integer churnThresholdDays; // Sprint 2.1.7.2 - D4
 
   // Chain Structure - NEW for Sprint 2
   private Integer totalLocationsEU;
@@ -209,6 +210,11 @@ public final class CustomerResponseBuilder {
     return this;
   }
 
+  public CustomerResponseBuilder churnThresholdDays(Integer churnThresholdDays) {
+    this.churnThresholdDays = churnThresholdDays;
+    return this;
+  }
+
   public CustomerResponseBuilder createdAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
     return this;
@@ -339,6 +345,7 @@ public final class CustomerResponseBuilder {
     this.atRisk = customer.isAtRisk();
     this.lastContactDate = customer.getLastContactDate();
     this.nextFollowUpDate = customer.getNextFollowUpDate();
+    this.churnThresholdDays = customer.getChurnThresholdDays(); // Sprint 2.1.7.2 - D4
     this.createdAt = customer.getCreatedAt();
     this.createdBy = customer.getCreatedBy();
     this.updatedAt = customer.getUpdatedAt();
@@ -396,6 +403,7 @@ public final class CustomerResponseBuilder {
         atRisk,
         lastContactDate,
         nextFollowUpDate,
+        churnThresholdDays, // Sprint 2.1.7.2 - D4
 
         // Chain Structure - NEW for Sprint 2
         totalLocationsEU,
