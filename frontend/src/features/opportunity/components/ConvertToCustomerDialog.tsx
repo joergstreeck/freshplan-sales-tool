@@ -26,7 +26,6 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import BusinessIcon from '@mui/icons-material/Business';
 import { useNavigate } from 'react-router-dom';
-import { useSnackbar } from 'notistack';
 import { httpClient } from '../../../lib/apiClient';
 import type { IOpportunity } from '../types/opportunity.types';
 
@@ -91,7 +90,6 @@ export default function ConvertToCustomerDialog({
   onClose,
   onSuccess,
 }: ConvertToCustomerDialogProps) {
-  const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
   const currentUser = useCurrentUser();
 
@@ -107,6 +105,9 @@ export default function ConvertToCustomerDialog({
   // Xentral Customers
   const [xentralCustomers, setXentralCustomers] = useState<XentralCustomerDTO[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
+
+  // Error State (statt Toast)
+  const [apiError, setApiError] = useState<string | null>(null);
 
   /**
    * Load Xentral Customers (verkäufer-gefiltert)
@@ -127,7 +128,7 @@ export default function ConvertToCustomerDialog({
       setXentralCustomers(response.data || []);
     } catch (error) {
       console.error('Failed to load Xentral customers:', error);
-      enqueueSnackbar('Fehler beim Laden der Xentral-Kunden', { variant: 'error' });
+      setApiError('Fehler beim Laden der Xentral-Kunden');
       setXentralCustomers([]);
     } finally {
       setLoadingCustomers(false);
@@ -140,11 +141,13 @@ export default function ConvertToCustomerDialog({
    */
   const handleConvert = async () => {
     if (!companyName.trim()) {
-      enqueueSnackbar('Bitte Firmenname eingeben', { variant: 'warning' });
+      setApiError('Bitte Firmenname eingeben');
       return;
     }
 
     setLoading(true);
+    setApiError(null);
+
     try {
       const request: ConvertToCustomerRequest = {
         companyName: companyName.trim(),
@@ -159,11 +162,7 @@ export default function ConvertToCustomerDialog({
 
       const customer = response.data;
 
-      enqueueSnackbar(
-        `Customer "${customer.companyName}" erfolgreich angelegt (Status: ${customer.status})`,
-        { variant: 'success' }
-      );
-
+      // Success! Call callbacks and navigate
       if (onSuccess) {
         onSuccess();
       }
@@ -174,7 +173,7 @@ export default function ConvertToCustomerDialog({
       console.error('Failed to convert opportunity:', error);
       const errorMessage =
         error?.response?.data?.message || 'Fehler beim Anlegen des Customers';
-      enqueueSnackbar(errorMessage, { variant: 'error' });
+      setApiError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -190,6 +189,7 @@ export default function ConvertToCustomerDialog({
       );
       setSelectedXentralCustomer(null);
       setNotes('');
+      setApiError(null);
     }
   }, [open, opportunity]);
 
@@ -206,6 +206,13 @@ export default function ConvertToCustomerDialog({
 
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
+          {/* API Error Alert */}
+          {apiError && (
+            <Alert severity="error" onClose={() => setApiError(null)}>
+              {apiError}
+            </Alert>
+          )}
+
           {/* Company Name */}
           <TextField
             fullWidth
