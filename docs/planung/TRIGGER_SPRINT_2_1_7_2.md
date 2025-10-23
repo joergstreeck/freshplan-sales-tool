@@ -6,7 +6,7 @@
 **Estimated Effort:** 25h (3+ Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-16
-**Updated:** 2025-10-20 (UX-Decisions für Revenue Dashboard hinzugefügt)
+**Updated:** 2025-10-24 (XentralApiConfig Architecture Decision dokumentiert)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.4 COMPLETE
 
 ---
@@ -379,6 +379,42 @@ Alle Design-Entscheidungen sind dokumentiert in:
 - Error Recovery: Wenn Xentral down → Fallback-Daten? Retry-Logic?
 - Mock → Real Switch: Aktuell Feature-Flag - später: automatische Erkennung
 
+### **⚠️ WICHTIG: XentralApiConfig NICHT benötigt!**
+
+**Entscheidung (2025-10-24):** Xentral Connect API (2024/25) benötigt **KEINE** separate `XentralApiConfig.java`
+
+**Begründung:**
+- Neue Xentral Connect API verwendet **Token-basierte Authentifizierung** (PAT)
+- Nur 3 Properties benötigt: `xentral.api.base-url`, `xentral.api.token`, `xentral.api.mock-mode`
+- **`@ConfigProperty`** Injection reicht vollständig aus
+- **`@ConfigMapping`** mit `XentralApiConfig` führt zu Configuration-Validierungsfehlern
+
+**Architektur:**
+```java
+// ✅ RICHTIG: Direct @ConfigProperty Injection
+@ConfigProperty(name = "xentral.api.base-url")
+String baseUrl;
+
+@ConfigProperty(name = "xentral.api.token")
+String token;
+
+@ConfigProperty(name = "xentral.api.mock-mode", defaultValue = "true")
+boolean mockMode;
+
+// ❌ FALSCH: XentralApiConfig mit @ConfigMapping
+// → Verursacht Property Validation Errors
+// → Nicht benötigt für neue API
+```
+
+**Betroffene Dateien:**
+- ✅ `XentralSettingsResource.java` → Verwendet `@ConfigProperty`
+- ✅ `XentralApiService.java` → Verwendet `@ConfigProperty`
+- ❌ `XentralApiConfig.java` → **DELETED** (war Legacy-Code, nie benötigt)
+
+**Commit:** `015822ffa` (2025-10-24)
+
+**Siehe auch:** `/docs/decisions/ADR-XXXX-xentral-api-config.md` (TBD)
+
 ---
 
 ## 🔗 RELATED WORK
@@ -405,4 +441,4 @@ Alle Design-Entscheidungen sind dokumentiert in:
 
 **✅ SPRINT STATUS: 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE**
 
-**Letzte Aktualisierung:** 2025-10-19 (3-Dokumente-Struktur, Sprint 2.1.7.4 Integration)
+**Letzte Aktualisierung:** 2025-10-24 (XentralApiConfig Architecture Decision dokumentiert)
