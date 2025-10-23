@@ -20,6 +20,7 @@ import {
   DialogActions,
   TextField,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
@@ -45,12 +46,15 @@ import { ContactGridContainer } from '../features/customers/components/contacts/
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { customerApi } from '../features/customer/api/customerApi';
+import { customerApi, type RevenueMetrics } from '../features/customer/api/customerApi';
 import type { Customer, CustomerContact } from '../features/customer/types/customer.types';
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
 import CreateOpportunityForCustomerDialog from '../features/opportunity/components/CreateOpportunityForCustomerDialog';
 import { CustomerOpportunitiesList } from '../features/customers/components/CustomerOpportunitiesList';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
+import { RevenueMetricsWidget } from '../features/customers/components/RevenueMetricsWidget';
+import { PaymentBehaviorIndicator } from '../features/customers/components/PaymentBehaviorIndicator';
+import { ChurnRiskAlert } from '../features/customers/components/ChurnRiskAlert';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -133,6 +137,19 @@ export function CustomerDetailPage() {
 
   // Fetch customer data
   const { data: customer, isLoading, error } = useCustomerDetails(customerId);
+
+  // Fetch revenue metrics from Xentral (Sprint 2.1.7.2)
+  const {
+    data: revenueMetrics,
+    isLoading: loadingMetrics,
+    error: metricsError,
+  } = useQuery({
+    queryKey: ['customer-revenue-metrics', customerId],
+    queryFn: () => customerApi.getRevenueMetrics(customerId!),
+    enabled: !!customer?.xentralCustomerId, // Only fetch if customer has Xentral-ID
+    retry: 1,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
 
   // Check if user can view audit trail
   const canViewAudit = user?.roles?.some(role => ['admin', 'manager', 'auditor'].includes(role));
@@ -371,6 +388,72 @@ export function CustomerDetailPage() {
             </Typography>
             <Typography variant="caption" color="text.secondary">
               Churn-Monitoring ist außerhalb der Saison pausiert
+            </Typography>
+          </Alert>
+        )}
+
+        {/* Revenue Metrics Section (Sprint 2.1.7.2) */}
+        {customer.xentralCustomerId && (
+          <Paper sx={{ p: 3, mb: 3 }}>
+            <Typography variant="h6" gutterBottom>
+              Umsatzdaten (Xentral)
+            </Typography>
+
+            {loadingMetrics ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                <CircularProgress />
+              </Box>
+            ) : metricsError ? (
+              <Alert severity="warning">
+                Umsatzdaten konnten nicht geladen werden. Bitte versuchen Sie es später erneut.
+              </Alert>
+            ) : revenueMetrics ? (
+              <>
+                {/* Revenue Cards */}
+                <Grid container spacing={2} sx={{ mb: 2 }}>
+                  <Grid item xs={12} md={4}>
+                    <RevenueMetricsWidget
+                      title="Umsatz (30 Tage)"
+                      value={revenueMetrics.revenue30Days}
+                      color="success"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <RevenueMetricsWidget
+                      title="Umsatz (90 Tage)"
+                      value={revenueMetrics.revenue90Days}
+                      color="info"
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <RevenueMetricsWidget
+                      title="Umsatz (365 Tage)"
+                      value={revenueMetrics.revenue365Days}
+                      color="primary"
+                    />
+                  </Grid>
+                </Grid>
+
+                {/* Payment Behavior Indicator */}
+                <PaymentBehaviorIndicator
+                  behavior={revenueMetrics.paymentBehavior}
+                  averageDaysToPay={revenueMetrics.averageDaysToPay}
+                />
+
+                {/* Churn Risk Alert */}
+                <ChurnRiskAlert lastOrderDate={revenueMetrics.lastOrderDate} />
+              </>
+            ) : null}
+          </Paper>
+        )}
+
+        {/* No Xentral Connection Warning */}
+        {!customer.xentralCustomerId && customer.status === 'AKTIV' && (
+          <Alert severity="warning" sx={{ mb: 3 }}>
+            <AlertTitle>Keine Xentral-Verknüpfung vorhanden</AlertTitle>
+            <Typography variant="body2">
+              Für diesen Kunden können keine Umsatzdaten angezeigt werden, da keine Verknüpfung zu
+              Xentral besteht.
             </Typography>
           </Alert>
         )}
