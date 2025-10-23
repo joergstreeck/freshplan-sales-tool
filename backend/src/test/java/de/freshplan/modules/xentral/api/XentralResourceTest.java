@@ -53,8 +53,8 @@ class XentralResourceTest {
         .statusCode(200)
         .contentType("application/json")
         .body("$", not(empty())) // Mock should return data
-        .body("[0].id", notNullValue())
-        .body("[0].name", notNullValue());
+        .body("[0].xentralId", notNullValue())
+        .body("[0].companyName", notNullValue());
   }
 
   @Test
@@ -107,9 +107,9 @@ class XentralResourceTest {
         .get("/api/xentral/customers/{xentralId}")
         .then()
         .statusCode(200)
-        .body("id", equalTo("XENT-001"))
-        .body("name", notNullValue())
-        .body("totalRevenue", notNullValue()); // FinancialMetrics fields
+        .body("xentralId", equalTo("XENT-001"))
+        .body("companyName", notNullValue())
+        .body("totalRevenue", notNullValue()); // Financial data
   }
 
   @Test
@@ -152,8 +152,8 @@ class XentralResourceTest {
         .statusCode(200)
         .contentType("application/json")
         .body("$", not(empty())) // Mock should return invoices
-        .body("[0].id", notNullValue())
-        .body("[0].total", notNullValue());
+        .body("[0].invoiceId", notNullValue())
+        .body("[0].amount", notNullValue());
   }
 
   @Test
@@ -207,8 +207,8 @@ class XentralResourceTest {
         .statusCode(200)
         .contentType("application/json")
         .body("$", not(empty())) // Mock should return sales reps
-        .body("[0].id", notNullValue())
-        .body("[0].name", notNullValue())
+        .body("[0].employeeId", notNullValue())
+        .body("[0].firstName", notNullValue())
         .body("[0].email", notNullValue());
   }
 
