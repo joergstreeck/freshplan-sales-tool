@@ -143,6 +143,14 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "xentral_customer_id", length = 50)
   private String xentralCustomerId;
 
+  /**
+   * Churn-Alarm Schwelle in Tagen (Sprint 2.1.7.2 - D4, Migration V10036)
+   * Kundenspezifisch konfigurierbar (Default: 90 Tage)
+   * Gültiger Bereich: 14-365 Tage
+   */
+  @Column(name = "churn_threshold_days", nullable = false)
+  private Integer churnThresholdDays = 90;
+
   // Hierarchy Support
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_customer_id")
@@ -556,6 +564,14 @@ public class Customer extends PanacheEntityBase {
 
   public void setXentralCustomerId(String xentralCustomerId) {
     this.xentralCustomerId = xentralCustomerId;
+  }
+
+  public Integer getChurnThresholdDays() {
+    return churnThresholdDays;
+  }
+
+  public void setChurnThresholdDays(Integer churnThresholdDays) {
+    this.churnThresholdDays = churnThresholdDays;
   }
 
   public Customer getParentCustomer() {
