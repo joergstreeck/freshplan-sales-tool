@@ -44,6 +44,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
       'kitchenSize',
       'employeeCount',
       'chainCustomer',
+      'churnThresholdDays',
     ]
       .map(key => getFieldByKey(key))
       .filter(isFieldDefinition);

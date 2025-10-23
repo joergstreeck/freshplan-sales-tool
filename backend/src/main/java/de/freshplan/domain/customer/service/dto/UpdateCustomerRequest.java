@@ -48,7 +48,12 @@ public record UpdateCustomerRequest(
 
     // Contact & Follow-up
     LocalDateTime lastContactDate,
-    LocalDateTime nextFollowUpDate) {
+    LocalDateTime nextFollowUpDate,
+
+    // Churn Configuration (Sprint 2.1.7.2 - D4)
+    @Min(value = 14, message = "Churn threshold must be at least 14 days")
+        @Max(value = 365, message = "Churn threshold must not exceed 365 days")
+        Integer churnThresholdDays) {
 
   /** Builder for creating update requests. */
   public static Builder builder() {
@@ -73,6 +78,7 @@ public record UpdateCustomerRequest(
     private DeliveryCondition deliveryCondition;
     private LocalDateTime lastContactDate;
     private LocalDateTime nextFollowUpDate;
+    private Integer churnThresholdDays;
 
     public Builder companyName(String companyName) {
       this.companyName = companyName;
@@ -159,6 +165,11 @@ public record UpdateCustomerRequest(
       return this;
     }
 
+    public Builder churnThresholdDays(Integer churnThresholdDays) {
+      this.churnThresholdDays = churnThresholdDays;
+      return this;
+    }
+
     public UpdateCustomerRequest build() {
       return new UpdateCustomerRequest(
           companyName,
@@ -177,7 +188,8 @@ public record UpdateCustomerRequest(
           creditLimit,
           deliveryCondition,
           lastContactDate,
-          nextFollowUpDate);
+          nextFollowUpDate,
+          churnThresholdDays);
     }
   }
 }

@@ -109,6 +109,18 @@
         "enumSource": "financing-types",
         "required": false,
         "helpText": "Geschäftsmodell des Unternehmens (Single Source of Truth: Backend API)"
+      },
+      {
+        "key": "churnThresholdDays",
+        "label": "Churn-Schwelle (Tage)",
+        "entityType": "customer",
+        "fieldType": "number",
+        "required": false,
+        "min": 14,
+        "max": 365,
+        "defaultValue": 90,
+        "placeholder": "z.B. 90",
+        "helpText": "Anzahl Tage ohne Bestellung, ab denen Kunde als Churn-Risiko gilt (Sprint 2.1.7.2 - D4). Standard: 90 Tage. Zulässig: 14-365 Tage."
       }
     ],
     "industrySpecific": {

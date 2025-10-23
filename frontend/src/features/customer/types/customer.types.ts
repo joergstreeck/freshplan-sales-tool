@@ -26,6 +26,7 @@ export interface CustomerResponse {
   atRisk: boolean;
   lastContactDate?: string;
   nextFollowUpDate?: string;
+  churnThresholdDays?: number; // Sprint 2.1.7.2 - D4 (Default: 90)
 
   // Seasonal Business - NEW for Sprint 2.1.7.4
   isSeasonalBusiness?: boolean;

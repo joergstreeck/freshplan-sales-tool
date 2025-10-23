@@ -441,7 +441,10 @@ export function CustomerDetailPage() {
                 />
 
                 {/* Churn Risk Alert */}
-                <ChurnRiskAlert lastOrderDate={revenueMetrics.lastOrderDate} />
+                <ChurnRiskAlert
+                  lastOrderDate={revenueMetrics.lastOrderDate}
+                  churnThresholdDays={customer.churnThresholdDays}
+                />
               </>
             ) : null}
           </Paper>

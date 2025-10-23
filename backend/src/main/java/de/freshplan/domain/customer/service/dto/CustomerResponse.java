@@ -51,6 +51,7 @@ public record CustomerResponse(
     boolean atRisk,
     LocalDateTime lastContactDate,
     LocalDateTime nextFollowUpDate,
+    Integer churnThresholdDays,
 
     // Chain Structure - NEW for Sprint 2
     Integer totalLocationsEU,
@@ -117,6 +118,7 @@ public record CustomerResponse(
         null,
         riskScore,
         false,
+        null,
         null,
         null,
 

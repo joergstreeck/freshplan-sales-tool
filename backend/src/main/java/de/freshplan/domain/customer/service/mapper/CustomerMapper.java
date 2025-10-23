@@ -74,6 +74,7 @@ public class CustomerMapper {
         customer.isAtRisk(),
         customer.getLastContactDate(),
         customer.getNextFollowUpDate(),
+        customer.getChurnThresholdDays(),
 
         // Chain Structure - NEW for Sprint 2
         customer.getTotalLocationsEU(),
@@ -141,6 +142,7 @@ public class CustomerMapper {
         customer.isAtRisk(),
         customer.getLastContactDate(), // NEEDED FOR FILTERS
         null, // nextFollowUpDate
+        null, // churnThresholdDays
         null, // totalLocationsEU
         null, // locationsGermany
         null, // locationsAustria
@@ -386,6 +388,9 @@ public class CustomerMapper {
     }
     if (request.nextFollowUpDate() != null) {
       customer.setNextFollowUpDate(request.nextFollowUpDate());
+    }
+    if (request.churnThresholdDays() != null) {
+      customer.setChurnThresholdDays(request.churnThresholdDays());
     }
 
     // Update audit fields
