@@ -48,7 +48,7 @@ interface ConnectionTestResponse {
   message: string;
 }
 
-export const XentralSettingsPage: React.FC = () => {
+const XentralSettingsPage: React.FC = () => {
   const queryClient = useQueryClient();
 
   // Local form state
