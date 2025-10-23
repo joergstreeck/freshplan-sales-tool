@@ -11,6 +11,7 @@
 | [ADR-0005](./ADR-0005-nginx-oidc-gateway.md) | Nginx+OIDC Gateway statt Kong/Envoy | ✅ ACCEPTED | 2025-09-10 |
 | [ADR-0006](./ADR-0006-mock-governance.md) | Mock-Governance (Business-Logic mock-frei) | ✅ ACCEPTED | 2025-09-23 |
 | [ADR-0007](./ADR-0007-rls-connection-affinity.md) | RLS Connection Affinity Pattern | ✅ IMPLEMENTED | 2025-09-25 |
+| [ADR-0008](./ADR-0008-xentral-config-property-injection.md) | Xentral API Configuration via @ConfigProperty | ✅ ACCEPTED | 2025-10-24 |
 
 ## Kontext
 

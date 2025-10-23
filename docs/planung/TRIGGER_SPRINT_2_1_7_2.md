@@ -413,7 +413,7 @@ boolean mockMode;
 
 **Commit:** `015822ffa` (2025-10-24)
 
-**Siehe auch:** `/docs/decisions/ADR-XXXX-xentral-api-config.md` (TBD)
+**Siehe auch:** [ADR-0008: Xentral API Configuration via @ConfigProperty](adr/ADR-0008-xentral-config-property-injection.md)
 
 ---
 
