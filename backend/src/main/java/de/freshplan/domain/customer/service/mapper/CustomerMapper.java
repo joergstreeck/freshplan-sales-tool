@@ -50,6 +50,7 @@ public class CustomerMapper {
     return new CustomerResponse(
         customer.getId().toString(),
         customer.getCustomerNumber(),
+        customer.getXentralCustomerId(),
         customer.getCompanyName(),
         customer.getTradingName(),
         customer.getLegalForm(),
@@ -120,6 +121,7 @@ public class CustomerMapper {
     return new CustomerResponse(
         customer.getId().toString(),
         customer.getCustomerNumber(),
+        customer.getXentralCustomerId(),
         customer.getCompanyName(),
         null, // tradingName
         null, // legalForm

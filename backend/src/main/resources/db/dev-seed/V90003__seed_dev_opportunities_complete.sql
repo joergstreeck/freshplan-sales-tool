@@ -102,149 +102,210 @@ INSERT INTO opportunities (
 -- ====================
 
 -- OPP-5: Neuer Standort → QUALIFICATION
-INSERT INTO opportunities (
-    id, name, description, stage, expected_value, expected_close_date,
-    probability, assigned_to, lead_id, customer_id, opportunity_type,
-    created_at, updated_at
-) VALUES (
-    gen_random_uuid(),
-    'Neuer Standort: [DEV-SEED] Kantine Schulweg 45 - Expansion',
-    'Kunde möchte 2 weitere Standorte beliefern lassen.',
-    'QUALIFICATION',
-    18000.00,
-    CURRENT_DATE + INTERVAL '45 days',
-    25,
-    NULL, -- assigned_to (User-Management not yet in DEV-SEED)
-    NULL,
-    (SELECT id FROM customers WHERE customer_number = 'KD-DEV-001' LIMIT 1),
-    'NEUER_STANDORT', -- Sprint 2.1.7.1: Zusätzliche Standorte
-    NOW() - INTERVAL '3 days',
-    NOW() - INTERVAL '1 day'
-);
+-- Note: Only insert if customer exists (V90001 may not have run yet)
+DO $$
+DECLARE
+  v_customer_id UUID;
+BEGIN
+  SELECT id INTO v_customer_id FROM customers WHERE customer_number = 'KD-DEV-001' LIMIT 1;
 
+  IF v_customer_id IS NOT NULL THEN
+    INSERT INTO opportunities (
+        id, name, description, stage, expected_value, expected_close_date,
+        probability, assigned_to, lead_id, customer_id, opportunity_type,
+        created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        'Neuer Standort: [DEV-SEED] Kantine Schulweg 45 - Expansion',
+        'Kunde möchte 2 weitere Standorte beliefern lassen.',
+        'QUALIFICATION',
+        18000.00,
+        CURRENT_DATE + INTERVAL '45 days',
+        25,
+        NULL, -- assigned_to (User-Management not yet in DEV-SEED)
+        NULL,
+        v_customer_id,
+        'NEUER_STANDORT', -- Sprint 2.1.7.1: Zusätzliche Standorte
+        NOW() - INTERVAL '3 days',
+        NOW() - INTERVAL '1 day'
+    );
+  ELSE
+    RAISE WARNING 'Skipping OPP-5: Customer KD-DEV-001 not found. V90001 may not have run yet.';
+  END IF;
+END $$;
 -- OPP-6: Sortimentserweiterung (Neue Produktlinie) → NEEDS_ANALYSIS
-INSERT INTO opportunities (
-    id, name, description, stage, expected_value, expected_close_date,
-    probability, assigned_to, lead_id, customer_id, opportunity_type,
-    created_at, updated_at
-) VALUES (
-    gen_random_uuid(),
-    'Sortimentserweiterung: [DEV-SEED] Seniorenheim Blumenstraße 12 - Bio-Linie',
-    'Interesse an Bio-zertifizierter Produktlinie.',
-    'NEEDS_ANALYSIS',
-    10000.00,
-    CURRENT_DATE + INTERVAL '30 days',
-    40,
-    NULL, -- assigned_to (User-Management not yet in DEV-SEED)
-    NULL,
-    (SELECT id FROM customers WHERE customer_number = 'KD-DEV-002' LIMIT 1),
-    'SORTIMENTSERWEITERUNG', -- Sprint 2.1.7.1: Neue Produktkategorie
-    NOW() - INTERVAL '12 days',
-    NOW() - INTERVAL '5 days'
-);
+DO $$
+DECLARE
+  v_customer_id UUID;
+BEGIN
+  SELECT id INTO v_customer_id FROM customers WHERE customer_number = 'KD-DEV-002' LIMIT 1;
+  IF v_customer_id IS NOT NULL THEN
+    INSERT INTO opportunities (
+        id, name, description, stage, expected_value, expected_close_date,
+        probability, assigned_to, lead_id, customer_id, opportunity_type,
+        created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        'Sortimentserweiterung: [DEV-SEED] Seniorenheim Blumenstraße 12 - Bio-Linie',
+        'Interesse an Bio-zertifizierter Produktlinie.',
+        'NEEDS_ANALYSIS',
+        10000.00,
+        CURRENT_DATE + INTERVAL '30 days',
+        40,
+        NULL,
+        NULL,
+        v_customer_id,
+        'SORTIMENTSERWEITERUNG',
+        NOW() - INTERVAL '12 days',
+        NOW() - INTERVAL '5 days'
+    );
+  ELSE
+    RAISE WARNING 'Skipping OPP-6: Customer KD-DEV-002 not found.';
+  END IF;
+END $$;
 
 -- OPP-7: Verlängerung (Vertragsverlängerung) → PROPOSAL
-INSERT INTO opportunities (
-    id, name, description, stage, expected_value, expected_close_date,
-    probability, assigned_to, lead_id, customer_id, opportunity_type,
-    created_at, updated_at
-) VALUES (
-    gen_random_uuid(),
-    'Verlängerung: [DEV-SEED] Kindertagesstätte Parkweg 8 - Vertragsverlängerung',
-    'Jahresvertrag läuft aus. Verlängerung um 2 Jahre geplant.',
-    'PROPOSAL',
-    22000.00,
-    CURRENT_DATE + INTERVAL '60 days',
-    75,
-    NULL, -- assigned_to (User-Management not yet in DEV-SEED)
-    NULL,
-    (SELECT id FROM customers WHERE customer_number = 'KD-DEV-003' LIMIT 1),
-    'VERLAENGERUNG', -- Sprint 2.1.7.1: Rahmenvertrag-Renewal
-    NOW() - INTERVAL '8 days',
-    NOW() - INTERVAL '2 days'
-);
+DO $$
+DECLARE
+  v_customer_id UUID;
+BEGIN
+  SELECT id INTO v_customer_id FROM customers WHERE customer_number = 'KD-DEV-003' LIMIT 1;
+  IF v_customer_id IS NOT NULL THEN
+    INSERT INTO opportunities (
+        id, name, description, stage, expected_value, expected_close_date,
+        probability, assigned_to, lead_id, customer_id, opportunity_type,
+        created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        'Verlängerung: [DEV-SEED] Kindertagesstätte Parkweg 8 - Vertragsverlängerung',
+        'Jahresvertrag läuft aus. Verlängerung um 2 Jahre geplant.',
+        'PROPOSAL',
+        22000.00,
+        CURRENT_DATE + INTERVAL '60 days',
+        75,
+        NULL,
+        NULL,
+        v_customer_id,
+        'VERLAENGERUNG',
+        NOW() - INTERVAL '8 days',
+        NOW() - INTERVAL '2 days'
+    );
+  ELSE
+    RAISE WARNING 'Skipping OPP-7: Customer KD-DEV-003 not found.';
+  END IF;
+END $$;
 
 -- OPP-8: Sortimentserweiterung (Volumen-Erhöhung) → NEGOTIATION
-INSERT INTO opportunities (
-    id, name, description, stage, expected_value, expected_close_date,
-    probability, assigned_to, lead_id, customer_id, opportunity_type,
-    created_at, updated_at
-) VALUES (
-    gen_random_uuid(),
-    'Sortimentserweiterung: [DEV-SEED] Krankenhaus Am Stadtpark 5 - Volumen +30%',
-    'Neue Abteilung eröffnet. Liefervolumen soll um 30% steigen.',
-    'NEGOTIATION',
-    35000.00,
-    CURRENT_DATE + INTERVAL '20 days',
-    80,
-    NULL, -- assigned_to (User-Management not yet in DEV-SEED)
-    NULL,
-    (SELECT id FROM customers WHERE customer_number = 'KD-DEV-004' LIMIT 1),
-    'SORTIMENTSERWEITERUNG', -- Sprint 2.1.7.1: Volumen-Erhöhung = Sortimentserweiterung
-    NOW() - INTERVAL '15 days',
-    NOW() - INTERVAL '3 days'
-);
+DO $$
+DECLARE
+  v_customer_id UUID;
+BEGIN
+  SELECT id INTO v_customer_id FROM customers WHERE customer_number = 'KD-DEV-004' LIMIT 1;
+  IF v_customer_id IS NOT NULL THEN
+    INSERT INTO opportunities (
+        id, name, description, stage, expected_value, expected_close_date,
+        probability, assigned_to, lead_id, customer_id, opportunity_type,
+        created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        'Sortimentserweiterung: [DEV-SEED] Krankenhaus Am Stadtpark 5 - Volumen +30%',
+        'Neue Abteilung eröffnet. Liefervolumen soll um 30% steigen.',
+        'NEGOTIATION',
+        35000.00,
+        CURRENT_DATE + INTERVAL '20 days',
+        80,
+        NULL,
+        NULL,
+        v_customer_id,
+        'SORTIMENTSERWEITERUNG',
+        NOW() - INTERVAL '15 days',
+        NOW() - INTERVAL '3 days'
+    );
+  ELSE
+    RAISE WARNING 'Skipping OPP-8: Customer KD-DEV-004 not found.';
+  END IF;
+END $$;
 
 -- OPP-9: Sortimentserweiterung (Snacks) → CLOSED_WON
-INSERT INTO opportunities (
-    id, name, description, stage, expected_value, expected_close_date,
-    probability, assigned_to, lead_id, customer_id, opportunity_type,
-    created_at, updated_at
-) VALUES (
-    gen_random_uuid(),
-    'Sortimentserweiterung: [DEV-SEED] Betriebskantine Hauptstraße 100 - Snacks - GEWONNEN',
-    'Zusätzlich zu Hauptgerichten jetzt auch Snack-Sortiment. Deal gewonnen! Test-Phase erfolgreich. Mitarbeiter lieben die Auswahl.',
-    'CLOSED_WON',
-    8000.00,
-    CURRENT_DATE - INTERVAL '5 days',
-    100,
-    NULL, -- assigned_to (User-Management not yet in DEV-SEED)
-    NULL,
-    (SELECT id FROM customers WHERE customer_number = 'KD-DEV-005' LIMIT 1),
-    'SORTIMENTSERWEITERUNG', -- Sprint 2.1.7.1: Neue Produktkategorie (Snacks)
-    NOW() - INTERVAL '20 days',
-    NOW() - INTERVAL '5 days'
-);
+DO $$
+DECLARE
+  v_customer_id UUID;
+BEGIN
+  SELECT id INTO v_customer_id FROM customers WHERE customer_number = 'KD-DEV-005' LIMIT 1;
+  IF v_customer_id IS NOT NULL THEN
+    INSERT INTO opportunities (
+        id, name, description, stage, expected_value, expected_close_date,
+        probability, assigned_to, lead_id, customer_id, opportunity_type,
+        created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        'Sortimentserweiterung: [DEV-SEED] Betriebskantine Hauptstraße 100 - Snacks - GEWONNEN',
+        'Zusätzlich zu Hauptgerichten jetzt auch Snack-Sortiment. Deal gewonnen! Test-Phase erfolgreich. Mitarbeiter lieben die Auswahl.',
+        'CLOSED_WON',
+        8000.00,
+        CURRENT_DATE - INTERVAL '5 days',
+        100,
+        NULL,
+        NULL,
+        v_customer_id,
+        'SORTIMENTSERWEITERUNG',
+        NOW() - INTERVAL '20 days',
+        NOW() - INTERVAL '5 days'
+    );
+  ELSE
+    RAISE WARNING 'Skipping OPP-9: Customer KD-DEV-005 not found.';
+  END IF;
+END $$;
 
 -- OPP-10: Verlängerung (Gescheitert) → CLOSED_LOST
-INSERT INTO opportunities (
-    id, name, description, stage, expected_value, expected_close_date,
-    probability, assigned_to, lead_id, customer_id, opportunity_type,
-    created_at, updated_at
-) VALUES (
-    gen_random_uuid(),
-    'Verlängerung: [DEV-SEED] Kantine Schulweg 45 - Vertragsverlängerung gescheitert - VERLOREN',
-    'Vertragsverlängerung gescheitert. Kunde wechselt zu Wettbewerber. Preis zu hoch. Wettbewerber bot 15% günstiger an.',
-    'CLOSED_LOST',
-    15000.00,
-    CURRENT_DATE - INTERVAL '10 days',
-    0,
-    NULL, -- assigned_to (User-Management not yet in DEV-SEED)
-    NULL,
-    (SELECT id FROM customers WHERE customer_number = 'KD-DEV-001' LIMIT 1),
-    'VERLAENGERUNG', -- Sprint 2.1.7.1: Rahmenvertrag-Renewal (gescheitert)
-    NOW() - INTERVAL '90 days',
-    NOW() - INTERVAL '10 days'
-);
+DO $$
+DECLARE
+  v_customer_id UUID;
+BEGIN
+  SELECT id INTO v_customer_id FROM customers WHERE customer_number = 'KD-DEV-001' LIMIT 1;
+  IF v_customer_id IS NOT NULL THEN
+    INSERT INTO opportunities (
+        id, name, description, stage, expected_value, expected_close_date,
+        probability, assigned_to, lead_id, customer_id, opportunity_type,
+        created_at, updated_at
+    ) VALUES (
+        gen_random_uuid(),
+        'Verlängerung: [DEV-SEED] Kantine Schulweg 45 - Vertragsverlängerung gescheitert - VERLOREN',
+        'Vertragsverlängerung gescheitert. Kunde wechselt zu Wettbewerber. Preis zu hoch. Wettbewerber bot 15% günstiger an.',
+        'CLOSED_LOST',
+        15000.00,
+        CURRENT_DATE - INTERVAL '10 days',
+        0,
+        NULL,
+        NULL,
+        v_customer_id,
+        'VERLAENGERUNG',
+        NOW() - INTERVAL '22 days',
+        NOW() - INTERVAL '10 days'
+    );
+  ELSE
+    RAISE WARNING 'Skipping OPP-10: Customer KD-DEV-001 not found.';
+  END IF;
+END $$;
 
 -- ====================
 -- 3. OPPORTUNITY ACTIVITIES (Skipped - Schema not yet available)
 -- ====================
--- OpportunityActivity table not yet implemented (will be added in Sprint 2.1.6.2 Phase 3)
+-- Note: opportunity_activities table will be created in future migration
+-- These SEED activities will be added once the schema is ready
 
--- =====================================================
--- VERIFICATION QUERY (Run after migration)
--- =====================================================
--- SELECT stage, COUNT(*), SUM(expected_value) as total_value
--- FROM opportunities
--- GROUP BY stage
--- ORDER BY stage;
---
--- Expected Output:
--- NEEDS_ANALYSIS    | 2 | €30,000
--- PROPOSAL          | 2 | €37,000
--- QUALIFICATION     | 1 | €18,000
--- NEGOTIATION       | 2 | €43,000
--- CLOSED_WON        | 2 | €20,000
--- CLOSED_LOST       | 1 | €15,000
--- =====================================================
+-- ====================
+-- 4. SUCCESS MESSAGE
+-- ====================
+DO $$
+BEGIN
+  RAISE NOTICE '✅ V90003 DEV-SEED Opportunities Complete!';
+  RAISE NOTICE '   - 4 Opportunities from Leads (OPP-1 to OPP-4)';
+  RAISE NOTICE '   - 6 Opportunities for Customers (OPP-5 to OPP-10, if customers exist)';
+  RAISE NOTICE '   - Covers all stages: QUALIFICATION → NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION → CLOSED_WON/LOST';
+  RAISE NOTICE '';
+  RAISE NOTICE '📋 NEXT STEPS:';
+  RAISE NOTICE '   1. UI: Opportunity Pipeline (Kanban Board)';
+  RAISE NOTICE '   2. UI: Lead → Opportunity Conversion Dialog';
+  RAISE NOTICE '   3. UI: Customer → Opportunity Creation Dialog';
+END $$;

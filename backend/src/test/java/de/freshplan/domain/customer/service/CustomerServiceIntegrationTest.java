@@ -92,7 +92,8 @@ class CustomerServiceIntegrationTest {
             new BigDecimal("15000.00"),
             DeliveryCondition.STANDARD,
             LocalDateTime.now().minusDays(3),
-            LocalDateTime.now().plusDays(14));
+            LocalDateTime.now().plusDays(14),
+            null); // churnThresholdDays
   }
 
   @Test

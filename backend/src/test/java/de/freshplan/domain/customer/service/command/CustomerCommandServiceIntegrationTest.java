@@ -166,7 +166,8 @@ class CustomerCommandServiceIntegrationTest {
             null, // creditLimit
             null, // deliveryCondition
             null, // lastContactDate
-            null // nextFollowUpDate
+            null, // nextFollowUpDate
+            null // churnThresholdDays
             );
 
     CustomerResponse originalUpdated =
@@ -206,7 +207,8 @@ class CustomerCommandServiceIntegrationTest {
             null,
             null,
             null,
-            null);
+            null,
+            null); // churnThresholdDays
 
     // Both services should throw the same exception for null ID
     try {
@@ -716,7 +718,8 @@ class CustomerCommandServiceIntegrationTest {
             null, // creditLimit
             null, // deliveryCondition
             LocalDateTime.now().minusDays(5), // lastContactDate
-            null // nextFollowUpDate
+            null, // nextFollowUpDate
+            null // churnThresholdDays
             );
 
     originalService.updateCustomer(sourceId1, updateSource, "update-user");

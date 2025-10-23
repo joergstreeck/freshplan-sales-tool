@@ -17,6 +17,7 @@ public record CustomerResponse(
     // Identifier
     String id,
     String customerNumber,
+    String xentralCustomerId,
 
     // Basic Information
     String companyName,
@@ -98,6 +99,7 @@ public record CustomerResponse(
     this(
         id,
         customerNumber,
+        null, // xentralCustomerId
         companyName,
         null,
         null,

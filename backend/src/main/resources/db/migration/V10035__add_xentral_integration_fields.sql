@@ -87,18 +87,10 @@ COMMENT ON COLUMN app_user.can_see_unassigned_customers IS
 -- ============================================================================
 
 -- Verhindere Endlos-Schleifen: User kann nicht sein eigener Manager sein
-DO $$
-BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM pg_constraint
-    WHERE conname = 'chk_app_user_manager_not_self'
-    AND conrelid = 'app_user'::regclass
-  ) THEN
-    ALTER TABLE app_user
-    ADD CONSTRAINT chk_app_user_manager_not_self
-    CHECK (manager_id IS NULL OR manager_id != id);
-  END IF;
-END $$;
+-- Note: Flyway ensures idempotency (script runs only once), so no IF EXISTS check needed
+ALTER TABLE app_user
+ADD CONSTRAINT chk_app_user_manager_not_self
+CHECK (manager_id IS NULL OR manager_id != id);
 
 COMMENT ON CONSTRAINT chk_app_user_manager_not_self ON app_user IS
   'Prevents circular hierarchy: User cannot be their own manager';

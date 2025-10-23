@@ -1,5 +1,6 @@
 package de.freshplan.modules.xentral.api;
 
+import de.freshplan.modules.xentral.config.XentralApiConfig;
 import de.freshplan.modules.xentral.dto.ConnectionTestResponse;
 import de.freshplan.modules.xentral.dto.XentralSettingsDTO;
 import de.freshplan.modules.xentral.service.XentralSettingsService;
@@ -43,13 +44,15 @@ public class XentralSettingsResource {
 
   @Inject XentralSettingsService service;
 
+  @Inject XentralApiConfig config;
+
   /**
    * Get Xentral settings.
    *
-   * <p>Returns current database settings if available. Returns 404 if no settings exist (fallback
-   * to application.properties).
+   * <p>Returns current database settings if available. Returns application.properties defaults if
+   * no settings exist.
    *
-   * @return XentralSettingsDTO (200 OK) or 404 if no settings in database
+   * @return XentralSettingsDTO (200 OK) - DB settings or application.properties defaults
    */
   @GET
   @Path("/settings")
@@ -62,12 +65,11 @@ public class XentralSettingsResource {
       logger.info("Returning Xentral settings from database");
       return Response.ok(settings.get()).build();
     } else {
-      logger.info("No Xentral settings in database (using application.properties fallback)");
-      return Response.status(Response.Status.NOT_FOUND)
-          .entity(
-              "{\"message\": \"Keine Einstellungen in Datenbank gefunden. Fallback auf"
-                  + " application.properties.\"}")
-          .build();
+      logger.info("No Xentral settings in database - returning application.properties defaults");
+      // Return defaults from application.properties
+      XentralSettingsDTO defaultDto =
+          new XentralSettingsDTO(config.baseUrl(), config.token(), config.mockMode());
+      return Response.ok(defaultDto).build();
     }
   }
 
