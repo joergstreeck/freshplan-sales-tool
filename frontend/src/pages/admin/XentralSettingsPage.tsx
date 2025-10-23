@@ -223,6 +223,7 @@ const XentralSettingsPage: React.FC = () => {
             helperText="Basis-URL Ihres Xentral ERP-Systems (z.B. https://ihr-unternehmen.xentral.biz)"
             sx={{ mb: 3 }}
             required
+            inputProps={{ 'data-testid': 'xentral-api-url-input' }}
           />
 
           {/* API Token */}
@@ -236,11 +237,17 @@ const XentralSettingsPage: React.FC = () => {
             helperText="Authentifizierungs-Token für die Xentral API (wird verschlüsselt gespeichert)"
             sx={{ mb: 3 }}
             required
+            inputProps={{ 'data-testid': 'xentral-api-token-input' }}
           />
 
           <Box sx={{ mb: 3 }}>
             <FormControlLabel
-              control={<Switch checked={showPassword} onChange={e => setShowPassword(e.target.checked)} />}
+              control={
+                <Switch
+                  checked={showPassword}
+                  onChange={e => setShowPassword(e.target.checked)}
+                />
+              }
               label="Token anzeigen"
             />
           </Box>
@@ -250,7 +257,12 @@ const XentralSettingsPage: React.FC = () => {
           {/* Mock Mode */}
           <Box sx={{ mb: 3 }}>
             <FormControlLabel
-              control={<Switch checked={formData.mockMode} onChange={handleFieldChange('mockMode')} />}
+              control={
+                <Switch
+                  checked={formData.mockMode}
+                  onChange={handleFieldChange('mockMode')}
+                />
+              }
               label="Mock-Mode (Entwicklung)"
             />
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
@@ -278,6 +290,7 @@ const XentralSettingsPage: React.FC = () => {
               onClick={handleTestConnection}
               disabled={testMutation.isPending || !formData.apiUrl || !formData.apiToken}
               startIcon={testMutation.isPending ? <CircularProgress size={20} /> : <CloudDoneIcon />}
+              data-testid="test-connection-button"
             >
               Verbindung testen
             </Button>
@@ -287,6 +300,7 @@ const XentralSettingsPage: React.FC = () => {
               onClick={handleSave}
               disabled={saveMutation.isPending || !formData.apiUrl || !formData.apiToken}
               startIcon={saveMutation.isPending ? <CircularProgress size={20} /> : <SaveIcon />}
+              data-testid="save-button"
             >
               Speichern
             </Button>
