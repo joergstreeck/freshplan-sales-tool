@@ -40,7 +40,13 @@ CRITICAL_PATTERNS_STRICT = [
     (r'fontFamily:\s*["\'](?!inherit|var\()[A-Za-z]',
      "HARDCODED FONT: Use theme.typography instead"),
 
-    # 4. Englische UI-Texte (Common violations)
+    # 4. MUI Grid v2 Migration (Grid v1 is deprecated in MUI v6+)
+    (r'<Grid\s+item(?:\s|>)',
+     "DEPRECATED GRID v1: Use <Grid size={{ xs: 12 }}> instead of <Grid item xs={12}>"),
+    (r'<Grid\s+(?:xs|sm|md|lg|xl)=\{',
+     "DEPRECATED GRID v1: Use size={{ xs: 12 }} instead of xs={12}"),
+
+    # 5. Englische UI-Texte (Common violations)
     (r'[>"]Save[<"]',
      "ENGLISH TEXT: Use 'Speichern' (German)"),
     (r'[>"]Delete[<"]',
@@ -136,6 +142,7 @@ def main():
     print("🔍 Checking:")
     print("  ❌ No hardcoded colors (use theme.palette)")
     print("  ❌ No hardcoded fonts (use theme.typography)")
+    print("  ❌ No Grid v1 (use Grid v2: size={{ xs: 12 }})")
     print("  ❌ No English UI text (use German)")
     print()
     
@@ -197,6 +204,7 @@ def main():
         print()
         print("   ✓ No hardcoded colors")
         print("   ✓ No hardcoded fonts")
+        print("   ✓ Grid v2 (MUI v6+)")
         print("   ✓ German UI text")
         sys.exit(0)
 
@@ -236,6 +244,7 @@ def main():
         print("🔧 How to fix:")
         print("   • Colors: sx={{ color: 'primary.main' }}")
         print("   • Fonts: sx={{ fontFamily: 'heading' }}")
+        print("   • Grid: <Grid size={{ xs: 12, md: 6 }}> (v2)")
         print("   • Text: Use German (Save → Speichern)")
         print()
         print("📖 See: docs/planung/grundlagen/DESIGN_SYSTEM.md")
