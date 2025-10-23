@@ -66,6 +66,8 @@ public class CustomerResource {
   de.freshplan.domain.opportunity.service.OpportunityService
       opportunityService; // For customer opportunities
 
+  @Inject de.freshplan.domain.customer.service.RevenueMetricsService revenueMetricsService;
+
   // ========== CRUD OPERATIONS ==========
 
   /**
@@ -494,6 +496,37 @@ public class CustomerResource {
         "Customer {} activated: PROSPECT → AKTIV (order: {})", customerId, request.orderNumber());
 
     return Response.ok(updatedCustomer).build();
+  }
+
+  /**
+   * Get revenue metrics for customer (Sprint 2.1.7.2)
+   *
+   * <p>Returns revenue metrics (30/90/365 days) and payment behavior from Xentral.
+   *
+   * <p><strong>Authorization:</strong> Roles {@code admin}, {@code manager}, {@code sales} are
+   * authorized.
+   *
+   * @param customerId Customer UUID
+   * @return 200 OK with revenue metrics, 404 if customer not found
+   */
+  @GET
+  @Path("/{id}/revenue-metrics")
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response getRevenueMetrics(@PathParam("id") UUID customerId) {
+    log.debug("Getting revenue metrics for customer: {}", customerId);
+
+    try {
+      de.freshplan.domain.customer.dto.RevenueMetrics metrics =
+          revenueMetricsService.getRevenueMetrics(customerId);
+
+      return Response.ok(metrics).build();
+
+    } catch (NotFoundException e) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
   }
 
   /** Simple error response DTO for API errors. */
