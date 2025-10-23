@@ -34,7 +34,7 @@ import {
   Settings as SettingsIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
-import { httpClient } from '@/api/http';
+import { httpClient } from '@/lib/apiClient';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface XentralSettings {
