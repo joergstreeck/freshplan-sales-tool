@@ -75,6 +75,7 @@ public class UserMapper {
         .email(user.getEmail())
         .enabled(user.isEnabled())
         .roles(user.getRoles())
+        .xentralSalesRepId(user.getXentralSalesRepId())
         .createdAt(user.getCreatedAt())
         .updatedAt(user.getUpdatedAt())
         .build();

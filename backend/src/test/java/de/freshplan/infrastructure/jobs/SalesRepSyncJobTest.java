@@ -54,14 +54,14 @@ class SalesRepSyncJobTest {
     // Reset mocks
     reset(xentralApiService, userRepository);
 
-    // Create test user using public constructor
-    testUser = new User("max.mustermann", "Max", "Mustermann", "max.mustermann@freshplan.de");
+    // Create test user using public constructor (matching SEED data domain)
+    testUser = new User("stefan.weber", "Stefan", "Weber", "stefan.weber@freshplan.example");
     testUser.setXentralSalesRepId(null); // Initially not synced
 
-    // Create test Xentral sales rep
+    // Create test Xentral sales rep (matching SEED data domain)
     testSalesRep =
         new XentralEmployeeDTO(
-            "XENT-EMP-001", "Max", "Mustermann", "max.mustermann@freshplan.de", "sales");
+            "XENT-EMP-001", "Stefan", "Weber", "stefan.weber@freshplan.example", "sales");
   }
 
   // ============================================================================
@@ -75,14 +75,14 @@ class SalesRepSyncJobTest {
     when(xentralApiService.getAllSalesReps()).thenReturn(List.of(testSalesRep));
 
     // AND: User with matching email exists
-    when(userRepository.findByEmail("max.mustermann@freshplan.de"))
+    when(userRepository.findByEmail("stefan.weber@freshplan.example"))
         .thenReturn(Optional.of(testUser));
 
     // WHEN: Sync job runs
     salesRepSyncJob.syncSalesRepIds();
 
     // THEN: User's xentralSalesRepId should be updated
-    verify(userRepository, times(1)).findByEmail("max.mustermann@freshplan.de");
+    verify(userRepository, times(1)).findByEmail("stefan.weber@freshplan.example");
     verify(userRepository, times(1)).persist(testUser);
     assertEquals("XENT-EMP-001", testUser.getXentralSalesRepId());
   }
@@ -90,27 +90,27 @@ class SalesRepSyncJobTest {
   @Test
   @DisplayName("syncSalesRepIds() - Multiple sales reps → All synced")
   void testSyncSalesRepIds_MultipleSalesReps_AllSynced() {
-    // GIVEN: Xentral API returns 3 sales reps
+    // GIVEN: Xentral API returns 3 sales reps (matching SEED data domain)
     XentralEmployeeDTO salesRep1 =
         new XentralEmployeeDTO(
-            "SR-001", "Max", "Mustermann", "max@freshplan.de", "sales");
+            "SR-001", "Stefan", "Weber", "stefan.weber@freshplan.example", "sales");
     XentralEmployeeDTO salesRep2 =
         new XentralEmployeeDTO(
-            "SR-002", "Anna", "Schmidt", "anna@freshplan.de", "sales");
+            "SR-002", "Anna", "Schmidt", "anna.schmidt@freshplan.example", "sales");
     XentralEmployeeDTO salesRep3 =
         new XentralEmployeeDTO(
-            "SR-003", "Tom", "Wagner", "tom@freshplan.de", "sales");
+            "SR-003", "Michael", "Becker", "michael.becker@freshplan.example", "sales");
 
     when(xentralApiService.getAllSalesReps()).thenReturn(List.of(salesRep1, salesRep2, salesRep3));
 
     // AND: Users exist for all sales reps
-    User user1 = new User("max.mustermann", "Max", "Mustermann", "max@freshplan.de");
-    User user2 = new User("anna.schmidt", "Anna", "Schmidt", "anna@freshplan.de");
-    User user3 = new User("tom.wagner", "Tom", "Wagner", "tom@freshplan.de");
+    User user1 = new User("stefan.weber", "Stefan", "Weber", "stefan.weber@freshplan.example");
+    User user2 = new User("anna.schmidt", "Anna", "Schmidt", "anna.schmidt@freshplan.example");
+    User user3 = new User("michael.becker", "Michael", "Becker", "michael.becker@freshplan.example");
 
-    when(userRepository.findByEmail("max@freshplan.de")).thenReturn(Optional.of(user1));
-    when(userRepository.findByEmail("anna@freshplan.de")).thenReturn(Optional.of(user2));
-    when(userRepository.findByEmail("tom@freshplan.de")).thenReturn(Optional.of(user3));
+    when(userRepository.findByEmail("stefan.weber@freshplan.example")).thenReturn(Optional.of(user1));
+    when(userRepository.findByEmail("anna.schmidt@freshplan.example")).thenReturn(Optional.of(user2));
+    when(userRepository.findByEmail("michael.becker@freshplan.example")).thenReturn(Optional.of(user3));
 
     // WHEN: Sync job runs
     salesRepSyncJob.syncSalesRepIds();
@@ -129,7 +129,7 @@ class SalesRepSyncJobTest {
     testUser.setXentralSalesRepId("XENT-EMP-001");
 
     when(xentralApiService.getAllSalesReps()).thenReturn(List.of(testSalesRep));
-    when(userRepository.findByEmail("max.mustermann@freshplan.de"))
+    when(userRepository.findByEmail("stefan.weber@freshplan.example"))
         .thenReturn(Optional.of(testUser));
 
     // WHEN: Sync job runs
@@ -148,7 +148,7 @@ class SalesRepSyncJobTest {
   void testSyncSalesRepIds_EmailNotFound_LogsWarningAndContinues() {
     // GIVEN: Xentral sales rep exists, but no matching user
     when(xentralApiService.getAllSalesReps()).thenReturn(List.of(testSalesRep));
-    when(userRepository.findByEmail("max.mustermann@freshplan.de"))
+    when(userRepository.findByEmail("stefan.weber@freshplan.example"))
         .thenReturn(Optional.empty());
 
     // WHEN: Sync job runs
@@ -165,24 +165,24 @@ class SalesRepSyncJobTest {
     // GIVEN: 3 sales reps (2 matched, 1 unmatched)
     XentralEmployeeDTO matchedRep1 =
         new XentralEmployeeDTO(
-            "SR-001", "Max", "Mustermann", "max@freshplan.de", "sales");
+            "SR-001", "Stefan", "Weber", "stefan.weber@freshplan.example", "sales");
     XentralEmployeeDTO unmatchedRep =
         new XentralEmployeeDTO(
             "SR-002", "Unknown", "User", "unknown@external.com", "sales"); // Not in FreshPlan
     XentralEmployeeDTO matchedRep2 =
         new XentralEmployeeDTO(
-            "SR-003", "Anna", "Schmidt", "anna@freshplan.de", "sales");
+            "SR-003", "Anna", "Schmidt", "anna.schmidt@freshplan.example", "sales");
 
     when(xentralApiService.getAllSalesReps())
         .thenReturn(List.of(matchedRep1, unmatchedRep, matchedRep2));
 
     // AND: Only 2 users exist
-    User user1 = new User("max.mustermann", "Max", "Mustermann", "max@freshplan.de");
-    User user2 = new User("anna.schmidt", "Anna", "Schmidt", "anna@freshplan.de");
+    User user1 = new User("stefan.weber", "Stefan", "Weber", "stefan.weber@freshplan.example");
+    User user2 = new User("anna.schmidt", "Anna", "Schmidt", "anna.schmidt@freshplan.example");
 
-    when(userRepository.findByEmail("max@freshplan.de")).thenReturn(Optional.of(user1));
+    when(userRepository.findByEmail("stefan.weber@freshplan.example")).thenReturn(Optional.of(user1));
     when(userRepository.findByEmail("unknown@external.com")).thenReturn(Optional.empty());
-    when(userRepository.findByEmail("anna@freshplan.de")).thenReturn(Optional.of(user2));
+    when(userRepository.findByEmail("anna.schmidt@freshplan.example")).thenReturn(Optional.of(user2));
 
     // WHEN: Sync job runs
     salesRepSyncJob.syncSalesRepIds();

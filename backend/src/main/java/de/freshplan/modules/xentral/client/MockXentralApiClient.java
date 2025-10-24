@@ -145,14 +145,15 @@ public class MockXentralApiClient {
               "PAID"));
 
   // Mock Data: Xentral Employees (Sales Reps)
+  // Email domains match SEED data: @freshplan.example
   private static final List<XentralEmployeeDTO> MOCK_EMPLOYEES =
       List.of(
           new XentralEmployeeDTO(
-              "SALES-REP-001", "Max", "Mustermann", "max.mustermann@freshplan.de", "sales"),
+              "SALES-REP-001", "Stefan", "Weber", "stefan.weber@freshplan.example", "sales"),
           new XentralEmployeeDTO(
-              "SALES-REP-002", "Lisa", "Schmidt", "lisa.schmidt@freshplan.de", "sales"),
+              "SALES-REP-002", "Anna", "Schmidt", "anna.schmidt@freshplan.example", "sales"),
           new XentralEmployeeDTO(
-              "SALES-REP-003", "Tom", "Weber", "tom.weber@freshplan.de", "sales"));
+              "SALES-REP-003", "Michael", "Becker", "michael.becker@freshplan.example", "sales"));
 
   /**
    * Get customers by sales rep ID

@@ -30,7 +30,7 @@ import {
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '@/components/layout/MainLayoutV2';
 import { httpClient } from '@/lib/apiClient';
-import { useSnackbar } from 'notistack';
+import toast from 'react-hot-toast';
 
 /**
  * User DTO (simplified from backend)
@@ -57,8 +57,6 @@ interface JobTriggerResponse {
 }
 
 export default function UserManagementPage() {
-  const { enqueueSnackbar } = useSnackbar();
-
   // State
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,7 +74,7 @@ export default function UserManagementPage() {
       setUsers(response.data);
     } catch (error) {
       console.error('Failed to load users:', error);
-      enqueueSnackbar('Fehler beim Laden der Benutzer', { variant: 'error' });
+      toast.error('Fehler beim Laden der Benutzer');
     } finally {
       setLoading(false);
     }
@@ -94,25 +92,18 @@ export default function UserManagementPage() {
       );
 
       if (response.data.status === 'success') {
-        enqueueSnackbar('Sales-Rep Sync erfolgreich! Seite wird neu geladen...', {
-          variant: 'success',
-        });
+        toast.success('Sales-Rep Sync erfolgreich! Seite wird neu geladen...');
 
         // Reload users after sync
         setTimeout(() => {
           loadUsers();
         }, 1500);
       } else {
-        enqueueSnackbar(`Sync fehlgeschlagen: ${response.data.message}`, {
-          variant: 'error',
-        });
+        toast.error(`Sync fehlgeschlagen: ${response.data.message}`);
       }
     } catch (error: any) {
       console.error('Sales-Rep sync failed:', error);
-      enqueueSnackbar(
-        error.response?.data?.message || 'Fehler beim Sync. Siehe Server-Logs.',
-        { variant: 'error' }
-      );
+      toast.error(error.response?.data?.message || 'Fehler beim Sync. Siehe Server-Logs.');
     } finally {
       setSyncing(false);
     }
