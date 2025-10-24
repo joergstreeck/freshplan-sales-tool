@@ -228,6 +228,11 @@ export const UserTableMUI = () => {
                       Rollen
                     </Typography>
                   </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      Xentral Sales-Rep ID
+                    </Typography>
+                  </TableCell>
                   <TableCell align="center">
                     <Typography variant="subtitle2" fontWeight="bold">
                       Status
@@ -275,6 +280,17 @@ export const UserTableMUI = () => {
                           />
                         ))}
                       </Stack>
+                    </TableCell>
+                    <TableCell>
+                      {user.xentralSalesRepId ? (
+                        <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                          {user.xentralSalesRepId}
+                        </Typography>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          -
+                        </Typography>
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       {user.enabled ? (

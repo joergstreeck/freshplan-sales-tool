@@ -13,6 +13,7 @@ export const UserSchema = z.object({
   lastName: z.string().min(1).max(100),
   roles: z.array(UserRole).min(1),
   enabled: z.boolean(),
+  xentralSalesRepId: z.string().nullable().optional(),
   createdAt: z.string().datetime().optional(),
   updatedAt: z.string().datetime().optional(),
 });
