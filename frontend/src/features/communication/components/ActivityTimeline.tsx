@@ -56,7 +56,7 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
 // ============================================================================
-// TYPES
+// TYPES (EXPORTED for use in other components)
 // ============================================================================
 
 export interface Activity {
@@ -419,5 +419,3 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
     </Timeline>
   );
 };
-
-export default ActivityTimeline;

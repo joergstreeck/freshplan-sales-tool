@@ -59,8 +59,9 @@ import { RevenueMetricsWidget } from '../features/customers/components/RevenueMe
 import { PaymentBehaviorIndicator } from '../features/customers/components/PaymentBehaviorIndicator';
 import { ChurnRiskAlert } from '../features/customers/components/ChurnRiskAlert';
 import { httpClient } from '../lib/apiClient';
-import { ActivityTimeline, type Activity } from '../features/communication/components/ActivityTimeline';
+import { ActivityTimeline } from '../features/communication/components/ActivityTimeline';
 import { ActivityDialog } from '../features/communication/components/ActivityDialog';
+import type { Activity } from '../features/communication/components/ActivityTimeline';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -946,7 +947,7 @@ function CustomerContacts({
  * Displays unified timeline of customer activities including Lead history!
  * The backend automatically merges Lead activities if customer.originalLeadId exists.
  */
-function CustomerActivities({ _customerId }: { _customerId: string }) {
+function CustomerActivities({ customerId }: { customerId: string }) {
   const [activityDialogOpen, setActivityDialogOpen] = useState(false);
   const [editActivity, setEditActivity] = useState<Activity | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -997,7 +998,7 @@ function CustomerActivities({ _customerId }: { _customerId: string }) {
       <ActivityTimeline
         key={refreshKey}
         entityType="customer"
-        entityId={_customerId}
+        entityId={customerId}
         onEdit={handleEditActivity}
       />
 
@@ -1006,7 +1007,7 @@ function CustomerActivities({ _customerId }: { _customerId: string }) {
         open={activityDialogOpen}
         onClose={handleCloseDialog}
         entityType="customer"
-        entityId={_customerId}
+        entityId={customerId}
         activity={editActivity}
         onSaved={handleActivitySaved}
       />

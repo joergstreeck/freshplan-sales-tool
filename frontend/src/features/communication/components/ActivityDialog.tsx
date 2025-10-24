@@ -29,7 +29,7 @@ import {
   Alert,
   Box,
 } from '@mui/material';
-import { Activity } from './ActivityTimeline';
+import type { Activity } from './ActivityTimeline';
 
 // ============================================================================
 // TYPES
@@ -304,5 +304,3 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
     </Dialog>
   );
 };
-
-export default ActivityDialog;
