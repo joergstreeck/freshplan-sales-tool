@@ -81,7 +81,7 @@ def find_entities() -> Set[str]:
         Set of entity class names
     """
     entities = set()
-    entity_pattern = re.compile(r'@Entity.*?class\s+(\w+)')
+    entity_pattern = re.compile(r'@Entity.*?class\s+(\w+)', re.MULTILINE | re.DOTALL)
 
     project_root = Path(__file__).parent.parent
 
@@ -96,7 +96,7 @@ def find_entities() -> Set[str]:
             content = java_file.read_text(encoding='utf-8', errors='ignore')
 
             if '@Entity' in content:
-                match = entity_pattern.search(content, re.MULTILINE | re.DOTALL)
+                match = entity_pattern.search(content)
                 if match:
                     entity_name = match.group(1)
                     entities.add(entity_name)
