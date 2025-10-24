@@ -3,6 +3,9 @@
  *
  * Renders a dropdown select field with predefined options.
  * Used for fieldType: 'select'
+ *
+ * If field.allowCustomValue is true, uses Autocomplete with freeSolo
+ * to allow custom text input in addition to predefined options.
  */
 
 import React from 'react';
@@ -12,6 +15,8 @@ import {
   MenuItem,
   FormHelperText,
   ListItemText,
+  Autocomplete,
+  TextField,
 } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material/Select';
 import { useTheme } from '@mui/material/styles';
@@ -65,6 +70,78 @@ export const SelectField: React.FC<SelectFieldProps> = ({
     placeholder: field.placeholder,
   });
 
+  // If allowCustomValue is true, use Autocomplete with freeSolo
+  if (field.allowCustomValue) {
+    const options = field.options?.map(opt => opt.label) || [];
+
+    // Find current option label
+    const currentOption = field.options?.find(opt => opt.value === value);
+    const autocompleteValue = currentOption ? currentOption.label : value || null;
+
+    return (
+      <FormControl
+        fullWidth
+        size="small"
+        error={error}
+        required={required}
+        disabled={disabled || readOnly}
+        className="field-dropdown-auto"
+        sx={{
+          ...dropdownWidth.style,
+          [theme.breakpoints?.down('sm')]: {
+            width: '100%',
+          },
+        }}
+      >
+        <Autocomplete
+          freeSolo
+          value={autocompleteValue}
+          options={options}
+          disabled={disabled || readOnly}
+          onChange={(_event, newValue) => {
+            if (newValue) {
+              // If newValue matches an option label, use the option's value
+              const matchedOption = field.options?.find(opt => opt.label === newValue);
+              onChange(matchedOption ? matchedOption.value : newValue);
+            } else {
+              onChange('');
+            }
+          }}
+          onInputChange={(_event, newInputValue) => {
+            // Handle direct text input
+            if (newInputValue) {
+              const matchedOption = field.options?.find(opt => opt.label === newInputValue);
+              if (!matchedOption) {
+                onChange(newInputValue);
+              }
+            }
+          }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={field.placeholder || 'Bitte wählen oder eingeben...'}
+              error={error}
+              helperText={helperText}
+              onBlur={onBlur}
+              InputProps={{
+                ...params.InputProps,
+                'aria-label': field.label,
+                'aria-required': required,
+                'aria-invalid': error,
+              }}
+            />
+          )}
+          sx={{
+            '& .MuiAutocomplete-inputRoot': {
+              backgroundColor: readOnly ? 'action.disabledBackground' : 'background.paper',
+            },
+          }}
+        />
+      </FormControl>
+    );
+  }
+
+  // Default: Use standard Select dropdown
   return (
     <FormControl
       fullWidth
