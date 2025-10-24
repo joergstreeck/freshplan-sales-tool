@@ -12,6 +12,7 @@ interface User {
   email: string;
   username?: string;
   roles?: string[];
+  xentralSalesRepId?: string; // Sprint 2.1.7.2 D1 - Sales Rep ID from backend
 }
 
 interface AuthContextType {

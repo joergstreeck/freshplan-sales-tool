@@ -99,35 +99,39 @@ public class UserResource {
           .build();
     }
 
-    var authDetails = securityContext.getAuthenticationDetails();
+    // Sprint 2.1.7.2 D1: Return full UserResponse with xentralSalesRepId
+    try {
+      UserResponse userResponse = userService.getUserByUsername(username);
+      return Response.ok(userResponse).build();
+    } catch (Exception e) {
+      // Fallback for users not yet in database (e.g., test environments)
+      var authDetails = securityContext.getAuthenticationDetails();
+      UUID userId = securityContext.getUserId();
+      String email = securityContext.getEmail();
 
-    // Create a simple response object with authentication info for tests
-    UUID userId = securityContext.getUserId();
-    String email = securityContext.getEmail();
+      // Use deterministic ID for test environments
+      UUID responseId = userId;
+      if (responseId == null) {
+        responseId = UUID.nameUUIDFromBytes(username.getBytes());
+      }
 
-    // Use deterministic ID for test environments
-    UUID responseId = userId;
-    if (responseId == null) {
-      // Generate consistent ID based on username for tests
-      responseId = UUID.nameUUIDFromBytes(username.getBytes());
+      var response =
+          Map.of(
+              "id",
+              responseId,
+              "username",
+              username,
+              "email",
+              email != null ? email : "",
+              "roles",
+              securityContext.getRoles().stream().toList(),
+              "enabled",
+              true,
+              "authenticated",
+              true);
+
+      return Response.ok(response).build();
     }
-
-    var response =
-        Map.of(
-            "id",
-            responseId,
-            "username",
-            username,
-            "email",
-            email != null ? email : "",
-            "roles",
-            securityContext.getRoles().stream().toList(),
-            "enabled",
-            true,
-            "authenticated",
-            true);
-
-    return Response.ok(response).build();
   }
 
   /**

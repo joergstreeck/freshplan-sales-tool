@@ -27,6 +27,7 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import BusinessIcon from '@mui/icons-material/Business';
 import { useNavigate } from 'react-router-dom';
 import { httpClient } from '../../../lib/apiClient';
+import { useCurrentUser } from '../../../hooks/useCurrentUser';
 import type { IOpportunity } from '../types/opportunity.types';
 
 interface ConvertToCustomerDialogProps {
@@ -66,24 +67,6 @@ interface CustomerResponse {
   status: string;
 }
 
-/**
- * Current user context (from auth)
- */
-interface CurrentUser {
-  id: string;
-  name: string;
-  xentralSalesRepId?: string;
-}
-
-// TODO: Replace with real auth hook
-const useCurrentUser = (): CurrentUser => {
-  return {
-    id: '00000000-0000-0000-0000-000000000001',
-    name: 'Test User',
-    xentralSalesRepId: 'SR-001',
-  };
-};
-
 export default function ConvertToCustomerDialog({
   open,
   opportunity,
@@ -91,7 +74,7 @@ export default function ConvertToCustomerDialog({
   onSuccess,
 }: ConvertToCustomerDialogProps) {
   const navigate = useNavigate();
-  const currentUser = useCurrentUser();
+  const { user: currentUser, loading: userLoading } = useCurrentUser();
 
   // Form State
   const [companyName, setCompanyName] = useState(
@@ -114,12 +97,18 @@ export default function ConvertToCustomerDialog({
    * Backend: GET /api/xentral/customers?salesRepId={id}
    */
   useEffect(() => {
-    if (open && currentUser.xentralSalesRepId) {
+    if (open && currentUser?.xentralSalesRepId) {
       loadXentralCustomers();
     }
-  }, [open, currentUser.xentralSalesRepId]);
+  }, [open, currentUser]);
 
   const loadXentralCustomers = async () => {
+    if (!currentUser?.xentralSalesRepId) {
+      console.warn('No xentralSalesRepId found for current user');
+      setXentralCustomers([]);
+      return;
+    }
+
     setLoadingCustomers(true);
     try {
       const response = await httpClient.get<XentralCustomerDTO[]>(
