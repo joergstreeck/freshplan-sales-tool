@@ -40,6 +40,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
       'customerNumber',
       'companyName',
       'legalForm',
+      'hierarchyType',
       'businessType',
       'kitchenSize',
       'employeeCount',

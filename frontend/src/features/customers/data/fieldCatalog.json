@@ -75,6 +75,29 @@
         ]
       },
       {
+        "key": "hierarchyType",
+        "label": "Unternehmenstyp",
+        "entityType": "customer",
+        "fieldType": "select",
+        "required": true,
+        "options": [
+          {
+            "value": "STANDALONE",
+            "label": "Einzelbetrieb"
+          },
+          {
+            "value": "HEADQUARTER",
+            "label": "Zentrale/Hauptbetrieb (mit Filialen)"
+          },
+          {
+            "value": "FILIALE",
+            "label": "Filiale (gehört zu Zentrale)",
+            "disabled": true
+          }
+        ],
+        "helpText": "Einzelbetriebe und Zentralen können sofort angelegt werden. Filialen-Zuordnung folgt in Sprint 2.1.7.7"
+      },
+      {
         "key": "businessType",
         "label": "Geschäftstyp",
         "entityType": "customer",
@@ -129,6 +152,84 @@
       "seniorenresidenz": [],
       "restaurant": [],
       "betriebsrestaurant": []
+    },
+    "painPoints": {
+      "label": "Herausforderungen",
+      "description": "Welche Herausforderungen hat der Kunde?",
+      "fields": [
+        {
+          "key": "painStaffShortage",
+          "label": "Personalmangel",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde hat Probleme, ausreichend qualifiziertes Personal zu finden"
+        },
+        {
+          "key": "painHighCosts",
+          "label": "Hoher Kostendruck",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde steht unter erheblichem Kostendruck"
+        },
+        {
+          "key": "painQualityIssues",
+          "label": "Qualitätsprobleme",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde hat Herausforderungen bei der Einhaltung von Qualitätsstandards"
+        },
+        {
+          "key": "painSupplyChain",
+          "label": "Lieferkettenprobleme",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde hat Probleme mit der Zuverlässigkeit der Lieferkette"
+        },
+        {
+          "key": "painFoodSafety",
+          "label": "Lebensmittelsicherheit",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde hat Bedenken bezüglich Lebensmittelsicherheit und Compliance"
+        },
+        {
+          "key": "painSustainability",
+          "label": "Nachhaltigkeit",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde möchte nachhaltigere Lösungen implementieren"
+        },
+        {
+          "key": "painDigitalization",
+          "label": "Digitalisierung",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde hat Herausforderungen bei der Digitalisierung von Prozessen"
+        },
+        {
+          "key": "painCustomerRetention",
+          "label": "Kundenbindung",
+          "entityType": "customer",
+          "fieldType": "boolean",
+          "required": false,
+          "defaultValue": false,
+          "helpText": "Kunde hat Schwierigkeiten, Kunden langfristig zu binden"
+        }
+      ]
     }
   },
   "location": {

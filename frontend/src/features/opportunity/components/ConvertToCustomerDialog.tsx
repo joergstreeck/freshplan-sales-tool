@@ -21,6 +21,10 @@ import {
   Box,
   Stack,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
@@ -50,10 +54,12 @@ interface XentralCustomerDTO {
 /**
  * Request DTO für Opportunity → Customer Konvertierung
  * Backend: ConvertToCustomerRequest.java (Sprint 2.1.7.1)
+ * Sprint 2.1.7.2: hierarchyType für Multi-Location Vorbereitung
  */
 interface ConvertToCustomerRequest {
   companyName: string;
   xentralCustomerId?: string;
+  hierarchyType?: 'STANDALONE' | 'HEADQUARTER' | 'FILIALE';
   notes?: string;
 }
 
@@ -83,6 +89,7 @@ export default function ConvertToCustomerDialog({
   const [selectedXentralCustomer, setSelectedXentralCustomer] =
     useState<XentralCustomerDTO | null>(null);
   const [notes, setNotes] = useState('');
+  const [hierarchyType, setHierarchyType] = useState<'STANDALONE' | 'HEADQUARTER' | 'FILIALE'>('STANDALONE');
   const [loading, setLoading] = useState(false);
 
   // Xentral Customers
@@ -141,6 +148,7 @@ export default function ConvertToCustomerDialog({
       const request: ConvertToCustomerRequest = {
         companyName: companyName.trim(),
         xentralCustomerId: selectedXentralCustomer?.xentralId,
+        hierarchyType: hierarchyType,
         notes: notes.trim() || undefined,
       };
 
@@ -178,6 +186,7 @@ export default function ConvertToCustomerDialog({
       );
       setSelectedXentralCustomer(null);
       setNotes('');
+      setHierarchyType('STANDALONE');
       setApiError(null);
     }
   }, [open, opportunity]);
@@ -214,6 +223,25 @@ export default function ConvertToCustomerDialog({
             }}
             helperText="Name des Unternehmens (wird als Customer angelegt)"
           />
+
+          {/* hierarchyType Select - Sprint 2.1.7.2 Multi-Location Prep */}
+          <FormControl fullWidth>
+            <InputLabel>Unternehmenstyp</InputLabel>
+            <Select
+              value={hierarchyType}
+              label="Unternehmenstyp"
+              onChange={(e) => setHierarchyType(e.target.value as 'STANDALONE' | 'HEADQUARTER' | 'FILIALE')}
+            >
+              <MenuItem value="STANDALONE">Einzelbetrieb</MenuItem>
+              <MenuItem value="HEADQUARTER">Zentrale/Hauptbetrieb (mit Filialen)</MenuItem>
+              <MenuItem value="FILIALE" disabled>
+                Filiale (gehört zu Zentrale) - Bald verfügbar
+              </MenuItem>
+            </Select>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.75 }}>
+              Einzelbetriebe und Zentralen können sofort angelegt werden. Filialen-Zuordnung folgt in Sprint 2.1.7.7.
+            </Typography>
+          </FormControl>
 
           {/* Xentral-Kunden-Dropdown */}
           <Autocomplete

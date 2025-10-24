@@ -1,6 +1,8 @@
 package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
+import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.command.CustomerCommandService;
@@ -14,10 +16,13 @@ import de.freshplan.shared.constants.PaginationConstants;
 import de.freshplan.shared.constants.RiskManagementConstants;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -67,6 +72,8 @@ public class CustomerResource {
       opportunityService; // For customer opportunities
 
   @Inject de.freshplan.domain.customer.service.RevenueMetricsService revenueMetricsService;
+
+  @Inject Clock clock; // For audit timestamps (Sprint 2.1.7.2 D9.3)
 
   // ========== CRUD OPERATIONS ==========
 
@@ -528,6 +535,150 @@ public class CustomerResource {
           .build();
     }
   }
+
+  // ========== CONTACT MANAGEMENT (Sprint 2.1.7.2 D9.3) ==========
+
+  /**
+   * Creates a new contact for a customer.
+   *
+   * <p>Sprint 2.1.7.2 D9.3: Dashboard Contact CRUD
+   *
+   * @param customerId The customer ID
+   * @param request The contact creation request
+   * @return 201 Created with contact data
+   */
+  @POST
+  @Path("/{id}/contacts")
+  @Transactional
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response createContact(@PathParam("id") UUID customerId, @Valid ContactRequest request) {
+    log.info("Creating contact for customer {}: {}", customerId, request.email());
+
+    // 1. Verify customer exists
+    Customer customer = Customer.findById(customerId);
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // 2. Create contact
+    CustomerContact contact = new CustomerContact();
+    contact.setCustomer(customer);
+    contact.setSalutation(request.salutation());
+    contact.setTitle(request.title());
+    contact.setFirstName(request.firstName());
+    contact.setLastName(request.lastName());
+    contact.setPosition(request.position());
+    contact.setDecisionLevel(request.decisionLevel());
+    contact.setEmail(request.email());
+    contact.setPhone(request.phone());
+    contact.setMobile(request.mobile());
+    contact.setIsPrimary(request.isPrimary() != null ? request.isPrimary() : false);
+    contact.setIsActive(true); // New contacts are active by default
+    contact.setIsDecisionMaker(request.isDecisionMaker() != null ? request.isDecisionMaker() : false);
+
+    // Audit fields
+    contact.setCreatedBy(currentUser.getUsername());
+    contact.setCreatedAt(LocalDateTime.now(clock));
+    contact.setUpdatedBy(currentUser.getUsername());
+    contact.setUpdatedAt(LocalDateTime.now(clock));
+
+    contact.persist();
+
+    log.info("Contact created: {} (ID: {})", contact.getEmail(), contact.getId());
+
+    return Response.status(Response.Status.CREATED).entity(contact).build();
+  }
+
+  /**
+   * Updates an existing contact.
+   *
+   * <p>Sprint 2.1.7.2 D9.3: Dashboard Contact CRUD
+   *
+   * @param customerId The customer ID
+   * @param contactId The contact ID
+   * @param request The contact update request
+   * @return 200 OK with updated contact
+   */
+  @PUT
+  @Path("/{id}/contacts/{contactId}")
+  @Transactional
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response updateContact(
+      @PathParam("id") UUID customerId,
+      @PathParam("contactId") UUID contactId,
+      @Valid ContactRequest request) {
+
+    log.info("Updating contact {} for customer {}", contactId, customerId);
+
+    // 1. Verify customer exists
+    Customer customer = Customer.findById(customerId);
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // 2. Verify contact exists and belongs to customer
+    CustomerContact contact = CustomerContact.findById(contactId);
+    if (contact == null) {
+      log.warn("Contact not found: {}", contactId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Contact not found", "CONTACT_NOT_FOUND"))
+          .build();
+    }
+
+    if (!contact.getCustomer().getId().equals(customerId)) {
+      log.warn("Contact {} does not belong to customer {}", contactId, customerId);
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse("Contact does not belong to this customer", "INVALID_CONTACT"))
+          .build();
+    }
+
+    // 3. Update contact
+    contact.setSalutation(request.salutation());
+    contact.setTitle(request.title());
+    contact.setFirstName(request.firstName());
+    contact.setLastName(request.lastName());
+    contact.setPosition(request.position());
+    contact.setDecisionLevel(request.decisionLevel());
+    contact.setEmail(request.email());
+    contact.setPhone(request.phone());
+    contact.setMobile(request.mobile());
+    if (request.isPrimary() != null) {
+      contact.setIsPrimary(request.isPrimary());
+    }
+    if (request.isDecisionMaker() != null) {
+      contact.setIsDecisionMaker(request.isDecisionMaker());
+    }
+
+    // Audit fields
+    contact.setUpdatedBy(currentUser.getUsername());
+    contact.setUpdatedAt(LocalDateTime.now(clock));
+
+    contact.persist();
+
+    log.info("Contact updated: {} (ID: {})", contact.getEmail(), contact.getId());
+
+    return Response.ok(contact).build();
+  }
+
+  /** Contact request DTO for create/update operations. */
+  private record ContactRequest(
+      String salutation,
+      String title,
+      String firstName,
+      String lastName,
+      String position,
+      String decisionLevel,
+      String email,
+      String phone,
+      String mobile,
+      Boolean isPrimary,
+      Boolean isDecisionMaker) {}
 
   /** Simple error response DTO for API errors. */
   private record ErrorResponse(String message, String errorCode) {}
