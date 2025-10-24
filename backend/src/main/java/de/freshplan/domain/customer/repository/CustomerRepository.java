@@ -222,6 +222,26 @@ public class CustomerRepository implements PanacheRepositoryBase<Customer, UUID>
     return count("customerNumber = ?1 AND isDeleted = false", customerNumber) > 0;
   }
 
+  // ========== XENTRAL INTEGRATION (Sprint 2.1.7.2) ==========
+
+  /**
+   * Find customer by Xentral Customer ID.
+   *
+   * <p>Sprint 2.1.7.2: Xentral Webhook Integration
+   *
+   * <p>Used by XentralOrderEventHandler to find customers when processing webhooks.
+   *
+   * @param xentralCustomerId Xentral Customer ID
+   * @return Customer wrapped in Optional, or empty if not found
+   */
+  public Optional<Customer> findByXentralCustomerId(String xentralCustomerId) {
+    if (xentralCustomerId == null || xentralCustomerId.isBlank()) {
+      return Optional.empty();
+    }
+    return find("xentralCustomerId = ?1 AND isDeleted = false", xentralCustomerId)
+        .firstResultOptional();
+  }
+
   // ========== SEARCH & FILTERING ==========
 
   // Note: Search functionality has been moved to CustomerQueryBuilder

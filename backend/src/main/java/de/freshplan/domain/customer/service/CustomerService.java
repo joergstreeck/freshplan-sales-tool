@@ -559,6 +559,57 @@ public class CustomerService {
     return mapToResponse(customer);
   }
 
+  /**
+   * Activate PROSPECT customer (Sprint 2.1.7.2 - D7 Webhook Integration)
+   *
+   * <p>Called by XentralOrderEventHandler when a PROSPECT customer receives their first order.
+   * Changes status from PROSPECT to AKTIV and creates timeline event.
+   *
+   * @param customerId Customer ID
+   * @param orderNumber Order number that triggered activation
+   */
+  @Transactional
+  public void activateCustomer(UUID customerId, String orderNumber) {
+    log.debug(
+        "Activating PROSPECT customer - ID: {}, triggered by order: {}", customerId, orderNumber);
+
+    Customer customer =
+        customerRepository
+            .findByIdActive(customerId)
+            .orElseThrow(() -> new CustomerNotFoundException(customerId));
+
+    // Validation: Only PROSPECT customers can be activated
+    if (customer.getStatus() != CustomerStatus.PROSPECT) {
+      log.warn(
+          "Cannot activate customer with status {} - only PROSPECT can be activated: {}",
+          customer.getStatus(),
+          customerId);
+      throw new IllegalStateException(
+          "Customer cannot be activated - current status: "
+              + customer.getStatus()
+              + " (only PROSPECT can be activated)");
+    }
+
+    // Change status to AKTIV
+    customer.setStatus(CustomerStatus.AKTIV);
+    customer.setUpdatedBy("SYSTEM_XENTRAL_WEBHOOK");
+    customer.updateRiskScore();
+
+    // Create timeline event
+    createTimelineEvent(
+        customer,
+        "CUSTOMER_ACTIVATED",
+        "Kunde automatisch aktiviert durch erste Bestellung: " + orderNumber,
+        "SYSTEM_XENTRAL_WEBHOOK",
+        ImportanceLevel.HIGH);
+
+    log.info(
+        "Customer activated successfully - ID: {}, Company: {}, Order: {}",
+        customer.getId(),
+        customer.getCompanyName(),
+        orderNumber);
+  }
+
   // ========== DASHBOARD DATA ==========
 
   /** Gets dashboard statistics. */

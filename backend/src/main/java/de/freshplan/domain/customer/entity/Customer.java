@@ -151,6 +151,17 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "churn_threshold_days", nullable = false)
   private Integer churnThresholdDays = 90;
 
+  /**
+   * Last Order Date - Datum der letzten Bestellung (Sprint 2.1.7.2 - D7 Webhook)
+   *
+   * <p>Wird automatisch aktualisiert durch Xentral Webhook "Order Delivered". Verwendet für
+   * Churn-Detection und Customer-Health-Monitoring.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "last_order_date")
+  private java.time.LocalDate lastOrderDate;
+
   // Hierarchy Support
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_customer_id")
@@ -572,6 +583,14 @@ public class Customer extends PanacheEntityBase {
 
   public void setChurnThresholdDays(Integer churnThresholdDays) {
     this.churnThresholdDays = churnThresholdDays;
+  }
+
+  public java.time.LocalDate getLastOrderDate() {
+    return lastOrderDate;
+  }
+
+  public void setLastOrderDate(java.time.LocalDate lastOrderDate) {
+    this.lastOrderDate = lastOrderDate;
   }
 
   public Customer getParentCustomer() {
