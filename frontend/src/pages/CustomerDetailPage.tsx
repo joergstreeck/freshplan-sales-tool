@@ -43,6 +43,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useCustomerDetails } from '../features/customer/hooks/useCustomerDetails';
 import { EntityAuditTimeline } from '../features/audit/components/EntityAuditTimeline';
 import { ContactGridContainer } from '../features/customers/components/contacts/ContactGridContainer';
+import { ContactFormDialog } from '../features/customers/components/contacts/ContactFormDialog';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -55,6 +56,7 @@ import { CustomerOnboardingWizardModal } from '../features/customers/components/
 import { RevenueMetricsWidget } from '../features/customers/components/RevenueMetricsWidget';
 import { PaymentBehaviorIndicator } from '../features/customers/components/PaymentBehaviorIndicator';
 import { ChurnRiskAlert } from '../features/customers/components/ChurnRiskAlert';
+import { httpClient } from '../lib/apiClient';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -700,6 +702,12 @@ function CustomerContacts({
   customerId: string;
   highlightContactId?: string | null;
 }) {
+  const queryClient = useQueryClient();
+
+  // Contact Dialog State (Sprint 2.1.7.2 D9.3)
+  const [showContactDialog, setShowContactDialog] = useState(false);
+  const [editingContact, setEditingContact] = useState<CustomerContact | null>(null);
+
   // Fetch contacts for this customer
   const {
     data: contacts,
@@ -735,21 +743,46 @@ function CustomerContacts({
     }
   }, [highlightContactId, contacts]);
 
+  // Handle contact submit (Sprint 2.1.7.2 D9.3)
+  const handleContactSubmit = async (contactData: Partial<CustomerContact>) => {
+    try {
+      if (editingContact) {
+        // Update existing contact
+        await httpClient.put(
+          `/api/customers/${customerId}/contacts/${editingContact.id}`,
+          contactData
+        );
+      } else {
+        // Create new contact
+        await httpClient.post(`/api/customers/${customerId}/contacts`, contactData);
+      }
+
+      // Refresh contacts list
+      queryClient.invalidateQueries({ queryKey: ['customer-contacts', customerId] });
+
+      // Close dialog
+      setShowContactDialog(false);
+      setEditingContact(null);
+    } catch (error) {
+      console.error('Failed to save contact:', error);
+      // TODO: Show error toast/notification
+      alert('Fehler beim Speichern des Kontakts');
+    }
+  };
+
   // Handle contact actions
   const handleContactAction = (action: ContactAction) => {
     switch (action.type) {
       case 'add':
-        // TODO: Implement add contact modal
-        alert('Kontakt hinzufügen - Modal wird noch implementiert');
+        // Open dialog for new contact (Sprint 2.1.7.2 D9.3)
+        setEditingContact(null);
+        setShowContactDialog(true);
         break;
       case 'edit':
-        // TODO: Implement edit contact modal
+        // Open dialog for editing existing contact (Sprint 2.1.7.2 D9.3)
         if (action.contact) {
-          alert(
-            `Kontakt bearbeiten: ${action.contact.firstName} ${action.contact.lastName}\n\nDiese Funktion wird noch implementiert.`
-          );
-        } else {
-          alert('Kontakt bearbeiten - Modal wird noch implementiert');
+          setEditingContact(action.contact);
+          setShowContactDialog(true);
         }
         break;
       case 'delete':
@@ -882,6 +915,17 @@ function CustomerContacts({
         useSmartCards={true}
         highlightContactId={highlightContactId}
         customerId={customerId}
+      />
+
+      {/* Contact Form Dialog (Sprint 2.1.7.2 D9.3) */}
+      <ContactFormDialog
+        open={showContactDialog}
+        onClose={() => {
+          setShowContactDialog(false);
+          setEditingContact(null);
+        }}
+        onSubmit={handleContactSubmit}
+        contact={editingContact}
       />
     </Box>
   );
