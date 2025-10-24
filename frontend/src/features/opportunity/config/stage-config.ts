@@ -77,7 +77,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.CLOSED_WON,
     label: 'Gewonnen',
-    color: 'text.primary',
+    color: 'success.dark',
     bgColor: 'success.light',
     description: 'Erfolgreich abgeschlossen',
     allowedNextStages: [OpportunityStage.RENEWAL],
@@ -89,7 +89,7 @@ export const STAGE_CONFIGURATIONS: ReadonlyArray<IStageConfig> = [
   {
     stage: OpportunityStage.CLOSED_LOST,
     label: 'Verloren',
-    color: 'text.primary',
+    color: 'error.dark',
     bgColor: 'error.light',
     description: 'Verloren',
     allowedNextStages: [],
