@@ -1,10 +1,15 @@
 package de.freshplan.domain.testdata.service;
 
+import de.freshplan.domain.communication.entity.Activity;
+import de.freshplan.domain.communication.entity.EntityType;
+import de.freshplan.domain.communication.service.ActivityService;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.testdata.service.command.TestDataCommandService;
 import de.freshplan.domain.testdata.service.query.TestDataQueryService;
+import de.freshplan.modules.leads.domain.ActivityOutcome;
+import de.freshplan.modules.leads.domain.ActivityType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -40,9 +45,15 @@ public class TestDataService {
 
   @Inject CustomerTimelineRepository timelineRepository;
 
+  @Inject ActivityService activityService;
+
   /**
-   * Seeds the database with 5 diverse test customers. All test data is marked with is_test_data =
-   * true and prefixed with [TEST].
+   * Seeds the database with 10 diverse test customers (90001-90010).
+   *
+   * <p>Sprint 2.1.7.2 (D8): Enhanced with converted customers (Lead→Customer) and unified activity
+   * timeline.
+   *
+   * <p>All test data is marked with is_test_data = true and prefixed with [TEST].
    */
   @Transactional
   public SeedResult seedTestData() {
@@ -53,6 +64,12 @@ public class TestDataService {
 
     // Legacy implementation
     LOG.info("Starting test data seeding...");
+
+    // AUTO-CLEANUP: Remove old test data before seeding new data
+    LOG.info("Cleaning up old test data before seeding...");
+    CleanupResult cleanup = cleanTestData();
+    LOG.infof("Cleaned up %d old customers and %d timeline events",
+              cleanup.customersDeleted(), cleanup.eventsDeleted());
 
     List<Customer> createdCustomers = new ArrayList<>();
     List<CustomerTimelineEvent> createdEvents = new ArrayList<>();
@@ -160,6 +177,207 @@ public class TestDataService {
               EventCategory.EMAIL,
               "Interesse an Bio-Produkten bekundet",
               LocalDateTime.now().minusDays(15)));
+
+      // ========================================================================
+      // Sprint 2.1.7.2 (D8): NEUE TEST-KUNDEN MIT MEHR TIEFE
+      // ========================================================================
+      // 90006-90010: Konvertierte Kunden + Activities für Unified Timeline
+      // ========================================================================
+
+      // 6. Konvertierter Kunde (Lead→Customer), AKTIV, ganzjährig, Top-Kunde
+      Customer convertedCustomer1 =
+          createTestCustomer(
+              "90006",
+              "[TEST] Bio-Großhandel Meyer - Konvertiert (Ex-Lead 10001)",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(7),
+              Industry.EINZELHANDEL); // Großhandel = Einzelhandel
+      convertedCustomer1.setOriginalLeadId(10001L); // 🎯 KONVERTIERT VON LEAD!
+      convertedCustomer1.setPartnerStatus(PartnerStatus.GOLD_PARTNER);
+      convertedCustomer1.setExpectedAnnualVolume(new BigDecimal("200000.00")); // Top-Kunde
+      convertedCustomer1.setRiskScore(5);
+      convertedCustomer1.setCreatedAt(LocalDateTime.now().minusDays(180)); // Kunde seit 6 Monaten
+      customerRepository.persist(convertedCustomer1);
+      createdCustomers.add(convertedCustomer1);
+
+      // 7. Konvertierter Kunde (Lead→Customer), INAKTIV, saisonal
+      Customer convertedCustomer2 =
+          createTestCustomer(
+              "90007",
+              "[TEST] Strandhotel Ostsee - Konvertiert, INAKTIV (Ex-Lead 10002)",
+              CustomerStatus.INAKTIV, // INAKTIV!
+              LocalDateTime.now().minusDays(65),
+              Industry.HOTEL);
+      convertedCustomer2.setOriginalLeadId(10002L); // 🎯 KONVERTIERT VON LEAD!
+      convertedCustomer2.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+      convertedCustomer2.setExpectedAnnualVolume(new BigDecimal("35000.00")); // Kleinerer Umsatz
+      convertedCustomer2.setRiskScore(75); // High Risk
+      convertedCustomer2.setCreatedAt(LocalDateTime.now().minusDays(250));
+      customerRepository.persist(convertedCustomer2);
+      createdCustomers.add(convertedCustomer2);
+
+      // 8. Normaler Kunde (KEIN Lead), AKTIV, ganzjährig
+      Customer normalCustomer1 =
+          createTestCustomer(
+              "90008",
+              "[TEST] Kantine Siemens Campus - Ganzjährig aktiv",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(3),
+              Industry.KANTINE);
+      // KEIN originalLeadId → direkt als Kunde angelegt!
+      normalCustomer1.setPartnerStatus(PartnerStatus.SILBER_PARTNER);
+      normalCustomer1.setExpectedAnnualVolume(new BigDecimal("95000.00"));
+      normalCustomer1.setRiskScore(12);
+      normalCustomer1.setCreatedAt(LocalDateTime.now().minusDays(120));
+      customerRepository.persist(normalCustomer1);
+      createdCustomers.add(normalCustomer1);
+
+      // 9. Konvertierter Kunde (Lead→Customer), AKTIV, saisonal
+      Customer convertedCustomer3 =
+          createTestCustomer(
+              "90009",
+              "[TEST] Biergarten Alpensee - Konvertiert, saisonal (Ex-Lead 10003)",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(10),
+              Industry.RESTAURANT);
+      convertedCustomer3.setOriginalLeadId(10003L); // 🎯 KONVERTIERT VON LEAD!
+      convertedCustomer3.setPartnerStatus(PartnerStatus.SILBER_PARTNER);
+      convertedCustomer3.setExpectedAnnualVolume(new BigDecimal("55000.00"));
+      convertedCustomer3.setRiskScore(25);
+      convertedCustomer3.setCreatedAt(LocalDateTime.now().minusDays(90));
+      customerRepository.persist(convertedCustomer3);
+      createdCustomers.add(convertedCustomer3);
+
+      // 10. Normaler Kunde (KEIN Lead), INAKTIV, ganzjährig
+      Customer normalCustomer2 =
+          createTestCustomer(
+              "90010",
+              "[TEST] Catering Deluxe - INAKTIV ohne Lead-Historie",
+              CustomerStatus.INAKTIV, // INAKTIV!
+              LocalDateTime.now().minusDays(80),
+              Industry.CATERING);
+      // KEIN originalLeadId → direkt als Kunde angelegt!
+      normalCustomer2.setPartnerStatus(PartnerStatus.KEIN_PARTNER);
+      normalCustomer2.setExpectedAnnualVolume(new BigDecimal("42000.00"));
+      normalCustomer2.setRiskScore(70);
+      normalCustomer2.setCreatedAt(LocalDateTime.now().minusDays(300));
+      customerRepository.persist(normalCustomer2);
+      createdCustomers.add(normalCustomer2);
+
+      // ========================================================================
+      // Sprint 2.1.7.2 (D8): ACTIVITIES für Unified Timeline
+      // ========================================================================
+      // Lead-Phase Activities (für konvertierte Kunden 90006, 90007, 90009)
+      // Customer-Phase Activities (für ALLE neuen Kunden 90006-90010)
+      // ========================================================================
+
+      // 🎯 LEAD-PHASE Activities für 90006 (Ex-Lead 10001)
+      Activity lead1Activity1 =
+          Activity.forLead(10001L, TEST_USER, ActivityType.QUALIFIED_CALL, null);
+      lead1Activity1.summary = "Erstkontakt Bio-Großhandel Meyer - Interesse an regionalem Gemüse";
+      lead1Activity1.description =
+          "Geschäftsführer Herr Meyer sehr interessiert an Bio-Gemüse aus der Region. Plant Expansion im Bereich Gastronomie-Belieferung.";
+      lead1Activity1.outcome = ActivityOutcome.QUALIFIED;
+      lead1Activity1.activityDate = LocalDateTime.now().minusDays(200);
+      activityService.createActivity(lead1Activity1);
+
+      Activity lead1Activity2 =
+          Activity.forLead(10001L, TEST_USER, ActivityType.DEMO, null);
+      lead1Activity2.summary = "Produktdemo bei Bio-Großhandel Meyer vor Ort";
+      lead1Activity2.description =
+          "Demo im Lager durchgeführt. Sehr positive Resonanz auf Frische und Qualität. Entscheidung für Konvertierung gefallen.";
+      lead1Activity2.outcome = ActivityOutcome.SUCCESSFUL;
+      lead1Activity2.activityDate = LocalDateTime.now().minusDays(185);
+      activityService.createActivity(lead1Activity2);
+
+      // 🎯 CUSTOMER-PHASE Activities für 90006
+      Activity customer1Activity1 =
+          Activity.forCustomer(
+              convertedCustomer1.getId(), TEST_USER, ActivityType.MEETING, null);
+      customer1Activity1.summary = "Vertragsverhandlung - 200k€ Jahresumsatz vereinbart";
+      customer1Activity1.description =
+          "Gold-Partner Status zugesichert. Lieferintervall 2x wöchentlich. Sehr zufrieden mit Service.";
+      customer1Activity1.outcome = ActivityOutcome.SUCCESSFUL;
+      customer1Activity1.activityDate = LocalDateTime.now().minusDays(7);
+      activityService.createActivity(customer1Activity1);
+
+      // 🎯 LEAD-PHASE Activities für 90007 (Ex-Lead 10002)
+      Activity lead2Activity1 =
+          Activity.forLead(10002L, TEST_USER, ActivityType.CALL, null);
+      lead2Activity1.summary = "Anruf Strandhotel Ostsee - Saisonbetrieb";
+      lead2Activity1.description =
+          "Hotel nur April-Oktober geöffnet. Interesse an Bio-Produkten für Frühstücksbuffet.";
+      lead2Activity1.outcome = ActivityOutcome.CALLBACK_REQUESTED;
+      lead2Activity1.activityDate = LocalDateTime.now().minusDays(280);
+      activityService.createActivity(lead2Activity1);
+
+      Activity lead2Activity2 =
+          Activity.forLead(10002L, TEST_USER, ActivityType.SAMPLE_SENT, null);
+      lead2Activity2.summary = "Musterlieferung Gemüse + Obst versendet";
+      lead2Activity2.description = "5kg Musterpaket an Küchenchef gesendet. Wartet auf Feedback.";
+      lead2Activity2.outcome = ActivityOutcome.INFO_SENT;
+      lead2Activity2.activityDate = LocalDateTime.now().minusDays(260);
+      activityService.createActivity(lead2Activity2);
+
+      // 🎯 CUSTOMER-PHASE Activities für 90007 (INAKTIV - lange kein Kontakt!)
+      Activity customer2Activity1 =
+          Activity.forCustomer(
+              convertedCustomer2.getId(), TEST_USER, ActivityType.NOTE, null);
+      customer2Activity1.summary = "Kunde meldet sich nicht mehr - saisonbedingt geschlossen";
+      customer2Activity1.description =
+          "Mehrere Kontaktversuche erfolglos. Hotel vermutlich in Winterpause. Status auf INAKTIV gesetzt.";
+      customer2Activity1.activityDate = LocalDateTime.now().minusDays(65);
+      activityService.createActivity(customer2Activity1);
+
+      // 🎯 CUSTOMER-PHASE Activities für 90008 (KEIN Lead - direkt als Kunde)
+      Activity customer3Activity1 =
+          Activity.forCustomer(normalCustomer1.getId(), TEST_USER, ActivityType.EMAIL, null);
+      customer3Activity1.summary = "Angebot Kantine Siemens - Wochenlieferung Bio-Salate";
+      customer3Activity1.description = "Wöchentliche Lieferung 50kg Bio-Salate + Gemüse. Zahlung Netto 30.";
+      customer3Activity1.outcome = ActivityOutcome.SUCCESSFUL;
+      customer3Activity1.activityDate = LocalDateTime.now().minusDays(3);
+      activityService.createActivity(customer3Activity1);
+
+      // 🎯 LEAD-PHASE Activities für 90009 (Ex-Lead 10003)
+      Activity lead3Activity1 =
+          Activity.forLead(10003L, TEST_USER, ActivityType.QUALIFIED_CALL, null);
+      lead3Activity1.summary = "Qualifizierter Anruf Biergarten Alpensee";
+      lead3Activity1.description =
+          "Biergarten sucht regionalen Lieferanten für Sommersaison. Interesse an Kartoffeln, Salaten, Kräutern.";
+      lead3Activity1.outcome = ActivityOutcome.QUALIFIED;
+      lead3Activity1.activityDate = LocalDateTime.now().minusDays(100);
+      activityService.createActivity(lead3Activity1);
+
+      Activity lead3Activity2 =
+          Activity.forLead(10003L, TEST_USER, ActivityType.ROI_PRESENTATION, null);
+      lead3Activity2.summary = "ROI-Präsentation: Bio spart Kosten durch weniger Food Waste";
+      lead3Activity2.description =
+          "Längere Haltbarkeit Bio-Produkte nachgewiesen. Einsparung ca. 15% durch weniger Verderb. Kunde überzeugt.";
+      lead3Activity2.outcome = ActivityOutcome.SUCCESSFUL;
+      lead3Activity2.activityDate = LocalDateTime.now().minusDays(92);
+      activityService.createActivity(lead3Activity2);
+
+      // 🎯 CUSTOMER-PHASE Activities für 90009
+      Activity customer4Activity1 =
+          Activity.forCustomer(
+              convertedCustomer3.getId(), TEST_USER, ActivityType.FOLLOW_UP, null);
+      customer4Activity1.summary = "Follow-up: Saisonstart April - Bestellung läuft";
+      customer4Activity1.description = "Erste Lieferung erfolgt. Kunde sehr zufrieden. Silber-Partner Status.";
+      customer4Activity1.outcome = ActivityOutcome.SUCCESSFUL;
+      customer4Activity1.activityDate = LocalDateTime.now().minusDays(10);
+      activityService.createActivity(customer4Activity1);
+
+      // 🎯 CUSTOMER-PHASE Activities für 90010 (KEIN Lead - direkt als Kunde, INAKTIV)
+      Activity customer5Activity1 =
+          Activity.forCustomer(normalCustomer2.getId(), TEST_USER, ActivityType.CALL, null);
+      customer5Activity1.summary = "Anruf Catering Deluxe - keine Reaktion";
+      customer5Activity1.description =
+          "Mehrere Versuche, Kunden zu erreichen. Mailbox voll. Vermutlich Geschäft aufgegeben.";
+      customer5Activity1.outcome = ActivityOutcome.NO_ANSWER;
+      customer5Activity1.activityDate = LocalDateTime.now().minusDays(80);
+      activityService.createActivity(customer5Activity1);
+
+      LOG.infof("✅ Sprint 2.1.7.2: Created %d enhanced test customers with Lead→Customer history", 5);
 
       // Persist all timeline events
       for (CustomerTimelineEvent event : createdEvents) {
