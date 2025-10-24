@@ -161,6 +161,32 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-10-24 16:45 - Sprint 2.1.7.2 Status-Check - 7/10 Deliverables COMPLETE
+
+**Kontext:** Sprint 2.1.7.2 Codebase-Analyse nach Context-Resume - Implementierungsstand aller 10 Deliverables geprüft.
+
+**Erledigt:**
+- ✅ **ANALYSE COMPLETE:** Alle 10 Deliverables untersucht (Backend + Frontend)
+  - ✅ D1 ConvertToCustomerDialog: COMPLETE (328 LOC, Xentral-Integration)
+  - ✅ D2 XentralApiClient: COMPLETE (Mock/Real Switching, 4 Endpoints)
+  - ✅ D3 Customer-Dashboard: COMPLETE (RevenueMetrics, Payment Behavior)
+  - ✅ D4 Churn-Alarm: COMPLETE (Migration V10036, ChurnRiskAlert Component)
+  - ✅ D5 Admin-UI Xentral: COMPLETE (XentralSettingsPage 327 LOC)
+  - ⚠️ D6 Sales-Rep Sync: TEILWEISE (Backend SalesRepSyncJob ✅, Frontend UserManagementPage ❌)
+  - ✅ D7 Xentral Webhook: COMPLETE (Previous Session)
+  - ❌ D8 Unified Communication: NICHT IMPLEMENTIERT (Spec: 📋 PLANNING)
+  - ❌ D9 Customer UX Polish: NICHT IMPLEMENTIERT (Pain Points, Multi-Contact)
+  - ❌ D10 Multi-Location Prep: NICHT IMPLEMENTIERT (hierarchyType Dropdown)
+
+**Migration:** V10035 (Xentral Integration), V10036 (Churn Threshold) existieren ✅
+**Branch:** feature/sprint-2-1-7-2-customer-xentral-integration
+**Tests:** Keine neuen Tests ausgeführt (nur Code-Analyse)
+**Status:** 📋 IN PROGRESS - 7/10 COMPLETE, 3 Deliverables offen (D8, D9, D10)
+
+**NEXT STEPS:** User-Entscheidung zu nächstem Deliverable (D6 Frontend Quick-Win 30min vs. D8 Pre-Live Critical 8h)
+
+---
+
 ### 2025-10-22 20:35 - CRM_AI_CONTEXT_SCHNELL.md Update - Sprint 2.1.7.4 integriert
 
 **Kontext:** Post-Sprint 2.1.7.4 Dokumentation - CRM_AI_CONTEXT_SCHNELL.md aktualisieren (Living Document Pattern 80/20).
@@ -1739,8 +1765,9 @@
     - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md` (status: complete)
 
-- **🎯 NÄCHSTER SPRINT - Sprint 2.1.7.2 - CUSTOMER-MANAGEMENT COMPLETE + OPTION A VORBEREITUNG**
-  - **Status:** 📋 READY TO START - Sprint 2.1.7.4 COMPLETE ✅ (Prerequisites erfüllt!)
+- **🎯 AKTUELLER SPRINT - Sprint 2.1.7.2 - CUSTOMER-MANAGEMENT COMPLETE + OPTION A VORBEREITUNG**
+  - **Status:** 📋 IN PROGRESS - **7/10 Deliverables COMPLETE** ✅ (D1-D7 ✅, D8-D10 offen ⏳)
+  - **Branch:** feature/sprint-2-1-7-2-customer-xentral-integration (working tree clean)
   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Multi-Location Prep (Option A)
   - **Aufwand:** 36h = 4-5 Arbeitstage (erweitert von 25h - **Option A Vorbereitung!**)
   - **Aufwands-Verteilung:**
@@ -1752,18 +1779,17 @@
   - **Migrations:** V10033 (Unified Activity), V10034 (xentral_customer_id), V10035 (months_active)
   - **Tests:** 162 Tests (90 Backend + 72 Frontend)
   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ✅
-  - **Deliverables:** 10 Deliverables (erweitert von 8)
-    - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
-    - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
-    - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
-    - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
-    - **D5:** Admin-UI für Xentral-Einstellungen
-    - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
-    - **D7:** Testing & Integration Tests (162 Tests)
-    - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren ⚡
-    - **D8:** Unified Communication System (Lead + Customer) ⭐ NEU!
-    - **D9:** Customer UX Polish (Wizard + Dashboard Review) ⭐ NEU!
-    - **D10:** Multi-Location Vorbereitung (UI disabled) ⭐ NEU!
+  - **Deliverables:** 10 Deliverables (erweitert von 8) - **Status: 7/10 COMPLETE** ✅
+    - **D1:** ✅ ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info (328 LOC)
+    - **D2:** ✅ XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode + MockXentralApiClient 257 LOC)
+    - **D3:** ✅ Customer-Dashboard (Revenue Metrics 30/90/365 Tage + RevenueMetricsService 146 LOC)
+    - **D4:** ✅ Churn-Alarm Konfiguration (14-365 Tage, Migration V10036 + ChurnRiskAlert Component)
+    - **D5:** ✅ Admin-UI für Xentral-Einstellungen (XentralSettingsPage 327 LOC + Backend Resource)
+    - **D6:** ⚠️ Sales-Rep Mapping Auto-Sync (Backend SalesRepSyncJob ✅ 162 LOC, Frontend UserManagementPage ❌)
+    - **D7:** ✅ Xentral Webhook → PROSPECT automatisch aktivieren ⚡ (Previous Session)
+    - **D8:** ❌ Unified Communication System (Lead + Customer) ⭐ OFFEN - Activity Entity/Service/Timeline fehlen
+    - **D9:** ❌ Customer UX Polish (Wizard + Dashboard Review) ⭐ OFFEN - Pain Points + Multi-Contact fehlen
+    - **D10:** ❌ Multi-Location Vorbereitung (UI disabled) ⭐ OFFEN - hierarchyType Dropdown fehlt in ConvertDialog
   - **Integration mit Sprint 2.1.7.4:**
     - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
     - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)

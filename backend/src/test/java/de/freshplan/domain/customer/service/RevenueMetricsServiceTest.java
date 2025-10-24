@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,6 +93,18 @@ class RevenueMetricsServiceTest {
             """)
         .executeUpdate();
 
+    entityManager.flush();
+  }
+
+  @AfterEach
+  @Transactional
+  void tearDown() {
+    // Clean up test customers created in setUp()
+    // This prevents test data pollution in the database
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customers WHERE company_name IN ('Test Hotel GmbH', 'Test Restaurant GmbH')")
+        .executeUpdate();
     entityManager.flush();
   }
 
