@@ -1,8 +1,16 @@
 # FreshPlan Test-Daten Guide
 
-**Letzte Aktualisierung:** 2025-10-24 (Sprint 2.1.7.2)
+**Letzte Aktualisierung:** 2025-10-24 (Sprint 2.1.7.2 - Entity Coverage 100%)
 **Für:** Entwickler, QA, Product Owner
 **Referenz:** `backend/src/main/java/de/freshplan/domain/testdata/service/TestDataService.java`
+
+---
+
+## 📊 COVERAGE STATUS
+
+**Entity-Coverage (CI-Check):** ✅ 17/17 (100%) 🎉
+
+Alle relevanten @Entity-Klassen sind im TestDataService dokumentiert oder abgedeckt. Der automatische CI-Check (`python3 scripts/check-test-data-coverage.py`) validiert die Coverage bei jedem Commit.
 
 ---
 
@@ -15,7 +23,7 @@
 | **Users** | `admin`, `anna.schmidt`, `max.mueller`, `tom.weber` | 4 | ✅ |
 | **Leads** | `10001` - `10012` | 12 | ✅ |
 | **Customers** | `90001` - `90015` | 15 | ✅ |
-| **Opportunities** | TBD | 7 | ⚠️ |
+| **Opportunities** | TBD | 7 | ⚠️ (Coverage: planned) |
 | **Activities** | Various IDs | ~30 | ✅ |
 | **Contacts** | Embedded in Leads/Customers | ~20 | ✅ |
 

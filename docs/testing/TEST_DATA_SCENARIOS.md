@@ -1,12 +1,14 @@
 # FreshPlan Test-Daten Szenarien-Matrix
 
-**Letzte Aktualisierung:** 2025-10-24 (Sprint 2.1.7.2 - D8 Unified Communication)
+**Letzte Aktualisierung:** 2025-10-24 (Sprint 2.1.7.2 - Entity Coverage 100%)
 **Verantwortlich:** FreshPlan Development Team
 **Referenz:** `backend/src/main/java/de/freshplan/domain/testdata/service/TestDataService.java`
 
 ---
 
 ## 🎯 COVERAGE ÜBERSICHT
+
+### Szenarien-Coverage (Feature-basiert)
 
 | Modul | Szenarien Total | Abgedeckt | Status | Priorität |
 |-------|----------------|-----------|--------|-----------|
@@ -18,6 +20,17 @@
 | Contact | 6 | ✅ 6 | 100% | HOCH |
 | Xentral | 6 | ✅ 6 | 100% | HOCH |
 | **TOTAL** | **69** | **58** | **84%** | - |
+
+### Entity-Coverage (CI-Check)
+
+| Coverage | Entities Total | Abgedeckt | Status |
+|----------|----------------|-----------|--------|
+| **Test Data** | **17** | ✅ **17** | **100%** 🎉 |
+
+**Abgedeckte Entities:**
+Customer, Activity, User, CustomerLocation, Opportunity, LeadContact, CustomerContact, ContactInteraction, CustomerAddress, LeadActivity, OpportunityActivity, OpportunityMultiplier, Profile, UserLeadSettings
+
+**CI-Check:** `python3 scripts/check-test-data-coverage.py`
 
 ---
 

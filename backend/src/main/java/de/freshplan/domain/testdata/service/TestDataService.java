@@ -27,6 +27,28 @@ import org.jboss.logging.Logger;
  * <p>CQRS Refactoring: This service now acts as a facade that delegates to Command and Query
  * services based on a feature flag. When cqrs.enabled=true, it uses the new split services. When
  * false, it falls back to the legacy implementation.
+ *
+ * <p><b>Test Data Coverage (Sprint 2.1.7.2):</b>
+ * This service provides test data coverage for the following entities:
+ *
+ * <ul>
+ *   <li><b>Customer</b> - 10 diverse test customers with realistic scenarios (already implemented)</li>
+ *   <li><b>Activity</b> - Unified communication activities for Leads and Customers (already implemented)</li>
+ *   <li><b>User</b> - Test users for activities and authentication (covered via TEST_USER constant)</li>
+ *   <li><b>CustomerLocation</b> - Customer delivery locations (coverage planned)</li>
+ *   <li><b>Opportunity</b> - Sales opportunities and pipeline tracking (coverage planned)</li>
+ *   <li><b>LeadContact</b> - Lead contact persons (coverage via modules/leads)</li>
+ *   <li><b>CustomerContact</b> - Customer contact persons (coverage planned)</li>
+ *   <li><b>ContactInteraction</b> - Interactions with contacts (coverage planned)</li>
+ *   <li><b>CustomerAddress</b> - Customer addresses (coverage planned)</li>
+ *   <li><b>LeadActivity</b> - Lead-specific activities (coverage via modules/leads)</li>
+ *   <li><b>OpportunityActivity</b> - Opportunity-related activities (coverage planned)</li>
+ *   <li><b>OpportunityMultiplier</b> - Opportunity probability multipliers (coverage planned)</li>
+ *   <li><b>Profile</b> - User profiles (coverage planned)</li>
+ *   <li><b>UserLeadSettings</b> - User-specific lead management settings (coverage via modules/leads)</li>
+ * </ul>
+ *
+ * <p>For detailed test data scenarios, see: docs/testing/TEST_DATA_SCENARIOS.md
  */
 @ApplicationScoped
 public class TestDataService {
