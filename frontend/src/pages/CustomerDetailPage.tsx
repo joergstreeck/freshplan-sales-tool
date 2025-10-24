@@ -37,6 +37,7 @@ import {
   HourglassEmpty as HourglassEmptyIcon,
   CheckCircle as CheckCircleIcon,
   NaturePeople as NaturePeopleIcon,
+  Add as AddIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useAuth } from '../contexts/AuthContext';
@@ -58,6 +59,8 @@ import { RevenueMetricsWidget } from '../features/customers/components/RevenueMe
 import { PaymentBehaviorIndicator } from '../features/customers/components/PaymentBehaviorIndicator';
 import { ChurnRiskAlert } from '../features/customers/components/ChurnRiskAlert';
 import { httpClient } from '../lib/apiClient';
+import { ActivityTimeline, type Activity } from '../features/communication/components/ActivityTimeline';
+import { ActivityDialog } from '../features/communication/components/ActivityDialog';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -935,15 +938,78 @@ function CustomerContacts({
 }
 
 // Placeholder for Customer Activities
+/**
+ * Customer Activities Component
+ *
+ * Sprint 2.1.7.2: D8 Unified Communication System
+ *
+ * Displays unified timeline of customer activities including Lead history!
+ * The backend automatically merges Lead activities if customer.originalLeadId exists.
+ */
 function CustomerActivities({ _customerId }: { _customerId: string }) {
+  const [activityDialogOpen, setActivityDialogOpen] = useState(false);
+  const [editActivity, setEditActivity] = useState<Activity | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleEditActivity = (activity: Activity) => {
+    setEditActivity(activity);
+    setActivityDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setActivityDialogOpen(false);
+    setEditActivity(null);
+  };
+
+  const handleActivitySaved = () => {
+    // Refresh timeline by re-mounting component
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <Box>
-      <Alert severity="info" sx={{ mb: 2 }}>
-        Das Aktivitäten-Tracking wird in Sprint 4 implementiert.
+      {/* Header with "Neue Aktivität" Button */}
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 3,
+        }}
+      >
+        <Typography variant="h6">Aktivitäten</Typography>
+        <Button
+          variant="contained"
+          startIcon={<AddIcon />}
+          onClick={() => setActivityDialogOpen(true)}
+        >
+          Neue Aktivität
+        </Button>
+      </Box>
+
+      {/* Info Alert about Lead History */}
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Diese Timeline zeigt alle Aktivitäten für diesen Kunden. Falls der Kunde aus einem Lead
+        konvertiert wurde, werden auch die Lead-Aktivitäten angezeigt (Badge: "Als Lead erfasst").
       </Alert>
-      <Typography variant="body2" color="text.secondary">
-        Hier werden zukünftig alle Aktivitäten und Interaktionen mit dem Kunden angezeigt.
-      </Typography>
+
+      {/* Activity Timeline (includes Lead history automatically!) */}
+      <ActivityTimeline
+        key={refreshKey}
+        entityType="customer"
+        entityId={_customerId}
+        onEdit={handleEditActivity}
+      />
+
+      {/* Activity Dialog for Create/Edit */}
+      <ActivityDialog
+        open={activityDialogOpen}
+        onClose={handleCloseDialog}
+        entityType="customer"
+        entityId={_customerId}
+        activity={editActivity}
+        onSaved={handleActivitySaved}
+      />
     </Box>
   );
 }
