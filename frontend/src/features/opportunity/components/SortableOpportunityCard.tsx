@@ -27,8 +27,30 @@ export const SortableOpportunityCard: React.FC<SortableOpportunityCardProps> = (
     marginBottom: '12px',
   };
 
+  // BUGFIX: Prevent drag when clicking on buttons (Quick Actions)
+  // Filter out pointer events that originate from buttons or interactive elements
+  const filteredListeners = {
+    ...listeners,
+    onPointerDown: (e: React.PointerEvent) => {
+      // Check if the click target is a button or inside a button
+      const target = e.target as HTMLElement;
+      const isButton = target.closest('button') !== null;
+
+      if (isButton) {
+        // Don't start drag operation if clicking on a button
+        e.stopPropagation();
+        return;
+      }
+
+      // Otherwise, proceed with drag
+      if (listeners?.onPointerDown) {
+        listeners.onPointerDown(e);
+      }
+    },
+  };
+
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+    <div ref={setNodeRef} style={style} {...attributes} {...filteredListeners}>
       <OpportunityCard
         opportunity={opportunity}
         onQuickAction={onQuickAction}
