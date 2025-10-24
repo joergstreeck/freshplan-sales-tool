@@ -44,6 +44,7 @@ import { useCustomerDetails } from '../features/customer/hooks/useCustomerDetail
 import { EntityAuditTimeline } from '../features/audit/components/EntityAuditTimeline';
 import { ContactGridContainer } from '../features/customers/components/contacts/ContactGridContainer';
 import { ContactFormDialog } from '../features/customers/components/contacts/ContactFormDialog';
+import { CustomerFieldThemeProvider } from '../features/customers/theme/CustomerFieldThemeProvider';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -918,15 +919,17 @@ function CustomerContacts({
       />
 
       {/* Contact Form Dialog (Sprint 2.1.7.2 D9.3) */}
-      <ContactFormDialog
-        open={showContactDialog}
-        onClose={() => {
-          setShowContactDialog(false);
-          setEditingContact(null);
-        }}
-        onSubmit={handleContactSubmit}
-        contact={editingContact}
-      />
+      <CustomerFieldThemeProvider>
+        <ContactFormDialog
+          open={showContactDialog}
+          onClose={() => {
+            setShowContactDialog(false);
+            setEditingContact(null);
+          }}
+          onSubmit={handleContactSubmit}
+          contact={editingContact}
+        />
+      </CustomerFieldThemeProvider>
     </Box>
   );
 }
