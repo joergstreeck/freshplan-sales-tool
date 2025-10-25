@@ -1,6 +1,11 @@
 package de.freshplan.api.resources;
 
+import de.freshplan.domain.customer.entity.CustomerType;
+import de.freshplan.domain.customer.entity.DeliveryCondition;
+import de.freshplan.domain.customer.entity.ExpansionPlan;
 import de.freshplan.domain.customer.entity.FinancingType;
+import de.freshplan.domain.customer.entity.LegalForm;
+import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
@@ -149,6 +154,121 @@ public class EnumResource {
   public List<EnumValue> getFinancingTypes() {
     return Arrays.stream(FinancingType.values())
         .map(type -> new EnumValue(type.name(), type.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all CustomerType enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+   *
+   * @return List of CustomerType values with display names
+   */
+  @GET
+  @Path("/customer-types")
+  @PermitAll
+  @Operation(summary = "Get all Customer Type enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Customer Type values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getCustomerTypes() {
+    return Arrays.stream(CustomerType.values())
+        .map(type -> new EnumValue(type.name(), type.name()))
+        .toList();
+  }
+
+  /**
+   * Get all PaymentTerms enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+   *
+   * @return List of PaymentTerms values with display names
+   */
+  @GET
+  @Path("/payment-terms")
+  @PermitAll
+  @Operation(summary = "Get all Payment Terms enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Payment Terms values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getPaymentTerms() {
+    return Arrays.stream(PaymentTerms.values())
+        .map(term -> new EnumValue(term.name(), term.name()))
+        .toList();
+  }
+
+  /**
+   * Get all DeliveryCondition enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+   *
+   * @return List of DeliveryCondition values with display names
+   */
+  @GET
+  @Path("/delivery-conditions")
+  @PermitAll
+  @Operation(summary = "Get all Delivery Condition enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Delivery Condition values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getDeliveryConditions() {
+    return Arrays.stream(DeliveryCondition.values())
+        .map(condition -> new EnumValue(condition.name(), condition.name()))
+        .toList();
+  }
+
+  /**
+   * Get all Legal Form enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+   *
+   * @return List of Legal Form values with display names
+   */
+  @GET
+  @Path("/legal-forms")
+  @PermitAll
+  @Operation(summary = "Get all Legal Form enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Legal Form values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getLegalForms() {
+    return Arrays.stream(LegalForm.values())
+        .map(form -> new EnumValue(form.name(), form.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all Expansion Plan enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+   *
+   * @return List of Expansion Plan values with display names
+   */
+  @GET
+  @Path("/expansion-plan")
+  @PermitAll
+  @Operation(summary = "Get all Expansion Plan enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Expansion Plan values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getExpansionPlan() {
+    return Arrays.stream(ExpansionPlan.values())
+        .map(plan -> new EnumValue(plan.name(), plan.getDisplayName()))
         .toList();
   }
 

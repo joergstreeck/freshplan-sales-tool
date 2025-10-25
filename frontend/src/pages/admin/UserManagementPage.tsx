@@ -87,9 +87,7 @@ export default function UserManagementPage() {
   const handleSyncSalesReps = async () => {
     setSyncing(true);
     try {
-      const response = await httpClient.post<JobTriggerResponse>(
-        '/api/admin/jobs/sync-sales-reps'
-      );
+      const response = await httpClient.post<JobTriggerResponse>('/api/admin/jobs/sync-sales-reps');
 
       if (response.data.status === 'success') {
         toast.success('Sales-Rep Sync erfolgreich! Seite wird neu geladen...');
@@ -112,7 +110,9 @@ export default function UserManagementPage() {
   if (loading) {
     return (
       <MainLayoutV2 maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}
+        >
           <CircularProgress />
         </Box>
       </MainLayoutV2>
@@ -124,7 +124,9 @@ export default function UserManagementPage() {
       <Box>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+          <Box
+            sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}
+          >
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
               <PeopleIcon sx={{ fontSize: 40, color: 'secondary.main', mr: 2 }} />
               <Typography variant="h4" component="h1">
@@ -151,8 +153,9 @@ export default function UserManagementPage() {
         {/* Info Alert */}
         <Alert severity="info" sx={{ mb: 3 }}>
           <Typography variant="body2">
-            <strong>Sales-Rep Sync:</strong> Täglich um 2:00 Uhr werden Xentral Employee IDs automatisch
-            per Email-Matching synchronisiert. Sie können den Sync auch manuell anstoßen.
+            <strong>Sales-Rep Sync:</strong> Täglich um 2:00 Uhr werden Xentral Employee IDs
+            automatisch per Email-Matching synchronisiert. Sie können den Sync auch manuell
+            anstoßen.
           </Typography>
         </Alert>
 
@@ -186,7 +189,11 @@ export default function UserManagementPage() {
                     {/* Name */}
                     <TableCell>
                       {user.firstName} {user.lastName}
-                      <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: 'block' }}
+                      >
                         {user.username}
                       </Typography>
                     </TableCell>
@@ -213,7 +220,7 @@ export default function UserManagementPage() {
                       {user.xentralSalesRepId ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <CheckCircleIcon sx={{ color: 'success.main', fontSize: 18 }} />
-                          <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                          <Typography variant="body2">
                             {user.xentralSalesRepId}
                           </Typography>
                         </Box>
@@ -265,9 +272,7 @@ export default function UserManagementPage() {
             <Typography variant="caption" color="text.secondary">
               Mit Xentral-ID
             </Typography>
-            <Typography variant="h5">
-              {users.filter(u => u.xentralSalesRepId).length}
-            </Typography>
+            <Typography variant="h5">{users.filter(u => u.xentralSalesRepId).length}</Typography>
           </Paper>
 
           <Paper sx={{ p: 2, flex: 1 }}>

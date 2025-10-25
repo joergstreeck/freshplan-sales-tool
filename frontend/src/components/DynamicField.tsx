@@ -227,10 +227,12 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
         );
 
       case 'DATE':
+        // Extract date-only portion from ISO datetime (yyyy-MM-dd)
+        const dateValue = value ? String(value).split('T')[0] : '';
         return (
           <TextField
             label={label}
-            value={value ?? ''}
+            value={dateValue}
             onChange={e => handleChange(e.target.value)}
             required={required}
             disabled={readonly}
@@ -285,7 +287,7 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
   };
 
   return (
-    <Grid item xs={12} sm={cols}>
+    <Grid size={{ xs: 12, sm: cols }}>
       {renderField()}
     </Grid>
   );

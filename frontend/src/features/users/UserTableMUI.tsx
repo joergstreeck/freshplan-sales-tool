@@ -146,12 +146,12 @@ export const UserTableMUI = () => {
                 backgroundColor: 'primary.main',
                 color: 'white',
                 '&:hover': {
-                backgroundColor: 'primary.dark',
-              },
-            }}
-          >
-            Neuer Benutzer
-          </Button>
+                  backgroundColor: 'primary.dark',
+                },
+              }}
+            >
+              Neuer Benutzer
+            </Button>
           </Stack>
         </Box>
 
@@ -283,7 +283,7 @@ export const UserTableMUI = () => {
                     </TableCell>
                     <TableCell>
                       {user.xentralSalesRepId ? (
-                        <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>
+                        <Typography variant="body2">
                           {user.xentralSalesRepId}
                         </Typography>
                       ) : (
