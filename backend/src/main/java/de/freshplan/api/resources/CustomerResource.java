@@ -577,7 +577,8 @@ public class CustomerResource {
     contact.setMobile(request.mobile());
     contact.setIsPrimary(request.isPrimary() != null ? request.isPrimary() : false);
     contact.setIsActive(true); // New contacts are active by default
-    contact.setIsDecisionMaker(request.isDecisionMaker() != null ? request.isDecisionMaker() : false);
+    contact.setIsDecisionMaker(
+        request.isDecisionMaker() != null ? request.isDecisionMaker() : false);
 
     // Audit fields
     contact.setCreatedBy(currentUser.getUsername());
@@ -664,6 +665,43 @@ public class CustomerResource {
     log.info("Contact updated: {} (ID: {})", contact.getEmail(), contact.getId());
 
     return Response.ok(contact).build();
+  }
+
+  // ========== LOCATION MANAGEMENT (Sprint 2.1.7.2 D11) ==========
+
+  /**
+   * Gets all locations for a customer.
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards - Card 1 (Unternehmensprofil)
+   *
+   * @param customerId The customer ID
+   * @return 200 OK with list of locations
+   */
+  @GET
+  @Path("/{id}/locations")
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response getCustomerLocations(@PathParam("id") UUID customerId) {
+    log.debug("Fetching locations for customer: {}", customerId);
+
+    // Verify customer exists
+    Customer customer = Customer.findById(customerId);
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // Fetch locations
+    List<de.freshplan.domain.customer.entity.CustomerLocation> locations =
+        de.freshplan.domain.customer.entity.CustomerLocation.find(
+                "customer.id = ?1 and isDeleted = false ORDER BY isMainLocation DESC, createdAt ASC",
+                customerId)
+            .list();
+
+    log.info("Found {} locations for customer {}", locations.size(), customerId);
+
+    return Response.ok(locations).build();
   }
 
   /** Contact request DTO for create/update operations. */
