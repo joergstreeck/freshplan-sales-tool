@@ -67,19 +67,16 @@ CRITICAL_PATTERNS_STRICT = [
      "ENGLISH TEXT: Use 'Filtern' (German)"),
     (r'[>"]Export[<"]',
      "ENGLISH TEXT: Use 'Exportieren' (German)"),
-]
 
-# WARNING PATTERNS - Best Practices (nicht blockierend, aber empfohlen)
-WARNING_PATTERNS = [
-    # 1. Hardcoded Shadows (should use theme.shadows[X])
+    # 6. Hardcoded Shadows (should use theme.shadows[X])
     (r'boxShadow:\s*["\'][^"\']*px[^"\']*["\']',
      "HARDCODED SHADOW: Use theme.shadows[X] instead (0-24)"),
 
-    # 2. Hardcoded Transition Durations (should use theme.transitions.duration.X)
+    # 7. Hardcoded Transition Durations (should use theme.transitions.duration.X)
     (r'transition(?:Duration)?:\s*["\']?\d+ms["\']?',
      "HARDCODED TRANSITION: Use theme.transitions.duration.standard (150-375ms)"),
 
-    # 3. Status Colors hardcoded (should use theme.palette.status.X)
+    # 8. Status Colors hardcoded (should use theme.palette.status.X)
     (r'["\']#66BB6A["\']',  # won/probabilityHigh color
      "STATUS COLOR: Use theme.palette.status.won or theme.palette.status.probabilityHigh"),
     (r'["\']#EF5350["\']',  # lost color
@@ -133,14 +130,13 @@ def is_chart_file(file_path: Path) -> bool:
     """Check if file is a chart/data-viz file (relaxed rules)"""
     return any(chart_file in str(file_path) for chart_file in CHART_FILES)
 
-def check_file(file_path: Path) -> Tuple[List[Tuple[int, str, str]], List[Tuple[int, str, str]]]:
+def check_file(file_path: Path) -> List[Tuple[int, str, str]]:
     """Check file for design system violations
 
     Returns:
-        (critical_violations, warnings): Tuple of critical violations and warnings
+        List of critical violations (line_num, line, message)
     """
     critical_violations = []
-    warnings = []
 
     # Select pattern set based on file type
     critical_patterns = CRITICAL_PATTERNS_CHARTS if is_chart_file(file_path) else CRITICAL_PATTERNS_STRICT
@@ -158,15 +154,10 @@ def check_file(file_path: Path) -> Tuple[List[Tuple[int, str, str]], List[Tuple[
                 if re.search(pattern, line):
                     critical_violations.append((line_num, line.strip()[:100], message))
 
-            # Check warning patterns (best practices)
-            for pattern, message in WARNING_PATTERNS:
-                if re.search(pattern, line):
-                    warnings.append((line_num, line.strip()[:100], message))
-
     except Exception:
         pass  # Skip files that can't be read
 
-    return critical_violations, warnings
+    return critical_violations
 
 def main():
     print("🎨 Design System Compliance Check")
@@ -178,6 +169,9 @@ def main():
     print("  ❌ No hardcoded fonts (use theme.typography)")
     print("  ❌ No Grid v1 (use Grid v2: size={{ xs: 12 }})")
     print("  ❌ No English UI text (use German)")
+    print("  ❌ No hardcoded shadows (use theme.shadows[X])")
+    print("  ❌ No hardcoded transitions (use theme.transitions.duration)")
+    print("  ❌ No hardcoded status colors (use theme.palette.status)")
     print()
     
     # Find TypeScript/TSX files only
@@ -211,16 +205,14 @@ def main():
     print(f"✅ Found {len(all_files)} files")
     print()
 
-    # Check files (separate CRITICAL violations vs BEST PRACTICE warnings)
+    # Check files (CRITICAL violations only - all patterns now blocking)
     strict_violations = {}  # Normal files - critical violations (must be fixed)
     chart_violations = {}   # Chart files - critical violations (relaxed rules)
-    best_practice_warnings = {}  # Best practice warnings (informational only)
     total_strict = 0
     total_chart = 0
-    total_warnings = 0
 
     for file_path in all_files:
-        critical_vios, warns = check_file(file_path)
+        critical_vios = check_file(file_path)
         relative_path = file_path.relative_to(PROJECT_ROOT)
 
         # Collect critical violations
@@ -232,25 +224,21 @@ def main():
                 strict_violations[relative_path] = critical_vios
                 total_strict += len(critical_vios)
 
-        # Collect best practice warnings
-        if warns:
-            best_practice_warnings[relative_path] = warns
-            total_warnings += len(warns)
-
     # Report
     total_critical = total_strict + total_chart
 
-    if total_critical == 0 and total_warnings == 0:
+    if total_critical == 0:
         print("✅ SUCCESS: Design System compliant!")
         print(f"   Files checked: {len(all_files)}")
-        print(f"   Critical violations: 0")
-        print(f"   Best practice warnings: 0")
+        print(f"   Violations: 0")
         print()
         print("   ✓ No hardcoded colors")
         print("   ✓ No hardcoded fonts")
         print("   ✓ Grid v2 (MUI v7)")
         print("   ✓ German UI text")
-        print("   ✓ Theme-based shadows/transitions")
+        print("   ✓ Theme-based shadows")
+        print("   ✓ Theme-based transitions")
+        print("   ✓ Theme-based status colors")
         sys.exit(0)
 
     # Print CRITICAL violations first (STRICT first, then CHART)
@@ -280,48 +268,23 @@ def main():
                 print(f"     ... and {len(violations) - 3} more")
             print()
 
-    # Print BEST PRACTICE warnings (informational only)
-    if total_warnings > 0:
-        print(f"💡 BEST PRACTICE: {total_warnings} warnings found (informational - not blocking):")
-        print()
-        for file_path, warnings in sorted(best_practice_warnings.items()):
-            print(f"  📝 {file_path}")
-            for line_num, line, message in warnings[:3]:
-                print(f"     Line {line_num}: {message}")
-                if len(line) > 80:
-                    print(f"       {line[:77]}...")
-                else:
-                    print(f"       {line}")
-            if len(warnings) > 3:
-                print(f"     ... and {len(warnings) - 3} more")
-            print()
-
     print("━" * 50)
 
-    # Exit based on CRITICAL violations only (warnings don't block)
-    if total_strict > 0:
+    # Exit based on violations (ALL patterns now blocking)
+    if total_critical > 0:
         print("🚫 Design System Rules Violated")
         print()
-        print("🔧 How to fix CRITICAL violations:")
+        print("🔧 How to fix violations:")
         print("   • Colors: sx={{ color: 'primary.main' }}")
         print("   • Fonts: sx={{ fontFamily: 'heading' }}")
         print("   • Grid: <Grid size={{ xs: 12, md: 6 }}> (v7)")
         print("   • Text: Use German (Save → Speichern)")
+        print("   • Shadows: sx={{ boxShadow: 2 }} or theme.shadows[2]")
+        print("   • Transitions: theme.transitions.duration.standard")
+        print("   • Status Colors: theme.palette.status.won")
         print()
         print("📖 See: docs/planung/grundlagen/DESIGN_SYSTEM.md")
         sys.exit(1)
-    else:
-        print("✅ SUCCESS: No CRITICAL violations")
-        print(f"   Files checked: {len(all_files)}")
-        print(f"   Critical violations: 0")
-        if total_warnings > 0:
-            print(f"   Best practice warnings: {total_warnings} (informational)")
-            print()
-            print("💡 Consider fixing warnings:")
-            print("   • Shadows: sx={{ boxShadow: 2 }} or theme.shadows[2]")
-            print("   • Transitions: theme.transitions.duration.standard")
-            print("   • Status Colors: theme.palette.status.won")
-        sys.exit(0)
 
 if __name__ == '__main__':
     main()
