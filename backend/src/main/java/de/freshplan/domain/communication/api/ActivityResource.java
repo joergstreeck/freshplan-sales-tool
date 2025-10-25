@@ -1,7 +1,6 @@
 package de.freshplan.domain.communication.api;
 
 import de.freshplan.domain.communication.entity.Activity;
-import de.freshplan.domain.communication.entity.EntityType;
 import de.freshplan.domain.communication.service.ActivityService;
 import de.freshplan.modules.leads.domain.ActivityOutcome;
 import de.freshplan.modules.leads.domain.ActivityType;
@@ -88,7 +87,8 @@ public class ActivityResource {
     List<Activity> activities =
         activityService.getCustomerActivitiesIncludingLeadHistory(customerId);
 
-    Log.infof("Found %d activities for Customer %s (incl. Lead history)", activities.size(), customerId);
+    Log.infof(
+        "Found %d activities for Customer %s (incl. Lead history)", activities.size(), customerId);
     return Response.ok(activities).build();
   }
 
@@ -136,8 +136,7 @@ public class ActivityResource {
     String userId = securityContext.getUserPrincipal().getName();
 
     // Create activity using factory method
-    Activity activity =
-        Activity.forLead(leadId, userId, request.activityType, request.description);
+    Activity activity = Activity.forLead(leadId, userId, request.activityType, request.description);
 
     // Set optional fields
     activity.summary = request.summary;
@@ -245,8 +244,7 @@ public class ActivityResource {
    * <p>Used for POST /api/activities/{entityType}/{entityId}
    */
   public static class CreateActivityRequest {
-    @NotNull(message = "activityType is required")
-    public ActivityType activityType;
+    @NotNull(message = "activityType is required") public ActivityType activityType;
 
     @NotBlank(message = "summary is required")
     public String summary;

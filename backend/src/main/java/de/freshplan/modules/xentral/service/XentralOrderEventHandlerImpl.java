@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.0.0
  */
 @ApplicationScoped
-@Priority(1)  // Highest priority - selected over Mock (which has Priority=Integer.MAX_VALUE)
+@Priority(1) // Highest priority - selected over Mock (which has Priority=Integer.MAX_VALUE)
 public class XentralOrderEventHandlerImpl implements XentralOrderEventHandler {
 
   private static final Logger logger = LoggerFactory.getLogger(XentralOrderEventHandlerImpl.class);
@@ -90,10 +90,8 @@ public class XentralOrderEventHandlerImpl implements XentralOrderEventHandler {
             .findByXentralCustomerId(xentralCustomerId)
             .orElseThrow(
                 () -> {
-                  logger.warn(
-                      "Customer not found for xentralCustomerId: {}", xentralCustomerId);
-                  return new IllegalArgumentException(
-                      "Customer not found: " + xentralCustomerId);
+                  logger.warn("Customer not found for xentralCustomerId: {}", xentralCustomerId);
+                  return new IllegalArgumentException("Customer not found: " + xentralCustomerId);
                 });
 
     // Business Logic: Auto-Activation for PROSPECT customers

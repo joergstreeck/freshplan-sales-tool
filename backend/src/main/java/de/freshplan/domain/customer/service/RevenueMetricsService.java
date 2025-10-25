@@ -10,7 +10,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -19,9 +18,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Revenue Metrics Service
  *
- * Sprint 2.1.7.2: Customer Dashboard - Revenue Metrics from Xentral
+ * <p>Sprint 2.1.7.2: Customer Dashboard - Revenue Metrics from Xentral
  *
- * Calculates revenue metrics (30/90/365 days) and payment behavior from Xentral invoices.
+ * <p>Calculates revenue metrics (30/90/365 days) and payment behavior from Xentral invoices.
  *
  * @author FreshPlan Team
  * @since 2.0.0

@@ -150,9 +150,7 @@ class XentralOrderEventHandlerImplTest {
 
     // Then - reload customer to see changes
     Customer reloaded =
-        customerRepository
-            .findByXentralCustomerId("XENT-CUST-WEBHOOK-001")
-            .orElseThrow();
+        customerRepository.findByXentralCustomerId("XENT-CUST-WEBHOOK-001").orElseThrow();
 
     assertThat(reloaded.getStatus()).isEqualTo(CustomerStatus.AKTIV);
   }
@@ -171,9 +169,7 @@ class XentralOrderEventHandlerImplTest {
 
     // Then - reload customer to see changes
     Customer reloaded =
-        customerRepository
-            .findByXentralCustomerId("XENT-CUST-WEBHOOK-002")
-            .orElseThrow();
+        customerRepository.findByXentralCustomerId("XENT-CUST-WEBHOOK-002").orElseThrow();
 
     assertThat(reloaded.getLastOrderDate()).isEqualTo(deliveryDate);
     assertThat(reloaded.getLastOrderDate()).isNotEqualTo(oldDate);

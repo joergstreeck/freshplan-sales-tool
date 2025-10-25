@@ -76,8 +76,7 @@ public class Activity extends PanacheEntityBase {
    *
    * <p>Future: PARTNER, SUPPLIER, etc.
    */
-  @NotNull
-  @Enumerated(EnumType.STRING)
+  @NotNull @Enumerated(EnumType.STRING)
   @Column(name = "entity_type", nullable = false, length = 20)
   public EntityType entityType;
 
@@ -93,8 +92,7 @@ public class Activity extends PanacheEntityBase {
    *
    * <p>Future: Sprint 2.1.8+ may unify all entities to UUID
    */
-  @NotNull
-  @Column(name = "entity_id", nullable = false, columnDefinition = "TEXT")
+  @NotNull @Column(name = "entity_id", nullable = false, columnDefinition = "TEXT")
   public String entityId;
 
   // ============================================================================
@@ -104,13 +102,12 @@ public class Activity extends PanacheEntityBase {
   /**
    * Activity Type
    *
-   * <p>Enum: QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT, NOTE, FOLLOW_UP,
-   * EMAIL, CALL, SAMPLE_FEEDBACK, FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED,
-   * ORDER, STATUS_CHANGE, CREATED, DELETED, REMINDER_SENT, GRACE_PERIOD_STARTED, EXPIRED,
-   * REACTIVATED, CLOCK_STOPPED, CLOCK_RESUMED
+   * <p>Enum: QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT, NOTE, FOLLOW_UP, EMAIL,
+   * CALL, SAMPLE_FEEDBACK, FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED, ORDER,
+   * STATUS_CHANGE, CREATED, DELETED, REMINDER_SENT, GRACE_PERIOD_STARTED, EXPIRED, REACTIVATED,
+   * CLOCK_STOPPED, CLOCK_RESUMED
    */
-  @NotNull
-  @Enumerated(EnumType.STRING)
+  @NotNull @Enumerated(EnumType.STRING)
   @Column(name = "activity_type", nullable = false, length = 50)
   public ActivityType activityType;
 
@@ -119,8 +116,7 @@ public class Activity extends PanacheEntityBase {
    *
    * <p>When did this activity occur?
    */
-  @NotNull
-  @Column(name = "activity_date", nullable = false)
+  @NotNull @Column(name = "activity_date", nullable = false)
   public LocalDateTime activityDate = LocalDateTime.now();
 
   /**
@@ -232,8 +228,7 @@ public class Activity extends PanacheEntityBase {
    *
    * <p>User who logged the activity
    */
-  @NotNull
-  @Size(max = 50)
+  @NotNull @Size(max = 50)
   @Column(name = "user_id", nullable = false, length = 50)
   public String userId;
 
@@ -257,8 +252,7 @@ public class Activity extends PanacheEntityBase {
    *
    * <p>When was this activity record created?
    */
-  @NotNull
-  @Column(name = "created_at", nullable = false)
+  @NotNull @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt = LocalDateTime.now();
 
   // ============================================================================

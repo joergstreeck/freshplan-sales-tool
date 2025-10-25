@@ -199,7 +199,16 @@ public final class UserResponse {
 
     public UserResponse build() {
       return new UserResponse(
-          id, username, firstName, lastName, email, enabled, roles, xentralSalesRepId, createdAt, updatedAt);
+          id,
+          username,
+          firstName,
+          lastName,
+          email,
+          enabled,
+          roles,
+          xentralSalesRepId,
+          createdAt,
+          updatedAt);
     }
   }
 }

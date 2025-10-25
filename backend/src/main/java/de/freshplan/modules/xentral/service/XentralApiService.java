@@ -119,7 +119,10 @@ public class XentralApiService {
     try {
       logger.debug("Real-API-Mode: Calling Xentral v1 Invoices API");
       List<XentralInvoiceDTO> invoices = realAdapter.getInvoicesByCustomer(xentralCustomerId);
-      logger.info("Real API: Found {} invoices for xentralCustomerId={}", invoices.size(), xentralCustomerId);
+      logger.info(
+          "Real API: Found {} invoices for xentralCustomerId={}",
+          invoices.size(),
+          xentralCustomerId);
       return invoices;
 
     } catch (Exception e) {

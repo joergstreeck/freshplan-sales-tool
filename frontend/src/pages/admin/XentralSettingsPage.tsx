@@ -151,19 +151,20 @@ const XentralSettingsPage: React.FC = () => {
     testMutation.mutate();
   };
 
-  const handleFieldChange = (field: keyof XentralSettings) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: field === 'mockMode' ? event.target.checked : event.target.value,
-    }));
-  };
+  const handleFieldChange =
+    (field: keyof XentralSettings) => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setFormData(prev => ({
+        ...prev,
+        [field]: field === 'mockMode' ? event.target.checked : event.target.value,
+      }));
+    };
 
   if (settingsLoading) {
     return (
       <MainLayoutV2 maxWidth="lg">
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+        <Box
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}
+        >
           <CircularProgress />
         </Box>
       </MainLayoutV2>
@@ -190,7 +191,8 @@ const XentralSettingsPage: React.FC = () => {
         {!settings && !settingsError && (
           <Alert severity="info" sx={{ mb: 3 }}>
             <Typography variant="body2">
-              Keine Einstellungen in der Datenbank gefunden. Es werden die Standard-Einstellungen aus
+              Keine Einstellungen in der Datenbank gefunden. Es werden die Standard-Einstellungen
+              aus
               <code>application.properties</code> verwendet.
             </Typography>
           </Alert>
@@ -243,10 +245,7 @@ const XentralSettingsPage: React.FC = () => {
           <Box sx={{ mb: 3 }}>
             <FormControlLabel
               control={
-                <Switch
-                  checked={showPassword}
-                  onChange={e => setShowPassword(e.target.checked)}
-                />
+                <Switch checked={showPassword} onChange={e => setShowPassword(e.target.checked)} />
               }
               label="Token anzeigen"
             />
@@ -258,10 +257,7 @@ const XentralSettingsPage: React.FC = () => {
           <Box sx={{ mb: 3 }}>
             <FormControlLabel
               control={
-                <Switch
-                  checked={formData.mockMode}
-                  onChange={handleFieldChange('mockMode')}
-                />
+                <Switch checked={formData.mockMode} onChange={handleFieldChange('mockMode')} />
               }
               label="Mock-Mode (Entwicklung)"
             />
@@ -289,7 +285,9 @@ const XentralSettingsPage: React.FC = () => {
               variant="outlined"
               onClick={handleTestConnection}
               disabled={testMutation.isPending || !formData.apiUrl || !formData.apiToken}
-              startIcon={testMutation.isPending ? <CircularProgress size={20} /> : <CloudDoneIcon />}
+              startIcon={
+                testMutation.isPending ? <CircularProgress size={20} /> : <CloudDoneIcon />
+              }
               data-testid="test-connection-button"
             >
               Verbindung testen
@@ -313,8 +311,9 @@ const XentralSettingsPage: React.FC = () => {
             Hinweis zur API-Sicherheit
           </Typography>
           <Typography variant="caption">
-            Der API Token wird verschlüsselt in der Datenbank gespeichert. Stellen Sie sicher, dass Sie einen
-            Token mit minimalen Berechtigungen verwenden (nur Lesen von Kunden, Rechnungen und Mitarbeitern).
+            Der API Token wird verschlüsselt in der Datenbank gespeichert. Stellen Sie sicher, dass
+            Sie einen Token mit minimalen Berechtigungen verwenden (nur Lesen von Kunden, Rechnungen
+            und Mitarbeitern).
           </Typography>
         </Alert>
       </Box>

@@ -86,10 +86,13 @@ export default function ConvertToCustomerDialog({
   const [companyName, setCompanyName] = useState(
     opportunity.customerName || opportunity.leadCompanyName || opportunity.name || ''
   );
-  const [selectedXentralCustomer, setSelectedXentralCustomer] =
-    useState<XentralCustomerDTO | null>(null);
+  const [selectedXentralCustomer, setSelectedXentralCustomer] = useState<XentralCustomerDTO | null>(
+    null
+  );
   const [notes, setNotes] = useState('');
-  const [hierarchyType, setHierarchyType] = useState<'STANDALONE' | 'HEADQUARTER' | 'FILIALE'>('STANDALONE');
+  const [hierarchyType, setHierarchyType] = useState<'STANDALONE' | 'HEADQUARTER' | 'FILIALE'>(
+    'STANDALONE'
+  );
   const [loading, setLoading] = useState(false);
 
   // Xentral Customers
@@ -168,8 +171,7 @@ export default function ConvertToCustomerDialog({
       navigate(`/customers/${customer.id}`);
     } catch (error: any) {
       console.error('Failed to convert opportunity:', error);
-      const errorMessage =
-        error?.response?.data?.message || 'Fehler beim Anlegen des Customers';
+      const errorMessage = error?.response?.data?.message || 'Fehler beim Anlegen des Customers';
       setApiError(errorMessage);
     } finally {
       setLoading(false);
@@ -216,7 +218,7 @@ export default function ConvertToCustomerDialog({
             fullWidth
             label="Firmenname"
             value={companyName}
-            onChange={(e) => setCompanyName(e.target.value)}
+            onChange={e => setCompanyName(e.target.value)}
             required
             InputProps={{
               startAdornment: <BusinessIcon sx={{ mr: 1, color: 'action.active' }} />,
@@ -230,7 +232,9 @@ export default function ConvertToCustomerDialog({
             <Select
               value={hierarchyType}
               label="Unternehmenstyp"
-              onChange={(e) => setHierarchyType(e.target.value as 'STANDALONE' | 'HEADQUARTER' | 'FILIALE')}
+              onChange={e =>
+                setHierarchyType(e.target.value as 'STANDALONE' | 'HEADQUARTER' | 'FILIALE')
+              }
             >
               <MenuItem value="STANDALONE">Einzelbetrieb</MenuItem>
               <MenuItem value="HEADQUARTER">Zentrale/Hauptbetrieb (mit Filialen)</MenuItem>
@@ -239,7 +243,8 @@ export default function ConvertToCustomerDialog({
               </MenuItem>
             </Select>
             <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.75 }}>
-              Einzelbetriebe und Zentralen können sofort angelegt werden. Filialen-Zuordnung folgt in Sprint 2.1.7.7.
+              Einzelbetriebe und Zentralen können sofort angelegt werden. Filialen-Zuordnung folgt
+              in Sprint 2.1.7.7.
             </Typography>
           </FormControl>
 
@@ -249,8 +254,8 @@ export default function ConvertToCustomerDialog({
             loading={loadingCustomers}
             value={selectedXentralCustomer}
             onChange={(event, value) => setSelectedXentralCustomer(value)}
-            getOptionLabel={(option) => `${option.companyName} (${option.xentralId})`}
-            renderInput={(params) => (
+            getOptionLabel={option => `${option.companyName} (${option.xentralId})`}
+            renderInput={params => (
               <TextField
                 {...params}
                 label="Xentral-Kunde verknüpfen (optional)"
@@ -272,7 +277,8 @@ export default function ConvertToCustomerDialog({
                   <Typography variant="body1">{option.companyName}</Typography>
                   <Typography variant="caption" color="text.secondary">
                     Xentral-ID: {option.xentralId}
-                    {option.totalRevenue != null && ` • Umsatz: ${option.totalRevenue.toLocaleString('de-DE')} €`}
+                    {option.totalRevenue != null &&
+                      ` • Umsatz: ${option.totalRevenue.toLocaleString('de-DE')} €`}
                   </Typography>
                 </Stack>
               </Box>
@@ -281,7 +287,7 @@ export default function ConvertToCustomerDialog({
               // Suche in Company-Name UND Xentral-ID
               const lowerInput = inputValue.toLowerCase();
               return options.filter(
-                (option) =>
+                option =>
                   option.companyName.toLowerCase().includes(lowerInput) ||
                   option.xentralId.toLowerCase().includes(lowerInput)
               );
@@ -328,7 +334,7 @@ export default function ConvertToCustomerDialog({
             fullWidth
             label="Notizen (optional)"
             value={notes}
-            onChange={(e) => setNotes(e.target.value)}
+            onChange={e => setNotes(e.target.value)}
             multiline
             rows={3}
             placeholder="Zusätzliche Informationen zur Konvertierung..."

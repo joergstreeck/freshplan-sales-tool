@@ -279,6 +279,12 @@ class XentralV1InvoiceMapperTest {
 
   private XentralV1Invoice createInvoice(String status) {
     return new XentralV1Invoice(
-        "INV-TEST", "RE-TEST", "CUST-TEST", BigDecimal.TEN, LocalDate.now(), LocalDate.now(), status);
+        "INV-TEST",
+        "RE-TEST",
+        "CUST-TEST",
+        BigDecimal.TEN,
+        LocalDate.now(),
+        LocalDate.now(),
+        status);
   }
 }

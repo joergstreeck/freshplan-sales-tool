@@ -283,7 +283,8 @@ public class User extends PanacheEntityBase {
   }
 
   public void setCanSeeUnassignedCustomers(Boolean canSeeUnassignedCustomers) {
-    this.canSeeUnassignedCustomers = canSeeUnassignedCustomers != null ? canSeeUnassignedCustomers : false;
+    this.canSeeUnassignedCustomers =
+        canSeeUnassignedCustomers != null ? canSeeUnassignedCustomers : false;
   }
 
   @Override

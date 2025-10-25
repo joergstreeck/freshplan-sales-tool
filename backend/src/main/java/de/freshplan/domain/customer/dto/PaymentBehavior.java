@@ -3,47 +3,29 @@ package de.freshplan.domain.customer.dto;
 /**
  * Payment Behavior Classification (Ampel-System)
  *
- * Sprint 2.1.7.2: Customer Dashboard - Zahlungsverhalten-Ampel
+ * <p>Sprint 2.1.7.2: Customer Dashboard - Zahlungsverhalten-Ampel
  *
- * Thresholds (based on averageDaysToPay):
- * - EXCELLENT: ≤7 days (Zahlungsziel übertroffen)
- * - GOOD: 8-14 days (Innerhalb Zahlungsziel)
- * - WARNING: 15-30 days (Verzögerte Zahlung)
- * - CRITICAL: >30 days (Kritische Zahlungsmoral)
- * - N_A: No data available
+ * <p>Thresholds (based on averageDaysToPay): - EXCELLENT: ≤7 days (Zahlungsziel übertroffen) -
+ * GOOD: 8-14 days (Innerhalb Zahlungsziel) - WARNING: 15-30 days (Verzögerte Zahlung) - CRITICAL:
+ * >30 days (Kritische Zahlungsmoral) - N_A: No data available
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 public enum PaymentBehavior {
-  /**
-   * Excellent payment behavior (≤7 days)
-   * Color: Green
-   */
+  /** Excellent payment behavior (≤7 days) Color: Green */
   EXCELLENT,
 
-  /**
-   * Good payment behavior (8-14 days)
-   * Color: Light Green / Blue
-   */
+  /** Good payment behavior (8-14 days) Color: Light Green / Blue */
   GOOD,
 
-  /**
-   * Warning - delayed payment (15-30 days)
-   * Color: Orange
-   */
+  /** Warning - delayed payment (15-30 days) Color: Orange */
   WARNING,
 
-  /**
-   * Critical payment behavior (>30 days)
-   * Color: Red
-   */
+  /** Critical payment behavior (>30 days) Color: Red */
   CRITICAL,
 
-  /**
-   * Not available - no payment data
-   * Color: Gray
-   */
+  /** Not available - no payment data Color: Gray */
   N_A;
 
   /**

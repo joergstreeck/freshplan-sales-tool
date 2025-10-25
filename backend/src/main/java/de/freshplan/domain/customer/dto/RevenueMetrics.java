@@ -6,12 +6,9 @@ import java.time.LocalDate;
 /**
  * Revenue Metrics DTO
  *
- * Sprint 2.1.7.2: Customer Dashboard - Revenue Metrics from Xentral
+ * <p>Sprint 2.1.7.2: Customer Dashboard - Revenue Metrics from Xentral
  *
- * Contains:
- * - Revenue for 30/90/365 days
- * - Payment behavior classification
- * - Average days to pay
+ * <p>Contains: - Revenue for 30/90/365 days - Payment behavior classification - Average days to pay
  * - Last order date (for churn detection)
  *
  * @author FreshPlan Team
@@ -32,12 +29,7 @@ public record RevenueMetrics(
    */
   public static RevenueMetrics empty() {
     return new RevenueMetrics(
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        BigDecimal.ZERO,
-        PaymentBehavior.N_A,
-        null,
-        null);
+        BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, PaymentBehavior.N_A, null, null);
   }
 
   /**

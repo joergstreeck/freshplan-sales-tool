@@ -31,10 +31,7 @@ describe('ChurnRiskAlert', () => {
       recentDate.setDate(recentDate.getDate() - 30); // 30 days ago
 
       const { container } = renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={recentDate.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={recentDate.toISOString()} churnThresholdDays={90} />
       );
 
       // No alert should be rendered
@@ -46,10 +43,7 @@ describe('ChurnRiskAlert', () => {
       oldDate.setDate(oldDate.getDate() - 100); // 100 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={oldDate.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={oldDate.toISOString()} churnThresholdDays={90} />
       );
 
       expect(screen.getByText(/Churn-Risiko: Inaktiver Kunde/i)).toBeInTheDocument();
@@ -59,12 +53,7 @@ describe('ChurnRiskAlert', () => {
     });
 
     it('shows error alert when lastOrderDate is null (no orders)', () => {
-      renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={null}
-          churnThresholdDays={90}
-        />
-      );
+      renderWithTheme(<ChurnRiskAlert lastOrderDate={null} churnThresholdDays={90} />);
 
       expect(screen.getByText(/Churn-Risiko: Keine Bestellungen/i)).toBeInTheDocument();
       expect(screen.getByText(/hat noch keine Bestellungen aufgegeben/i)).toBeInTheDocument();
@@ -77,10 +66,7 @@ describe('ChurnRiskAlert', () => {
       oldDate.setDate(oldDate.getDate() - 20); // 20 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={oldDate.toISOString()}
-          churnThresholdDays={14}
-        />
+        <ChurnRiskAlert lastOrderDate={oldDate.toISOString()} churnThresholdDays={14} />
       );
 
       // 20 days >= 14 days threshold → should show alert
@@ -94,10 +80,7 @@ describe('ChurnRiskAlert', () => {
       recentDate.setDate(recentDate.getDate() - 200); // 200 days ago
 
       const { container } = renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={recentDate.toISOString()}
-          churnThresholdDays={365}
-        />
+        <ChurnRiskAlert lastOrderDate={recentDate.toISOString()} churnThresholdDays={365} />
       );
 
       // 200 days < 365 days threshold → no alert
@@ -127,10 +110,7 @@ describe('ChurnRiskAlert', () => {
       oldDate.setDate(oldDate.getDate() - 120); // 120 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={oldDate.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={oldDate.toISOString()} churnThresholdDays={90} />
       );
 
       // Should show German time ago text (e.g., "vor 4 Monaten")
@@ -143,10 +123,7 @@ describe('ChurnRiskAlert', () => {
       oldDate.setDate(oldDate.getDate() - 150); // 150 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={oldDate.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={oldDate.toISOString()} churnThresholdDays={90} />
       );
 
       // Should show "(150 Tage)"
@@ -160,10 +137,7 @@ describe('ChurnRiskAlert', () => {
       exactDate.setDate(exactDate.getDate() - 90); // Exactly 90 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={exactDate.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={exactDate.toISOString()} churnThresholdDays={90} />
       );
 
       // Exactly at threshold (90 days) → SHOW alert (>= threshold)
@@ -176,10 +150,7 @@ describe('ChurnRiskAlert', () => {
       oneDayOver.setDate(oneDayOver.getDate() - 91); // 91 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={oneDayOver.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={oneDayOver.toISOString()} churnThresholdDays={90} />
       );
 
       // 91 days > 90 days threshold → should show alert
@@ -191,10 +162,7 @@ describe('ChurnRiskAlert', () => {
       veryOldDate.setDate(veryOldDate.getDate() - 500); // 500 days ago
 
       renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={veryOldDate.toISOString()}
-          churnThresholdDays={90}
-        />
+        <ChurnRiskAlert lastOrderDate={veryOldDate.toISOString()} churnThresholdDays={90} />
       );
 
       expect(screen.getByText(/Churn-Risiko: Inaktiver Kunde/i)).toBeInTheDocument();
@@ -204,16 +172,13 @@ describe('ChurnRiskAlert', () => {
 
   describe('Localization', () => {
     it('uses German labels', () => {
-      renderWithTheme(
-        <ChurnRiskAlert
-          lastOrderDate={null}
-          churnThresholdDays={90}
-        />
-      );
+      renderWithTheme(<ChurnRiskAlert lastOrderDate={null} churnThresholdDays={90} />);
 
       // Check German labels - use more specific text matchers
       expect(screen.getByText(/Churn-Risiko: Keine Bestellungen/i)).toBeInTheDocument();
-      expect(screen.getByText(/Dieser Kunde hat noch keine Bestellungen aufgegeben/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Dieser Kunde hat noch keine Bestellungen aufgegeben/i)
+      ).toBeInTheDocument();
     });
   });
 });

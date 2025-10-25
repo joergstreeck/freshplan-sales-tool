@@ -2,7 +2,6 @@ package de.freshplan.modules.xentral.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -25,14 +24,12 @@ import de.freshplan.modules.xentral.dto.v2.XentralV2Customer.General;
 import de.freshplan.modules.xentral.dto.v2.XentralV2Customer.SalesRep;
 import de.freshplan.modules.xentral.dto.v2.XentralV2CustomerMapper;
 import de.freshplan.modules.xentral.dto.v2.XentralV2CustomerResponse;
-import de.freshplan.modules.xentral.service.FinancialMetricsCalculator.FinancialMetrics;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -87,10 +84,10 @@ class XentralV1V2ApiAdapterTest {
             "active",
             new SalesRep("SALES-002", "Jane Smith", "jane@example.com"));
 
-    var customersResponse = new XentralV2CustomerResponse(List.of(v2Customer1, v2Customer2), null, null);
+    var customersResponse =
+        new XentralV2CustomerResponse(List.of(v2Customer1, v2Customer2), null, null);
 
-    when(customersV2Client.getCustomers(anyString(), eq(1), eq(100)))
-        .thenReturn(customersResponse);
+    when(customersV2Client.getCustomers(anyString(), eq(1), eq(100))).thenReturn(customersResponse);
 
     // Mock invoices (empty = no financial data enrichment)
     when(invoicesV1Client.getInvoicesByCustomer(anyString(), eq("CUST-001"), eq(1), eq(100)))
@@ -118,8 +115,7 @@ class XentralV1V2ApiAdapterTest {
   void testGetCustomers_EmptyResponse() {
     // Given: v2 API returns empty list
     var emptyResponse = new XentralV2CustomerResponse(List.of(), null, null);
-    when(customersV2Client.getCustomers(anyString(), anyInt(), anyInt()))
-        .thenReturn(emptyResponse);
+    when(customersV2Client.getCustomers(anyString(), anyInt(), anyInt())).thenReturn(emptyResponse);
 
     // When
     List<XentralCustomerDTO> customers = adapter.getCustomers();
@@ -176,8 +172,7 @@ class XentralV1V2ApiAdapterTest {
   void testGetCustomerById_NotFound() {
     // Given: v2 API returns empty list
     var emptyResponse = new XentralV2CustomerResponse(List.of(), null, null);
-    when(customersV2Client.getCustomerById(anyString(), eq("CUST-999")))
-        .thenReturn(emptyResponse);
+    when(customersV2Client.getCustomerById(anyString(), eq("CUST-999"))).thenReturn(emptyResponse);
 
     // When
     XentralCustomerDTO customer = adapter.getCustomerById("CUST-999");
@@ -206,7 +201,8 @@ class XentralV1V2ApiAdapterTest {
             "active",
             new SalesRep("SALES-456", "Jane", "jane@example.com"));
 
-    var customersResponse = new XentralV2CustomerResponse(List.of(v2Customer1, v2Customer2), null, null);
+    var customersResponse =
+        new XentralV2CustomerResponse(List.of(v2Customer1, v2Customer2), null, null);
     when(customersV2Client.getCustomers(anyString(), anyInt(), anyInt()))
         .thenReturn(customersResponse);
 
@@ -260,10 +256,7 @@ class XentralV1V2ApiAdapterTest {
             LocalDate.of(2024, 9, 15));
     var balance2 =
         new XentralV1InvoiceBalance(
-            new BigDecimal("2000.00"),
-            BigDecimal.ZERO,
-            new BigDecimal("2000.00"),
-            null);
+            new BigDecimal("2000.00"), BigDecimal.ZERO, new BigDecimal("2000.00"), null);
 
     when(invoicesV1Client.getInvoiceBalance(anyString(), eq("INV-001"))).thenReturn(balance1);
     when(invoicesV1Client.getInvoiceBalance(anyString(), eq("INV-002"))).thenReturn(balance2);
@@ -327,8 +320,7 @@ class XentralV1V2ApiAdapterTest {
             "EMP-002", "Jane", "Smith", "jane@example.com", "manager", "Management");
 
     var employeeResponse =
-        new XentralEmployeesV1Client.XentralV1EmployeeResponse(
-            List.of(employee1, employee2), null);
+        new XentralEmployeesV1Client.XentralV1EmployeeResponse(List.of(employee1, employee2), null);
     when(employeesV1Client.getEmployees(anyString(), anyInt(), anyInt()))
         .thenReturn(employeeResponse);
 

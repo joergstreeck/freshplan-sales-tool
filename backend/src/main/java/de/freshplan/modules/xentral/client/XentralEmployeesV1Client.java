@@ -69,12 +69,7 @@ public interface XentralEmployeesV1Client {
   /** Employee entity from v1 API. */
   @JsonIgnoreProperties(ignoreUnknown = true)
   record XentralV1Employee(
-      String id,
-      String firstName,
-      String lastName,
-      String email,
-      String role,
-      String department) {
+      String id, String firstName, String lastName, String email, String role, String department) {
     public String getFullName() {
       return firstName + " " + lastName;
     }

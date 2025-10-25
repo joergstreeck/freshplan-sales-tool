@@ -11,8 +11,8 @@
 #   → Überspringbar mit "y"
 #
 # STUFE 2 (SCHARF): TestDataService.java geändert
-#   → ZWINGT Aktualisierung von TEST_DATA_SCENARIOS.md UND TEST_DATA_GUIDE.md
-#   → Commit BLOCKIERT wenn Docs fehlen
+#   → ZWINGT Aktualisierung von TEST_DATA_QUALITY_CONCEPT.md
+#   → Commit BLOCKIERT wenn Doku fehlt
 #   → Nur überspringbar mit --no-verify (NOT RECOMMENDED)
 #
 # Installation:
@@ -37,8 +37,7 @@ STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
 # Flags
 ENTITY_ENUM_MIGRATION_CHANGED=false
 TEST_DATA_SERVICE_CHANGED=false
-SCENARIOS_DOC_CHANGED=false
-GUIDE_DOC_CHANGED=false
+QUALITY_CONCEPT_DOC_CHANGED=false
 
 # ============================================================================
 # PRÜFE 1: Entity/Enum/Migration Änderungen
@@ -60,12 +59,8 @@ fi
 # PRÜFE 3: Dokumentations-Änderungen
 # ============================================================================
 
-if echo "$STAGED_FILES" | grep -q "TEST_DATA_SCENARIOS.md"; then
-  SCENARIOS_DOC_CHANGED=true
-fi
-
-if echo "$STAGED_FILES" | grep -q "TEST_DATA_GUIDE.md"; then
-  GUIDE_DOC_CHANGED=true
+if echo "$STAGED_FILES" | grep -q "TEST_DATA_QUALITY_CONCEPT.md"; then
+  QUALITY_CONCEPT_DOC_CHANGED=true
 fi
 
 # ============================================================================
@@ -76,50 +71,34 @@ if [ "$TEST_DATA_SERVICE_CHANGED" = true ]; then
   echo ""
   echo -e "${RED}🚨 KRITISCH: TestDataService wurde geändert!${NC}"
   echo ""
-  echo "   Du MUSST die Dokumentationen aktualisieren:"
+  echo "   Du MUSST die Dokumentation aktualisieren:"
   echo ""
 
-  if [ "$SCENARIOS_DOC_CHANGED" = false ]; then
-    echo -e "   ${RED}❌ TEST_DATA_SCENARIOS.md nicht geändert${NC}"
+  if [ "$QUALITY_CONCEPT_DOC_CHANGED" = false ]; then
+    echo -e "   ${RED}❌ TEST_DATA_QUALITY_CONCEPT.md nicht geändert${NC}"
   else
-    echo -e "   ${GREEN}✅ TEST_DATA_SCENARIOS.md aktualisiert${NC}"
-  fi
-
-  if [ "$GUIDE_DOC_CHANGED" = false ]; then
-    echo -e "   ${RED}❌ TEST_DATA_GUIDE.md nicht geändert${NC}"
-  else
-    echo -e "   ${GREEN}✅ TEST_DATA_GUIDE.md aktualisiert${NC}"
+    echo -e "   ${GREEN}✅ TEST_DATA_QUALITY_CONCEPT.md aktualisiert${NC}"
   fi
 
   echo ""
 
-  # Wenn BEIDE Docs fehlen → BLOCKIEREN
-  if [ "$SCENARIOS_DOC_CHANGED" = false ] || [ "$GUIDE_DOC_CHANGED" = false ]; then
-    echo -e "${RED}   Commit BLOCKIERT. Bitte aktualisiere BEIDE Docs.${NC}"
+  # Wenn Doku fehlt → BLOCKIEREN
+  if [ "$QUALITY_CONCEPT_DOC_CHANGED" = false ]; then
+    echo -e "${RED}   Commit BLOCKIERT. Bitte aktualisiere die Dokumentation.${NC}"
     echo ""
     echo "   📋 Erforderliche Änderungen:"
-
-    if [ "$SCENARIOS_DOC_CHANGED" = false ]; then
-      echo "      1. docs/testing/TEST_DATA_SCENARIOS.md aktualisieren"
-      echo "         - Szenario-ID vergeben (z.B. FEAT-01)"
-      echo "         - Details dokumentieren (Status, Test-Daten, Features)"
-      echo "         - Coverage-Tabelle aktualisieren"
-    fi
-
-    if [ "$GUIDE_DOC_CHANGED" = false ]; then
-      echo "      2. docs/testing/TEST_DATA_GUIDE.md aktualisieren"
-      echo "         - Quick Reference erweitern (Welcher Kunde hat was?)"
-      echo "         - Feature-Testing Matrix erweitern"
-    fi
-
+    echo "      1. docs/testing/TEST_DATA_QUALITY_CONCEPT.md aktualisieren"
+    echo "         - Szenario-Matrix erweitern (falls neue Entities)"
+    echo "         - Datenmodell-Anforderungen ergänzen (falls neue Felder)"
+    echo "         - Implementierungsplan aktualisieren"
     echo ""
     echo -e "   ${YELLOW}Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
 
     exit 1
   else
-    # Beide Docs aktualisiert → SUCCESS
-    echo -e "${GREEN}✅ TestDataService + Docs aktualisiert${NC}"
+    # Doku aktualisiert → SUCCESS
+    echo -e "${GREEN}✅ TestDataService + Doku aktualisiert${NC}"
     echo -e "${GREEN}✅ Commit erlaubt${NC}"
     echo ""
     exit 0
@@ -137,9 +116,9 @@ if [ "$ENTITY_ENUM_MIGRATION_CHANGED" = true ] && [ "$TEST_DATA_SERVICE_CHANGED"
   echo "   Du hast Entities/Enums/Migrations geändert."
   echo "   Bitte prüfe, ob TEST-DATEN aktualisiert werden müssen:"
   echo ""
-  echo "   1. Szenarien-Matrix: docs/testing/TEST_DATA_SCENARIOS.md"
+  echo "   1. Datenmodell: docs/testing/TEST_DATA_QUALITY_CONCEPT.md"
   echo "   2. TestDataService: Neue Szenarien hinzufügen?"
-  echo "   3. Test-Daten-Guide: docs/testing/TEST_DATA_GUIDE.md"
+  echo "   3. Szenario-Matrix: Neue Test-Fälle erforderlich?"
   echo ""
   echo -e "   ${YELLOW}Zum Überspringen: git commit --no-verify${NC}"
   echo ""

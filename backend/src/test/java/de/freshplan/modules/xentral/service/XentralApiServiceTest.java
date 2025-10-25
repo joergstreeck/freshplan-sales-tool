@@ -2,7 +2,6 @@ package de.freshplan.modules.xentral.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -78,14 +77,7 @@ class XentralApiServiceTest {
       // Given
       var mockCustomer =
           new XentralCustomerDTO(
-              "MOCK-123",
-              "Mock GmbH",
-              "test@mock.com",
-              null,
-              null,
-              null,
-              null,
-              null);
+              "MOCK-123", "Mock GmbH", "test@mock.com", null, null, null, null, null);
 
       when(mockClient.getCustomerById("MOCK-123")).thenReturn(mockCustomer);
 

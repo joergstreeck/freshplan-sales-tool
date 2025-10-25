@@ -241,7 +241,8 @@ public class LeadConvertService {
         customerContact.persist();
       }
       Log.infof(
-          "Copied %d contacts from Lead %d to Customer %s", lead.contacts.size(), leadId, customer.getId());
+          "Copied %d contacts from Lead %d to Customer %s",
+          lead.contacts.size(), leadId, customer.getId());
     } else {
       // FALLBACK: Legacy Lead with Single-Field contact (no LeadContact collection)
       // Parse lead.contactPerson into firstName/lastName

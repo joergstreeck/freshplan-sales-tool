@@ -144,9 +144,8 @@ public class Customer extends PanacheEntityBase {
   private String xentralCustomerId;
 
   /**
-   * Churn-Alarm Schwelle in Tagen (Sprint 2.1.7.2 - D4, Migration V10036)
-   * Kundenspezifisch konfigurierbar (Default: 90 Tage)
-   * Gültiger Bereich: 14-365 Tage
+   * Churn-Alarm Schwelle in Tagen (Sprint 2.1.7.2 - D4, Migration V10036) Kundenspezifisch
+   * konfigurierbar (Default: 90 Tage) Gültiger Bereich: 14-365 Tage
    */
   @Column(name = "churn_threshold_days", nullable = false)
   private Integer churnThresholdDays = 90;

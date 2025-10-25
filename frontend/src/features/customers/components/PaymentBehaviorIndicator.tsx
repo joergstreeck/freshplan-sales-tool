@@ -77,9 +77,7 @@ export const PaymentBehaviorIndicator: React.FC<PaymentBehaviorIndicatorProps> =
     return (
       <Alert severity="info">
         <AlertTitle>Zahlungsverhalten: Keine Daten</AlertTitle>
-        <Typography variant="body2">
-          Es liegen noch keine Zahlungsdaten vor.
-        </Typography>
+        <Typography variant="body2">Es liegen noch keine Zahlungsdaten vor.</Typography>
       </Alert>
     );
   }

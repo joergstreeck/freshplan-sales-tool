@@ -9,7 +9,6 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
@@ -138,7 +137,8 @@ class FinancialMetricsCalculatorTest {
                     LocalDate.of(2024, 10, 15)));
 
     // When
-    FinancialMetrics metrics = calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
+    FinancialMetrics metrics =
+        calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
 
     // Then: totalRevenue = 1000.00 + 2500.00 + 750.50 = 4250.50
     assertThat(metrics.totalRevenue()).isEqualByComparingTo(new BigDecimal("4250.50"));
@@ -246,7 +246,8 @@ class FinancialMetricsCalculatorTest {
                     LocalDate.of(2024, 10, 1))); // 30 days
 
     // When
-    FinancialMetrics metrics = calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
+    FinancialMetrics metrics =
+        calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
 
     // Then: averageDaysToPay = (10 + 20 + 30) / 3 = 20
     assertThat(metrics.averageDaysToPay()).isEqualTo(20);
@@ -269,11 +270,11 @@ class FinancialMetricsCalculatorTest {
     var balances =
         Map.of(
             "INV-001",
-                new XentralV1InvoiceBalance(
-                    new BigDecimal("1000.00"),
-                    BigDecimal.ZERO,
-                    new BigDecimal("1000.00"),
-                    null)); // No payment date
+            new XentralV1InvoiceBalance(
+                new BigDecimal("1000.00"),
+                BigDecimal.ZERO,
+                new BigDecimal("1000.00"),
+                null)); // No payment date
 
     // When
     FinancialMetrics metrics = calculator.calculate(List.of(invoice1), balances);
@@ -338,10 +339,12 @@ class FinancialMetricsCalculatorTest {
                     LocalDate.of(2024, 10, 7))); // 6 days
 
     // When
-    FinancialMetrics metrics = calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
+    FinancialMetrics metrics =
+        calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
 
     // Then
-    assertThat(metrics.totalRevenue()).isEqualByComparingTo(new BigDecimal("2500.00")); // 1000 + 1500
+    assertThat(metrics.totalRevenue())
+        .isEqualByComparingTo(new BigDecimal("2500.00")); // 1000 + 1500
     assertThat(metrics.averageDaysToPay()).isEqualTo(10); // (14 + 6) / 2 = 10
     assertThat(metrics.lastOrderDate()).isEqualTo(LocalDate.of(2024, 10, 1));
   }
@@ -381,7 +384,8 @@ class FinancialMetricsCalculatorTest {
             "paid");
 
     // When
-    FinancialMetrics metrics = calculator.calculate(List.of(invoice1, invoice2, invoice3), Map.of());
+    FinancialMetrics metrics =
+        calculator.calculate(List.of(invoice1, invoice2, invoice3), Map.of());
 
     // Then: lastOrderDate should be 2024-10-01
     assertThat(metrics.lastOrderDate()).isEqualTo(LocalDate.of(2024, 10, 1));
@@ -471,11 +475,11 @@ class FinancialMetricsCalculatorTest {
     var balance =
         Map.of(
             "INV-001",
-                new XentralV1InvoiceBalance(
-                    new BigDecimal("1500.00"),
-                    new BigDecimal("1500.00"),
-                    BigDecimal.ZERO,
-                    LocalDate.of(2024, 9, 15))); // 14 days
+            new XentralV1InvoiceBalance(
+                new BigDecimal("1500.00"),
+                new BigDecimal("1500.00"),
+                BigDecimal.ZERO,
+                LocalDate.of(2024, 9, 15))); // 14 days
 
     // When
     FinancialMetrics metrics = calculator.calculate(List.of(invoice), balance);
@@ -542,7 +546,8 @@ class FinancialMetricsCalculatorTest {
                     LocalDate.of(2024, 9, 18))); // 17 days
 
     // When
-    FinancialMetrics metrics = calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
+    FinancialMetrics metrics =
+        calculator.calculate(List.of(invoice1, invoice2, invoice3), balances);
 
     // Then: (15 + 16 + 17) / 3 = 16.0 (exact)
     assertThat(metrics.averageDaysToPay()).isEqualTo(16);
@@ -657,11 +662,11 @@ class FinancialMetricsCalculatorTest {
     var balance =
         Map.of(
             "INV-001",
-                new XentralV1InvoiceBalance(
-                    new BigDecimal("1000.00"),
-                    new BigDecimal("1000.00"),
-                    BigDecimal.ZERO,
-                    LocalDate.of(2024, 9, 10))); // Payment BEFORE invoice date
+            new XentralV1InvoiceBalance(
+                new BigDecimal("1000.00"),
+                new BigDecimal("1000.00"),
+                BigDecimal.ZERO,
+                LocalDate.of(2024, 9, 10))); // Payment BEFORE invoice date
 
     // When
     FinancialMetrics metrics = calculator.calculate(List.of(invoice), balance);
@@ -697,11 +702,11 @@ class FinancialMetricsCalculatorTest {
     var balances =
         Map.of(
             "INV-001",
-                new XentralV1InvoiceBalance(
-                    new BigDecimal("1000.00"),
-                    new BigDecimal("1000.00"),
-                    BigDecimal.ZERO,
-                    LocalDate.of(2024, 9, 10)));
+            new XentralV1InvoiceBalance(
+                new BigDecimal("1000.00"),
+                new BigDecimal("1000.00"),
+                BigDecimal.ZERO,
+                LocalDate.of(2024, 9, 10)));
     // INV-002 has NO balance data
 
     // When

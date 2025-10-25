@@ -70,15 +70,14 @@ public class XentralSettingsService {
    */
   @Transactional
   public XentralSettingsDTO updateSettings(XentralSettingsDTO dto) {
-    logger.info(
-        "updateSettings() - Updating Xentral settings (mockMode={})",
-        dto.mockMode());
+    logger.info("updateSettings() - Updating Xentral settings (mockMode={})", dto.mockMode());
 
     // Validate DTO
     dto.validate();
 
     // UPSERT: Create or update
-    XentralSettings entity = repository.createOrUpdate(dto.apiUrl(), dto.apiToken(), dto.mockMode());
+    XentralSettings entity =
+        repository.createOrUpdate(dto.apiUrl(), dto.apiToken(), dto.mockMode());
 
     logger.info("Xentral settings updated successfully (id={})", entity.getId());
 

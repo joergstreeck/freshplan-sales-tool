@@ -14,8 +14,7 @@ import java.util.List;
  * @see XentralV2Customer
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public record XentralV2CustomerResponse(
-    List<XentralV2Customer> data, Extra extra, Cursor cursor) {
+public record XentralV2CustomerResponse(List<XentralV2Customer> data, Extra extra, Cursor cursor) {
 
   @JsonIgnoreProperties(ignoreUnknown = true)
   public record Extra(Integer totalCount, Integer pageSize, Integer currentPage) {}

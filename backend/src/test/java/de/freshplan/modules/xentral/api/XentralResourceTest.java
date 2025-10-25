@@ -226,13 +226,28 @@ class XentralResourceTest {
   @DisplayName("All endpoints require authentication (401 without auth)")
   void testAllEndpoints_NoAuth_Returns401() {
     // GET /customers
-    given().queryParam("salesRepId", "SALES-REP-001").when().get("/api/xentral/customers").then().statusCode(401);
+    given()
+        .queryParam("salesRepId", "SALES-REP-001")
+        .when()
+        .get("/api/xentral/customers")
+        .then()
+        .statusCode(401);
 
     // GET /customers/{id}
-    given().pathParam("xentralId", "XENT-001").when().get("/api/xentral/customers/{xentralId}").then().statusCode(401);
+    given()
+        .pathParam("xentralId", "XENT-001")
+        .when()
+        .get("/api/xentral/customers/{xentralId}")
+        .then()
+        .statusCode(401);
 
     // GET /invoices
-    given().queryParam("customerId", "XENT-001").when().get("/api/xentral/invoices").then().statusCode(401);
+    given()
+        .queryParam("customerId", "XENT-001")
+        .when()
+        .get("/api/xentral/invoices")
+        .then()
+        .statusCode(401);
 
     // GET /employees/sales-reps
     given().when().get("/api/xentral/employees/sales-reps").then().statusCode(401);

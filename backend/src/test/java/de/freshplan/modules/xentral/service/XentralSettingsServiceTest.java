@@ -239,8 +239,7 @@ class XentralSettingsServiceTest {
   @DisplayName("testConnection() - API error → ERROR response")
   void testConnection_ApiError_ReturnsErrorResponse() {
     // GIVEN: API throws exception
-    when(xentralApiService.getAllSalesReps())
-        .thenThrow(new RuntimeException("Connection timeout"));
+    when(xentralApiService.getAllSalesReps()).thenThrow(new RuntimeException("Connection timeout"));
 
     // WHEN
     ConnectionTestResponse response = service.testConnection();
@@ -251,8 +250,7 @@ class XentralSettingsServiceTest {
         response.message().contains("Verbindung fehlgeschlagen"),
         "Message should contain 'Verbindung fehlgeschlagen'");
     assertTrue(
-        response.message().contains("Connection timeout"),
-        "Message should contain error details");
+        response.message().contains("Connection timeout"), "Message should contain error details");
 
     verify(xentralApiService, times(1)).getAllSalesReps();
   }

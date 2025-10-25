@@ -16,7 +16,6 @@ import de.freshplan.modules.xentral.dto.v2.XentralV2CustomerResponse;
 import de.freshplan.modules.xentral.service.FinancialMetricsCalculator.FinancialMetrics;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -124,7 +123,8 @@ public class XentralV1V2ApiAdapter {
     try {
       String authHeader = "Bearer " + apiToken;
 
-      XentralV2CustomerResponse response = customersV2Client.getCustomerById(authHeader, customerId);
+      XentralV2CustomerResponse response =
+          customersV2Client.getCustomerById(authHeader, customerId);
 
       if (!response.hasData()) {
         LOG.warnf("Customer not found: %s", customerId);
@@ -239,7 +239,10 @@ public class XentralV1V2ApiAdapter {
 
       // Enrich customer with financial data
       return customerMapper.enrichWithFinancialData(
-          baseCustomer, metrics.totalRevenue(), metrics.averageDaysToPay(), metrics.lastOrderDate());
+          baseCustomer,
+          metrics.totalRevenue(),
+          metrics.averageDaysToPay(),
+          metrics.lastOrderDate());
 
     } catch (Exception e) {
       LOG.errorf(e, "Failed to enrich customer with financial data: %s", customer.id());
@@ -263,7 +266,8 @@ public class XentralV1V2ApiAdapter {
 
     for (XentralV1Invoice invoice : invoices) {
       try {
-        XentralV1InvoiceBalance balance = invoicesV1Client.getInvoiceBalance(authHeader, invoice.id());
+        XentralV1InvoiceBalance balance =
+            invoicesV1Client.getInvoiceBalance(authHeader, invoice.id());
         balances.put(invoice.id(), balance);
       } catch (Exception e) {
         LOG.warnf(e, "Failed to fetch balance for invoice: %s", invoice.id());

@@ -55,9 +55,7 @@ public class ActivityService {
    */
   public List<Activity> getActivities(EntityType entityType, String entityId) {
     return Activity.find(
-            "entityType = ?1 AND entityId = ?2 ORDER BY activityDate DESC",
-            entityType,
-            entityId)
+            "entityType = ?1 AND entityId = ?2 ORDER BY activityDate DESC", entityType, entityId)
         .list();
   }
 
@@ -73,8 +71,8 @@ public class ActivityService {
    *   <li>Step 4: Merge + sort by date DESC
    * </ul>
    *
-   * <p><b>Frontend Use:</b> CustomerDetailPage Activity-Tab shows badge "Als Lead erfasst" for
-   * Lead activities.
+   * <p><b>Frontend Use:</b> CustomerDetailPage Activity-Tab shows badge "Als Lead erfasst" for Lead
+   * activities.
    *
    * @param customerId Customer UUID
    * @return Unified Timeline (Lead + Customer Activities)
@@ -88,7 +86,8 @@ public class ActivityService {
     }
 
     // 2. Get Customer Activities (entity_type = CUSTOMER, entity_id = customerId)
-    List<Activity> activities = new ArrayList<>(getActivities(EntityType.CUSTOMER, customerId.toString()));
+    List<Activity> activities =
+        new ArrayList<>(getActivities(EntityType.CUSTOMER, customerId.toString()));
 
     // 3. If converted from Lead → include Lead Activities!
     if (customer.getOriginalLeadId() != null) {
@@ -125,9 +124,8 @@ public class ActivityService {
    * Create Activity
    *
    * <p><b>Factory Pattern:</b> Use {@link Activity#forLead(Long, String,
-   * de.freshplan.modules.leads.domain.ActivityType, String)} or {@link
-   * Activity#forCustomer(UUID, String, de.freshplan.modules.leads.domain.ActivityType, String)}
-   * instead!
+   * de.freshplan.modules.leads.domain.ActivityType, String)} or {@link Activity#forCustomer(UUID,
+   * String, de.freshplan.modules.leads.domain.ActivityType, String)} instead!
    *
    * @param activity Activity to persist
    * @return Persisted Activity

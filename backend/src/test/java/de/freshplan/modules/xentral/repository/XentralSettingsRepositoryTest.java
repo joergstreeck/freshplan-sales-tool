@@ -157,8 +157,7 @@ class XentralSettingsRepositoryTest {
     long secondCount = repository.count();
     assertEquals(
         1, secondCount, "Should STILL have exactly ONE row after second createOrUpdate()!");
-    assertEquals(
-        firstCount, secondCount, "Row count should NOT increase (UPSERT, not INSERT!)");
+    assertEquals(firstCount, secondCount, "Row count should NOT increase (UPSERT, not INSERT!)");
   }
 
   @Test

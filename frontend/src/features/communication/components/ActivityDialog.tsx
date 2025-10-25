@@ -204,9 +204,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={handleCancel} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {activity ? 'Aktivität bearbeiten' : 'Neue Aktivität'}
-      </DialogTitle>
+      <DialogTitle>{activity ? 'Aktivität bearbeiten' : 'Neue Aktivität'}</DialogTitle>
 
       <DialogContent>
         {error && (
@@ -224,9 +222,9 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
               id="activity-type"
               value={activityType}
               label="Typ"
-              onChange={(e) => setActivityType(e.target.value)}
+              onChange={e => setActivityType(e.target.value)}
             >
-              {ACTIVITY_TYPE_OPTIONS.map((option) => (
+              {ACTIVITY_TYPE_OPTIONS.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -241,7 +239,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
             type="datetime-local"
             label="Datum/Zeit"
             value={activityDate}
-            onChange={(e) => setActivityDate(e.target.value)}
+            onChange={e => setActivityDate(e.target.value)}
             InputLabelProps={{ shrink: true }}
           />
 
@@ -252,7 +250,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
             label="Zusammenfassung"
             placeholder="z.B. Telefonat Küchenchef - Interesse an Bio-Gemüse-Abo"
             value={summary}
-            onChange={(e) => setSummary(e.target.value)}
+            onChange={e => setSummary(e.target.value)}
             helperText="Kurze Zusammenfassung der Aktivität (max. 500 Zeichen)"
             inputProps={{ maxLength: 500 }}
           />
@@ -263,7 +261,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
             label="Notizen"
             placeholder="Detaillierte Notizen zur Aktivität..."
             value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            onChange={e => setDescription(e.target.value)}
             multiline
             rows={4}
             helperText="Detaillierte Beschreibung der Aktivität"
@@ -277,9 +275,9 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
               id="outcome"
               value={outcome}
               label="Ergebnis"
-              onChange={(e) => setOutcome(e.target.value)}
+              onChange={e => setOutcome(e.target.value)}
             >
-              {OUTCOME_OPTIONS.map((option) => (
+              {OUTCOME_OPTIONS.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -293,11 +291,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
         <Button onClick={handleCancel} disabled={saving}>
           Abbrechen
         </Button>
-        <Button
-          variant="contained"
-          onClick={handleSave}
-          disabled={saving || !summary}
-        >
+        <Button variant="contained" onClick={handleSave} disabled={saving || !summary}>
           {saving ? 'Speichern...' : 'Speichern'}
         </Button>
       </DialogActions>

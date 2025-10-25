@@ -23,11 +23,7 @@ describe('RevenueMetricsWidget', () => {
   describe('Rendering', () => {
     it('renders widget with title and formatted value', () => {
       renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (30 Tage)"
-          value={25000}
-          color="success"
-        />
+        <RevenueMetricsWidget title="Umsatz (30 Tage)" value={25000} color="success" />
       );
 
       expect(screen.getByText('Umsatz (30 Tage)')).toBeInTheDocument();
@@ -36,22 +32,14 @@ describe('RevenueMetricsWidget', () => {
 
     it('renders widget with different colors', () => {
       const { rerender } = renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (90 Tage)"
-          value={50000}
-          color="info"
-        />
+        <RevenueMetricsWidget title="Umsatz (90 Tage)" value={50000} color="info" />
       );
 
       expect(screen.getByText('50.000 €')).toBeInTheDocument();
 
       rerender(
         <ThemeProvider theme={freshfoodzTheme}>
-          <RevenueMetricsWidget
-            title="Umsatz (365 Tage)"
-            value={100000}
-            color="primary"
-          />
+          <RevenueMetricsWidget title="Umsatz (365 Tage)" value={100000} color="primary" />
         </ThemeProvider>
       );
 
@@ -61,24 +49,14 @@ describe('RevenueMetricsWidget', () => {
 
   describe('Currency Formatting', () => {
     it('formats zero value correctly', () => {
-      renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (30 Tage)"
-          value={0}
-          color="success"
-        />
-      );
+      renderWithTheme(<RevenueMetricsWidget title="Umsatz (30 Tage)" value={0} color="success" />);
 
       expect(screen.getByText('0 €')).toBeInTheDocument();
     });
 
     it('formats small values correctly', () => {
       renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (30 Tage)"
-          value={99.5}
-          color="success"
-        />
+        <RevenueMetricsWidget title="Umsatz (30 Tage)" value={99.5} color="success" />
       );
 
       // Note: minimumFractionDigits: 0 does NOT round, it just shows decimals if present
@@ -87,11 +65,7 @@ describe('RevenueMetricsWidget', () => {
 
     it('formats large values with thousands separator', () => {
       renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (365 Tage)"
-          value={1250000}
-          color="primary"
-        />
+        <RevenueMetricsWidget title="Umsatz (365 Tage)" value={1250000} color="primary" />
       );
 
       expect(screen.getByText('1.250.000 €')).toBeInTheDocument();
@@ -99,11 +73,7 @@ describe('RevenueMetricsWidget', () => {
 
     it('formats decimal values with German formatting', () => {
       renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (30 Tage)"
-          value={12345.67}
-          color="success"
-        />
+        <RevenueMetricsWidget title="Umsatz (30 Tage)" value={12345.67} color="success" />
       );
 
       // de-DE locale uses comma for decimals, period for thousands
@@ -114,11 +84,7 @@ describe('RevenueMetricsWidget', () => {
   describe('Layout & Accessibility', () => {
     it('renders title as caption variant', () => {
       renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (30 Tage)"
-          value={5000}
-          color="success"
-        />
+        <RevenueMetricsWidget title="Umsatz (30 Tage)" value={5000} color="success" />
       );
 
       const titleElement = screen.getByText('Umsatz (30 Tage)');
@@ -129,11 +95,7 @@ describe('RevenueMetricsWidget', () => {
 
     it('renders value as h4 variant', () => {
       renderWithTheme(
-        <RevenueMetricsWidget
-          title="Umsatz (30 Tage)"
-          value={5000}
-          color="success"
-        />
+        <RevenueMetricsWidget title="Umsatz (30 Tage)" value={5000} color="success" />
       );
 
       const valueElement = screen.getByText('5.000 €');

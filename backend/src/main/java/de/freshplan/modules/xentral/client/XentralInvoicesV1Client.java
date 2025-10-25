@@ -14,8 +14,8 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 /**
  * Quarkus REST Client for Xentral v1 Invoices API.
  *
- * <p>Endpoints: - GET /api/v1/invoices (list invoices) - GET /api/v1/invoices/{id}/balance
- * (payment details)
+ * <p>Endpoints: - GET /api/v1/invoices (list invoices) - GET /api/v1/invoices/{id}/balance (payment
+ * details)
  *
  * <p>Used to calculate financial metrics: - totalRevenue = SUM(balance.paid) - averageDaysToPay =
  * AVG(DAYS.between(invoice.date, balance.paymentDate)) - lastOrderDate = MAX(invoice.date)

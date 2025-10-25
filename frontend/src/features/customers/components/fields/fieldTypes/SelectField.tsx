@@ -116,7 +116,7 @@ export const SelectField: React.FC<SelectFieldProps> = ({
               }
             }
           }}
-          renderInput={(params) => (
+          renderInput={params => (
             <TextField
               {...params}
               placeholder={field.placeholder || 'Bitte wählen oder eingeben...'}

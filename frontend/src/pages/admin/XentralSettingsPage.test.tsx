@@ -94,9 +94,7 @@ describe('XentralSettingsPage', () => {
       renderWithProviders(<XentralSettingsPage />);
 
       // Use findByText which waits automatically
-      const infoAlert = await screen.findByText(
-        /Keine Einstellungen in der Datenbank gefunden/
-      );
+      const infoAlert = await screen.findByText(/Keine Einstellungen in der Datenbank gefunden/);
       expect(infoAlert).toBeInTheDocument();
     });
 
@@ -257,11 +255,14 @@ describe('XentralSettingsPage', () => {
       fireEvent.click(saveButton);
 
       // Wait for error alert to appear (any error message is fine)
-      await waitFor(() => {
-        const alerts = screen.getAllByRole('alert');
-        const hasErrorAlert = alerts.some(alert => alert.textContent?.includes('Network error'));
-        expect(hasErrorAlert).toBe(true);
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          const alerts = screen.getAllByRole('alert');
+          const hasErrorAlert = alerts.some(alert => alert.textContent?.includes('Network error'));
+          expect(hasErrorAlert).toBe(true);
+        },
+        { timeout: 3000 }
+      );
     });
   });
 
@@ -319,11 +320,16 @@ describe('XentralSettingsPage', () => {
       fireEvent.click(testButton);
 
       // Wait for error alert to appear
-      await waitFor(() => {
-        const alerts = screen.getAllByRole('alert');
-        const hasErrorAlert = alerts.some(alert => alert.textContent?.includes('Connection timeout'));
-        expect(hasErrorAlert).toBe(true);
-      }, { timeout: 3000 });
+      await waitFor(
+        () => {
+          const alerts = screen.getAllByRole('alert');
+          const hasErrorAlert = alerts.some(alert =>
+            alert.textContent?.includes('Connection timeout')
+          );
+          expect(hasErrorAlert).toBe(true);
+        },
+        { timeout: 3000 }
+      );
     });
 
     it('disables connection test button when URL or Token is empty', async () => {

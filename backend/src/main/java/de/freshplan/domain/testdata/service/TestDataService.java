@@ -1,19 +1,21 @@
 package de.freshplan.domain.testdata.service;
 
 import de.freshplan.domain.communication.entity.Activity;
-import de.freshplan.domain.communication.entity.EntityType;
 import de.freshplan.domain.communication.service.ActivityService;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
+import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.testdata.service.command.TestDataCommandService;
 import de.freshplan.domain.testdata.service.query.TestDataQueryService;
 import de.freshplan.modules.leads.domain.ActivityOutcome;
 import de.freshplan.modules.leads.domain.ActivityType;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,24 +30,26 @@ import org.jboss.logging.Logger;
  * services based on a feature flag. When cqrs.enabled=true, it uses the new split services. When
  * false, it falls back to the legacy implementation.
  *
- * <p><b>Test Data Coverage (Sprint 2.1.7.2):</b>
- * This service provides test data coverage for the following entities:
+ * <p><b>Test Data Coverage (Sprint 2.1.7.2):</b> This service provides test data coverage for the
+ * following entities:
  *
  * <ul>
- *   <li><b>Customer</b> - 10 diverse test customers with realistic scenarios (already implemented)</li>
- *   <li><b>Activity</b> - Unified communication activities for Leads and Customers (already implemented)</li>
- *   <li><b>User</b> - Test users for activities and authentication (covered via TEST_USER constant)</li>
- *   <li><b>CustomerLocation</b> - Customer delivery locations (coverage planned)</li>
- *   <li><b>Opportunity</b> - Sales opportunities and pipeline tracking (coverage planned)</li>
- *   <li><b>LeadContact</b> - Lead contact persons (coverage via modules/leads)</li>
- *   <li><b>CustomerContact</b> - Customer contact persons (coverage planned)</li>
- *   <li><b>ContactInteraction</b> - Interactions with contacts (coverage planned)</li>
- *   <li><b>CustomerAddress</b> - Customer addresses (coverage planned)</li>
- *   <li><b>LeadActivity</b> - Lead-specific activities (coverage via modules/leads)</li>
- *   <li><b>OpportunityActivity</b> - Opportunity-related activities (coverage planned)</li>
- *   <li><b>OpportunityMultiplier</b> - Opportunity probability multipliers (coverage planned)</li>
- *   <li><b>Profile</b> - User profiles (coverage planned)</li>
- *   <li><b>UserLeadSettings</b> - User-specific lead management settings (coverage via modules/leads)</li>
+ *   <li><b>Customer</b> - 10 diverse test customers with realistic scenarios (already implemented)
+ *   <li><b>Activity</b> - Unified communication activities for Leads and Customers (already
+ *       implemented)
+ *   <li><b>User</b> - Test users for activities and authentication (covered via TEST_USER constant)
+ *   <li><b>CustomerLocation</b> - Customer delivery locations (coverage planned)
+ *   <li><b>Opportunity</b> - Sales opportunities and pipeline tracking (coverage planned)
+ *   <li><b>LeadContact</b> - Lead contact persons (coverage via modules/leads)
+ *   <li><b>CustomerContact</b> - Customer contact persons (coverage planned)
+ *   <li><b>ContactInteraction</b> - Interactions with contacts (coverage planned)
+ *   <li><b>CustomerAddress</b> - Customer addresses (coverage planned)
+ *   <li><b>LeadActivity</b> - Lead-specific activities (coverage via modules/leads)
+ *   <li><b>OpportunityActivity</b> - Opportunity-related activities (coverage planned)
+ *   <li><b>OpportunityMultiplier</b> - Opportunity probability multipliers (coverage planned)
+ *   <li><b>Profile</b> - User profiles (coverage planned)
+ *   <li><b>UserLeadSettings</b> - User-specific lead management settings (coverage via
+ *       modules/leads)
  * </ul>
  *
  * <p>For detailed test data scenarios, see: docs/testing/TEST_DATA_SCENARIOS.md
@@ -67,7 +71,11 @@ public class TestDataService {
 
   @Inject CustomerTimelineRepository timelineRepository;
 
+  @Inject OpportunityRepository opportunityRepository;
+
   @Inject ActivityService activityService;
+
+  @Inject EntityManager entityManager;
 
   /**
    * Seeds the database with 10 diverse test customers (90001-90010).
@@ -90,8 +98,9 @@ public class TestDataService {
     // AUTO-CLEANUP: Remove old test data before seeding new data
     LOG.info("Cleaning up old test data before seeding...");
     CleanupResult cleanup = cleanTestData();
-    LOG.infof("Cleaned up %d old customers and %d timeline events",
-              cleanup.customersDeleted(), cleanup.eventsDeleted());
+    LOG.infof(
+        "Cleaned up %d old customers and %d timeline events",
+        cleanup.customersDeleted(), cleanup.eventsDeleted());
 
     List<Customer> createdCustomers = new ArrayList<>();
     List<CustomerTimelineEvent> createdEvents = new ArrayList<>();
@@ -303,8 +312,7 @@ public class TestDataService {
       lead1Activity1.activityDate = LocalDateTime.now().minusDays(200);
       activityService.createActivity(lead1Activity1);
 
-      Activity lead1Activity2 =
-          Activity.forLead(10001L, TEST_USER, ActivityType.DEMO, null);
+      Activity lead1Activity2 = Activity.forLead(10001L, TEST_USER, ActivityType.DEMO, null);
       lead1Activity2.summary = "Produktdemo bei Bio-Großhandel Meyer vor Ort";
       lead1Activity2.description =
           "Demo im Lager durchgeführt. Sehr positive Resonanz auf Frische und Qualität. Entscheidung für Konvertierung gefallen.";
@@ -314,8 +322,7 @@ public class TestDataService {
 
       // 🎯 CUSTOMER-PHASE Activities für 90006
       Activity customer1Activity1 =
-          Activity.forCustomer(
-              convertedCustomer1.getId(), TEST_USER, ActivityType.MEETING, null);
+          Activity.forCustomer(convertedCustomer1.getId(), TEST_USER, ActivityType.MEETING, null);
       customer1Activity1.summary = "Vertragsverhandlung - 200k€ Jahresumsatz vereinbart";
       customer1Activity1.description =
           "Gold-Partner Status zugesichert. Lieferintervall 2x wöchentlich. Sehr zufrieden mit Service.";
@@ -324,8 +331,7 @@ public class TestDataService {
       activityService.createActivity(customer1Activity1);
 
       // 🎯 LEAD-PHASE Activities für 90007 (Ex-Lead 10002)
-      Activity lead2Activity1 =
-          Activity.forLead(10002L, TEST_USER, ActivityType.CALL, null);
+      Activity lead2Activity1 = Activity.forLead(10002L, TEST_USER, ActivityType.CALL, null);
       lead2Activity1.summary = "Anruf Strandhotel Ostsee - Saisonbetrieb";
       lead2Activity1.description =
           "Hotel nur April-Oktober geöffnet. Interesse an Bio-Produkten für Frühstücksbuffet.";
@@ -333,8 +339,7 @@ public class TestDataService {
       lead2Activity1.activityDate = LocalDateTime.now().minusDays(280);
       activityService.createActivity(lead2Activity1);
 
-      Activity lead2Activity2 =
-          Activity.forLead(10002L, TEST_USER, ActivityType.SAMPLE_SENT, null);
+      Activity lead2Activity2 = Activity.forLead(10002L, TEST_USER, ActivityType.SAMPLE_SENT, null);
       lead2Activity2.summary = "Musterlieferung Gemüse + Obst versendet";
       lead2Activity2.description = "5kg Musterpaket an Küchenchef gesendet. Wartet auf Feedback.";
       lead2Activity2.outcome = ActivityOutcome.INFO_SENT;
@@ -343,8 +348,7 @@ public class TestDataService {
 
       // 🎯 CUSTOMER-PHASE Activities für 90007 (INAKTIV - lange kein Kontakt!)
       Activity customer2Activity1 =
-          Activity.forCustomer(
-              convertedCustomer2.getId(), TEST_USER, ActivityType.NOTE, null);
+          Activity.forCustomer(convertedCustomer2.getId(), TEST_USER, ActivityType.NOTE, null);
       customer2Activity1.summary = "Kunde meldet sich nicht mehr - saisonbedingt geschlossen";
       customer2Activity1.description =
           "Mehrere Kontaktversuche erfolglos. Hotel vermutlich in Winterpause. Status auf INAKTIV gesetzt.";
@@ -355,7 +359,8 @@ public class TestDataService {
       Activity customer3Activity1 =
           Activity.forCustomer(normalCustomer1.getId(), TEST_USER, ActivityType.EMAIL, null);
       customer3Activity1.summary = "Angebot Kantine Siemens - Wochenlieferung Bio-Salate";
-      customer3Activity1.description = "Wöchentliche Lieferung 50kg Bio-Salate + Gemüse. Zahlung Netto 30.";
+      customer3Activity1.description =
+          "Wöchentliche Lieferung 50kg Bio-Salate + Gemüse. Zahlung Netto 30.";
       customer3Activity1.outcome = ActivityOutcome.SUCCESSFUL;
       customer3Activity1.activityDate = LocalDateTime.now().minusDays(3);
       activityService.createActivity(customer3Activity1);
@@ -381,10 +386,10 @@ public class TestDataService {
 
       // 🎯 CUSTOMER-PHASE Activities für 90009
       Activity customer4Activity1 =
-          Activity.forCustomer(
-              convertedCustomer3.getId(), TEST_USER, ActivityType.FOLLOW_UP, null);
+          Activity.forCustomer(convertedCustomer3.getId(), TEST_USER, ActivityType.FOLLOW_UP, null);
       customer4Activity1.summary = "Follow-up: Saisonstart April - Bestellung läuft";
-      customer4Activity1.description = "Erste Lieferung erfolgt. Kunde sehr zufrieden. Silber-Partner Status.";
+      customer4Activity1.description =
+          "Erste Lieferung erfolgt. Kunde sehr zufrieden. Silber-Partner Status.";
       customer4Activity1.outcome = ActivityOutcome.SUCCESSFUL;
       customer4Activity1.activityDate = LocalDateTime.now().minusDays(10);
       activityService.createActivity(customer4Activity1);
@@ -399,7 +404,8 @@ public class TestDataService {
       customer5Activity1.activityDate = LocalDateTime.now().minusDays(80);
       activityService.createActivity(customer5Activity1);
 
-      LOG.infof("✅ Sprint 2.1.7.2: Created %d enhanced test customers with Lead→Customer history", 5);
+      LOG.infof(
+          "✅ Sprint 2.1.7.2: Created %d enhanced test customers with Lead→Customer history", 5);
 
       // Persist all timeline events
       for (CustomerTimelineEvent event : createdEvents) {
@@ -409,6 +415,13 @@ public class TestDataService {
       LOG.infof(
           "Successfully seeded %d test customers with %d timeline events",
           createdCustomers.size(), createdEvents.size());
+
+      // ========================================================================
+      // Super-Customer Scenario (L3 + C1)
+      // ========================================================================
+      Customer superCustomer = seedSuperCustomerScenario();
+      createdCustomers.add(superCustomer);
+      LOG.infof("✅ Created Super-Customer scenario: Customer ID %s", superCustomer.getId());
 
       return new SeedResult(createdCustomers.size(), createdEvents.size());
 
@@ -427,18 +440,105 @@ public class TestDataService {
     }
 
     // Legacy implementation
-    LOG.info("Starting test data cleanup...");
+    LOG.info("Starting test data cleanup (legacy mode)...");
 
     try {
-      // Delete timeline events first (due to foreign key constraints)
-      long deletedEvents = timelineRepository.delete("isTestData", true);
+      // STEP 1: Get all test customer IDs (entities WITHOUT isTestData must be deleted via parent
+      // relationship)
+      @SuppressWarnings("unchecked")
+      List<Object> testCustomerIds =
+          entityManager
+              .createQuery("SELECT c.id FROM Customer c WHERE c.isTestData = true")
+              .getResultList();
 
-      // Delete customers
+      LOG.debugf("Found %d test customers to clean", testCustomerIds.size());
+
+      if (testCustomerIds.isEmpty()) {
+        LOG.info("No test data to clean");
+        return new CleanupResult(0, 0);
+      }
+
+      // STEP 2: Delete child entities WITHOUT isTestData (via parent relationship)
+
+      // 2.1. Delete Activities (polymorphic pattern - entityType='CUSTOMER', entityId=customer.id)
+      // Activity uses polymorphic association: entityType + entityId (TEXT)
+      // Convert UUID objects to strings for comparison with entityId column
+      List<String> customerIdStrings =
+          testCustomerIds.stream()
+              .map(Object::toString)
+              .collect(java.util.stream.Collectors.toList());
+
+      long deletedActivities =
+          entityManager
+              .createQuery(
+                  "DELETE FROM Activity a WHERE a.entityType = 'CUSTOMER' AND a.entityId IN :customerIdStrings")
+              .setParameter("customerIdStrings", customerIdStrings)
+              .executeUpdate();
+      LOG.debugf("Deleted %d activities", deletedActivities);
+
+      // 2.2. Delete Opportunities (belongs to Customer - no isTestData field)
+      long deletedOpportunities =
+          entityManager
+              .createQuery("DELETE FROM Opportunity o WHERE o.customer.id IN :customerIds")
+              .setParameter("customerIds", testCustomerIds)
+              .executeUpdate();
+      LOG.debugf("Deleted %d opportunities", deletedOpportunities);
+
+      // 2.3. Delete CustomerContacts (belongs to Customer - no isTestData field)
+      long deletedContacts =
+          entityManager
+              .createQuery("DELETE FROM CustomerContact cc WHERE cc.customer.id IN :customerIds")
+              .setParameter("customerIds", testCustomerIds)
+              .executeUpdate();
+      LOG.debugf("Deleted %d customer contacts", deletedContacts);
+
+      // 2.4. Delete CustomerAddresses (belongs to CustomerLocation - no isTestData field)
+      long deletedAddresses =
+          entityManager
+              .createQuery(
+                  "DELETE FROM CustomerAddress ca WHERE ca.location.customer.id IN :customerIds")
+              .setParameter("customerIds", testCustomerIds)
+              .executeUpdate();
+      LOG.debugf("Deleted %d customer addresses", deletedAddresses);
+
+      // 2.5. Delete CustomerLocations (belongs to Customer - no isTestData field)
+      long deletedLocations =
+          entityManager
+              .createQuery("DELETE FROM CustomerLocation cl WHERE cl.customer.id IN :customerIds")
+              .setParameter("customerIds", testCustomerIds)
+              .executeUpdate();
+      LOG.debugf("Deleted %d customer locations", deletedLocations);
+
+      // STEP 3: Delete entities WITH isTestData field
+
+      // 3.1. Delete CustomerTimelineEvents (has isTestData = true)
+      long deletedEvents = timelineRepository.delete("isTestData", true);
+      LOG.debugf("Deleted %d timeline events", deletedEvents);
+
+      // 3.2. Leads: Sprint 2.1.7.2 - Lead entity does NOT have isTestData field
+      // Test Leads are identified by naming pattern (e.g., "L3 Großhandel - Super Customer")
+      // Delete via company name pattern matching (% matches any characters)
+      long deletedLeads =
+          entityManager
+              .createQuery(
+                  "DELETE FROM Lead l WHERE l.companyName LIKE 'L% %' AND (l.companyName LIKE 'L_ %' OR l.companyName LIKE 'L__ %' OR l.companyName LIKE 'L___ %')")
+              .executeUpdate();
+      LOG.debugf("Deleted %d test leads (pattern: 'L# ...')", deletedLeads);
+
+      // STEP 4: Delete Customers last (parent entity with isTestData = true)
       long deletedCustomers = customerRepository.delete("isTestData", true);
+      LOG.debugf("Deleted %d customers", deletedCustomers);
 
       LOG.infof(
-          "Successfully cleaned up %d customers and %d timeline events",
-          deletedCustomers, deletedEvents);
+          "Successfully cleaned up: %d customers, %d locations, %d addresses, %d contacts, %d opportunities, %d activities, %d leads, %d timeline events",
+          deletedCustomers,
+          deletedLocations,
+          deletedAddresses,
+          deletedContacts,
+          deletedOpportunities,
+          deletedActivities,
+          deletedLeads,
+          deletedEvents);
 
       return new CleanupResult(deletedCustomers, deletedEvents);
 
@@ -980,6 +1080,342 @@ public class TestDataService {
     customers.add(punctuation);
 
     return customers;
+  }
+
+  /**
+   * Seeds L3 (CONVERTED Lead) and C1 (Super-Customer) with complete relationships.
+   *
+   * <p>Sprint 2.1.7.2 (Xentral Integration): Creates realistic test data for:
+   *
+   * <ul>
+   *   <li>L3: CONVERTED Lead with 2 LeadContacts + 3 Activities
+   *   <li>C1: Super-Customer (from L3) with all required fields
+   *   <li>2 CustomerLocations (HQ + Branch) with CASCADE addresses
+   *   <li>2 CustomerContacts (Primary + Secondary)
+   *   <li>1 Opportunity (Q4 Großbestellung)
+   *   <li>5 Activities (3 Lead-Phase + 2 Customer-Phase)
+   * </ul>
+   *
+   * @return Created Customer C1 for logging purposes
+   */
+  @Transactional
+  public Customer seedSuperCustomerScenario() {
+    if (cqrsEnabled) {
+      LOG.debugf("CQRS enabled - delegating seedSuperCustomerScenario to TestDataCommandService");
+      // TODO: Implement in command service when CQRS is enabled
+      throw new UnsupportedOperationException(
+          "seedSuperCustomerScenario not yet implemented in CQRS mode");
+    }
+
+    LOG.info("Creating L3 (CONVERTED Lead) and C1 (Super-Customer) test scenario...");
+
+    try {
+      // ========================================================================
+      // 1. CREATE L3 (CONVERTED LEAD)
+      // ========================================================================
+      de.freshplan.modules.leads.domain.Lead lead3 = new de.freshplan.modules.leads.domain.Lead();
+      lead3.companyName = "Großhandel Frisch AG";
+      lead3.companyNameNormalized = "grosshandel frisch ag";
+      lead3.status = de.freshplan.modules.leads.domain.LeadStatus.CONVERTED;
+      lead3.source = de.freshplan.domain.shared.LeadSource.MESSE; // TRADE_SHOW → MESSE
+      lead3.businessType =
+          de.freshplan.domain.shared.BusinessType.GROSSHANDEL; // RETAIL → GROSSHANDEL
+      lead3.contactPerson = "Michael Frisch";
+      lead3.email = "info@frisch-ag.de";
+      lead3.emailNormalized = "info@frisch-ag.de";
+      lead3.phone = "+49 30 12345678";
+      lead3.phoneE164 = "+493012345678";
+      lead3.street = "Industriestraße 10";
+      lead3.postalCode = "12345";
+      lead3.city = "Berlin";
+      lead3.countryCode = "DE";
+      lead3.kitchenSize = de.freshplan.domain.shared.KitchenSize.GROSS; // LARGE → GROSS
+      lead3.employeeCount = 50;
+      lead3.estimatedVolume = new BigDecimal("150000.00");
+      lead3.branchCount = 2;
+      lead3.isChain = false;
+      lead3.ownerUserId = TEST_USER;
+      lead3.createdBy = TEST_USER; // Required @NotNull field
+      lead3.registeredAt = LocalDateTime.now().minusDays(200);
+      // Note: Lead entity doesn't have convertedAt field - removed
+
+      // Persist Lead using Panache (Lead extends PanacheEntityBase)
+      lead3.persist();
+      LOG.infof("✅ Created L3 Lead: id=%d, companyName=%s", lead3.id, lead3.companyName);
+
+      // Create 2 LeadContacts for L3
+      de.freshplan.modules.leads.domain.LeadContact leadContact1 =
+          new de.freshplan.modules.leads.domain.LeadContact();
+      leadContact1.setLead(lead3);
+      leadContact1.setFirstName("Michael");
+      leadContact1.setLastName("Frisch");
+      leadContact1.setEmail("michael.frisch@frisch-ag.de");
+      leadContact1.setPosition("Geschäftsführer");
+      leadContact1.setPrimary(true);
+      leadContact1.persist();
+
+      de.freshplan.modules.leads.domain.LeadContact leadContact2 =
+          new de.freshplan.modules.leads.domain.LeadContact();
+      leadContact2.setLead(lead3);
+      leadContact2.setFirstName("Julia");
+      leadContact2.setLastName("Neumann");
+      leadContact2.setEmail("julia.neumann@frisch-ag.de");
+      leadContact2.setPosition("Einkaufsleiterin");
+      leadContact2.setPrimary(false);
+      leadContact2.persist();
+
+      LOG.infof("✅ Created 2 LeadContacts for L3");
+
+      // Create 3 Lead-Phase Activities for L3
+      de.freshplan.domain.communication.entity.Activity leadActivity1 =
+          de.freshplan.domain.communication.entity.Activity.forLead(
+              lead3.id,
+              TEST_USER,
+              de.freshplan.modules.leads.domain.ActivityType.QUALIFIED_CALL,
+              null);
+      leadActivity1.summary = "Erstkontakt Großhandel Frisch AG - Interesse an Bio-Produkten";
+      leadActivity1.description =
+          "Geschäftsführer Michael Frisch sehr interessiert an Bio-Großhandel für Gastronomie. Plant Expansion.";
+      leadActivity1.outcome = de.freshplan.modules.leads.domain.ActivityOutcome.QUALIFIED;
+      leadActivity1.activityDate = LocalDateTime.now().minusDays(200);
+      activityService.createActivity(leadActivity1);
+
+      de.freshplan.domain.communication.entity.Activity leadActivity2 =
+          de.freshplan.domain.communication.entity.Activity.forLead(
+              lead3.id, TEST_USER, de.freshplan.modules.leads.domain.ActivityType.DEMO, null);
+      leadActivity2.summary = "Produktdemo vor Ort - Frische & Qualität überzeugt";
+      leadActivity2.description =
+          "Demo im Lager durchgeführt. Sehr positive Resonanz. Entscheidung für Konvertierung gefallen.";
+      leadActivity2.outcome = de.freshplan.modules.leads.domain.ActivityOutcome.SUCCESSFUL;
+      leadActivity2.activityDate = LocalDateTime.now().minusDays(185);
+      activityService.createActivity(leadActivity2);
+
+      de.freshplan.domain.communication.entity.Activity leadActivity3 =
+          de.freshplan.domain.communication.entity.Activity.forLead(
+              lead3.id, TEST_USER, de.freshplan.modules.leads.domain.ActivityType.MEETING, null);
+      leadActivity3.summary = "Vertragsverhandlung - Lead zu Kunde konvertiert";
+      leadActivity3.description =
+          "Jahresumsatz 150k€ vereinbart. Gold-Partner Status zugesichert. Lead erfolgreich konvertiert.";
+      leadActivity3.outcome = de.freshplan.modules.leads.domain.ActivityOutcome.SUCCESSFUL;
+      leadActivity3.activityDate = LocalDateTime.now().minusDays(180);
+      activityService.createActivity(leadActivity3);
+
+      LOG.infof("✅ Created 3 Lead-Phase Activities for L3");
+
+      // ========================================================================
+      // 2. CREATE C1 (SUPER-CUSTOMER FROM L3)
+      // ========================================================================
+      Customer customer =
+          createTestCustomer(
+              "90101",
+              "[TEST] Großhandel Frisch AG - Super Customer",
+              CustomerStatus.AKTIV,
+              LocalDateTime.now().minusDays(7),
+              Industry
+                  .EINZELHANDEL); // Legacy Industry (deprecated) - maps to both LEH and GROSSHANDEL
+
+      customer.setOriginalLeadId(lead3.id); // Link to L3
+      customer.setBusinessType(
+          de.freshplan.domain.shared.BusinessType
+              .GROSSHANDEL); // Set correct BusinessType (overrides Industry mapping)
+      customer.setPartnerStatus(PartnerStatus.GOLD_PARTNER);
+      customer.setExpectedAnnualVolume(new BigDecimal("150000.00"));
+      customer.setActualAnnualVolume(new BigDecimal("145000.00"));
+      customer.setRiskScore(5);
+      customer.setCreatedAt(LocalDateTime.now().minusDays(180));
+      customer.setKitchenSize(de.freshplan.domain.shared.KitchenSize.GROSS); // LARGE → GROSS
+      customer.setEmployeeCount(50);
+      customer.setBranchCount(2);
+      customer.setIsChain(false);
+      customer.setEstimatedVolume(new BigDecimal("150000.00"));
+      customer.setCreditLimit(new BigDecimal("20000.00"));
+      customer.setClassification(Classification.A_KUNDE);
+
+      customerRepository.persist(customer);
+      LOG.infof("✅ Created C1 Customer: id=%s, customerNumber=%s", customer.getId(), "90101");
+
+      // ========================================================================
+      // 3. CREATE 2 CUSTOMER LOCATIONS (CASCADE ADDRESSES)
+      // ========================================================================
+
+      // Location 1: HQ Berlin
+      CustomerLocation locationHQ = new CustomerLocation();
+      locationHQ.setCustomer(customer);
+      locationHQ.setLocationName("Hauptsitz Berlin");
+      locationHQ.setLocationCode("HQ-BER-001");
+      locationHQ.setCategory(LocationCategory.HEADQUARTERS);
+      locationHQ.setIsMainLocation(true);
+      locationHQ.setIsActive(true);
+      locationHQ.setIsBillingLocation(true);
+      locationHQ.setIsShippingLocation(true);
+      locationHQ.setPhone("+49 30 12345678");
+      locationHQ.setEmail("hq@frisch-ag.de");
+      locationHQ.setCreatedBy(TEST_USER);
+
+      // Address for HQ (CASCADE will persist this automatically)
+      CustomerAddress addressHQ = new CustomerAddress();
+      addressHQ.setLocation(locationHQ);
+      addressHQ.setAddressType(AddressType.BILLING);
+      addressHQ.setStreet("Industriestraße");
+      addressHQ.setStreetNumber("10");
+      addressHQ.setPostalCode("12345");
+      addressHQ.setCity("Berlin");
+      addressHQ.setCountry("DEU");
+      addressHQ.setIsPrimaryForType(true);
+      addressHQ.setIsActive(true);
+      addressHQ.setCreatedBy(TEST_USER);
+
+      locationHQ.addAddress(addressHQ);
+      customer.addLocation(locationHQ);
+
+      // Location 2: Branch Potsdam
+      CustomerLocation locationBranch = new CustomerLocation();
+      locationBranch.setCustomer(customer);
+      locationBranch.setLocationName("Filiale Potsdam");
+      locationBranch.setLocationCode("BR-POT-001");
+      locationBranch.setCategory(LocationCategory.BRANCH_OFFICE);
+      locationBranch.setIsMainLocation(false);
+      locationBranch.setIsActive(true);
+      locationBranch.setIsBillingLocation(false);
+      locationBranch.setIsShippingLocation(true);
+      locationBranch.setPhone("+49 331 9876543");
+      locationBranch.setEmail("potsdam@frisch-ag.de");
+      locationBranch.setCreatedBy(TEST_USER);
+
+      // Address for Branch (CASCADE will persist this automatically)
+      CustomerAddress addressBranch = new CustomerAddress();
+      addressBranch.setLocation(locationBranch);
+      addressBranch.setAddressType(AddressType.SHIPPING);
+      addressBranch.setStreet("Potsdamer Straße");
+      addressBranch.setStreetNumber("20");
+      addressBranch.setPostalCode("14467");
+      addressBranch.setCity("Potsdam");
+      addressBranch.setCountry("DEU");
+      addressBranch.setIsPrimaryForType(true);
+      addressBranch.setIsActive(true);
+      addressBranch.setCreatedBy(TEST_USER);
+
+      locationBranch.addAddress(addressBranch);
+      customer.addLocation(locationBranch);
+
+      LOG.infof(
+          "✅ Created 2 CustomerLocations with CASCADE addresses (HQ Berlin + Branch Potsdam)");
+
+      // ========================================================================
+      // 4. CREATE 2 CUSTOMER CONTACTS
+      // ========================================================================
+      CustomerContact contact1 = new CustomerContact();
+      contact1.setCustomer(customer);
+      contact1.setFirstName("Michael");
+      contact1.setLastName("Frisch");
+      contact1.setEmail("michael.frisch@frisch-ag.de");
+      contact1.setPhone("+49 30 12345678");
+      contact1.setPosition("Geschäftsführer");
+      contact1.setDepartment("Management");
+      contact1.setIsPrimary(true);
+      contact1.setIsDecisionMaker(true);
+      contact1.setIsActive(true);
+      contact1.setAssignedLocation(locationHQ);
+      contact1.setCreatedBy(TEST_USER);
+
+      customer.addContact(contact1);
+
+      CustomerContact contact2 = new CustomerContact();
+      contact2.setCustomer(customer);
+      contact2.setFirstName("Julia");
+      contact2.setLastName("Neumann");
+      contact2.setEmail("julia.neumann@frisch-ag.de");
+      contact2.setPhone("+49 30 12345679");
+      contact2.setPosition("Einkaufsleiterin");
+      contact2.setDepartment("Einkauf");
+      contact2.setIsPrimary(false);
+      contact2.setIsDecisionMaker(false);
+      contact2.setIsActive(true);
+      contact2.setAssignedLocation(locationHQ);
+      contact2.setCreatedBy(TEST_USER);
+
+      customer.addContact(contact2);
+
+      LOG.infof("✅ Created 2 CustomerContacts (Michael Frisch + Julia Neumann)");
+
+      // ========================================================================
+      // 5. CREATE 1 OPPORTUNITY FOR C1
+      // ========================================================================
+      de.freshplan.domain.opportunity.entity.Opportunity opportunity =
+          new de.freshplan.domain.opportunity.entity.Opportunity();
+      opportunity.setName("Q4 Großbestellung Backwaren");
+      opportunity.setStage(de.freshplan.domain.opportunity.entity.OpportunityStage.QUALIFICATION);
+      opportunity.setOpportunityType(
+          de.freshplan.domain.opportunity.entity.OpportunityType.SORTIMENTSERWEITERUNG);
+      opportunity.setCustomer(customer);
+      opportunity.setExpectedValue(new BigDecimal("150000.00"));
+      opportunity.setProbability(50);
+      opportunity.setExpectedCloseDate(LocalDate.of(2024, 12, 31));
+      opportunity.setDescription(
+          "Großbestellung Backwaren für Q4 2024. Erweiterung des Sortiments um frische Backwaren.");
+
+      // Persist opportunity using repository
+      de.freshplan.domain.opportunity.repository.OpportunityRepository opportunityRepository =
+          jakarta
+              .enterprise
+              .inject
+              .spi
+              .CDI
+              .current()
+              .select(de.freshplan.domain.opportunity.repository.OpportunityRepository.class)
+              .get();
+      opportunityRepository.persist(opportunity);
+
+      LOG.infof("✅ Created 1 Opportunity: name=%s, value=%s", opportunity.getName(), "150000.00");
+
+      // ========================================================================
+      // 6. CREATE 2 CUSTOMER-PHASE ACTIVITIES
+      // ========================================================================
+      de.freshplan.domain.communication.entity.Activity customerActivity1 =
+          de.freshplan.domain.communication.entity.Activity.forCustomer(
+              customer.getId(),
+              TEST_USER,
+              de.freshplan.modules.leads.domain.ActivityType.MEETING,
+              null);
+      customerActivity1.summary = "Vertragsverhandlung - 150k€ Jahresumsatz vereinbart";
+      customerActivity1.description =
+          "Gold-Partner Status zugesichert. Lieferintervall 2x wöchentlich. Sehr zufrieden mit Service.";
+      customerActivity1.outcome = de.freshplan.modules.leads.domain.ActivityOutcome.SUCCESSFUL;
+      customerActivity1.activityDate = LocalDateTime.now().minusDays(7);
+      activityService.createActivity(customerActivity1);
+
+      de.freshplan.domain.communication.entity.Activity customerActivity2 =
+          de.freshplan.domain.communication.entity.Activity.forCustomer(
+              customer.getId(),
+              TEST_USER,
+              de.freshplan.modules.leads.domain.ActivityType.FOLLOW_UP,
+              null);
+      customerActivity2.summary = "Follow-up: Kundenzufriedenheit & Sortimentserweiterung";
+      customerActivity2.description =
+          "Kunde sehr zufrieden mit Qualität und Service. Interesse an Sortimentserweiterung (Backwaren) für Q4.";
+      customerActivity2.outcome = de.freshplan.modules.leads.domain.ActivityOutcome.SUCCESSFUL;
+      customerActivity2.activityDate = LocalDateTime.now().minusDays(3);
+      activityService.createActivity(customerActivity2);
+
+      LOG.infof("✅ Created 2 Customer-Phase Activities");
+
+      // ========================================================================
+      // 7. FINAL PERSIST
+      // ========================================================================
+      // Customer has CASCADE, so locations, contacts, and addresses will be persisted automatically
+      customerRepository.persist(customer);
+
+      LOG.infof(
+          "✅ Sprint 2.1.7.2: Successfully created L3→C1 Super-Customer Scenario "
+              + "(Lead id=%d → Customer id=%s, 2 Locations, 2 Contacts, 1 Opportunity, 5 Activities)",
+          lead3.id, customer.getId());
+
+      return customer;
+
+    } catch (Exception e) {
+      LOG.error("Error seeding Super-Customer scenario", e);
+      throw new RuntimeException("Failed to seed Super-Customer scenario: " + e.getMessage(), e);
+    }
   }
 
   // Result classes

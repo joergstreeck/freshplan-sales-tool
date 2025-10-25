@@ -30,15 +30,7 @@ import {
   TimelineDot,
   TimelineOppositeContent,
 } from '@mui/lab';
-import {
-  Box,
-  Typography,
-  Paper,
-  CircularProgress,
-  Alert,
-  Chip,
-  IconButton,
-} from '@mui/material';
+import { Box, Typography, Paper, CircularProgress, Alert, Chip, IconButton } from '@mui/material';
 import {
   Phone as PhoneIcon,
   Email as EmailIcon,
@@ -183,7 +175,9 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   // ACTIVITY COLOR MAPPING (MUI Theme Colors Only!)
   // ============================================================================
 
-  const getActivityColor = (activity: Activity): 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'default' => {
+  const getActivityColor = (
+    activity: Activity
+  ): 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info' | 'default' => {
     // Meaningful Contact → Success
     if (activity.isMeaningfulContact) return 'success';
 

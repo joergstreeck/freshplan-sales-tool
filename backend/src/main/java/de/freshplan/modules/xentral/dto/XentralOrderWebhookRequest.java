@@ -28,8 +28,7 @@ import java.time.LocalDate;
  * @since 2.0.0
  */
 public record XentralOrderWebhookRequest(
-    @NotBlank(message = "xentralCustomerId cannot be null or blank")
-        String xentralCustomerId,
+    @NotBlank(message = "xentralCustomerId cannot be null or blank") String xentralCustomerId,
     @NotBlank(message = "orderNumber cannot be null or blank") String orderNumber,
     @NotNull(message = "deliveryDate cannot be null") LocalDate deliveryDate) {
 

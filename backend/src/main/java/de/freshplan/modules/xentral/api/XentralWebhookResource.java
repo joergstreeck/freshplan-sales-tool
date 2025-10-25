@@ -101,9 +101,7 @@ public class XentralWebhookResource {
     } catch (Exception e) {
       // Unexpected errors
       logger.error(
-          "Error processing Xentral Webhook: order-delivered [order={}]",
-          request.orderNumber(),
-          e);
+          "Error processing Xentral Webhook: order-delivered [order={}]", request.orderNumber(), e);
 
       return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
           .entity(

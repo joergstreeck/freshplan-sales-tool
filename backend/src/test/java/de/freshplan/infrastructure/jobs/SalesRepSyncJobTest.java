@@ -22,8 +22,7 @@ import org.junit.jupiter.api.Test;
  *
  * <p>Sprint 2.1.7.2 D6 - Sales-Rep Mapping Auto-Sync Tests
  *
- * <p><b>Test Strategy:</b> Unit tests with mocked dependencies (XentralApiService,
- * UserRepository)
+ * <p><b>Test Strategy:</b> Unit tests with mocked dependencies (XentralApiService, UserRepository)
  *
  * <p><b>Bug Detection Focus:</b>
  *
@@ -106,11 +105,15 @@ class SalesRepSyncJobTest {
     // AND: Users exist for all sales reps
     User user1 = new User("stefan.weber", "Stefan", "Weber", "stefan.weber@freshplan.example");
     User user2 = new User("anna.schmidt", "Anna", "Schmidt", "anna.schmidt@freshplan.example");
-    User user3 = new User("michael.becker", "Michael", "Becker", "michael.becker@freshplan.example");
+    User user3 =
+        new User("michael.becker", "Michael", "Becker", "michael.becker@freshplan.example");
 
-    when(userRepository.findByEmail("stefan.weber@freshplan.example")).thenReturn(Optional.of(user1));
-    when(userRepository.findByEmail("anna.schmidt@freshplan.example")).thenReturn(Optional.of(user2));
-    when(userRepository.findByEmail("michael.becker@freshplan.example")).thenReturn(Optional.of(user3));
+    when(userRepository.findByEmail("stefan.weber@freshplan.example"))
+        .thenReturn(Optional.of(user1));
+    when(userRepository.findByEmail("anna.schmidt@freshplan.example"))
+        .thenReturn(Optional.of(user2));
+    when(userRepository.findByEmail("michael.becker@freshplan.example"))
+        .thenReturn(Optional.of(user3));
 
     // WHEN: Sync job runs
     salesRepSyncJob.syncSalesRepIds();
@@ -148,8 +151,7 @@ class SalesRepSyncJobTest {
   void testSyncSalesRepIds_EmailNotFound_LogsWarningAndContinues() {
     // GIVEN: Xentral sales rep exists, but no matching user
     when(xentralApiService.getAllSalesReps()).thenReturn(List.of(testSalesRep));
-    when(userRepository.findByEmail("stefan.weber@freshplan.example"))
-        .thenReturn(Optional.empty());
+    when(userRepository.findByEmail("stefan.weber@freshplan.example")).thenReturn(Optional.empty());
 
     // WHEN: Sync job runs
     salesRepSyncJob.syncSalesRepIds();
@@ -180,9 +182,11 @@ class SalesRepSyncJobTest {
     User user1 = new User("stefan.weber", "Stefan", "Weber", "stefan.weber@freshplan.example");
     User user2 = new User("anna.schmidt", "Anna", "Schmidt", "anna.schmidt@freshplan.example");
 
-    when(userRepository.findByEmail("stefan.weber@freshplan.example")).thenReturn(Optional.of(user1));
+    when(userRepository.findByEmail("stefan.weber@freshplan.example"))
+        .thenReturn(Optional.of(user1));
     when(userRepository.findByEmail("unknown@external.com")).thenReturn(Optional.empty());
-    when(userRepository.findByEmail("anna.schmidt@freshplan.example")).thenReturn(Optional.of(user2));
+    when(userRepository.findByEmail("anna.schmidt@freshplan.example"))
+        .thenReturn(Optional.of(user2));
 
     // WHEN: Sync job runs
     salesRepSyncJob.syncSalesRepIds();

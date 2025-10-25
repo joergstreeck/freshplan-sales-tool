@@ -11,8 +11,8 @@ import org.hibernate.annotations.UuidGenerator;
  *
  * <p>Sprint 2.1.7.2 - D5: Admin-UI für Xentral-Einstellungen
  *
- * <p>This entity stores Xentral ERP integration settings that can be managed via Admin-UI.
- * Database settings have priority over application.properties defaults.
+ * <p>This entity stores Xentral ERP integration settings that can be managed via Admin-UI. Database
+ * settings have priority over application.properties defaults.
  *
  * <p><b>Architecture:</b>
  *
@@ -35,7 +35,9 @@ import org.hibernate.annotations.UuidGenerator;
 @Entity
 @Table(
     name = "xentral_settings",
-    indexes = {@Index(name = "idx_xentral_settings_singleton", columnList = "singleton_guard", unique = true)})
+    indexes = {
+      @Index(name = "idx_xentral_settings_singleton", columnList = "singleton_guard", unique = true)
+    })
 public class XentralSettings extends PanacheEntityBase {
 
   @Id
