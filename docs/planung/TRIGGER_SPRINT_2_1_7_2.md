@@ -191,6 +191,45 @@
 
 ---
 
+## 🔧 SUB-TRIGGERS & TECHNICAL FOUNDATIONS
+
+### **D11: Server-Driven Customer Cards** (COMPLETE)
+
+**Status:** ✅ COMPLETE (2025-10-25)
+**Trigger-Dokument:** [TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md](TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md)
+
+**Ziel:** Server-Driven UI Architektur für Customer Cards - Backend als Single Source of Truth für Schema und Daten
+
+**Completed Work:**
+- ✅ **Backend Phase 1**: 5 fehlende Enum-Endpoints implementiert
+  - `/api/enums/legal-forms` (LegalForm.java)
+  - `/api/enums/customer-types` (CustomerType.java)
+  - `/api/enums/payment-terms` (PaymentTerms.java)
+  - `/api/enums/delivery-conditions` (DeliveryCondition.java)
+  - `/api/enums/expansion-plan` (ExpansionPlan.java)
+- ✅ **Frontend Phase 1**: Browser-Fehler behoben
+  - MUI Grid v7 Migration (DynamicField.tsx)
+  - DATE Format Fix (yyyy-MM-dd)
+- ✅ **Design System Enforcement**: Pre-Commit Hook erweitert
+  - Custom Palette Usage Checks (theme.palette.status.won)
+  - Shadow System Checks (theme.shadows[X])
+  - Transitions Checks (theme.transitions.duration.X)
+- ✅ **Documentation**: DESIGN_SYSTEM.md vollständig dokumentiert
+  - Component Overrides (Button, Card, Drawer, Sidebar, TextField, Tabs, Chip)
+  - Custom Palette Extensions (freshfoodz, status namespaces)
+  - MUI v7 Grid API Migration Guide
+
+**Commits:**
+- `dcf8ac007`: D11 Phase 1 - Browser-Fehler behoben + Design System Enforcement
+- `158a7557f`: Xentral Integration + Testkunden-Strategie + Quality Improvements
+
+**Business Impact:**
+- Frontend-Entwickler können Customer-Cards dynamisch erweitern ohne Backend-Deployment
+- Design System wird automatisch durchgesetzt (Pre-Commit Hook blockiert Violations)
+- Neue Claude-Instanzen haben vollständige Theme-Dokumentation
+
+---
+
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
