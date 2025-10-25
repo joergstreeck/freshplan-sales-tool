@@ -49,7 +49,7 @@ import { CustomerFieldThemeProvider } from '../features/customers/theme/Customer
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { customerApi, type RevenueMetrics } from '../features/customer/api/customerApi';
+import { customerApi } from '../features/customer/api/customerApi';
 import type { Customer, CustomerContact } from '../features/customer/types/customer.types';
 import type { ContactAction } from '../features/customers/components/contacts/ContactGridContainer';
 import CreateOpportunityForCustomerDialog from '../features/opportunity/components/CreateOpportunityForCustomerDialog';
@@ -62,6 +62,7 @@ import { httpClient } from '../lib/apiClient';
 import { ActivityTimeline } from '../features/communication/components/ActivityTimeline';
 import { ActivityDialog } from '../features/communication/components/ActivityDialog';
 import type { Activity } from '../features/communication/components/ActivityTimeline';
+import { ServerDrivenCustomerCards } from '../components/ServerDrivenCustomerCards';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -164,7 +165,7 @@ export function CustomerDetailPage() {
   // Auto-switch to contacts tab if highlightContact is present
   useEffect(() => {
     if (highlightContactId) {
-      setActiveTab(1); // Assuming contacts tab is index 1
+      setActiveTab(2); // Contacts tab is now index 2 (after Server-Driven Cards tab)
     }
   }, [highlightContactId]);
 
@@ -478,25 +479,31 @@ export function CustomerDetailPage() {
             sx={{ borderBottom: 1, borderColor: 'divider' }}
           >
             <Tab label="Übersicht" icon={<InfoIcon />} iconPosition="start" {...a11yProps(0)} />
-            <Tab label="Kontakte" icon={<ContactsIcon />} iconPosition="start" {...a11yProps(1)} />
+            <Tab
+              label="Profil (Server-Driven)"
+              icon={<BusinessIcon />}
+              iconPosition="start"
+              {...a11yProps(1)}
+            />
+            <Tab label="Kontakte" icon={<ContactsIcon />} iconPosition="start" {...a11yProps(2)} />
             <Tab
               label={`Verkaufschancen${opportunityCount > 0 ? ` (${opportunityCount})` : ''}`}
               icon={<TrendingUpIcon />}
               iconPosition="start"
-              {...a11yProps(2)}
+              {...a11yProps(3)}
             />
             <Tab
               label="Aktivitäten"
               icon={<AssessmentIcon />}
               iconPosition="start"
-              {...a11yProps(3)}
+              {...a11yProps(4)}
             />
             {canViewAudit && (
               <Tab
                 label="Änderungshistorie"
                 icon={<TimelineIcon />}
                 iconPosition="start"
-                {...a11yProps(4)}
+                {...a11yProps(5)}
               />
             )}
           </Tabs>
@@ -507,22 +514,26 @@ export function CustomerDetailPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <CustomerContacts customerId={customerId!} highlightContactId={highlightContactId} />
+            <ServerDrivenCustomerCards customerId={customerId!} />
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
+            <CustomerContacts customerId={customerId!} highlightContactId={highlightContactId} />
+          </TabPanel>
+
+          <TabPanel value={activeTab} index={3}>
             <CustomerOpportunitiesList
               customerId={customerId!}
               onCountChange={setOpportunityCount}
             />
           </TabPanel>
 
-          <TabPanel value={activeTab} index={3}>
+          <TabPanel value={activeTab} index={4}>
             <CustomerActivities customerId={customerId!} />
           </TabPanel>
 
           {canViewAudit && (
-            <TabPanel value={activeTab} index={4}>
+            <TabPanel value={activeTab} index={5}>
               <EntityAuditTimeline
                 entityType="customer"
                 entityId={customerId!}
@@ -542,7 +553,7 @@ export function CustomerDetailPage() {
           onSuccess={() => {
             setShowOpportunityDialog(false);
             // Switch to Opportunities tab to show the new opportunity
-            setActiveTab(2);
+            setActiveTab(3);
           }}
         />
 
@@ -964,7 +975,7 @@ function CustomerActivities({ customerId }: { customerId: string }) {
 
   const handleActivitySaved = () => {
     // Refresh timeline by re-mounting component
-    setRefreshKey((prev) => prev + 1);
+    setRefreshKey(prev => prev + 1);
   };
 
   return (
