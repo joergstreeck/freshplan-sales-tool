@@ -359,4 +359,23 @@ public class ContactService {
     }
     return contacts.stream().anyMatch(c -> !c.getId().equals(excludeContactId));
   }
+
+  /**
+   * Get primary contact for a customer (Sprint 2.1.7.2 D11)
+   *
+   * @param customerId the customer ID
+   * @return primary contact DTO, or null if no primary contact found
+   */
+  public ContactDTO getPrimaryContactByCustomerId(UUID customerId) {
+    if (cqrsEnabled) {
+      return queryService.getPrimaryContactByCustomerId(customerId);
+    }
+    // Legacy implementation below
+    List<CustomerContact> contacts = contactRepository.findByCustomerId(customerId);
+    return contacts.stream()
+        .filter(CustomerContact::getIsPrimary)
+        .findFirst()
+        .map(contactMapper::toDTO)
+        .orElse(null);
+  }
 }

@@ -529,8 +529,7 @@ public class CustomerSchemaResource {
                     .label("Lieferantenqualität")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
-                    .helpText(
-                        "Lead-Feld: lead.painSupplierQuality → customer.painSupplierQuality")
+                    .helpText("Lead-Feld: lead.painSupplierQuality → customer.painSupplierQuality")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painUnreliableDelivery")

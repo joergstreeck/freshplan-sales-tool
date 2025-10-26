@@ -1,5 +1,6 @@
 package de.freshplan.domain.customer.service;
 
+import de.freshplan.domain.customer.dto.CustomerSummaryDTO;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerLifecycleStage;
 import de.freshplan.domain.customer.entity.CustomerStatus;
@@ -43,15 +44,18 @@ public class CustomerService {
   private final CustomerRepository customerRepository;
   private final CustomerNumberGeneratorService numberGenerator;
   private final CustomerMapper customerMapper;
+  private final ContactService contactService;
 
   @Inject
   public CustomerService(
       CustomerRepository customerRepository,
       CustomerNumberGeneratorService numberGenerator,
-      CustomerMapper customerMapper) {
+      CustomerMapper customerMapper,
+      ContactService contactService) {
     this.customerRepository = customerRepository;
     this.numberGenerator = numberGenerator;
     this.customerMapper = customerMapper;
+    this.contactService = contactService;
   }
 
   // ========== CRUD OPERATIONS ==========
@@ -748,5 +752,80 @@ public class CustomerService {
       case "MERGE_PERFORMED" -> EventCategory.SYSTEM;
       default -> EventCategory.OTHER;
     };
+  }
+
+  // ========== CUSTOMER SUMMARY (Sprint 2.1.7.2 D11) ==========
+
+  /**
+   * Get customer summary for compact view
+   *
+   * <p>Returns condensed customer information for the compact overview displayed when clicking a
+   * customer in the list.
+   *
+   * @param customerId Customer ID
+   * @return CustomerSummaryDTO with compact information, or null if customer not found
+   */
+  public CustomerSummaryDTO getCustomerSummary(UUID customerId) {
+    log.debug("Getting customer summary for customer ID: {}", customerId);
+
+    // Find customer
+    Optional<Customer> customerOpt = customerRepository.findByIdActive(customerId);
+    if (customerOpt.isEmpty()) {
+      log.warn("Customer not found for summary: {}", customerId);
+      return null;
+    }
+
+    Customer customer = customerOpt.get();
+
+    // Get primary contact
+    ContactDTO primaryContact = contactService.getPrimaryContactByCustomerId(customerId);
+
+    // Calculate location count from Phase 1 fields (locationsDE, locationsCH, locationsAT)
+    int locationCount =
+        (customer.getLocationsDE() != null ? customer.getLocationsDE() : 0)
+            + (customer.getLocationsCH() != null ? customer.getLocationsCH() : 0)
+            + (customer.getLocationsAT() != null ? customer.getLocationsAT() : 0);
+
+    // Build location names list (top locations from deliveryAddresses or main address)
+    List<String> locationNames = new java.util.ArrayList<>();
+    if (customer.getCity() != null) {
+      locationNames.add(customer.getCity()); // Main address city
+    }
+    // TODO: Parse deliveryAddresses JSONB for additional location names (Phase 3)
+
+    // Build summary DTO
+    CustomerSummaryDTO summary = new CustomerSummaryDTO();
+    summary.setCompanyName(customer.getCompanyName());
+    summary.setStatus(customer.getStatus() != null ? customer.getStatus().toString() : "UNKNOWN");
+    summary.setExpectedAnnualVolume(customer.getExpectedAnnualVolume());
+    summary.setLocationCount(locationCount);
+    summary.setLocationNames(locationNames);
+
+    // Primary contact info
+    if (primaryContact != null) {
+      summary.setPrimaryContactName(
+          primaryContact.getFirstName() + " " + primaryContact.getLastName());
+      summary.setPrimaryContactEmail(primaryContact.getEmail());
+    }
+
+    // Risk score
+    summary.setRiskScore(customer.getRiskScore());
+
+    // Last contact date (convert LocalDateTime to Instant)
+    summary.setLastContactDate(
+        customer.getLastContactDate() != null
+            ? customer.getLastContactDate().atZone(java.time.ZoneId.systemDefault()).toInstant()
+            : null);
+
+    // Next steps (placeholder - will be implemented in Activities feature Sprint 2.2.x)
+    summary.setNextSteps(List.of());
+
+    log.debug(
+        "Customer summary generated for: {} (locations: {}, risk: {})",
+        customer.getCompanyName(),
+        locationCount,
+        customer.getRiskScore());
+
+    return summary;
   }
 }

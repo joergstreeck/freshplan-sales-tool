@@ -271,6 +271,30 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "delivery_addresses", columnDefinition = "jsonb")
   private List<String> deliveryAddresses = new ArrayList<>();
 
+  /**
+   * Number of locations in Germany
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "locations_de")
+  private Integer locationsDE;
+
+  /**
+   * Number of locations in Switzerland
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "locations_ch")
+  private Integer locationsCH;
+
+  /**
+   * Number of locations in Austria
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "locations_at")
+  private Integer locationsAT;
+
   // Business Model - NEW for Sprint 2
   @Enumerated(EnumType.STRING)
   @Column(name = "primary_financing", length = 20)
@@ -944,6 +968,30 @@ public class Customer extends PanacheEntityBase {
 
   public void setDeliveryAddresses(List<String> deliveryAddresses) {
     this.deliveryAddresses = deliveryAddresses;
+  }
+
+  public Integer getLocationsDE() {
+    return locationsDE;
+  }
+
+  public void setLocationsDE(Integer locationsDE) {
+    this.locationsDE = locationsDE;
+  }
+
+  public Integer getLocationsCH() {
+    return locationsCH;
+  }
+
+  public void setLocationsCH(Integer locationsCH) {
+    this.locationsCH = locationsCH;
+  }
+
+  public Integer getLocationsAT() {
+    return locationsAT;
+  }
+
+  public void setLocationsAT(Integer locationsAT) {
+    this.locationsAT = locationsAT;
   }
 
   public FinancingType getPrimaryFinancing() {
