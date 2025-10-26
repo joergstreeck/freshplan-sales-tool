@@ -1,9 +1,21 @@
-# 🎯 SPEC: Customer Detail View - FINALE VERSION
+# ❌ DEPRECATED: Customer Detail View - Progressive Disclosure Pattern
+
+> **⚠️ DIESE ARCHITEKTUR WURDE VERWORFEN AM 2025-10-26**
+>
+> **Grund:** UX-Probleme, Platzvergeudung, zu viele Disclosure-Levels, inkonsistent mit bestehendem Cockpit-Pattern
+>
+> **Aktuelle Spec:** `SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md`
+>
+> **Diese Datei bleibt nur zu Dokumentationszwecken erhalten.**
+
+---
+
+# 🎯 SPEC: Customer Detail View - FINALE VERSION (DEPRECATED)
 
 **📅 Erstellt:** 2025-10-26
-**📝 Status:** ✅ FINAL - VERBINDLICH
+**📝 Status:** ❌ DEPRECATED - NICHT IMPLEMENTIEREN!
 **👤 Autor:** Jörg Streeck + Strategic Consultant
-**🚨 KRITISCH:** Alle vorherigen SPEC_D11 Versionen sind VERALTET und UNGÜLTIG!
+**🚨 KRITISCH:** Diese Spec wurde durch SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md ersetzt!
 
 ---
 

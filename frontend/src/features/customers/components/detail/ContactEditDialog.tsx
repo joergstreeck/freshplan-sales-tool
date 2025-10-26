@@ -317,3 +317,6 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
     </Dialog>
   );
 };
+
+// Explicit re-export for Vite HMR
+export type { Contact };

@@ -122,6 +122,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.TEXT)
                     .readonly(true)
                     .gridCols(6)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(1)
+                    .wizardSectionId("company_basic")
+                    .wizardSectionTitle("Unternehmensdaten")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("companyName")
@@ -131,6 +136,11 @@ public class CustomerSchemaResource {
                     .placeholder("z.B. Großhandel Frische Küche GmbH")
                     .helpText("Offizieller Firmenname laut Handelsregister")
                     .gridCols(6)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(2)
+                    .wizardSectionId("company_basic")
+                    .wizardSectionTitle("Unternehmensdaten")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("tradingName")
@@ -139,6 +149,7 @@ public class CustomerSchemaResource {
                     .placeholder("z.B. Fresh Kitchen Wholesale")
                     .helpText("Unter diesem Namen ist das Unternehmen im Markt bekannt")
                     .gridCols(6)
+                    .showInWizard(false) // Nur in Details, nicht im Wizard
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("legalForm")
@@ -146,6 +157,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/legal-forms")
                     .gridCols(6)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(3)
+                    .wizardSectionId("company_basic")
+                    .wizardSectionTitle("Unternehmensdaten")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("customerType")
@@ -153,6 +169,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/customer-types")
                     .gridCols(6)
+                    .showInWizard(false) // Nur in Details
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("businessType")
@@ -162,6 +179,11 @@ public class CustomerSchemaResource {
                     .required(true)
                     .gridCols(6)
                     .helpText("Wird aus Lead-Konversion übernommen (lead.businessType)")
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(5)
+                    .wizardSectionId("company_basic")
+                    .wizardSectionTitle("Unternehmensdaten")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("status")
@@ -172,6 +194,7 @@ public class CustomerSchemaResource {
                     .helpText(
                         "System setzt automatisch (Lead→AKTIV, Churn→RISIKO), kann manuell"
                             + " überschrieben werden")
+                    .showInWizard(false) // Readonly, automatisch gesetzt
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("originalLeadId")
@@ -180,6 +203,7 @@ public class CustomerSchemaResource {
                     .readonly(true)
                     .gridCols(6)
                     .helpText("Verknüpfung zum ursprünglichen Lead (bei Lead→Kunde Konvertierung)")
+                    .showInWizard(false) // Readonly, automatisch gesetzt
                     .build()))
         .build();
   }
@@ -211,12 +235,18 @@ public class CustomerSchemaResource {
         .subtitle("Rechnungs- und Lieferadressen (strukturiert)")
         .fields(
             List.of(
-                // Sprint 2.1.7.2 D11: Structured mainAddress (GROUP type)
+                // Sprint 2.1.7.2 D11: Structured mainAddress (GROUP type) - Wizard Step 1
                 FieldDefinition.builder()
                     .fieldKey("mainAddress")
                     .label("Hauptadresse (= Rechnungsadresse)")
                     .type(FieldType.GROUP)
                     .gridCols(12)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(10)
+                    .wizardSectionId("address")
+                    .wizardSectionTitle("📍 Adresse Hauptstandort")
+                    .showDividerAfter(true)
                     .fields(
                         List.of(
                             FieldDefinition.builder()
@@ -245,12 +275,13 @@ public class CustomerSchemaResource {
                                 .gridCols(4)
                                 .build()))
                     .build(),
-                // Sprint 2.1.7.2 D11: Structured deliveryAddresses (ARRAY type)
+                // Sprint 2.1.7.2 D11: Structured deliveryAddresses (ARRAY type) - Nur Details
                 FieldDefinition.builder()
                     .fieldKey("deliveryAddresses")
                     .label("Lieferadressen")
                     .type(FieldType.ARRAY)
                     .gridCols(12)
+                    .showInWizard(false) // Nur in Details, nicht im Wizard
                     .itemSchema(
                         FieldDefinition.builder()
                             .fieldKey("item")
@@ -311,18 +342,33 @@ public class CustomerSchemaResource {
                     .label("Standorte Deutschland")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(11)
+                    .wizardSectionId("chain_structure")
+                    .wizardSectionTitle("🏢 Filialstruktur")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("locationsCH")
                     .label("Standorte Schweiz")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(12)
+                    .wizardSectionId("chain_structure")
+                    .wizardSectionTitle("🏢 Filialstruktur")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("locationsAT")
                     .label("Standorte Österreich")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(13)
+                    .wizardSectionId("chain_structure")
+                    .wizardSectionTitle("🏢 Filialstruktur")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("expansionPlanned")
@@ -330,6 +376,12 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/expansion-plan")
                     .gridCols(4)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(14)
+                    .wizardSectionId("chain_structure")
+                    .wizardSectionTitle("🏢 Filialstruktur")
+                    .showDividerAfter(true)
                     .build()))
         .collapsible(true)
         .build();
@@ -366,24 +418,37 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/kitchen-sizes")
                     .gridCols(6)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(6)
+                    .wizardSectionId("company_basic")
+                    .wizardSectionTitle("Unternehmensdaten")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("employeeCount")
                     .label("Anzahl Mitarbeiter")
                     .type(FieldType.NUMBER)
                     .gridCols(6)
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(7)
+                    .wizardSectionId("company_basic")
+                    .wizardSectionTitle("Unternehmensdaten")
+                    .showDividerAfter(true)
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("branchCount")
                     .label("Anzahl Filialen")
                     .type(FieldType.NUMBER)
                     .gridCols(6)
+                    .showInWizard(false) // Nur in Details
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("isChain")
                     .label("Filialunternehmen?")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .showInWizard(false) // Nur in Details
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("parentCustomer")
@@ -392,6 +457,7 @@ public class CustomerSchemaResource {
                     .readonly(true)
                     .gridCols(12)
                     .helpText("Übergeordnetes Unternehmen im Konzern")
+                    .showInWizard(false) // Nur in Details
                     .build()))
         .build();
   }
@@ -432,6 +498,12 @@ public class CustomerSchemaResource {
                     .helpText(
                         "Geplanter Umsatz (aus Lead-Konversion: lead.estimatedVolume →"
                             + " customer.expectedAnnualVolume)")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(10)
+                    .wizardSectionId("revenue_potential")
+                    .wizardSectionTitle("💰 Umsatzpotenzial")
+                    .showDividerAfter(true)
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("actualAnnualVolume")
@@ -440,6 +512,7 @@ public class CustomerSchemaResource {
                     .readonly(true)
                     .gridCols(6)
                     .helpText("Realisierter Umsatz (aus Xentral)")
+                    .showInWizard(false) // Readonly, from Xentral
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("revenue30Days")
@@ -447,6 +520,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.CURRENCY)
                     .readonly(true)
                     .gridCols(4)
+                    .showInWizard(false) // Readonly, from Xentral
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("revenue90Days")
@@ -454,6 +528,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.CURRENCY)
                     .readonly(true)
                     .gridCols(4)
+                    .showInWizard(false) // Readonly, from Xentral
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("revenue365Days")
@@ -461,6 +536,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.CURRENCY)
                     .readonly(true)
                     .gridCols(4)
+                    .showInWizard(false) // Readonly, from Xentral
                     .build()))
         .build();
   }
@@ -496,12 +572,14 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/payment-terms")
                     .gridCols(6)
+                    .showInWizard(false) // Contract negotiated after customer creation
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("creditLimit")
                     .label("Kreditlimit")
                     .type(FieldType.CURRENCY)
                     .gridCols(6)
+                    .showInWizard(false) // Contract negotiated after customer creation
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("deliveryCondition")
@@ -509,6 +587,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/delivery-conditions")
                     .gridCols(6)
+                    .showInWizard(false) // Contract negotiated after customer creation
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("primaryFinancing")
@@ -516,6 +595,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/financing-types")
                     .gridCols(6)
+                    .showInWizard(false) // Contract negotiated after customer creation
                     .build()))
         .build();
   }
@@ -553,13 +633,18 @@ public class CustomerSchemaResource {
         .subtitle("Herausforderungen (aus Lead-Konversion kopiert)")
         .fields(
             List.of(
-                // All 8 boolean pain point flags from Lead conversion
+                // All 8 boolean pain point flags from Lead conversion (Wizard Step 2!)
                 FieldDefinition.builder()
                     .fieldKey("painStaffShortage")
                     .label("Personalmangel")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Lead-Feld: lead.painStaffShortage → customer.painStaffShortage")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(1)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painHighCosts")
@@ -567,6 +652,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Lead-Feld: lead.painHighCosts → customer.painHighCosts")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(2)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painFoodWaste")
@@ -574,6 +664,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Lead-Feld: lead.painFoodWaste → customer.painFoodWaste")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(3)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painQualityInconsistency")
@@ -583,6 +678,11 @@ public class CustomerSchemaResource {
                     .helpText(
                         "Lead-Feld: lead.painQualityInconsistency →"
                             + " customer.painQualityInconsistency")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(4)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painTimePressure")
@@ -590,6 +690,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Lead-Feld: lead.painTimePressure → customer.painTimePressure")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(5)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painSupplierQuality")
@@ -597,6 +702,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Lead-Feld: lead.painSupplierQuality → customer.painSupplierQuality")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(6)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painUnreliableDelivery")
@@ -605,6 +715,11 @@ public class CustomerSchemaResource {
                     .gridCols(6)
                     .helpText(
                         "Lead-Feld: lead.painUnreliableDelivery → customer.painUnreliableDelivery")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(7)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painPoorService")
@@ -612,6 +727,11 @@ public class CustomerSchemaResource {
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Lead-Feld: lead.painPoorService → customer.painPoorService")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(8)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
                     .build(),
                 // Text field with detailed pain point notes
                 FieldDefinition.builder()
@@ -622,6 +742,12 @@ public class CustomerSchemaResource {
                     .placeholder(
                         "z.B. Hauptproblem: Zuverlässige Bio-Lieferanten schwer zu finden...")
                     .helpText("Lead-Feld: lead.painNotes → customer.painNotes")
+                    .showInWizard(true)
+                    .wizardStep(2)
+                    .wizardOrder(9)
+                    .wizardSectionId("pain_points")
+                    .wizardSectionTitle("Herausforderungen")
+                    .showDividerAfter(true)
                     .build()))
         .build();
   }

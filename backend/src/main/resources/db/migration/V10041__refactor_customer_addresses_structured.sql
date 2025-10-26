@@ -13,17 +13,17 @@ ALTER TABLE customers
 
 -- Step 2: Füge strukturierte Adressfelder hinzu (EXAKT wie Lead Entity!)
 ALTER TABLE customers
-  ADD COLUMN street VARCHAR(255),
-  ADD COLUMN postal_code VARCHAR(20),
-  ADD COLUMN city VARCHAR(100),
-  ADD COLUMN country_code VARCHAR(2) DEFAULT 'DE';
+  ADD COLUMN IF NOT EXISTS street VARCHAR(255),
+  ADD COLUMN IF NOT EXISTS postal_code VARCHAR(20),
+  ADD COLUMN IF NOT EXISTS city VARCHAR(100),
+  ADD COLUMN IF NOT EXISTS country_code VARCHAR(2) DEFAULT 'DE';
 
 -- Step 3: Füge Multi-Location Felder hinzu
 ALTER TABLE customers
-  ADD COLUMN locations_de INTEGER DEFAULT 0,
-  ADD COLUMN locations_ch INTEGER DEFAULT 0,
-  ADD COLUMN locations_at INTEGER DEFAULT 0,
-  ADD COLUMN expansion_planned VARCHAR(20) DEFAULT 'UNKNOWN';
+  ADD COLUMN IF NOT EXISTS locations_de INTEGER DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS locations_ch INTEGER DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS locations_at INTEGER DEFAULT 0,
+  ADD COLUMN IF NOT EXISTS expansion_planned VARCHAR(20) DEFAULT 'UNKNOWN';
 
 -- Step 4: Kommentare für Dokumentation
 COMMENT ON COLUMN customers.street IS 'Street address (incl. house number) - matches Lead.street for 1:1 conversion';
@@ -37,11 +37,18 @@ COMMENT ON COLUMN customers.locations_at IS 'Number of locations in Austria';
 COMMENT ON COLUMN customers.expansion_planned IS 'Planned expansion (YES, NO, UNKNOWN)';
 
 -- Step 5: Constraint für expansion_planned Enum
-ALTER TABLE customers
-  ADD CONSTRAINT chk_expansion_planned CHECK (expansion_planned IN ('YES', 'NO', 'UNKNOWN'));
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint WHERE conname = 'chk_expansion_planned'
+  ) THEN
+    ALTER TABLE customers
+      ADD CONSTRAINT chk_expansion_planned CHECK (expansion_planned IN ('YES', 'NO', 'UNKNOWN'));
+  END IF;
+END$$;
 
 -- Step 6: Index auf postal_code für Geo-Queries
-CREATE INDEX idx_customers_postal_code ON customers (postal_code);
+CREATE INDEX IF NOT EXISTS idx_customers_postal_code ON customers (postal_code);
 
 -- HINWEIS: delivery_addresses (JSONB) bleibt erhalten aus V10040!
 -- Diese Spalte wird für Multi-Location Lieferadressen genutzt.

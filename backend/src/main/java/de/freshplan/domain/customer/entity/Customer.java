@@ -194,6 +194,40 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "actual_annual_volume", precision = 12, scale = 2)
   private BigDecimal actualAnnualVolume;
 
+  /**
+   * Revenue (Umsatz) der letzten 30 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
+   *
+   * <p>Befüllung: Später via Xentral API Sync Verwendung: - Customer-Scoring (Ranking nach Umsatz)
+   * - Dashboard Revenue-Analysen - CustomerSchemaResource (Card "Geschäftspotenzial")
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "revenue_30_days", precision = 12, scale = 2)
+  private BigDecimal revenue30Days;
+
+  /**
+   * Revenue (Umsatz) der letzten 90 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
+   *
+   * <p>Befüllung: Später via Xentral API Sync Verwendung: - Trend-Analysen (30/90/365 Tage
+   * Vergleich) - Dashboard Revenue-Entwicklung - CustomerSchemaResource (Card
+   * "Geschäftspotenzial")
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "revenue_90_days", precision = 12, scale = 2)
+  private BigDecimal revenue90Days;
+
+  /**
+   * Revenue (Umsatz) der letzten 365 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
+   *
+   * <p>Befüllung: Später via Xentral API Sync Verwendung: - Jahres-Scoring (Top-Kunden Ranking) -
+   * Revenue-Forecast - CustomerSchemaResource (Card "Geschäftspotenzial")
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "revenue_365_days", precision = 12, scale = 2)
+  private BigDecimal revenue365Days;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "payment_terms", length = 20)
   private PaymentTerms paymentTerms = PaymentTerms.NETTO_30;
@@ -725,6 +759,30 @@ public class Customer extends PanacheEntityBase {
 
   public void setActualAnnualVolume(BigDecimal actualAnnualVolume) {
     this.actualAnnualVolume = actualAnnualVolume;
+  }
+
+  public BigDecimal getRevenue30Days() {
+    return revenue30Days;
+  }
+
+  public void setRevenue30Days(BigDecimal revenue30Days) {
+    this.revenue30Days = revenue30Days;
+  }
+
+  public BigDecimal getRevenue90Days() {
+    return revenue90Days;
+  }
+
+  public void setRevenue90Days(BigDecimal revenue90Days) {
+    this.revenue90Days = revenue90Days;
+  }
+
+  public BigDecimal getRevenue365Days() {
+    return revenue365Days;
+  }
+
+  public void setRevenue365Days(BigDecimal revenue365Days) {
+    this.revenue365Days = revenue365Days;
   }
 
   public PaymentTerms getPaymentTerms() {

@@ -66,6 +66,78 @@ export interface FieldDefinition {
   helpText: string | null;
   gridCols: number | null;
   validationRules: string[];
+
+  // ========== WIZARD METADATA (Sprint 2.1.7.2 D11) ==========
+  /**
+   * Show this field in Customer Wizard?
+   *
+   * Sprint 2.1.7.2 D11: Single Source of Truth for Wizard + Detail-Tabs
+   *
+   * If true, field appears in wizard step defined by wizardStep
+   */
+  showInWizard?: boolean;
+
+  /**
+   * Wizard step number (1-4)
+   *
+   * Sprint 2.1.7.2 D11: Wizard Steps
+   *
+   * 1 = Basis & Filialstruktur
+   * 2 = Herausforderungen & Potenzial
+   * 3 = Multi-Contact Management
+   * 4 = Angebot & Services
+   *
+   * Only relevant if showInWizard = true
+   */
+  wizardStep?: number;
+
+  /**
+   * Order within wizard step (1, 2, 3, ...)
+   *
+   * Sprint 2.1.7.2 D11: Field ordering in wizard
+   *
+   * Fields with lower order appear first
+   *
+   * Only relevant if showInWizard = true
+   */
+  wizardOrder?: number;
+
+  /**
+   * Wizard section identifier (for grouping fields)
+   *
+   * Sprint 2.1.7.2 D11 Option B: Server-Driven Sections
+   *
+   * Groups fields visually in wizard steps
+   *
+   * Examples: "company_basic", "address", "business_model", "chain_structure"
+   *
+   * Only relevant if showInWizard = true
+   */
+  wizardSectionId?: string;
+
+  /**
+   * Wizard section title (display text for section heading)
+   *
+   * Sprint 2.1.7.2 D11 Option B: Server-Driven Sections
+   *
+   * Displayed as section heading in wizard
+   *
+   * Examples: "Unternehmensdaten", "📍 Adresse Hauptstandort", "💰 Geschäftsmodell"
+   *
+   * Only relevant if showInWizard = true
+   */
+  wizardSectionTitle?: string;
+
+  /**
+   * Show divider after this field?
+   *
+   * Sprint 2.1.7.2 D11 Option B: Server-Driven Sections
+   *
+   * If true, renders a divider line after this field (section separator)
+   *
+   * Only relevant if showInWizard = true
+   */
+  showDividerAfter?: boolean;
 }
 
 /**

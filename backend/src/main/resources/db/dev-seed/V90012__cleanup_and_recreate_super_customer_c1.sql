@@ -138,7 +138,7 @@ INSERT INTO customers (
     0,
     0,
     0,
-    'JA',
+    'YES',
 
     -- Pain Points
     TRUE,

@@ -8,17 +8,11 @@
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { Box, Typography, Alert, AlertTitle, Divider } from '@mui/material';
+import { Box, Typography, Alert, AlertTitle, Divider, CircularProgress } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
-import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
+import { useCustomerSchema } from '../../../../hooks/useCustomerSchema';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import { FilialstrukturLayout } from '../layout/FilialstrukturLayout';
-import { TextField } from '../fields/fieldTypes/TextField';
-import { NumberField } from '../fields/fieldTypes/NumberField';
-import { SelectField } from '../fields/fieldTypes/SelectField';
-import type { FieldDefinition } from '../../types/field.types';
-import { isFieldDefinition } from '../../types/field.types';
-import { getFieldSize } from '../../utils/fieldSizeCalculator';
+import type { FieldDefinition } from '../../../../types/customer-schema';
 
 /**
  * Step 1: Basis & Filialstruktur

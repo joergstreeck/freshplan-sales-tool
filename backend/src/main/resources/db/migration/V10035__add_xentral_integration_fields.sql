@@ -83,6 +83,38 @@ COMMENT ON COLUMN app_user.can_see_unassigned_customers IS
 
 
 -- ============================================================================
+-- FELD 5-7: customers.revenue30Days / revenue90Days / revenue365Days
+-- ============================================================================
+-- Zweck: Umsatz-Tracking für Customer-Scoring + Revenue-Analysen
+-- Befüllung: Später via Xentral API (GET /api/xentral/customers/{id})
+-- Verwendung:
+--   - CustomerSchemaResource: Server-Driven UI Fields (Card "Geschäftspotenzial")
+--   - Scoring: Kunden-Ranking nach Umsatz
+--   - Dashboard: Revenue-Entwicklung visualisieren (30/90/365 Tage Trend)
+
+ALTER TABLE customers
+ADD COLUMN IF NOT EXISTS revenue_30_days NUMERIC(12, 2);
+
+ALTER TABLE customers
+ADD COLUMN IF NOT EXISTS revenue_90_days NUMERIC(12, 2);
+
+ALTER TABLE customers
+ADD COLUMN IF NOT EXISTS revenue_365_days NUMERIC(12, 2);
+
+CREATE INDEX IF NOT EXISTS idx_customers_revenue_365_days
+ON customers(revenue_365_days DESC NULLS LAST);
+
+COMMENT ON COLUMN customers.revenue_30_days IS
+  'Umsatz der letzten 30 Tage (aus Xentral) - für Scoring + Dashboards';
+
+COMMENT ON COLUMN customers.revenue_90_days IS
+  'Umsatz der letzten 90 Tage (aus Xentral) - für Trend-Analysen';
+
+COMMENT ON COLUMN customers.revenue_365_days IS
+  'Umsatz der letzten 365 Tage (aus Xentral) - für Jahres-Scoring';
+
+
+-- ============================================================================
 -- VALIDATION & CONSTRAINTS
 -- ============================================================================
 
@@ -94,6 +126,18 @@ CHECK (manager_id IS NULL OR manager_id != id);
 
 COMMENT ON CONSTRAINT chk_app_user_manager_not_self ON app_user IS
   'Prevents circular hierarchy: User cannot be their own manager';
+
+-- Verhindere negative Revenue-Werte
+ALTER TABLE customers
+ADD CONSTRAINT chk_customers_revenue_non_negative
+CHECK (
+  (revenue_30_days IS NULL OR revenue_30_days >= 0) AND
+  (revenue_90_days IS NULL OR revenue_90_days >= 0) AND
+  (revenue_365_days IS NULL OR revenue_365_days >= 0)
+);
+
+COMMENT ON CONSTRAINT chk_customers_revenue_non_negative ON customers IS
+  'Revenue values must be >= 0 or NULL';
 
 
 -- ============================================================================
@@ -107,10 +151,11 @@ BEGIN
   RAISE NOTICE '   - customers.xentral_customer_id (Xentral Customer ID)';
   RAISE NOTICE '   - app_user.manager_id (Team-Hierarchie)';
   RAISE NOTICE '   - app_user.can_see_unassigned_customers (Manager Unassigned-Privilege)';
+  RAISE NOTICE '   - customers.revenue_30_days, revenue_90_days, revenue_365_days (Umsatz-Tracking)';
   RAISE NOTICE '';
   RAISE NOTICE '📋 NEXT STEPS:';
   RAISE NOTICE '   1. User-Entity: @Column xentralSalesRepId + managerId + canSeeUnassignedCustomers';
-  RAISE NOTICE '   2. Customer-Entity: @Column xentralCustomerId';
+  RAISE NOTICE '   2. Customer-Entity: @Column xentralCustomerId + revenue30Days + revenue90Days + revenue365Days';
   RAISE NOTICE '   3. Nightly Sync Job: SalesRepSyncJob implementieren';
   RAISE NOTICE '   4. RLS Security: getUnassignedCustomers() Methode';
   RAISE NOTICE '   5. ConvertToCustomerDialog: Xentral-Dropdown + xentralCustomerId';

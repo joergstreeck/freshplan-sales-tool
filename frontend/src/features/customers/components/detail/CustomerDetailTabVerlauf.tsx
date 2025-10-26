@@ -40,7 +40,7 @@ import {
   Person as PersonIcon,
   Timeline as TimelineIcon,
 } from '@mui/icons-material';
-import { ContactEditDialog, Contact } from './ContactEditDialog';
+import { ContactEditDialog, type Contact } from './ContactEditDialog';
 
 interface CustomerDetailTabVerlaufProps {
   customerId: string;
