@@ -16,8 +16,6 @@ import { DataFreshnessManager } from '../features/customers/components/intellige
 import { LeadQualityDashboard } from '../features/leads/components/intelligence/LeadQualityDashboard';
 import { LeadProtectionManager } from '../features/leads/components/intelligence/LeadProtectionManager';
 import { IntelligentFilterBar } from '../features/customers/components/filter/IntelligentFilterBar';
-import { CustomerCompactView } from '../features/customers/components/detail/CustomerCompactView';
-import { CustomerDetailModal } from '../features/customers/components/detail/CustomerDetailModal';
 import { useAuth } from '../contexts/AuthContext';
 import { generateLeadUrl } from '../utils/slugify';
 import { useCustomers, useCustomerSearchAdvanced } from '../features/customer/api/customerQueries';
@@ -58,10 +56,6 @@ export function CustomersPageV2({
   const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-
-  // Sprint 2.1.7.2 D11: Customer Detail View State
-  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
-  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   // Use focus list store for sort configuration only
   const { sortBy, setSortBy } = useFocusListStore();
@@ -552,17 +546,16 @@ export function CustomersPageV2({
                 />
 
                 {/* Customer Table - Use virtualized version for > 20 items */}
-                <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
-                  <Box sx={{ flex: context === 'customers' && selectedCustomerId ? 2 : 1 }}>
-                    {filteredCustomers.length > 20 ? (
+                <Box>
+                  {filteredCustomers.length > 20 ? (
                       <VirtualizedCustomerTable
                         customers={filteredCustomers}
                         columns={columnConfig}
                         onRowClick={customer => {
                           // Context-based behavior
                           if (context === 'customers') {
-                            // Sprint 2.1.7.2 D11: Show CompactView in right panel (not navigate!)
-                            setSelectedCustomerId(customer.id);
+                            // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                            navigate(`/customers/${customer.id}`);
                           } else if (context === 'leads') {
                             // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                             navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
@@ -573,12 +566,12 @@ export function CustomersPageV2({
                       />
                     ) : (
                       <CustomerTable
-                        customers={filteredCustomers}
+                        customers=  {filteredCustomers}
                         onRowClick={customer => {
                           // Context-based behavior
                           if (context === 'customers') {
-                            // Sprint 2.1.7.2 D11: Show CompactView in right panel (not navigate!)
-                            setSelectedCustomerId(customer.id);
+                            // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                            navigate(`/customers/${customer.id}`);
                           } else if (context === 'leads') {
                             // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                             navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
@@ -596,8 +589,8 @@ export function CustomersPageV2({
                             // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                             navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                           } else {
-                            // Sprint 2.1.7.2 D11: Show CompactView
-                            setSelectedCustomerId(customer.id);
+                            // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                            navigate(`/customers/${customer.id}`);
                           }
                         }}
                         onDelete={customer => {
@@ -606,27 +599,6 @@ export function CustomersPageV2({
                         }}
                       />
                     )}
-                  </Box>
-
-                  {/* Sprint 2.1.7.2 D11: Customer Compact View (right panel) */}
-                  {context === 'customers' && selectedCustomerId && selectedCustomer && (
-                    <Box
-                      sx={{
-                        flex: 1,
-                        minWidth: 400,
-                        maxWidth: 500,
-                        borderLeft: 1,
-                        borderColor: 'divider',
-                        pl: 2,
-                        overflowY: 'auto',
-                      }}
-                    >
-                      <CustomerCompactView
-                        customer={selectedCustomer}
-                        onShowDetails={() => setDetailModalOpen(true)}
-                      />
-                    </Box>
-                  )}
                 </Box>
 
                 {/* Load More Button (only for server-side pagination) */}
@@ -702,15 +674,6 @@ export function CustomersPageV2({
             toast.success('Lead erfolgreich gelöscht!');
           }}
         />
-
-        {/* Sprint 2.1.7.2 D11: Customer Detail Modal */}
-        {selectedCustomerId && (
-          <CustomerDetailModal
-            customerId={selectedCustomerId}
-            open={detailModalOpen}
-            onClose={() => setDetailModalOpen(false)}
-          />
-        )}
       </Box>
     </MainLayoutV2>
   );

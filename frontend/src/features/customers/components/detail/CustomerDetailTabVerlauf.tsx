@@ -133,9 +133,6 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
           <strong>Tab "Verlauf":</strong> Kontaktverwaltung und Kommunikationshistorie
           (Timeline).
         </Typography>
-        <Typography variant="caption" color="text.secondary">
-          Sprint 2.1.7.2 D11 - Phase 3
-        </Typography>
       </Alert>
 
       {/* Section 1: Ansprechpartner */}

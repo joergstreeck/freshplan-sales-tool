@@ -42,7 +42,9 @@ import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useCustomerDetails } from '../features/customer/hooks/useCustomerDetails';
 import { CustomerDetailTabFirma } from '../features/customers/components/detail/CustomerDetailTabFirma';
 import { CustomerDetailTabGeschaeft } from '../features/customers/components/detail/CustomerDetailTabGeschaeft';
+import { CustomerDetailTabVerlauf } from '../features/customers/components/detail/CustomerDetailTabVerlauf';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
+import { CustomerActionButtons } from '../features/customers/components/detail/CustomerActionButtons';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -226,6 +228,9 @@ export function CustomerDetailPage() {
           </Box>
         </Paper>
 
+        {/* Action Buttons (Cockpit-Pattern - Sprint 2.1.7.2 D11) */}
+        <CustomerActionButtons customer={customer} onEdit={() => setShowEditWizard(true)} />
+
         {/* Tabs */}
         <Paper>
           <Tabs
@@ -246,7 +251,6 @@ export function CustomerDetailPage() {
               label="Verlauf"
               icon={<TimelineIcon />}
               iconPosition="start"
-              disabled
               {...a11yProps(2)}
             />
           </Tabs>
@@ -261,14 +265,7 @@ export function CustomerDetailPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
-            <Box sx={{ textAlign: 'center', py: 4 }}>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                Verlauf
-              </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Diese Funktion wird in Sprint 2.2.x implementiert.
-              </Typography>
-            </Box>
+            <CustomerDetailTabVerlauf customerId={customerId!} />
           </TabPanel>
         </Paper>
 
