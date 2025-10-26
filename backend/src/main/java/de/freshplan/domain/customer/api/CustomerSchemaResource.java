@@ -166,9 +166,20 @@ public class CustomerSchemaResource {
                 FieldDefinition.builder()
                     .fieldKey("status")
                     .label("Status")
-                    .type(FieldType.CHIP)
+                    .type(FieldType.ENUM)
+                    .enumSource("/api/enums/customer-status")
+                    .gridCols(6)
+                    .helpText(
+                        "System setzt automatisch (Lead→AKTIV, Churn→RISIKO), kann manuell"
+                            + " überschrieben werden")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("originalLeadId")
+                    .label("Original Lead ID")
+                    .type(FieldType.TEXT)
                     .readonly(true)
                     .gridCols(6)
+                    .helpText("Verknüpfung zum ursprünglichen Lead (bei Lead→Kunde Konvertierung)")
                     .build()))
         .build();
   }

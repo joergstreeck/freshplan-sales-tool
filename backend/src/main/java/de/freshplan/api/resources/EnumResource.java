@@ -297,6 +297,29 @@ public class EnumResource {
   }
 
   /**
+   * Get all Customer Status enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards (Status Field)
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+   *
+   * @return List of Customer Status values with display names
+   */
+  @GET
+  @Path("/customer-status")
+  @PermitAll
+  @Operation(summary = "Get all Customer Status enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Customer Status values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getCustomerStatus() {
+    return Arrays.stream(de.freshplan.domain.customer.entity.CustomerStatus.values())
+        .map(status -> new EnumValue(status.name(), status.name()))
+        .toList();
+  }
+
+  /**
    * DTO for Enum values (name + displayName).
    *
    * <p>Used by Frontend for Dropdown rendering.
