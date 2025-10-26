@@ -224,6 +224,26 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "expansion_planned", length = 10)
   private String expansionPlanned;
 
+  // Multi-Location Address Support (Sprint 2.1.7.2 D11 Phase 3)
+
+  /**
+   * Primary billing address for invoicing (single address as formatted string).
+   *
+   * @since 2.1.7.2 D11 Phase 3
+   */
+  @Column(name = "billing_address", length = 500)
+  private String billingAddress;
+
+  /**
+   * Array of delivery addresses for multi-location customers. Stored as JSONB array of address
+   * objects: [{street, city, zip, country}, ...]
+   *
+   * @since 2.1.7.2 D11 Phase 3
+   */
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "delivery_addresses", columnDefinition = "jsonb")
+  private List<String> deliveryAddresses = new ArrayList<>();
+
   // Business Model - NEW for Sprint 2
   @Enumerated(EnumType.STRING)
   @Column(name = "primary_financing", length = 20)
@@ -855,6 +875,24 @@ public class Customer extends PanacheEntityBase {
 
   public void setExpansionPlanned(String expansionPlanned) {
     this.expansionPlanned = expansionPlanned;
+  }
+
+  // Multi-Location Address Support Getters/Setters (Sprint 2.1.7.2 D11 Phase 3)
+
+  public String getBillingAddress() {
+    return billingAddress;
+  }
+
+  public void setBillingAddress(String billingAddress) {
+    this.billingAddress = billingAddress;
+  }
+
+  public List<String> getDeliveryAddresses() {
+    return deliveryAddresses;
+  }
+
+  public void setDeliveryAddresses(List<String> deliveryAddresses) {
+    this.deliveryAddresses = deliveryAddresses;
   }
 
   public FinancingType getPrimaryFinancing() {

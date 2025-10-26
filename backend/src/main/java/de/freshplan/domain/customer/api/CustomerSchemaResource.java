@@ -172,6 +172,21 @@ public class CustomerSchemaResource {
         .subtitle("Geografische Präsenz und Expansion")
         .fields(
             List.of(
+                // Phase 3: Multi-Location Address Support
+                FieldDefinition.builder()
+                    .fieldKey("billingAddress")
+                    .label("Rechnungsadresse")
+                    .type(FieldType.TEXTAREA)
+                    .gridCols(6)
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("deliveryAddresses")
+                    .label("Lieferadressen (JSON)")
+                    .type(FieldType.TEXTAREA)
+                    .gridCols(6)
+                    .helpText("JSON-Array: [{\"street\":\"...\", \"city\":\"...\", \"zip\":\"...\", \"country\":\"...\"}]")
+                    .build(),
+                // Location Statistics
                 FieldDefinition.builder()
                     .fieldKey("totalLocationsEu")
                     .label("Standorte gesamt (EU)")
@@ -202,6 +217,7 @@ public class CustomerSchemaResource {
                     .type(FieldType.NUMBER)
                     .gridCols(4)
                     .build(),
+                // Expansion Planning
                 FieldDefinition.builder()
                     .fieldKey("expansionPlanned")
                     .label("Expansion geplant?")
