@@ -552,9 +552,9 @@ Sprint 2.1.7.2 D11 ist **COMPLETE** wenn:
 - **Button:** [🔍 Alle Details anzeigen] → Navigiert zu View B
 
 #### View B: Detail-Ansicht mit Tabs (Deep Dive)
-- **Route:** `/customers/:id/details`
+- **Implementierung:** Modal/Drawer (Fullscreen)
 - **Component:** `CustomerDetailView.tsx` (NEU)
-- **Navigation:** Neue Seite (Option A - Browser-Back funktioniert, URLs teilbar)
+- **Navigation:** Eigener ← Zurück Button (Option B - konsistent mit SPA-Navigation)
 - **Tabs:**
   1. **"Firma"** → 3 Cards in 2-Spalten Grid (Unternehmensprofil, Standorte, Klassifikation)
   2. **"Geschäft"** → 4 Cards in 2-Spalten Grid (Business Data, Verträge, Pain Points, Produkte)

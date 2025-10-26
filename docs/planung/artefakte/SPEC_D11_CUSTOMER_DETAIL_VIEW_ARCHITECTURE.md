@@ -153,34 +153,36 @@ GET /api/customers/{id}/compact-view
 
 ### Wann sichtbar
 - User klickt auf [Alle Details anzeigen] Button
-- **Navigation:** `/customers/:id/details` (Option A - neue Seite)
-- Öffnet sich als separate Seite mit Browser-History
+- **Navigation:** Modal/Drawer öffnet sich (Fullscreen)
+- Eigener ← Zurück Button oben links schließt Modal
 
 ### Navigation-Entscheidung
 
-**Option A (GEWÄHLT): Neue Seite**
+**Option B (GEWÄHLT): Modal/Drawer (Fullscreen)**
+```
+/customers/:id → Kompakte View
+[Alle Details anzeigen] → Modal/Drawer öffnet sich (Fullscreen)
+[← Zurück] Button oben links → Modal schließt sich
+```
+
+**Vorteile:**
+- ✅ **Konsistent mit bestehender SPA-Navigation** (eigene ← Zurück Buttons überall!)
+- ✅ Schnellerer Wechsel (kein Page Reload)
+- ✅ User bleibt im gleichen Kontext
+- ✅ Kompakte View bleibt "im Hintergrund" (Context Preservation)
+- ✅ Einfacherer State Management (showDetails State)
+- ✅ Bessere UX für SPA (Single Page Application)
+
+**~~Option A (VERWORFEN): Neue Seite~~**
 ```
 /customers → Kundenliste
 /customers/:id → Kompakte View
 /customers/:id/details → Tab-View
 ```
-
-**Vorteile:**
-- ✅ Browser-Back funktioniert intuitiv
-- ✅ URLs sind teilbar (z.B. für Support-Tickets)
-- ✅ Einfacher zu implementieren
-- ✅ Bessere Navigation in Browser-History
-- ✅ Separate Seite = weniger State Management
-
-**~~Option B (VERWORFEN): Modal/Overlay~~**
-```
-/customers/:id → Kompakte View
-[Alle Details] → Overlay öffnet sich
-```
-- ❌ Browser-Back funktioniert nicht (muss custom implementiert werden)
-- ❌ URLs nicht teilbar
-- ❌ Komplexer State Management
-- ✅ Schnellerer Wechsel (kein Page Reload)
+- ❌ **Inkonsistent mit bestehender Navigation** (System hat eigene ← Zurück Buttons, nicht Browser-Back!)
+- ❌ Separate Routes notwendig
+- ✅ URLs teilbar (aber nicht kritisch für internes Tool)
+- ✅ Browser-Back funktioniert (aber nicht genutzt im SPA)
 
 ### Tab-Struktur
 
@@ -708,7 +710,7 @@ GET /api/customers/{id}/timeline
 
 ---
 
-## 🔄 ROUTING-ÄNDERUNG
+## 🔄 STATE MANAGEMENT (Modal-basiert)
 
 ### ALT (Phase 1)
 ```typescript
@@ -716,25 +718,44 @@ GET /api/customers/{id}/timeline
 /customers/:id → Zeigt alle 7 Cards untereinander (CustomerProfileTab)
 ```
 
-### NEU (Phase 2)
+### NEU (Phase 2 - Modal/Drawer)
 ```typescript
 // CustomerDetailPage.tsx
 /customers/:id → CustomerCompactView (default)
-  └─ Button [Alle Details anzeigen] → Navigate to /customers/:id/details
 
-// CustomerDetailViewPage.tsx (NEU)
-/customers/:id/details → CustomerDetailView (Tab-Container)
-  ├─ Tab "Firma" → CustomerDetailTabFirma
-  ├─ Tab "Geschäft" → CustomerDetailTabGeschaeft
-  └─ Tab "Verlauf" → CustomerDetailTabVerlauf (später)
+// State Management (KEIN Routing!)
+const [showDetailsModal, setShowDetailsModal] = useState(false);
+
+// Compact View:
+<CustomerCompactView
+  customerId={id}
+  onShowDetails={() => setShowDetailsModal(true)}
+/>
+
+// Detail Modal (MUI Drawer/Dialog):
+<Drawer
+  open={showDetailsModal}
+  onClose={() => setShowDetailsModal(false)}
+  anchor="right"
+  fullScreen
+>
+  <CustomerDetailView
+    customerId={id}
+    onClose={() => setShowDetailsModal(false)}
+  />
+    ├─ ← Zurück Button (oben links) → schließt Modal
+    ├─ Tab "Firma" → CustomerDetailTabFirma
+    ├─ Tab "Geschäft" → CustomerDetailTabGeschaeft
+    └─ Tab "Verlauf" → CustomerDetailTabVerlauf (später)
+</Drawer>
 ```
 
-### React Router Config
+### React Routing (UNVERÄNDERT!)
 
 ```typescript
 // App.tsx oder routes.tsx
+// KEINE neue Route nötig - nur Modal State Management!
 <Route path="/customers/:id" element={<CustomerDetailPage />} />
-<Route path="/customers/:id/details" element={<CustomerDetailViewPage />} />
 ```
 
 ---
