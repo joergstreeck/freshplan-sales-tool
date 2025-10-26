@@ -364,12 +364,6 @@ export function CustomersPageV2({
     return filtered;
   }, [customers, filterConfig, sortConfig]);
 
-  // Sprint 2.1.7.2 D11: Derive selected customer from filteredCustomers
-  const selectedCustomer = useMemo(
-    () => filteredCustomers.find(c => c.id === selectedCustomerId) || null,
-    [filteredCustomers, selectedCustomerId]
-  );
-
   const _handleExport = async (format: string) => {
     try {
       // Build query params from filter config
