@@ -528,7 +528,22 @@ public class OpportunityService {
         customer.setPainNotes(lead.painNotes);
       }
 
-      logger.debug("Copied pain points and business data from lead {}", lead.id);
+      // Copy structured address fields (Sprint 2.1.7.2 D11 Phase 1)
+      // WICHTIG: 1:1 Feldnamen-Mapping für einfache Konversion!
+      if (lead.street != null) {
+        customer.setStreet(lead.street);
+      }
+      if (lead.postalCode != null) {
+        customer.setPostalCode(lead.postalCode);
+      }
+      if (lead.city != null) {
+        customer.setCity(lead.city);
+      }
+      if (lead.countryCode != null) {
+        customer.setCountryCode(lead.countryCode);
+      }
+
+      logger.debug("Copied pain points, business data, and address from lead {}", lead.id);
     }
 
     // 9. Override expected volume from opportunity if set

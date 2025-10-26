@@ -224,21 +224,48 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "expansion_planned", length = 10)
   private String expansionPlanned;
 
-  // Multi-Location Address Support (Sprint 2.1.7.2 D11 Phase 3)
+  // Structured Address Fields (Sprint 2.1.7.2 D11 Phase 1)
+  // WICHTIG: Feldnamen EXAKT wie Lead Entity für 1:1 Konversion!
 
   /**
-   * Primary billing address for invoicing (single address as formatted string).
+   * Street address (includes house number). Matches Lead.street for 1:1 conversion.
    *
-   * @since 2.1.7.2 D11 Phase 3
+   * @since 2.1.7.2 D11 Phase 1
    */
-  @Column(name = "billing_address", length = 500)
-  private String billingAddress;
+  @Column(name = "street")
+  private String street;
+
+  /**
+   * Postal code (PLZ). Matches Lead.postalCode for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "postal_code", length = 20)
+  private String postalCode;
+
+  /**
+   * City name. Matches Lead.city for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "city", length = 100)
+  private String city;
+
+  /**
+   * Country code (DE, CH, AT). Matches Lead.countryCode for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "country_code", length = 2)
+  private String countryCode;
+
+  // Multi-Location Address Support (Sprint 2.1.7.2 D11 Phase 1)
 
   /**
    * Array of delivery addresses for multi-location customers. Stored as JSONB array of address
-   * objects: [{street, city, zip, country}, ...]
+   * objects: [{locationName, street, postalCode, city, countryCode, isActive}, ...]
    *
-   * @since 2.1.7.2 D11 Phase 3
+   * @since 2.1.7.2 D11 Phase 1
    */
   @JdbcTypeCode(SqlTypes.JSON)
   @Column(name = "delivery_addresses", columnDefinition = "jsonb")
@@ -877,14 +904,38 @@ public class Customer extends PanacheEntityBase {
     this.expansionPlanned = expansionPlanned;
   }
 
-  // Multi-Location Address Support Getters/Setters (Sprint 2.1.7.2 D11 Phase 3)
+  // Structured Address Getters/Setters (Sprint 2.1.7.2 D11 Phase 1)
 
-  public String getBillingAddress() {
-    return billingAddress;
+  public String getStreet() {
+    return street;
   }
 
-  public void setBillingAddress(String billingAddress) {
-    this.billingAddress = billingAddress;
+  public void setStreet(String street) {
+    this.street = street;
+  }
+
+  public String getPostalCode() {
+    return postalCode;
+  }
+
+  public void setPostalCode(String postalCode) {
+    this.postalCode = postalCode;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
   }
 
   public List<String> getDeliveryAddresses() {
