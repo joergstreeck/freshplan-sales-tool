@@ -63,6 +63,7 @@ import { ActivityTimeline } from '../features/communication/components/ActivityT
 import { ActivityDialog } from '../features/communication/components/ActivityDialog';
 import type { Activity } from '../features/communication/components/ActivityTimeline';
 import { ServerDrivenCustomerCards } from '../components/ServerDrivenCustomerCards';
+import { CustomerCompactView } from '../features/customers/components/detail/CustomerCompactView';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -480,7 +481,7 @@ export function CustomerDetailPage() {
           >
             <Tab label="Übersicht" icon={<InfoIcon />} iconPosition="start" {...a11yProps(0)} />
             <Tab
-              label="Profil (Server-Driven)"
+              label="Kompakt-Ansicht"
               icon={<BusinessIcon />}
               iconPosition="start"
               {...a11yProps(1)}
@@ -514,7 +515,13 @@ export function CustomerDetailPage() {
           </TabPanel>
 
           <TabPanel value={activeTab} index={1}>
-            <ServerDrivenCustomerCards customerId={customerId!} />
+            <CustomerCompactView
+              customer={customer}
+              onShowDetails={() => {
+                // TODO Phase 2: Open Modal/Drawer with CustomerDetailView
+                alert('Phase 2: Modal/Drawer mit vollständigen Details wird hier geöffnet');
+              }}
+            />
           </TabPanel>
 
           <TabPanel value={activeTab} index={2}>
