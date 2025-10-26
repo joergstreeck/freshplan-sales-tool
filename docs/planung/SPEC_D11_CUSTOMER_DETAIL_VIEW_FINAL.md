@@ -191,7 +191,7 @@ public class Contact {
     {"fieldId": "customerType", "label": "Kundentyp", "type": "select", "options": ["UNTERNEHMEN", "EINZELPERSON"]},
     {"fieldId": "businessType", "label": "Branche", "type": "select", "options": ["RESTAURANT", "HOTEL", "CATERING", "KANTINE", "GROSSHANDEL", "LEH", "BILDUNG", "GESUNDHEIT", "SONSTIGES"]},
     {"fieldId": "legalForm", "label": "Rechtsform", "type": "select"},
-    {"fieldId": "status", "label": "Status", "type": "select", "options": ["AKTIV", "INAKTIV", "GESPERRT"]},
+    {"fieldId": "status", "label": "Status", "type": "select", "enumSource": "/api/enums/customer-status", "options": ["LEAD", "PROSPECT", "AKTIV", "RISIKO", "INAKTIV", "ARCHIVIERT"]},
     {"fieldId": "originalLeadId", "label": "Original Lead ID", "type": "text", "readOnly": true}
   ]
 }
@@ -307,6 +307,55 @@ public class CustomerSummaryResource {
     }
 }
 ```
+
+---
+
+### CustomerResource.changeCustomerStatus() - 3-Tier Role-Based Authorization
+
+**Sprint 2.1.7.2 D11:** Customer Status Update mit rollenbasierter Zugriffssteuerung
+
+**Endpoint:** `PUT /api/customers/{id}/status`
+
+**Request Body:**
+```json
+{
+  "newStatus": "AKTIV"
+}
+```
+
+**Authorization Rules (3-Tier):**
+
+| Rolle | Erlaubte Status-Änderungen | Einschränkungen |
+|-------|---------------------------|----------------|
+| **SALES** (sales) | AKTIV ↔ RISIKO | Kann NUR zwischen AKTIV und RISIKO wechseln |
+| **MANAGER** (manager) | AKTIV, RISIKO, INAKTIV | Kann zusätzlich INAKTIV setzen, ABER NICHT ARCHIVIERT |
+| **ADMIN** (admin) | Alle Status | Keine Einschränkungen, kann auch ARCHIVIERT setzen |
+
+**Business Rules:**
+- System setzt Status automatisch (z.B. Lead→AKTIV bei Konversion, Churn→RISIKO)
+- Benutzer können Status manuell überschreiben (basierend auf ihrer Rolle)
+- Bei unzureichenden Berechtigungen: HTTP 403 mit benutzerfreundlicher Fehlermeldung
+
+**Error Responses:**
+
+```json
+{
+  "message": "Sales users can only change between AKTIV and RISIKO. Contact your manager to set other statuses.",
+  "errorCode": "INSUFFICIENT_PERMISSIONS"
+}
+```
+
+```json
+{
+  "message": "Only ADMIN can set ARCHIVIERT status. Contact your administrator.",
+  "errorCode": "INSUFFICIENT_PERMISSIONS"
+}
+```
+
+**Implementation:**
+- Datei: `CustomerResource.java` (Zeile 393-494)
+- Enum Endpoint: `/api/enums/customer-status` (siehe `EnumResource.java`)
+- Validierung: Role-based checks BEFORE calling service layer
 
 ---
 
