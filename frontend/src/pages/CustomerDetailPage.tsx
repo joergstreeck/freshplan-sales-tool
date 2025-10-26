@@ -64,6 +64,7 @@ import { ActivityDialog } from '../features/communication/components/ActivityDia
 import type { Activity } from '../features/communication/components/ActivityTimeline';
 import { ServerDrivenCustomerCards } from '../components/ServerDrivenCustomerCards';
 import { CustomerCompactView } from '../features/customers/components/detail/CustomerCompactView';
+import { CustomerDetailView } from '../features/customers/components/detail/CustomerDetailView';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -134,6 +135,9 @@ export function CustomerDetailPage() {
 
   // Edit Dialog State
   const [showEditWizard, setShowEditWizard] = useState(false);
+
+  // Detail View Drawer State (Phase 2: D11)
+  const [detailsDrawerOpen, setDetailsDrawerOpen] = useState(false);
 
   // Activation Dialog State (Sprint 2.1.7.4)
   const [showActivateDialog, setShowActivateDialog] = useState(false);
@@ -517,10 +521,7 @@ export function CustomerDetailPage() {
           <TabPanel value={activeTab} index={1}>
             <CustomerCompactView
               customer={customer}
-              onShowDetails={() => {
-                // TODO Phase 2: Open Modal/Drawer with CustomerDetailView
-                alert('Phase 2: Modal/Drawer mit vollständigen Details wird hier geöffnet');
-              }}
+              onShowDetails={() => setDetailsDrawerOpen(true)}
             />
           </TabPanel>
 
@@ -1029,6 +1030,16 @@ function CustomerActivities({ customerId }: { customerId: string }) {
         activity={editActivity}
         onSaved={handleActivitySaved}
       />
+
+      {/* Customer Detail View Drawer (Phase 2: D11) */}
+      {customer && (
+        <CustomerDetailView
+          open={detailsDrawerOpen}
+          onClose={() => setDetailsDrawerOpen(false)}
+          customerId={customerId!}
+          customerName={customer.companyName}
+        />
+      )}
     </Box>
   );
 }

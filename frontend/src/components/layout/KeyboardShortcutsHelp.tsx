@@ -86,13 +86,16 @@ export const KeyboardShortcutsHelp: React.FC = () => {
             animation: hasSeenHelp ? 'none' : 'pulse 2s infinite',
             '@keyframes pulse': {
               '0%': {
-                boxShadow: '0 0 0 0 rgba(148, 196, 86, 0.7)',
+                transform: 'scale(1)',
+                opacity: 1,
               },
               '70%': {
-                boxShadow: '0 0 0 10px rgba(148, 196, 86, 0)',
+                transform: 'scale(1.1)',
+                opacity: 0.7,
               },
               '100%': {
-                boxShadow: '0 0 0 0 rgba(148, 196, 86, 0)',
+                transform: 'scale(1)',
+                opacity: 1,
               },
             },
           }}
