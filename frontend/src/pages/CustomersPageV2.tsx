@@ -2,7 +2,6 @@ import { useState, useEffect, useMemo } from 'react';
 import { Box, Tabs, Tab, Button } from '@mui/material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
-import { CustomerDetailView } from '../features/customers/components/detail/CustomerDetailView';
 import LeadWizard from '../features/leads/LeadWizard';
 import AddFirstContactDialog from '../features/leads/AddFirstContactDialog';
 import DeleteLeadDialog from '../features/leads/DeleteLeadDialog';
@@ -57,9 +56,6 @@ export function CustomersPageV2({
   const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  // Sprint 2.1.7.2 D11: CustomerDetailView Drawer State
-  const [detailViewOpen, setDetailViewOpen] = useState(false);
-  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
 
   // Use focus list store for sort configuration only
   const { sortBy, setSortBy } = useFocusListStore();
@@ -465,10 +461,9 @@ export function CustomersPageV2({
     // Liste aktualisieren
     await refetch();
 
-    // Sprint 2.1.7.2 D11: CustomerDetailView Drawer öffnen für neue Kunden
+    // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page
     if (context === 'customers') {
-      setSelectedCustomer(customer);
-      setDetailViewOpen(true);
+      navigate(`/customers/${customer.id}`);
     }
     // Bei Leads: Bleiben auf der Liste, neuer Lead wird highlighted
   };
@@ -552,9 +547,8 @@ export function CustomersPageV2({
                     onRowClick={customer => {
                       // Context-based navigation
                       if (context === 'customers') {
-                        // Sprint 2.1.7.2 D11: Open CustomerDetailView Drawer
-                        setSelectedCustomer(customer);
-                        setDetailViewOpen(true);
+                        // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page
+                        navigate(`/customers/${customer.id}`);
                       } else if (context === 'leads') {
                         // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                         navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
@@ -569,9 +563,8 @@ export function CustomersPageV2({
                     onRowClick={customer => {
                       // Context-based navigation
                       if (context === 'customers') {
-                        // Sprint 2.1.7.2 D11: Open CustomerDetailView Drawer
-                        setSelectedCustomer(customer);
-                        setDetailViewOpen(true);
+                        // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page
+                        navigate(`/customers/${customer.id}`);
                       } else if (context === 'leads') {
                         // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                         navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
@@ -589,9 +582,8 @@ export function CustomersPageV2({
                         // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
                         navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                       } else {
-                        // Sprint 2.1.7.2 D11: Open CustomerDetailView Drawer
-                        setSelectedCustomer(customer);
-                        setDetailViewOpen(true);
+                        // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page
+                        navigate(`/customers/${customer.id}`);
                       }
                     }}
                     onDelete={customer => {
@@ -674,19 +666,6 @@ export function CustomersPageV2({
             toast.success('Lead erfolgreich gelöscht!');
           }}
         />
-
-        {/* Sprint 2.1.7.2 D11: CustomerDetailView Drawer */}
-        {selectedCustomer && (
-          <CustomerDetailView
-            open={detailViewOpen}
-            onClose={() => {
-              setDetailViewOpen(false);
-              setSelectedCustomer(null);
-            }}
-            customerId={selectedCustomer.id}
-            customerName={selectedCustomer.companyName || selectedCustomer.name || 'Kunde'}
-          />
-        )}
       </Box>
     </MainLayoutV2>
   );

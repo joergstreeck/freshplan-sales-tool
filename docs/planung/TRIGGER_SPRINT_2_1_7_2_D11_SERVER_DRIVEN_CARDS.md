@@ -99,71 +99,94 @@ healthScore = (
 
 ## 🏗️ IMPLEMENTIERUNGSPLAN: BAUEN → AUFRÄUMEN → TESTEN
 
-**⚠️ WICHTIG:** Implementierung basiert auf **Zwei-View Architektur** (siehe Architektur-Entscheidung unten)
+## 🚨 KRITISCH: KORREKTE ARCHITEKTUR
 
-### Phase 1: CustomerCompactView (Kompakte Übersicht) - 3h
+**❌ VERWORFEN:** Drawer/Popup-Architektur (kein Header/Sidebar → Müll!)
+**✅ KORREKT:** Volle Seite mit MainLayoutV2 (Header + Sidebar + Theme V2)
 
-#### Backend (1h)
+### Navigation-Struktur (FINAL):
 ```
-⏳ Optionaler Endpoint (Alternative: Frontend filtert existierende Daten)
-   └─ GET /api/customers/{id}/compact-view
-   └─ Liefert: Name, Status, Umsatz, Health Score, Locations Summary, Next Steps, Primary Contact
+/customers → Kundenliste (CustomersPageV2)
+  ├─ Button [+ Neuer Kunde] → öffnet Wizard (bleibt unverändert!)
+  └─ Click auf Kunde → navigate('/customers/:id')
 
-⏳ Falls nicht implementiert:
-   └─ Frontend nutzt existierenden GET /api/customers/{id} und filtert relevante Daten
-```
-
-#### Frontend (2h)
-```
-⏳ CustomerCompactView.tsx (NEU)
-   ├─ Zeigt: Name, Status, Jahresumsatz
-   ├─ Multi-Location Summary ("3 Standorte: München, Berlin, Hamburg")
-   ├─ Health Score & Risiko
-   ├─ Letzter Kontakt & Letzte Bestellung
-   ├─ Nächste Schritte (aus Activities)
-   ├─ Haupt-Ansprechpartner
-   └─ Button [🔍 Alle Details anzeigen] → Navigate to /customers/:id/details
-
-⏳ Update CustomerDetailPage.tsx
-   └─ Default: Zeige CustomerCompactView statt CustomerProfileTab
+/customers/:id → Kunden-Detailseite (CustomerDetailPage - NEU!)
+  ├─ MainLayoutV2 mit Header + Sidebar
+  ├─ Tab "Firma" (3 Cards)
+  ├─ Tab "Geschäft" (4 Cards)
+  └─ Tab "Verlauf" (disabled)
 ```
 
-**Acceptance Criteria:**
-- [ ] CustomerCompactView zeigt alle Kern-Infos
-- [ ] Multi-Location Summary funktioniert
-- [ ] Button navigiert zu `/customers/:id/details`
+**Siehe Details:** `SPEC_D11_CUSTOMER_DETAIL_VIEW_ARCHITECTURE.md`
 
 ---
 
-### Phase 2: CustomerDetailView mit Tabs - 4h
+### Phase 1: Backend CustomerSchemaResource.java neu schreiben - 2h
 
-#### Frontend (4h)
+**KRITISCH:** Backend liefert aktuell FALSCHE Struktur!
+
+**❌ Aktuelle Probleme:**
+1. `cardId` mit Bindestrichen (`company-profile`) statt Unterstrichen
+2. Falsche Card-Namen (`needs-solutions` → sollte `pain_points` sein)
+3. Mega-Card mit 4 Sections → sollten 3 separate Cards sein
+
+**✅ Korrekte Card-Namen (verbindlich):**
+| Card ID | Tab | Titel |
+|---------|-----|-------|
+| `company_profile` | Firma | Unternehmensprofil |
+| `locations` | Firma | Standorte |
+| `classification` | Firma | Klassifikation |
+| `business_data` | Geschäft | Geschäftsdaten & Performance |
+| `contracts` | Geschäft | Vertragsbedingungen |
+| `pain_points` | Geschäft | Bedürfnisse & Pain Points |
+| `products` | Geschäft | Produktportfolio & Services |
+
+**Tasks:**
 ```
-⏳ CustomerDetailView.tsx (NEU - Tab-Container)
-   ├─ MUI Tabs Component
-   ├─ 3 Tabs: Firma, Geschäft, Verlauf
-   └─ Tab-State Management (URL-basiert: ?tab=firma)
-
-⏳ CustomerDetailTabFirma.tsx (NEU)
-   ├─ Verwendet ServerDrivenCustomerCards
-   ├─ Zeigt Cards: company_profile, locations, classification
-   └─ Grid Layout: size={{ xs: 12, md: 6 }} (2 Spalten Desktop, 1 Spalte Mobile)
-
-⏳ CustomerDetailTabGeschaeft.tsx (NEU)
-   ├─ Verwendet ServerDrivenCustomerCards
-   ├─ Zeigt Cards: business_data, contracts, pain_points, products
-   └─ Grid Layout: size={{ xs: 12, md: 6 }}
-
-⏳ Routing Update
-   ├─ Neue Route: /customers/:id/details
-   └─ Component: CustomerDetailViewPage.tsx
+⏳ CustomerSchemaResource.java komplett neu schreiben
+   ├─ buildCompanyProfileCard() → NUR basic info
+   ├─ buildLocationsCard() → NUR locations
+   ├─ buildClassificationCard() → NUR classification
+   ├─ buildBusinessDataCard() → revenue, performance
+   ├─ buildContractsCard() → payment terms
+   ├─ buildPainPointsCard() → customer needs
+   └─ buildProductsCard() → product portfolio
 ```
 
 **Acceptance Criteria:**
+- [ ] Backend liefert 7 separate Cards
+- [ ] Alle `cardId` mit Unterstrichen
+- [ ] Tab "Firma" Filter findet: `company_profile`, `locations`, `classification`
+- [ ] Tab "Geschäft" Filter findet: `business_data`, `contracts`, `pain_points`, `products`
+
+---
+
+### Phase 2: Frontend CustomerDetailPage.tsx erstellen - 2h
+
+**Tasks:**
+```
+⏳ CustomerDetailPage.tsx (NEU - volle Seite!)
+   ├─ MainLayoutV2 mit maxWidth="xl"
+   ├─ Kundenkopfzeile (Name, Status, Umsatz)
+   ├─ Tab-Navigation (Firma, Geschäft, Verlauf)
+   ├─ CustomerDetailTabFirma (3 Cards)
+   ├─ CustomerDetailTabGeschaeft (4 Cards)
+   └─ Design System V2 compliant
+
+⏳ Routing hinzufügen (App.tsx oder routes.tsx)
+   └─ <Route path="/customers/:id" element={<CustomerDetailPage />} />
+
+⏳ CustomersPageV2: Navigation fixen
+   ├─ Drawer-Code entfernen (Zeilen 60-62, 679-689)
+   └─ Zurück zu navigate('/customers/:id')
+```
+
+**Acceptance Criteria:**
+- [ ] Volle Seite mit Header + Sidebar
 - [ ] Tab-Navigation funktioniert
-- [ ] Cards werden korrekt in Tabs gruppiert
-- [ ] Grid-Layout responsive (MUI v7 API)
-- [ ] URL-Navigation funktioniert (`?tab=firma`)
+- [ ] Cards werden korrekt angezeigt (mit Daten!)
+- [ ] Grid Layout responsive (MUI v7 API)
+- [ ] Button "Neuer Kunde" öffnet weiterhin Wizard
 
 ---
 

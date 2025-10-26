@@ -19,7 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards
  *
- * <p>Provides schema definitions for all 7 Customer Cards.
+ * <p>Provides schema definitions for 7 Customer Cards (3 in Tab "Firma", 4 in Tab "Geschäft").
  *
  * <p>Frontend fetches this schema from `GET /api/customers/schema` and renders cards dynamically.
  *
@@ -30,6 +30,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * fieldCatalog.json needed - No calculations in Frontend - Future-proof (new fields → only Backend
  * changes)
  *
+ * <p><strong>IMPORTANT:</strong> All cardIds use UNDERSCORES (e.g. "company_profile"), NOT hyphens!
+ * This matches frontend filter expectations in CustomerDetailTabFirma.tsx and
+ * CustomerDetailTabGeschaeft.tsx.
+ *
  * @author FreshPlan Team
  * @since 2.0.0
  */
@@ -39,20 +43,25 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public class CustomerSchemaResource {
 
   /**
-   * Get schema for all 7 Customer Cards
+   * Get schema for 7 Customer Cards
    *
    * <p>Returns field definitions for dynamic rendering in Frontend.
    *
-   * <p><strong>7 Cards:</strong>
+   * <p><strong>Tab "Firma" (3 Cards):</strong>
    *
    * <ol>
-   *   <li>🏢 Unternehmensprofil - Company Profile
-   *   <li>💰 Geschäftsdaten & Performance - Business Data
-   *   <li>🎯 Bedürfnisse & Lösungen - Needs & Solutions
-   *   <li>👥 Kontakte & Stakeholder - Contacts
-   *   <li>📦 Produktportfolio & Services - Products
-   *   <li>📈 Aktivitäten & Timeline - Activities
-   *   <li>⚠️ Health & Risk - Health Score & Alerts
+   *   <li>🏢 company_profile - Unternehmensprofil
+   *   <li>📍 locations - Standorte
+   *   <li>📊 classification - Klassifikation & Größe
+   * </ol>
+   *
+   * <p><strong>Tab "Geschäft" (4 Cards):</strong>
+   *
+   * <ol>
+   *   <li>💰 business_data - Geschäftsdaten & Performance
+   *   <li>📄 contracts - Vertragsbedingungen
+   *   <li>🎯 pain_points - Bedürfnisse & Pain Points (from Lead conversion)
+   *   <li>📦 products - Produktportfolio & Services
    * </ol>
    *
    * @return List of 7 Customer Card Schemas
@@ -68,43 +77,41 @@ public class CustomerSchemaResource {
 
     List<CustomerCardSchema> schema =
         List.of(
-            buildCompanyProfileCard(),
-            buildBusinessDataCard(),
-            buildNeedsAndSolutionsCard(),
-            buildContactsCard(),
-            buildProductPortfolioCard(),
-            buildActivitiesCard(),
-            buildHealthAndRiskCard());
+            // Tab "Firma" (3 Cards)
+            buildCompanyProfileCard(), // Order 1
+            buildLocationsCard(), // Order 2
+            buildClassificationCard(), // Order 3
+            // Tab "Geschäft" (4 Cards)
+            buildBusinessDataCard(), // Order 4
+            buildContractsCard(), // Order 5
+            buildPainPointsCard(), // Order 6
+            buildProductsCard() // Order 7
+            );
 
     return Response.ok(schema).build();
   }
 
-  // ========== CARD 1: UNTERNEHMENSPROFIL ==========
+  // ========== TAB "FIRMA" - CARD 1: UNTERNEHMENSPROFIL ==========
 
   /**
-   * Karte 1: 🏢 Unternehmensprofil
+   * Card 1: 🏢 Unternehmensprofil (Tab "Firma")
    *
-   * <p>Sections: Stammdaten, Standorte, Klassifikation, Hierarchie
+   * <p>Basic company information: Name, Legal Form, Customer Type, Status
    */
   private CustomerCardSchema buildCompanyProfileCard() {
     return CustomerCardSchema.builder()
-        .cardId("company-profile")
+        .cardId("company_profile") // UNDERSCORE (not hyphen!)
         .title("Unternehmensprofil")
-        .subtitle("Stammdaten, Standorte, Klassifikation, Hierarchie")
+        .subtitle("Stammdaten und grundlegende Informationen")
         .icon("🏢")
         .order(1)
-        .sections(
-            List.of(
-                buildBasicInfoSection(),
-                buildLocationsSection(),
-                buildClassificationSection(),
-                buildHierarchySection()))
+        .sections(List.of(buildBasicInfoSection()))
         .build();
   }
 
   private CardSection buildBasicInfoSection() {
     return CardSection.builder()
-        .sectionId("basic-info")
+        .sectionId("basic_info")
         .title("Stammdaten")
         .subtitle("Grundlegende Unternehmensinformationen")
         .fields(
@@ -154,6 +161,7 @@ public class CustomerSchemaResource {
                     .enumSource("/api/enums/business-types")
                     .required(true)
                     .gridCols(6)
+                    .helpText("Wird aus Lead-Konversion übernommen (lead.businessType)")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("status")
@@ -165,28 +173,60 @@ public class CustomerSchemaResource {
         .build();
   }
 
-  private CardSection buildLocationsSection() {
-    return CardSection.builder()
-        .sectionId("locations")
+  // ========== TAB "FIRMA" - CARD 2: STANDORTE ==========
+
+  /**
+   * Card 2: 📍 Standorte (Tab "Firma")
+   *
+   * <p>Multi-location details: Billing Address, Delivery Addresses, Location Statistics
+   *
+   * <p>IMPORTANT: Migration V10040 added billingAddress (VARCHAR) and deliveryAddresses (JSONB)
+   */
+  private CustomerCardSchema buildLocationsCard() {
+    return CustomerCardSchema.builder()
+        .cardId("locations") // UNDERSCORE (not hyphen!)
         .title("Standorte")
-        .subtitle("Geografische Präsenz und Expansion")
+        .subtitle("Geografische Präsenz und Multi-Location Details")
+        .icon("📍")
+        .order(2)
+        .sections(List.of(buildAddressesSection(), buildLocationStatsSection()))
+        .build();
+  }
+
+  private CardSection buildAddressesSection() {
+    return CardSection.builder()
+        .sectionId("addresses")
+        .title("Adressen")
+        .subtitle("Rechnungs- und Lieferadressen (V10040)")
         .fields(
             List.of(
-                // Phase 3: Multi-Location Address Support
+                // Migration V10040: Multi-Location Address Support
                 FieldDefinition.builder()
                     .fieldKey("billingAddress")
                     .label("Rechnungsadresse")
                     .type(FieldType.TEXTAREA)
                     .gridCols(6)
+                    .helpText("Primäre Rechnungsadresse für Invoicing (VARCHAR 500)")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("deliveryAddresses")
                     .label("Lieferadressen (JSON)")
                     .type(FieldType.TEXTAREA)
                     .gridCols(6)
-                    .helpText("JSON-Array: [{\"street\":\"...\", \"city\":\"...\", \"zip\":\"...\", \"country\":\"...\"}]")
-                    .build(),
-                // Location Statistics
+                    .helpText(
+                        "JSON-Array: [{\"street\":\"...\", \"city\":\"...\", \"zip\":\"...\","
+                            + " \"country\":\"...\"}]")
+                    .build()))
+        .build();
+  }
+
+  private CardSection buildLocationStatsSection() {
+    return CardSection.builder()
+        .sectionId("location_stats")
+        .title("Standort-Statistik")
+        .subtitle("Anzahl Standorte nach Region")
+        .fields(
+            List.of(
                 FieldDefinition.builder()
                     .fieldKey("totalLocationsEu")
                     .label("Standorte gesamt (EU)")
@@ -217,7 +257,6 @@ public class CustomerSchemaResource {
                     .type(FieldType.NUMBER)
                     .gridCols(4)
                     .build(),
-                // Expansion Planning
                 FieldDefinition.builder()
                     .fieldKey("expansionPlanned")
                     .label("Expansion geplant?")
@@ -229,11 +268,29 @@ public class CustomerSchemaResource {
         .build();
   }
 
+  // ========== TAB "FIRMA" - CARD 3: KLASSIFIKATION ==========
+
+  /**
+   * Card 3: 📊 Klassifikation (Tab "Firma")
+   *
+   * <p>Company size and structure: Kitchen Size, Employees, Branches, Chain
+   */
+  private CustomerCardSchema buildClassificationCard() {
+    return CustomerCardSchema.builder()
+        .cardId("classification") // UNDERSCORE (not hyphen!)
+        .title("Klassifikation")
+        .subtitle("Größe und Struktur")
+        .icon("📊")
+        .order(3)
+        .sections(List.of(buildClassificationSection()))
+        .build();
+  }
+
   private CardSection buildClassificationSection() {
     return CardSection.builder()
         .sectionId("classification")
-        .title("Klassifikation")
-        .subtitle("Größe und Struktur")
+        .title("Größe und Struktur")
+        .subtitle("Klassifikation des Unternehmens")
         .fields(
             List.of(
                 FieldDefinition.builder()
@@ -260,18 +317,7 @@ public class CustomerSchemaResource {
                     .label("Filialunternehmen?")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
-                    .build()))
-        .collapsible(true)
-        .build();
-  }
-
-  private CardSection buildHierarchySection() {
-    return CardSection.builder()
-        .sectionId("hierarchy")
-        .title("Hierarchie")
-        .subtitle("Unternehmensstruktur und Konzernzugehörigkeit")
-        .fields(
-            List.of(
+                    .build(),
                 FieldDefinition.builder()
                     .fieldKey("parentCustomer")
                     .label("Muttergesellschaft")
@@ -280,26 +326,27 @@ public class CustomerSchemaResource {
                     .gridCols(12)
                     .helpText("Übergeordnetes Unternehmen im Konzern")
                     .build()))
-        .collapsible(true)
-        .defaultCollapsed(true)
         .build();
   }
 
-  // ========== CARD 2: GESCHÄFTSDATEN & PERFORMANCE ==========
+  // ========== TAB "GESCHÄFT" - CARD 4: GESCHÄFTSDATEN & PERFORMANCE ==========
 
   /**
-   * Karte 2: 💰 Geschäftsdaten & Performance
+   * Card 4: 💰 Geschäftsdaten & Performance (Tab "Geschäft")
    *
-   * <p>Sections: Umsätze (Xentral), Verträge, Konditionen, YoY Growth
+   * <p>Revenue metrics: Expected vs Actual, Xentral Integration (30/90/365 days)
+   *
+   * <p>IMPORTANT: expectedAnnualVolume comes from Lead conversion (lead.estimatedVolume →
+   * customer.expectedAnnualVolume)
    */
   private CustomerCardSchema buildBusinessDataCard() {
     return CustomerCardSchema.builder()
-        .cardId("business-data")
+        .cardId("business_data") // UNDERSCORE (not hyphen!)
         .title("Geschäftsdaten & Performance")
-        .subtitle("Umsätze, Verträge, Konditionen, YoY Growth")
+        .subtitle("Umsätze, Metriken und YoY Growth")
         .icon("💰")
-        .order(2)
-        .sections(List.of(buildRevenueSection(), buildContractTermsSection()))
+        .order(4)
+        .sections(List.of(buildRevenueSection()))
         .build();
   }
 
@@ -311,19 +358,13 @@ public class CustomerSchemaResource {
         .fields(
             List.of(
                 FieldDefinition.builder()
-                    .fieldKey("estimatedVolume")
-                    .label("Geschätztes Volumen (Lead-Phase)")
-                    .type(FieldType.CURRENCY)
-                    .readonly(true)
-                    .gridCols(6)
-                    .helpText("Ursprüngliche Schätzung aus der Lead-Erfassung")
-                    .build(),
-                FieldDefinition.builder()
                     .fieldKey("expectedAnnualVolume")
                     .label("Erwarteter Jahresumsatz")
                     .type(FieldType.CURRENCY)
                     .gridCols(6)
-                    .helpText("Geplanter Umsatz für das laufende Jahr")
+                    .helpText(
+                        "Geplanter Umsatz (aus Lead-Konversion: lead.estimatedVolume →"
+                            + " customer.expectedAnnualVolume)")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("actualAnnualVolume")
@@ -357,9 +398,27 @@ public class CustomerSchemaResource {
         .build();
   }
 
+  // ========== TAB "GESCHÄFT" - CARD 5: VERTRAGSBEDINGUNGEN ==========
+
+  /**
+   * Card 5: 📄 Vertragsbedingungen (Tab "Geschäft")
+   *
+   * <p>Contract terms: Payment Terms, Credit Limit, Delivery Conditions, Financing
+   */
+  private CustomerCardSchema buildContractsCard() {
+    return CustomerCardSchema.builder()
+        .cardId("contracts") // UNDERSCORE (not hyphen!)
+        .title("Vertragsbedingungen")
+        .subtitle("Zahlungsbedingungen und Kreditrahmen")
+        .icon("📄")
+        .order(5)
+        .sections(List.of(buildContractTermsSection()))
+        .build();
+  }
+
   private CardSection buildContractTermsSection() {
     return CardSection.builder()
-        .sectionId("contract-terms")
+        .sectionId("contract_terms")
         .title("Vertragskonditionen")
         .subtitle("Zahlungsbedingungen und Kreditrahmen")
         .fields(
@@ -391,83 +450,104 @@ public class CustomerSchemaResource {
                     .enumSource("/api/enums/financing-types")
                     .gridCols(6)
                     .build()))
-        .collapsible(true)
         .build();
   }
 
-  // ========== CARD 3: BEDÜRFNISSE & LÖSUNGEN ==========
+  // ========== TAB "GESCHÄFT" - CARD 6: BEDÜRFNISSE & PAIN POINTS ==========
 
   /**
-   * Karte 3: 🎯 Bedürfnisse & Lösungen
+   * Card 6: 🎯 Bedürfnisse & Pain Points (Tab "Geschäft")
    *
-   * <p>Sections: Pain Points (aus Lead) → Produktempfehlungen
+   * <p>CRITICAL: This card contains ALL 9 fields copied from Lead during conversion
+   * (OpportunityService.convertToCustomer() lines 445-584):
+   *
+   * <ul>
+   *   <li>8 boolean pain point flags (painStaffShortage, painHighCosts, etc.)
+   *   <li>1 text field (painNotes)
+   * </ul>
+   *
+   * <p>If these fields are missing → data loss during Lead→Customer conversion!
    */
-  private CustomerCardSchema buildNeedsAndSolutionsCard() {
+  private CustomerCardSchema buildPainPointsCard() {
     return CustomerCardSchema.builder()
-        .cardId("needs-solutions")
-        .title("Bedürfnisse & Lösungen")
-        .subtitle("Pain Points und Produktempfehlungen")
+        .cardId("pain_points") // UNDERSCORE (not hyphen!)
+        .title("Bedürfnisse & Pain Points")
+        .subtitle("Herausforderungen des Kunden (aus Lead-Phase)")
         .icon("🎯")
-        .order(3)
+        .order(6)
         .sections(List.of(buildPainPointsSection()))
         .build();
   }
 
   private CardSection buildPainPointsSection() {
     return CardSection.builder()
-        .sectionId("pain-points")
+        .sectionId("pain_points")
         .title("Pain Points")
-        .subtitle("Herausforderungen des Kunden (aus Lead-Phase)")
+        .subtitle("Herausforderungen (aus Lead-Konversion kopiert)")
         .fields(
             List.of(
+                // All 8 boolean pain point flags from Lead conversion
                 FieldDefinition.builder()
                     .fieldKey("painStaffShortage")
                     .label("Personalmangel")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText("Lead-Feld: lead.painStaffShortage → customer.painStaffShortage")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painHighCosts")
                     .label("Hohe Kosten")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText("Lead-Feld: lead.painHighCosts → customer.painHighCosts")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painFoodWaste")
                     .label("Lebensmittelverschwendung")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText("Lead-Feld: lead.painFoodWaste → customer.painFoodWaste")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painQualityInconsistency")
                     .label("Qualitätsschwankungen")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText(
+                        "Lead-Feld: lead.painQualityInconsistency →"
+                            + " customer.painQualityInconsistency")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painTimePressure")
                     .label("Zeitdruck")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText("Lead-Feld: lead.painTimePressure → customer.painTimePressure")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painSupplierQuality")
                     .label("Lieferantenqualität")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText(
+                        "Lead-Feld: lead.painSupplierQuality → customer.painSupplierQuality")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painUnreliableDelivery")
                     .label("Unzuverlässige Lieferungen")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText(
+                        "Lead-Feld: lead.painUnreliableDelivery → customer.painUnreliableDelivery")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painPoorService")
                     .label("Schlechter Service")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
+                    .helpText("Lead-Feld: lead.painPoorService → customer.painPoorService")
                     .build(),
+                // Text field with detailed pain point notes
                 FieldDefinition.builder()
                     .fieldKey("painNotes")
                     .label("Details zu Pain Points")
@@ -475,164 +555,35 @@ public class CustomerSchemaResource {
                     .gridCols(12)
                     .placeholder(
                         "z.B. Hauptproblem: Zuverlässige Bio-Lieferanten schwer zu finden...")
+                    .helpText("Lead-Feld: lead.painNotes → customer.painNotes")
                     .build()))
         .build();
   }
 
-  // ========== CARD 4: KONTAKTE & STAKEHOLDER ==========
+  // ========== TAB "GESCHÄFT" - CARD 7: PRODUKTPORTFOLIO ==========
 
   /**
-   * Karte 4: 👥 Kontakte & Stakeholder
+   * Card 7: 📦 Produktportfolio & Services (Tab "Geschäft")
    *
-   * <p>Note: Contact data wird per separatem Endpoint geladen: GET /api/customers/{id}/contacts
-   *
-   * <p>Diese Karte zeigt keine Fields (nur Title + Explanation), Frontend lädt Daten dynamisch.
+   * <p>Note: Product data noch nicht implementiert. Platzhalter für zukünftige Features (Sprint
+   * 2.2.x).
    */
-  private CustomerCardSchema buildContactsCard() {
+  private CustomerCardSchema buildProductsCard() {
     return CustomerCardSchema.builder()
-        .cardId("contacts")
-        .title("Kontakte & Stakeholder")
-        .subtitle("Ansprechpartner, Buying Center, Kommunikationshistorie")
-        .icon("👥")
-        .order(4)
-        .sections(
-            List.of(
-                CardSection.builder()
-                    .sectionId("contacts-list")
-                    .title("Ansprechpartner")
-                    .subtitle("Kontakte werden per separatem Endpoint geladen")
-                    .fields(List.of())
-                    .build()))
-        .build();
-  }
-
-  // ========== CARD 5: PRODUKTPORTFOLIO & SERVICES ==========
-
-  /**
-   * Karte 5: 📦 Produktportfolio & Services
-   *
-   * <p>Note: Product data noch nicht implementiert. Platzhalter für zukünftige Features.
-   */
-  private CustomerCardSchema buildProductPortfolioCard() {
-    return CustomerCardSchema.builder()
-        .cardId("product-portfolio")
+        .cardId("products") // UNDERSCORE (not hyphen!)
         .title("Produktportfolio & Services")
         .subtitle("Aktive Produkte, Service-Level, Cross-Sell Opportunities")
         .icon("📦")
-        .order(5)
+        .order(7)
         .sections(
             List.of(
                 CardSection.builder()
-                    .sectionId("products-placeholder")
+                    .sectionId("products_placeholder")
                     .title("Produktportfolio")
                     .subtitle("Feature kommt in Sprint 2.2.x")
                     .fields(List.of())
                     .build()))
         .defaultCollapsed(true)
-        .build();
-  }
-
-  // ========== CARD 6: AKTIVITÄTEN & TIMELINE ==========
-
-  /**
-   * Karte 6: 📈 Aktivitäten & Timeline
-   *
-   * <p>Note: Activity data wird per separatem Endpoint geladen: GET
-   * /api/activities?entityType=CUSTOMER&entityId={id}
-   *
-   * <p>Diese Karte zeigt keine Fields (nur Title), Frontend lädt Activity-Timeline dynamisch.
-   */
-  private CustomerCardSchema buildActivitiesCard() {
-    return CustomerCardSchema.builder()
-        .cardId("activities")
-        .title("Aktivitäten & Timeline")
-        .subtitle("Bestellungen, Meetings, Calls, Next Steps")
-        .icon("📈")
-        .order(6)
-        .sections(
-            List.of(
-                CardSection.builder()
-                    .sectionId("activities-timeline")
-                    .title("Timeline")
-                    .subtitle("Aktivitäten werden per separatem Endpoint geladen")
-                    .fields(List.of())
-                    .build()))
-        .build();
-  }
-
-  // ========== CARD 7: HEALTH & RISK ==========
-
-  /**
-   * Karte 7: ⚠️ Health & Risk
-   *
-   * <p>Sections: Health Score (auto), Churn-Alerts, Handlungsempfehlungen
-   */
-  private CustomerCardSchema buildHealthAndRiskCard() {
-    return CustomerCardSchema.builder()
-        .cardId("health-risk")
-        .title("Health & Risk")
-        .subtitle("Health Score, Churn-Alerts, Handlungsempfehlungen")
-        .icon("⚠️")
-        .order(7)
-        .sections(List.of(buildHealthScoreSection(), buildRiskIndicatorsSection()))
-        .build();
-  }
-
-  private CardSection buildHealthScoreSection() {
-    return CardSection.builder()
-        .sectionId("health-score")
-        .title("Health Score")
-        .subtitle("Automatisch berechnet anhand von Bestellungen und Kommunikation")
-        .fields(
-            List.of(
-                FieldDefinition.builder()
-                    .fieldKey("healthScore")
-                    .label("Health Score")
-                    .type(FieldType.LABEL)
-                    .readonly(true)
-                    .gridCols(12)
-                    .helpText("🟢 80-100: Gesund | 🟡 50-79: Watch | 🔴 0-49: Risiko (Handeln!)")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("lastContactDate")
-                    .label("Letzter Kontakt")
-                    .type(FieldType.DATE)
-                    .readonly(true)
-                    .gridCols(6)
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("lastOrderDate")
-                    .label("Letzte Bestellung")
-                    .type(FieldType.DATE)
-                    .readonly(true)
-                    .gridCols(6)
-                    .build()))
-        .build();
-  }
-
-  private CardSection buildRiskIndicatorsSection() {
-    return CardSection.builder()
-        .sectionId("risk-indicators")
-        .title("Risiko-Indikatoren")
-        .subtitle("Churn-Schwellwerte und Alerts")
-        .fields(
-            List.of(
-                FieldDefinition.builder()
-                    .fieldKey("riskScore")
-                    .label("Risiko-Score")
-                    .type(FieldType.NUMBER)
-                    .readonly(true)
-                    .gridCols(6)
-                    .helpText("0-100: Je höher, desto größer das Churn-Risiko")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("churnThresholdDays")
-                    .label("Churn-Schwelle (Tage)")
-                    .type(FieldType.NUMBER)
-                    .gridCols(6)
-                    .helpText("Anzahl Tage ohne Bestellung, bevor Kunde als 'At Risk' gilt")
-                    .build()))
-        .collapsible(true)
         .build();
   }
 }
