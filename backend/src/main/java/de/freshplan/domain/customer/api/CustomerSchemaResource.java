@@ -197,25 +197,93 @@ public class CustomerSchemaResource {
     return CardSection.builder()
         .sectionId("addresses")
         .title("Adressen")
-        .subtitle("Rechnungs- und Lieferadressen (V10040)")
+        .subtitle("Rechnungs- und Lieferadressen (strukturiert)")
         .fields(
             List.of(
-                // Migration V10040: Multi-Location Address Support
+                // Sprint 2.1.7.2 D11: Structured mainAddress (GROUP type)
                 FieldDefinition.builder()
-                    .fieldKey("billingAddress")
-                    .label("Rechnungsadresse")
-                    .type(FieldType.TEXTAREA)
-                    .gridCols(6)
-                    .helpText("Primäre Rechnungsadresse für Invoicing (VARCHAR 500)")
+                    .fieldKey("mainAddress")
+                    .label("Hauptadresse (= Rechnungsadresse)")
+                    .type(FieldType.GROUP)
+                    .gridCols(12)
+                    .fields(
+                        List.of(
+                            FieldDefinition.builder()
+                                .fieldKey("street")
+                                .label("Straße")
+                                .type(FieldType.TEXT)
+                                .gridCols(12)
+                                .build(),
+                            FieldDefinition.builder()
+                                .fieldKey("postalCode")
+                                .label("PLZ")
+                                .type(FieldType.TEXT)
+                                .gridCols(4)
+                                .build(),
+                            FieldDefinition.builder()
+                                .fieldKey("city")
+                                .label("Ort")
+                                .type(FieldType.TEXT)
+                                .gridCols(4)
+                                .build(),
+                            FieldDefinition.builder()
+                                .fieldKey("countryCode")
+                                .label("Land")
+                                .type(FieldType.ENUM)
+                                .enumSource("/api/enums/country-codes")
+                                .gridCols(4)
+                                .build()))
                     .build(),
+                // Sprint 2.1.7.2 D11: Structured deliveryAddresses (ARRAY type)
                 FieldDefinition.builder()
                     .fieldKey("deliveryAddresses")
-                    .label("Lieferadressen (JSON)")
-                    .type(FieldType.TEXTAREA)
-                    .gridCols(6)
-                    .helpText(
-                        "JSON-Array: [{\"street\":\"...\", \"city\":\"...\", \"zip\":\"...\","
-                            + " \"country\":\"...\"}]")
+                    .label("Lieferadressen")
+                    .type(FieldType.ARRAY)
+                    .gridCols(12)
+                    .itemSchema(
+                        FieldDefinition.builder()
+                            .fieldKey("item")
+                            .type(FieldType.GROUP)
+                            .fields(
+                                List.of(
+                                    FieldDefinition.builder()
+                                        .fieldKey("locationName")
+                                        .label("Standort-Name")
+                                        .type(FieldType.TEXT)
+                                        .gridCols(12)
+                                        .build(),
+                                    FieldDefinition.builder()
+                                        .fieldKey("street")
+                                        .label("Straße")
+                                        .type(FieldType.TEXT)
+                                        .gridCols(12)
+                                        .build(),
+                                    FieldDefinition.builder()
+                                        .fieldKey("postalCode")
+                                        .label("PLZ")
+                                        .type(FieldType.TEXT)
+                                        .gridCols(4)
+                                        .build(),
+                                    FieldDefinition.builder()
+                                        .fieldKey("city")
+                                        .label("Ort")
+                                        .type(FieldType.TEXT)
+                                        .gridCols(4)
+                                        .build(),
+                                    FieldDefinition.builder()
+                                        .fieldKey("countryCode")
+                                        .label("Land")
+                                        .type(FieldType.ENUM)
+                                        .enumSource("/api/enums/country-codes")
+                                        .gridCols(4)
+                                        .build(),
+                                    FieldDefinition.builder()
+                                        .fieldKey("isActive")
+                                        .label("Aktiv")
+                                        .type(FieldType.BOOLEAN)
+                                        .gridCols(12)
+                                        .build()))
+                            .build())
                     .build()))
         .build();
   }
@@ -228,32 +296,20 @@ public class CustomerSchemaResource {
         .fields(
             List.of(
                 FieldDefinition.builder()
-                    .fieldKey("totalLocationsEu")
-                    .label("Standorte gesamt (EU)")
-                    .type(FieldType.NUMBER)
-                    .gridCols(4)
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("locationsGermany")
+                    .fieldKey("locationsDE")
                     .label("Standorte Deutschland")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("locationsAustria")
-                    .label("Standorte Österreich")
-                    .type(FieldType.NUMBER)
-                    .gridCols(4)
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("locationsSwitzerland")
+                    .fieldKey("locationsCH")
                     .label("Standorte Schweiz")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("locationsRestEu")
-                    .label("Standorte Rest-EU")
+                    .fieldKey("locationsAT")
+                    .label("Standorte Österreich")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
                     .build(),

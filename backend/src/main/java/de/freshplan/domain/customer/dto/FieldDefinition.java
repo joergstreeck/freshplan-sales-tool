@@ -74,7 +74,29 @@ public record FieldDefinition(
      *
      * <p>Example: ["min:0", "max:1000000", "email"]
      */
-    List<String> validationRules) {
+    List<String> validationRules,
+
+    /**
+     * Nested fields (for GROUP type)
+     *
+     * <p>Sprint 2.1.7.2 D11: Structured Address Support
+     *
+     * <p>Example: mainAddress (GROUP) with fields: street, postalCode, city, countryCode
+     *
+     * <p>Only used when type = GROUP, null otherwise
+     */
+    List<FieldDefinition> fields,
+
+    /**
+     * Item schema (for ARRAY type)
+     *
+     * <p>Sprint 2.1.7.2 D11: Repeatable Items Support
+     *
+     * <p>Example: deliveryAddresses (ARRAY) with itemSchema defining address structure
+     *
+     * <p>Only used when type = ARRAY, null otherwise
+     */
+    FieldDefinition itemSchema) {
 
   /** Builder for convenient FieldDefinition creation */
   public static Builder builder() {
@@ -92,6 +114,8 @@ public record FieldDefinition(
     private String helpText;
     private Integer gridCols = 6; // Default: half width
     private List<String> validationRules = List.of();
+    private List<FieldDefinition> fields; // Sprint 2.1.7.2 D11: GROUP type support
+    private FieldDefinition itemSchema; // Sprint 2.1.7.2 D11: ARRAY type support
 
     public Builder fieldKey(String fieldKey) {
       this.fieldKey = fieldKey;
@@ -143,6 +167,28 @@ public record FieldDefinition(
       return this;
     }
 
+    /**
+     * Set nested fields (for GROUP type)
+     *
+     * @param fields list of nested field definitions
+     * @return this builder
+     */
+    public Builder fields(List<FieldDefinition> fields) {
+      this.fields = fields;
+      return this;
+    }
+
+    /**
+     * Set item schema (for ARRAY type)
+     *
+     * @param itemSchema schema definition for array items
+     * @return this builder
+     */
+    public Builder itemSchema(FieldDefinition itemSchema) {
+      this.itemSchema = itemSchema;
+      return this;
+    }
+
     public FieldDefinition build() {
       return new FieldDefinition(
           fieldKey,
@@ -154,7 +200,9 @@ public record FieldDefinition(
           placeholder,
           helpText,
           gridCols,
-          validationRules);
+          validationRules,
+          fields,
+          itemSchema);
     }
   }
 }

@@ -62,5 +62,19 @@ public enum FieldType {
    *
    * <p>Example: Status Badge (AKTIV → Green, PROSPECT → Yellow)
    */
-  CHIP
+  CHIP,
+
+  /**
+   * Group of fields (nested structure)
+   *
+   * <p>Example: mainAddress with street, postalCode, city, countryCode (Sprint 2.1.7.2 D11)
+   */
+  GROUP,
+
+  /**
+   * Array of items with schema (repeatable structure)
+   *
+   * <p>Example: deliveryAddresses with multiple address items (Sprint 2.1.7.2 D11)
+   */
+  ARRAY
 }

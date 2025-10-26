@@ -7,6 +7,7 @@ import de.freshplan.domain.customer.entity.FinancingType;
 import de.freshplan.domain.customer.entity.LegalForm;
 import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.shared.BusinessType;
+import de.freshplan.domain.shared.CountryCode;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
 import de.freshplan.modules.leads.domain.ActivityOutcome;
@@ -269,6 +270,29 @@ public class EnumResource {
   public List<EnumValue> getExpansionPlan() {
     return Arrays.stream(ExpansionPlan.values())
         .map(plan -> new EnumValue(plan.name(), plan.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all Country Code enum values.
+   *
+   * <p>Used for: CustomerForm, CustomerCards (Address Fields)
+   *
+   * <p>Sprint 2.1.7.2 D11: Structured Address Support (GROUP/ARRAY types)
+   *
+   * @return List of Country Code values with display names
+   */
+  @GET
+  @Path("/country-codes")
+  @PermitAll
+  @Operation(summary = "Get all Country Code enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Country Code values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getCountryCodes() {
+    return Arrays.stream(CountryCode.values())
+        .map(code -> new EnumValue(code.name(), code.getDisplayName()))
         .toList();
   }
 
