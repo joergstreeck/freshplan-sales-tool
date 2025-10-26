@@ -1,6 +1,12 @@
 /**
  * Step 4: Angebot & Leistungen je Filiale
  *
+ * Sprint 2.1.7.2 D11: Server-Driven Customer Wizard
+ *
+ * NOTE: Step 4 manages Location Service Data (separate from Customer fields).
+ * This step does NOT use useCustomerSchema - it manages location-specific
+ * services via useLocationServicesStore.
+ *
  * Erfasst standortspezifische Service-Informationen mit Progress-Tracking
  * und Bulk-Actions für effiziente Dateneingabe.
  *

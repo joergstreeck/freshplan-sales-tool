@@ -1,11 +1,24 @@
 /**
  * Field Definitions API Hook
  *
+ * @deprecated Sprint 2.1.7.2 D11 - REPLACED by useCustomerSchema Hook
+ *
+ * This hook uses client-side fieldCatalog.json with API fallback, which is being
+ * phased out in favor of server-driven schema from /api/customers/schema.
+ *
+ * Migration Path:
+ * - Wizard Steps 1-2: Now use useCustomerSchema (server-driven)
+ * - Detail Tabs: Already use useCustomerSchema
+ * - This hook: Will be removed in future sprint
+ *
+ * DO NOT USE in new code! Use useCustomerSchema instead.
+ *
  * Erweiterte Version des Field Definitions Hooks, die Field Definitions
  * vom Backend lädt. Fällt auf lokale Daten zurück wenn API nicht verfügbar.
  *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/04-api-integration.md
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
+ * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/hooks/useCustomerSchema.ts (NEW!)
  */
 
 import { useEffect } from 'react';
