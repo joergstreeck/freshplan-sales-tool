@@ -391,16 +391,90 @@ public class CustomerResource {
   }
 
   /**
-   * Changes customer status with business rule validation.
+   * Changes customer status with role-based authorization.
+   *
+   * <p>Sprint 2.1.7.2 D11: 3-Tier Role-Based Status Update
+   *
+   * <p><strong>Authorization Rules:</strong>
+   *
+   * <ul>
+   *   <li><strong>SALES (sales):</strong> Can only change AKTIV ↔ RISIKO
+   *   <li><strong>MANAGER (manager):</strong> Can also set INAKTIV (+ AKTIV ↔ RISIKO)
+   *   <li><strong>ADMIN (admin):</strong> Can set all statuses including ARCHIVIERT
+   * </ul>
+   *
+   * <p><strong>Business Rules:</strong> System sets status automatically (Lead→AKTIV,
+   * Churn→RISIKO), but users can manually override based on their role permissions.
    *
    * @param id The customer ID
    * @param request The status change request
-   * @return 200 OK with updated customer
+   * @return 200 OK with updated customer, 403 if role lacks permission
    */
   @PUT
   @Path("/{id}/status")
   public Response changeCustomerStatus(
       @PathParam("id") UUID id, @Valid ChangeStatusRequest request) {
+
+    log.info(
+        "Status change request for customer {}: {} (user: {}, roles: {})",
+        id,
+        request.newStatus(),
+        currentUser.getUsername(),
+        currentUser.getRoles());
+
+    // 1. Role-Based Authorization Check
+    CustomerStatus targetStatus = request.newStatus();
+    boolean isAdmin = securityContext.hasRole("admin");
+    boolean isManager = securityContext.hasRole("manager");
+    boolean isSales = securityContext.hasRole("sales");
+
+    // ADMIN: Can set all statuses (no restrictions)
+    if (isAdmin) {
+      log.debug("Admin user - all status changes allowed");
+    }
+    // MANAGER: Can set AKTIV, RISIKO, INAKTIV (but NOT ARCHIVIERT)
+    else if (isManager) {
+      if (targetStatus == CustomerStatus.ARCHIVIERT) {
+        log.warn(
+            "Manager {} tried to set ARCHIVIERT status - requires ADMIN role",
+            currentUser.getUsername());
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(
+                new ErrorResponse(
+                    "Only ADMIN can set ARCHIVIERT status. Contact your administrator.",
+                    "INSUFFICIENT_PERMISSIONS"))
+            .build();
+      }
+      log.debug("Manager user - can set AKTIV, RISIKO, INAKTIV");
+    }
+    // SALES: Can ONLY set AKTIV or RISIKO (no INAKTIV, no ARCHIVIERT)
+    else if (isSales) {
+      if (targetStatus != CustomerStatus.AKTIV && targetStatus != CustomerStatus.RISIKO) {
+        log.warn(
+            "Sales user {} tried to set {} status - only AKTIV/RISIKO allowed",
+            currentUser.getUsername(),
+            targetStatus);
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(
+                new ErrorResponse(
+                    "Sales users can only change between AKTIV and RISIKO. Contact your manager to"
+                        + " set other statuses.",
+                    "INSUFFICIENT_PERMISSIONS"))
+            .build();
+      }
+      log.debug("Sales user - can only set AKTIV or RISIKO");
+    }
+    // Fallback: No valid role (should not happen due to @RolesAllowed on class level)
+    else {
+      log.error("User {} has no valid role for status changes", currentUser.getUsername());
+      return Response.status(Response.Status.FORBIDDEN)
+          .entity(
+              new ErrorResponse(
+                  "Insufficient permissions for status changes", "INSUFFICIENT_PERMISSIONS"))
+          .build();
+    }
+
+    // 2. Execute Status Change (authorization passed)
     CustomerResponse customer;
     if (cqrsEnabled) {
       log.debug("Using CQRS CommandService for changeStatus");
@@ -409,6 +483,13 @@ public class CustomerResource {
       log.debug("Using legacy CustomerService for changeStatus");
       customer = customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
     }
+
+    log.info(
+        "Status changed successfully for customer {}: {} (by: {})",
+        id,
+        request.newStatus(),
+        currentUser.getUsername());
+
     return Response.ok(customer).build();
   }
 
