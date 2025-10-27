@@ -39,8 +39,12 @@ import {
   Delete as DeleteIcon,
   Person as PersonIcon,
   Timeline as TimelineIcon,
+  Email as EmailIcon,
+  Phone as PhoneIcon,
+  Note as NoteIcon,
 } from '@mui/icons-material';
 import { ContactEditDialog, type Contact } from './ContactEditDialog';
+import { useCustomerContacts } from '../../../customer/hooks/useCustomerContacts';
 
 interface CustomerDetailTabVerlaufProps {
   customerId: string;
@@ -54,14 +58,12 @@ interface CustomerDetailTabVerlaufProps {
 export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> = ({
   customerId,
 }) => {
-  // State
+  // Fetch contacts from API (Sprint 2.1.7.2 D11.1 - Hotfix)
+  const { data: contacts = [], isLoading } = useCustomerContacts(customerId);
+
+  // Dialog state
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // TODO: Replace with real API hook in Phase 4
-  // const { data: contacts, isLoading, refetch } = useCustomerContacts(customerId);
 
   // Handle create contact
   const handleCreateContact = () => {
@@ -114,15 +116,44 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
     }
   };
 
-  // Get role label
-  const getRoleLabel = (role: string): string => {
+  // Get role/position label (supports both backend 'position' and frontend 'role')
+  const getRoleLabel = (contact: Contact): string => {
+    const roleOrPosition = contact.position || contact.role || '';
+
+    // Try to map known role codes to labels
     const labels: Record<string, string> = {
       CHEF: 'Küchenchef',
       BUYER: 'Einkäufer',
       MANAGER: 'Manager',
       OTHER: 'Sonstiges',
     };
-    return labels[role] || role;
+
+    // Return mapped label or original position/role text
+    return labels[roleOrPosition.toUpperCase()] || roleOrPosition;
+  };
+
+  // Contact Action Handlers
+  const handleEmailContact = (contact: Contact) => {
+    if (contact.email) {
+      window.location.href = `mailto:${contact.email}?subject=Kontaktaufnahme von FreshPlan`;
+    } else {
+      alert('Keine E-Mail-Adresse für diesen Kontakt hinterlegt.');
+    }
+  };
+
+  const handleCallContact = (contact: Contact) => {
+    const phone = contact.mobile || contact.phone;
+    if (phone) {
+      window.location.href = `tel:${phone}`;
+    } else {
+      alert('Keine Telefonnummer für diesen Kontakt hinterlegt.');
+    }
+  };
+
+  const handleAddNote = (contact: Contact) => {
+    // TODO Sprint 2.2: Notiz-Dialog öffnen
+    console.log('Notiz hinzufügen für:', contact.firstName, contact.lastName);
+    alert('Notiz-Funktion wird in Sprint 2.2 implementiert.');
   };
 
   return (
@@ -184,29 +215,71 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                   bgcolor: contact.isPrimary ? 'action.hover' : 'background.paper',
                 }}
                 secondaryAction={
-                  <Box>
+                  <Stack direction="row" spacing={0.5} alignItems="center">
+                    {/* Action Buttons */}
                     <IconButton
-                      edge="end"
+                      size="small"
+                      aria-label="E-Mail senden"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEmailContact(contact);
+                      }}
+                      disabled={!contact.email}
+                      color="primary"
+                    >
+                      <EmailIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      aria-label="Anrufen"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleCallContact(contact);
+                      }}
+                      disabled={!contact.phone && !contact.mobile}
+                      color="primary"
+                    >
+                      <PhoneIcon fontSize="small" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      aria-label="Notiz hinzufügen"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddNote(contact);
+                      }}
+                      color="primary"
+                    >
+                      <NoteIcon fontSize="small" />
+                    </IconButton>
+
+                    <Divider orientation="vertical" flexItem sx={{ mx: 0.5 }} />
+
+                    {/* Edit/Delete Buttons */}
+                    <IconButton
+                      size="small"
                       aria-label="Kontakt bearbeiten"
                       onClick={() => handleEditContact(contact)}
-                      sx={{ mr: 1 }}
                     >
-                      <EditIcon />
+                      <EditIcon fontSize="small" />
                     </IconButton>
                     <IconButton
-                      edge="end"
+                      size="small"
                       aria-label="Kontakt löschen"
                       onClick={() => handleDeleteContact(contact.id!)}
+                      color="error"
                     >
-                      <DeleteIcon />
+                      <DeleteIcon fontSize="small" />
                     </IconButton>
-                  </Box>
+                  </Stack>
                 }
               >
                 <ListItemText
+                  primaryTypographyProps={{ component: 'div' }}
+                  secondaryTypographyProps={{ component: 'div' }}
                   primary={
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography variant="subtitle1" fontWeight="medium">
+                      <Typography variant="subtitle1" fontWeight="medium" component="span">
                         {contact.firstName} {contact.lastName}
                       </Typography>
                       {contact.isPrimary && (
@@ -219,31 +292,31 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                     </Stack>
                   }
                   secondary={
-                    <Box sx={{ mt: 0.5 }}>
+                    <Box component="span" sx={{ mt: 0.5, display: 'block' }}>
                       <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
                         <Chip
-                          label={getRoleLabel(contact.role)}
+                          label={getRoleLabel(contact)}
                           size="small"
                           variant="outlined"
                         />
                         {contact.email && (
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" color="text.secondary" component="span">
                             {contact.email}
                           </Typography>
                         )}
                         {contact.phone && (
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" color="text.secondary" component="span">
                             {contact.phone}
                           </Typography>
                         )}
                         {contact.mobile && (
-                          <Typography variant="body2" color="text.secondary">
+                          <Typography variant="body2" color="text.secondary" component="span">
                             {contact.mobile}
                           </Typography>
                         )}
                       </Stack>
                       {contact.notes && (
-                        <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block' }}>
+                        <Typography variant="caption" color="text.secondary" component="span" sx={{ mt: 1, display: 'block' }}>
                           {contact.notes}
                         </Typography>
                       )}

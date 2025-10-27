@@ -40,6 +40,8 @@ SCRIPT_DIR = Path(__file__).parent
 PROJECT_ROOT = SCRIPT_DIR.parent
 CUSTOMER_SCHEMA = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/api/CustomerSchemaResource.java"
 CUSTOMER_ENTITY = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/entity/Customer.java"
+CONTACT_ENTITY = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/entity/CustomerContact.java"
+CONTACT_DIALOG = PROJECT_ROOT / "frontend/src/features/customers/components/detail/ContactEditDialog.tsx"
 ENUM_RESOURCES_DIR = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/api"
 MIGRATIONS_DIR = PROJECT_ROOT / "backend/src/main/resources/db/migration"
 
@@ -216,6 +218,68 @@ def check_database_constraints(field_name: str, enum_source: str) -> Tuple[bool,
     return False, ""
 
 
+def extract_contact_frontend_fields() -> Set[str]:
+    """
+    Extract field names from ContactEditDialog.tsx (Contact interface)
+
+    Returns: Set of field names that frontend declares
+    """
+    if not CONTACT_DIALOG.exists():
+        return set()
+
+    content = CONTACT_DIALOG.read_text()
+    fields = set()
+
+    # Find Contact interface definition
+    # Pattern: export interface Contact { ... }
+    interface_pattern = r'export\s+interface\s+Contact\s*\{([^}]+)\}'
+    match = re.search(interface_pattern, content, re.DOTALL)
+
+    if match:
+        interface_body = match.group(1)
+        # Extract field names
+        # Pattern: fieldName?: type;
+        field_pattern = r'(\w+)\??:'
+        for field_match in re.finditer(field_pattern, interface_body):
+            field_name = field_match.group(1)
+            # Convert camelCase to snake_case for comparison with Entity
+            snake_case_name = re.sub(r'([A-Z])', r'_\1', field_name).lower()
+            fields.add(snake_case_name)
+
+    return fields
+
+
+def extract_contact_entity_fields() -> Set[str]:
+    """Extract field names from CustomerContact.java entity"""
+    if not CONTACT_ENTITY.exists():
+        return set()
+
+    content = CONTACT_ENTITY.read_text()
+    fields = set()
+
+    # Same patterns as Customer entity extraction
+    patterns = [
+        r'^\s*private\s+\w+(?:<[^>]+>)?\s+(\w+)\s*;',
+        r'^\s*private\s+\w+(?:<[^>]+>)?\s+(\w+)\s*=',
+        r'^\s*@Column.*?\n\s*private\s+\w+(?:<[^>]+>)?\s+(\w+)',
+    ]
+
+    lines = content.split('\n')
+    for i, line in enumerate(lines):
+        for pattern in patterns:
+            combined = line
+            if i + 1 < len(lines):
+                combined = line + '\n' + lines[i + 1]
+
+            match = re.search(pattern, combined, re.MULTILINE)
+            if match:
+                field_name = match.group(1)
+                if field_name not in {'serialVersionUID', 'class', 'roles', 'reportsTo', 'directReports'}:
+                    fields.add(field_name)
+
+    return fields
+
+
 def main():
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
     print(f"{BLUE}🔒 Server-Driven Architecture Parity Guard{NC}")
@@ -343,6 +407,56 @@ def main():
         print(f"{GREEN}✅ STUFE 3 INFO: Database constraints recommended{NC}")
         print()
 
+    # ========== STUFE 4: Contact Frontend → Entity Parity (Basic Check) ==========
+    print(f"{BLUE}📋 STUFE 4: Contact Parity Check (Basic - No Schema Resource Yet){NC}")
+    print()
+
+    contact_frontend_fields = extract_contact_frontend_fields()
+    contact_entity_fields = extract_contact_entity_fields()
+
+    if contact_frontend_fields and contact_entity_fields:
+        print(f"  ContactEditDialog.tsx: {len(contact_frontend_fields)} fields")
+        print(f"  CustomerContact.java entity: {len(contact_entity_fields)} fields")
+        print()
+
+        # Check for frontend fields missing in backend
+        contact_violations = []
+        for frontend_field in contact_frontend_fields:
+            # Map common mismatches (camelCase vs snake_case)
+            # Frontend uses isPrimary, backend might use is_primary or isPrimary
+            if frontend_field not in contact_entity_fields:
+                # Try alternative names
+                alt_names = [
+                    frontend_field,
+                    frontend_field.replace('is_', ''),
+                    frontend_field.replace('_', ''),
+                    'is' + frontend_field.replace('is_', '').title().replace('_', ''),
+                ]
+                found = any(alt in contact_entity_fields for alt in alt_names)
+                if not found:
+                    contact_violations.append(frontend_field)
+
+        if contact_violations:
+            print(f"{RED}❌ FAILURE: Found {len(contact_violations)} Contact fields missing in backend:{NC}")
+            print()
+            for field in contact_violations:
+                print(f"  {RED}✗{NC} {field}")
+            print()
+            print(f"{RED}🚫 RULE VIOLATION: Contact Frontend/Backend Parity (ZERO TOLERANCE){NC}")
+            print()
+            print("📖 Fix by:")
+            print("   1. Add missing fields to CustomerContact.java entity")
+            print("   2. Create migration to add columns to 'customer_contacts' table")
+            print("   3. Update ContactMapper.java to map new fields")
+            print()
+            return 1
+        else:
+            print(f"{GREEN}✅ STUFE 4 PASSED: All Contact frontend fields exist in backend{NC}")
+            print()
+    else:
+        print(f"{YELLOW}⚠️  INFO: Contact files not found or no fields detected{NC}")
+        print()
+
     # ========== SUMMARY ==========
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
     print(f"{GREEN}✅ SUCCESS: Server-Driven Parity Check PASSED{NC}")
@@ -353,6 +467,9 @@ def main():
     print(f"  Enum Resources: {len(enum_resources)}")
     print(f"  Ghost Fields: {len(ghost_fields)}")
     print(f"  Enum Violations: {len(enum_violations)}")
+    if contact_frontend_fields and contact_entity_fields:
+        print(f"  Contact Frontend Fields: {len(contact_frontend_fields)}")
+        print(f"  Contact Entity Fields: {len(contact_entity_fields)}")
     print()
 
     return 0

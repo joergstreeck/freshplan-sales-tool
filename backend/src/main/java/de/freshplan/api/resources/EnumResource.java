@@ -1,11 +1,15 @@
 package de.freshplan.api.resources;
 
+import de.freshplan.domain.customer.entity.ContactRole;
 import de.freshplan.domain.customer.entity.CustomerType;
+import de.freshplan.domain.customer.entity.DecisionLevel;
 import de.freshplan.domain.customer.entity.DeliveryCondition;
 import de.freshplan.domain.customer.entity.ExpansionPlan;
 import de.freshplan.domain.customer.entity.FinancingType;
 import de.freshplan.domain.customer.entity.LegalForm;
 import de.freshplan.domain.customer.entity.PaymentTerms;
+import de.freshplan.domain.customer.entity.Salutation;
+import de.freshplan.domain.customer.entity.Title;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.CountryCode;
 import de.freshplan.domain.shared.KitchenSize;
@@ -316,6 +320,109 @@ public class EnumResource {
   public List<EnumValue> getCustomerStatus() {
     return Arrays.stream(de.freshplan.domain.customer.entity.CustomerStatus.values())
         .map(status -> new EnumValue(status.name(), status.name()))
+        .toList();
+  }
+
+  /**
+   * Get all Contact Role enum values.
+   *
+   * <p>Used for: ContactEditDialog (Dropdown suggestions)
+   *
+   * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+   *
+   * <p>Business Rule: Realistic roles in German gastronomy businesses (Küchenchef, Einkaufsleiter,
+   * Betriebsleiter, Geschäftsführer, etc.)
+   *
+   * @return List of ContactRole values with display names
+   */
+  @GET
+  @Path("/contact-roles")
+  @PermitAll
+  @Operation(summary = "Get all Contact Role enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Contact Role values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getContactRoles() {
+    return Arrays.stream(ContactRole.values())
+        .map(role -> new EnumValue(role.name(), role.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all Salutation enum values.
+   *
+   * <p>Used for: ContactEditDialog (Dropdown)
+   *
+   * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+   *
+   * <p>Business Rule: German business etiquette requires proper salutations (Herr, Frau, Divers)
+   *
+   * @return List of Salutation values with display names
+   */
+  @GET
+  @Path("/salutations")
+  @PermitAll
+  @Operation(summary = "Get all Salutation enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Salutation values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getSalutations() {
+    return Arrays.stream(Salutation.values())
+        .map(salutation -> new EnumValue(salutation.name(), salutation.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all Decision Level enum values.
+   *
+   * <p>Used for: ContactEditDialog (Dropdown)
+   *
+   * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+   *
+   * <p>Business Rule: Understanding decision-making level is crucial for B2B sales strategy
+   * (Executive, Manager, Operational, Influencer)
+   *
+   * @return List of DecisionLevel values with display names
+   */
+  @GET
+  @Path("/decision-levels")
+  @PermitAll
+  @Operation(summary = "Get all Decision Level enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Decision Level values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getDecisionLevels() {
+    return Arrays.stream(DecisionLevel.values())
+        .map(level -> new EnumValue(level.name(), level.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all Title enum values.
+   *
+   * <p>Used for: ContactEditDialog (Dropdown)
+   *
+   * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+   *
+   * <p>Business Rule: German business etiquette requires proper titles in formal
+   * correspondence (letters, emails). Common titles: Dr., Prof., Dipl.-Ing., M.Sc., etc.
+   *
+   * @return List of Title values with display names
+   */
+  @GET
+  @Path("/titles")
+  @PermitAll
+  @Operation(summary = "Get all Title enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Title values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getTitles() {
+    return Arrays.stream(Title.values())
+        .map(title -> new EnumValue(title.name(), title.getDisplayName()))
         .toList();
   }
 

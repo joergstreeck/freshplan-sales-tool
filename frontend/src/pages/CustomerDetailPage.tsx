@@ -16,7 +16,7 @@
  */
 
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -79,8 +79,12 @@ function a11yProps(index: number) {
 
 export function CustomerDetailPage() {
   const { customerId } = useParams<{ customerId: string }>();
-  const [activeTab, setActiveTab] = useState(0);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // Read tab from URL parameter (default: 0)
+  const initialTab = parseInt(searchParams.get('tab') || '0', 10);
+  const [activeTab, setActiveTab] = useState(initialTab);
 
   // Edit Dialog State
   const [showEditWizard, setShowEditWizard] = useState(false);

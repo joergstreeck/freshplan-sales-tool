@@ -413,8 +413,8 @@ frontend/src/features/customers/components/detail/
 
 ### Tab: Verlauf
 - [ ] Timeline sichtbar
-- [ ] Kontakte CRUD funktioniert
-- [ ] ContactEditDialog öffnet
+- [ ] Kontakte CRUD funktioniert ← ❌ **GAP: Contact API Hook fehlt!**
+- [ ] ContactEditDialog öffnet ← ⚠️ **Dialog existiert, aber keine Daten**
 
 ---
 
@@ -479,7 +479,7 @@ frontend/src/features/customers/components/detail/
 3. ✅ 6 Action Buttons sichtbar (E-Mail, Anrufen, Angebot, Notiz, Meeting, Bearbeiten)
 4. ✅ 3 Tabs anklickbar (Firma, Geschäft, Verlauf)
 5. ✅ Tab "Firma" zeigt Stammdaten (wie bisher im Modal)
-6. ✅ Tab "Verlauf" zeigt Timeline + Kontakte (wie bisher im Modal)
+6. ❌ Tab "Verlauf" zeigt Timeline + Kontakte ← **GAP: Kontakte nicht geladen!**
 7. ✅ URL teilbar: `/customers/:id`
 8. ✅ Breadcrumb zurück funktioniert
 9. ✅ Konsistent mit Cockpit-Pattern (Action Buttons + Tabs)
@@ -488,6 +488,213 @@ frontend/src/features/customers/components/detail/
 ---
 
 **🎯 ZIEL:** Cockpit-Pattern konsequent durchziehen - konsistent, benutzerfreundlich, mehr Platz für Details!
+
+---
+
+## 🚨 GAP ANALYSIS: Sprint 2.1.7.2 D11 - PHASE 4 UNVOLLSTÄNDIG
+
+**📅 Entdeckt:** 2025-10-27
+**🚨 Severity:** MEDIUM - Feature unvollständig, User sieht leere Kontaktliste
+**✅ Status:** DOCUMENTED - Ready for Implementation
+
+---
+
+### ❌ DAS PROBLEM: CONTACT API INTEGRATION FEHLT
+
+#### IST-Zustand:
+
+**Backend:**
+```
+✅ ContactResource.java - API existiert!
+   GET /api/customers/{id}/contacts
+   POST /api/customers/{id}/contacts
+   PUT /api/customers/{id}/contacts/{contactId}
+   DELETE /api/customers/{id}/contacts/{contactId}
+
+✅ ContactDTO.java - DTO existiert!
+✅ ContactService.java - Service existiert!
+✅ SEED Data - Julia Hoffmann als Kontakt vorhanden!
+```
+
+**Frontend:**
+```
+✅ CustomerDetailTabVerlauf.tsx - UI Component existiert!
+✅ ContactEditDialog.tsx - Dialog existiert!
+✅ Contact Type - TypeScript Interface existiert!
+
+❌ useCustomerContacts Hook - FEHLT!
+❌ API Integration - NICHT IMPLEMENTIERT!
+❌ Hardcoded Empty State - useState<Contact[]>([])
+```
+
+**Symptom:**
+- User navigiert zu Tab "Verlauf"
+- Sieht "Noch keine Kontakte erfasst"
+- **OBWOHL** Julia Hoffmann in SEED-Daten existiert!
+- Intelligente Suche findet Julia Hoffmann → Navigation funktioniert
+- Aber Tab zeigt keine Daten → Kein API Call!
+
+---
+
+### 🔍 ROOT CAUSE
+
+**File:** `frontend/.../CustomerDetailTabVerlauf.tsx` (Zeile 57-64)
+
+```typescript
+export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> = ({
+  customerId,
+}) => {
+  // State
+  const [contacts, setContacts] = useState<Contact[]>([]); // ❌ HARDCODED EMPTY!
+  const [isLoading, setIsLoading] = useState(false);       // ❌ HARDCODED FALSE!
+
+  // TODO: Replace with real API hook in Phase 4  ← DAS IST DAS PROBLEM!
+  // const { data: contacts, isLoading, refetch } = useCustomerContacts(customerId);
+```
+
+**Was fehlt:**
+
+1. **Hook nicht implementiert:**
+   ```typescript
+   // FILE: frontend/src/features/customer/hooks/useCustomerContacts.ts
+   // ❌ EXISTIERT NICHT!
+   ```
+
+2. **Komponente nutzt Platzhalter-State:**
+   - `contacts` bleibt immer `[]`
+   - `isLoading` bleibt immer `false`
+   - Kein API Call wird je gemacht
+
+3. **Backend-DTO ≠ Frontend-Type:**
+   - Backend: `ContactDTO` mit ~20 Feldern
+   - Frontend: `Contact` mit ~8 Feldern (ContactEditDialog.tsx:38)
+   - Type Mapping fehlt!
+
+---
+
+### 📋 IMPLEMENTATION PLAN (Sprint 2.1.7.2 D11.1 - HOTFIX)
+
+#### Task 1: Create useCustomerContacts Hook (10 min)
+
+**File:** `frontend/src/features/customer/hooks/useCustomerContacts.ts` (NEW)
+
+```typescript
+import { useQuery } from '@tanstack/react-query';
+import { httpClient } from '../../../lib/httpClient';
+import type { Contact } from '../../customers/components/detail/ContactEditDialog';
+
+export function useCustomerContacts(customerId: string) {
+  return useQuery({
+    queryKey: ['customers', customerId, 'contacts'],
+    queryFn: async () => {
+      const response = await httpClient.get<Contact[]>(
+        `/api/customers/${customerId}/contacts`
+      );
+      return response.data;
+    },
+    enabled: !!customerId,
+  });
+}
+```
+
+#### Task 2: Integrate Hook in Component (5 min)
+
+**File:** `CustomerDetailTabVerlauf.tsx` (EDIT - Zeile 57-64)
+
+```typescript
+// VORHER:
+const [contacts, setContacts] = useState<Contact[]>([]);
+const [isLoading, setIsLoading] = useState(false);
+// TODO: Replace with real API hook in Phase 4
+
+// NACHHER:
+const { data: contacts = [], isLoading } = useCustomerContacts(customerId);
+// State für Dialog bleibt:
+const [contactDialogOpen, setContactDialogOpen] = useState(false);
+const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+```
+
+#### Task 3: Type Mapping prüfen (5 min)
+
+**Backend DTO (ContactDTO.java) → Frontend Type (Contact interface)**
+
+**Vergleich:**
+```
+Backend (ContactDTO):          Frontend (Contact):
+- id: UUID                  →  id?: string ✅
+- customerId: UUID          →  (nicht benötigt)
+- firstName: String         →  firstName: string ✅
+- lastName: String          →  lastName: string ✅
+- email: String             →  email?: string ✅
+- phone: String             →  phone?: string ✅
+- mobile: String            →  mobile?: string ✅
+- isPrimary: boolean        →  isPrimary?: boolean ✅
+- position: String          →  (fehlt - ignorieren für MVP)
+- decisionLevel: String     →  (fehlt - ignorieren für MVP)
+- notes: String             →  notes?: string ✅
+- ... 10 weitere Felder     →  role: 'CHEF'|'BUYER'|... ← MISMATCH!
+```
+
+**Problem:** Backend hat `position`, Frontend erwartet `role`.
+
+**Lösung:**
+- Frontend Type erweitern um `position?: string`
+- ODER Backend DTO hat `role` Mapping (prüfen!)
+
+#### Task 4: Test mit SEED Data (5 min)
+
+1. Backend läuft: `./mvnw quarkus:dev`
+2. Frontend läuft: `npm run dev`
+3. Navigate zu Customer "Betriebsgastronomie TechPark Frankfurt GmbH"
+4. Tab "Verlauf" öffnen
+5. **EXPECT:** Julia Hoffmann wird angezeigt!
+6. **EXPECT:** `role` Field wird korrekt gemappt
+
+---
+
+### ✅ ACCEPTANCE CRITERIA (Hotfix D11.1)
+
+1. ✅ Hook `useCustomerContacts.ts` erstellt
+2. ✅ `CustomerDetailTabVerlauf.tsx` nutzt Hook (TODO entfernt!)
+3. ✅ SEED Customer zeigt Julia Hoffmann im Tab "Verlauf"
+4. ✅ Kontaktliste zeigt Name, E-Mail, Telefon
+5. ✅ Button "+ Neuer Kontakt" öffnet Dialog (bestehend)
+6. ✅ Edit/Delete Buttons funktionieren (bestehende Handler)
+7. ✅ Type Mapping Backend ↔ Frontend korrekt
+
+---
+
+### 🎯 WARUM PASSIERTE DAS?
+
+**Phase 4 Plan (SPEC Zeile 456-460):**
+```markdown
+### Phase 4: Polish & Test (30 min)
+1. Responsive testing
+2. Clean up old components (CompactView, Modal)
+3. Remove Phase 3 banners from tabs
+4. Final UX testing
+```
+
+**Was fehlt:** Kein expliziter Step "Connect Contact API to Component"!
+
+**Lesson Learned:**
+- ✅ UI Struktur wurde in Phase 3 erstellt
+- ✅ Backend API existiert seit langem
+- ❌ Verknüpfung (Hook) wurde vergessen
+- ❌ Phase 4 fokussierte auf "Polish", nicht "Complete"
+
+---
+
+### 📚 REFERENCES
+
+- **Backend API:** `GET /api/customers/{id}/contacts` (ContactResource.java:23)
+- **Frontend Component:** `CustomerDetailTabVerlauf.tsx:57-64`
+- **Frontend Type:** `ContactEditDialog.tsx:38`
+- **SEED Data:** Betriebsgastronomie TechPark Frankfurt GmbH → Julia Hoffmann
+
+---
+
+**🚨 PRIORITY:** HIGH - User sieht aktuell KEINE Kontakte (obwohl vorhanden!)
 
 ---
 

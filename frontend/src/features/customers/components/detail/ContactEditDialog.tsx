@@ -20,6 +20,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
+  Box,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -33,18 +34,36 @@ import {
   Alert,
   useTheme,
   useMediaQuery,
+  CircularProgress,
+  Autocomplete,
 } from '@mui/material';
+import {
+  useContactRoles,
+  useSalutations,
+  useDecisionLevels,
+  useTitles,
+} from '../../../../hooks/useContactEnums';
 
 export interface Contact {
   id?: string;
+  // V1 Fields: German Business Etiquette & Sales Strategy
+  salutation?: string; // HERR, FRAU, DIVERS
+  title?: string; // Dr., Prof., etc. (freetext)
   firstName: string;
   lastName: string;
-  role: 'CHEF' | 'BUYER' | 'MANAGER' | 'OTHER';
+  position?: string; // Küchenchef, Einkaufsleiter, etc. (backend field - freetext with suggestions)
+  decisionLevel?: string; // EXECUTIVE, MANAGER, OPERATIONAL, INFLUENCER
+  // Contact Info
   email?: string;
   phone?: string;
   mobile?: string;
   isPrimary?: boolean;
   notes?: string;
+  // V2 Fields (Sprint 2.1.7.7)
+  birthday?: string; // ISO date string
+  assignedLocationId?: string;
+  linkedin?: string;
+  xing?: string;
 }
 
 interface ContactEditDialogProps {
@@ -63,7 +82,7 @@ interface ContactEditDialogProps {
 export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   open,
   onClose,
-  customerId,
+  customerId: _customerId,
   contact,
   onSubmit,
 }) => {
@@ -71,16 +90,30 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isEdit = !!contact;
 
+  // Load enums from backend
+  const { data: contactRoles, isLoading: isLoadingRoles } = useContactRoles();
+  const { data: salutations, isLoading: isLoadingSalutations } = useSalutations();
+  const { data: decisionLevels, isLoading: isLoadingDecisionLevels } = useDecisionLevels();
+  const { data: titles, isLoading: isLoadingTitles } = useTitles();
+
   // Form state
   const [formData, setFormData] = useState<Partial<Contact>>({
+    salutation: '',
+    title: '',
     firstName: '',
     lastName: '',
-    role: 'CHEF',
+    position: '',
+    decisionLevel: '',
     email: '',
     phone: '',
     mobile: '',
     isPrimary: false,
     notes: '',
+    // V2 Fields (Sprint 2.1.7.7)
+    birthday: '',
+    assignedLocationId: '',
+    linkedin: '',
+    xing: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -89,17 +122,29 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   // Initialize form data
   useEffect(() => {
     if (contact) {
-      setFormData(contact);
+      setFormData({
+        ...contact,
+        // Normalize salutation to UPPERCASE (backend may have mixed-case like "Frau")
+        salutation: contact.salutation?.toUpperCase() || '',
+      });
     } else {
       setFormData({
+        salutation: '',
+        title: '',
         firstName: '',
         lastName: '',
-        role: 'CHEF',
+        position: '',
+        decisionLevel: '',
         email: '',
         phone: '',
         mobile: '',
         isPrimary: false,
         notes: '',
+        // V2 Fields (Sprint 2.1.7.7)
+        birthday: '',
+        assignedLocationId: '',
+        linkedin: '',
+        xing: '',
       });
     }
     setErrors({});
@@ -195,7 +240,54 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
           </Alert>
         )}
 
+        {/* Loading State */}
+        {(isLoadingSalutations || isLoadingTitles || isLoadingRoles || isLoadingDecisionLevels) && (
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+            <CircularProgress size={24} />
+          </Box>
+        )}
+
         <Grid container spacing={2} sx={{ mt: 1 }}>
+          {/* V1: Anrede (Salutation) */}
+          <Grid size={{ xs: 4 }}>
+            <TextField
+              select
+              label="Anrede"
+              value={formData.salutation || ''}
+              onChange={e => handleFieldChange('salutation', e.target.value)}
+              fullWidth
+              helperText="Herr, Frau, Divers"
+              disabled={isLoadingSalutations}
+            >
+              <MenuItem value="">---</MenuItem>
+              {salutations?.map(s => (
+                <MenuItem key={s.value} value={s.value}>
+                  {s.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
+          {/* V1: Titel (Title) - Dropdown für deutsche Briefanrede */}
+          <Grid size={{ xs: 8 }}>
+            <TextField
+              select
+              label="Titel"
+              value={formData.title || ''}
+              onChange={e => handleFieldChange('title', e.target.value)}
+              fullWidth
+              helperText="Akademischer/Berufstitel für Briefanrede"
+              disabled={isLoadingTitles}
+            >
+              <MenuItem value="">---</MenuItem>
+              {titles?.map(t => (
+                <MenuItem key={t.value} value={t.value}>
+                  {t.label}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
+
           {/* Vorname */}
           <Grid size={{ xs: 6 }}>
             <TextField
@@ -222,20 +314,56 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
             />
           </Grid>
 
-          {/* Rolle */}
+          {/* Position (Autocomplete: Dropdown mit Vorschlägen UND Freitext) */}
+          <Grid size={{ xs: 12 }}>
+            <Autocomplete
+              freeSolo
+              options={contactRoles?.map(r => r.label) || []}
+              value={
+                contactRoles?.find(r => r.value === formData.position)?.label ||
+                formData.position ||
+                ''
+              }
+              onChange={(_, newValue) => {
+                // Find matching enum value or use raw input
+                const matchingRole = contactRoles?.find(r => r.label === newValue);
+                handleFieldChange('position', matchingRole?.value || newValue || '');
+              }}
+              onInputChange={(_, newInputValue) => {
+                // Allow freetext input
+                if (newInputValue !== formData.position) {
+                  handleFieldChange('position', newInputValue);
+                }
+              }}
+              disabled={isLoadingRoles}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Position"
+                  helperText="Rolle/Funktion im Betrieb (Dropdown oder Freitext)"
+                  fullWidth
+                />
+              )}
+            />
+          </Grid>
+
+          {/* V1: Entscheidungsebene (Decision Level) */}
           <Grid size={{ xs: 12 }}>
             <TextField
               select
-              label="Rolle"
-              value={formData.role || 'CHEF'}
-              onChange={e => handleFieldChange('role', e.target.value)}
+              label="Entscheidungsebene"
+              value={formData.decisionLevel || ''}
+              onChange={e => handleFieldChange('decisionLevel', e.target.value)}
               fullWidth
-              helperText="Welche Funktion hat diese Person?"
+              helperText="Wichtig für Sales-Strategie: Wer entscheidet?"
+              disabled={isLoadingDecisionLevels}
             >
-              <MenuItem value="CHEF">Küchenchef (CHEF)</MenuItem>
-              <MenuItem value="BUYER">Einkäufer (BUYER)</MenuItem>
-              <MenuItem value="MANAGER">Manager</MenuItem>
-              <MenuItem value="OTHER">Sonstiges</MenuItem>
+              <MenuItem value="">---</MenuItem>
+              {decisionLevels?.map(level => (
+                <MenuItem key={level.value} value={level.value}>
+                  {level.label}
+                </MenuItem>
+              ))}
             </TextField>
           </Grid>
 
@@ -284,6 +412,58 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
               rows={3}
               fullWidth
               helperText="Optionale Anmerkungen zu diesem Kontakt"
+            />
+          </Grid>
+
+          {/* V2 FIELDS - Aktiviert (außer Standort - Sprint 2.1.7.7) */}
+          {/* Geburtstag */}
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              label="Geburtstag"
+              type="date"
+              value={formData.birthday || ''}
+              onChange={e => handleFieldChange('birthday', e.target.value)}
+              fullWidth
+              InputLabelProps={{ shrink: true }}
+              helperText="Optional: Geburtstag für persönliche Beziehungspflege"
+            />
+          </Grid>
+
+          {/* Standort (Location) - BLEIBT DISABLED (Sprint 2.1.7.7) */}
+          <Grid size={{ xs: 12 }}>
+            <TextField
+              label="Zugeordneter Standort"
+              value={formData.assignedLocationId || ''}
+              onChange={e => handleFieldChange('assignedLocationId', e.target.value)}
+              fullWidth
+              disabled
+              helperText="Feature kommt in Sprint 2.1.7.7 (Standortzuordnung)"
+            />
+          </Grid>
+
+          {/* LinkedIn */}
+          <Grid size={{ xs: 6 }}>
+            <TextField
+              label="LinkedIn"
+              type="url"
+              value={formData.linkedin || ''}
+              onChange={e => handleFieldChange('linkedin', e.target.value)}
+              fullWidth
+              placeholder="https://linkedin.com/in/..."
+              helperText="LinkedIn-Profil-URL"
+            />
+          </Grid>
+
+          {/* XING */}
+          <Grid size={{ xs: 6 }}>
+            <TextField
+              label="XING"
+              type="url"
+              value={formData.xing || ''}
+              onChange={e => handleFieldChange('xing', e.target.value)}
+              fullWidth
+              placeholder="https://xing.com/profile/..."
+              helperText="XING-Profil-URL"
             />
           </Grid>
 

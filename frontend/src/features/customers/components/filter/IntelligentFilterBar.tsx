@@ -276,7 +276,7 @@ export function IntelligentFilterBar({
 
   const handleContactClick = useCallback(
     (customerId: string, contactId: string) => {
-      navigate(`/customers/${customerId}?highlightContact=${contactId}`);
+      navigate(`/customers/${customerId}?tab=2&highlightContact=${contactId}`);
       setShowSearchResults(false);
       clearResults();
       setSearchTerm('');
