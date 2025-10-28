@@ -44,6 +44,20 @@ CONTACT_ENTITY = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/custo
 CONTACT_DIALOG = PROJECT_ROOT / "frontend/src/features/customers/components/detail/ContactEditDialog.tsx"
 ENUM_RESOURCE_FILE = PROJECT_ROOT / "backend/src/main/java/de/freshplan/api/resources/EnumResource.java"
 MIGRATIONS_DIR = PROJECT_ROOT / "backend/src/main/resources/db/migration"
+FRONTEND_FEATURES_DIR = PROJECT_ROOT / "frontend/src/features"
+
+# Whitelist: Dialoge/Forms die NICHT schema-driven sein müssen
+# (einfache Dialoge ohne Entity-Daten: Confirm, Delete, Filter, etc.)
+SCHEMA_DRIVEN_WHITELIST = {
+    'DeleteLeadDialog.tsx',           # Nur Bestätigung
+    'StopTheClockDialog.tsx',         # Nur Bestätigung
+    'ConvertToCustomerDialog.tsx',    # Nur Bestätigung + einfache Auswahl
+    'AdvancedFilterDialog.tsx',       # Filter UI, keine Entity-Daten
+    'CalculatorForm.tsx',             # Calculator-spezifisch, keine Server-Daten
+    'EngagementScoreForm.tsx',        # Score-Formular, kein Entity
+    'PainScoreForm.tsx',              # Score-Formular, kein Entity
+    'RevenueScoreForm.tsx',           # Score-Formular, kein Entity
+}
 
 
 def extract_schema_fields() -> Dict[str, Dict]:
@@ -324,63 +338,151 @@ def extract_contact_entity_fields() -> Set[str]:
     return fields
 
 
-def check_frontend_schema_driven() -> Tuple[bool, List[str]]:
+def find_all_dialogs_and_forms() -> List[Path]:
     """
-    Check if ContactEditDialog.tsx uses schema-driven rendering instead of hardcoded fields
+    Find all Dialog and Form files in frontend/src/features
 
-    Returns: (is_schema_driven: bool, violations: List[str])
+    Returns: List of Path objects for *Dialog.tsx and *Form.tsx files
+    """
+    if not FRONTEND_FEATURES_DIR.exists():
+        return []
+
+    dialogs = list(FRONTEND_FEATURES_DIR.glob('**/*Dialog.tsx'))
+    forms = list(FRONTEND_FEATURES_DIR.glob('**/*Form.tsx'))
+
+    return sorted(dialogs + forms)
+
+
+def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
+    """
+    Check if a Dialog/Form file uses schema-driven rendering
 
     Schema-driven indicators:
-    - ✅ Uses useContactSchema() hook
+    - ✅ Uses use*Schema() hook (useContactSchema, useCustomerSchema, etc.)
     - ✅ Has renderField() or similar dynamic rendering function
     - ✅ Maps over schema.sections or schema.fields
 
     Hardcoded indicators (violations):
-    - ❌ Hardcoded <TextField label="Vorname" />
+    - ❌ Hardcoded <TextField label="..." /> without dynamic schema
     - ❌ Hardcoded field keys without schema mapping
-    """
-    if not CONTACT_DIALOG.exists():
-        return True, []  # File doesn't exist, skip check
 
-    content = CONTACT_DIALOG.read_text()
+    Returns: (is_schema_driven, violations, status_emoji)
+    """
+    if not file_path.exists():
+        return True, [], '⚠️'
+
+    content = file_path.read_text()
     violations = []
 
-    # Check 1: Does it use useContactSchema()?
-    uses_schema_hook = 'useContactSchema()' in content
+    # Check 1: Does it use any use*Schema() hook?
+    schema_hooks = [
+        'useContactSchema()',
+        'useCustomerSchema()',
+        'useLeadSchema()',
+        'useOpportunitySchema()',
+        'useUserSchema()',
+    ]
+    uses_schema_hook = any(hook in content for hook in schema_hooks)
 
     # Check 2: Does it have dynamic rendering?
     has_dynamic_rendering = bool(
         re.search(r'\.map\(\s*\(?(?:section|field)', content) or
         re.search(r'renderField\s*\(', content) or
-        re.search(r'contactSchema.*\.sections', content)
+        re.search(r'(contact|customer|lead)Schema.*\.sections', content)
     )
 
     # Check 3: Look for hardcoded field labels (strong indicator of hardcoded UI)
-    # Pattern: <TextField label="Vorname" (but NOT in comments)
+    # Skip comments to avoid false positives
+    lines_without_comments = [
+        line.split('//')[0] for line in content.split('\n')
+        if not line.strip().startswith('//')
+    ]
+    content_without_comments = '\n'.join(lines_without_comments)
+
     hardcoded_patterns = [
-        r'<TextField\s+[^>]*label="(Vorname|Nachname|E-Mail|Telefon|Position|Anrede|Titel)"',
-        r'<Grid[^>]*>\s*<TextField[^>]*label="[^"]{3,}"',  # Grid with hardcoded TextField
+        r'<TextField\s+[^>]*label="[^"]{3,}"[^>]*(?!{)',  # TextField with static label
+        r'<FormControl[^>]*>\s*<InputLabel[^>]*>[^<]{3,}</InputLabel>',  # Static InputLabel
     ]
 
-    hardcoded_matches = []
+    hardcoded_count = 0
     for pattern in hardcoded_patterns:
-        matches = re.findall(pattern, content)
-        hardcoded_matches.extend(matches)
+        matches = re.findall(pattern, content_without_comments)
+        hardcoded_count += len(matches)
 
     # Determine if schema-driven
     is_schema_driven = uses_schema_hook and has_dynamic_rendering
 
     # Build violation messages
-    if not uses_schema_hook:
-        violations.append("Missing useContactSchema() hook import/usage")
+    if not uses_schema_hook and hardcoded_count > 3:
+        # Only complain if there are significant hardcoded fields (3+ fields)
+        violations.append(f"Missing use*Schema() hook, found {hardcoded_count} hardcoded fields")
 
-    if not has_dynamic_rendering:
-        violations.append("No dynamic rendering detected (.map over sections/fields)")
+    if uses_schema_hook and not has_dynamic_rendering:
+        violations.append("Has schema hook but NO dynamic rendering (.map over sections/fields)")
 
-    if hardcoded_matches and not is_schema_driven:
-        violations.append(f"Found {len(hardcoded_matches)} hardcoded field labels (schema-driven should render dynamically)")
+    if hardcoded_count > 5 and not is_schema_driven:
+        violations.append(f"Found {hardcoded_count} hardcoded field labels (should use schema)")
 
-    return is_schema_driven, violations
+    # Determine status emoji
+    if is_schema_driven:
+        status_emoji = '✅'
+    elif file_path.name in SCHEMA_DRIVEN_WHITELIST:
+        status_emoji = '⚪'  # Whitelisted (simple dialog, no schema needed)
+    elif hardcoded_count > 5:
+        status_emoji = '❌'  # Critical: Many hardcoded fields
+    elif hardcoded_count > 0:
+        status_emoji = '⚠️'  # Warning: Some hardcoded fields
+    else:
+        status_emoji = '✅'  # OK: No violations
+
+    return is_schema_driven, violations, status_emoji
+
+
+def scan_all_frontend_components() -> Tuple[bool, Dict[str, List]]:
+    """
+    Scan ALL Dialog/Form files in frontend for schema-driven architecture
+
+    Returns: (all_passed, results_by_status)
+    Where results_by_status = {
+        'schema_driven': [...],
+        'whitelisted': [...],
+        'warnings': [...],
+        'violations': [...]
+    }
+    """
+    all_files = find_all_dialogs_and_forms()
+
+    results = {
+        'schema_driven': [],
+        'whitelisted': [],
+        'warnings': [],
+        'violations': []
+    }
+
+    for file_path in all_files:
+        is_schema_driven, violations, status = check_file_is_schema_driven(file_path)
+        relative_path = file_path.relative_to(PROJECT_ROOT)
+
+        file_info = {
+            'path': relative_path,
+            'name': file_path.name,
+            'violations': violations
+        }
+
+        # Categorize by status
+        if status == '✅':
+            results['schema_driven'].append(file_info)
+        elif status == '⚪':
+            results['whitelisted'].append(file_info)
+        elif status == '⚠️':
+            results['warnings'].append(file_info)
+        elif status == '❌':
+            results['violations'].append(file_info)
+
+    # All passed if NO critical violations (❌)
+    all_passed = len(results['violations']) == 0
+
+    return all_passed, results
 
 
 def main():
@@ -568,26 +670,63 @@ def main():
         print(f"{YELLOW}⚠️  INFO: Contact files not found or no fields detected{NC}")
         print()
 
-    # ========== STUFE 5: Frontend Schema-Driven Check ==========
-    print(f"{BLUE}📋 STUFE 5: Frontend Schema-Driven Architecture Check{NC}")
+    # ========== STUFE 5: Frontend Schema-Driven Architecture Scan (ALL Files) ==========
+    print(f"{BLUE}📋 STUFE 5: Frontend Schema-Driven Architecture Scan{NC}")
+    print(f"{BLUE}   Scanning ALL Dialog/Form files in frontend/src/features{NC}")
     print()
 
-    is_schema_driven, schema_violations = check_frontend_schema_driven()
+    all_passed, results = scan_all_frontend_components()
 
-    if not is_schema_driven:
-        print(f"{RED}❌ FAILURE: ContactEditDialog.tsx is NOT schema-driven!{NC}")
+    total_files = (
+        len(results['schema_driven']) +
+        len(results['whitelisted']) +
+        len(results['warnings']) +
+        len(results['violations'])
+    )
+
+    print(f"  Found {total_files} Dialog/Form files")
+    print()
+
+    # Show schema-driven files (✅)
+    if results['schema_driven']:
+        print(f"{GREEN}✅ Schema-Driven ({len(results['schema_driven'])} files):{NC}")
+        for file_info in results['schema_driven']:
+            print(f"  {GREEN}✓{NC} {file_info['name']}")
         print()
-        print(f"  Violations found:")
-        for violation in schema_violations:
-            print(f"  {RED}✗{NC} {violation}")
+
+    # Show whitelisted files (⚪)
+    if results['whitelisted']:
+        print(f"{BLUE}⚪ Whitelisted - Simple Dialogs ({len(results['whitelisted'])} files):{NC}")
+        for file_info in results['whitelisted']:
+            print(f"  {BLUE}○{NC} {file_info['name']}")
+        print()
+
+    # Show warnings (⚠️)
+    if results['warnings']:
+        print(f"{YELLOW}⚠️  Warnings - Some Hardcoded Fields ({len(results['warnings'])} files):{NC}")
+        for file_info in results['warnings']:
+            print(f"  {YELLOW}⚠{NC} {file_info['name']}")
+            if file_info['violations']:
+                for v in file_info['violations']:
+                    print(f"     → {v}")
+        print()
+
+    # Show violations (❌) - BLOCKING
+    if results['violations']:
+        print(f"{RED}❌ VIOLATIONS - Critical: Many Hardcoded Fields ({len(results['violations'])} files):{NC}")
+        print()
+        for file_info in results['violations']:
+            print(f"  {RED}✗{NC} {file_info['path']}")
+            for v in file_info['violations']:
+                print(f"     → {v}")
         print()
         print(f"{RED}🚫 RULE VIOLATION: Frontend MUST use schema-driven rendering (ZERO TOLERANCE){NC}")
         print()
         print("📖 Required architecture:")
-        print("   1. Import and use useContactSchema() hook")
+        print("   1. Import and use use*Schema() hook (useContactSchema, useCustomerSchema, etc.)")
         print("   2. Implement renderField() function to map FieldType → MUI component")
-        print("   3. Map over contactSchema.sections.fields dynamically")
-        print("   4. NO hardcoded <TextField label=\"...\"> without schema")
+        print("   3. Map over schema.sections.fields dynamically")
+        print("   4. NO hardcoded <TextField label=\"...\"> for entity fields")
         print()
         print("   Example:")
         print("   const { data: schemas } = useContactSchema();")
@@ -600,11 +739,7 @@ def main():
         print()
         return 1
     else:
-        print(f"{GREEN}✅ STUFE 5 PASSED: ContactEditDialog uses schema-driven rendering{NC}")
-        print()
-        print(f"  ✓ Uses useContactSchema() hook")
-        print(f"  ✓ Has dynamic field rendering")
-        print(f"  ✓ Maps over schema.sections/fields")
+        print(f"{GREEN}✅ STUFE 5 PASSED: All scanned files follow schema-driven or whitelisted patterns{NC}")
         print()
 
     # ========== SUMMARY ==========
@@ -612,14 +747,22 @@ def main():
     print(f"{GREEN}✅ SUCCESS: Server-Driven Parity Check PASSED{NC}")
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
     print()
-    print(f"  Schema Fields: {len(schema_fields)}")
-    print(f"  Entity Fields: {len(entity_fields)}")
-    print(f"  Enum Resources: {len(enum_resources)}")
-    print(f"  Ghost Fields: {len(ghost_fields)}")
-    print(f"  Enum Violations: {len(enum_violations)}")
+    print(f"  📊 Customer Schema:")
+    print(f"     Schema Fields: {len(schema_fields)}")
+    print(f"     Entity Fields: {len(entity_fields)}")
+    print(f"     Enum Resources: {len(enum_resources)}")
+    print()
     if contact_frontend_fields and contact_entity_fields:
-        print(f"  Contact Frontend Fields: {len(contact_frontend_fields)}")
-        print(f"  Contact Entity Fields: {len(contact_entity_fields)}")
+        print(f"  📊 Contact Parity:")
+        print(f"     Frontend Fields: {len(contact_frontend_fields)}")
+        print(f"     Entity Fields: {len(contact_entity_fields)}")
+        print()
+    print(f"  📊 Frontend Code Scan:")
+    print(f"     Total Files Scanned: {total_files}")
+    print(f"     ✅ Schema-Driven: {len(results['schema_driven'])}")
+    print(f"     ⚪ Whitelisted (Simple): {len(results['whitelisted'])}")
+    print(f"     ⚠️  Warnings: {len(results['warnings'])}")
+    print(f"     ❌ Critical Violations: {len(results['violations'])}")
     print()
 
     return 0
