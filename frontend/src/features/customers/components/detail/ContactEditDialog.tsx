@@ -1,15 +1,17 @@
 /**
  * Contact Edit Dialog Component
  *
- * Sprint 2.1.7.2 D11: Server-Driven Customer Cards - Phase 3
+ * Sprint 2.1.7.2 D11.1: Server-Driven UI for Contact Forms
  *
- * Einfacher Dialog zum Anlegen/Bearbeiten von Kundenkontakten.
- * Leichtgewichtige Alternative zu ContactFormDialog (nur 1 Tab, Basis-Felder).
+ * Schema-driven Dialog zum Anlegen/Bearbeiten von Kundenkontakten.
+ * Fetches schema from ContactSchemaResource (/api/contacts/schema).
  *
  * Features:
- * - Create/Edit Kontakte
- * - Felder: Vorname, Nachname, Rolle, E-Mail, Telefon, Mobil, isPrimary, Notizen
- * - Validierung: Mindestens ein Kontaktfeld erforderlich
+ * - Server-Driven UI: Backend controls form structure via schema
+ * - 3 Sections: basic_info, relationship, social_business
+ * - Dynamic field rendering based on FieldType (TEXT, TEXTAREA, ENUM, DATE, NUMBER)
+ * - Enum sources from backend (/api/enums/...)
+ * - Validation from schema (required fields)
  * - MUI v7 Grid v2 API
  *
  * Used by: CustomerDetailTabVerlauf.tsx
@@ -36,6 +38,8 @@ import {
   useMediaQuery,
   CircularProgress,
   Autocomplete,
+  Typography,
+  Divider,
 } from '@mui/material';
 import {
   useContactRoles,
@@ -43,27 +47,34 @@ import {
   useDecisionLevels,
   useTitles,
 } from '../../../../hooks/useContactEnums';
+import { useContactSchema } from '../../../../hooks/useContactSchema';
+import type { FieldDefinition } from '../../../../hooks/useContactSchema';
 
 export interface Contact {
   id?: string;
-  // V1 Fields: German Business Etiquette & Sales Strategy
+  // Basic Info (Section 1: basic_info)
   salutation?: string; // HERR, FRAU, DIVERS
-  title?: string; // Dr., Prof., etc. (freetext)
+  title?: string; // Dr., Prof., etc.
   firstName: string;
   lastName: string;
-  position?: string; // Küchenchef, Einkaufsleiter, etc. (backend field - freetext with suggestions)
+  position?: string; // Küchenchef, Einkaufsleiter, etc.
   decisionLevel?: string; // EXECUTIVE, MANAGER, OPERATIONAL, INFLUENCER
-  // Contact Info
   email?: string;
   phone?: string;
   mobile?: string;
-  isPrimary?: boolean;
-  notes?: string;
-  // V2 Fields (Sprint 2.1.7.7)
+  // Relationship (Section 2: relationship)
   birthday?: string; // ISO date string
-  assignedLocationId?: string;
-  linkedin?: string;
-  xing?: string;
+  hobbies?: string; // V2: Hobbies & Interessen
+  familyStatus?: string; // V2: Familienstand
+  childrenCount?: number; // V2: Anzahl Kinder
+  personalNotes?: string; // V2: Persönliche Notizen (Beziehung)
+  // Social & Business (Section 3: social_business)
+  linkedin?: string; // V2: LinkedIn Profile URL
+  xing?: string; // V2: XING Profile URL
+  notes?: string; // V2: Business Notizen (geschäftlich)
+  // Extra fields (not in schema)
+  isPrimary?: boolean; // UI-only flag
+  assignedLocationId?: string; // Future feature (Sprint 2.1.7.7)
 }
 
 interface ContactEditDialogProps {
@@ -77,7 +88,7 @@ interface ContactEditDialogProps {
 /**
  * Contact Edit Dialog
  *
- * Kompakter Dialog für schnelles Anlegen/Bearbeiten von Kontakten.
+ * Schema-driven Dialog für Kontakte mit dynamischer Feldgenerierung.
  */
 export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   open,
@@ -90,14 +101,19 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isEdit = !!contact;
 
-  // Load enums from backend
+  // Load schema from backend (Server-Driven UI)
+  const { data: schemas, isLoading: isLoadingSchema } = useContactSchema();
+  const contactSchema = schemas?.[0]; // First (and only) card
+
+  // Load enums from backend (for enum fields)
   const { data: contactRoles, isLoading: isLoadingRoles } = useContactRoles();
   const { data: salutations, isLoading: isLoadingSalutations } = useSalutations();
   const { data: decisionLevels, isLoading: isLoadingDecisionLevels } = useDecisionLevels();
   const { data: titles, isLoading: isLoadingTitles } = useTitles();
 
-  // Form state
+  // Form state (all fields from schema + extras)
   const [formData, setFormData] = useState<Partial<Contact>>({
+    // Section 1: basic_info
     salutation: '',
     title: '',
     firstName: '',
@@ -107,13 +123,19 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
     email: '',
     phone: '',
     mobile: '',
-    isPrimary: false,
-    notes: '',
-    // V2 Fields (Sprint 2.1.7.7)
+    // Section 2: relationship
     birthday: '',
-    assignedLocationId: '',
+    hobbies: '',
+    familyStatus: '',
+    childrenCount: undefined,
+    personalNotes: '',
+    // Section 3: social_business
     linkedin: '',
     xing: '',
+    notes: '',
+    // Extra fields (not in schema)
+    isPrimary: false,
+    assignedLocationId: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -129,6 +151,7 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
       });
     } else {
       setFormData({
+        // Section 1: basic_info
         salutation: '',
         title: '',
         firstName: '',
@@ -138,13 +161,19 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
         email: '',
         phone: '',
         mobile: '',
-        isPrimary: false,
-        notes: '',
-        // V2 Fields (Sprint 2.1.7.7)
+        // Section 2: relationship
         birthday: '',
-        assignedLocationId: '',
+        hobbies: '',
+        familyStatus: '',
+        childrenCount: undefined,
+        personalNotes: '',
+        // Section 3: social_business
         linkedin: '',
         xing: '',
+        notes: '',
+        // Extra fields
+        isPrimary: false,
+        assignedLocationId: '',
       });
     }
     setErrors({});
@@ -154,7 +183,7 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Required fields
+    // Required fields (from schema)
     if (!formData.firstName?.trim()) {
       newErrors.firstName = 'Vorname ist erforderlich';
     }
@@ -201,7 +230,7 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
   };
 
   // Handle field change
-  const handleFieldChange = (field: keyof Contact, value: string | boolean) => {
+  const handleFieldChange = (field: keyof Contact, value: string | boolean | number) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -217,11 +246,176 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
     }
   };
 
+  /**
+   * Get enum data for a specific enumSource URL
+   */
+  const getEnumData = (enumSource: string) => {
+    if (enumSource === '/api/enums/contact-salutations') return salutations;
+    if (enumSource === '/api/enums/contact-titles') return titles;
+    if (enumSource === '/api/enums/contact-decision-levels') return decisionLevels;
+    if (enumSource === '/api/enums/contact-roles') return contactRoles;
+    return [];
+  };
+
+  /**
+   * Render a single field based on FieldDefinition
+   */
+  const renderField = (field: FieldDefinition) => {
+    const fieldKey = field.fieldKey as keyof Contact;
+    const value = formData[fieldKey];
+    const error = errors[fieldKey];
+
+    // Special case: Position field (Autocomplete with freeSolo)
+    if (fieldKey === 'position') {
+      return (
+        <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
+          <Autocomplete
+            freeSolo
+            options={contactRoles?.map(r => r.label) || []}
+            value={
+              contactRoles?.find(r => r.value === value)?.label || (value as string) || ''
+            }
+            onChange={(_, newValue) => {
+              const matchingRole = contactRoles?.find(r => r.label === newValue);
+              handleFieldChange(fieldKey, matchingRole?.value || newValue || '');
+            }}
+            onInputChange={(_, newInputValue) => {
+              if (newInputValue !== value) {
+                handleFieldChange(fieldKey, newInputValue);
+              }
+            }}
+            disabled={isLoadingRoles}
+            renderInput={params => (
+              <TextField
+                {...params}
+                label={field.label}
+                helperText={field.helpText || field.placeholder}
+                required={field.required}
+                error={!!error}
+                fullWidth
+              />
+            )}
+          />
+        </Grid>
+      );
+    }
+
+    // ENUM type
+    if (field.type === 'ENUM' && field.enumSource) {
+      const enumData = getEnumData(field.enumSource);
+      const isLoading =
+        (field.enumSource === '/api/enums/contact-salutations' && isLoadingSalutations) ||
+        (field.enumSource === '/api/enums/contact-titles' && isLoadingTitles) ||
+        (field.enumSource === '/api/enums/contact-decision-levels' && isLoadingDecisionLevels) ||
+        (field.enumSource === '/api/enums/contact-roles' && isLoadingRoles);
+
+      return (
+        <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
+          <TextField
+            select
+            label={field.label}
+            value={value || ''}
+            onChange={e => handleFieldChange(fieldKey, e.target.value)}
+            fullWidth
+            required={field.required}
+            error={!!error}
+            helperText={error || field.helpText || field.placeholder}
+            disabled={isLoading}
+          >
+            <MenuItem value="">---</MenuItem>
+            {enumData?.map(item => (
+              <MenuItem key={item.value} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+      );
+    }
+
+    // TEXTAREA type
+    if (field.type === 'TEXTAREA') {
+      return (
+        <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
+          <TextField
+            label={field.label}
+            value={value || ''}
+            onChange={e => handleFieldChange(fieldKey, e.target.value)}
+            multiline
+            rows={3}
+            fullWidth
+            required={field.required}
+            error={!!error}
+            helperText={error || field.helpText || field.placeholder}
+            placeholder={field.placeholder}
+          />
+        </Grid>
+      );
+    }
+
+    // DATE type
+    if (field.type === 'DATE') {
+      return (
+        <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
+          <TextField
+            label={field.label}
+            type="date"
+            value={value || ''}
+            onChange={e => handleFieldChange(fieldKey, e.target.value)}
+            fullWidth
+            required={field.required}
+            error={!!error}
+            helperText={error || field.helpText || field.placeholder}
+            InputLabelProps={{ shrink: true }}
+          />
+        </Grid>
+      );
+    }
+
+    // NUMBER type
+    if (field.type === 'NUMBER') {
+      return (
+        <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
+          <TextField
+            label={field.label}
+            type="number"
+            value={value || ''}
+            onChange={e =>
+              handleFieldChange(fieldKey, e.target.value ? parseInt(e.target.value, 10) : 0)
+            }
+            fullWidth
+            required={field.required}
+            error={!!error}
+            helperText={error || field.helpText || field.placeholder}
+            placeholder={field.placeholder}
+          />
+        </Grid>
+      );
+    }
+
+    // TEXT type (default)
+    return (
+      <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
+        <TextField
+          label={field.label}
+          type={fieldKey === 'email' ? 'email' : fieldKey === 'phone' || fieldKey === 'mobile' ? 'tel' : 'text'}
+          value={value || ''}
+          onChange={e => handleFieldChange(fieldKey, e.target.value)}
+          fullWidth
+          required={field.required}
+          error={!!error}
+          helperText={error || field.helpText || field.placeholder}
+          placeholder={field.placeholder}
+        />
+      </Grid>
+    );
+  };
+
   return (
     <Dialog
       open={open}
       onClose={onClose}
-      maxWidth="sm"
+      maxWidth="md"
       fullWidth
       fullScreen={isMobile}
     >
@@ -241,234 +435,58 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
         )}
 
         {/* Loading State */}
-        {(isLoadingSalutations || isLoadingTitles || isLoadingRoles || isLoadingDecisionLevels) && (
+        {isLoadingSchema && (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
             <CircularProgress size={24} />
           </Box>
         )}
 
-        <Grid container spacing={2} sx={{ mt: 1 }}>
-          {/* V1: Anrede (Salutation) */}
-          <Grid size={{ xs: 4 }}>
-            <TextField
-              select
-              label="Anrede"
-              value={formData.salutation || ''}
-              onChange={e => handleFieldChange('salutation', e.target.value)}
-              fullWidth
-              helperText="Herr, Frau, Divers"
-              disabled={isLoadingSalutations}
-            >
-              <MenuItem value="">---</MenuItem>
-              {salutations?.map(s => (
-                <MenuItem key={s.value} value={s.value}>
-                  {s.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+        {/* Schema not loaded yet */}
+        {!isLoadingSchema && !contactSchema && (
+          <Alert severity="info" sx={{ my: 2 }}>
+            Kontaktformular wird geladen...
+          </Alert>
+        )}
 
-          {/* V1: Titel (Title) - Dropdown für deutsche Briefanrede */}
-          <Grid size={{ xs: 8 }}>
-            <TextField
-              select
-              label="Titel"
-              value={formData.title || ''}
-              onChange={e => handleFieldChange('title', e.target.value)}
-              fullWidth
-              helperText="Akademischer/Berufstitel für Briefanrede"
-              disabled={isLoadingTitles}
-            >
-              <MenuItem value="">---</MenuItem>
-              {titles?.map(t => (
-                <MenuItem key={t.value} value={t.value}>
-                  {t.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
-
-          {/* Vorname */}
-          <Grid size={{ xs: 6 }}>
-            <TextField
-              label="Vorname"
-              value={formData.firstName || ''}
-              onChange={e => handleFieldChange('firstName', e.target.value)}
-              required
-              fullWidth
-              error={!!errors.firstName}
-              helperText={errors.firstName}
-            />
-          </Grid>
-
-          {/* Nachname */}
-          <Grid size={{ xs: 6 }}>
-            <TextField
-              label="Nachname"
-              value={formData.lastName || ''}
-              onChange={e => handleFieldChange('lastName', e.target.value)}
-              required
-              fullWidth
-              error={!!errors.lastName}
-              helperText={errors.lastName}
-            />
-          </Grid>
-
-          {/* Position (Autocomplete: Dropdown mit Vorschlägen UND Freitext) */}
-          <Grid size={{ xs: 12 }}>
-            <Autocomplete
-              freeSolo
-              options={contactRoles?.map(r => r.label) || []}
-              value={
-                contactRoles?.find(r => r.value === formData.position)?.label ||
-                formData.position ||
-                ''
-              }
-              onChange={(_, newValue) => {
-                // Find matching enum value or use raw input
-                const matchingRole = contactRoles?.find(r => r.label === newValue);
-                handleFieldChange('position', matchingRole?.value || newValue || '');
-              }}
-              onInputChange={(_, newInputValue) => {
-                // Allow freetext input
-                if (newInputValue !== formData.position) {
-                  handleFieldChange('position', newInputValue);
-                }
-              }}
-              disabled={isLoadingRoles}
-              renderInput={params => (
-                <TextField
-                  {...params}
-                  label="Position"
-                  helperText="Rolle/Funktion im Betrieb (Dropdown oder Freitext)"
-                  fullWidth
-                />
+        {/* Render sections dynamically from schema */}
+        {contactSchema &&
+          contactSchema.sections.map((section, sectionIndex) => (
+            <Box key={section.sectionId} sx={{ mb: 3 }}>
+              {/* Section Header */}
+              <Typography
+                variant="h6"
+                sx={{
+                  mb: 1,
+                  mt: sectionIndex > 0 ? 2 : 0,
+                  fontSize: '1rem',
+                  fontWeight: 600,
+                  color: 'text.secondary',
+                }}
+              >
+                {section.title}
+              </Typography>
+              {section.subtitle && (
+                <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+                  {section.subtitle}
+                </Typography>
               )}
-            />
-          </Grid>
 
-          {/* V1: Entscheidungsebene (Decision Level) */}
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              select
-              label="Entscheidungsebene"
-              value={formData.decisionLevel || ''}
-              onChange={e => handleFieldChange('decisionLevel', e.target.value)}
-              fullWidth
-              helperText="Wichtig für Sales-Strategie: Wer entscheidet?"
-              disabled={isLoadingDecisionLevels}
-            >
-              <MenuItem value="">---</MenuItem>
-              {decisionLevels?.map(level => (
-                <MenuItem key={level.value} value={level.value}>
-                  {level.label}
-                </MenuItem>
-              ))}
-            </TextField>
-          </Grid>
+              {/* Section Fields */}
+              <Grid container spacing={2}>
+                {section.fields.map(field => renderField(field))}
+              </Grid>
 
-          {/* E-Mail */}
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="E-Mail"
-              type="email"
-              value={formData.email || ''}
-              onChange={e => handleFieldChange('email', e.target.value)}
-              fullWidth
-              error={!!errors.email}
-              helperText={errors.email}
-            />
-          </Grid>
+              {/* Divider after section (except last) */}
+              {sectionIndex < contactSchema.sections.length - 1 && (
+                <Divider sx={{ mt: 3 }} />
+              )}
+            </Box>
+          ))}
 
-          {/* Telefon */}
-          <Grid size={{ xs: 6 }}>
-            <TextField
-              label="Telefon"
-              type="tel"
-              value={formData.phone || ''}
-              onChange={e => handleFieldChange('phone', e.target.value)}
-              fullWidth
-            />
-          </Grid>
-
-          {/* Mobil */}
-          <Grid size={{ xs: 6 }}>
-            <TextField
-              label="Mobil"
-              type="tel"
-              value={formData.mobile || ''}
-              onChange={e => handleFieldChange('mobile', e.target.value)}
-              fullWidth
-            />
-          </Grid>
-
-          {/* Notizen */}
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="Notizen"
-              value={formData.notes || ''}
-              onChange={e => handleFieldChange('notes', e.target.value)}
-              multiline
-              rows={3}
-              fullWidth
-              helperText="Optionale Anmerkungen zu diesem Kontakt"
-            />
-          </Grid>
-
-          {/* V2 FIELDS - Aktiviert (außer Standort - Sprint 2.1.7.7) */}
-          {/* Geburtstag */}
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="Geburtstag"
-              type="date"
-              value={formData.birthday || ''}
-              onChange={e => handleFieldChange('birthday', e.target.value)}
-              fullWidth
-              InputLabelProps={{ shrink: true }}
-              helperText="Optional: Geburtstag für persönliche Beziehungspflege"
-            />
-          </Grid>
-
-          {/* Standort (Location) - BLEIBT DISABLED (Sprint 2.1.7.7) */}
-          <Grid size={{ xs: 12 }}>
-            <TextField
-              label="Zugeordneter Standort"
-              value={formData.assignedLocationId || ''}
-              onChange={e => handleFieldChange('assignedLocationId', e.target.value)}
-              fullWidth
-              disabled
-              helperText="Feature kommt in Sprint 2.1.7.7 (Standortzuordnung)"
-            />
-          </Grid>
-
-          {/* LinkedIn */}
-          <Grid size={{ xs: 6 }}>
-            <TextField
-              label="LinkedIn"
-              type="url"
-              value={formData.linkedin || ''}
-              onChange={e => handleFieldChange('linkedin', e.target.value)}
-              fullWidth
-              placeholder="https://linkedin.com/in/..."
-              helperText="LinkedIn-Profil-URL"
-            />
-          </Grid>
-
-          {/* XING */}
-          <Grid size={{ xs: 6 }}>
-            <TextField
-              label="XING"
-              type="url"
-              value={formData.xing || ''}
-              onChange={e => handleFieldChange('xing', e.target.value)}
-              fullWidth
-              placeholder="https://xing.com/profile/..."
-              helperText="XING-Profil-URL"
-            />
-          </Grid>
-
-          {/* Hauptansprechpartner */}
-          <Grid size={{ xs: 12 }}>
+        {/* Extra field: isPrimary (not in schema) */}
+        {contactSchema && (
+          <Box sx={{ mt: 3 }}>
+            <Divider sx={{ mb: 2 }} />
             <FormControlLabel
               control={
                 <Checkbox
@@ -478,8 +496,8 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
               }
               label="Als Hauptansprechpartner festlegen"
             />
-          </Grid>
-        </Grid>
+          </Box>
+        )}
       </DialogContent>
 
       <DialogActions>

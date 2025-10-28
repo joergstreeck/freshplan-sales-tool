@@ -42,7 +42,7 @@ CUSTOMER_SCHEMA = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/cust
 CUSTOMER_ENTITY = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/entity/Customer.java"
 CONTACT_ENTITY = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/entity/CustomerContact.java"
 CONTACT_DIALOG = PROJECT_ROOT / "frontend/src/features/customers/components/detail/ContactEditDialog.tsx"
-ENUM_RESOURCES_DIR = PROJECT_ROOT / "backend/src/main/java/de/freshplan/domain/customer/api"
+ENUM_RESOURCE_FILE = PROJECT_ROOT / "backend/src/main/java/de/freshplan/api/resources/EnumResource.java"
 MIGRATIONS_DIR = PROJECT_ROOT / "backend/src/main/resources/db/migration"
 
 
@@ -170,27 +170,52 @@ def extract_entity_fields() -> Set[str]:
 
 def extract_enum_resources() -> Dict[str, Path]:
     """
-    Find all EnumResource.java files
+    Extract all enum endpoints from EnumResource.java
+
+    Scans for class-level @Path("/api/enums") and method-level @Path("/xyz"),
+    then combines them to build full endpoint paths like "/api/enums/xyz"
+
+    Example:
+        @Path("/api/enums")  // class level
+        public class EnumResource {
+            @GET
+            @Path("/legal-forms")  // method level
+            public List<EnumValue> getLegalForms() { ... }
+        }
+
+        Result: {'/api/enums/legal-forms': Path to EnumResource.java}
 
     Returns: {
-        '/api/enums/legal-forms': Path to LegalFormEnumResource.java,
+        '/api/enums/legal-forms': Path to EnumResource.java,
+        '/api/enums/customer-types': Path to EnumResource.java,
         ...
     }
     """
     enum_resources = {}
 
-    if not ENUM_RESOURCES_DIR.exists():
+    if not ENUM_RESOURCE_FILE.exists():
         return enum_resources
 
-    # Pattern: @Path("/api/enums/xyz")
-    path_pattern = r'@Path\("(/api/enums/[^"]+)"\)'
+    content = ENUM_RESOURCE_FILE.read_text()
 
-    for java_file in ENUM_RESOURCES_DIR.glob("*EnumResource.java"):
-        content = java_file.read_text()
-        match = re.search(path_pattern, content)
-        if match:
-            endpoint = match.group(1)
-            enum_resources[endpoint] = java_file
+    # Step 1: Extract class-level @Path (e.g., "/api/enums")
+    class_path_pattern = r'@Path\("(/api/enums)"\)'
+    class_match = re.search(class_path_pattern, content)
+    if not class_match:
+        # No class-level @Path found, skip
+        return enum_resources
+
+    class_path = class_match.group(1)  # "/api/enums"
+
+    # Step 2: Extract all method-level @Path annotations
+    # Pattern: Look for @GET followed by @Path("/xyz")
+    # This ensures we only match GET endpoint methods
+    method_path_pattern = r'@GET\s+@Path\("([^"]+)"\)'
+
+    for match in re.finditer(method_path_pattern, content, re.MULTILINE | re.DOTALL):
+        method_path = match.group(1)  # e.g., "/legal-forms"
+        full_path = class_path + method_path  # "/api/enums/legal-forms"
+        enum_resources[full_path] = ENUM_RESOURCE_FILE
 
     return enum_resources
 
@@ -237,20 +262,34 @@ def extract_contact_frontend_fields() -> Set[str]:
 
     if match:
         interface_body = match.group(1)
-        # Extract field names
-        # Pattern: fieldName?: type;
-        field_pattern = r'(\w+)\??:'
-        for field_match in re.finditer(field_pattern, interface_body):
-            field_name = field_match.group(1)
-            # Convert camelCase to snake_case for comparison with Entity
-            snake_case_name = re.sub(r'([A-Z])', r'_\1', field_name).lower()
-            fields.add(snake_case_name)
+
+        # Extract field names LINE BY LINE to filter out comments
+        for line in interface_body.split('\n'):
+            # Skip comment-only lines
+            line_stripped = line.strip()
+            if line_stripped.startswith('//') or not line_stripped:
+                continue
+
+            # Remove inline comments: "firstName: string; // comment" -> "firstName: string;"
+            line_clean = line.split('//')[0]
+
+            # Pattern: fieldName?: type; (at start of line, after optional whitespace)
+            field_pattern = r'^\s*(\w+)\??:\s*'
+            field_match = re.search(field_pattern, line_clean)
+            if field_match:
+                field_name = field_match.group(1)
+                # Keep as camelCase for comparison with Entity (both use camelCase)
+                fields.add(field_name)
 
     return fields
 
 
 def extract_contact_entity_fields() -> Set[str]:
-    """Extract field names from CustomerContact.java entity"""
+    """Extract field names from CustomerContact.java entity
+
+    Also handles DTO→Entity mappings:
+    - Frontend: assignedLocationId (String) → Backend: assignedLocation (CustomerLocation)
+    """
     if not CONTACT_ENTITY.exists():
         return set()
 
@@ -258,10 +297,11 @@ def extract_contact_entity_fields() -> Set[str]:
     fields = set()
 
     # Same patterns as Customer entity extraction
+    # Note: [\w.]+ matches qualified types like java.time.LocalDate
     patterns = [
-        r'^\s*private\s+\w+(?:<[^>]+>)?\s+(\w+)\s*;',
-        r'^\s*private\s+\w+(?:<[^>]+>)?\s+(\w+)\s*=',
-        r'^\s*@Column.*?\n\s*private\s+\w+(?:<[^>]+>)?\s+(\w+)',
+        r'^\s*private\s+[\w.]+(?:<[^>]+>)?\s+(\w+)\s*;',
+        r'^\s*private\s+[\w.]+(?:<[^>]+>)?\s+(\w+)\s*=',
+        r'^\s*@Column.*?\n\s*private\s+[\w.]+(?:<[^>]+>)?\s+(\w+)',
     ]
 
     lines = content.split('\n')
@@ -277,7 +317,70 @@ def extract_contact_entity_fields() -> Set[str]:
                 if field_name not in {'serialVersionUID', 'class', 'roles', 'reportsTo', 'directReports'}:
                     fields.add(field_name)
 
+                    # DTO→Entity mapping: assignedLocation → also accept assignedLocationId
+                    if field_name == 'assignedLocation':
+                        fields.add('assignedLocationId')
+
     return fields
+
+
+def check_frontend_schema_driven() -> Tuple[bool, List[str]]:
+    """
+    Check if ContactEditDialog.tsx uses schema-driven rendering instead of hardcoded fields
+
+    Returns: (is_schema_driven: bool, violations: List[str])
+
+    Schema-driven indicators:
+    - ✅ Uses useContactSchema() hook
+    - ✅ Has renderField() or similar dynamic rendering function
+    - ✅ Maps over schema.sections or schema.fields
+
+    Hardcoded indicators (violations):
+    - ❌ Hardcoded <TextField label="Vorname" />
+    - ❌ Hardcoded field keys without schema mapping
+    """
+    if not CONTACT_DIALOG.exists():
+        return True, []  # File doesn't exist, skip check
+
+    content = CONTACT_DIALOG.read_text()
+    violations = []
+
+    # Check 1: Does it use useContactSchema()?
+    uses_schema_hook = 'useContactSchema()' in content
+
+    # Check 2: Does it have dynamic rendering?
+    has_dynamic_rendering = bool(
+        re.search(r'\.map\(\s*\(?(?:section|field)', content) or
+        re.search(r'renderField\s*\(', content) or
+        re.search(r'contactSchema.*\.sections', content)
+    )
+
+    # Check 3: Look for hardcoded field labels (strong indicator of hardcoded UI)
+    # Pattern: <TextField label="Vorname" (but NOT in comments)
+    hardcoded_patterns = [
+        r'<TextField\s+[^>]*label="(Vorname|Nachname|E-Mail|Telefon|Position|Anrede|Titel)"',
+        r'<Grid[^>]*>\s*<TextField[^>]*label="[^"]{3,}"',  # Grid with hardcoded TextField
+    ]
+
+    hardcoded_matches = []
+    for pattern in hardcoded_patterns:
+        matches = re.findall(pattern, content)
+        hardcoded_matches.extend(matches)
+
+    # Determine if schema-driven
+    is_schema_driven = uses_schema_hook and has_dynamic_rendering
+
+    # Build violation messages
+    if not uses_schema_hook:
+        violations.append("Missing useContactSchema() hook import/usage")
+
+    if not has_dynamic_rendering:
+        violations.append("No dynamic rendering detected (.map over sections/fields)")
+
+    if hardcoded_matches and not is_schema_driven:
+        violations.append(f"Found {len(hardcoded_matches)} hardcoded field labels (schema-driven should render dynamically)")
+
+    return is_schema_driven, violations
 
 
 def main():
@@ -286,6 +389,14 @@ def main():
     print(f"{BLUE}   Sprint 2.1.7.2 D11 - Backend = Single Source of Truth{NC}")
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
     print()
+
+    # Track all violations across all stages
+    all_violations = {
+        'stufe1': [],
+        'stufe2': [],
+        'stufe4': [],
+        'stufe5': [],
+    }
 
     # ========== STUFE 1: Schema → Entity Parity ==========
     print(f"{BLUE}📋 STUFE 1: Schema → Entity Parity{NC}")
@@ -455,6 +566,45 @@ def main():
             print()
     else:
         print(f"{YELLOW}⚠️  INFO: Contact files not found or no fields detected{NC}")
+        print()
+
+    # ========== STUFE 5: Frontend Schema-Driven Check ==========
+    print(f"{BLUE}📋 STUFE 5: Frontend Schema-Driven Architecture Check{NC}")
+    print()
+
+    is_schema_driven, schema_violations = check_frontend_schema_driven()
+
+    if not is_schema_driven:
+        print(f"{RED}❌ FAILURE: ContactEditDialog.tsx is NOT schema-driven!{NC}")
+        print()
+        print(f"  Violations found:")
+        for violation in schema_violations:
+            print(f"  {RED}✗{NC} {violation}")
+        print()
+        print(f"{RED}🚫 RULE VIOLATION: Frontend MUST use schema-driven rendering (ZERO TOLERANCE){NC}")
+        print()
+        print("📖 Required architecture:")
+        print("   1. Import and use useContactSchema() hook")
+        print("   2. Implement renderField() function to map FieldType → MUI component")
+        print("   3. Map over contactSchema.sections.fields dynamically")
+        print("   4. NO hardcoded <TextField label=\"...\"> without schema")
+        print()
+        print("   Example:")
+        print("   const { data: schemas } = useContactSchema();")
+        print("   const contactSchema = schemas?.[0];")
+        print("   contactSchema.sections.map(section => (")
+        print("     section.fields.map(field => renderField(field))")
+        print("   ))")
+        print()
+        print(f"{YELLOW}   See ContactEditDialog.tsx for reference implementation{NC}")
+        print()
+        return 1
+    else:
+        print(f"{GREEN}✅ STUFE 5 PASSED: ContactEditDialog uses schema-driven rendering{NC}")
+        print()
+        print(f"  ✓ Uses useContactSchema() hook")
+        print(f"  ✓ Has dynamic field rendering")
+        print(f"  ✓ Maps over schema.sections/fields")
         print()
 
     # ========== SUMMARY ==========
