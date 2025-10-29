@@ -61,6 +61,7 @@ interface UseUniversalSearchOptions {
   limit?: number;
   debounceMs?: number;
   minQueryLength?: number;
+  context?: 'leads' | 'customers'; // NEW: Search context
 }
 
 interface UseUniversalSearchReturn {
@@ -100,6 +101,7 @@ export const useUniversalSearch = (
     limit = 10,
     debounceMs = 300,
     minQueryLength = 2,
+    context = 'customers', // NEW: Default to customers
   } = options;
 
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -115,9 +117,9 @@ export const useUniversalSearch = (
    */
   const getCacheKey = useCallback(
     (query: string): string => {
-      return `${query}-${includeContacts}-${includeInactive}-${limit}`;
+      return `${query}-${includeContacts}-${includeInactive}-${limit}-${context}`;
     },
-    [includeContacts, includeInactive, limit]
+    [includeContacts, includeInactive, limit, context]
   );
 
   /**
@@ -166,6 +168,7 @@ export const useUniversalSearch = (
           includeContacts: includeContacts.toString(),
           includeInactive: includeInactive.toString(),
           limit: limit.toString(),
+          context: context, // NEW: Pass context parameter
         });
 
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
@@ -213,7 +216,7 @@ export const useUniversalSearch = (
         setIsLoading(false);
       }
     },
-    [minQueryLength, includeContacts, includeInactive, limit, getCacheKey, isCacheValid]
+    [minQueryLength, includeContacts, includeInactive, limit, context, getCacheKey, isCacheValid]
   );
 
   /**

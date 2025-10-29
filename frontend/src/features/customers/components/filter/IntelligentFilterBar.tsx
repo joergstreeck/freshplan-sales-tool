@@ -157,6 +157,7 @@ export function IntelligentFilterBar({
     limit: 15,
     debounceMs: 300,
     minQueryLength: 2,
+    context: context, // ✅ Pass context to search in correct tables
   });
 
   // Context-based column configuration (local state, not persisted globally)
@@ -267,21 +268,28 @@ export function IntelligentFilterBar({
   // Search Result Handlers
   const handleCustomerClick = useCallback(
     (customerId: string) => {
-      navigate(`/customers/${customerId}`);
+      const basePath = context === 'leads' ? '/lead-generation/leads' : '/customers';
+      navigate(`${basePath}/${customerId}`);
       setShowSearchResults(false);
       clearResults();
     },
-    [navigate, clearResults]
+    [navigate, clearResults, context]
   );
 
   const handleContactClick = useCallback(
     (customerId: string, contactId: string) => {
-      navigate(`/customers/${customerId}?tab=2&highlightContact=${contactId}`);
+      if (context === 'leads') {
+        // Leads haben Akkordeon-Struktur, keine Tabs
+        navigate(`/lead-generation/leads/${customerId}`);
+      } else {
+        // Customers haben Tab-Struktur (Tab 2 = Kontakte)
+        navigate(`/customers/${customerId}?tab=2&highlightContact=${contactId}`);
+      }
       setShowSearchResults(false);
       clearResults();
       setSearchTerm('');
     },
-    [navigate, clearResults]
+    [navigate, clearResults, context]
   );
 
   // Universal Search Handler

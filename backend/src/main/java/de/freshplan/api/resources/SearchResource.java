@@ -40,20 +40,23 @@ public class SearchResource {
   @Inject SearchService searchService;
 
   /**
-   * Performs universal search across customers and contacts. Analyzes the query to determine search
-   * type (email, phone, customer number, or text) and returns relevance-sorted results.
+   * Performs universal search across customers and contacts OR leads and lead contacts. Analyzes
+   * the query to determine search type (email, phone, customer number, or text) and returns
+   * relevance-sorted results.
    *
    * @param query The search query (min 2 characters)
    * @param includeContacts Whether to include contacts in search results
-   * @param includeInactive Whether to include inactive customers
+   * @param includeInactive Whether to include inactive customers/leads
    * @param limit Maximum number of results per entity type
-   * @return Search results with customers and contacts
+   * @param context Search context: "leads" for leads, otherwise customers (default: "customers")
+   * @return Search results with customers/leads and contacts
    */
   @GET
   @Path("/universal")
   @Operation(
       summary = "Universal Search",
-      description = "Search across customers and contacts with intelligent query analysis")
+      description =
+          "Search across customers and contacts OR leads and lead contacts with intelligent query analysis")
   @APIResponses({
     @APIResponse(
         responseCode = "200",
@@ -78,7 +81,7 @@ public class SearchResource {
           @QueryParam("includeContacts")
           @DefaultValue("true")
           boolean includeContacts,
-      @Parameter(description = "Include inactive customers", example = "false")
+      @Parameter(description = "Include inactive customers/leads", example = "false")
           @QueryParam("includeInactive")
           @DefaultValue("false")
           boolean includeInactive,
@@ -87,23 +90,29 @@ public class SearchResource {
           @DefaultValue("20")
           @Min(1)
           @Max(100)
-          int limit) {
+          int limit,
+      @Parameter(
+              description = "Search context: 'leads' for leads, otherwise customers",
+              example = "customers")
+          @QueryParam("context")
+          @DefaultValue("customers")
+          String context) {
 
     LOG.infof(
-        "Universal search request: query='%s', includeContacts=%s, includeInactive=%s, limit=%d",
-        query, includeContacts, includeInactive, limit);
+        "Universal search request: query='%s', context='%s', includeContacts=%s, includeInactive=%s, limit=%d",
+        query, context, includeContacts, includeInactive, limit);
 
     try {
       SearchResults results =
-          searchService.universalSearch(query, includeContacts, includeInactive, limit);
+          searchService.universalSearch(query, includeContacts, includeInactive, limit, context);
 
       LOG.infof(
-          "Search completed: %d customers, %d contacts found",
-          results.getCustomers().size(), results.getContacts().size());
+          "Search completed in context '%s': %d entities, %d contacts found",
+          context, results.getCustomers().size(), results.getContacts().size());
 
       return Response.ok(results).build();
     } catch (Exception e) {
-      LOG.errorf(e, "Error during universal search for query: %s", query);
+      LOG.errorf(e, "Error during universal search for query: %s in context: %s", query, context);
       throw new WebApplicationException(
           "Search failed: " + e.getMessage(), Response.Status.INTERNAL_SERVER_ERROR);
     }
