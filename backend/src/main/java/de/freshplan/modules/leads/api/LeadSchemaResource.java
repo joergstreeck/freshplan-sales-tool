@@ -57,7 +57,14 @@ public class LeadSchemaResource {
    *
    * <p>Returns field definitions for dynamic rendering in LeadWizard and LeadEditDialog.
    *
-   * <p><strong>Sections (3 stages for Progressive Profiling):</strong>
+   * <p><strong>Two Cards Returned:</strong>
+   *
+   * <ol>
+   *   <li>lead_progressive_profiling - For LeadWizard (3 Progressive Stages)
+   *   <li>lead_edit - For LeadEditDialog (All fields in one view)
+   * </ol>
+   *
+   * <p><strong>Progressive Profiling Sections (3 stages):</strong>
    *
    * <ol>
    *   <li>🎯 stage_0_pre_claim - Basis-Informationen (Pre-Claim, 10 Tage Schutz)
@@ -65,19 +72,19 @@ public class LeadSchemaResource {
    *   <li>📊 stage_2_nurturing - Nurturing & Qualifikation (Pain Points, Relationship)
    * </ol>
    *
-   * @return Lead Schema with 3 sections (Progressive Profiling stages)
+   * @return Lead Schema with 2 cards (Progressive Profiling + Edit Dialog)
    */
   @GET
   @PermitAll
-  @Operation(summary = "Get Lead Schema (Progressive Profiling: 3 Stages)")
+  @Operation(summary = "Get Lead Schema (Progressive Profiling + Edit Dialog)")
   @APIResponse(
       responseCode = "200",
-      description = "Lead Schema (Progressive Profiling)",
+      description = "Lead Schema (2 cards: Progressive Profiling + Edit)",
       content = @Content(schema = @Schema(implementation = CustomerCardSchema.class)))
   public Response getLeadSchema() {
 
-    // Single card with 3 sections (Progressive Profiling stages)
-    CustomerCardSchema leadSchema =
+    // Card 1: Progressive Profiling (LeadWizard - 3 stages)
+    CustomerCardSchema progressiveSchema =
         CustomerCardSchema.builder()
             .cardId("lead_progressive_profiling")
             .title("Lead erfassen")
@@ -92,7 +99,23 @@ public class LeadSchemaResource {
                     ))
             .build();
 
-    return Response.ok(List.of(leadSchema)).build();
+    // Card 2: Edit Dialog (LeadEditDialog - all fields in one view)
+    CustomerCardSchema editSchema =
+        CustomerCardSchema.builder()
+            .cardId("lead_edit")
+            .title("Lead bearbeiten")
+            .subtitle("Lead-Informationen aktualisieren")
+            .icon("✏️")
+            .order(2)
+            .sections(
+                List.of(
+                    buildEditBasicSection(), // Section 1: Basic Info
+                    buildEditBusinessSection(), // Section 2: Business Info
+                    buildEditNurturingSection() // Section 3: Nurturing Info
+                    ))
+            .build();
+
+    return Response.ok(List.of(progressiveSchema, editSchema)).build();
   }
 
   // ========== STAGE 0: PRE-CLAIM (MESSE, EMPFEHLUNG) ==========
@@ -180,6 +203,15 @@ public class LeadSchemaResource {
                     .gridCols(8)
                     .placeholder("Berlin")
                     .helpText("Stadt (optional)")
+                    .showDividerAfter(true)
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("notes")
+                    .label("Notizen / Quelle (optional)")
+                    .type(FieldType.TEXTAREA)
+                    .gridCols(12)
+                    .placeholder("Z.B. Empfehlung von Herrn Schulz, Partner-Liste Nr. 47, Stand A-12 auf der INTERNORGA...")
+                    .helpText("Hintergrund-Informationen ohne Einfluss auf Lead-Schutz")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)
@@ -206,7 +238,7 @@ public class LeadSchemaResource {
             List.of(
                 FieldDefinition.builder()
                     .fieldKey("businessType")
-                    .label("Geschäftsart")
+                    .label("Branche")
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
                     .gridCols(6)
@@ -376,6 +408,115 @@ public class LeadSchemaResource {
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)
+        .build();
+  }
+
+  // ========== LEAD EDIT DIALOG SECTIONS ==========
+
+  /**
+   * Edit Dialog Section 1: Basis-Informationen
+   *
+   * <p>Minimal fields for quick lead updates (companyName, source, website)
+   *
+   * <p>Note: source field uses LeadSource.requiresFirstContact() business rule (MESSE, TELEFON
+   * require first contact documentation)
+   */
+  private CardSection buildEditBasicSection() {
+    return CardSection.builder()
+        .sectionId("edit_basic")
+        .title("Basis-Informationen")
+        .subtitle("Firmenname, Quelle, Website")
+        .fields(
+            List.of(
+                FieldDefinition.builder()
+                    .fieldKey("companyName")
+                    .label("Firmenname")
+                    .type(FieldType.TEXT)
+                    .required(true)
+                    .gridCols(12)
+                    .placeholder("z.B. Hotel Adlon Kempinski Berlin")
+                    .helpText("Der offizielle Firmenname des Leads")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("source")
+                    .label("Quelle")
+                    .type(FieldType.ENUM)
+                    .enumSource(
+                        "/api/enums/lead-sources") // MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE
+                    .required(true)
+                    .gridCols(6)
+                    .helpText(
+                        "MESSE/TELEFON erfordern Erstkontakt-Dokumentation. Andere Quellen: 10-Tage Pre-Claim.")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("website")
+                    .label("Website")
+                    .type(FieldType.TEXT)
+                    .gridCols(6)
+                    .placeholder("https://www.example.com")
+                    .helpText("Unternehmens-Website (optional)")
+                    .build()))
+        .collapsible(false)
+        .defaultCollapsed(false)
+        .build();
+  }
+
+  /**
+   * Edit Dialog Section 2: Adresse
+   *
+   * <p>Address fields (street, postalCode, city)
+   */
+  private CardSection buildEditBusinessSection() {
+    return CardSection.builder()
+        .sectionId("edit_address")
+        .title("Adresse")
+        .subtitle("Straße, PLZ, Stadt")
+        .fields(
+            List.of(
+                FieldDefinition.builder()
+                    .fieldKey("street")
+                    .label("Straße")
+                    .type(FieldType.TEXT)
+                    .gridCols(12)
+                    .placeholder("Unter den Linden 77")
+                    .helpText("Straße und Hausnummer (optional)")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("postalCode")
+                    .label("PLZ")
+                    .type(FieldType.TEXT)
+                    .gridCols(4)
+                    .placeholder("10117")
+                    .helpText("Postleitzahl (optional)")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("city")
+                    .label("Stadt")
+                    .type(FieldType.TEXT)
+                    .gridCols(8)
+                    .placeholder("Berlin")
+                    .helpText("Stadt (optional)")
+                    .build()))
+        .collapsible(false)
+        .defaultCollapsed(false)
+        .build();
+  }
+
+  /**
+   * Edit Dialog Section 3: Erweiterte Informationen
+   *
+   * <p>Placeholder for future expansion (business type, kitchen size, etc.)
+   *
+   * <p>Currently empty - users can add extended lead info via separate dialogs
+   */
+  private CardSection buildEditNurturingSection() {
+    return CardSection.builder()
+        .sectionId("edit_extended")
+        .title("Erweiterte Informationen")
+        .subtitle("Weitere Lead-Details über separate Dialoge verfügbar")
+        .fields(List.of()) // Empty for now
+        .collapsible(true)
+        .defaultCollapsed(true)
         .build();
   }
 }

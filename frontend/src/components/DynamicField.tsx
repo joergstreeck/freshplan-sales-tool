@@ -226,7 +226,7 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
           />
         );
 
-      case 'DATE':
+      case 'DATE': {
         // Extract date-only portion from ISO datetime (yyyy-MM-dd)
         const dateValue = value ? String(value).split('T')[0] : '';
         return (
@@ -242,6 +242,7 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
             InputLabelProps={{ shrink: true }}
           />
         );
+      }
 
       case 'DATETIME':
         return (

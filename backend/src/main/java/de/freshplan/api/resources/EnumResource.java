@@ -10,11 +10,17 @@ import de.freshplan.domain.customer.entity.LegalForm;
 import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.customer.entity.Salutation;
 import de.freshplan.domain.customer.entity.Title;
+import de.freshplan.domain.shared.BudgetAvailability;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.CountryCode;
+import de.freshplan.domain.shared.DealSize;
 import de.freshplan.domain.shared.KitchenSize;
 import de.freshplan.domain.shared.LeadSource;
 import de.freshplan.modules.leads.domain.ActivityOutcome;
+import de.freshplan.modules.leads.domain.ActivityType;
+import de.freshplan.modules.leads.domain.DecisionMakerAccess;
+import de.freshplan.modules.leads.domain.RelationshipStatus;
+import de.freshplan.modules.leads.domain.UrgencyLevel;
 import jakarta.annotation.security.PermitAll;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -113,6 +119,34 @@ public class EnumResource {
   public List<EnumValue> getKitchenSizes() {
     return Arrays.stream(KitchenSize.values())
         .map(size -> new EnumValue(size.name(), size.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get user-selectable ActivityType enum values.
+   *
+   * <p>Used for: ActivityDialog, LeadActivityForm
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven UI for Activity Management
+   *
+   * <p><strong>Filters:</strong> Returns only user-selectable activities (10 types).
+   * System activities (FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED) and legacy
+   * activities (ORDER, STATUS_CHANGE, etc.) are excluded.
+   *
+   * @return List of user-selectable ActivityType values with display names (10 types)
+   */
+  @GET
+  @Path("/activity-types")
+  @PermitAll
+  @Operation(summary = "Get user-selectable Activity Type enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of user-selectable Activity Type values (10 types)",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getActivityTypes() {
+    return Arrays.stream(ActivityType.values())
+        .filter(ActivityType::isUserSelectable) // Filter: Only user-selectable activities
+        .map(type -> new EnumValue(type.name(), type.getDisplayName()))
         .toList();
   }
 
@@ -423,6 +457,136 @@ public class EnumResource {
   public List<EnumValue> getTitles() {
     return Arrays.stream(Title.values())
         .map(title -> new EnumValue(title.name(), title.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all RelationshipStatus enum values.
+   *
+   * <p>Used for: LeadWizard Stage 2, EngagementScoreForm, LeadDetailView
+   *
+   * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Engagement Score)
+   *
+   * <p>Business Rule: Relationship status impacts Engagement Score (40% weight). Values range
+   * from COLD (0 pts) to ADVOCATE (25 pts).
+   *
+   * @return List of RelationshipStatus values with display names
+   */
+  @GET
+  @Path("/relationship-status")
+  @PermitAll
+  @Operation(summary = "Get all Relationship Status enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Relationship Status values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getRelationshipStatus() {
+    return Arrays.stream(RelationshipStatus.values())
+        .map(status -> new EnumValue(status.name(), status.getLabel()))
+        .toList();
+  }
+
+  /**
+   * Get all DecisionMakerAccess enum values.
+   *
+   * <p>Used for: LeadWizard Stage 2, EngagementScoreForm, LeadDetailView
+   *
+   * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Engagement Score)
+   *
+   * <p>Business Rule: Decision maker access is THE critical factor for win rate (60% weight).
+   * IS_DECISION_MAKER = ~70-80% win rate, BLOCKED/UNKNOWN = ~10-15% win rate.
+   *
+   * @return List of DecisionMakerAccess values with display names
+   */
+  @GET
+  @Path("/decision-maker-access")
+  @PermitAll
+  @Operation(summary = "Get all Decision Maker Access enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Decision Maker Access values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getDecisionMakerAccess() {
+    return Arrays.stream(DecisionMakerAccess.values())
+        .map(access -> new EnumValue(access.name(), access.getLabel()))
+        .toList();
+  }
+
+  /**
+   * Get all UrgencyLevel enum values.
+   *
+   * <p>Used for: LeadWizard Stage 2, PainScoreForm, LeadDetailView
+   *
+   * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Pain Score)
+   *
+   * <p>Business Rule: Urgency level impacts Dringlichkeit dimension (40% weight). Values range
+   * from NORMAL (0 pts) to EMERGENCY (25 pts). High pain + high urgency = hot lead.
+   *
+   * @return List of UrgencyLevel values with display names
+   */
+  @GET
+  @Path("/urgency-levels")
+  @PermitAll
+  @Operation(summary = "Get all Urgency Level enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Urgency Level values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getUrgencyLevels() {
+    return Arrays.stream(UrgencyLevel.values())
+        .map(level -> new EnumValue(level.name(), level.getLabel()))
+        .toList();
+  }
+
+  /**
+   * Get all BudgetAvailability enum values.
+   *
+   * <p>Used for: LeadWizard Stage 2, RevenueScoreForm, LeadDetailView
+   *
+   * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Revenue Score)
+   *
+   * <p>Business Rule: Budget availability is critical for sales prioritization. YES = high
+   * priority, NO = nurturing lead.
+   *
+   * @return List of BudgetAvailability values with display names
+   */
+  @GET
+  @Path("/budget-availability")
+  @PermitAll
+  @Operation(summary = "Get all Budget Availability enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Budget Availability values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getBudgetAvailability() {
+    return Arrays.stream(BudgetAvailability.values())
+        .map(budget -> new EnumValue(budget.name(), budget.getLabel()))
+        .toList();
+  }
+
+  /**
+   * Get all DealSize enum values.
+   *
+   * <p>Used for: LeadWizard Stage 2, RevenueScoreForm, LeadDetailView
+   *
+   * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Revenue Score)
+   *
+   * <p>Business Rule: Deal size impacts Revenue Score (25% of total lead score). Values range
+   * from SMALL (25 pts) to ENTERPRISE (100 pts).
+   *
+   * @return List of DealSize values with display names
+   */
+  @GET
+  @Path("/deal-sizes")
+  @PermitAll
+  @Operation(summary = "Get all Deal Size enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Deal Size values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getDealSizes() {
+    return Arrays.stream(DealSize.values())
+        .map(size -> new EnumValue(size.name(), size.getDisplayName()))
         .toList();
   }
 

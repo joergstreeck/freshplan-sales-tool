@@ -29,7 +29,6 @@ import {
   Button,
   TextField,
   Box,
-  IconButton,
   MenuItem,
   Grid,
   Alert,
@@ -40,7 +39,6 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
-import { Close as CloseIcon } from '@mui/icons-material';
 import { toast } from 'react-hot-toast';
 import type { LeadContactDTO } from '../types';
 import { createLeadContact, updateLeadContact } from '../api';

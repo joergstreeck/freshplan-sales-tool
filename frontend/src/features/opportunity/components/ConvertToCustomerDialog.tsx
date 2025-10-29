@@ -80,7 +80,7 @@ export default function ConvertToCustomerDialog({
   onSuccess,
 }: ConvertToCustomerDialogProps) {
   const navigate = useNavigate();
-  const { user: currentUser, loading: userLoading } = useCurrentUser();
+  const { user: currentUser, loading: _userLoading } = useCurrentUser();
 
   // Form State
   const [companyName, setCompanyName] = useState(
@@ -110,6 +110,7 @@ export default function ConvertToCustomerDialog({
     if (open && currentUser?.xentralSalesRepId) {
       loadXentralCustomers();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, currentUser]);
 
   const loadXentralCustomers = async () => {
@@ -169,9 +170,9 @@ export default function ConvertToCustomerDialog({
 
       onClose();
       navigate(`/customers/${customer.id}`);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to convert opportunity:', error);
-      const errorMessage = error?.response?.data?.message || 'Fehler beim Anlegen des Customers';
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Fehler beim Anlegen des Customers';
       setApiError(errorMessage);
     } finally {
       setLoading(false);

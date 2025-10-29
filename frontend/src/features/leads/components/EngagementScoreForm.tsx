@@ -1,4 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+/**
+ * EngagementScoreForm - Schema-Driven Engagement Score Form
+ * Sprint 2.1.7.2 D11.2 - Server-Driven UI for Lead Scoring
+ *
+ * @description Dynamic form rendering based on backend schema (ScoreSchemaResource.java)
+ * @since 2025-10-29 - Migrated from hardcoded to schema-driven
+ */
+
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   Box,
   FormControl,
@@ -7,32 +15,73 @@ import {
   MenuItem,
   TextField,
   Alert,
-  Typography,
-  Divider,
   Chip,
+  CircularProgress,
+  Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
+import { useScoreSchema } from '@/hooks/useScoreSchema';
+import { useEnumOptions } from '@/hooks/useEnumOptions';
+import type { FieldDefinition, FieldType } from '@/hooks/useContactSchema';
 
 interface EngagementScoreFormProps {
   lead: Lead;
   onUpdate: (updates: Partial<Lead>) => Promise<void>;
 }
 
+function getDefaultValue(type: FieldType): unknown {
+  switch (type) {
+    case 'TEXT':
+    case 'TEXTAREA':
+      return '';
+    case 'NUMBER':
+    case 'CURRENCY':
+      return null;
+    case 'BOOLEAN':
+      return false;
+    case 'ENUM':
+      return '';
+    case 'DATE':
+    case 'DATETIME':
+      return null;
+    default:
+      return null;
+  }
+}
+
 export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps) {
-  const [formData, setFormData] = useState({
-    relationshipStatus: lead.relationshipStatus || 'COLD',
-    decisionMakerAccess: lead.decisionMakerAccess || 'UNKNOWN',
-    competitorInUse: lead.competitorInUse || '',
-    internalChampionName: lead.internalChampionName || '',
+  // ========== SCHEMA LOADING ==========
+  const { data: schemas, isLoading: schemaLoading } = useScoreSchema();
+  const engagementSchema = useMemo(() => schemas?.find(s => s.cardId === 'engagement_score'), [schemas]);
+  const engagementSection = useMemo(() => engagementSchema?.sections?.[0], [engagementSchema]);
+  const fields = useMemo(() => engagementSection?.fields || [], [engagementSection]);
+
+  // ========== FORM DATA (DYNAMIC) ==========
+  const [formData, setFormData] = useState<Record<string, unknown>>(() => {
+    const initial: Record<string, unknown> = {};
+    return initial;
   });
 
+  // Update formData when schema arrives
+  useEffect(() => {
+    if (fields.length > 0 && Object.keys(formData).length === 0) {
+      const initial: Record<string, unknown> = {};
+      fields.forEach(field => {
+        const leadValue = lead[field.fieldKey as keyof Lead];
+        initial[field.fieldKey] = leadValue !== undefined ? leadValue : getDefaultValue(field.type);
+      });
+      setFormData(initial);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields.length]);
+
+  // ========== AUTO-SAVE LOGIC ==========
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRenderRef = useRef(true);
   const isSavingRef = useRef(false);
 
-  // Auto-Save Handler
   const autoSave = useCallback(
     async (immediate = false) => {
       if (debounceTimerRef.current) {
@@ -78,19 +127,20 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
       return;
     }
 
-    // Check if data actually changed from lead props (prevent save on mount)
-    const hasChanges =
-      formData.relationshipStatus !== (lead.relationshipStatus || 'COLD') ||
-      formData.decisionMakerAccess !== (lead.decisionMakerAccess || 'UNKNOWN') ||
-      formData.competitorInUse !== (lead.competitorInUse || '') ||
-      formData.internalChampionName !== (lead.internalChampionName || '');
+    const hasChanges = Object.keys(formData).some(key => {
+      const leadValue = lead[key as keyof Lead];
+      const formValue = formData[key];
+      const leadDefault = leadValue !== undefined ? leadValue : getDefaultValue(
+        fields.find(f => f.fieldKey === key)?.type || 'TEXT'
+      );
+      return formValue !== leadDefault;
+    });
 
-    // Only save if there are actual changes
     if (hasChanges) {
       autoSave(true); // Always immediate
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]); // ONLY formData - autoSave causes infinite loop!
+  }, [formData]);
 
   // Cleanup
   useEffect(() => {
@@ -101,6 +151,88 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
     };
   }, []);
 
+  // ========== FIELD RENDERING ==========
+  const renderField = (field: FieldDefinition) => {
+    const value = formData[field.fieldKey];
+
+    switch (field.type) {
+      case 'ENUM':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <EnumSelect
+              field={field}
+              value={String(value || '')}
+              onChange={newValue =>
+                setFormData({ ...formData, [field.fieldKey]: newValue })
+              }
+            />
+          </Grid>
+        );
+
+      case 'TEXT':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              value={String(value || '')}
+              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+
+      case 'TEXTAREA':
+        return (
+          <Grid size={{ xs: 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              multiline
+              rows={4}
+              value={String(value || '')}
+              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+
+      default:
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              value={String(value || '')}
+              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+    }
+  };
+
+  // ========== LOADING STATE ==========
+  if (schemaLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!engagementSchema || !engagementSection) {
+    return (
+      <Alert severity="error">
+        Schema nicht gefunden. Bitte Backend prüfen (ScoreSchemaResource.java).
+      </Alert>
+    );
+  }
+
+  // ========== RENDER ==========
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -116,81 +248,59 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
         {saveStatus === 'saved' && <Chip label="Gespeichert ✓" size="small" color="success" />}
       </Box>
 
+      {/* Section Title */}
+      {engagementSection.title && (
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {engagementSection.title}
+        </Typography>
+      )}
+      {engagementSection.subtitle && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {engagementSection.subtitle}
+        </Typography>
+      )}
+
+      {/* Dynamic Fields */}
       <Grid container spacing={3}>
-        {/* Section 1: Beziehungsebene */}
-        <Grid size={{ xs: 12 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Beziehungsebene
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-        </Grid>
-
-        {/* Relationship Status */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <InputLabel>Beziehungsqualität</InputLabel>
-            <Select
-              value={formData.relationshipStatus}
-              onChange={e => setFormData({ ...formData, relationshipStatus: e.target.value })}
-            >
-              <MenuItem value="COLD">❄️ Kein Kontakt (0 Punkte)</MenuItem>
-              <MenuItem value="CONTACTED">📞 Erstkontakt erfolgt (5 Punkte)</MenuItem>
-              <MenuItem value="ENGAGED_SKEPTICAL">🤔 Im Gespräch - skeptisch (8 Punkte)</MenuItem>
-              <MenuItem value="ENGAGED_POSITIVE">😊 Im Gespräch - positiv (12 Punkte)</MenuItem>
-              <MenuItem value="TRUSTED">🤝 Vertrauensbasis aufgebaut (17 Punkte)</MenuItem>
-              <MenuItem value="ADVOCATE">⭐ Fürsprecher / Befürworter (25 Punkte)</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* Decision Maker Access */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <InputLabel>Entscheider-Zugang</InputLabel>
-            <Select
-              value={formData.decisionMakerAccess}
-              onChange={e => setFormData({ ...formData, decisionMakerAccess: e.target.value })}
-            >
-              <MenuItem value="UNKNOWN">❓ Noch nicht identifiziert (0 Punkte)</MenuItem>
-              <MenuItem value="BLOCKED">🚫 Blockiert / Gatekeeper (-3 Punkte)</MenuItem>
-              <MenuItem value="INDIRECT">🔄 Indirekter Zugang (10 Punkte)</MenuItem>
-              <MenuItem value="DIRECT">✅ Direkter Kontakt (20 Punkte)</MenuItem>
-              <MenuItem value="IS_DECISION_MAKER">👔 Ist Entscheider (25 Punkte)</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* Section 2: Weitere Informationen */}
-        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Weitere Informationen
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-        </Grid>
-
-        {/* Internal Champion + Competitor nebeneinander */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            label="Fürsprecher im Unternehmen"
-            value={formData.internalChampionName}
-            onChange={e => setFormData({ ...formData, internalChampionName: e.target.value })}
-            fullWidth
-            placeholder="Name des Fürsprechers"
-            helperText="+30 Punkte wenn vorhanden"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            label="Aktueller Wettbewerber"
-            value={formData.competitorInUse}
-            onChange={e => setFormData({ ...formData, competitorInUse: e.target.value })}
-            fullWidth
-            placeholder="z.B. Metro, CHEFS CULINAR"
-            helperText="Welcher Lieferant wird aktuell genutzt?"
-          />
-        </Grid>
+        {fields.map(field => renderField(field))}
       </Grid>
     </Box>
+  );
+}
+
+/**
+ * EnumSelect Component - Loads enum options from backend dynamically
+ */
+interface EnumSelectProps {
+  field: FieldDefinition;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function EnumSelect({ field, value, onChange }: EnumSelectProps) {
+  const { data: options, isLoading } = useEnumOptions(field.enumSource || '');
+
+  return (
+    <FormControl fullWidth>
+      <InputLabel>{field.label}</InputLabel>
+      <Select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        label={field.label}
+        disabled={isLoading}
+      >
+        {isLoading && <MenuItem disabled>Lädt...</MenuItem>}
+        {options?.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+      {field.helpText && (
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.75 }}>
+          {field.helpText}
+        </Typography>
+      )}
+    </FormControl>
   );
 }

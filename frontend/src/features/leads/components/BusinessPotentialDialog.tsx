@@ -1,11 +1,23 @@
 /**
- * BusinessPotentialDialog - Edit business metrics and pain factors
+ * BusinessPotentialDialog - Schema-Driven Business Potential Assessment
  *
- * Sprint 2.1.6 Phase 5+ - V277 Migration
- * Allows editing:
- * - Business metrics (businessType, kitchenSize, employeeCount, estimatedVolume)
- * - Branch information (branchCount, isChain checkbox)
- * - Pain factors (5 checkboxes + painNotes textarea)
+ * Sprint 2.1.7.2 D11: Server-Driven UI Migration
+ *
+ * This dialog fetches its field definitions from the backend via useBusinessPotentialSchema.
+ * Backend: GET /api/business-potentials/schema (BusinessPotentialSchemaResource.java)
+ *
+ * Fields (6, dynamically loaded):
+ * - businessType (ENUM, required) - Geschäftsart
+ * - kitchenSize (ENUM) - Küchengröße
+ * - employeeCount (NUMBER) - Mitarbeiteranzahl
+ * - estimatedVolume (CURRENCY) - Geschätztes Jahresvolumen
+ * - branchCount (NUMBER) - Anzahl Filialen/Standorte
+ * - isChain (BOOLEAN) - Kettenbetrieb
+ *
+ * Architecture:
+ * - Backend = Single Source of Truth for field definitions
+ * - Frontend = Rendering Layer (no hardcoded field definitions)
+ * - Enum options fetched from backend (/api/enums/...)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -26,11 +38,15 @@ import {
   Typography,
   Divider,
   InputAdornment,
+  CircularProgress,
+  Alert,
 } from '@mui/material';
 import { TrendingUp as TrendingUpIcon, Store as StoreIcon } from '@mui/icons-material';
 import toast from 'react-hot-toast';
 import type { Lead, BusinessType } from '../types';
 import { updateLead } from '../api';
+import { useBusinessPotentialSchema } from '../../../hooks/useBusinessPotentialSchema';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
 interface BusinessPotentialDialogProps {
   open: boolean;
@@ -54,6 +70,23 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
     isChain: lead.isChain || false,
   });
 
+  // Fetch schema from backend (Server-Driven UI)
+  const { data: schemas, isLoading: schemaLoading, error: schemaError } = useBusinessPotentialSchema();
+
+  // Extract business potential schema
+  const businessPotentialSchema = schemas?.find(s => s.cardId === 'business_potential');
+  const assessmentSection = businessPotentialSchema?.sections?.find(
+    s => s.sectionId === 'potential_assessment'
+  );
+  const fields = assessmentSection?.fields || [];
+
+  // Fetch enum options for ENUM fields
+  const businessTypeField = fields.find(f => f.fieldKey === 'businessType');
+  const kitchenSizeField = fields.find(f => f.fieldKey === 'kitchenSize');
+
+  const { data: businessTypeOptions } = useEnumOptions(businessTypeField?.enumSource || '');
+  const { data: kitchenSizeOptions } = useEnumOptions(kitchenSizeField?.enumSource || '');
+
   // Reset form when lead changes
   useEffect(() => {
     setFormData({
@@ -68,7 +101,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
 
   const handleSave = async () => {
     try {
-      // Validate branchCount
+      // Validate branchCount (custom business logic)
       if (formData.isChain && (!formData.branchCount || formData.branchCount < 2)) {
         toast.error('Kettenbetriebe müssen mindestens 2 Standorte haben');
         return;
@@ -84,26 +117,66 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
       };
 
       await updateLead(lead.id, payload);
-      toast.success('Vertriebsintelligenz erfolgreich aktualisiert');
+      toast.success('Geschäftspotenzial erfolgreich aktualisiert');
       onSave();
       onClose();
     } catch (error) {
       console.error('Failed to update business potential:', error);
-      toast.error('Fehler beim Speichern der Vertriebsdaten');
+      toast.error('Fehler beim Speichern der Geschäftsdaten');
     }
   };
+
+  // Loading state
+  if (schemaLoading) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+          <CircularProgress />
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Error state
+  if (schemaError || !businessPotentialSchema) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogContent>
+          <Alert severity="error">
+            Fehler beim Laden des Schemas. Bitte versuchen Sie es später erneut.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Schließen</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  // Extract field definitions from schema
+  const businessTypeFieldDef = fields.find(f => f.fieldKey === 'businessType');
+  const kitchenSizeFieldDef = fields.find(f => f.fieldKey === 'kitchenSize');
+  const employeeCountFieldDef = fields.find(f => f.fieldKey === 'employeeCount');
+  const estimatedVolumeFieldDef = fields.find(f => f.fieldKey === 'estimatedVolume');
+  const branchCountFieldDef = fields.find(f => f.fieldKey === 'branchCount');
+  const isChainFieldDef = fields.find(f => f.fieldKey === 'isChain');
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <TrendingUpIcon />
-          <Typography variant="h6">Vertriebsintelligenz bearbeiten</Typography>
+          <Typography variant="h6">{businessPotentialSchema.title}</Typography>
         </Box>
+        {businessPotentialSchema.subtitle && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {businessPotentialSchema.subtitle}
+          </Typography>
+        )}
       </DialogTitle>
 
       <DialogContent>
-        {/* Business Metrics */}
+        {/* Schema-driven section rendering */}
         <Box sx={{ mb: 3 }}>
           <Typography
             variant="subtitle2"
@@ -111,63 +184,92 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
             sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
           >
             <StoreIcon fontSize="small" />
-            Geschäftsdaten
+            {assessmentSection?.title || 'Geschäftsdaten'}
           </Typography>
+          {assessmentSection?.subtitle && (
+            <Typography variant="caption" color="text.secondary" gutterBottom>
+              {assessmentSection.subtitle}
+            </Typography>
+          )}
           <Divider sx={{ mb: 2 }} />
 
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Geschäftstyp</InputLabel>
-            <Select
-              value={formData.businessType}
-              label="Geschäftstyp"
-              onChange={e => setFormData({ ...formData, businessType: e.target.value })}
-            >
-              <MenuItem value="">—</MenuItem>
-              <MenuItem value="RESTAURANT">Restaurant</MenuItem>
-              <MenuItem value="HOTEL">Hotel</MenuItem>
-              <MenuItem value="CATERING">Catering</MenuItem>
-              <MenuItem value="KANTINE">Kantine</MenuItem>
-              <MenuItem value="GROSSHANDEL">Großhandel</MenuItem>
-              <MenuItem value="LEH">LEH</MenuItem>
-              <MenuItem value="BILDUNG">Bildung</MenuItem>
-              <MenuItem value="GESUNDHEIT">Gesundheit</MenuItem>
-              <MenuItem value="SONSTIGES">Sonstiges</MenuItem>
-            </Select>
-          </FormControl>
+          {/* businessType (ENUM) */}
+          {businessTypeFieldDef && (
+            <FormControl fullWidth sx={{ mb: 2 }} required={businessTypeFieldDef.required}>
+              <InputLabel>{businessTypeFieldDef.label}</InputLabel>
+              <Select
+                value={formData.businessType}
+                label={businessTypeFieldDef.label}
+                onChange={e => setFormData({ ...formData, businessType: e.target.value })}
+              >
+                <MenuItem value="">—</MenuItem>
+                {businessTypeOptions?.map(option => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {businessTypeFieldDef.helpText && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {businessTypeFieldDef.helpText}
+                </Typography>
+              )}
+            </FormControl>
+          )}
 
-          <FormControl fullWidth sx={{ mb: 2 }}>
-            <InputLabel>Küchengröße</InputLabel>
-            <Select
-              value={formData.kitchenSize}
-              label="Küchengröße"
-              onChange={e => setFormData({ ...formData, kitchenSize: e.target.value })}
-            >
-              <MenuItem value="">—</MenuItem>
-              <MenuItem value="small">Klein</MenuItem>
-              <MenuItem value="medium">Mittel</MenuItem>
-              <MenuItem value="large">Groß</MenuItem>
-            </Select>
-          </FormControl>
+          {/* kitchenSize (ENUM) */}
+          {kitchenSizeFieldDef && (
+            <FormControl fullWidth sx={{ mb: 2 }}>
+              <InputLabel>{kitchenSizeFieldDef.label}</InputLabel>
+              <Select
+                value={formData.kitchenSize}
+                label={kitchenSizeFieldDef.label}
+                onChange={e => setFormData({ ...formData, kitchenSize: e.target.value })}
+              >
+                <MenuItem value="">—</MenuItem>
+                {kitchenSizeOptions?.map(option => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+              {kitchenSizeFieldDef.helpText && (
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
+                  {kitchenSizeFieldDef.helpText}
+                </Typography>
+              )}
+            </FormControl>
+          )}
 
-          <TextField
-            fullWidth
-            label="Mitarbeiteranzahl"
-            type="number"
-            value={formData.employeeCount}
-            onChange={e => setFormData({ ...formData, employeeCount: e.target.value })}
-            sx={{ mb: 2 }}
-          />
+          {/* employeeCount (NUMBER) */}
+          {employeeCountFieldDef && (
+            <TextField
+              fullWidth
+              label={employeeCountFieldDef.label}
+              type="number"
+              value={formData.employeeCount}
+              onChange={e => setFormData({ ...formData, employeeCount: e.target.value })}
+              placeholder={employeeCountFieldDef.placeholder}
+              helperText={employeeCountFieldDef.helpText}
+              sx={{ mb: 2 }}
+            />
+          )}
 
-          <TextField
-            fullWidth
-            label="Umsatzpotenzial"
-            type="number"
-            value={formData.estimatedVolume}
-            onChange={e => setFormData({ ...formData, estimatedVolume: e.target.value })}
-            InputProps={{
-              endAdornment: <InputAdornment position="end">€/Monat</InputAdornment>,
-            }}
-          />
+          {/* estimatedVolume (CURRENCY) */}
+          {estimatedVolumeFieldDef && (
+            <TextField
+              fullWidth
+              label={estimatedVolumeFieldDef.label}
+              type="number"
+              value={formData.estimatedVolume}
+              onChange={e => setFormData({ ...formData, estimatedVolume: e.target.value })}
+              placeholder={estimatedVolumeFieldDef.placeholder}
+              helperText={estimatedVolumeFieldDef.helpText}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">€</InputAdornment>,
+              }}
+            />
+          )}
         </Box>
 
         {/* Branch/Chain Information */}
@@ -182,26 +284,40 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
-          <TextField
-            fullWidth
-            label="Anzahl Standorte"
-            type="number"
-            value={formData.branchCount}
-            onChange={e => setFormData({ ...formData, branchCount: Number(e.target.value) })}
-            sx={{ mb: 2 }}
-            inputProps={{ min: 1 }}
-          />
+          {/* branchCount (NUMBER) */}
+          {branchCountFieldDef && (
+            <TextField
+              fullWidth
+              label={branchCountFieldDef.label}
+              type="number"
+              value={formData.branchCount}
+              onChange={e => setFormData({ ...formData, branchCount: Number(e.target.value) })}
+              placeholder={branchCountFieldDef.placeholder}
+              helperText={branchCountFieldDef.helpText}
+              sx={{ mb: 2 }}
+              inputProps={{ min: 1 }}
+            />
+          )}
 
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.isChain}
-                onChange={e => setFormData({ ...formData, isChain: e.target.checked })}
-              />
-            }
-            label="Kettenbetrieb (mehrere Standorte)"
-          />
+          {/* isChain (BOOLEAN) */}
+          {isChainFieldDef && (
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={formData.isChain}
+                  onChange={e => setFormData({ ...formData, isChain: e.target.checked })}
+                />
+              }
+              label={isChainFieldDef.label}
+            />
+          )}
+          {isChainFieldDef?.helpText && (
+            <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 4 }}>
+              {isChainFieldDef.helpText}
+            </Typography>
+          )}
 
+          {/* Gesamtpotenzial Calculation (Custom Business Logic) */}
           {formData.isChain && formData.branchCount && formData.estimatedVolume && (
             <Box sx={{ mt: 1, p: 2, bgcolor: 'primary.lighter', borderRadius: 1 }}>
               <Typography variant="body2" color="primary">
@@ -210,7 +326,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
                   {(Number(formData.estimatedVolume) * formData.branchCount).toLocaleString(
                     'de-DE'
                   )}{' '}
-                  €/Monat
+                  €/Jahr
                 </strong>
               </Typography>
               <Typography variant="caption" color="text.secondary">

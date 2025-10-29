@@ -1,4 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+/**
+ * RevenueScoreForm - Schema-Driven Revenue Score Form
+ * Sprint 2.1.7.2 D11.2 - Server-Driven UI for Lead Scoring
+ *
+ * @description Dynamic form rendering based on backend schema (ScoreSchemaResource.java)
+ * @since 2025-10-29 - Migrated from hardcoded to schema-driven
+ */
+
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   Box,
   TextField,
@@ -10,39 +18,77 @@ import {
   Checkbox,
   Alert,
   InputAdornment,
-  FormHelperText,
   Chip,
+  CircularProgress,
+  Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
+import { useScoreSchema } from '@/hooks/useScoreSchema';
+import { useEnumOptions } from '@/hooks/useEnumOptions';
+import type { FieldDefinition, FieldType } from '@/hooks/useContactSchema';
 
 interface RevenueScoreFormProps {
   lead: Lead;
   onUpdate: (updates: Partial<Lead>) => Promise<void>;
 }
 
-function calculateDealSize(monthlyVolume: number | null): string {
-  if (!monthlyVolume) return '';
-  const annual = monthlyVolume * 12;
-
-  if (annual >= 100000) return 'ENTERPRISE';
-  if (annual >= 20000) return 'LARGE';
-  if (annual >= 5000) return 'MEDIUM';
-  return 'SMALL';
+/**
+ * Get default value for a field type
+ */
+function getDefaultValue(type: FieldType): unknown {
+  switch (type) {
+    case 'TEXT':
+    case 'TEXTAREA':
+      return '';
+    case 'NUMBER':
+    case 'CURRENCY':
+      return null;
+    case 'BOOLEAN':
+      return false;
+    case 'ENUM':
+      return '';
+    case 'DATE':
+    case 'DATETIME':
+      return null;
+    default:
+      return null;
+  }
 }
 
+
 export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
-  const [formData, setFormData] = useState({
-    estimatedVolume: lead.estimatedVolume || null,
-    budgetConfirmed: lead.budgetConfirmed || false,
-    dealSize: lead.dealSize || '',
+  // ========== SCHEMA LOADING ==========
+  const { data: schemas, isLoading: schemaLoading } = useScoreSchema();
+  const revenueSchema = useMemo(() => schemas?.find(s => s.cardId === 'revenue_score'), [schemas]);
+  const revenueSection = useMemo(() => revenueSchema?.sections?.[0], [revenueSchema]);
+  const fields = useMemo(() => revenueSection?.fields || [], [revenueSection]);
+
+  // ========== FORM DATA (DYNAMIC) ==========
+  const [formData, setFormData] = useState<Record<string, unknown>>(() => {
+    const initial: Record<string, unknown> = {};
+    return initial;
   });
+
+  // Update formData when schema arrives
+  useEffect(() => {
+    if (fields.length > 0 && Object.keys(formData).length === 0) {
+      const initial: Record<string, unknown> = {};
+      fields.forEach(field => {
+        const leadValue = lead[field.fieldKey as keyof Lead];
+        initial[field.fieldKey] = leadValue !== undefined ? leadValue : getDefaultValue(field.type);
+      });
+      setFormData(initial);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields.length]);
+
+  // ========== AUTO-SAVE LOGIC ==========
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRenderRef = useRef(true);
   const isSavingRef = useRef(false);
 
-  // Auto-Save Handler
   const autoSave = useCallback(
     async (immediate = false) => {
       if (debounceTimerRef.current) {
@@ -57,11 +103,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
         isSavingRef.current = true;
         setSaveStatus('saving');
         try {
-          await onUpdate({
-            estimatedVolume: formData.estimatedVolume,
-            budgetConfirmed: formData.budgetConfirmed,
-            dealSize: formData.dealSize || undefined,
-          });
+          await onUpdate(formData);
           setSaveStatus('saved');
           setTimeout(() => setSaveStatus('idle'), 2000);
         } catch (error) {
@@ -83,29 +125,29 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
 
   // Auto-save on formData changes
   useEffect(() => {
-    // Skip on first render to avoid save on mount
     if (isFirstRenderRef.current) {
       isFirstRenderRef.current = false;
       return;
     }
 
-    // Skip if currently saving
     if (isSavingRef.current) {
       return;
     }
 
-    // Check if data actually changed from lead props
-    const hasChanges =
-      formData.estimatedVolume !== (lead.estimatedVolume || null) ||
-      formData.budgetConfirmed !== (lead.budgetConfirmed || false) ||
-      formData.dealSize !== (lead.dealSize || '');
+    const hasChanges = Object.keys(formData).some(key => {
+      const leadValue = lead[key as keyof Lead];
+      const formValue = formData[key];
+      const leadDefault = leadValue !== undefined ? leadValue : getDefaultValue(
+        fields.find(f => f.fieldKey === key)?.type || 'TEXT'
+      );
+      return formValue !== leadDefault;
+    });
 
-    // Only save if there are actual changes
     if (hasChanges) {
-      autoSave(true); // Always immediate
+      autoSave(true); // Always immediate for Revenue form
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formData]); // ONLY formData - autoSave causes infinite loop!
+  }, [formData]);
 
   // Cleanup
   useEffect(() => {
@@ -116,8 +158,104 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
     };
   }, []);
 
-  const autoDealSize = calculateDealSize(formData.estimatedVolume);
+  // ========== FIELD RENDERING ==========
+  const renderField = (field: FieldDefinition) => {
+    const value = formData[field.fieldKey];
 
+    switch (field.type) {
+      case 'CURRENCY':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              type="number"
+              value={value || ''}
+              onChange={e =>
+                setFormData({
+                  ...formData,
+                  [field.fieldKey]: e.target.value ? parseFloat(e.target.value) : null,
+                })
+              }
+              inputProps={{ step: 1000 }}
+              InputProps={{
+                startAdornment: <InputAdornment position="start">€</InputAdornment>,
+              }}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+
+      case 'BOOLEAN':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={Boolean(value)}
+                  onChange={e =>
+                    setFormData({ ...formData, [field.fieldKey]: e.target.checked })
+                  }
+                />
+              }
+              label={field.label}
+            />
+            {field.helpText && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4 }}>
+                {field.helpText}
+              </Typography>
+            )}
+          </Grid>
+        );
+
+      case 'ENUM':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <EnumSelect
+              field={field}
+              value={String(value || '')}
+              onChange={newValue =>
+                setFormData({ ...formData, [field.fieldKey]: newValue })
+              }
+            />
+          </Grid>
+        );
+
+      default:
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              value={String(value || '')}
+              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+    }
+  };
+
+  // ========== LOADING STATE ==========
+  if (schemaLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!revenueSchema || !revenueSection) {
+    return (
+      <Alert severity="error">
+        Schema nicht gefunden. Bitte Backend prüfen (ScoreSchemaResource.java).
+      </Alert>
+    );
+  }
+
+  // ========== RENDER ==========
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -133,64 +271,59 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
         {saveStatus === 'saved' && <Chip label="Gespeichert ✓" size="small" color="success" />}
       </Box>
 
+      {/* Section Title */}
+      {revenueSection.title && (
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {revenueSection.title}
+        </Typography>
+      )}
+      {revenueSection.subtitle && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {revenueSection.subtitle}
+        </Typography>
+      )}
+
+      {/* Dynamic Fields */}
       <Grid container spacing={2}>
-        {/* Estimated Volume */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField
-            label="Geschätztes Jahresvolumen"
-            type="number"
-            value={formData.estimatedVolume || ''}
-            onChange={e =>
-              setFormData({
-                ...formData,
-                estimatedVolume: e.target.value ? parseFloat(e.target.value) : null,
-              })
-            }
-            InputProps={{
-              startAdornment: <InputAdornment position="start">€</InputAdornment>,
-              endAdornment: <InputAdornment position="end">/Monat</InputAdornment>,
-            }}
-            helperText="Erwartetes monatliches Bestellvolumen"
-            fullWidth
-          />
-        </Grid>
-
-        {/* Deal Size */}
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <InputLabel>Deal Size</InputLabel>
-            <Select
-              value={formData.dealSize || autoDealSize}
-              onChange={e => setFormData({ ...formData, dealSize: e.target.value })}
-            >
-              <MenuItem value="SMALL">Klein (1-5k €/Jahr)</MenuItem>
-              <MenuItem value="MEDIUM">Mittel (5-20k €/Jahr)</MenuItem>
-              <MenuItem value="LARGE">Groß (20-100k €/Jahr)</MenuItem>
-              <MenuItem value="ENTERPRISE">Enterprise (100k+ €/Jahr)</MenuItem>
-            </Select>
-            <FormHelperText>
-              {formData.dealSize
-                ? 'Manuell gesetzt'
-                : autoDealSize
-                  ? `Automatisch: ${autoDealSize}`
-                  : 'Nicht berechnet'}
-            </FormHelperText>
-          </FormControl>
-        </Grid>
-
-        {/* Budget Confirmed */}
-        <Grid size={{ xs: 12 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.budgetConfirmed}
-                onChange={e => setFormData({ ...formData, budgetConfirmed: e.target.checked })}
-              />
-            }
-            label="Budget freigegeben / bestätigt"
-          />
-        </Grid>
+        {fields.map(field => renderField(field))}
       </Grid>
     </Box>
+  );
+}
+
+/**
+ * EnumSelect Component - Loads enum options from backend dynamically
+ */
+interface EnumSelectProps {
+  field: FieldDefinition;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function EnumSelect({ field, value, onChange }: EnumSelectProps) {
+  const { data: options, isLoading } = useEnumOptions(field.enumSource || '');
+
+  return (
+    <FormControl fullWidth>
+      <InputLabel>{field.label}</InputLabel>
+      <Select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        label={field.label}
+        disabled={isLoading}
+      >
+        {isLoading && <MenuItem disabled>Lädt...</MenuItem>}
+        {options?.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+      {field.helpText && (
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.75 }}>
+          {field.helpText}
+        </Typography>
+      )}
+    </FormControl>
   );
 }

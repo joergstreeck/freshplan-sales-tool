@@ -65,11 +65,9 @@ public class ActivitySchemaResource {
    * <p>Fields:
    *
    * <ol>
-   *   <li>activityType (ENUM, required) - CALL, EMAIL, MEETING, NOTE
-   *   <li>title (TEXT, required) - Titel der Aktivität
-   *   <li>description (TEXTAREA) - Beschreibung
-   *   <li>scheduledDate (DATE) - Geplantes Datum
-   *   <li>status (ENUM) - PLANNED, COMPLETED, CANCELLED
+   *   <li>activityType (ENUM, required) - CALL, EMAIL, MEETING, NOTE, etc.
+   *   <li>description (TEXTAREA, required) - Beschreibung der Aktivität
+   *   <li>outcome (ENUM, optional) - Ergebnis (SUCCESSFUL, UNSUCCESSFUL, etc.)
    * </ol>
    *
    * @return Activity Schema with 1 section (activity_details)
@@ -87,9 +85,9 @@ public class ActivitySchemaResource {
     CustomerCardSchema activitySchema =
         CustomerCardSchema.builder()
             .cardId("activity")
-            .title("Aktivität")
-            .subtitle("Lead-Aktivität erstellen/bearbeiten")
-            .icon("📅")
+            .title("Neue Aktivität erfassen")
+            .subtitle("Lead-Aktivität protokollieren")
+            .icon("📝")
             .order(1)
             .sections(List.of(buildActivityDetailsSection()))
             .build();
@@ -100,67 +98,48 @@ public class ActivitySchemaResource {
   /**
    * Section: Aktivitätsdetails
    *
-   * <p>Activity tracking fields for Lead management.
+   * <p>Activity logging fields for completed Lead activities.
    *
    * <p>Fields:
    *
    * <ul>
-   *   <li>activityType - Required ENUM field (CALL, EMAIL, MEETING, NOTE)
-   *   <li>title - Required TEXT field (Titel der Aktivität)
-   *   <li>description - TEXTAREA field (Beschreibung der Aktivität)
-   *   <li>scheduledDate - DATE field (Geplantes Datum)
-   *   <li>status - ENUM field (PLANNED, COMPLETED, CANCELLED)
+   *   <li>activityType - Required ENUM field (CALL, EMAIL, MEETING, NOTE, etc.)
+   *   <li>description - Required TEXTAREA field (Was wurde besprochen/gemacht?)
+   *   <li>outcome - Optional ENUM field (SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, etc.)
    * </ul>
    */
   private CardSection buildActivityDetailsSection() {
     return CardSection.builder()
         .sectionId("activity_details")
         .title("Aktivitätsdetails")
-        .subtitle("Typ, Titel, Beschreibung, Datum, Status")
+        .subtitle("Typ, Beschreibung, Ergebnis")
         .fields(
             List.of(
                 FieldDefinition.builder()
                     .fieldKey("activityType")
                     .label("Aktivitätstyp")
                     .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/activity-types") // CALL, EMAIL, MEETING, NOTE, etc.
+                    .enumSource("/api/enums/activity-types") // CALL, EMAIL, MEETING, NOTE, etc.
                     .required(true)
-                    .gridCols(6)
+                    .gridCols(12)
                     .helpText("Art der Aktivität (Anruf, E-Mail, Meeting, Notiz)")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("title")
-                    .label("Titel")
-                    .type(FieldType.TEXT)
-                    .required(true)
-                    .gridCols(6)
-                    .placeholder("z.B. Erstgespräch, Follow-Up Call, ...")
-                    .helpText("Kurzer Titel der Aktivität")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("description")
                     .label("Beschreibung")
                     .type(FieldType.TEXTAREA)
+                    .required(true)
                     .gridCols(12)
-                    .placeholder("Details zur Aktivität...")
-                    .helpText("Ausführliche Beschreibung der Aktivität")
+                    .placeholder("Was wurde besprochen? Welche Ergebnisse wurden erzielt?")
+                    .helpText("Ausführliche Beschreibung der Aktivität (max. 1000 Zeichen)")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("scheduledDate")
-                    .label("Geplantes Datum")
-                    .type(FieldType.DATE)
-                    .gridCols(6)
-                    .helpText("Wann ist die Aktivität geplant?")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("status")
-                    .label("Status")
+                    .fieldKey("outcome")
+                    .label("Ergebnis (optional)")
                     .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/activity-status") // PLANNED, COMPLETED, CANCELLED
-                    .gridCols(6)
-                    .helpText("Aktueller Status der Aktivität")
+                    .enumSource("/api/enums/activity-outcomes") // SUCCESSFUL, UNSUCCESSFUL, etc.
+                    .gridCols(12)
+                    .helpText("Hilft beim Tracking von Erfolg und Follow-up-Bedarf")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)

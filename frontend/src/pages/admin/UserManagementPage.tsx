@@ -99,9 +99,10 @@ export default function UserManagementPage() {
       } else {
         toast.error(`Sync fehlgeschlagen: ${response.data.message}`);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sales-Rep sync failed:', error);
-      toast.error(error.response?.data?.message || 'Fehler beim Sync. Siehe Server-Logs.');
+      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Fehler beim Sync. Siehe Server-Logs.';
+      toast.error(errorMessage);
     } finally {
       setSyncing(false);
     }

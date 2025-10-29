@@ -17,12 +17,12 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 /**
  * Score Schema Resource for Server-Driven UI
  *
- * <p>Sprint 2.1.7.2 D11: Server-Driven UI for Lead Scoring (Pain, Revenue, Engagement)
+ * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Pain, Revenue, Engagement)
  *
  * <p>Provides schema definitions for 3 separate scoring forms:
  *
  * <ul>
- *   <li>Pain Score - Schmerzpunkte-Bewertung (OPERATIONAL, DELIVERY, SERVICE)
+ *   <li>Pain Score - Schmerzpunkte-Bewertung (8 Boolean Pain Points + Notes)
  *   <li>Revenue Score - Umsatzpotenzial-Bewertung
  *   <li>Engagement Score - Engagement-Level-Bewertung
  * </ul>
@@ -30,16 +30,15 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * <p>Frontend fetches this schema from `GET /api/scores/schema` and renders 3 separate scoring
  * dialogs.
  *
- * <p><strong>Architecture:</strong> Backend = Single Source of Truth for schema + data Frontend =
- * Rendering Layer (no hardcoded schemas)
+ * <p><strong>CRITICAL:</strong> Schemas MUST match LeadSchemaResource Stage 2 fields to ensure
+ * consistency across Lead Wizard and Score Forms!
  *
- * <p><strong>Benefits:</strong>
+ * <p><strong>Architecture:</strong>
  *
  * <ul>
- *   <li>Backend controls Score form structures
- *   <li>Enum sources from backend (/api/enums/...)
- *   <li>No frontend/backend parity issues
- *   <li>3 separate scoring forms for comprehensive Lead qualification
+ *   <li>Backend = Single Source of Truth for schema + data
+ *   <li>Frontend = Rendering Layer (no hardcoded schemas)
+ *   <li>Pain Points use BOOLEAN (not ENUM) to match Lead + Customer entities
  * </ul>
  *
  * @author FreshPlan Team
@@ -84,19 +83,28 @@ public class ScoreSchemaResource {
   /**
    * Pain Score Schema
    *
-   * <p>Schmerzpunkte des Kunden bewerten (3 Kategorien: OPERATIONAL, DELIVERY, SERVICE)
+   * <p>Schmerzpunkte des Kunden bewerten
    *
-   * <p>Fields (8 pain points + notes):
+   * <p><strong>CRITICAL:</strong> Pain Points use BOOLEAN (not ENUM) to match:
    *
    * <ul>
-   *   <li>painStaffShortage - Personalmangel (ENUM: NONE, LOW, MEDIUM, HIGH)
-   *   <li>painHighCosts - Hohe Kosten (ENUM)
-   *   <li>painFoodWaste - Lebensmittelverschwendung (ENUM)
-   *   <li>painQualityInconsistency - Qualitätsschwankungen (ENUM)
-   *   <li>painTimePressure - Zeitdruck (ENUM)
-   *   <li>painSupplierQuality - Lieferanten-Qualität (ENUM)
-   *   <li>painUnreliableDelivery - Unzuverlässige Lieferung (ENUM)
-   *   <li>painPoorService - Schlechter Service (ENUM)
+   *   <li>LeadSchemaResource Stage 2 (Lines 312-367)
+   *   <li>CustomerSchemaResource Pain Points Card (Lines 637-692)
+   *   <li>Lead.java + Customer.java entities (Boolean fields)
+   * </ul>
+   *
+   * <p>Fields (8 boolean pain points + urgency + notes):
+   *
+   * <ul>
+   *   <li>painStaffShortage - Personalmangel (BOOLEAN)
+   *   <li>painHighCosts - Hohe Kosten (BOOLEAN)
+   *   <li>painFoodWaste - Lebensmittelverschwendung (BOOLEAN)
+   *   <li>painQualityInconsistency - Qualitätsschwankungen (BOOLEAN)
+   *   <li>painTimePressure - Zeitdruck (BOOLEAN)
+   *   <li>painSupplierQuality - Lieferanten-Qualität (BOOLEAN)
+   *   <li>painUnreliableDelivery - Unzuverlässige Lieferung (BOOLEAN)
+   *   <li>painPoorService - Schlechter Service (BOOLEAN)
+   *   <li>urgencyLevel - Dringlichkeitsstufe (ENUM: NORMAL, MEDIUM, HIGH, EMERGENCY)
    *   <li>painNotes - Notizen zu Schmerzpunkten (TEXTAREA)
    * </ul>
    */
@@ -115,85 +123,86 @@ public class ScoreSchemaResource {
     return CardSection.builder()
         .sectionId("pain_points")
         .title("Schmerzpunkte")
-        .subtitle("Bewerten Sie die Intensität jedes Schmerzpunktes")
+        .subtitle("Herausforderungen des Kunden identifizieren")
         .fields(
             List.of(
-                // OPERATIONAL PAINS
+                // ========== 8 BOOLEAN PAIN POINTS (from LeadSchemaResource Stage 2) ==========
                 FieldDefinition.builder()
                     .fieldKey("painStaffShortage")
-                    .label("Personalmangel")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity") // NONE, LOW, MEDIUM, HIGH
+                    .label("Personalmangel / Fachkräftemangel")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
-                    .helpText("Wie stark ist der Personalmangel?")
+                    .helpText("Leidet der Betrieb unter Personalmangel?")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painHighCosts")
-                    .label("Hohe Kosten")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Hoher Kostendruck")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Sind die Einkaufskosten zu hoch?")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painFoodWaste")
-                    .label("Lebensmittelverschwendung")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Food Waste / Überproduktion")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Gibt es Probleme mit Lebensmittelverschwendung?")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painQualityInconsistency")
-                    .label("Qualitätsschwankungen")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Interne Qualitätsinkonsistenz")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Gibt es Qualitätsschwankungen bei Produkten?")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painTimePressure")
-                    .label("Zeitdruck")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Zeitdruck / Effizienz")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Besteht Zeitdruck in der Küche/Produktion?")
                     .build(),
-                // DELIVERY PAINS
                 FieldDefinition.builder()
                     .fieldKey("painSupplierQuality")
-                    .label("Lieferanten-Qualität")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Qualitätsprobleme beim Lieferanten")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Gibt es Probleme mit der Qualität des aktuellen Lieferanten?")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("painUnreliableDelivery")
-                    .label("Unzuverlässige Lieferung")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Unzuverlässige Lieferzeiten")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Ist die Lieferung des aktuellen Lieferanten unzuverlässig?")
                     .build(),
-                // SERVICE PAINS
                 FieldDefinition.builder()
                     .fieldKey("painPoorService")
-                    .label("Schlechter Service")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/pain-intensity")
+                    .label("Schlechter Service/Support")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(6)
                     .helpText("Ist der Service des aktuellen Lieferanten schlecht?")
                     .build(),
-                // NOTES
+                // ========== URGENCY LEVEL ==========
+                FieldDefinition.builder()
+                    .fieldKey("urgencyLevel")
+                    .label("Dringlichkeitsstufe")
+                    .type(FieldType.ENUM)
+                    .enumSource(
+                        "/api/enums/urgency-levels") // NORMAL, MEDIUM, HIGH, EMERGENCY
+                    .gridCols(6)
+                    .helpText("Wie dringlich ist die Lösung dieser Probleme?")
+                    .build(),
+                // ========== NOTES ==========
                 FieldDefinition.builder()
                     .fieldKey("painNotes")
-                    .label("Notizen zu Schmerzpunkten")
+                    .label("Weitere Details zu Pain-Faktoren (optional)")
                     .type(FieldType.TEXTAREA)
                     .gridCols(12)
-                    .placeholder("Weitere Schmerzpunkte oder Details...")
+                    .placeholder(
+                        "Beschreiben Sie konkrete Probleme, Auswirkungen oder besondere"
+                            + " Umstände...")
                     .helpText("Freitext für zusätzliche Pain Points")
-                    .showDividerAfter(false)
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)
@@ -235,45 +244,22 @@ public class ScoreSchemaResource {
         .subtitle("Bewerten Sie das geschätzte Umsatzpotenzial")
         .fields(
             List.of(
+                // ========== estimatedVolume (jährlich!) ==========
                 FieldDefinition.builder()
-                    .fieldKey("estimatedAnnualRevenue")
-                    .label("Geschätzter Jahresumsatz")
-                    .type(FieldType.CURRENCY)
-                    .gridCols(6)
-                    .placeholder("z.B. 50000")
-                    .helpText("Potentieller Jahresumsatz mit diesem Kunden")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("budgetAvailable")
-                    .label("Budget verfügbar")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/budget-availability") // YES, NO, UNKNOWN
-                    .gridCols(6)
-                    .helpText("Hat der Kunde Budget für Einkäufe?")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("contractValue")
-                    .label("Vertragswert")
+                    .fieldKey("estimatedVolume")
+                    .label("Geschätztes Jahresvolumen (€)")
                     .type(FieldType.CURRENCY)
                     .gridCols(6)
                     .placeholder("z.B. 100000")
-                    .helpText("Erwarteter Vertragswert über Laufzeit")
+                    .helpText("Geschätztes jährliches Einkaufsvolumen Lebensmittel/Getränke")
                     .build(),
+                // ========== budgetConfirmed (BOOLEAN!) ==========
                 FieldDefinition.builder()
-                    .fieldKey("dealSize")
-                    .label("Deal-Größe")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/deal-sizes") // SMALL, MEDIUM, LARGE, ENTERPRISE
-                    .gridCols(6)
-                    .helpText("Größe des Deals")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("revenueNotes")
-                    .label("Notizen zum Umsatzpotenzial")
-                    .type(FieldType.TEXTAREA)
+                    .fieldKey("budgetConfirmed")
+                    .label("Budget freigegeben / bestätigt")
+                    .type(FieldType.BOOLEAN)
                     .gridCols(12)
-                    .placeholder("Weitere Informationen zum Umsatzpotenzial...")
-                    .helpText("Freitext für zusätzliche Details")
+                    .helpText("Hat der Kunde Budget für Einkäufe bestätigt?")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)
@@ -287,13 +273,16 @@ public class ScoreSchemaResource {
    *
    * <p>Engagement-Level des Kunden bewerten
    *
+   * <p><strong>CRITICAL:</strong> Fields match LeadSchemaResource Stage 2 (Lines 377-408)
+   *
    * <p>Fields:
    *
    * <ul>
-   *   <li>responseRate - Antwortrate (ENUM: FAST, MEDIUM, SLOW, NONE)
-   *   <li>meetingFrequency - Meeting-Häufigkeit (ENUM: WEEKLY, BIWEEKLY, MONTHLY, RARELY)
-   *   <li>stakeholderEngagement - Stakeholder-Engagement (ENUM: HIGH, MEDIUM, LOW)
-   *   <li>decisionMakingSpeed - Entscheidungsgeschwindigkeit (ENUM: FAST, MEDIUM, SLOW)
+   *   <li>relationshipStatus - Beziehungsstatus (ENUM: COLD, WARM, HOT, CHAMPION)
+   *   <li>decisionMakerAccess - Entscheider-Zugang (ENUM: UNKNOWN, GATEKEEPER, INFLUENCER,
+   *       DECISION_MAKER, EXECUTIVE)
+   *   <li>competitorInUse - Aktueller Wettbewerber (TEXT)
+   *   <li>internalChampionName - Interner Champion (TEXT)
    *   <li>engagementNotes - Notizen zum Engagement (TEXTAREA)
    * </ul>
    */
@@ -311,46 +300,49 @@ public class ScoreSchemaResource {
   private CardSection buildEngagementMetricsSection() {
     return CardSection.builder()
         .sectionId("engagement_metrics")
-        .title("Engagement-Metriken")
-        .subtitle("Bewerten Sie das Engagement des Kunden")
+        .title("Beziehungsebene")
+        .subtitle("Bewerten Sie die Beziehung zum Kunden")
         .fields(
             List.of(
                 FieldDefinition.builder()
-                    .fieldKey("responseRate")
-                    .label("Antwortrate")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/response-rates") // FAST, MEDIUM, SLOW, NONE
-                    .gridCols(6)
-                    .helpText("Wie schnell reagiert der Kunde auf Anfragen?")
-                    .build(),
-                FieldDefinition.builder()
-                    .fieldKey("meetingFrequency")
-                    .label("Meeting-Häufigkeit")
+                    .fieldKey("relationshipStatus")
+                    .label("Beziehungsqualität")
                     .type(FieldType.ENUM)
                     .enumSource(
-                        "/api/enums/meeting-frequency") // WEEKLY, BIWEEKLY, MONTHLY, RARELY
+                        "/api/enums/relationship-status") // COLD, WARM, HOT, CHAMPION
                     .gridCols(6)
-                    .helpText("Wie häufig finden Meetings statt?")
+                    .helpText("Wie ist der aktuelle Beziehungsstatus?")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("stakeholderEngagement")
-                    .label("Stakeholder-Engagement")
+                    .fieldKey("decisionMakerAccess")
+                    .label("Entscheider-Zugang")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/engagement-levels") // HIGH, MEDIUM, LOW
+                    .enumSource(
+                        "/api/enums/decision-maker-access") // UNKNOWN, GATEKEEPER,
+                    // INFLUENCER, DECISION_MAKER,
+                    // EXECUTIVE
                     .gridCols(6)
-                    .helpText("Wie stark sind die Stakeholder engagiert?")
+                    .helpText("Haben wir Zugang zum Entscheider?")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("decisionMakingSpeed")
-                    .label("Entscheidungsgeschwindigkeit")
-                    .type(FieldType.ENUM)
-                    .enumSource("/api/enums/decision-speeds") // FAST, MEDIUM, SLOW
+                    .fieldKey("internalChampionName")
+                    .label("Fürsprecher im Unternehmen")
+                    .type(FieldType.TEXT)
                     .gridCols(6)
-                    .helpText("Wie schnell werden Entscheidungen getroffen?")
+                    .placeholder("Name des Fürsprechers")
+                    .helpText("+30 Punkte wenn vorhanden")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("competitorInUse")
+                    .label("Aktueller Wettbewerber")
+                    .type(FieldType.TEXT)
+                    .gridCols(6)
+                    .placeholder("z.B. Metro, CHEFS CULINAR")
+                    .helpText("Welcher Lieferant wird aktuell genutzt?")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("engagementNotes")
-                    .label("Notizen zum Engagement")
+                    .label("Notizen zum Engagement (optional)")
                     .type(FieldType.TEXTAREA)
                     .gridCols(12)
                     .placeholder("Weitere Informationen zum Engagement...")

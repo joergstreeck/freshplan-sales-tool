@@ -27,13 +27,15 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  * <p><strong>Architecture:</strong> Backend = Single Source of Truth for schema + data Frontend =
  * Rendering Layer (no hardcoded schemas)
  *
- * <p><strong>Business Potential Fields:</strong>
+ * <p><strong>Business Potential Fields (matches frontend BusinessPotentialDialog):</strong>
  *
  * <ul>
  *   <li>businessType - Geschäftsart (Restaurant, Hotel, Kantine, etc.)
- *   <li>estimatedBudget - Geschätztes jährliches Budget (maps to Lead.estimatedVolume)
- *   <li>decisionTimeframe - Entscheidungszeitraum (TODO: Add to Lead entity in future migration)
- *   <li>notes - Notizen zum Geschäftspotenzial (TODO: Add to Lead entity or map to existing notes)
+ *   <li>kitchenSize - Küchengröße (Klein, Mittel, Groß, Sehr Groß)
+ *   <li>employeeCount - Mitarbeiteranzahl
+ *   <li>estimatedVolume - Geschätztes Jahresvolumen (€)
+ *   <li>branchCount - Anzahl Filialen/Standorte
+ *   <li>isChain - Kettenbetrieb (Ja/Nein)
  * </ul>
  *
  * <p><strong>Benefits:</strong>
@@ -66,9 +68,11 @@ public class BusinessPotentialSchemaResource {
    *
    * <ol>
    *   <li>businessType (ENUM, required) - Geschäftsart
-   *   <li>estimatedBudget (CURRENCY) - Geschätztes Budget
-   *   <li>decisionTimeframe (ENUM) - Entscheidungszeitraum
-   *   <li>notes (TEXTAREA) - Notizen
+   *   <li>kitchenSize (ENUM) - Küchengröße
+   *   <li>employeeCount (NUMBER) - Mitarbeiteranzahl
+   *   <li>estimatedVolume (CURRENCY) - Geschätztes Jahresvolumen
+   *   <li>branchCount (NUMBER) - Anzahl Filialen/Standorte
+   *   <li>isChain (BOOLEAN) - Kettenbetrieb
    * </ol>
    *
    * @return Business Potential Schema with 1 section (potential_assessment)
@@ -101,56 +105,71 @@ public class BusinessPotentialSchemaResource {
    *
    * <p>Business Potential assessment fields for Lead qualification.
    *
-   * <p>Fields:
+   * <p>Fields (matches BusinessPotentialDialog frontend):
    *
    * <ul>
    *   <li>businessType - Required ENUM field (Restaurant, Hotel, Kantine, etc.)
-   *   <li>estimatedBudget - CURRENCY field (Jährliches Budget für Lebensmittel/Getränke)
-   *   <li>decisionTimeframe - ENUM field (Entscheidungszeitraum: Sofort, 1-3 Monate, etc.)
-   *   <li>notes - TEXTAREA field (Weitere Informationen zum Geschäftspotenzial)
+   *   <li>kitchenSize - ENUM field (Klein, Mittel, Groß, Sehr Groß)
+   *   <li>employeeCount - NUMBER field (Anzahl Mitarbeiter gesamt)
+   *   <li>estimatedVolume - CURRENCY field (Jährliches Einkaufsvolumen Lebensmittel/Getränke)
+   *   <li>branchCount - NUMBER field (Anzahl Filialen/Standorte)
+   *   <li>isChain - BOOLEAN field (Kettenbetrieb: mehrere Standorte mit zentraler Verwaltung)
    * </ul>
    */
   private CardSection buildPotentialAssessmentSection() {
     return CardSection.builder()
         .sectionId("potential_assessment")
         .title("Potenzial-Bewertung")
-        .subtitle("Geschäftsart, Budget, Entscheidungszeitraum")
+        .subtitle("Geschäftsart, Küchengröße, Mitarbeiter, Budget, Filialstruktur")
         .fields(
             List.of(
                 FieldDefinition.builder()
                     .fieldKey("businessType")
                     .label("Geschäftsart")
                     .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
+                    .enumSource("/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
                     .required(true)
                     .gridCols(6)
                     .helpText("Branche des Unternehmens")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("estimatedBudget")
-                    .label("Geschätztes Budget")
+                    .fieldKey("kitchenSize")
+                    .label("Küchengröße")
+                    .type(FieldType.ENUM)
+                    .enumSource("/api/enums/kitchen-sizes") // KLEIN, MITTEL, GROSS, SEHR_GROSS
+                    .gridCols(6)
+                    .helpText("Größe der Küche / Produktionskapazität")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("employeeCount")
+                    .label("Mitarbeiteranzahl")
+                    .type(FieldType.NUMBER)
+                    .gridCols(6)
+                    .placeholder("z.B. 50")
+                    .helpText("Anzahl Mitarbeiter gesamt")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("estimatedVolume")
+                    .label("Geschätztes Jahresvolumen (€)")
                     .type(FieldType.CURRENCY)
                     .gridCols(6)
                     .placeholder("z.B. 100000")
-                    .helpText("Jährliches Budget für Lebensmittel/Getränke")
+                    .helpText("Geschätztes jährliches Einkaufsvolumen Lebensmittel/Getränke")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("decisionTimeframe")
-                    .label("Entscheidungszeitraum")
-                    .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/decision-timeframes") // SOFORT, 1_3_MONATE, 3_6_MONATE, LAENGER
+                    .fieldKey("branchCount")
+                    .label("Anzahl Filialen/Standorte")
+                    .type(FieldType.NUMBER)
                     .gridCols(6)
-                    .helpText("Wann wird eine Entscheidung erwartet?")
+                    .placeholder("z.B. 1")
+                    .helpText("Anzahl Filialen/Standorte (1 = Einzelstandort)")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("notes")
-                    .label("Notizen")
-                    .type(FieldType.TEXTAREA)
-                    .gridCols(12)
-                    .placeholder("Weitere Informationen zum Geschäftspotenzial...")
-                    .helpText("Zusätzliche Details zur Potenzial-Bewertung")
+                    .fieldKey("isChain")
+                    .label("Kettenbetrieb")
+                    .type(FieldType.BOOLEAN)
+                    .gridCols(6)
+                    .helpText("Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)
