@@ -3,9 +3,9 @@ package de.freshplan.domain.customer.entity;
 /**
  * Academic and Professional Titles (German Business Etiquette).
  *
- * Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+ * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
  *
- * German business culture requires proper titles in formal communication (letters, emails).
+ * <p>German business culture requires proper titles in formal communication (letters, emails).
  * These are the most common titles used in German business correspondence.
  */
 public enum Title {

@@ -129,9 +129,9 @@ public class EnumResource {
    *
    * <p>Sprint 2.1.7.2 D11: Server-Driven UI for Activity Management
    *
-   * <p><strong>Filters:</strong> Returns only user-selectable activities (10 types).
-   * System activities (FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED) and legacy
-   * activities (ORDER, STATUS_CHANGE, etc.) are excluded.
+   * <p><strong>Filters:</strong> Returns only user-selectable activities (10 types). System
+   * activities (FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED) and legacy activities
+   * (ORDER, STATUS_CHANGE, etc.) are excluded.
    *
    * @return List of user-selectable ActivityType values with display names (10 types)
    */
@@ -441,8 +441,8 @@ public class EnumResource {
    *
    * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
    *
-   * <p>Business Rule: German business etiquette requires proper titles in formal
-   * correspondence (letters, emails). Common titles: Dr., Prof., Dipl.-Ing., M.Sc., etc.
+   * <p>Business Rule: German business etiquette requires proper titles in formal correspondence
+   * (letters, emails). Common titles: Dr., Prof., Dipl.-Ing., M.Sc., etc.
    *
    * @return List of Title values with display names
    */
@@ -467,8 +467,8 @@ public class EnumResource {
    *
    * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Engagement Score)
    *
-   * <p>Business Rule: Relationship status impacts Engagement Score (40% weight). Values range
-   * from COLD (0 pts) to ADVOCATE (25 pts).
+   * <p>Business Rule: Relationship status impacts Engagement Score (40% weight). Values range from
+   * COLD (0 pts) to ADVOCATE (25 pts).
    *
    * @return List of RelationshipStatus values with display names
    */
@@ -519,8 +519,8 @@ public class EnumResource {
    *
    * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Pain Score)
    *
-   * <p>Business Rule: Urgency level impacts Dringlichkeit dimension (40% weight). Values range
-   * from NORMAL (0 pts) to EMERGENCY (25 pts). High pain + high urgency = hot lead.
+   * <p>Business Rule: Urgency level impacts Dringlichkeit dimension (40% weight). Values range from
+   * NORMAL (0 pts) to EMERGENCY (25 pts). High pain + high urgency = hot lead.
    *
    * @return List of UrgencyLevel values with display names
    */
@@ -571,8 +571,8 @@ public class EnumResource {
    *
    * <p>Sprint 2.1.7.2 D11.2: Server-Driven UI for Lead Scoring (Revenue Score)
    *
-   * <p>Business Rule: Deal size impacts Revenue Score (25% of total lead score). Values range
-   * from SMALL (25 pts) to ENTERPRISE (100 pts).
+   * <p>Business Rule: Deal size impacts Revenue Score (25% of total lead score). Values range from
+   * SMALL (25 pts) to ENTERPRISE (100 pts).
    *
    * @return List of DealSize values with display names
    */

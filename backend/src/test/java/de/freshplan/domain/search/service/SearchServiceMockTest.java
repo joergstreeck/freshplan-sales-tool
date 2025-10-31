@@ -190,7 +190,8 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList());
 
     // When
-    SearchResults results = searchService.universalSearch(customerNumberQuery, true, false, 20, "customers");
+    SearchResults results =
+        searchService.universalSearch(customerNumberQuery, true, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);

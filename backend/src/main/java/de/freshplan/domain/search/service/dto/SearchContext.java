@@ -6,14 +6,10 @@ package de.freshplan.domain.search.service.dto;
  * <p>Replaces string-based context parameter with type-safe enum.
  */
 public enum SearchContext {
-  /**
-   * Search in leads.
-   */
+  /** Search in leads. */
   LEADS,
 
-  /**
-   * Search in customers (default).
-   */
+  /** Search in customers (default). */
   CUSTOMERS;
 
   /**

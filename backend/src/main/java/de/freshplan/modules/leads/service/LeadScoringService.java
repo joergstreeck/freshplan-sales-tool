@@ -202,8 +202,8 @@ public class LeadScoringService {
    *   <li>Deal size category (auto-calculated): ENTERPRISE=30, LARGE=22, MEDIUM=15, SMALL=8
    * </ul>
    *
-   * <p><strong>IMPORTANT:</strong> estimatedVolume is ANNUAL (not monthly) since Sprint 2.1.7.2
-   * D11 Phase 2
+   * <p><strong>IMPORTANT:</strong> estimatedVolume is ANNUAL (not monthly) since Sprint 2.1.7.2 D11
+   * Phase 2
    *
    * @param lead The lead to score
    * @return Revenue score (0-100)

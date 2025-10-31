@@ -188,8 +188,7 @@ public class ScoreSchemaResource {
                     .fieldKey("urgencyLevel")
                     .label("Dringlichkeitsstufe")
                     .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/urgency-levels") // NORMAL, MEDIUM, HIGH, EMERGENCY
+                    .enumSource("/api/enums/urgency-levels") // NORMAL, MEDIUM, HIGH, EMERGENCY
                     .gridCols(6)
                     .helpText("Wie dringlich ist die Lösung dieser Probleme?")
                     .build(),
@@ -308,8 +307,7 @@ public class ScoreSchemaResource {
                     .fieldKey("relationshipStatus")
                     .label("Beziehungsqualität")
                     .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/relationship-status") // COLD, WARM, HOT, CHAMPION
+                    .enumSource("/api/enums/relationship-status") // COLD, WARM, HOT, CHAMPION
                     .gridCols(6)
                     .helpText("Wie ist der aktuelle Beziehungsstatus?")
                     .build(),
@@ -317,8 +315,7 @@ public class ScoreSchemaResource {
                     .fieldKey("decisionMakerAccess")
                     .label("Entscheider-Zugang")
                     .type(FieldType.ENUM)
-                    .enumSource(
-                        "/api/enums/decision-maker-access") // UNKNOWN, GATEKEEPER,
+                    .enumSource("/api/enums/decision-maker-access") // UNKNOWN, GATEKEEPER,
                     // INFLUENCER, DECISION_MAKER,
                     // EXECUTIVE
                     .gridCols(6)

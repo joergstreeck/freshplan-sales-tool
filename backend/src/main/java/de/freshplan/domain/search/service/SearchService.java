@@ -70,11 +70,16 @@ public class SearchService {
    * @return Combined search results
    */
   public SearchResults universalSearch(
-      String query, boolean includeContacts, boolean includeInactive, int limit, SearchContext context) {
+      String query,
+      boolean includeContacts,
+      boolean includeInactive,
+      int limit,
+      SearchContext context) {
 
     if (cqrsEnabled) {
       LOG.debugf("CQRS enabled - delegating universalSearch to SearchQueryService");
-      // NOTE: CQRS SearchQueryService currently only supports customer search (no context routing yet)
+      // NOTE: CQRS SearchQueryService currently only supports customer search (no context routing
+      // yet)
       return queryService.universalSearch(query, includeContacts, includeInactive, limit);
     }
 
@@ -97,7 +102,8 @@ public class SearchService {
   @Deprecated
   public SearchResults universalSearch(
       String query, boolean includeContacts, boolean includeInactive, int limit, String context) {
-    return universalSearch(query, includeContacts, includeInactive, limit, SearchContext.fromString(context));
+    return universalSearch(
+        query, includeContacts, includeInactive, limit, SearchContext.fromString(context));
   }
 
   /**
@@ -125,14 +131,17 @@ public class SearchService {
 
   /** Legacy implementation of universalSearch (preserved for fallback). */
   private SearchResults legacyUniversalSearch(
-      String query, boolean includeContacts, boolean includeInactive, int limit, SearchContext context) {
+      String query,
+      boolean includeContacts,
+      boolean includeInactive,
+      int limit,
+      SearchContext context) {
 
     long startTime = System.currentTimeMillis();
 
     // Analyze query type
     QueryType queryType = detectQueryType(query);
-    LOG.debugf(
-        "Query type detected: %s for query: %s in context: %s", queryType, query, context);
+    LOG.debugf("Query type detected: %s for query: %s in context: %s", queryType, query, context);
 
     // Prepare search results
     List<SearchResult> entityResults = new ArrayList<>();
@@ -452,8 +461,7 @@ public class SearchService {
       case EMAIL:
         // Search in lead email field (Lead has direct email field!)
         leads =
-            de.freshplan.modules.leads.domain.Lead.find(
-                    "lower(email) = ?1", query.toLowerCase())
+            de.freshplan.modules.leads.domain.Lead.find("lower(email) = ?1", query.toLowerCase())
                 .page(0, limit)
                 .list();
         matchedFields.add("email");
@@ -477,8 +485,7 @@ public class SearchService {
         String searchPattern = "%" + query.toLowerCase() + "%";
         leads =
             de.freshplan.modules.leads.domain.Lead.find(
-                    "lower(companyName) LIKE ?1 OR lower(contactPerson) LIKE ?1",
-                    searchPattern)
+                    "lower(companyName) LIKE ?1 OR lower(contactPerson) LIKE ?1", searchPattern)
                 .page(0, limit)
                 .list();
         matchedFields.addAll(List.of("companyName", "contactPerson"));
@@ -491,12 +498,9 @@ public class SearchService {
           leads.stream()
               .filter(
                   l ->
-                      l.status
-                              != de.freshplan.modules.leads.domain.LeadStatus.EXPIRED
-                          && l.status
-                              != de.freshplan.modules.leads.domain.LeadStatus.DELETED
-                          && l.status
-                              != de.freshplan.modules.leads.domain.LeadStatus.LOST)
+                      l.status != de.freshplan.modules.leads.domain.LeadStatus.EXPIRED
+                          && l.status != de.freshplan.modules.leads.domain.LeadStatus.DELETED
+                          && l.status != de.freshplan.modules.leads.domain.LeadStatus.LOST)
               .collect(Collectors.toList());
     }
 
@@ -551,8 +555,7 @@ public class SearchService {
         // Search in phone AND mobile fields
         contacts =
             de.freshplan.modules.leads.domain.LeadContact.find(
-                    "isActive = true AND (phone LIKE ?1 OR mobile LIKE ?1)",
-                    "%" + query + "%")
+                    "isActive = true AND (phone LIKE ?1 OR mobile LIKE ?1)", "%" + query + "%")
                 .page(0, limit)
                 .list();
         matchedFields.addAll(List.of("phone", "mobile"));
@@ -598,7 +601,8 @@ public class SearchService {
               dto.setPhone(contact.getPhone());
               dto.setPosition(contact.getPosition());
               dto.setLeadId(contact.getLead().id.toString());
-              dto.setCustomerId(contact.getLead().id.toString()); // Alias for frontend compatibility
+              dto.setCustomerId(
+                  contact.getLead().id.toString()); // Alias for frontend compatibility
               dto.setLeadName(contact.getLead().companyName);
               dto.setIsPrimary(contact.isPrimary());
 
@@ -678,8 +682,7 @@ public class SearchService {
     }
 
     // Name matching
-    String fullName =
-        (contact.getFirstName() + " " + contact.getLastName()).toLowerCase();
+    String fullName = (contact.getFirstName() + " " + contact.getLastName()).toLowerCase();
     if (fullName.equals(lowerQuery)) {
       score += 90;
     } else if (fullName.startsWith(lowerQuery)) {

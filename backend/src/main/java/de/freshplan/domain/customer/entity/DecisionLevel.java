@@ -3,10 +3,10 @@ package de.freshplan.domain.customer.entity;
 /**
  * Decision Level for Contacts (Sales Strategy).
  *
- * Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+ * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
  *
- * Understanding the decision-making level is crucial for B2B sales strategy.
- * Helps prioritize contacts and tailor communication approach.
+ * <p>Understanding the decision-making level is crucial for B2B sales strategy. Helps prioritize
+ * contacts and tailor communication approach.
  */
 public enum DecisionLevel {
   /** Executive level - C-Level, Owner (final decision maker) */

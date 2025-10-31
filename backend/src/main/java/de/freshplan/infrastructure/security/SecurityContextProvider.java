@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
@@ -22,6 +23,9 @@ public class SecurityContextProvider {
   @Inject SecurityIdentity securityIdentity;
 
   @Inject Instance<JsonWebToken> jwtInstance;
+
+  @ConfigProperty(name = "quarkus.security.auth.enabled-in-dev-mode", defaultValue = "true")
+  boolean authEnabledInDevMode;
 
   /**
    * Get the current user's ID from the JWT token.
@@ -225,6 +229,11 @@ public class SecurityContextProvider {
    * @throws SecurityException if not authenticated
    */
   public void requireAuthentication() {
+    // Skip authentication check in dev mode when disabled
+    if (!authEnabledInDevMode) {
+      return;
+    }
+
     if (!isAuthenticated()) {
       LOG.warn("Unauthorized access attempt detected");
       throw new SecurityException("Authentication required");
@@ -254,6 +263,11 @@ public class SecurityContextProvider {
    * @throws SecurityException if none of the roles are present
    */
   public void requireAnyRole(String... roles) {
+    // Skip role check in dev mode when disabled
+    if (!authEnabledInDevMode) {
+      return;
+    }
+
     requireAuthentication();
     Set<String> userRoles = getRoles();
 

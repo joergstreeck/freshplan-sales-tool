@@ -3,9 +3,9 @@ package de.freshplan.domain.customer.entity;
 /**
  * Salutation for Contacts (German Business Etiquette).
  *
- * Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+ * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
  *
- * German business culture requires proper salutations in professional communication.
+ * <p>German business culture requires proper salutations in professional communication.
  */
 public enum Salutation {
   /** Herr (Mr.) */

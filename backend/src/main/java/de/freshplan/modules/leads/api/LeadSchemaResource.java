@@ -49,7 +49,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  */
 @Path("/api/leads/schema")
 @Produces(MediaType.APPLICATION_JSON)
-@Tag(name = "Lead Schema", description = "Server-Driven UI Schema for Lead Forms (Progressive Profiling)")
+@Tag(
+    name = "Lead Schema",
+    description = "Server-Driven UI Schema for Lead Forms (Progressive Profiling)")
 public class LeadSchemaResource {
 
   /**
@@ -149,7 +151,9 @@ public class LeadSchemaResource {
                     .fieldKey("source")
                     .label("Quelle")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/lead-sources") // MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE
+                    .enumSource(
+                        "/api/enums/lead-sources") // MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR,
+                    // PARTNER, SONSTIGE
                     .required(true)
                     .gridCols(6)
                     .helpText("Woher kommt der Lead? (MESSE/EMPFEHLUNG = Pre-Claim 10 Tage)")
@@ -210,7 +214,8 @@ public class LeadSchemaResource {
                     .label("Notizen / Quelle (optional)")
                     .type(FieldType.TEXTAREA)
                     .gridCols(12)
-                    .placeholder("Z.B. Empfehlung von Herrn Schulz, Partner-Liste Nr. 47, Stand A-12 auf der INTERNORGA...")
+                    .placeholder(
+                        "Z.B. Empfehlung von Herrn Schulz, Partner-Liste Nr. 47, Stand A-12 auf der INTERNORGA...")
                     .helpText("Hintergrund-Informationen ohne Einfluss auf Lead-Schutz")
                     .build()))
         .collapsible(false)
@@ -240,7 +245,8 @@ public class LeadSchemaResource {
                     .fieldKey("businessType")
                     .label("Branche")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
+                    .enumSource(
+                        "/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
                     .gridCols(6)
                     .helpText("Branche des Unternehmens")
                     .build(),
@@ -282,7 +288,8 @@ public class LeadSchemaResource {
                     .label("Kettenbetrieb")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
-                    .helpText("Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)")
+                    .helpText(
+                        "Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)
@@ -386,7 +393,9 @@ public class LeadSchemaResource {
                     .fieldKey("decisionMakerAccess")
                     .label("Entscheider-Zugang")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/decision-maker-access") // UNKNOWN, GATEKEEPER, INFLUENCER, DECISION_MAKER, EXECUTIVE
+                    .enumSource(
+                        "/api/enums/decision-maker-access") // UNKNOWN, GATEKEEPER, INFLUENCER,
+                    // DECISION_MAKER, EXECUTIVE
                     .gridCols(6)
                     .helpText("Haben wir Zugang zum Entscheider?")
                     .build(),
@@ -442,7 +451,8 @@ public class LeadSchemaResource {
                     .label("Quelle")
                     .type(FieldType.ENUM)
                     .enumSource(
-                        "/api/enums/lead-sources") // MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR, PARTNER, SONSTIGE
+                        "/api/enums/lead-sources") // MESSE, EMPFEHLUNG, TELEFON, WEB_FORMULAR,
+                    // PARTNER, SONSTIGE
                     .required(true)
                     .gridCols(6)
                     .helpText(

@@ -127,7 +127,8 @@ public class BusinessPotentialSchemaResource {
                     .fieldKey("businessType")
                     .label("Geschäftsart")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
+                    .enumSource(
+                        "/api/enums/business-types") // RESTAURANT, HOTEL, KANTINE, CATERING, etc.
                     .required(true)
                     .gridCols(6)
                     .helpText("Branche des Unternehmens")
@@ -169,7 +170,8 @@ public class BusinessPotentialSchemaResource {
                     .label("Kettenbetrieb")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
-                    .helpText("Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)")
+                    .helpText(
+                        "Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)

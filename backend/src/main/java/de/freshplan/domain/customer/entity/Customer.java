@@ -209,8 +209,7 @@ public class Customer extends PanacheEntityBase {
    * Revenue (Umsatz) der letzten 90 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
    *
    * <p>Befüllung: Später via Xentral API Sync Verwendung: - Trend-Analysen (30/90/365 Tage
-   * Vergleich) - Dashboard Revenue-Entwicklung - CustomerSchemaResource (Card
-   * "Geschäftspotenzial")
+   * Vergleich) - Dashboard Revenue-Entwicklung - CustomerSchemaResource (Card "Geschäftspotenzial")
    *
    * @since 2.1.7.2
    */

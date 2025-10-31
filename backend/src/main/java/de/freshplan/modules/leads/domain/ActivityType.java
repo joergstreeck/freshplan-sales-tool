@@ -63,27 +63,23 @@ public enum ActivityType {
   /**
    * Check if this activity type is user-selectable in ActivityDialog.
    *
-   * <p>User-selectable activities (10 types):
-   * - Progress Activities (5): QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT
-   * - Non-Progress Activities (5): NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK
+   * <p>User-selectable activities (10 types): - Progress Activities (5): QUALIFIED_CALL, MEETING,
+   * DEMO, ROI_PRESENTATION, SAMPLE_SENT - Non-Progress Activities (5): NOTE, FOLLOW_UP, EMAIL,
+   * CALL, SAMPLE_FEEDBACK
    *
-   * <p>NOT user-selectable (13 types):
-   * - System Activities (3): FIRST_CONTACT_DOCUMENTED, EMAIL_RECEIVED, LEAD_ASSIGNED
-   * - Legacy Activities (10): ORDER, STATUS_CHANGE, CREATED, etc.
+   * <p>NOT user-selectable (13 types): - System Activities (3): FIRST_CONTACT_DOCUMENTED,
+   * EMAIL_RECEIVED, LEAD_ASSIGNED - Legacy Activities (10): ORDER, STATUS_CHANGE, CREATED, etc.
    *
    * @return true if users can manually select this activity type
    */
   public boolean isUserSelectable() {
     return switch (this) {
-      // Progress Activities (5)
-      case QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT ->
-          true;
-      // Non-Progress Activities (5)
-      case NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK ->
-          true;
-      // System & Legacy Activities (13) - NOT user-selectable
-      default ->
-          false;
+        // Progress Activities (5)
+      case QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT -> true;
+        // Non-Progress Activities (5)
+      case NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK -> true;
+        // System & Legacy Activities (13) - NOT user-selectable
+      default -> false;
     };
   }
 

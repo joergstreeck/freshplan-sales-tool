@@ -21,8 +21,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
  *
  * <p>Provides schema definitions for Contact sections (visible in CustomerDetailTabVerlauf).
  *
- * <p>Frontend fetches this schema from `GET /api/contacts/schema` and renders sections
- * dynamically.
+ * <p>Frontend fetches this schema from `GET /api/contacts/schema` and renders sections dynamically.
  *
  * <p><strong>Architecture:</strong> Backend = Single Source of Truth for schema + data Frontend =
  * Rendering Layer (no hardcoded schemas, no fieldCatalog.json)
@@ -149,7 +148,8 @@ public class ContactSchemaResource {
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/contact-decision-levels")
                     .gridCols(6)
-                    .helpText("Entscheidungskompetenz (Executive, Manager, Operational, Influencer)")
+                    .helpText(
+                        "Entscheidungskompetenz (Executive, Manager, Operational, Influencer)")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("email")
@@ -182,8 +182,8 @@ public class ContactSchemaResource {
   /**
    * Section 2: 🤝 Beziehungsmanagement
    *
-   * <p>Relationship data for sales excellence: Birthday, Hobbies, Family Status, Children,
-   * Personal Notes
+   * <p>Relationship data for sales excellence: Birthday, Hobbies, Family Status, Children, Personal
+   * Notes
    */
   private CardSection buildRelationshipSection() {
     return CardSection.builder()

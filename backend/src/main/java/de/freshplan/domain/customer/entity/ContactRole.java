@@ -3,9 +3,9 @@ package de.freshplan.domain.customer.entity;
 /**
  * Contact Role in Gastronomy/Hospitality Business.
  *
- * Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
+ * <p>Sprint 2.1.7.2 D11.1: Contact Management - Backend/Frontend Parity
  *
- * Realistic roles in German gastronomy businesses for better targeting.
+ * <p>Realistic roles in German gastronomy businesses for better targeting.
  */
 public enum ContactRole {
   /** Küchenchef / Chefkoch - responsible for kitchen operations */

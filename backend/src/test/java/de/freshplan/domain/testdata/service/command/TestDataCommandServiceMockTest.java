@@ -126,7 +126,8 @@ class TestDataCommandServiceMockTest {
   }
 
   @Test
-  @Disabled("Cannot mock Panache static methods (Activity.delete, CustomerContact.delete, etc.) - requires Integration Test")
+  @Disabled(
+      "Cannot mock Panache static methods (Activity.delete, CustomerContact.delete, etc.) - requires Integration Test")
   void cleanTestData_shouldDeleteEventsBeforeCustomers() {
     // Given - FK-safe delete order
     when(timelineRepository.delete("isTestData", true)).thenReturn(10L);
@@ -146,7 +147,8 @@ class TestDataCommandServiceMockTest {
   }
 
   @Test
-  @Disabled("Cannot mock Panache static methods (Activity.delete, CustomerContact.delete, etc.) - requires Integration Test")
+  @Disabled(
+      "Cannot mock Panache static methods (Activity.delete, CustomerContact.delete, etc.) - requires Integration Test")
   void cleanTestData_withRepositoryException_shouldThrowRuntimeException() {
     // Given
     doThrow(new RuntimeException("Database error"))
