@@ -25,7 +25,8 @@ import { setupTestData, cleanupTestData } from '../fixtures/test-data-helper';
 
 test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
   // Setup: Create test customers with timeline/contacts data
-  test.beforeAll(async (_context, testInfo) => {
+  // eslint-disable-next-line no-empty-pattern
+  test.beforeAll(async ({ }, testInfo) => {
     const baseURL = testInfo.project.use.baseURL || 'http://localhost:8080';
     await setupTestData(baseURL);
     console.log('✅ Test data setup complete');
