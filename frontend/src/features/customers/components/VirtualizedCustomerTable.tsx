@@ -53,7 +53,9 @@ export function VirtualizedCustomerTable({
   const theme = useTheme();
 
   // Calculate visible columns
-  const visibleColumns = useMemo(() => columns.filter(col => col.visible), [columns]);
+  const visibleColumns = useMemo(() => {
+    return columns.filter(col => col.visible);
+  }, [columns]);
 
   // Item count for infinite loading
   const itemCount = hasMore ? customers.length + 1 : customers.length;
@@ -99,18 +101,32 @@ export function VirtualizedCustomerTable({
       return 'success';
     };
 
-    // Calculate status color
+    // Calculate status color (Backend sends German values)
     const getStatusColor = (status: string) => {
-      switch (status) {
+      switch (status?.toUpperCase()) {
+        case 'AKTIV':
         case 'ACTIVE':
           return 'success';
+        case 'PROSPECT':
+          return 'info';
+        case 'INAKTIV':
         case 'INACTIVE':
           return 'default';
+        case 'ARCHIVIERT':
+        case 'ARCHIVED':
+          return 'default';
         case 'DRAFT':
+        case 'ENTWURF':
           return 'warning';
         default:
           return 'default';
       }
+    };
+
+    // Capitalize status label (first letter uppercase, rest lowercase)
+    const formatStatusLabel = (status: string) => {
+      if (!status) return status;
+      return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
     };
 
     return (
@@ -147,7 +163,7 @@ export function VirtualizedCustomerTable({
                 return (
                   <Box key={column.id} sx={{ flex: 1, minWidth: 100 }}>
                     <Chip
-                      label={value as string}
+                      label={formatStatusLabel(value as string)}
                       size="small"
                       color={
                         getStatusColor(value as string) as
@@ -207,17 +223,14 @@ export function VirtualizedCustomerTable({
                 return (
                   <Box
                     key={column.id}
-                    sx={{ flex: 0, minWidth: 120, display: 'flex', gap: 1 }}
+                    sx={{ flex: 0, minWidth: 100, display: 'flex', gap: 1 }}
                     onClick={(e: React.MouseEvent<HTMLDivElement>) => e.stopPropagation()}
                   >
                     {onEdit && (
-                      <IconButton size="small" onClick={() => onEdit(customer)}>
+                      <IconButton size="small" color="success" onClick={() => onEdit(customer)}>
                         <EditIcon fontSize="small" />
                       </IconButton>
                     )}
-                    <IconButton size="small" onClick={() => onRowClick?.(customer)}>
-                      <ViewIcon fontSize="small" />
-                    </IconButton>
                     {onDelete && (
                       <IconButton size="small" color="error" onClick={() => onDelete(customer)}>
                         <DeleteIcon fontSize="small" />

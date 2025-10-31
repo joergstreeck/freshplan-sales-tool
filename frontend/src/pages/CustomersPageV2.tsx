@@ -555,6 +555,20 @@ export function CustomersPageV2({
                             navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
                           }
                         }}
+                        onEdit={customer => {
+                          setSelectedLead(customer as unknown as Lead);
+                          if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                            setFirstContactDialogOpen(true);
+                          } else if (context === 'leads') {
+                            navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                          } else {
+                            navigate(`/customers/${customer.id}`);
+                          }
+                        }}
+                        onDelete={customer => {
+                          setSelectedLead(customer as unknown as Lead);
+                          setDeleteDialogOpen(true);
+                        }}
                         height={600}
                         rowHeight={72}
                       />
