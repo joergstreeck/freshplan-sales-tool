@@ -89,7 +89,9 @@ export default function CustomerActivityTimeline({ customerId }: CustomerActivit
     }
   };
 
-  const getActivityColor = (type: string) => {
+  const getActivityColor = (
+    type: string
+  ): 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning' | 'grey' => {
     switch (type) {
       case 'EMAIL':
       case 'CALL':
@@ -143,7 +145,7 @@ export default function CustomerActivityTimeline({ customerId }: CustomerActivit
             </Typography>
           </TimelineOppositeContent>
           <TimelineSeparator>
-            <TimelineDot color={getActivityColor(activity.activityType) as any}>
+            <TimelineDot color={getActivityColor(activity.activityType)}>
               {getActivityIcon(activity.activityType)}
             </TimelineDot>
             {index < activities.length - 1 && <TimelineConnector />}

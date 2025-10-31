@@ -18,6 +18,7 @@ import {
   StickyNote2Outlined as NoteIcon,
 } from '@mui/icons-material';
 import type { Contact } from '../types/contact.types';
+import { getContactDisplayName } from '../types/contact.types';
 import { useState, useEffect } from 'react';
 
 interface CustomerContactsListProps {
@@ -160,9 +161,7 @@ export default function CustomerContactsList({ customerId }: CustomerContactsLis
             <Box display="flex" alignItems="center" gap={0.5} mb={0.5}>
               <PersonIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
               <Typography variant="subtitle2" fontWeight={contact.isPrimary ? 600 : 500}>
-                {(contact as any).displayName ||
-                  (contact as any).fullName ||
-                  `${contact.firstName} ${contact.lastName}`}
+                {getContactDisplayName(contact)}
               </Typography>
             </Box>
             {contact.position && (

@@ -18,7 +18,6 @@ import {
 } from '@mui/material';
 import {
   Edit as EditIcon,
-  Visibility as ViewIcon,
   Delete as DeleteIcon,
 } from '@mui/icons-material';
 import type { Customer } from '../../../types/customer.types';

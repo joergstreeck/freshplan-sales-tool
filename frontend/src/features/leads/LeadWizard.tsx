@@ -96,7 +96,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const { data: decisionMakerAccessOptions, isLoading: decisionMakerAccessLoading } = useEnumOptions(decisionMakerAccessField?.enumSource || '');
 
   // Build enum options map for renderField
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+   
   const enumOptionsMap: Record<string, { options: EnumOption[]; loading: boolean }> = {
     source: { options: sourceOptions || [], loading: sourceLoading },
     businessType: { options: businessTypeOptions || [], loading: businessTypeLoading },

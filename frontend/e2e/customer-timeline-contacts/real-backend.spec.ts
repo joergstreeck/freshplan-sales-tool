@@ -21,11 +21,11 @@
 
 import { test, expect } from '@playwright/test';
 import { mockAuth } from '../fixtures/auth-helper';
-import { setupTestData, cleanupTestData, findTestCustomer } from '../fixtures/test-data-helper';
+import { setupTestData, cleanupTestData } from '../fixtures/test-data-helper';
 
 test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
   // Setup: Create test customers with timeline/contacts data
-  test.beforeAll(async ({}, testInfo) => {
+  test.beforeAll(async (_context, testInfo) => {
     const baseURL = testInfo.project.use.baseURL || 'http://localhost:8080';
     await setupTestData(baseURL);
     console.log('✅ Test data setup complete');

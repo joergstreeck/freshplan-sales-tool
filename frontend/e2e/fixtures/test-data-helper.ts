@@ -8,7 +8,7 @@
  * @since Sprint 2.1.7.2
  */
 
-import { Page, request, APIRequestContext } from '@playwright/test';
+import { request, APIRequestContext } from '@playwright/test';
 
 export interface TestCustomer {
   id: string;
@@ -27,7 +27,7 @@ let testDataContext: TestDataContext | null = null;
  * Creates test customers with timeline activities and contacts
  * Called in beforeAll() hook
  */
-export async function setupTestData(baseURL: string): Promise<TestDataContext> {
+export async function setupTestData(_baseURL: string): Promise<TestDataContext> {
   // Always use backend URL for API requests (not frontend URL)
   const backendURL = 'http://localhost:8080';
 

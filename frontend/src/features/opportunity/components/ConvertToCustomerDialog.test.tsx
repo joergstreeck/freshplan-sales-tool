@@ -5,6 +5,7 @@
  * @description Tests für Opportunity → Customer Konvertierung mit Xentral-Dropdown
  * @since 2025-10-23
  */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
