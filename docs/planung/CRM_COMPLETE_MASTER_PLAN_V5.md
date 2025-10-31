@@ -1715,6 +1715,18 @@
 - **Tests:** Keine neuen Tests (Housekeeping-Session)
 - **Status:** ✅ Übergabe vollständig - Bereit für neue Session (Sprint 2.1.7.4 oder User-Anweisung)
 
+### 2025-10-31 23:43 — Sprint 2.1.7.2 MERGED TO MAIN - Documentation COMPLETE
+- **Kontext:** Sprint 2.1.7.2 (PR #144) erfolgreich gemerged (31.10.2025 21:50:20 UTC) - Dokumentation vollständig aktualisiert + doppelte Übergabe erstellt
+- **Erledigt:**
+  - **Sprint 2.1.7.2 Dokumentation COMPLETE:** 5 Haupt-Dokumente aktualisiert (TRIGGER_SPRINT_2_1_7_2, TRIGGER_INDEX, PRODUCTION_ROADMAP_2025, CRM_AI_CONTEXT_SCHNELL, MIGRATIONS)
+  - **MIGRATIONS.md:** Vollständig aktualisiert (V10025, V10031-V10042, V90006-V90012), alle Gaps dokumentiert (V10004/V10006/V10007 als SKIPPED)
+  - **CRM_AI_CONTEXT_SCHNELL.md:** Ultra-kompakt aktualisiert (Sprint 2.1.7.2 Features, Server-Driven UI, Xentral-Integration, 946 Tests GREEN)
+  - **Handover:** 2 Übergaben erstellt (`2025-10-31_HANDOVER_23-36.md` + `2025-10-31_HANDOVER_23-41.md`)
+  - **PR #144:** https://github.com/joergstreeck/freshplan-sales-tool/pull/144 (Merge Commit: 9dfe8b93c)
+- **Migration:** n/a (keine DB-Arbeit - nur Dokumentations-Session)
+- **Tests:** 946/946 Backend GREEN, Frontend GREEN, 20/20 CI Workflows GREEN ✅ (aus PR #144)
+- **Status:** ✅ Sprint 2.1.7.2 COMPLETE + MERGED + DOKUMENTIERT - Sprint 2.1.7.7 READY TO START (mit User-Freigabe)
+
 <!-- MP5:SESSION_LOG:END -->
 
 ## Next Steps
@@ -1765,39 +1777,37 @@
     - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_4.md` (status: complete)
 
-- **🎯 AKTUELLER SPRINT - Sprint 2.1.7.2 - CUSTOMER-MANAGEMENT COMPLETE + OPTION A VORBEREITUNG**
-  - **Status:** 📋 IN PROGRESS - **7/10 Deliverables COMPLETE** ✅ (D1-D7 ✅, D8-D10 offen ⏳)
-  - **Branch:** feature/sprint-2-1-7-2-customer-xentral-integration (working tree clean)
-  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Multi-Location Prep (Option A)
-  - **Aufwand:** 36h = 4-5 Arbeitstage (erweitert von 25h - **Option A Vorbereitung!**)
-  - **Aufwands-Verteilung:**
-    - Original 8 Deliverables: 25h (Xentral Integration)
-    - **D8 Unified Communication:** +6h (Migration V10033 lead_activities → activities)
-    - **D9 Customer UX Polish:** +4h (Wizard/Dashboard Review + Fixes)
-    - **D10 Multi-Location Prep:** +1h (hierarchyType UI disabled vorbereiten)
-  - **ARCHITEKTUR-ENTSCHEIDUNG (Option A):** Sprint 2.1.7.7 danach = **-5h Gesamt-Einsparung**
-  - **Migrations:** V10033 (Unified Activity), V10034 (xentral_customer_id), V10035 (months_active)
-  - **Tests:** 162 Tests (90 Backend + 72 Frontend)
+- **✅ SPRINT 2.1.7.2 - CUSTOMER-MANAGEMENT + XENTRAL-INTEGRATION (MERGED - 31.10.2025)**
+  - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 9dfe8b93c)
+  - **PR #144:** https://github.com/joergstreeck/freshplan-sales-tool/pull/144 (Merged 31.10.2025 21:50:20 UTC)
+  - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Server-Driven UI Framework
+  - **Aufwand:** ~36h = 4-5 Arbeitstage (erweitert von 25h)
+  - **Migrations:** V10035-V10042 (8 Migrations: Xentral Integration, Churn Threshold, Activity System, Multi-Location Prep, Contacts)
+  - **Tests:** 946/946 Backend GREEN, Frontend GREEN ✅, 20/20 CI Workflows GREEN ✅
   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ✅
-  - **Deliverables:** 10 Deliverables (erweitert von 8) - **Status: 7/10 COMPLETE** ✅
-    - **D1:** ✅ ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info (328 LOC)
-    - **D2:** ✅ XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode + MockXentralApiClient 257 LOC)
-    - **D3:** ✅ Customer-Dashboard (Revenue Metrics 30/90/365 Tage + RevenueMetricsService 146 LOC)
-    - **D4:** ✅ Churn-Alarm Konfiguration (14-365 Tage, Migration V10036 + ChurnRiskAlert Component)
-    - **D5:** ✅ Admin-UI für Xentral-Einstellungen (XentralSettingsPage 327 LOC + Backend Resource)
-    - **D6:** ⚠️ Sales-Rep Mapping Auto-Sync (Backend SalesRepSyncJob ✅ 162 LOC, Frontend UserManagementPage ❌)
-    - **D7:** ✅ Xentral Webhook → PROSPECT automatisch aktivieren ⚡ (Previous Session)
-    - **D8:** ❌ Unified Communication System (Lead + Customer) ⭐ OFFEN - Activity Entity/Service/Timeline fehlen
-    - **D9:** 📦 Customer UX Polish → MOVED TO Sprint 2.1.7.7 (UI/UX Focus besser kombiniert mit Multi-Location)
-    - **D10:** 📦 Multi-Location Vorbereitung → MOVED TO Sprint 2.1.7.7 (hierarchyType Dropdown + CreateBranchDialog)
-  - **Integration mit Sprint 2.1.7.4:**
-    - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
-    - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
-    - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
+  - **Deliverables:** 11/11 COMPLETE ✅
+    - **D1:** ✅ ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
+    - **D2:** ✅ XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode + MockXentralApiClient)
+    - **D3:** ✅ Customer-Dashboard (Revenue Metrics 30/90/365 Tage + RevenueMetricsService)
+    - **D4:** ✅ Churn-Alarm Konfiguration (14-365 Tage, seasonal-aware, Migration V10036)
+    - **D5:** ✅ Admin-UI für Xentral-Einstellungen (XentralSettingsPage + Backend Resource)
+    - **D6:** ✅ Sales-Rep Mapping Auto-Sync (@Scheduled täglich + Frontend UserManagementPage)
+    - **D7:** ✅ Xentral Webhook → PROSPECT automatisch aktivieren (XentralOrderEventHandler)
+    - **D8:** ✅ Unified Communication System (Activity Entity/Service/Timeline + CustomerActivityTimeline.tsx)
+    - **D9:** ✅ Customer UX Polish (CustomerContactsList.tsx + CustomerTable.integration.test)
+    - **D10:** ✅ Multi-Location Vorbereitung (hierarchyType Dropdown + structured_address fields)
+    - **D11:** ✅ Server-Driven Customer Cards (5 Enum-Endpoints + fieldCatalog.json + ServerDrivenFormLayout)
+  - **Key Features:**
+    - **Server-Driven UI Framework:** Backend definiert Forms dynamisch, Frontend rendert automatisch (WELTWEITE INNOVATION!)
+    - **Xentral Live-Daten:** Revenue Metrics (30/90/365 Tage), Payment Behavior Tracking
+    - **Churn-Alarm:** Per-Customer konfigurierbar (14-365 Tage), seasonal-aware
+    - **Activity Timeline:** CustomerActivityTimeline.tsx - chronologische Aktivitäten-Historie
+    - **Multi-Location:** Structured Address fields für Sprint 2.1.7.7 Vorbereitung
   - **Artefakte:**
-    - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (10 Kapitel, 2,966 Zeilen)
-    - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
-  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md`
+    - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md)
+    - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
+    - [SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md](artefakte/sprint-2.1.7.2/SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md)
+  - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md` (status: merged)
 
 - **📋 SPRINT 2.1.7.7 - MULTI-LOCATION MANAGEMENT ⚡ NACH 2.1.7.2!**
   - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.2 COMPLETE

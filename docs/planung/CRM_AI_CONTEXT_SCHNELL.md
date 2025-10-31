@@ -1,6 +1,6 @@
 # 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
 
-**📅 Letzte Aktualisierung:** 2025-10-22
+**📅 Letzte Aktualisierung:** 2025-10-31
 **🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
 **📊 Ansatz:** Kompakt - 80% Vision + 20% Reality (Living Document)
 **🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
@@ -38,9 +38,9 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
 ### Next Steps
-- **COMPLETE:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle + Seasonal Business Support) ✅
+- **COMPLETE:** Sprint 2.1.7.2 (Customer-Management + Xentral-Integration) ✅
+- **COMPLETE:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle) ✅
 - **JETZT:** Sprint 2.1.7.7 (Multi-Location Management - Filialen + Hierarchie)
-- **DANACH:** Sprint 2.1.7.2 (Xentral-ERP-Integration - Umsatz + Zahlungsverhalten)
 
 ---
 
@@ -155,9 +155,9 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **CURRENT STATUS:**
 - 📊 **Tests:** Backend Tests GREEN (100% Coverage), Frontend Tests GREEN
 - 📦 **Migrations:** Production Migrations deployed → **Details:** `/docs/planung/MIGRATIONS.md`
-- 🚀 **Backend:** Lead-Management + Opportunity-Workflows operational ✅
-- 🚀 **Frontend:** Design System V2 deployed, Opportunities UI in Planning 🔶
-- 📋 **Next:** Opportunities Frontend UI + Xentral-ERP-Integration
+- 🚀 **Backend:** Xentral-ERP-Integration operational ✅, Server-Driven UI Framework deployed ✅
+- 🚀 **Frontend:** Dynamic Forms ohne Code-Changes, Customer Detail Cockpit operational
+- 📋 **Latest:** Sprint 2.1.7.2 MERGED (31.10.2025) - PR #144 - Customer-Management + Xentral-Integration
 
 ---
 
@@ -200,6 +200,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Industry-First B2B-Food-CRM mit Seasonal-Intelligence + Multi-Contact-Excellence
 
 **Competitive-Differentiators:**
+- **Server-Driven UI** - Weltweite Innovation: Forms ändern sich ohne Frontend-Deployment
 - **CAR-Strategy Help-System** (Calibrated Assistive Rollout) - weltweit einzigartig
 - **Seasonal Business Intelligence** - Eisdielen/Biergärten/Ski-Hütten Support mit ChurnDetectionService (KEIN Gebietsschutz bei Off-Season!)
 - **Territory + Seasonal-aware Autoscaling** für B2B-Food-Patterns (KEDA + Prometheus)
@@ -325,8 +326,13 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 #### 👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations)
 **Purpose:** Customer-Lifecycle + Multi-Location + Relationship-Management
-**Status:** ✅ PRODUCTION-READY - Field-based Architecture + ABAC-Security
+**Status:** ✅ PRODUCTION-READY - Server-Driven UI + Xentral-Integration + Activity Timeline
 **Key-Features:**
+- ✅ **Server-Driven UI** - Backend definiert Forms dynamisch, Frontend rendert automatisch (keine Code-Änderung bei neuen Feldern!)
+- ✅ **Xentral ERP Live-Daten** - Umsatz 30/90/365 Tage, Zahlungsverhalten-Ampel 🟢🟡🟠🔴
+- ✅ **Churn-Alarm** - Pro Kunde konfigurierbar (14-365 Tage), Seasonal-Aware (Eisdiele ≠ Restaurant)
+- ✅ **Unified Activity Timeline** - Alle Kontakte (Email/Phone/Meeting/Notes) in einer Timeline
+- ✅ **Multi-Location** - Strukturierte Adressen, Multiple Locations pro Customer
 - Dynamic Customer-Schema (JSONB base_fields + custom_fields)
 - Multi-Contact-Support (CHEF/BUYER Roles)
 - Territory-RLS (Row-Level-Security)
@@ -365,8 +371,10 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 #### 🏛️ MODUL 08 - ADMINISTRATION (Enterprise-Admin)
 **Purpose:** Security + Compliance + Multi-Tenancy + External-Integrations
-**Status:** ✅ 100% PLANNING COMPLETE - 76 Production-Ready Artefakte (9.6/10)
+**Status:** ✅ PRODUCTION-READY + Xentral-Integration-Management
 **Key-Features:**
+- ✅ **Xentral Admin-UI** - Zentrale API-Konfiguration, Mock-Mode Toggle, Test Connection
+- ✅ **Sales-Rep Auto-Sync** - Email-basiertes Mapping (Nightly 02:00), READ-ONLY für User
 - ABAC (Attribute-based Access Control)
 - Risk-Tiered-Approvals (Kritische Operationen erfordern Manager-Approval)
 - AI/ERP-Integrations (External-Systems-Connect)
@@ -842,6 +850,8 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 ### 📊 Latest Implementation (Stand: 2025-10-22)
 
 **Completed Sprints:**
+- ✅ **Sprint 2.1.7.2** (31.10.2025): Customer-Management + Xentral-Integration (PR #144 MERGED)
+  - Server-Driven UI Framework, Xentral Live-Daten, Churn-Alarm, Unified Activity Timeline
 - ✅ **Sprint 2.1.7.4** (22.10.2025): Customer Status Architecture - PROSPECT→AKTIV Lifecycle + Seasonal Business Support (PR #143 MERGED)
 - ✅ **Sprint 2.1.7.3** (19.10.2025): Customer → Opportunity UI - Business-Type-Matrix, OpportunitySettingsPage, Admin-UI
 - ✅ **Sprint 2.1.7.1** (18.10.2025): Lead → Opportunity UI - Complete Workflow, Kanban Pipeline, Drag & Drop, Filter-UI
@@ -850,11 +860,10 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 
 **Active Planning:**
 - 📋 **Sprint 2.1.7.7** (NEXT): Multi-Location Management - Filialen + Hierarchie
-- 📋 **Sprint 2.1.7.2** (AFTER 2.1.7.7): Xentral-ERP-Integration - Umsatz + Zahlungsverhalten, Nightly Polling (1x täglich)
 
 **Test Status:**
-- Backend: 1617 Tests GREEN ✅ - ChurnDetectionService NPE-fix, Lead Parity fields, Seasonal Business Support
-- Frontend: Tests GREEN ✅ - Seasonal Business Integration Tests, CustomerDetailPage Tests, ESLint passed
+- Backend: 946 Tests GREEN ✅ - Xentral-Integration, Server-Driven UI, Activity Timeline operational
+- Frontend: Tests GREEN ✅ - Customer Detail Cockpit, Dynamic Forms, ESLint passed
 - CI: Performance optimiert (JUnit parallel, ValidatorFactory optimization)
 
 ### 🎖️ Modul-Status-Matrix (Implementierungs-Stand)

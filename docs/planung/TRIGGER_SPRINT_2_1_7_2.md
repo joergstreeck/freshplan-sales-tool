@@ -1,13 +1,16 @@
 # 🚀 Sprint 2.1.7.2 - Customer-Management + Xentral-Integration
 
 **Sprint-ID:** 2.1.7.2
-**Status:** ✅ COMPLETE
+**Status:** ✅ GEMERGED (PR #144 - MERGED TO MAIN - 31.10.2025 21:50:20 UTC)
 **Priority:** P1 (High)
 **Estimated Effort:** 25h (3+ Arbeitstage)
 **Owner:** FreshPlan Team
 **Created:** 2025-10-16
-**Updated:** 2025-10-31 (Dokumentations-Bereinigung: 10 Dokumente konsolidiert unter artefakte/sprint-2.1.7.2/)
+**Updated:** 2025-10-31 (PR #144 MERGED - Merge Commit: 9dfe8b93c)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.4 COMPLETE
+**PR:** #144 - https://github.com/joergstreeck/freshplan-sales-tool/pull/144
+**Merge Commit:** 9dfe8b93c
+**CI Status:** 20/20 Workflows GREEN ✅
 
 ---
 

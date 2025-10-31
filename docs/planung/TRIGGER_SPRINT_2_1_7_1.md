@@ -1,14 +1,17 @@
 # 🚀 Sprint 2.1.7.1 - Lead → Opportunity Workflow (FOKUSSIERT)
 
 **Sprint-ID:** 2.1.7.1
-**Status:** ✅ COMPLETE
+**Status:** ✅ GEMERGED (PR #141 - MERGED TO MAIN - 18.10.2025 19:02:28Z)
 **Priority:** P1 (High)
 **Estimated Effort:** 17h (2 Arbeitstage)
 **Actual Effort:** ~18h (inkl. Bugfixes + UX-Verbesserungen)
 **Owner:** Claude + Jörg
 **Created:** 2025-10-13
-**Updated:** 2025-10-18 (COMPLETE - alle Deliverables umgesetzt)
+**Updated:** 2025-10-31 (PR #141 MERGED - Merge Commit: 9ac9dfd16)
 **Completed:** 2025-10-18
+**PR:** #141 - https://github.com/joergstreeck/freshplan-sales-tool/pull/141
+**Merge Commit:** 9ac9dfd16
+**CI Status:** ✅ 29/29 Workflows GREEN
 
 ---
 
