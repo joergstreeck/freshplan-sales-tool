@@ -4,9 +4,22 @@
 >
 > **Grund:** UX-Probleme, Platzvergeudung, zu viele Disclosure-Levels, inkonsistent mit bestehendem Cockpit-Pattern
 >
-> **Aktuelle Spec:** `SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md`
+> **Aktuelle Spec:** [SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md](./SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md)
 >
 > **Diese Datei bleibt nur zu Dokumentationszwecken erhalten.**
+
+---
+
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+
+**🔗 D11 Dokumenten-Hierarchie:**
+1. [🏗️ Architektur-Konzept](./TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md) - Server-Driven Cards Prinzip
+2. [✅ Final Architecture](./SPEC_D11_CUSTOMER_DETAIL_VIEW_ARCHITECTURE.md) - Verbindliche Implementierung
+3. [📝 Funktionale Spec](./SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md) - ✅ **DIESE STATTDESSEN VERWENDEN!**
+4. **Dieses Dokument** - ❌ DEPRECATED (nur zur Dokumentation)
+
+**⚠️ NICHT IMPLEMENTIEREN! Dieses Dokument beschreibt eine verworfene Architektur.**
 
 ---
 

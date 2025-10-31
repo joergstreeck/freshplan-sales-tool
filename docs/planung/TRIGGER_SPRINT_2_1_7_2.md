@@ -1,12 +1,12 @@
 # 🚀 Sprint 2.1.7.2 - Customer-Management + Xentral-Integration
 
 **Sprint-ID:** 2.1.7.2
-**Status:** 📋 PLANNING → 🚀 READY TO START
+**Status:** ✅ COMPLETE
 **Priority:** P1 (High)
 **Estimated Effort:** 25h (3+ Arbeitstage)
-**Owner:** TBD
+**Owner:** FreshPlan Team
 **Created:** 2025-10-16
-**Updated:** 2025-10-24 (XentralApiConfig Architecture Decision dokumentiert)
+**Updated:** 2025-10-31 (Dokumentations-Bereinigung: 10 Dokumente konsolidiert unter artefakte/sprint-2.1.7.2/)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.4 COMPLETE
 
 ---
@@ -196,7 +196,7 @@
 ### **D11: Server-Driven Customer Cards** (COMPLETE)
 
 **Status:** ✅ COMPLETE (2025-10-25)
-**Trigger-Dokument:** [TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md](TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md)
+**Trigger-Dokument:** [TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md](./artefakte/sprint-2.1.7.2/TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md)
 
 **Ziel:** Server-Driven UI Architektur für Customer Cards - Backend als Single Source of Truth für Schema und Daten
 
@@ -272,6 +272,32 @@
 
 ---
 
+## 📚 DOKUMENTATION
+
+**Alle detaillierten Spezifikationen liegen unter:** `docs/planung/artefakte/sprint-2.1.7.2/`
+
+### Übersicht & Kontext
+- [📋 Commit-Zusammenfassung](./artefakte/sprint-2.1.7.2/sprint-2.1.7.2-COMMIT-SUMMARY.md) - Was wurde gemacht? (95 Commits, 472 Tests)
+- [🎨 Design Decisions](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md) - Warum so gemacht? (7 Entscheidungen)
+- [🔧 Technische Spezifikation](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - Wie implementiert? (10 Deliverables, 2590+ Zeilen)
+
+### Deliverable D11: Customer Detail Cockpit
+- [🏗️ Architektur-Konzept](./artefakte/sprint-2.1.7.2/TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md) - Server-Driven Cards
+- [✅ Final Architecture](./artefakte/sprint-2.1.7.2/SPEC_D11_CUSTOMER_DETAIL_VIEW_ARCHITECTURE.md) - Verbindliche Implementierung
+- [📝 Funktionale Spec](./artefakte/sprint-2.1.7.2/SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md) - UX und Features
+- [❌ DEPRECATED: Progressive Disclosure](./artefakte/sprint-2.1.7.2/SPEC_D11_DEPRECATED_PROGRESSIVE_DISCLOSURE.md) - Verworfene Architektur
+
+### Weitere Spezifikationen
+- [🔍 Lead Search Implementation](./artefakte/sprint-2.1.7.2/LEAD_SEARCH_IMPLEMENTATION.md) - D2.1 Suchfunktion
+
+### Issues & Known Problems
+- [⚠️ Xentral CDI Issue](./artefakte/sprint-2.1.7.2/ISSUE_XENTRAL_CDI_2_1_7_2.md) - Nicht kritisch für Sprint 2.1.7.4
+
+### Meta
+- [📋 Bereinigungs-Plan](./artefakte/sprint-2.1.7.2/CLEANUP_PLAN.md) - Dieser Dokumentations-Cleanup
+
+---
+
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
@@ -344,8 +370,10 @@
 
 ## 📄 ARTEFAKTE
 
+**📌 Vollständige Dokumentation siehe:** [📚 DOKUMENTATION](#-dokumentation) (oben)
+
 **Technische Spezifikation:**
-→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md`
+→ [./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md)
 - Xentral API Client Implementation
 - ConvertToCustomerDialog (vollständig)
 - Customer-Dashboard Code-Beispiele
@@ -354,7 +382,7 @@
 - Test Specifications
 
 **Design Decisions:**
-→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md`
+→ [./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
 - Sales-Rep Mapping Strategie (Email-basiert)
 - Mock vs Real Development (Hybrid-Ansatz)
 - Churn-Alarm Konfiguration (Pro Kunde vs Global)
@@ -363,7 +391,7 @@
 - Webhook vs Polling (Real-Time vs Batch)
 
 **Design System:**
-→ `/docs/planung/grundlagen/DESIGN_SYSTEM.md`
+→ [./grundlagen/DESIGN_SYSTEM.md](./grundlagen/DESIGN_SYSTEM.md)
 - Freshfoodz Color Palette (#94C456, #004F7B)
 - Typography (Antonio Bold, Poppins)
 - Component Patterns

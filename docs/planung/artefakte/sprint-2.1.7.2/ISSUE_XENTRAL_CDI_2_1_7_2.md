@@ -1,10 +1,22 @@
 # ISSUE: XentralOrderEventHandler CDI Injection Problem
 
-**Sprint:** 2.1.7.2 - Xentral Integration  
-**Erstellt:** 2025-10-22  
-**Status:** 🟡 OPEN (Nicht kritisch für Sprint 2.1.7.4)  
-**Priorität:** MEDIUM  
+**Sprint:** 2.1.7.2 - Xentral Integration
+**Erstellt:** 2025-10-22
+**Status:** 🟡 OPEN (Nicht kritisch für Sprint 2.1.7.4)
+**Priorität:** MEDIUM
 **Owner:** Sprint 2.1.7.2 Team
+
+---
+
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [🔧 Technische Spec](./SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - D7 Webhook Integration
+- [📋 Commit-Zusammenfassung](./sprint-2.1.7.2-COMMIT-SUMMARY.md) - Was funktioniert
+
+**💡 Issue-Kontext:**
+- Dieses Issue betrifft **D7 - Xentral Webhook Integration**
+- Mock-Implementation existiert, aber CDI-Injection schlägt fehl
+- **Nicht kritisch** - Sprint 2.1.7.4 definiert nur Interface, echte Implementation kommt später
 
 ---
 

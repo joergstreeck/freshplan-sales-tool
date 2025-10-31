@@ -7,6 +7,16 @@
 
 ---
 
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [📋 Commit-Zusammenfassung](./sprint-2.1.7.2-COMMIT-SUMMARY.md) - Was wurde gemacht?
+- [🔧 Technische Spec](./SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - Wie implementiert?
+
+**🔗 Verwandte Entscheidungen:**
+- [D11 Cockpit Pattern Decision](./SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md#architecture-decision) - Warum Cockpit statt Progressive Disclosure?
+
+---
+
 ## 📋 ÜBERSICHT
 
 Dieses Dokument konsolidiert **alle Architektur- und Design-Entscheidungen** für Sprint 2.1.7.2.

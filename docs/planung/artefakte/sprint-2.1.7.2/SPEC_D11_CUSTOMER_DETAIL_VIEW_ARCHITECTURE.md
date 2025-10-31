@@ -8,6 +8,18 @@
 
 ---
 
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [🔧 Technische Spec](./SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - Komplette technische Details
+
+**🔗 D11 Dokumenten-Hierarchie:**
+1. [🏗️ Architektur-Konzept](./TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md) - Server-Driven Cards Prinzip
+2. **Dieses Dokument** - Verbindliche Implementierung (WAS bauen?)
+3. [📝 Funktionale Spec](./SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md) - UX und Features (WIE aussehen?)
+4. [❌ DEPRECATED](./SPEC_D11_DEPRECATED_PROGRESSIVE_DISCLOSURE.md) - Verworfene Architektur (NICHT bauen!)
+
+---
+
 ## 🚨 KRITISCH: KORREKTE ARCHITEKTUR
 
 ### ❌ FALSCHE IMPLEMENTIERUNG (wurde verworfen):

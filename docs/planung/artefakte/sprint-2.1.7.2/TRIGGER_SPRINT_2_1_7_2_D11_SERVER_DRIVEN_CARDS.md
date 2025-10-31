@@ -4,7 +4,20 @@
 **🎯 Sprint:** 2.1.7.2 - Customer-Management COMPLETE
 **⚡ Deliverable:** D11 - Server-Driven Customer Cards (Refactoring)
 **⏱️ Aufwand:** 8-12h (2 Arbeitstage)
-**🔄 Status:** 🔧 IN PROGRESS
+**🔄 Status:** ✅ COMPLETE
+
+---
+
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [📋 Commit-Zusammenfassung](./sprint-2.1.7.2-COMMIT-SUMMARY.md) - Was wurde gemacht?
+- [🔧 Technische Spec](./SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - Komplette technische Spezifikation
+
+**🔗 D11 Dokumenten-Hierarchie:**
+1. **Dieses Dokument** - Architektur-Konzept (Server-Driven Cards Prinzip)
+2. [✅ Final Architecture](./SPEC_D11_CUSTOMER_DETAIL_VIEW_ARCHITECTURE.md) - Verbindliche Implementierung
+3. [📝 Funktionale Spec](./SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md) - UX und Features
+4. [❌ DEPRECATED](./SPEC_D11_DEPRECATED_PROGRESSIVE_DISCLOSURE.md) - Verworfene Architektur
 
 ---
 

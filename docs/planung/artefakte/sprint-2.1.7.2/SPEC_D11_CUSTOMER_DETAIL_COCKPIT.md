@@ -7,6 +7,23 @@
 
 ---
 
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [🔧 Technische Spec](./SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - Backend/Frontend Implementierung
+
+**🔗 D11 Dokumenten-Hierarchie:**
+1. [🏗️ Architektur-Konzept](./TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md) - Server-Driven Cards Prinzip
+2. [✅ Final Architecture](./SPEC_D11_CUSTOMER_DETAIL_VIEW_ARCHITECTURE.md) - Verbindliche Implementierung
+3. **Dieses Dokument** - Funktionale Spec (UX, Features, Design)
+4. [❌ DEPRECATED](./SPEC_D11_DEPRECATED_PROGRESSIVE_DISCLOSURE.md) - Verworfene Architektur
+
+**💡 Dieses Dokument erklärt:**
+- **WARUM** Cockpit Pattern statt Progressive Disclosure
+- **WIE** die UX aussehen soll
+- **WAS** der User sieht und tun kann
+
+---
+
 ## 📋 EXECUTIVE SUMMARY
 
 **Kunde braucht:** CRM-Kundendetailansicht mit schnellem Zugriff auf Stammdaten, Kommunikationshistorie und Sales-Actions.

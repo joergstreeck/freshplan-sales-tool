@@ -2,8 +2,20 @@
 
 **Sprint-ID:** 2.1.7.2
 **Created:** 2025-10-19
-**Status:** 📋 PLANNING
-**Owner:** Claude
+**Status:** ✅ COMPLETE
+**Owner:** FreshPlan Team
+
+---
+
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [📋 Commit-Zusammenfassung](./sprint-2.1.7.2-COMMIT-SUMMARY.md) - Was wurde gemacht? (95 Commits, 472 Tests)
+- [🎨 Design Decisions](./SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md) - Warum diese Architektur?
+
+**🔗 Spezifische Spezifikationen:**
+- [🏗️ D11 Server-Driven Cards](./TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md) - Architektur-Konzept
+- [🔍 Lead Search](./LEAD_SEARCH_IMPLEMENTATION.md) - D2.1 Suchfunktion
+- [⚠️ Xentral CDI Issue](./ISSUE_XENTRAL_CDI_2_1_7_2.md) - Bekanntes Problem (nicht kritisch)
 
 ---
 

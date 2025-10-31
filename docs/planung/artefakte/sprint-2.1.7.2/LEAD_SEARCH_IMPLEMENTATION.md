@@ -6,6 +6,17 @@
 
 ---
 
+**📍 Navigation:**
+- [🏠 Sprint 2.1.7.2 Hauptdokument](../../TRIGGER_SPRINT_2_1_7_2.md)
+- [🔧 Technische Spec](./SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - D2.1 Details in technischer Spezifikation
+- [📋 Commit-Zusammenfassung](./sprint-2.1.7.2-COMMIT-SUMMARY.md) - Implementierungs-Historie
+
+**🔗 Verwandte Themen:**
+- SearchService Architektur - siehe Technische Spec
+- CQRS Pattern - Lead vs Customer Suche
+
+---
+
 ## 🎯 ANFORDERUNG
 
 **Zwei separate Suchen:**
