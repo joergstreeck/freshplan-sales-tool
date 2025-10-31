@@ -65,7 +65,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   const sections = useMemo((): WizardSection[] => {
     const sectionMap = new Map<string, WizardSection>();
 
-    step1Fields.forEach((field) => {
+    step1Fields.forEach(field => {
       const sectionId = field.wizardSectionId || 'default';
       const sectionTitle = field.wizardSectionTitle || '';
 

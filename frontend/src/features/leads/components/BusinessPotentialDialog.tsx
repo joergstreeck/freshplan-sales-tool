@@ -71,7 +71,11 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
   });
 
   // Fetch schema from backend (Server-Driven UI)
-  const { data: schemas, isLoading: schemaLoading, error: schemaError } = useBusinessPotentialSchema();
+  const {
+    data: schemas,
+    isLoading: schemaLoading,
+    error: schemaError,
+  } = useBusinessPotentialSchema();
 
   // Extract business potential schema
   const businessPotentialSchema = schemas?.find(s => s.cardId === 'business_potential');
@@ -130,7 +134,9 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
   if (schemaLoading) {
     return (
       <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-        <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+        <DialogContent
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}
+        >
           <CircularProgress />
         </DialogContent>
       </Dialog>

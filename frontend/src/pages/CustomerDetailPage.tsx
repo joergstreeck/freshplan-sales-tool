@@ -251,12 +251,7 @@ export function CustomerDetailPage() {
               iconPosition="start"
               {...a11yProps(1)}
             />
-            <Tab
-              label="Verlauf"
-              icon={<TimelineIcon />}
-              iconPosition="start"
-              {...a11yProps(2)}
-            />
+            <Tab label="Verlauf" icon={<TimelineIcon />} iconPosition="start" {...a11yProps(2)} />
           </Tabs>
 
           {/* Tab Panels */}

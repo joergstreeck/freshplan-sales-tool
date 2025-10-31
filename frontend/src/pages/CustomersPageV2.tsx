@@ -542,71 +542,71 @@ export function CustomersPageV2({
                 {/* Customer Table - Use virtualized version for > 20 items */}
                 <Box>
                   {filteredCustomers.length > 20 ? (
-                      <VirtualizedCustomerTable
-                        customers={filteredCustomers}
-                        columns={columnConfig}
-                        onRowClick={customer => {
-                          // Context-based behavior
-                          if (context === 'customers') {
-                            // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
-                            navigate(`/customers/${customer.id}`);
-                          } else if (context === 'leads') {
-                            // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
-                            navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                          }
-                        }}
-                        onEdit={customer => {
-                          setSelectedLead(customer as unknown as Lead);
-                          if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
-                            setFirstContactDialogOpen(true);
-                          } else if (context === 'leads') {
-                            navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                          } else {
-                            navigate(`/customers/${customer.id}`);
-                          }
-                        }}
-                        onDelete={customer => {
-                          setSelectedLead(customer as unknown as Lead);
-                          setDeleteDialogOpen(true);
-                        }}
-                        height={600}
-                        rowHeight={72}
-                      />
-                    ) : (
-                      <CustomerTable
-                        customers=  {filteredCustomers}
-                        onRowClick={customer => {
-                          // Context-based behavior
-                          if (context === 'customers') {
-                            // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
-                            navigate(`/customers/${customer.id}`);
-                          } else if (context === 'leads') {
-                            // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
-                            navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                          }
-                        }}
-                        highlightNew
-                        columns={columnConfig}
-                        context={context}
-                        showActions={true}
-                        onEdit={customer => {
-                          setSelectedLead(customer as unknown as Lead);
-                          if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
-                            setFirstContactDialogOpen(true);
-                          } else if (context === 'leads') {
-                            // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
-                            navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                          } else {
-                            // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
-                            navigate(`/customers/${customer.id}`);
-                          }
-                        }}
-                        onDelete={customer => {
-                          setSelectedLead(customer as unknown as Lead);
-                          setDeleteDialogOpen(true);
-                        }}
-                      />
-                    )}
+                    <VirtualizedCustomerTable
+                      customers={filteredCustomers}
+                      columns={columnConfig}
+                      onRowClick={customer => {
+                        // Context-based behavior
+                        if (context === 'customers') {
+                          // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                          navigate(`/customers/${customer.id}`);
+                        } else if (context === 'leads') {
+                          // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        }
+                      }}
+                      onEdit={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                          setFirstContactDialogOpen(true);
+                        } else if (context === 'leads') {
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        } else {
+                          navigate(`/customers/${customer.id}`);
+                        }
+                      }}
+                      onDelete={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        setDeleteDialogOpen(true);
+                      }}
+                      height={600}
+                      rowHeight={72}
+                    />
+                  ) : (
+                    <CustomerTable
+                      customers={filteredCustomers}
+                      onRowClick={customer => {
+                        // Context-based behavior
+                        if (context === 'customers') {
+                          // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                          navigate(`/customers/${customer.id}`);
+                        } else if (context === 'leads') {
+                          // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        }
+                      }}
+                      highlightNew
+                      columns={columnConfig}
+                      context={context}
+                      showActions={true}
+                      onEdit={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                          setFirstContactDialogOpen(true);
+                        } else if (context === 'leads') {
+                          // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        } else {
+                          // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                          navigate(`/customers/${customer.id}`);
+                        }
+                      }}
+                      onDelete={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        setDeleteDialogOpen(true);
+                      }}
+                    />
+                  )}
                 </Box>
 
                 {/* Load More Button (only for server-side pagination) */}

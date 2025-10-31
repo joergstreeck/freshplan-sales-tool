@@ -104,9 +104,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find timeline icon for first customer
       const timelineButtons = screen.getAllByTitle('Aktivitäten anzeigen');
@@ -155,9 +153,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find timeline icon
       const timelineButtons = screen.getAllByTitle('Aktivitäten anzeigen');
@@ -191,9 +187,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find timeline icon
       const timelineButtons = screen.getAllByTitle('Aktivitäten anzeigen');
@@ -253,9 +247,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find timeline icons
       const timelineButtons = screen.getAllByTitle('Aktivitäten anzeigen');
@@ -315,9 +307,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find contacts icon for first customer
       const contactsButtons = screen.getAllByTitle('Kontakte anzeigen');
@@ -371,9 +361,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find contacts icon
       const contactsButtons = screen.getAllByTitle('Kontakte anzeigen');
@@ -407,9 +395,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find contacts icon
       const contactsButtons = screen.getAllByTitle('Kontakte anzeigen');
@@ -438,9 +424,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Find contacts icon
       const contactsButtons = screen.getAllByTitle('Kontakte anzeigen');
@@ -506,9 +490,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Step 1: Open timeline
       const timelineButtons = screen.getAllByTitle('Aktivitäten anzeigen');
@@ -584,9 +566,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Open timeline
       const timelineButtons = screen.getAllByTitle('Aktivitäten anzeigen');
@@ -618,9 +598,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'actions', label: 'Aktionen', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Should render timeline and contacts icons (2 icons per customer)
       expect(screen.getAllByTitle('Aktivitäten anzeigen').length).toBe(2);
@@ -637,9 +615,7 @@ describe('CustomerTable Integration Tests', () => {
         { id: 'companyName', label: 'Firma', visible: true },
       ];
 
-      render(
-        <CustomerTable customers={mockCustomers} columns={columns} context="customers" />
-      );
+      render(<CustomerTable customers={mockCustomers} columns={columns} context="customers" />);
 
       // Should not render any action icons
       expect(screen.queryByTitle('Aktivitäten anzeigen')).not.toBeInTheDocument();

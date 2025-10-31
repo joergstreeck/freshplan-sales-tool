@@ -172,7 +172,9 @@ export default function ConvertToCustomerDialog({
       navigate(`/customers/${customer.id}`);
     } catch (error: unknown) {
       console.error('Failed to convert opportunity:', error);
-      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Fehler beim Anlegen des Customers';
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Fehler beim Anlegen des Customers';
       setApiError(errorMessage);
     } finally {
       setLoading(false);

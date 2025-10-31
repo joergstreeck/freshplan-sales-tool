@@ -16,10 +16,7 @@ import {
   Skeleton,
   useTheme,
 } from '@mui/material';
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import type { Customer } from '../../../types/customer.types';
 import type { ColumnConfig } from '../types/filter.types';
 import { formatCurrency, formatDate } from '../../../utils/formatters';

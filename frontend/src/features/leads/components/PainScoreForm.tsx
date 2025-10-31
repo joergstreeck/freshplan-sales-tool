@@ -147,9 +147,10 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
       const formValue = formData[key];
 
       // Compare with lead value (handle undefined/null/false equivalence)
-      const leadDefault = leadValue !== undefined ? leadValue : getDefaultValue(
-        fields.find(f => f.fieldKey === key)?.type || 'TEXT'
-      );
+      const leadDefault =
+        leadValue !== undefined
+          ? leadValue
+          : getDefaultValue(fields.find(f => f.fieldKey === key)?.type || 'TEXT');
       return formValue !== leadDefault;
     });
 
@@ -185,9 +186,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
               control={
                 <Checkbox
                   checked={Boolean(value)}
-                  onChange={e =>
-                    setFormData({ ...formData, [field.fieldKey]: e.target.checked })
-                  }
+                  onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.checked })}
                 />
               }
               label={field.label}
@@ -206,9 +205,7 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
             <EnumSelect
               field={field}
               value={String(value || '')}
-              onChange={newValue =>
-                setFormData({ ...formData, [field.fieldKey]: newValue })
-              }
+              onChange={newValue => setFormData({ ...formData, [field.fieldKey]: newValue })}
             />
           </Grid>
         );

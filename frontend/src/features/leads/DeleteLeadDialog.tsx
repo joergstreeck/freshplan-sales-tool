@@ -92,8 +92,8 @@ export default function DeleteLeadDialog({
         </Box>
 
         <Alert severity="warning" sx={{ mb: 2 }}>
-          Der {entityLabel} wird als gelöscht markiert (Soft Delete). Die Daten bleiben in der Datenbank
-          erhalten, der Status wird auf "DELETED" gesetzt.
+          Der {entityLabel} wird als gelöscht markiert (Soft Delete). Die Daten bleiben in der
+          Datenbank erhalten, der Status wird auf "DELETED" gesetzt.
         </Alert>
 
         {error && (

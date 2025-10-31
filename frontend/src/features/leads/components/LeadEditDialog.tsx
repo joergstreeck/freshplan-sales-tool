@@ -63,8 +63,12 @@ export function LeadEditDialog({ open, onClose, lead, onSave }: LeadEditDialogPr
   const [formData, setFormData] = useState<Record<string, string | number | boolean | null>>({});
 
   // Load enum options for ENUM fields (lead_edit has 1 enum: source)
-  const sourceField = editSchema?.sections.flatMap(s => s.fields).find(f => f.fieldKey === 'source');
-  const { data: sourceOptions, isLoading: sourceLoading } = useEnumOptions(sourceField?.enumSource || '');
+  const sourceField = editSchema?.sections
+    .flatMap(s => s.fields)
+    .find(f => f.fieldKey === 'source');
+  const { data: sourceOptions, isLoading: sourceLoading } = useEnumOptions(
+    sourceField?.enumSource || ''
+  );
 
   // Build enum options map for renderField
   const enumOptionsMap: Record<string, { options: EnumOption[]; loading: boolean }> = {
@@ -88,9 +92,7 @@ export function LeadEditDialog({ open, onClose, lead, onSave }: LeadEditDialogPr
     if (!lead || !editSchema) return;
 
     // Validate required fields
-    const requiredFields = editSchema.sections
-      .flatMap(s => s.fields)
-      .filter(f => f.required);
+    const requiredFields = editSchema.sections.flatMap(s => s.fields).filter(f => f.required);
 
     for (const field of requiredFields) {
       const value = formData[field.fieldKey];
@@ -195,7 +197,9 @@ export function LeadEditDialog({ open, onClose, lead, onSave }: LeadEditDialogPr
   if (schemaLoading) {
     return (
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+        <DialogContent
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}
+        >
           <CircularProgress />
         </DialogContent>
       </Dialog>
@@ -239,7 +243,15 @@ export function LeadEditDialog({ open, onClose, lead, onSave }: LeadEditDialogPr
 
       <DialogContent dividers>
         {editSchema.sections.map(section => (
-          <Box key={section.sectionId} sx={{ mb: section.sectionId === editSchema.sections[editSchema.sections.length - 1].sectionId ? 0 : 3 }}>
+          <Box
+            key={section.sectionId}
+            sx={{
+              mb:
+                section.sectionId === editSchema.sections[editSchema.sections.length - 1].sectionId
+                  ? 0
+                  : 3,
+            }}
+          >
             {section.fields.length > 0 && (
               <>
                 <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>

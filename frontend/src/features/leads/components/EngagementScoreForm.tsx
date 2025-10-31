@@ -53,7 +53,10 @@ function getDefaultValue(type: FieldType): unknown {
 export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps) {
   // ========== SCHEMA LOADING ==========
   const { data: schemas, isLoading: schemaLoading } = useScoreSchema();
-  const engagementSchema = useMemo(() => schemas?.find(s => s.cardId === 'engagement_score'), [schemas]);
+  const engagementSchema = useMemo(
+    () => schemas?.find(s => s.cardId === 'engagement_score'),
+    [schemas]
+  );
   const engagementSection = useMemo(() => engagementSchema?.sections?.[0], [engagementSchema]);
   const fields = useMemo(() => engagementSection?.fields || [], [engagementSection]);
 
@@ -130,9 +133,10 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
     const hasChanges = Object.keys(formData).some(key => {
       const leadValue = lead[key as keyof Lead];
       const formValue = formData[key];
-      const leadDefault = leadValue !== undefined ? leadValue : getDefaultValue(
-        fields.find(f => f.fieldKey === key)?.type || 'TEXT'
-      );
+      const leadDefault =
+        leadValue !== undefined
+          ? leadValue
+          : getDefaultValue(fields.find(f => f.fieldKey === key)?.type || 'TEXT');
       return formValue !== leadDefault;
     });
 
@@ -162,9 +166,7 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
             <EnumSelect
               field={field}
               value={String(value || '')}
-              onChange={newValue =>
-                setFormData({ ...formData, [field.fieldKey]: newValue })
-              }
+              onChange={newValue => setFormData({ ...formData, [field.fieldKey]: newValue })}
             />
           </Grid>
         );

@@ -130,7 +130,9 @@ export function ActivityDialog({ open, onClose, leadId, onSave }: ActivityDialog
   if (schemaLoading) {
     return (
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-        <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+        <DialogContent
+          sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}
+        >
           <CircularProgress />
         </DialogContent>
       </Dialog>

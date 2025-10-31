@@ -287,9 +287,5 @@ export const DynamicField: React.FC<DynamicFieldProps> = ({ field, value, onChan
     }
   };
 
-  return (
-    <Grid size={{ xs: 12, sm: cols }}>
-      {renderField()}
-    </Grid>
-  );
+  return <Grid size={{ xs: 12, sm: cols }}>{renderField()}</Grid>;
 };

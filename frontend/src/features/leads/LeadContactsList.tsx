@@ -1,11 +1,4 @@
-import {
-  Box,
-  Typography,
-  Stack,
-  Chip,
-  CircularProgress,
-  LinearProgress,
-} from '@mui/material';
+import { Box, Typography, Stack, Chip, CircularProgress, LinearProgress } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
   Phone as PhoneIcon,
@@ -166,16 +159,29 @@ export default function LeadContactsList({ leadId }: LeadContactsListProps) {
             )}
             <Box display="flex" gap={0.5} flexWrap="wrap">
               {contact.primary && (
-                <Chip label="Haupt" size="small" sx={{ bgcolor: 'primary.main', color: 'white', height: 18, fontSize: '0.65rem' }} />
+                <Chip
+                  label="Haupt"
+                  size="small"
+                  sx={{ bgcolor: 'primary.main', color: 'white', height: 18, fontSize: '0.65rem' }}
+                />
               )}
               {contact.isDecisionMaker && (
-                <Chip label="Entscheider" size="small" sx={{ bgcolor: 'error.main', color: 'white', height: 18, fontSize: '0.65rem' }} />
+                <Chip
+                  label="Entscheider"
+                  size="small"
+                  sx={{ bgcolor: 'error.main', color: 'white', height: 18, fontSize: '0.65rem' }}
+                />
               )}
               {contact.decisionLevel && decisionLevelLabels[contact.decisionLevel] && (
                 <Chip
                   label={decisionLevelLabels[contact.decisionLevel].label}
                   size="small"
-                  sx={{ bgcolor: decisionLevelLabels[contact.decisionLevel].color, color: 'white', height: 18, fontSize: '0.65rem' }}
+                  sx={{
+                    bgcolor: decisionLevelLabels[contact.decisionLevel].color,
+                    color: 'white',
+                    height: 18,
+                    fontSize: '0.65rem',
+                  }}
                 />
               )}
             </Box>

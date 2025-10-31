@@ -56,7 +56,6 @@ function getDefaultValue(type: FieldType): unknown {
   }
 }
 
-
 export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
   // ========== SCHEMA LOADING ==========
   const { data: schemas, isLoading: schemaLoading } = useScoreSchema();
@@ -137,9 +136,10 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
     const hasChanges = Object.keys(formData).some(key => {
       const leadValue = lead[key as keyof Lead];
       const formValue = formData[key];
-      const leadDefault = leadValue !== undefined ? leadValue : getDefaultValue(
-        fields.find(f => f.fieldKey === key)?.type || 'TEXT'
-      );
+      const leadDefault =
+        leadValue !== undefined
+          ? leadValue
+          : getDefaultValue(fields.find(f => f.fieldKey === key)?.type || 'TEXT');
       return formValue !== leadDefault;
     });
 
@@ -194,9 +194,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
               control={
                 <Checkbox
                   checked={Boolean(value)}
-                  onChange={e =>
-                    setFormData({ ...formData, [field.fieldKey]: e.target.checked })
-                  }
+                  onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.checked })}
                 />
               }
               label={field.label}
@@ -215,9 +213,7 @@ export function RevenueScoreForm({ lead, onUpdate }: RevenueScoreFormProps) {
             <EnumSelect
               field={field}
               value={String(value || '')}
-              onChange={newValue =>
-                setFormData({ ...formData, [field.fieldKey]: newValue })
-              }
+              onChange={newValue => setFormData({ ...formData, [field.fieldKey]: newValue })}
             />
           </Grid>
         );

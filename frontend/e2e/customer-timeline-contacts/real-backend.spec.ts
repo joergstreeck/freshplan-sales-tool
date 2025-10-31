@@ -23,7 +23,13 @@ import { test, expect } from '@playwright/test';
 import { mockAuth } from '../fixtures/auth-helper';
 import { setupTestData, cleanupTestData } from '../fixtures/test-data-helper';
 
+// Skip these tests in CI as they require a running backend
 test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
+  // Skip all tests in this suite when running in CI (no backend available)
+  test.beforeEach(() => {
+    test.skip(!!process.env.CI, 'Skipping real-backend tests in CI environment (no backend available)');
+  });
+
   // Setup: Create test customers with timeline/contacts data
   // eslint-disable-next-line no-empty-pattern
   test.beforeAll(async ({ }, testInfo) => {

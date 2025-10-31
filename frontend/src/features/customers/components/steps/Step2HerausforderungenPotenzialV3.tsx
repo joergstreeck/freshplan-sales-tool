@@ -121,7 +121,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
   const sections = useMemo((): WizardSection[] => {
     const sectionMap = new Map<string, WizardSection>();
 
-    step2Fields.forEach((field) => {
+    step2Fields.forEach(field => {
       const sectionId = field.wizardSectionId || 'default';
       const sectionTitle = field.wizardSectionTitle || '';
 
@@ -157,8 +157,8 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
     >;
 
     return painPointKeys
-      .filter((key) => customerData[key] === true)
-      .map((key) => ({
+      .filter(key => customerData[key] === true)
+      .map(key => ({
         key,
         ...PAIN_POINT_SOLUTIONS[key],
       }));
@@ -249,7 +249,7 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
             💡 Freshfoodz Lösungen für Ihre Herausforderungen
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
-            {activePainPoints.map((point) => (
+            {activePainPoints.map(point => (
               <Box
                 key={point.key}
                 sx={{

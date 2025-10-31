@@ -1,11 +1,4 @@
-import {
-  Box,
-  Typography,
-  Stack,
-  Chip,
-  CircularProgress,
-  LinearProgress,
-} from '@mui/material';
+import { Box, Typography, Stack, Chip, CircularProgress, LinearProgress } from '@mui/material';
 import { alpha } from '@mui/material/styles';
 import {
   Phone as PhoneIcon,
@@ -247,7 +240,9 @@ export default function CustomerContactsList({ customerId }: CustomerContactsLis
           <Stack spacing={0.5} alignItems="flex-end">
             {contact.relationshipWarmth !== undefined && (
               <Box display="flex" alignItems="center" gap={0.5}>
-                <TrendingIcon sx={{ fontSize: 12, color: getWarmthColor(contact.relationshipWarmth) }} />
+                <TrendingIcon
+                  sx={{ fontSize: 12, color: getWarmthColor(contact.relationshipWarmth) }}
+                />
                 <Box sx={{ width: 50 }}>
                   <LinearProgress
                     variant="determinate"

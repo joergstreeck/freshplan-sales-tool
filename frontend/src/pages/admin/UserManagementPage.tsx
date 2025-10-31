@@ -101,7 +101,9 @@ export default function UserManagementPage() {
       }
     } catch (error: unknown) {
       console.error('Sales-Rep sync failed:', error);
-      const errorMessage = (error as { response?: { data?: { message?: string } } })?.response?.data?.message || 'Fehler beim Sync. Siehe Server-Logs.';
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response?.data?.message ||
+        'Fehler beim Sync. Siehe Server-Logs.';
       toast.error(errorMessage);
     } finally {
       setSyncing(false);
@@ -221,9 +223,7 @@ export default function UserManagementPage() {
                       {user.xentralSalesRepId ? (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <CheckCircleIcon sx={{ color: 'success.main', fontSize: 18 }} />
-                          <Typography variant="body2">
-                            {user.xentralSalesRepId}
-                          </Typography>
+                          <Typography variant="body2">{user.xentralSalesRepId}</Typography>
                         </Box>
                       ) : (
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>

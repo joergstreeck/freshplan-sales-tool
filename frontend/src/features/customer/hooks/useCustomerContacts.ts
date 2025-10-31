@@ -19,9 +19,7 @@ export function useCustomerContacts(customerId: string) {
     queryKey: ['customers', customerId, 'contacts'],
     queryFn: async () => {
       if (!customerId) throw new Error('No customer ID provided');
-      const response = await httpClient.get<Contact[]>(
-        `/api/customers/${customerId}/contacts`
-      );
+      const response = await httpClient.get<Contact[]>(`/api/customers/${customerId}/contacts`);
       return response.data;
     },
     enabled: !!customerId,

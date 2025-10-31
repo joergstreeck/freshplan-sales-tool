@@ -283,9 +283,7 @@ export const UserTableMUI = () => {
                     </TableCell>
                     <TableCell>
                       {user.xentralSalesRepId ? (
-                        <Typography variant="body2">
-                          {user.xentralSalesRepId}
-                        </Typography>
+                        <Typography variant="body2">{user.xentralSalesRepId}</Typography>
                       ) : (
                         <Typography variant="body2" color="text.secondary">
                           -

@@ -21,7 +21,8 @@ const CustomersPage: React.FC = () => {
     return (
       <MainLayoutV2 maxWidth="full">
         <Alert severity="error">
-          Fehler beim Laden der Kunden: {error instanceof Error ? error.message : 'Unbekannter Fehler'}
+          Fehler beim Laden der Kunden:{' '}
+          {error instanceof Error ? error.message : 'Unbekannter Fehler'}
         </Alert>
       </MainLayoutV2>
     );
@@ -34,11 +35,7 @@ const CustomersPage: React.FC = () => {
           Kunden-Management
         </Typography>
 
-        <CustomerTable
-          customers={customers || []}
-          context="customers"
-          showActions={true}
-        />
+        <CustomerTable customers={customers || []} context="customers" showActions={true} />
       </Box>
     </MainLayoutV2>
   );

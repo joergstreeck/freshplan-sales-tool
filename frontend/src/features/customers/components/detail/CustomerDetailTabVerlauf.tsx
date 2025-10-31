@@ -161,8 +161,7 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
       {/* Info Banner */}
       <Alert severity="info" sx={{ mb: 3 }}>
         <Typography variant="body2">
-          <strong>Tab "Verlauf":</strong> Kontaktverwaltung und Kommunikationshistorie
-          (Timeline).
+          <strong>Tab "Verlauf":</strong> Kontaktverwaltung und Kommunikationshistorie (Timeline).
         </Typography>
       </Alert>
 
@@ -173,11 +172,7 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
             <PersonIcon color="primary" />
             <Typography variant="h6">Ansprechpartner</Typography>
           </Stack>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={handleCreateContact}
-          >
+          <Button variant="contained" startIcon={<AddIcon />} onClick={handleCreateContact}>
             Neuer Kontakt
           </Button>
         </Box>
@@ -195,8 +190,8 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
         {!isLoading && contacts.length === 0 && (
           <Alert severity="info">
             <Typography variant="body2">
-              Noch keine Kontakte erfasst. Klicken Sie auf "Neuer Kontakt" um einen
-              Ansprechpartner hinzuzufügen.
+              Noch keine Kontakte erfasst. Klicken Sie auf "Neuer Kontakt" um einen Ansprechpartner
+              hinzuzufügen.
             </Typography>
           </Alert>
         )}
@@ -220,7 +215,7 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                     <IconButton
                       size="small"
                       aria-label="E-Mail senden"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleEmailContact(contact);
                       }}
@@ -232,7 +227,7 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                     <IconButton
                       size="small"
                       aria-label="Anrufen"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleCallContact(contact);
                       }}
@@ -244,7 +239,7 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                     <IconButton
                       size="small"
                       aria-label="Notiz hinzufügen"
-                      onClick={(e) => {
+                      onClick={e => {
                         e.stopPropagation();
                         handleAddNote(contact);
                       }}
@@ -283,22 +278,14 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                         {contact.firstName} {contact.lastName}
                       </Typography>
                       {contact.isPrimary && (
-                        <Chip
-                          label="Hauptansprechpartner"
-                          color="primary"
-                          size="small"
-                        />
+                        <Chip label="Hauptansprechpartner" color="primary" size="small" />
                       )}
                     </Stack>
                   }
                   secondary={
                     <Box component="span" sx={{ mt: 0.5, display: 'block' }}>
                       <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
-                        <Chip
-                          label={getRoleLabel(contact)}
-                          size="small"
-                          variant="outlined"
-                        />
+                        <Chip label={getRoleLabel(contact)} size="small" variant="outlined" />
                         {contact.email && (
                           <Typography variant="body2" color="text.secondary" component="span">
                             {contact.email}
@@ -316,7 +303,12 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
                         )}
                       </Stack>
                       {contact.notes && (
-                        <Typography variant="caption" color="text.secondary" component="span" sx={{ mt: 1, display: 'block' }}>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          component="span"
+                          sx={{ mt: 1, display: 'block' }}
+                        >
                           {contact.notes}
                         </Typography>
                       )}
@@ -340,8 +332,8 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
 
         <Alert severity="info">
           <Typography variant="body2">
-            <strong>Timeline/Aktivitäten:</strong> Kommunikation und Aktivitäten werden in
-            Sprint 2.2.x implementiert.
+            <strong>Timeline/Aktivitäten:</strong> Kommunikation und Aktivitäten werden in Sprint
+            2.2.x implementiert.
           </Typography>
           <Typography variant="caption" color="text.secondary">
             Geplant: E-Mails, Telefonate, Meetings, Notizen

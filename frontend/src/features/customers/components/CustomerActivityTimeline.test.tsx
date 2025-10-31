@@ -203,7 +203,7 @@ describe('CustomerActivityTimeline', () => {
       'STATUS_CHANGE',
     ];
 
-    activityTypes.forEach((type) => {
+    activityTypes.forEach(type => {
       it(`should render ${type} activity with correct icon`, async () => {
         const mockActivities: CustomerActivity[] = [
           {
@@ -363,10 +363,9 @@ describe('CustomerActivityTimeline', () => {
       render(<CustomerActivityTimeline customerId={mockCustomerId} />);
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          `/api/customers/${mockCustomerId}/timeline`,
-          { credentials: 'include' }
-        );
+        expect(global.fetch).toHaveBeenCalledWith(`/api/customers/${mockCustomerId}/timeline`, {
+          credentials: 'include',
+        });
       });
     });
 
@@ -392,10 +391,9 @@ describe('CustomerActivityTimeline', () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledTimes(2);
-        expect(global.fetch).toHaveBeenLastCalledWith(
-          `/api/customers/${newCustomerId}/timeline`,
-          { credentials: 'include' }
-        );
+        expect(global.fetch).toHaveBeenLastCalledWith(`/api/customers/${newCustomerId}/timeline`, {
+          credentials: 'include',
+        });
       });
     });
   });

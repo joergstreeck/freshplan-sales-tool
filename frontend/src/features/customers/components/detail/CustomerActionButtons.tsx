@@ -116,12 +116,7 @@ export const CustomerActionButtons = ({ customer, onEdit }: CustomerActionButton
       </Button>
 
       {/* Bearbeiten */}
-      <Button
-        variant="contained"
-        startIcon={<EditIcon />}
-        onClick={handleEdit}
-        sx={{ ml: 'auto' }}
-      >
+      <Button variant="contained" startIcon={<EditIcon />} onClick={handleEdit} sx={{ ml: 'auto' }}>
         Bearbeiten
       </Button>
     </Box>

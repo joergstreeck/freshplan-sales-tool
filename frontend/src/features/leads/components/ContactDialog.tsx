@@ -242,9 +242,7 @@ export function ContactDialog({
           <Autocomplete
             freeSolo
             options={contactRoles?.map(r => r.label) || []}
-            value={
-              contactRoles?.find(r => r.value === value)?.label || (value as string) || ''
-            }
+            value={contactRoles?.find(r => r.value === value)?.label || (value as string) || ''}
             onChange={(_, newValue) => {
               const matchingRole = contactRoles?.find(r => r.label === newValue);
               handleFieldChange(fieldKey, matchingRole?.value || newValue || '');
@@ -371,7 +369,13 @@ export function ContactDialog({
       <Grid key={fieldKey} size={{ xs: field.gridCols || 12 }}>
         <TextField
           label={field.label}
-          type={fieldKey === 'email' ? 'email' : fieldKey === 'phone' || fieldKey === 'mobile' ? 'tel' : 'text'}
+          type={
+            fieldKey === 'email'
+              ? 'email'
+              : fieldKey === 'phone' || fieldKey === 'mobile'
+                ? 'tel'
+                : 'text'
+          }
           value={value || ''}
           onChange={e => handleFieldChange(fieldKey, e.target.value)}
           fullWidth
@@ -386,13 +390,7 @@ export function ContactDialog({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      maxWidth="md"
-      fullWidth
-      fullScreen={isMobile}
-    >
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth fullScreen={isMobile}>
       <DialogTitle>{isEdit ? 'Kontakt bearbeiten' : 'Neuer Kontakt'}</DialogTitle>
 
       <DialogContent dividers>
@@ -451,9 +449,7 @@ export function ContactDialog({
               </Grid>
 
               {/* Divider after section (except last) */}
-              {sectionIndex < contactSchema.sections.length - 1 && (
-                <Divider sx={{ mt: 3 }} />
-              )}
+              {sectionIndex < contactSchema.sections.length - 1 && <Divider sx={{ mt: 3 }} />}
             </Box>
           ))}
       </DialogContent>

@@ -86,23 +86,42 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const sourceField = stage0Section?.fields.find(f => f.fieldKey === 'source');
   const businessTypeField = stage1Section?.fields.find(f => f.fieldKey === 'businessType');
   const kitchenSizeField = stage1Section?.fields.find(f => f.fieldKey === 'kitchenSize');
-  const relationshipStatusField = stage2Section?.fields.find(f => f.fieldKey === 'relationshipStatus');
-  const decisionMakerAccessField = stage2Section?.fields.find(f => f.fieldKey === 'decisionMakerAccess');
+  const relationshipStatusField = stage2Section?.fields.find(
+    f => f.fieldKey === 'relationshipStatus'
+  );
+  const decisionMakerAccessField = stage2Section?.fields.find(
+    f => f.fieldKey === 'decisionMakerAccess'
+  );
 
-  const { data: sourceOptions, isLoading: sourceLoading } = useEnumOptions(sourceField?.enumSource || '');
-  const { data: businessTypeOptions, isLoading: businessTypeLoading } = useEnumOptions(businessTypeField?.enumSource || '');
-  const { data: kitchenSizeOptions, isLoading: kitchenSizeLoading } = useEnumOptions(kitchenSizeField?.enumSource || '');
-  const { data: relationshipStatusOptions, isLoading: relationshipStatusLoading } = useEnumOptions(relationshipStatusField?.enumSource || '');
-  const { data: decisionMakerAccessOptions, isLoading: decisionMakerAccessLoading } = useEnumOptions(decisionMakerAccessField?.enumSource || '');
+  const { data: sourceOptions, isLoading: sourceLoading } = useEnumOptions(
+    sourceField?.enumSource || ''
+  );
+  const { data: businessTypeOptions, isLoading: businessTypeLoading } = useEnumOptions(
+    businessTypeField?.enumSource || ''
+  );
+  const { data: kitchenSizeOptions, isLoading: kitchenSizeLoading } = useEnumOptions(
+    kitchenSizeField?.enumSource || ''
+  );
+  const { data: relationshipStatusOptions, isLoading: relationshipStatusLoading } = useEnumOptions(
+    relationshipStatusField?.enumSource || ''
+  );
+  const { data: decisionMakerAccessOptions, isLoading: decisionMakerAccessLoading } =
+    useEnumOptions(decisionMakerAccessField?.enumSource || '');
 
   // Build enum options map for renderField
-   
+
   const enumOptionsMap: Record<string, { options: EnumOption[]; loading: boolean }> = {
     source: { options: sourceOptions || [], loading: sourceLoading },
     businessType: { options: businessTypeOptions || [], loading: businessTypeLoading },
     kitchenSize: { options: kitchenSizeOptions || [], loading: kitchenSizeLoading },
-    relationshipStatus: { options: relationshipStatusOptions || [], loading: relationshipStatusLoading },
-    decisionMakerAccess: { options: decisionMakerAccessOptions || [], loading: decisionMakerAccessLoading },
+    relationshipStatus: {
+      options: relationshipStatusOptions || [],
+      loading: relationshipStatusLoading,
+    },
+    decisionMakerAccess: {
+      options: decisionMakerAccessOptions || [],
+      loading: decisionMakerAccessLoading,
+    },
   };
 
   // Form State (dynamically built from schema)
@@ -143,7 +162,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   const validateStage0 = (): Record<string, string[]> | null => {
     const errors: Record<string, string[]> = {};
 
-    if (!formData.companyName || (typeof formData.companyName === 'string' && !formData.companyName.trim())) {
+    if (
+      !formData.companyName ||
+      (typeof formData.companyName === 'string' && !formData.companyName.trim())
+    ) {
       errors.companyName = ['Firmenname ist erforderlich'];
     } else if (typeof formData.companyName === 'string' && formData.companyName.trim().length < 2) {
       errors.companyName = ['Firmenname muss mindestens 2 Zeichen lang sein'];
@@ -154,7 +176,7 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
     }
 
     // FirstContact validation (MESSE, TELEFON require documentation)
-    const requiresFirstContact = ['MESSE', 'TELEFON'].includes(formData.source as string || '');
+    const requiresFirstContact = ['MESSE', 'TELEFON'].includes((formData.source as string) || '');
     const showFirstContactBlock = requiresFirstContact || showFirstContactFields;
 
     if (showFirstContactBlock) {
@@ -446,7 +468,10 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
               ))}
             </Select>
             {(fieldError || field.helpText) && (
-              <Typography variant="caption" sx={{ mt: 0.5, ml: 1.75, color: fieldError ? 'error.main' : 'text.secondary' }}>
+              <Typography
+                variant="caption"
+                sx={{ mt: 0.5, ml: 1.75, color: fieldError ? 'error.main' : 'text.secondary' }}
+              >
                 {fieldError?.[0] || field.helpText}
               </Typography>
             )}
@@ -642,30 +667,38 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
             )}
 
             {/* Optional firstContact checkbox (nur bei EMPFEHLUNG/WEB/PARTNER/SONSTIGE) */}
-            {!['MESSE', 'TELEFON'].includes(formData.source as string || '') && formData.source && (
-              <Box sx={{ mt: 2 }}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={showFirstContactFields}
-                      onChange={e => {
-                        setShowFirstContactFields(e.target.checked);
-                        if (!e.target.checked) {
-                          setFirstContact(undefined);
-                        }
-                      }}
-                    />
-                  }
-                  label="☑ Ich hatte bereits Erstkontakt (für sofortigen Lead-Schutz)"
-                />
-                <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 4 }}>
-                  Aktiviert 6-Monate-Schutz ab jetzt. Nur ankreuzen wenn tatsächlich Erstkontakt stattfand.
-                </Typography>
-              </Box>
-            )}
+            {!['MESSE', 'TELEFON'].includes((formData.source as string) || '') &&
+              formData.source && (
+                <Box sx={{ mt: 2 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={showFirstContactFields}
+                        onChange={e => {
+                          setShowFirstContactFields(e.target.checked);
+                          if (!e.target.checked) {
+                            setFirstContact(undefined);
+                          }
+                        }}
+                      />
+                    }
+                    label="☑ Ich hatte bereits Erstkontakt (für sofortigen Lead-Schutz)"
+                  />
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    display="block"
+                    sx={{ ml: 4 }}
+                  >
+                    Aktiviert 6-Monate-Schutz ab jetzt. Nur ankreuzen wenn tatsächlich Erstkontakt
+                    stattfand.
+                  </Typography>
+                </Box>
+              )}
 
             {/* FirstContact block (conditional) */}
-            {(['MESSE', 'TELEFON'].includes(formData.source as string || '') || showFirstContactFields) && (
+            {(['MESSE', 'TELEFON'].includes((formData.source as string) || '') ||
+              showFirstContactFields) && (
               <Box
                 sx={{
                   mt: 3,
@@ -677,18 +710,22 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 }}
               >
                 <Typography variant="subtitle2" gutterBottom>
-                  {['MESSE', 'TELEFON'].includes(formData.source as string || '')
+                  {['MESSE', 'TELEFON'].includes((formData.source as string) || '')
                     ? 'Erstkontakt dokumentieren (PFLICHT)'
                     : 'Erstkontakt dokumentieren'}
-                  {['MESSE', 'TELEFON'].includes(formData.source as string || '') && (
+                  {['MESSE', 'TELEFON'].includes((formData.source as string) || '') && (
                     <Typography component="span" color="error.main">
                       {' '}
                       *
                     </Typography>
                   )}
                 </Typography>
-                <Typography variant="caption" color="text.secondary" sx={{ mb: 2, display: 'block' }}>
-                  {['MESSE', 'TELEFON'].includes(formData.source as string || '')
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mb: 2, display: 'block' }}
+                >
+                  {['MESSE', 'TELEFON'].includes((formData.source as string) || '')
                     ? 'Wann und wie fand der Erstkontakt statt? (Aktiviert 6-Monate-Schutz)'
                     : 'Wann und wie fand der Erstkontakt statt? (Aktiviert 6-Monate-Schutz ab jetzt)'}
                 </Typography>
@@ -723,7 +760,8 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   margin="dense"
                   error={!!fieldErrors['firstContact.performedAt']}
                   helperText={
-                    fieldErrors['firstContact.performedAt']?.[0] || 'Wann fand der Erstkontakt statt?'
+                    fieldErrors['firstContact.performedAt']?.[0] ||
+                    'Wann fand der Erstkontakt statt?'
                   }
                   InputLabelProps={{ shrink: true }}
                 />
@@ -807,7 +845,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 error={!!fieldErrors['contact.email'] || !!fieldErrors['contact']}
                 helperText={
                   fieldErrors['contact.email']?.[0] ||
-                  (fieldErrors['contact'] && !contactData.phone?.trim() ? fieldErrors['contact'][0] : '')
+                  (fieldErrors['contact'] && !contactData.phone?.trim()
+                    ? fieldErrors['contact'][0]
+                    : '')
                 }
                 disabled={saving}
               />
@@ -822,7 +862,9 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                 error={!!fieldErrors['contact'] || !!fieldErrors['contact.phone']}
                 helperText={
                   fieldErrors['contact.phone']?.[0] ||
-                  (fieldErrors['contact'] && !contactData.email?.trim() ? fieldErrors['contact'][0] : '')
+                  (fieldErrors['contact'] && !contactData.email?.trim()
+                    ? fieldErrors['contact'][0]
+                    : '')
                 }
                 disabled={saving}
               />
@@ -845,7 +887,11 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
                   Verarbeitung zur B2B-Geschäftsanbahnung.
                   <Link
                     onClick={() => {
-                      window.open('https://dsgvo-gesetz.de/art-6-dsgvo/', '_blank', 'noopener,noreferrer');
+                      window.open(
+                        'https://dsgvo-gesetz.de/art-6-dsgvo/',
+                        '_blank',
+                        'noopener,noreferrer'
+                      );
                     }}
                     sx={{ ml: 1, cursor: 'pointer' }}
                   >
@@ -885,7 +931,14 @@ export default function LeadWizard({ open, onClose, onCreated }: LeadWizardProps
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md" fullScreen={false} disableEnforceFocus>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      fullWidth
+      maxWidth="md"
+      fullScreen={false}
+      disableEnforceFocus
+    >
       <DialogTitle>
         {progressiveSchema?.title || 'Lead erfassen'}
         <IconButton

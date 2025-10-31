@@ -99,11 +99,12 @@ export function useCustomerSchema() {
    * @returns Array of fields for this step, sorted by wizardOrder
    */
   const getWizardFields = useMemo(
-    () => (step: number): FieldDefinition[] => {
-      return allFields
-        .filter((f) => f.showInWizard === true && f.wizardStep === step)
-        .sort((a, b) => (a.wizardOrder ?? 0) - (b.wizardOrder ?? 0));
-    },
+    () =>
+      (step: number): FieldDefinition[] => {
+        return allFields
+          .filter(f => f.showInWizard === true && f.wizardStep === step)
+          .sort((a, b) => (a.wizardOrder ?? 0) - (b.wizardOrder ?? 0));
+      },
     [allFields]
   );
 
@@ -118,7 +119,7 @@ export function useCustomerSchema() {
   const getCardFields = useMemo(
     () =>
       (cardId: string): CustomerCardSchema | undefined => {
-        return query.data?.find((card) => card.cardId === cardId);
+        return query.data?.find(card => card.cardId === cardId);
       },
     [query.data]
   );
@@ -132,7 +133,7 @@ export function useCustomerSchema() {
   const getFieldByKey = useMemo(
     () =>
       (key: string): FieldDefinition | undefined => {
-        return allFields.find((f) => f.fieldKey === key);
+        return allFields.find(f => f.fieldKey === key);
       },
     [allFields]
   );

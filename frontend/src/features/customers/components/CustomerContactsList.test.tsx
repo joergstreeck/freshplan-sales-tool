@@ -495,10 +495,9 @@ describe('CustomerContactsList', () => {
       render(<CustomerContactsList customerId={mockCustomerId} />);
 
       await waitFor(() => {
-        expect(global.fetch).toHaveBeenCalledWith(
-          `/api/customers/${mockCustomerId}/contacts`,
-          { credentials: 'include' }
-        );
+        expect(global.fetch).toHaveBeenCalledWith(`/api/customers/${mockCustomerId}/contacts`, {
+          credentials: 'include',
+        });
       });
     });
 
@@ -524,10 +523,9 @@ describe('CustomerContactsList', () => {
 
       await waitFor(() => {
         expect(global.fetch).toHaveBeenCalledTimes(2);
-        expect(global.fetch).toHaveBeenLastCalledWith(
-          `/api/customers/${newCustomerId}/contacts`,
-          { credentials: 'include' }
-        );
+        expect(global.fetch).toHaveBeenLastCalledWith(`/api/customers/${newCustomerId}/contacts`, {
+          credentials: 'include',
+        });
       });
     });
   });
