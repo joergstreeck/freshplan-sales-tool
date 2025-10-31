@@ -667,7 +667,7 @@ export function CustomersPageV2({
           }}
         />
 
-        {/* DeleteLead Dialog */}
+        {/* DeleteLead Dialog - Context-based labels */}
         <DeleteLeadDialog
           open={deleteDialogOpen}
           lead={selectedLead}
@@ -679,8 +679,10 @@ export function CustomersPageV2({
             setDeleteDialogOpen(false);
             setSelectedLead(null);
             refetch();
-            toast.success('Lead erfolgreich gelöscht!');
+            const entityLabel = context === 'leads' ? 'Lead' : 'Kunde';
+            toast.success(`${entityLabel} erfolgreich gelöscht!`);
           }}
+          context={context}
         />
       </Box>
     </MainLayoutV2>

@@ -198,11 +198,11 @@ class MockXentralApiClientTest {
 
     // Verify expected employees
     assertTrue(
-        salesReps.stream().anyMatch(e -> e.email().equals("max.mustermann@freshplan.de")),
-        "Should contain Max Mustermann");
+        salesReps.stream().anyMatch(e -> e.email().equals("stefan.weber@freshplan.example")),
+        "Should contain Stefan Weber");
     assertTrue(
-        salesReps.stream().anyMatch(e -> e.email().equals("lisa.schmidt@freshplan.de")),
-        "Should contain Lisa Schmidt");
+        salesReps.stream().anyMatch(e -> e.email().equals("anna.schmidt@freshplan.example")),
+        "Should contain Anna Schmidt");
   }
 
   // ========== TEST CONNECTION ==========
