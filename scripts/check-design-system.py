@@ -270,8 +270,8 @@ def main():
 
     print("━" * 50)
 
-    # Exit based on violations (ALL patterns now blocking)
-    if total_critical > 0:
+    # Exit based on STRICT violations only (Chart violations are warnings)
+    if total_strict > 0:
         print("🚫 Design System Rules Violated")
         print()
         print("🔧 How to fix violations:")
@@ -285,6 +285,12 @@ def main():
         print()
         print("📖 See: docs/planung/grundlagen/DESIGN_SYSTEM.md")
         sys.exit(1)
+
+    # Chart violations are WARNINGS only (exit 0)
+    if total_chart > 0:
+        print("⚠️  Chart files have relaxed violations - please review, but not blocking")
+        print("✅ CI passes - Chart colors for Recharts are allowed")
+        sys.exit(0)
 
 if __name__ == '__main__':
     main()
