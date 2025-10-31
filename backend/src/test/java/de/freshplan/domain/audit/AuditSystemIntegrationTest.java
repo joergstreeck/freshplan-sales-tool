@@ -22,6 +22,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 
 /**
  * Integration tests for the complete Audit System
@@ -112,6 +114,7 @@ class AuditSystemIntegrationTest {
 
   @Test
   @TestTransaction
+  @Execution(ExecutionMode.SAME_THREAD) // Prevent race conditions with parallel tests
   void testHashChainIntegrity() throws Exception {
     auditRepository.deleteAll(); // Clean within same transaction
 
