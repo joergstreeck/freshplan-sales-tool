@@ -1354,16 +1354,7 @@ public class TestDataService {
       opportunity.setDescription(
           "Großbestellung Backwaren für Q4 2024. Erweiterung des Sortiments um frische Backwaren.");
 
-      // Persist opportunity using repository
-      de.freshplan.domain.opportunity.repository.OpportunityRepository opportunityRepository =
-          jakarta
-              .enterprise
-              .inject
-              .spi
-              .CDI
-              .current()
-              .select(de.freshplan.domain.opportunity.repository.OpportunityRepository.class)
-              .get();
+      // Persist opportunity using injected repository
       opportunityRepository.persist(opportunity);
 
       LOG.infof("✅ Created 1 Opportunity: name=%s, value=%s", opportunity.getName(), "150000.00");

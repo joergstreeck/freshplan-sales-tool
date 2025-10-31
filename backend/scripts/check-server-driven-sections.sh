@@ -119,7 +119,8 @@ else
 
     echo -e "${BLUE}Prüfe Step-Komponenten in allen Features...${NC}"
 
-    for STEP_FILE in $STEP_FILES; do
+    echo "$STEP_FILES" | while read -r STEP_FILE; do
+        if [ -z "$STEP_FILE" ]; then continue; fi
         FILENAME=$(basename "$STEP_FILE")
         FEATURE=$(echo "$STEP_FILE" | sed 's|.*features/\([^/]*\)/.*|\1|')
 
@@ -180,7 +181,7 @@ if [ "$ERRORS_FOUND" -eq 0 ]; then
     echo -e "  - Schema-Resources gefunden: ${GREEN}$RESOURCE_COUNT${NC}"
 
     # Frontend Step-Komponenten
-    STEP_COUNT=$(echo "$STEP_FILES" | wc -w)
+    STEP_COUNT=$(echo "$STEP_FILES" | wc -l | tr -d ' ')
     echo -e "  - Frontend Step-Komponenten: ${GREEN}$STEP_COUNT${NC}"
     echo -e "  - Hardcodierte Sections: ${GREEN}0${NC}"
     echo ""

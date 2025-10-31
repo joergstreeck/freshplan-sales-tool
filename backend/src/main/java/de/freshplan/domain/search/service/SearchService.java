@@ -8,6 +8,7 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.search.service.dto.ContactSearchDto;
 import de.freshplan.domain.search.service.dto.CustomerSearchDto;
 import de.freshplan.domain.search.service.dto.QueryType;
+import de.freshplan.domain.search.service.dto.SearchContext;
 import de.freshplan.domain.search.service.dto.SearchResult;
 import de.freshplan.domain.search.service.dto.SearchResults;
 import de.freshplan.domain.search.service.query.SearchQueryService;
@@ -65,11 +66,11 @@ public class SearchService {
    * @param includeContacts Whether to include contacts
    * @param includeInactive Whether to include inactive customers/leads
    * @param limit Maximum results per entity type
-   * @param context Search context: "leads" for leads, otherwise customers (default: "customers")
+   * @param context Search context: LEADS for leads, CUSTOMERS for customers (default: CUSTOMERS)
    * @return Combined search results
    */
   public SearchResults universalSearch(
-      String query, boolean includeContacts, boolean includeInactive, int limit, String context) {
+      String query, boolean includeContacts, boolean includeInactive, int limit, SearchContext context) {
 
     if (cqrsEnabled) {
       LOG.debugf("CQRS enabled - delegating universalSearch to SearchQueryService");
@@ -80,6 +81,23 @@ public class SearchService {
     // Legacy implementation (preserved for fallback)
     LOG.debugf("CQRS disabled - using legacy universalSearch implementation");
     return legacyUniversalSearch(query, includeContacts, includeInactive, limit, context);
+  }
+
+  /**
+   * Performs universal search with string-based context parameter (for backward compatibility).
+   *
+   * @param query The search query
+   * @param includeContacts Whether to include contacts
+   * @param includeInactive Whether to include inactive customers/leads
+   * @param limit Maximum results per entity type
+   * @param context Search context: "leads" for leads, otherwise customers (default: "customers")
+   * @return Combined search results
+   * @deprecated Use {@link #universalSearch(String, boolean, boolean, int, SearchContext)} instead
+   */
+  @Deprecated
+  public SearchResults universalSearch(
+      String query, boolean includeContacts, boolean includeInactive, int limit, String context) {
+    return universalSearch(query, includeContacts, includeInactive, limit, SearchContext.fromString(context));
   }
 
   /**
@@ -107,7 +125,7 @@ public class SearchService {
 
   /** Legacy implementation of universalSearch (preserved for fallback). */
   private SearchResults legacyUniversalSearch(
-      String query, boolean includeContacts, boolean includeInactive, int limit, String context) {
+      String query, boolean includeContacts, boolean includeInactive, int limit, SearchContext context) {
 
     long startTime = System.currentTimeMillis();
 
@@ -120,8 +138,8 @@ public class SearchService {
     List<SearchResult> entityResults = new ArrayList<>();
     List<SearchResult> contactResults = new ArrayList<>();
 
-    // Context-based routing: "leads" → search leads, otherwise → search customers
-    if ("leads".equals(context)) {
+    // Context-based routing: LEADS → search leads, otherwise → search customers
+    if (SearchContext.LEADS.equals(context)) {
       // Search in Leads
       entityResults = searchLeads(query, queryType, includeInactive, limit);
 

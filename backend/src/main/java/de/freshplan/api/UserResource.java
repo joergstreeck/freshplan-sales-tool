@@ -103,9 +103,8 @@ public class UserResource {
     try {
       UserResponse userResponse = userService.getUserByUsername(username);
       return Response.ok(userResponse).build();
-    } catch (Exception e) {
+    } catch (jakarta.ws.rs.NotFoundException e) {
       // Fallback for users not yet in database (e.g., test environments)
-      var authDetails = securityContext.getAuthenticationDetails();
       UUID userId = securityContext.getUserId();
       String email = securityContext.getEmail();
 
