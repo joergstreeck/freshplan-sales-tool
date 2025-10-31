@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Paper,
@@ -26,11 +27,13 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SyncIcon from '@mui/icons-material/Sync';
 import { useUsers, useDeleteUser, useToggleUserStatus } from './userQueries';
 import { useUserStore } from './userStore';
 import type { User, UserFilter } from './userSchemas';
 
 export const UserTableMUI = () => {
+  const navigate = useNavigate();
   const [searchInput, setSearchInput] = useState('');
   const { activeFilters, setActiveFilters, openEditModal, openCreateModal } = useUserStore();
 
@@ -119,20 +122,37 @@ export const UserTableMUI = () => {
               {users.length} {users.length === 1 ? 'Benutzer' : 'Benutzer'} im System
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<PersonAddIcon />}
-            onClick={openCreateModal}
-            sx={{
-              backgroundColor: 'primary.main',
-              color: 'white',
-              '&:hover': {
-                backgroundColor: 'primary.dark',
-              },
-            }}
-          >
-            Neuer Benutzer
-          </Button>
+          <Stack direction="row" spacing={2}>
+            <Button
+              variant="outlined"
+              startIcon={<SyncIcon />}
+              onClick={() => navigate('/admin/users/sales-rep-mapping')}
+              sx={{
+                borderColor: 'secondary.main',
+                color: 'secondary.main',
+                '&:hover': {
+                  borderColor: 'secondary.dark',
+                  backgroundColor: 'secondary.light',
+                },
+              }}
+            >
+              Xentral Sales-Rep Mapping
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<PersonAddIcon />}
+              onClick={openCreateModal}
+              sx={{
+                backgroundColor: 'primary.main',
+                color: 'white',
+                '&:hover': {
+                  backgroundColor: 'primary.dark',
+                },
+              }}
+            >
+              Neuer Benutzer
+            </Button>
+          </Stack>
         </Box>
 
         {/* Search Bar */}
@@ -208,6 +228,11 @@ export const UserTableMUI = () => {
                       Rollen
                     </Typography>
                   </TableCell>
+                  <TableCell>
+                    <Typography variant="subtitle2" fontWeight="bold">
+                      Xentral Sales-Rep ID
+                    </Typography>
+                  </TableCell>
                   <TableCell align="center">
                     <Typography variant="subtitle2" fontWeight="bold">
                       Status
@@ -255,6 +280,15 @@ export const UserTableMUI = () => {
                           />
                         ))}
                       </Stack>
+                    </TableCell>
+                    <TableCell>
+                      {user.xentralSalesRepId ? (
+                        <Typography variant="body2">{user.xentralSalesRepId}</Typography>
+                      ) : (
+                        <Typography variant="body2" color="text.secondary">
+                          -
+                        </Typography>
+                      )}
                     </TableCell>
                     <TableCell align="center">
                       {user.enabled ? (

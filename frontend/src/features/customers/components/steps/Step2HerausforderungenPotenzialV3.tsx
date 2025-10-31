@@ -1,22 +1,32 @@
 /**
  * Step 2: Herausforderungen & Potenzial (V3)
  *
- * FINALE VERSION - NUR globale Themen
- * Keine standortbezogenen Felder mehr!
+ * Sprint 2.1.7.2 D11: Server-Driven Customer Wizard (Option B)
+ *
+ * Server-Driven Architecture:
+ * - Backend definiert ALLE Felder + Section-Struktur
+ * - Frontend rendert generisch basierend auf wizardSectionId/wizardSectionTitle
+ * - Keine hardcodierten Field-Arrays mehr!
  *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP2_HERAUSFORDERUNGEN_POTENZIAL_V3.md
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { Box, Typography, Card, CardContent, Grid, Chip } from '@mui/material';
+import { Box, Typography, CircularProgress, Alert, AlertTitle, Divider } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
-import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
+import { useCustomerSchema } from '../../../../hooks/useCustomerSchema';
+import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
+import type { FieldDefinition } from '../../../../types/customer-schema';
 
-// Import Sections
-import { GlobalChallengesSection } from '../sections/GlobalChallengesSection';
-import { RevenueExpectationSectionV2 } from '../sections/RevenueExpectationSectionV2';
-import { AdditionalBusinessSection } from '../sections/AdditionalBusinessSection';
-import { isFieldDefinition } from '../../types/field.types';
+/**
+ * Section data structure for grouping fields
+ */
+interface WizardSection {
+  sectionId: string;
+  title: string;
+  fields: FieldDefinition[];
+  showDividerAfter: boolean;
+}
 
 // Pain Point Solutions Mapping (100% Lead Parity - Sprint 2.1.7.2)
 // Field names match Lead entity exactly for seamless Lead→Customer conversion
@@ -81,37 +91,80 @@ const PAIN_POINT_SOLUTIONS = {
   },
 };
 
+/**
+ * Step 2: Herausforderungen & Potenzial
+ *
+ * Server-Driven: Backend controls sections, titles, field order via CustomerSchemaResource.java
+ */
 export const Step2HerausforderungenPotenzialV3: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =
     useCustomerOnboardingStore();
 
-  const { getFieldByKey } = useFieldDefinitions();
+  // ========== SERVER-DRIVEN SCHEMA (Sprint 2.1.7.2 D11) ==========
+  const { getWizardFields, isLoading, isError } = useCustomerSchema();
 
-  // Field Groups
-  const painPointFields = useMemo(() => {
-    return Object.keys(PAIN_POINT_SOLUTIONS)
-      .map(key => getFieldByKey(key))
-      .filter(isFieldDefinition);
-  }, [getFieldByKey]);
+  /**
+   * Get all Step 2 fields from backend
+   *
+   * Backend defines:
+   * - pain_points section (Order 1-9)
+   * - revenue_potential section (Order 10)
+   */
+  const step2Fields = useMemo(() => {
+    if (isLoading || isError) return [];
+    return getWizardFields(2); // Sorted by wizardOrder
+  }, [getWizardFields, isLoading, isError]);
 
-  const revenueField = useMemo(() => {
-    return getFieldByKey('expectedAnnualRevenue');
-  }, [getFieldByKey]);
+  /**
+   * Group fields by section (Option B: Server-Driven Sections)
+   */
+  const sections = useMemo((): WizardSection[] => {
+    const sectionMap = new Map<string, WizardSection>();
 
-  const additionalFields = useMemo(() => {
-    return ['vendingInterest', 'vendingLocations']
-      .map(key => getFieldByKey(key))
-      .filter(isFieldDefinition);
-  }, [getFieldByKey]);
+    step2Fields.forEach(field => {
+      const sectionId = field.wizardSectionId || 'default';
+      const sectionTitle = field.wizardSectionTitle || '';
 
-  // Active Pain Points
+      if (!sectionMap.has(sectionId)) {
+        sectionMap.set(sectionId, {
+          sectionId,
+          title: sectionTitle,
+          fields: [],
+          showDividerAfter: false,
+        });
+      }
+
+      const section = sectionMap.get(sectionId)!;
+      section.fields.push(field);
+
+      if (field.showDividerAfter) {
+        section.showDividerAfter = true;
+      }
+    });
+
+    return Array.from(sectionMap.values());
+  }, [step2Fields]);
+
+  /**
+   * Business Logic: Active Pain Points
+   *
+   * Note: This is NOT part of server-driven schema!
+   * This is business logic that identifies selected pain points.
+   */
   const activePainPoints = useMemo(() => {
-    return Object.entries(PAIN_POINT_SOLUTIONS)
-      .filter(([key]) => customerData[key] === 'ja')
-      .map(([key, data]) => ({ key, ...data }));
+    const painPointKeys = Object.keys(PAIN_POINT_SOLUTIONS) as Array<
+      keyof typeof PAIN_POINT_SOLUTIONS
+    >;
+
+    return painPointKeys
+      .filter(key => customerData[key] === true)
+      .map(key => ({
+        key,
+        ...PAIN_POINT_SOLUTIONS[key],
+      }));
   }, [customerData]);
 
-  // Handlers
+  // Field event handlers
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
@@ -126,6 +179,27 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
     [validateField]
   );
 
+  // ========== LOADING / ERROR STATES ==========
+
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Fehler beim Laden des Schemas</AlertTitle>
+        Bitte versuchen Sie es später erneut oder wenden Sie sich an den Support.
+      </Alert>
+    );
+  }
+
+  // ========== SERVER-DRIVEN RENDERING ==========
+
   return (
     <Box>
       <Typography variant="h5" component="h2" gutterBottom>
@@ -137,79 +211,75 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
         mit Freshfoodz.
       </Typography>
 
-      {/* 1. Pain Points */}
-      <GlobalChallengesSection
-        painPointFields={painPointFields}
-        values={customerData}
-        errors={validationErrors}
-        onChange={handleFieldChange}
-        onBlur={handleFieldBlur}
-      />
+      {/* SERVER-DRIVEN SECTIONS (Sprint 2.1.7.2 D11 Option B) */}
+      {/* Backend controls: section titles, field order, dividers */}
+      {sections.map((section, sectionIndex) => (
+        <React.Fragment key={section.sectionId}>
+          <Box sx={{ mb: 4 }}>
+            {/* Section Title (from backend wizardSectionTitle) */}
+            {section.title && (
+              <Typography variant="h6" gutterBottom>
+                {section.title}
+              </Typography>
+            )}
 
-      {/* 2. Umsatzerwartung */}
-      {revenueField && (
-        <RevenueExpectationSectionV2
-          revenueField={revenueField}
-          values={customerData}
-          errors={validationErrors}
-          onChange={handleFieldChange}
-          onBlur={handleFieldBlur}
-          totalLocations={customerData.totalLocationsEU || 1}
-          activePainPoints={activePainPoints.map(p => p.key)}
-        />
-      )}
+            {/* Fields in this section */}
+            <DynamicFieldRenderer
+              fields={section.fields}
+              values={customerData}
+              errors={validationErrors}
+              onChange={handleFieldChange}
+              onBlur={handleFieldBlur}
+              useAdaptiveLayout={true}
+            />
+          </Box>
 
-      {/* 3. Zusatzgeschäft */}
-      <AdditionalBusinessSection
-        additionalFields={additionalFields}
-        values={customerData}
-        errors={validationErrors}
-        onChange={handleFieldChange}
-        onBlur={handleFieldBlur}
-      />
+          {/* Divider (server-driven via showDividerAfter) */}
+          {section.showDividerAfter && sectionIndex < sections.length - 1 && (
+            <Divider sx={{ my: 3 }} />
+          )}
+        </React.Fragment>
+      ))}
 
-      {/* Solutions für ausgewählte Pain Points */}
+      {/* Business Logic: Solutions für ausgewählte Pain Points */}
+      {/* Show only when pain points are selected */}
       {activePainPoints.length > 0 && (
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 4, p: 3, bgcolor: 'background.paper', borderRadius: 2 }}>
           <Typography variant="h6" gutterBottom>
             💡 Freshfoodz Lösungen für Ihre Herausforderungen
           </Typography>
-          <Grid container spacing={2}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
             {activePainPoints.map(point => (
-              <Grid size={{ xs: 12, md: 6 }} key={point.key}>
-                <Card variant="outlined">
-                  <CardContent>
-                    <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-                      {point.title}
-                    </Typography>
-                    <Typography variant="body2" color="success.main" gutterBottom>
-                      ✅ {point.solution}
-                    </Typography>
-                    <Box sx={{ mt: 1 }}>
-                      {point.products.map(product => (
-                        <Chip
-                          key={product}
-                          label={product}
-                          size="small"
-                          sx={{ mr: 0.5, mb: 0.5 }}
-                        />
-                      ))}
-                    </Box>
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      display="block"
-                      sx={{ mt: 1 }}
-                    >
-                      {point.impact}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </Grid>
+              <Box
+                key={point.key}
+                sx={{
+                  p: 2,
+                  border: 1,
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                }}
+              >
+                <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+                  {point.title}
+                </Typography>
+                <Typography variant="body2" color="success.main" gutterBottom>
+                  ✅ {point.solution}
+                </Typography>
+                <Typography variant="caption" color="text.secondary" display="block">
+                  {point.impact}
+                </Typography>
+              </Box>
             ))}
-          </Grid>
+          </Box>
         </Box>
       )}
+
+      {/* Info Box: Next Step */}
+      <Alert severity="info" sx={{ mt: 3 }}>
+        <AlertTitle>Nächster Schritt</AlertTitle>
+        Im nächsten Schritt erfassen wir Ihre Kontakte und Ansprechpartner für eine optimale
+        Zusammenarbeit.
+      </Alert>
     </Box>
   );
 };

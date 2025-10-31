@@ -2,23 +2,24 @@
 module: "03_kundenmanagement"
 domain: "shared"
 doc_type: "guideline"
-status: "planned"
+status: "active"
 owner: "team/leads"
-updated: "2025-09-27"
+updated: "2025-10-22"
 ---
 
 # 🎯 Modul 03 Kundenmanagement - Vollständige Planungsdokumentation
 
 **📍 Navigation:** Home → Planung → 03 Kundenmanagement
 
-**📅 Letzte Aktualisierung:** 2025-09-27
-**🎯 Status:** PLANNED (Strukturell vorbereitet)
-**📊 Vollständigkeit:** Struktur 100%, Implementation TBD
+**📅 Letzte Aktualisierung:** 2025-10-22
+**🎯 Status:** ACTIVE (Sprint 2.1.7.4 Complete)
+**📊 Vollständigkeit:** Struktur 100%, CustomerStatus Architecture COMPLETE
 
 ## ✅ Status (Kurzübersicht)
-- **Backend:** 📋 *Planned* (Struktur bereit)
-- **Frontend:** 📋 *Planned* (Struktur bereit)
-- **Shared:** 📋 *Planned* (Struktur bereit)
+- **Current Sprint:** Sprint 2.1.7.4 - CustomerStatus Architecture ✅ COMPLETE
+- **Backend:** ✅ *Active* (CustomerStatus + Lead Parity)
+- **Frontend:** ✅ *Active* (Manual Activation + Seasonal Business)
+- **Shared:** ✅ *Active* (EnumResource Integration)
 - **Legacy:** 📚 *Archiviert* → [legacy-planning/](./legacy-planning/)
 
 ## 🚀 Start here (Reihenfolge)
@@ -91,15 +92,32 @@ updated: "2025-09-27"
 ## 🚀 CURRENT STATUS & DEPENDENCIES
 
 ### ✅ **Completed:**
+- **Sprint 2.1.7.4 (22.10.2025):** CustomerStatus Architecture + Lead Parity [PR #143](https://github.com/freshplan/freshplan-sales-tool/pull/143)
+  - CustomerStatus Enum + EnumResource Integration
+  - Lead Parity Fields (leadStatus, leadSource, sourceDetails)
+  - Manual Activation Workflow + Seasonal Business Support
+  - Tests: 1617/1617 GREEN
+  - Migrations: V10032, V10033, V90008
 - **Strukturelle Vorbereitung:** Standard-Verzeichnisse angelegt
 - **Legacy-Konsolidierung:** Historische Planungen archiviert
 
-### 🔄 **In Progress:**
-- Sprint-Mapping und Technical Concept (TBD)
-- Backend/Frontend Konzepte (TBD)
+### 🔄 **Recent Changes (Sprint 2.1.7.4):**
+- **Backend:**
+  - CustomerStatus Enum mit 8 Status-Werten (LEAD, PROSPECT, ACTIVE, etc.)
+  - Lead Parity: leadStatus, leadSource, sourceDetails in Customer-Entity
+  - Manual Activation: manualActivationRequired, manuallyActivatedAt, manuallyActivatedBy
+  - Seasonal Business: seasonalBusiness, seasonStartMonth, seasonEndMonth
+- **Frontend:**
+  - CustomerStatusBadge Component mit Theme-Integration
+  - Manual Activation Dialog + Seasonal Business UI
+  - EnumResource Integration für leadStatus/leadSource
+- **Migrations:**
+  - V10032: Lead Parity Fields + Constraints
+  - V10033: Status Cleanup + Seasonal Business + Indexes
+  - V90008: DEV-SEED Update für Lead Parity
 
 ### 📋 **Dependencies:**
-- **Integration:** Event-System von Modul 02 (Lead-Handover)
+- **Integration:** Event-System von Modul 02 (Lead-Handover) ✅
 - **Security:** RBAC-System (Kundendaten-Zugriff)
 - **Performance:** Optimierte Datenabfragen für Kundenhistorie
 

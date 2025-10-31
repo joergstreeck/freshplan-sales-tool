@@ -1,10 +1,23 @@
 /**
  * Field Definitions Hook
  *
+ * @deprecated Sprint 2.1.7.2 D11 - REPLACED by useCustomerSchema Hook
+ *
+ * This hook uses client-side fieldCatalog.json which is being phased out
+ * in favor of server-driven schema from /api/customers/schema.
+ *
+ * Migration Path:
+ * - Wizard Steps 1-2: Now use useCustomerSchema (server-driven)
+ * - Detail Tabs: Already use useCustomerSchema
+ * - This hook: Will be removed in future sprint
+ *
+ * DO NOT USE in new code! Use useCustomerSchema instead.
+ *
  * Loads and manages field definitions from the Field Catalog.
  * Filters fields based on entity type and industry.
  *
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
+ * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/hooks/useCustomerSchema.ts (NEW!)
  */
 
 import { useEffect, useState, useMemo } from 'react';

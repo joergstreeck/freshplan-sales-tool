@@ -89,7 +89,8 @@ class SearchCQRSIntegrationTest {
     customerRepository.flush();
 
     // When - Search by company name
-    SearchResults results = searchService.universalSearch("Hotel Search", false, false, 10);
+    SearchResults results =
+        searchService.universalSearch("Hotel Search", false, false, 10, "customers");
 
     // Then
     assertThat(results).isNotNull();
@@ -124,10 +125,12 @@ class SearchCQRSIntegrationTest {
     customerRepository.flush();
 
     // When - Search with unique identifier to avoid conflicts with existing test data
-    SearchResults withoutInactive = searchService.universalSearch(uniqueTestId, false, false, 10);
+    SearchResults withoutInactive =
+        searchService.universalSearch(uniqueTestId, false, false, 10, "customers");
 
     // When - Search with inactive
-    SearchResults withInactive = searchService.universalSearch(uniqueTestId, false, true, 10);
+    SearchResults withInactive =
+        searchService.universalSearch(uniqueTestId, false, true, 10, "customers");
 
     // Then
     assertThat(withoutInactive.getCustomers())
@@ -191,7 +194,8 @@ class SearchCQRSIntegrationTest {
             "[TEST] Performance",
             false, // includeContacts
             false, // includeInactive
-            20 // limit
+            20, // limit
+            "customers" // context
             );
     long executionTime = System.currentTimeMillis() - startTime;
 
@@ -233,7 +237,8 @@ class SearchCQRSIntegrationTest {
     customerRepository.flush();
 
     // When
-    SearchResults results = searchService.universalSearch("Relevance Test", false, false, 10);
+    SearchResults results =
+        searchService.universalSearch("Relevance Test", false, false, 10, "customers");
 
     // Then - Exact match should be first
     assertThat(results.getCustomers()).isNotEmpty();
@@ -256,7 +261,8 @@ class SearchCQRSIntegrationTest {
     customerRepository.flush();
 
     // When
-    SearchResults results = searchService.universalSearch("DOES_NOT_EXIST_12345", false, false, 10);
+    SearchResults results =
+        searchService.universalSearch("DOES_NOT_EXIST_12345", false, false, 10, "customers");
 
     // Then
     assertThat(results).isNotNull();

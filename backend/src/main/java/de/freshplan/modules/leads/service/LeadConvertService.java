@@ -195,38 +195,88 @@ public class LeadConvertService {
       }
     }
 
-    // 9. Create CustomerContact (from Lead contact data)
-    if (lead.contactPerson != null || lead.email != null) {
-      CustomerContact contact = new CustomerContact();
-      contact.setCustomer(customer);
+    // 9. Copy ALL contacts from Lead (Multi-Contact Migration - Sprint 2.1.7.2 D9.2)
+    if (lead.contacts != null && !lead.contacts.isEmpty()) {
+      // Multi-Contact Migration: Copy all contacts from Lead
+      for (de.freshplan.modules.leads.domain.LeadContact leadContact : lead.contacts) {
+        CustomerContact customerContact = new CustomerContact();
+        customerContact.setCustomer(customer);
 
-      // Parse contact person name (simple split: "Max Mustermann" → firstName/lastName)
-      // TODO (Future Sprint - Issue #135): Improve name parsing robustness
-      // Current logic fails for complex names (e.g., "Dr. Max von Mustermann", "Maria Anna
-      // Schmidt")
-      // Consider using a name parsing library or more sophisticated logic for better data quality
-      // For now, this simple split is acceptable for MVP (most German names: "FirstName LastName")
-      if (lead.contactPerson != null && !lead.contactPerson.isBlank()) {
-        String[] nameParts = lead.contactPerson.trim().split("\\s+", 2);
-        contact.setFirstName(nameParts[0]);
-        if (nameParts.length > 1) {
-          contact.setLastName(nameParts[1]);
-        } else {
-          contact.setLastName(""); // Required field
-        }
-      } else {
-        contact.setFirstName("Ansprechpartner");
-        contact.setLastName("Nicht angegeben");
+        // Copy all fields from LeadContact
+        customerContact.setSalutation(leadContact.getSalutation());
+        customerContact.setTitle(leadContact.getTitle());
+        customerContact.setFirstName(leadContact.getFirstName());
+        customerContact.setLastName(leadContact.getLastName());
+        customerContact.setPosition(leadContact.getPosition());
+        customerContact.setDecisionLevel(leadContact.getDecisionLevel());
+        customerContact.setEmail(leadContact.getEmail());
+        customerContact.setPhone(leadContact.getPhone());
+        customerContact.setMobile(leadContact.getMobile());
+        customerContact.setIsPrimary(leadContact.isPrimary());
+        customerContact.setIsActive(leadContact.isActive());
+        customerContact.setIsDecisionMaker(leadContact.getIsDecisionMaker());
+
+        // Personal information
+        customerContact.setBirthday(leadContact.getBirthday());
+        customerContact.setHobbies(leadContact.getHobbies());
+        customerContact.setFamilyStatus(leadContact.getFamilyStatus());
+        customerContact.setChildrenCount(leadContact.getChildrenCount());
+        customerContact.setPersonalNotes(leadContact.getPersonalNotes());
+
+        // Warmth & Quality scores
+        customerContact.setWarmthScore(leadContact.getWarmthScore());
+        customerContact.setWarmthConfidence(leadContact.getWarmthConfidence());
+        customerContact.setDataQualityScore(leadContact.getDataQualityScore());
+        customerContact.setDataQualityRecommendations(leadContact.getDataQualityRecommendations());
+
+        // Interaction tracking
+        customerContact.setLastInteractionDate(leadContact.getLastInteractionDate());
+
+        // Audit fields
+        customerContact.setCreatedBy(currentUserId);
+        customerContact.setCreatedAt(LocalDateTime.now(clock));
+        customerContact.setUpdatedBy(currentUserId);
+        customerContact.setUpdatedAt(LocalDateTime.now(clock));
+
+        customerContact.persist();
       }
+      Log.infof(
+          "Copied %d contacts from Lead %d to Customer %s",
+          lead.contacts.size(), leadId, customer.getId());
+    } else {
+      // FALLBACK: Legacy Lead with Single-Field contact (no LeadContact collection)
+      // Parse lead.contactPerson into firstName/lastName
+      if (lead.contactPerson != null || lead.email != null) {
+        CustomerContact contact = new CustomerContact();
+        contact.setCustomer(customer);
 
-      contact.setEmail(lead.email);
-      contact.setPhone(lead.phone);
-      contact.setIsPrimary(true);
-      contact.setCreatedBy(currentUserId);
-      contact.setCreatedAt(LocalDateTime.now(clock));
-      contact.setUpdatedBy(currentUserId);
-      contact.setUpdatedAt(LocalDateTime.now(clock));
-      contact.persist();
+        // Parse contact person name (simple split: "Max Mustermann" → firstName/lastName)
+        if (lead.contactPerson != null && !lead.contactPerson.isBlank()) {
+          String[] nameParts = lead.contactPerson.trim().split("\\s+", 2);
+          contact.setFirstName(nameParts[0]);
+          if (nameParts.length > 1) {
+            contact.setLastName(nameParts[1]);
+          } else {
+            contact.setLastName(""); // Required field
+          }
+        } else {
+          contact.setFirstName("Ansprechpartner");
+          contact.setLastName("Nicht angegeben");
+        }
+
+        contact.setEmail(lead.email);
+        contact.setPhone(lead.phone);
+        contact.setIsPrimary(true);
+        contact.setCreatedBy(currentUserId);
+        contact.setCreatedAt(LocalDateTime.now(clock));
+        contact.setUpdatedBy(currentUserId);
+        contact.setUpdatedAt(LocalDateTime.now(clock));
+        contact.persist();
+
+        Log.infof(
+            "Created fallback contact from Lead single-fields (leadId=%d, customerId=%s)",
+            leadId, customer.getId());
+      }
     }
 
     // 10. Archive Lead (ALWAYS keep for audit trail)

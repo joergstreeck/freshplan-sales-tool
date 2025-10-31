@@ -197,4 +197,92 @@ class CustomerMapperTest {
     assertNull(
         minimalResponse, "toMinimalResponse() should return null when input customer is null");
   }
+
+  /**
+   * Sprint 2.1.7.2 - D4 - Test 1: toResponse() maps default churnThresholdDays (90).
+   *
+   * <p>Verifies that toResponse() correctly maps churnThresholdDays from Customer entity to
+   * CustomerResponse DTO with default value.
+   */
+  @Test
+  @DisplayName("toResponse() should map default churnThresholdDays (90)")
+  void testToResponse_shouldMapDefaultChurnThresholdDays() {
+    // GIVEN: Customer entity with default churnThresholdDays (90)
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Hotel Churn Test GmbH")
+            .withCustomerNumber("KD-CHURN-001")
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
+
+    customer.setId(java.util.UUID.randomUUID());
+    // churnThresholdDays defaults to 90 in Customer entity
+    customer.setChurnThresholdDays(90);
+
+    // WHEN: Mapping to CustomerResponse
+    CustomerResponse response = customerMapper.toResponse(customer);
+
+    // THEN: churnThresholdDays should be mapped correctly
+    assertNotNull(response, "CustomerResponse should not be null");
+    assertEquals(
+        90, response.churnThresholdDays(), "churnThresholdDays should be 90 (default value)");
+  }
+
+  /**
+   * Sprint 2.1.7.2 - D4 - Test 2: toResponse() maps custom churnThresholdDays (30).
+   *
+   * <p>Verifies that toResponse() correctly maps custom churnThresholdDays values.
+   */
+  @Test
+  @DisplayName("toResponse() should map custom churnThresholdDays (30)")
+  void testToResponse_shouldMapCustomChurnThresholdDays() {
+    // GIVEN: Customer entity with custom churnThresholdDays (30)
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Fast Food Chain GmbH")
+            .withCustomerNumber("KD-CHURN-002")
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
+
+    customer.setId(java.util.UUID.randomUUID());
+    customer.setChurnThresholdDays(30); // Custom value: 30 days
+
+    // WHEN: Mapping to CustomerResponse
+    CustomerResponse response = customerMapper.toResponse(customer);
+
+    // THEN: churnThresholdDays should be mapped correctly
+    assertNotNull(response, "CustomerResponse should not be null");
+    assertEquals(
+        30, response.churnThresholdDays(), "churnThresholdDays should be 30 (custom value)");
+  }
+
+  /**
+   * Sprint 2.1.7.2 - D4 - Test 3: toMinimalResponse() sets churnThresholdDays to null.
+   *
+   * <p>Verifies that toMinimalResponse() excludes churnThresholdDays from minimal response
+   * (performance optimization).
+   */
+  @Test
+  @DisplayName("toMinimalResponse() should set churnThresholdDays to null (minimal payload)")
+  void testToMinimalResponse_shouldSetChurnThresholdDaysToNull() {
+    // GIVEN: Customer with custom churnThresholdDays
+    Customer customer =
+        CustomerTestDataFactory.builder()
+            .withCompanyName("Restaurant Test GmbH")
+            .withCustomerNumber("KD-CHURN-003")
+            .withStatus(CustomerStatus.AKTIV)
+            .build();
+
+    customer.setId(java.util.UUID.randomUUID());
+    customer.setChurnThresholdDays(60);
+
+    // WHEN: Mapping to minimal CustomerResponse
+    CustomerResponse minimalResponse = customerMapper.toMinimalResponse(customer);
+
+    // THEN: churnThresholdDays should be null (excluded from minimal response)
+    assertNotNull(minimalResponse, "Minimal CustomerResponse should not be null");
+    assertNull(
+        minimalResponse.churnThresholdDays(),
+        "churnThresholdDays should be null in minimal response");
+  }
 }

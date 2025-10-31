@@ -1,97 +1,101 @@
 /**
  * Step 1: Basis & Filialstruktur
  *
- * Erfasst Unternehmensdaten, Geschäftsmodell und Filialstruktur.
- * Zeigt sofortiges Potenzial bei Ketten.
+ * Sprint 2.1.7.2 D11: Server-Driven Customer Wizard (Option B)
+ *
+ * Server-Driven Architecture:
+ * - Backend definiert ALLE Felder + Section-Struktur
+ * - Frontend rendert generisch basierend auf wizardSectionId/wizardSectionTitle
+ * - Keine hardcodierten Field-Arrays mehr!
  *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP1_BASIS_FILIALSTRUKTUR.md
  */
 
 import React, { useCallback, useMemo } from 'react';
-import { Box, Typography, Alert, AlertTitle, Divider } from '@mui/material';
+import { Box, Typography, Alert, AlertTitle, Divider, CircularProgress } from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
-import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
+import { useCustomerSchema } from '../../../../hooks/useCustomerSchema';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
-import { FilialstrukturLayout } from '../layout/FilialstrukturLayout';
-import { TextField } from '../fields/fieldTypes/TextField';
-import { NumberField } from '../fields/fieldTypes/NumberField';
-import { SelectField } from '../fields/fieldTypes/SelectField';
-import type { FieldDefinition } from '../../types/field.types';
-import { isFieldDefinition } from '../../types/field.types';
-import { getFieldSize } from '../../utils/fieldSizeCalculator';
+import type { FieldDefinition } from '../../../../types/customer-schema';
+
+/**
+ * Section data structure for grouping fields
+ */
+interface WizardSection {
+  sectionId: string;
+  title: string;
+  fields: FieldDefinition[];
+  showDividerAfter: boolean;
+}
 
 /**
  * Step 1: Basis & Filialstruktur
  *
- * Neue verkaufsfokussierte Struktur mit:
- * - Basisdaten
- * - Geschäftsmodell
- * - Filialstruktur mit Potenzialindikator
+ * Server-Driven: Backend controls sections, titles, field order via CustomerSchemaResource.java
  */
 export const Step1BasisFilialstruktur: React.FC = () => {
   const { customerData, validationErrors, setCustomerField, validateField } =
     useCustomerOnboardingStore();
 
-  const { customerFields: _customerFields, getFieldByKey } = useFieldDefinitions();
+  // ========== SERVER-DRIVEN SCHEMA (Sprint 2.1.7.2 D11) ==========
+  const { getWizardFields, isLoading, isError } = useCustomerSchema();
 
-  // Field groups for better organization
-  const baseFields = useMemo(() => {
-    return [
-      'customerNumber',
-      'companyName',
-      'legalForm',
-      'businessType',
-      'kitchenSize',
-      'employeeCount',
-      'chainCustomer',
-    ]
-      .map(key => getFieldByKey(key))
-      .filter(isFieldDefinition);
-  }, [getFieldByKey]);
+  /**
+   * Get all Step 1 fields from backend
+   *
+   * Backend defines:
+   * - Which fields appear in Step 1 (showInWizard=true, wizardStep=1)
+   * - Field order (wizardOrder)
+   * - Section grouping (wizardSectionId, wizardSectionTitle)
+   * - Visual separators (showDividerAfter)
+   */
+  const step1Fields = useMemo(() => {
+    if (isLoading || isError) return [];
+    return getWizardFields(1); // Sorted by wizardOrder
+  }, [getWizardFields, isLoading, isError]);
 
-  const addressFields = useMemo(() => {
-    return ['street', 'houseNumber', 'postalCode', 'city']
-      .map(key => getFieldByKey(key))
-      .filter(isFieldDefinition);
-  }, [getFieldByKey]);
+  /**
+   * Group fields by section (Option B: Server-Driven Sections)
+   *
+   * Backend controls section structure via:
+   * - wizardSectionId: "company_basic", "address", "chain_structure"
+   * - wizardSectionTitle: "Unternehmensdaten", "📍 Adresse", "🏢 Filialstruktur"
+   * - showDividerAfter: true/false
+   */
+  const sections = useMemo((): WizardSection[] => {
+    const sectionMap = new Map<string, WizardSection>();
 
-  const businessModelFields = useMemo(() => {
-    const fields = [
-      'financingType',
-      'currentSupplier',
-      'contractEndDate',
-      'switchWillingness',
-      'decisionTimeline',
-    ]
-      .map(key => getFieldByKey(key))
-      .filter(isFieldDefinition);
+    step1Fields.forEach(field => {
+      const sectionId = field.wizardSectionId || 'default';
+      const sectionTitle = field.wizardSectionTitle || '';
 
-    // DEBUG: Log die berechneten Größen
-    if (process.env.NODE_ENV === 'development') {
-      fields.forEach(field => {
-        const _size = getFieldSize(field);
-        // Field size calculated
-      });
-    }
+      if (!sectionMap.has(sectionId)) {
+        sectionMap.set(sectionId, {
+          sectionId,
+          title: sectionTitle,
+          fields: [],
+          showDividerAfter: false,
+        });
+      }
 
-    return fields;
-  }, [getFieldByKey]);
+      const section = sectionMap.get(sectionId)!;
+      section.fields.push(field);
 
-  const chainStructureFields = useMemo(() => {
-    return [
-      'totalLocationsEU',
-      'locationsGermany',
-      'locationsAustria',
-      'locationsSwitzerland',
-      'locationsRestEU',
-      'expansionPlanned',
-      'decisionStructure',
-    ]
-      .map(key => getFieldByKey(key))
-      .filter(isFieldDefinition);
-  }, [getFieldByKey]);
+      // If any field in section has showDividerAfter, set it on section
+      if (field.showDividerAfter) {
+        section.showDividerAfter = true;
+      }
+    });
 
-  // Calculate potential for chains
+    return Array.from(sectionMap.values());
+  }, [step1Fields]);
+
+  /**
+   * Business Logic: Chain Potential Indicator
+   *
+   * Note: This is NOT part of server-driven schema!
+   * This is business logic that calculates potential based on data.
+   */
   const chainPotential = useMemo(() => {
     const total = Number(customerData.totalLocationsEU) || 0;
     if (total >= 50) return { level: 'high', text: '🔥 Großkunden-Potenzial!' };
@@ -100,6 +104,7 @@ export const Step1BasisFilialstruktur: React.FC = () => {
     return null;
   }, [customerData.totalLocationsEU]);
 
+  // Field event handlers
   const handleFieldChange = useCallback(
     (fieldKey: string, value: unknown) => {
       setCustomerField(fieldKey, value);
@@ -114,73 +119,26 @@ export const Step1BasisFilialstruktur: React.FC = () => {
     [validateField]
   );
 
-  // Render function for FilialstrukturLayout (without labels - labels are rendered by FilialstrukturLayout)
-  const renderField = useCallback(
-    (field: FieldDefinition) => {
-      const fieldValue = customerData[field.key];
-      const fieldError = validationErrors[field.key];
+  // ========== LOADING / ERROR STATES ==========
 
-      // Handle field change
-      const handleChange = (value: unknown) => {
-        handleFieldChange(field.key, value);
-      };
+  if (isLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
-      // Handle field blur
-      const handleBlur = () => {
-        handleFieldBlur(field.key);
-      };
+  if (isError) {
+    return (
+      <Alert severity="error">
+        <AlertTitle>Fehler beim Laden des Schemas</AlertTitle>
+        Bitte versuchen Sie es später erneut oder wenden Sie sich an den Support.
+      </Alert>
+    );
+  }
 
-      // Render field directly without FieldWrapper (no label)
-      switch (field.fieldType) {
-        case 'text':
-          return (
-            <TextField
-              field={field}
-              value={fieldValue || ''}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={!!fieldError}
-              helperText={fieldError}
-            />
-          );
-        case 'number':
-          return (
-            <NumberField
-              field={field}
-              value={fieldValue || ''}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={!!fieldError}
-              helperText={fieldError}
-            />
-          );
-        case 'select':
-        case 'dropdown':
-          return (
-            <SelectField
-              field={field}
-              value={fieldValue || ''}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={!!fieldError}
-              helperText={fieldError}
-            />
-          );
-        default:
-          return (
-            <DynamicFieldRenderer
-              fields={[field]}
-              values={customerData}
-              errors={validationErrors}
-              onChange={handleFieldChange}
-              onBlur={handleFieldBlur}
-              useAdaptiveLayout={false}
-            />
-          );
-      }
-    },
-    [customerData, validationErrors, handleFieldChange, handleFieldBlur]
-  );
+  // ========== SERVER-DRIVEN RENDERING ==========
 
   return (
     <Box>
@@ -192,61 +150,31 @@ export const Step1BasisFilialstruktur: React.FC = () => {
         Erfassen Sie die Grunddaten und erkennen Sie sofort das Vertriebspotenzial.
       </Typography>
 
-      {/* Base Fields */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          Unternehmensdaten
-        </Typography>
-        <DynamicFieldRenderer
-          fields={baseFields}
-          values={customerData}
-          errors={validationErrors}
-          onChange={handleFieldChange}
-          onBlur={handleFieldBlur}
-          useAdaptiveLayout={true}
-        />
-      </Box>
-
-      <Divider sx={{ my: 3 }} />
-
-      {/* Address */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          📍 Adresse Hauptstandort
-        </Typography>
-        <DynamicFieldRenderer
-          fields={addressFields}
-          values={customerData}
-          errors={validationErrors}
-          onChange={handleFieldChange}
-          onBlur={handleFieldBlur}
-          useAdaptiveLayout={true}
-        />
-      </Box>
-
-      {/* Chain Structure - Show only if chain customer */}
-      {customerData.chainCustomer === 'ja' && (
-        <>
-          <Divider sx={{ my: 3 }} />
+      {/* SERVER-DRIVEN SECTIONS (Sprint 2.1.7.2 D11 Option B) */}
+      {/* Backend controls: section titles, field order, dividers */}
+      {sections.map((section, sectionIndex) => (
+        <React.Fragment key={section.sectionId}>
           <Box sx={{ mb: 4 }}>
-            <Typography variant="h6" gutterBottom>
-              🏢 Filialstruktur
-            </Typography>
+            {/* Section Title (from backend wizardSectionTitle) */}
+            {section.title && (
+              <Typography variant="h6" gutterBottom>
+                {section.title}
+              </Typography>
+            )}
 
-            <Alert severity="info" sx={{ mb: 3 }}>
-              <AlertTitle>Standortverteilung erfassen</AlertTitle>
-              Geben Sie die Anzahl der Standorte pro Region an. Dies hilft uns, das Potenzial für
-              Rahmenverträge zu bewerten.
-            </Alert>
-
-            <FilialstrukturLayout
-              fields={chainStructureFields}
-              renderField={renderField}
+            {/* Fields in this section */}
+            <DynamicFieldRenderer
+              fields={section.fields}
               values={customerData}
+              errors={validationErrors}
+              onChange={handleFieldChange}
+              onBlur={handleFieldBlur}
+              useAdaptiveLayout={true}
             />
 
-            {/* Potential Indicator */}
-            {chainPotential && (
+            {/* Business Logic: Chain Potential Indicator */}
+            {/* Show only for chain_structure section when data indicates potential */}
+            {section.sectionId === 'chain_structure' && chainPotential && (
               <Box sx={{ mt: 2, p: 2, bgcolor: 'success.light', borderRadius: 2 }}>
                 <Typography variant="body1" fontWeight="bold">
                   {chainPotential.text}
@@ -254,27 +182,15 @@ export const Step1BasisFilialstruktur: React.FC = () => {
               </Box>
             )}
           </Box>
-        </>
-      )}
 
-      <Divider sx={{ my: 3 }} />
+          {/* Divider (server-driven via showDividerAfter) */}
+          {section.showDividerAfter && sectionIndex < sections.length - 1 && (
+            <Divider sx={{ my: 3 }} />
+          )}
+        </React.Fragment>
+      ))}
 
-      {/* Business Model */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h6" gutterBottom>
-          💰 Geschäftsmodell & Wettbewerb
-        </Typography>
-        <DynamicFieldRenderer
-          fields={businessModelFields}
-          values={customerData}
-          errors={validationErrors}
-          onChange={handleFieldChange}
-          onBlur={handleFieldBlur}
-          useAdaptiveLayout={true}
-        />
-      </Box>
-
-      {/* Info Box */}
+      {/* Info Box: Next Step */}
       <Alert severity="info" sx={{ mt: 3 }}>
         <AlertTitle>Nächster Schritt</AlertTitle>
         Im nächsten Schritt erfassen wir die Angebotsstruktur und identifizieren Vertriebschancen

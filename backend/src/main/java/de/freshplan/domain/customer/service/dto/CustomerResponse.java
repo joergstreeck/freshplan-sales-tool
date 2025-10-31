@@ -17,6 +17,7 @@ public record CustomerResponse(
     // Identifier
     String id,
     String customerNumber,
+    String xentralCustomerId,
 
     // Basic Information
     String companyName,
@@ -51,6 +52,7 @@ public record CustomerResponse(
     boolean atRisk,
     LocalDateTime lastContactDate,
     LocalDateTime nextFollowUpDate,
+    Integer churnThresholdDays,
 
     // Chain Structure - NEW for Sprint 2
     Integer totalLocationsEU,
@@ -97,6 +99,7 @@ public record CustomerResponse(
     this(
         id,
         customerNumber,
+        null, // xentralCustomerId
         companyName,
         null,
         null,
@@ -117,6 +120,7 @@ public record CustomerResponse(
         null,
         riskScore,
         false,
+        null,
         null,
         null,
 

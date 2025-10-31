@@ -8,6 +8,9 @@ public enum DeliveryCondition {
   /** Express delivery required. */
   EXPRESS,
 
+  /** Delivered at Place (Incoterm) - seller delivers goods to buyer's location. */
+  DAP,
+
   /** Customer picks up order. */
   SELBSTABHOLUNG,
 

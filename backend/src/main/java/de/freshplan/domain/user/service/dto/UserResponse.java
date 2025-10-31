@@ -24,6 +24,7 @@ public final class UserResponse {
   private final String email;
   private final boolean enabled;
   private final List<String> roles;
+  private final String xentralSalesRepId;
 
   @JsonFormat(
       shape = JsonFormat.Shape.STRING,
@@ -47,6 +48,7 @@ public final class UserResponse {
    * @param email the email address
    * @param enabled the enabled status
    * @param roles the user's roles
+   * @param xentralSalesRepId the Xentral Sales Rep ID (nullable)
    * @param createdAt the creation timestamp
    * @param updatedAt the last update timestamp
    */
@@ -58,6 +60,7 @@ public final class UserResponse {
       String email,
       boolean enabled,
       List<String> roles,
+      String xentralSalesRepId,
       Instant createdAt,
       Instant updatedAt) {
     this.id = id;
@@ -67,6 +70,7 @@ public final class UserResponse {
     this.email = email;
     this.enabled = enabled;
     this.roles = roles;
+    this.xentralSalesRepId = xentralSalesRepId;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
   }
@@ -111,6 +115,11 @@ public final class UserResponse {
     return roles;
   }
 
+  @JsonProperty("xentralSalesRepId")
+  public String getXentralSalesRepId() {
+    return xentralSalesRepId;
+  }
+
   @JsonProperty("createdAt")
   public Instant getCreatedAt() {
     return createdAt;
@@ -134,6 +143,7 @@ public final class UserResponse {
     private String email;
     private boolean enabled;
     private List<String> roles;
+    private String xentralSalesRepId;
     private Instant createdAt;
     private Instant updatedAt;
 
@@ -172,6 +182,11 @@ public final class UserResponse {
       return this;
     }
 
+    public Builder xentralSalesRepId(String xentralSalesRepId) {
+      this.xentralSalesRepId = xentralSalesRepId;
+      return this;
+    }
+
     public Builder createdAt(Instant createdAt) {
       this.createdAt = createdAt;
       return this;
@@ -184,7 +199,16 @@ public final class UserResponse {
 
     public UserResponse build() {
       return new UserResponse(
-          id, username, firstName, lastName, email, enabled, roles, createdAt, updatedAt);
+          id,
+          username,
+          firstName,
+          lastName,
+          email,
+          enabled,
+          roles,
+          xentralSalesRepId,
+          createdAt,
+          updatedAt);
     }
   }
 }

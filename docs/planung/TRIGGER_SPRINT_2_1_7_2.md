@@ -1,12 +1,12 @@
 # 🚀 Sprint 2.1.7.2 - Customer-Management + Xentral-Integration
 
 **Sprint-ID:** 2.1.7.2
-**Status:** 📋 PLANNING → 🚀 READY TO START
+**Status:** ✅ COMPLETE
 **Priority:** P1 (High)
 **Estimated Effort:** 25h (3+ Arbeitstage)
-**Owner:** TBD
+**Owner:** FreshPlan Team
 **Created:** 2025-10-16
-**Updated:** 2025-10-20 (UX-Decisions für Revenue Dashboard hinzugefügt)
+**Updated:** 2025-10-31 (Dokumentations-Bereinigung: 10 Dokumente konsolidiert unter artefakte/sprint-2.1.7.2/)
 **Dependencies:** Sprint 2.1.7.1 COMPLETE, Sprint 2.1.7.4 COMPLETE
 
 ---
@@ -191,6 +191,113 @@
 
 ---
 
+## 🔧 SUB-TRIGGERS & TECHNICAL FOUNDATIONS
+
+### **D11: Server-Driven Customer Cards** (COMPLETE)
+
+**Status:** ✅ COMPLETE (2025-10-25)
+**Trigger-Dokument:** [TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md](./artefakte/sprint-2.1.7.2/TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md)
+
+**Ziel:** Server-Driven UI Architektur für Customer Cards - Backend als Single Source of Truth für Schema und Daten
+
+**Completed Work:**
+- ✅ **Backend Phase 1**: 5 fehlende Enum-Endpoints implementiert
+  - `/api/enums/legal-forms` (LegalForm.java)
+  - `/api/enums/customer-types` (CustomerType.java)
+  - `/api/enums/payment-terms` (PaymentTerms.java)
+  - `/api/enums/delivery-conditions` (DeliveryCondition.java)
+  - `/api/enums/expansion-plan` (ExpansionPlan.java)
+- ✅ **Frontend Phase 1**: Browser-Fehler behoben
+  - MUI Grid v7 Migration (DynamicField.tsx)
+  - DATE Format Fix (yyyy-MM-dd)
+- ✅ **Design System Enforcement**: Pre-Commit Hook erweitert
+  - Custom Palette Usage Checks (theme.palette.status.won)
+  - Shadow System Checks (theme.shadows[X])
+  - Transitions Checks (theme.transitions.duration.X)
+- ✅ **Documentation**: DESIGN_SYSTEM.md vollständig dokumentiert
+  - Component Overrides (Button, Card, Drawer, Sidebar, TextField, Tabs, Chip)
+  - Custom Palette Extensions (freshfoodz, status namespaces)
+  - MUI v7 Grid API Migration Guide
+
+**Commits:**
+- `dcf8ac007`: D11 Phase 1 - Browser-Fehler behoben + Design System Enforcement
+- `158a7557f`: Xentral Integration + Testkunden-Strategie + Quality Improvements
+
+**Business Impact:**
+- Frontend-Entwickler können Customer-Cards dynamisch erweitern ohne Backend-Deployment
+- Design System wird automatisch durchgesetzt (Pre-Commit Hook blockiert Violations)
+- Neue Claude-Instanzen haben vollständige Theme-Dokumentation
+
+---
+
+### **D9: Customer UX Polish** (MOVED TO Sprint 2.1.7.7)
+
+**Status:** 📦 MOVED TO Sprint 2.1.7.7
+**Estimated Effort:** 4h
+
+**Ziel:** Customer Wizard + Dashboard UX Review und Pain-Points beheben
+
+**Scope:**
+- Customer Wizard UX Review (Pain Points + Multi-Contact Support)
+- Customer Dashboard Polish (Layout + Informationsarchitektur)
+- Wizard-Validation verbessern
+
+**Begründung der Verschiebung:**
+- D9 ist kein Blocker für Xentral Integration (D1-D8, D11)
+- Sprint 2.1.7.2 Fokus: Core Xentral Integration (100% Complete)
+- D9 passt besser zu Sprint 2.1.7.7 (UI/UX Improvements für Multi-Location)
+
+**→ Siehe:** [TRIGGER_SPRINT_2_1_7_7.md](TRIGGER_SPRINT_2_1_7_7.md#d9-customer-ux-polish)
+
+---
+
+### **D10: Multi-Location Vorbereitung** (MOVED TO Sprint 2.1.7.7)
+
+**Status:** 📦 MOVED TO Sprint 2.1.7.7
+**Estimated Effort:** 1h
+
+**Ziel:** hierarchyType Dropdown in ConvertToCustomerDialog vorbereiten (UI disabled)
+
+**Scope:**
+- hierarchyType Dropdown (HEADQUARTER/FILIALE/STANDALONE)
+- Initial disabled (kein CreateBranch UI yet)
+- Foundation für Sprint 2.1.7.7
+
+**Begründung der Verschiebung:**
+- Sprint 2.1.7.7 implementiert vollständiges Multi-Location Management
+- D10 ist Vorbereitung, macht ohne D9 (CreateBranchDialog) keinen Sinn
+- Bessere Kohärenz: Alle Multi-Location Features in einem Sprint
+
+**→ Siehe:** [TRIGGER_SPRINT_2_1_7_7.md](TRIGGER_SPRINT_2_1_7_7.md#deliverables)
+
+---
+
+## 📚 DOKUMENTATION
+
+**Alle detaillierten Spezifikationen liegen unter:** `docs/planung/artefakte/sprint-2.1.7.2/`
+
+### Übersicht & Kontext
+- [📋 Commit-Zusammenfassung](./artefakte/sprint-2.1.7.2/sprint-2.1.7.2-COMMIT-SUMMARY.md) - Was wurde gemacht? (95 Commits, 472 Tests)
+- [🎨 Design Decisions](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md) - Warum so gemacht? (7 Entscheidungen)
+- [🔧 Technische Spezifikation](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) - Wie implementiert? (10 Deliverables, 2590+ Zeilen)
+
+### Deliverable D11: Customer Detail Cockpit
+- [🏗️ Architektur-Konzept](./artefakte/sprint-2.1.7.2/TRIGGER_SPRINT_2_1_7_2_D11_SERVER_DRIVEN_CARDS.md) - Server-Driven Cards
+- [✅ Final Architecture](./artefakte/sprint-2.1.7.2/SPEC_D11_CUSTOMER_DETAIL_VIEW_ARCHITECTURE.md) - Verbindliche Implementierung
+- [📝 Funktionale Spec](./artefakte/sprint-2.1.7.2/SPEC_D11_CUSTOMER_DETAIL_COCKPIT.md) - UX und Features
+- [❌ DEPRECATED: Progressive Disclosure](./artefakte/sprint-2.1.7.2/SPEC_D11_DEPRECATED_PROGRESSIVE_DISCLOSURE.md) - Verworfene Architektur
+
+### Weitere Spezifikationen
+- [🔍 Lead Search Implementation](./artefakte/sprint-2.1.7.2/LEAD_SEARCH_IMPLEMENTATION.md) - D2.1 Suchfunktion
+
+### Issues & Known Problems
+- [⚠️ Xentral CDI Issue](./artefakte/sprint-2.1.7.2/ISSUE_XENTRAL_CDI_2_1_7_2.md) - Nicht kritisch für Sprint 2.1.7.4
+
+### Meta
+- [📋 Bereinigungs-Plan](./artefakte/sprint-2.1.7.2/CLEANUP_PLAN.md) - Dieser Dokumentations-Cleanup
+
+---
+
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
@@ -263,8 +370,10 @@
 
 ## 📄 ARTEFAKTE
 
+**📌 Vollständige Dokumentation siehe:** [📚 DOKUMENTATION](#-dokumentation) (oben)
+
 **Technische Spezifikation:**
-→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md`
+→ [./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md)
 - Xentral API Client Implementation
 - ConvertToCustomerDialog (vollständig)
 - Customer-Dashboard Code-Beispiele
@@ -273,7 +382,7 @@
 - Test Specifications
 
 **Design Decisions:**
-→ `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md`
+→ [./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](./artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
 - Sales-Rep Mapping Strategie (Email-basiert)
 - Mock vs Real Development (Hybrid-Ansatz)
 - Churn-Alarm Konfiguration (Pro Kunde vs Global)
@@ -282,7 +391,7 @@
 - Webhook vs Polling (Real-Time vs Batch)
 
 **Design System:**
-→ `/docs/planung/grundlagen/DESIGN_SYSTEM.md`
+→ [./grundlagen/DESIGN_SYSTEM.md](./grundlagen/DESIGN_SYSTEM.md)
 - Freshfoodz Color Palette (#94C456, #004F7B)
 - Typography (Antonio Bold, Poppins)
 - Component Patterns
@@ -379,6 +488,42 @@ Alle Design-Entscheidungen sind dokumentiert in:
 - Error Recovery: Wenn Xentral down → Fallback-Daten? Retry-Logic?
 - Mock → Real Switch: Aktuell Feature-Flag - später: automatische Erkennung
 
+### **⚠️ WICHTIG: XentralApiConfig NICHT benötigt!**
+
+**Entscheidung (2025-10-24):** Xentral Connect API (2024/25) benötigt **KEINE** separate `XentralApiConfig.java`
+
+**Begründung:**
+- Neue Xentral Connect API verwendet **Token-basierte Authentifizierung** (PAT)
+- Nur 3 Properties benötigt: `xentral.api.base-url`, `xentral.api.token`, `xentral.api.mock-mode`
+- **`@ConfigProperty`** Injection reicht vollständig aus
+- **`@ConfigMapping`** mit `XentralApiConfig` führt zu Configuration-Validierungsfehlern
+
+**Architektur:**
+```java
+// ✅ RICHTIG: Direct @ConfigProperty Injection
+@ConfigProperty(name = "xentral.api.base-url")
+String baseUrl;
+
+@ConfigProperty(name = "xentral.api.token")
+String token;
+
+@ConfigProperty(name = "xentral.api.mock-mode", defaultValue = "true")
+boolean mockMode;
+
+// ❌ FALSCH: XentralApiConfig mit @ConfigMapping
+// → Verursacht Property Validation Errors
+// → Nicht benötigt für neue API
+```
+
+**Betroffene Dateien:**
+- ✅ `XentralSettingsResource.java` → Verwendet `@ConfigProperty`
+- ✅ `XentralApiService.java` → Verwendet `@ConfigProperty`
+- ❌ `XentralApiConfig.java` → **DELETED** (war Legacy-Code, nie benötigt)
+
+**Commit:** `015822ffa` (2025-10-24)
+
+**Siehe auch:** [ADR-0008: Xentral API Configuration via @ConfigProperty](adr/ADR-0008-xentral-config-property-injection.md)
+
 ---
 
 ## 🔗 RELATED WORK
@@ -405,4 +550,4 @@ Alle Design-Entscheidungen sind dokumentiert in:
 
 **✅ SPRINT STATUS: 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE**
 
-**Letzte Aktualisierung:** 2025-10-19 (3-Dokumente-Struktur, Sprint 2.1.7.4 Integration)
+**Letzte Aktualisierung:** 2025-10-24 (XentralApiConfig Architecture Decision dokumentiert)

@@ -6,27 +6,31 @@ import java.math.BigDecimal;
 /**
  * Deal size categories for revenue scoring (Sprint 2.1.6+ Lead Scoring System).
  *
- * <p>Based on estimated annual volume (monthly × 12).
+ * <p>Based on estimated annual volume (ANNUAL since Sprint 2.1.7.2 D11 Phase 2).
  *
- * <p>Scoring Impact: Part of Revenue Score calculation (25% of total lead score): - SMALL (1-5k):
- * 25 points (baseline) - MEDIUM (5-20k): 50 points - LARGE (20-100k): 75 points - ENTERPRISE
- * (100k+): 100 points
+ * <p><strong>IMPORTANT:</strong> Thresholds updated to match B2B-Gastro reality:
  *
- * <p>Usage: - Auto-calculated from {@code estimatedVolume} field - Can be manually overridden by
- * sales rep (domain expertise)
+ * <ul>
+ *   <li>SMALL (<200k): 10 points - Small gastro operations
+ *   <li>MEDIUM (200k-1M): 20 points - Mid-market restaurants/catering
+ *   <li>LARGE (1M-2M): 30 points - High-value customers (chains, hotels)
+ *   <li>ENTERPRISE (>2M): 40 points - Strategic accounts (large chains, corporates)
+ * </ul>
+ *
+ * <p>Usage: Auto-calculated from {@code estimatedVolume} field in LeadScoringService
  */
 public enum DealSize {
-  /** Small deal: 1-5k €/year (baseline revenue potential) */
-  SMALL("Klein (1-5k €/Jahr)", new BigDecimal("1000"), new BigDecimal("5000")),
+  /** Small deal: <200k €/year (baseline revenue potential) */
+  SMALL("Klein (<200k €/Jahr)", BigDecimal.ZERO, new BigDecimal("200000")),
 
-  /** Medium deal: 5-20k €/year (standard customer) */
-  MEDIUM("Mittel (5-20k €/Jahr)", new BigDecimal("5000"), new BigDecimal("20000")),
+  /** Medium deal: 200k-1M €/year (standard customer) */
+  MEDIUM("Mittel (200k-1M €/Jahr)", new BigDecimal("200000"), new BigDecimal("1000000")),
 
-  /** Large deal: 20-100k €/year (high-value customer) */
-  LARGE("Groß (20-100k €/Jahr)", new BigDecimal("20000"), new BigDecimal("100000")),
+  /** Large deal: 1M-2M €/year (high-value customer) */
+  LARGE("Groß (1M-2M €/Jahr)", new BigDecimal("1000000"), new BigDecimal("2000000")),
 
-  /** Enterprise deal: 100k+ €/year (strategic account) */
-  ENTERPRISE("Enterprise (100k+ €/Jahr)", new BigDecimal("100000"), null);
+  /** Enterprise deal: 2M+ €/year (strategic account) */
+  ENTERPRISE("Enterprise (2M+ €/Jahr)", new BigDecimal("2000000"), null);
 
   private final String displayName;
   private final BigDecimal minAnnualVolume;

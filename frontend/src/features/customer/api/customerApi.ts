@@ -10,6 +10,19 @@ interface Contact {
   position?: string;
 }
 
+/**
+ * Revenue Metrics Response (Sprint 2.1.7.2)
+ * Matches backend DTO: de.freshplan.domain.customer.dto.RevenueMetrics
+ */
+export interface RevenueMetrics {
+  revenue30Days: number;
+  revenue90Days: number;
+  revenue365Days: number;
+  paymentBehavior: 'EXCELLENT' | 'GOOD' | 'WARNING' | 'CRITICAL' | 'N_A';
+  averageDaysToPay: number | null;
+  lastOrderDate: string | null;
+}
+
 export const customerApi = {
   // Get single customer by ID
   getCustomer: async (customerId: string): Promise<CustomerResponse> => {
@@ -97,6 +110,14 @@ export const customerApi = {
     const response = await httpClient.put<CustomerResponse>(
       `/api/customers/${customerId}/activate`,
       { orderNumber: orderNumber || null }
+    );
+    return response.data;
+  },
+
+  // Get revenue metrics from Xentral (Sprint 2.1.7.2)
+  getRevenueMetrics: async (customerId: string): Promise<RevenueMetrics> => {
+    const response = await httpClient.get<RevenueMetrics>(
+      `/api/customers/${customerId}/revenue-metrics`
     );
     return response.data;
   },

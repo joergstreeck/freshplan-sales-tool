@@ -1,6 +1,8 @@
 package de.freshplan.api.resources;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
+import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.entity.CustomerContact;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.service.CustomerService;
 import de.freshplan.domain.customer.service.command.CustomerCommandService;
@@ -14,10 +16,13 @@ import de.freshplan.shared.constants.PaginationConstants;
 import de.freshplan.shared.constants.RiskManagementConstants;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.time.Clock;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -65,6 +70,10 @@ public class CustomerResource {
   @Inject
   de.freshplan.domain.opportunity.service.OpportunityService
       opportunityService; // For customer opportunities
+
+  @Inject de.freshplan.domain.customer.service.RevenueMetricsService revenueMetricsService;
+
+  @Inject Clock clock; // For audit timestamps (Sprint 2.1.7.2 D9.3)
 
   // ========== CRUD OPERATIONS ==========
 
@@ -382,16 +391,90 @@ public class CustomerResource {
   }
 
   /**
-   * Changes customer status with business rule validation.
+   * Changes customer status with role-based authorization.
+   *
+   * <p>Sprint 2.1.7.2 D11: 3-Tier Role-Based Status Update
+   *
+   * <p><strong>Authorization Rules:</strong>
+   *
+   * <ul>
+   *   <li><strong>SALES (sales):</strong> Can only change AKTIV ↔ RISIKO
+   *   <li><strong>MANAGER (manager):</strong> Can also set INAKTIV (+ AKTIV ↔ RISIKO)
+   *   <li><strong>ADMIN (admin):</strong> Can set all statuses including ARCHIVIERT
+   * </ul>
+   *
+   * <p><strong>Business Rules:</strong> System sets status automatically (Lead→AKTIV,
+   * Churn→RISIKO), but users can manually override based on their role permissions.
    *
    * @param id The customer ID
    * @param request The status change request
-   * @return 200 OK with updated customer
+   * @return 200 OK with updated customer, 403 if role lacks permission
    */
   @PUT
   @Path("/{id}/status")
   public Response changeCustomerStatus(
       @PathParam("id") UUID id, @Valid ChangeStatusRequest request) {
+
+    log.info(
+        "Status change request for customer {}: {} (user: {}, roles: {})",
+        id,
+        request.newStatus(),
+        currentUser.getUsername(),
+        currentUser.getRoles());
+
+    // 1. Role-Based Authorization Check
+    CustomerStatus targetStatus = request.newStatus();
+    boolean isAdmin = securityContext.hasRole("admin");
+    boolean isManager = securityContext.hasRole("manager");
+    boolean isSales = securityContext.hasRole("sales");
+
+    // ADMIN: Can set all statuses (no restrictions)
+    if (isAdmin) {
+      log.debug("Admin user - all status changes allowed");
+    }
+    // MANAGER: Can set AKTIV, RISIKO, INAKTIV (but NOT ARCHIVIERT)
+    else if (isManager) {
+      if (targetStatus == CustomerStatus.ARCHIVIERT) {
+        log.warn(
+            "Manager {} tried to set ARCHIVIERT status - requires ADMIN role",
+            currentUser.getUsername());
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(
+                new ErrorResponse(
+                    "Only ADMIN can set ARCHIVIERT status. Contact your administrator.",
+                    "INSUFFICIENT_PERMISSIONS"))
+            .build();
+      }
+      log.debug("Manager user - can set AKTIV, RISIKO, INAKTIV");
+    }
+    // SALES: Can ONLY set AKTIV or RISIKO (no INAKTIV, no ARCHIVIERT)
+    else if (isSales) {
+      if (targetStatus != CustomerStatus.AKTIV && targetStatus != CustomerStatus.RISIKO) {
+        log.warn(
+            "Sales user {} tried to set {} status - only AKTIV/RISIKO allowed",
+            currentUser.getUsername(),
+            targetStatus);
+        return Response.status(Response.Status.FORBIDDEN)
+            .entity(
+                new ErrorResponse(
+                    "Sales users can only change between AKTIV and RISIKO. Contact your manager to"
+                        + " set other statuses.",
+                    "INSUFFICIENT_PERMISSIONS"))
+            .build();
+      }
+      log.debug("Sales user - can only set AKTIV or RISIKO");
+    }
+    // Fallback: No valid role (should not happen due to @RolesAllowed on class level)
+    else {
+      log.error("User {} has no valid role for status changes", currentUser.getUsername());
+      return Response.status(Response.Status.FORBIDDEN)
+          .entity(
+              new ErrorResponse(
+                  "Insufficient permissions for status changes", "INSUFFICIENT_PERMISSIONS"))
+          .build();
+    }
+
+    // 2. Execute Status Change (authorization passed)
     CustomerResponse customer;
     if (cqrsEnabled) {
       log.debug("Using CQRS CommandService for changeStatus");
@@ -400,6 +483,13 @@ public class CustomerResource {
       log.debug("Using legacy CustomerService for changeStatus");
       customer = customerService.changeStatus(id, request.newStatus(), currentUser.getUsername());
     }
+
+    log.info(
+        "Status changed successfully for customer {}: {} (by: {})",
+        id,
+        request.newStatus(),
+        currentUser.getUsername());
+
     return Response.ok(customer).build();
   }
 
@@ -495,6 +585,219 @@ public class CustomerResource {
 
     return Response.ok(updatedCustomer).build();
   }
+
+  /**
+   * Get revenue metrics for customer (Sprint 2.1.7.2)
+   *
+   * <p>Returns revenue metrics (30/90/365 days) and payment behavior from Xentral.
+   *
+   * <p><strong>Authorization:</strong> Roles {@code admin}, {@code manager}, {@code sales} are
+   * authorized.
+   *
+   * @param customerId Customer UUID
+   * @return 200 OK with revenue metrics, 404 if customer not found
+   */
+  @GET
+  @Path("/{id}/revenue-metrics")
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response getRevenueMetrics(@PathParam("id") UUID customerId) {
+    log.debug("Getting revenue metrics for customer: {}", customerId);
+
+    try {
+      de.freshplan.domain.customer.dto.RevenueMetrics metrics =
+          revenueMetricsService.getRevenueMetrics(customerId);
+
+      return Response.ok(metrics).build();
+
+    } catch (NotFoundException e) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+  }
+
+  // ========== CONTACT MANAGEMENT (Sprint 2.1.7.2 D9.3) ==========
+
+  /**
+   * Creates a new contact for a customer.
+   *
+   * <p>Sprint 2.1.7.2 D9.3: Dashboard Contact CRUD
+   *
+   * @param customerId The customer ID
+   * @param request The contact creation request
+   * @return 201 Created with contact data
+   */
+  @POST
+  @Path("/{id}/contacts")
+  @Transactional
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response createContact(@PathParam("id") UUID customerId, @Valid ContactRequest request) {
+    log.info("Creating contact for customer {}: {}", customerId, request.email());
+
+    // 1. Verify customer exists
+    Customer customer = Customer.findById(customerId);
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // 2. Create contact
+    CustomerContact contact = new CustomerContact();
+    contact.setCustomer(customer);
+    contact.setSalutation(request.salutation());
+    contact.setTitle(request.title());
+    contact.setFirstName(request.firstName());
+    contact.setLastName(request.lastName());
+    contact.setPosition(request.position());
+    contact.setDecisionLevel(request.decisionLevel());
+    contact.setEmail(request.email());
+    contact.setPhone(request.phone());
+    contact.setMobile(request.mobile());
+    contact.setIsPrimary(request.isPrimary() != null ? request.isPrimary() : false);
+    contact.setIsActive(true); // New contacts are active by default
+    contact.setIsDecisionMaker(
+        request.isDecisionMaker() != null ? request.isDecisionMaker() : false);
+
+    // Audit fields
+    contact.setCreatedBy(currentUser.getUsername());
+    contact.setCreatedAt(LocalDateTime.now(clock));
+    contact.setUpdatedBy(currentUser.getUsername());
+    contact.setUpdatedAt(LocalDateTime.now(clock));
+
+    contact.persist();
+
+    log.info("Contact created: {} (ID: {})", contact.getEmail(), contact.getId());
+
+    return Response.status(Response.Status.CREATED).entity(contact).build();
+  }
+
+  /**
+   * Updates an existing contact.
+   *
+   * <p>Sprint 2.1.7.2 D9.3: Dashboard Contact CRUD
+   *
+   * @param customerId The customer ID
+   * @param contactId The contact ID
+   * @param request The contact update request
+   * @return 200 OK with updated contact
+   */
+  @PUT
+  @Path("/{id}/contacts/{contactId}")
+  @Transactional
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response updateContact(
+      @PathParam("id") UUID customerId,
+      @PathParam("contactId") UUID contactId,
+      @Valid ContactRequest request) {
+
+    log.info("Updating contact {} for customer {}", contactId, customerId);
+
+    // 1. Verify customer exists
+    Customer customer = Customer.findById(customerId);
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // 2. Verify contact exists and belongs to customer
+    CustomerContact contact = CustomerContact.findById(contactId);
+    if (contact == null) {
+      log.warn("Contact not found: {}", contactId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Contact not found", "CONTACT_NOT_FOUND"))
+          .build();
+    }
+
+    if (!contact.getCustomer().getId().equals(customerId)) {
+      log.warn("Contact {} does not belong to customer {}", contactId, customerId);
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse("Contact does not belong to this customer", "INVALID_CONTACT"))
+          .build();
+    }
+
+    // 3. Update contact
+    contact.setSalutation(request.salutation());
+    contact.setTitle(request.title());
+    contact.setFirstName(request.firstName());
+    contact.setLastName(request.lastName());
+    contact.setPosition(request.position());
+    contact.setDecisionLevel(request.decisionLevel());
+    contact.setEmail(request.email());
+    contact.setPhone(request.phone());
+    contact.setMobile(request.mobile());
+    if (request.isPrimary() != null) {
+      contact.setIsPrimary(request.isPrimary());
+    }
+    if (request.isDecisionMaker() != null) {
+      contact.setIsDecisionMaker(request.isDecisionMaker());
+    }
+
+    // Audit fields
+    contact.setUpdatedBy(currentUser.getUsername());
+    contact.setUpdatedAt(LocalDateTime.now(clock));
+
+    contact.persist();
+
+    log.info("Contact updated: {} (ID: {})", contact.getEmail(), contact.getId());
+
+    return Response.ok(contact).build();
+  }
+
+  // ========== LOCATION MANAGEMENT (Sprint 2.1.7.2 D11) ==========
+
+  /**
+   * Gets all locations for a customer.
+   *
+   * <p>Sprint 2.1.7.2 D11: Server-Driven Customer Cards - Card 1 (Unternehmensprofil)
+   *
+   * @param customerId The customer ID
+   * @return 200 OK with list of locations
+   */
+  @GET
+  @Path("/{id}/locations")
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response getCustomerLocations(@PathParam("id") UUID customerId) {
+    log.debug("Fetching locations for customer: {}", customerId);
+
+    // Verify customer exists
+    Customer customer = Customer.findById(customerId);
+    if (customer == null) {
+      log.warn("Customer not found: {}", customerId);
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse("Customer not found", "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+
+    // Fetch locations
+    List<de.freshplan.domain.customer.entity.CustomerLocation> locations =
+        de.freshplan.domain.customer.entity.CustomerLocation.find(
+                "customer.id = ?1 and isDeleted = false ORDER BY isMainLocation DESC, createdAt ASC",
+                customerId)
+            .list();
+
+    log.info("Found {} locations for customer {}", locations.size(), customerId);
+
+    return Response.ok(locations).build();
+  }
+
+  /** Contact request DTO for create/update operations. */
+  private record ContactRequest(
+      String salutation,
+      String title,
+      String firstName,
+      String lastName,
+      String position,
+      String decisionLevel,
+      String email,
+      String phone,
+      String mobile,
+      Boolean isPrimary,
+      Boolean isDecisionMaker) {}
 
   /** Simple error response DTO for API errors. */
   private record ErrorResponse(String message, String errorCode) {}

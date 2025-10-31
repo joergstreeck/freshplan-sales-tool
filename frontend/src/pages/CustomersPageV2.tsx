@@ -461,9 +461,9 @@ export function CustomersPageV2({
     // Liste aktualisieren
     await refetch();
 
-    // Zur Detail-Seite navigieren - nur für Customers (Leads haben keine Detail-Seite)
+    // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page
     if (context === 'customers') {
-      navigate(`/customers/${customer.id}?highlight=new`);
+      navigate(`/customers/${customer.id}`);
     }
     // Bei Leads: Bleiben auf der Liste, neuer Lead wird highlighted
   };
@@ -540,56 +540,74 @@ export function CustomersPageV2({
                 />
 
                 {/* Customer Table - Use virtualized version for > 20 items */}
-                {filteredCustomers.length > 20 ? (
-                  <VirtualizedCustomerTable
-                    customers={filteredCustomers}
-                    columns={columnConfig}
-                    onRowClick={customer => {
-                      // Context-based navigation
-                      if (context === 'customers') {
-                        navigate(`/customers/${customer.id}`);
-                      } else if (context === 'leads') {
-                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
-                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                      }
-                    }}
-                    height={600}
-                    rowHeight={72}
-                  />
-                ) : (
-                  <CustomerTable
-                    customers={filteredCustomers}
-                    onRowClick={customer => {
-                      // Context-based navigation
-                      if (context === 'customers') {
-                        navigate(`/customers/${customer.id}`);
-                      } else if (context === 'leads') {
-                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
-                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                      }
-                    }}
-                    highlightNew
-                    columns={columnConfig}
-                    context={context}
-                    showActions={true}
-                    onEdit={customer => {
-                      setSelectedLead(customer as unknown as Lead);
-                      if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
-                        setFirstContactDialogOpen(true);
-                      } else if (context === 'leads') {
-                        // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
-                        navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
-                      } else {
-                        // Customer context - navigate to customer detail page
-                        navigate(`/customers/${customer.id}`);
-                      }
-                    }}
-                    onDelete={customer => {
-                      setSelectedLead(customer as unknown as Lead);
-                      setDeleteDialogOpen(true);
-                    }}
-                  />
-                )}
+                <Box>
+                  {filteredCustomers.length > 20 ? (
+                    <VirtualizedCustomerTable
+                      customers={filteredCustomers}
+                      columns={columnConfig}
+                      onRowClick={customer => {
+                        // Context-based behavior
+                        if (context === 'customers') {
+                          // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                          navigate(`/customers/${customer.id}`);
+                        } else if (context === 'leads') {
+                          // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        }
+                      }}
+                      onEdit={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                          setFirstContactDialogOpen(true);
+                        } else if (context === 'leads') {
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        } else {
+                          navigate(`/customers/${customer.id}`);
+                        }
+                      }}
+                      onDelete={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        setDeleteDialogOpen(true);
+                      }}
+                      height={600}
+                      rowHeight={72}
+                    />
+                  ) : (
+                    <CustomerTable
+                      customers={filteredCustomers}
+                      onRowClick={customer => {
+                        // Context-based behavior
+                        if (context === 'customers') {
+                          // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                          navigate(`/customers/${customer.id}`);
+                        } else if (context === 'leads') {
+                          // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        }
+                      }}
+                      highlightNew
+                      columns={columnConfig}
+                      context={context}
+                      showActions={true}
+                      onEdit={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        if (context === 'leads' && customer.leadStage === 'VORMERKUNG') {
+                          setFirstContactDialogOpen(true);
+                        } else if (context === 'leads') {
+                          // Sprint 2.1.6 Phase 5+: Navigate to Lead Detail page with slug
+                          navigate(generateLeadUrl(customer.companyName || 'lead', customer.id));
+                        } else {
+                          // Sprint 2.1.7.2 D11: Navigate to Customer Detail Page (Cockpit-Pattern)
+                          navigate(`/customers/${customer.id}`);
+                        }
+                      }}
+                      onDelete={customer => {
+                        setSelectedLead(customer as unknown as Lead);
+                        setDeleteDialogOpen(true);
+                      }}
+                    />
+                  )}
+                </Box>
 
                 {/* Load More Button (only for server-side pagination) */}
                 {hasMore && (
@@ -649,7 +667,7 @@ export function CustomersPageV2({
           }}
         />
 
-        {/* DeleteLead Dialog */}
+        {/* DeleteLead Dialog - Context-based labels */}
         <DeleteLeadDialog
           open={deleteDialogOpen}
           lead={selectedLead}
@@ -661,8 +679,10 @@ export function CustomersPageV2({
             setDeleteDialogOpen(false);
             setSelectedLead(null);
             refetch();
-            toast.success('Lead erfolgreich gelöscht!');
+            const entityLabel = context === 'leads' ? 'Lead' : 'Kunde';
+            toast.success(`${entityLabel} erfolgreich gelöscht!`);
           }}
+          context={context}
         />
       </Box>
     </MainLayoutV2>

@@ -117,7 +117,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
         backgroundColor: '#FFFFFF',
         color: '#000000',
         borderBottom: `2px solid ${theme.palette.primary.main}`,
-        boxShadow: '0 2px 4px rgba(0,0,0,0.08)',
+        boxShadow: 1,
         zIndex: theme.zIndex.appBar,
         left: { xs: 0, md: isCollapsed ? DRAWER_WIDTH_COLLAPSED : DRAWER_WIDTH },
         width: {
@@ -315,7 +315,7 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
                 sx: {
                   mt: 1,
                   minWidth: 200,
-                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                  boxShadow: 3,
                 },
               }}
             >

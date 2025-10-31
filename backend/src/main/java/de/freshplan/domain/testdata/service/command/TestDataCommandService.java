@@ -1,9 +1,12 @@
 package de.freshplan.domain.testdata.service.command;
 
+import de.freshplan.domain.communication.entity.Activity;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
+import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.testdata.service.TestDataService;
+import de.freshplan.modules.leads.domain.Lead;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -29,6 +32,7 @@ public class TestDataCommandService {
 
   @Inject CustomerRepository customerRepository;
   @Inject CustomerTimelineRepository timelineRepository;
+  @Inject OpportunityRepository opportunityRepository;
 
   /**
    * Seeds the database with 5 diverse test customers. All test data is marked with is_test_data =
@@ -168,15 +172,50 @@ public class TestDataCommandService {
     LOG.info("Starting test data cleanup...");
 
     try {
-      // Delete timeline events first (due to foreign key constraints)
-      long deletedEvents = timelineRepository.delete("isTestData", true);
+      // DELETE IN REVERSE DEPENDENCY ORDER (deepest children first)
 
-      // Delete customers
+      // 1. Activities (child of Opportunity)
+      long deletedActivities = Activity.delete("isTestData", true);
+      LOG.debugf("Deleted %d test activities", deletedActivities);
+
+      // 2. Opportunities (child of Customer)
+      long deletedOpportunities = opportunityRepository.delete("isTestData", true);
+      LOG.debugf("Deleted %d test opportunities", deletedOpportunities);
+
+      // 3. Customer Contacts (child of Customer)
+      long deletedContacts = CustomerContact.delete("isTestData", true);
+      LOG.debugf("Deleted %d test customer contacts", deletedContacts);
+
+      // 4. Customer Addresses (child of CustomerLocation)
+      long deletedAddresses = CustomerAddress.delete("isTestData", true);
+      LOG.debugf("Deleted %d test customer addresses", deletedAddresses);
+
+      // 5. Customer Locations (child of Customer)
+      long deletedLocations = CustomerLocation.delete("isTestData", true);
+      LOG.debugf("Deleted %d test customer locations", deletedLocations);
+
+      // 6. Timeline events (child of Customer)
+      long deletedEvents = timelineRepository.delete("isTestData", true);
+      LOG.debugf("Deleted %d test timeline events", deletedEvents);
+
+      // 7. Leads (may reference Customers via originalLeadId, but nullable)
+      long deletedLeads = Lead.delete("isTestData", true);
+      LOG.debugf("Deleted %d test leads", deletedLeads);
+
+      // 8. Customers (parent entity - delete last)
       long deletedCustomers = customerRepository.delete("isTestData", true);
+      LOG.debugf("Deleted %d test customers", deletedCustomers);
 
       LOG.infof(
-          "Successfully cleaned up %d customers and %d timeline events",
-          deletedCustomers, deletedEvents);
+          "Successfully cleaned up: %d customers, %d locations, %d addresses, %d contacts, %d opportunities, %d activities, %d leads, %d timeline events",
+          deletedCustomers,
+          deletedLocations,
+          deletedAddresses,
+          deletedContacts,
+          deletedOpportunities,
+          deletedActivities,
+          deletedLeads,
+          deletedEvents);
 
       return new TestDataService.CleanupResult(deletedCustomers, deletedEvents);
 

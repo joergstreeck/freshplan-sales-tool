@@ -227,26 +227,27 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Migrations:** V10031 (opportunity_multipliers mit CHECK constraints)
    - Status: ✅ COMPLETE (PR #142 MERGED TO MAIN - 19.10.2025)
 
-📋 TRIGGER_SPRINT_2_1_7_4.md - Customer Status Architecture (19.10.2025) ⚡ **ZUERST!**
+✅ TRIGGER_SPRINT_2_1_7_4.md - Customer Status Architecture (22.10.2025) - **PR #143 MERGED**
    - **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik + Seasonal Business
    - **8 Deliverables:**
-     - **D1:** Migration V10032 (LEAD → PROSPECT, Seasonal Business Columns)
-     - **D2:** LeadConvertService: PROSPECT statt AKTIV setzen
-     - **D3:** Auto-Conversion bei Opportunity WON (Lead → Customer)
-     - **D4:** XentralOrderEventHandler Interface (für Webhook-Integration)
-     - **D5:** Manual Activation Button + customerService.activateCustomer()
-     - **D6:** ChurnDetectionService mit Seasonal Business Support
-     - **D7:** Dashboard KPIs (PROSPECT-Zähler, Conversion Rate)
-     - **D8:** Frontend CustomerStatusBadge + ActivateCustomerButton
-   - **Aufwand:** 14h = 2 Arbeitstage
+     - **D1:** Migration V10032 (LEAD → PROSPECT, Seasonal Business Columns) ✅
+     - **D2:** Migration V10033 (hierarchyType + Umsatzfelder) ✅
+     - **D3:** LeadConvertService KOMPLETT-FIX (100% Datenübernahme) ✅
+     - **D4:** Auto-Conversion bei Opportunity WON (Lead → Customer) ✅
+     - **D5:** XentralOrderEventHandler Interface (für Webhook-Integration) ✅
+     - **D6:** Manual Activation Button + customerService.activateCustomer() ✅
+     - **D7:** ChurnDetectionService mit Seasonal Business Support ✅
+     - **D8:** Dashboard KPIs + Frontend CustomerStatusBadge ✅
+   - **Aufwand:** 15h = 2 Arbeitstage
    - **Business Rule:** PROSPECT → AKTIV bei erster gelieferter Bestellung
    - **Prerequisites:** Sprint 2.1.7.3 COMPLETE ✅
-   - **Migrations:** V10032 (CustomerStatus Cleanup + Seasonal Business)
-   - **Tests:** 46 Tests (32 Backend + 14 Frontend)
+   - **Migrations:** V10032 (CustomerStatus Cleanup + Seasonal Business), V10033 (hierarchyType + Umsatz), V90008 (SEED Update)
+   - **Tests:** 1617/1617 Tests GREEN ✅
+   - **PR #143:** https://github.com/joergstreeck/freshplan-sales-tool/pull/143
    - **Artefakte:**
      - [SPEC_SPRINT_2_1_7_4_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_4_TECHNICAL.md) (TOC: 8 Kapitel)
      - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
-   - Status: 📋 READY TO START ⚡
+   - Status: ✅ COMPLETE - MERGED TO MAIN (22.10.2025 17:06:22 UTC, Commit ade7fc2fa)
 
 📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management COMPLETE (21.10.2025) ⏳ **NACH 2.1.7.4!**
    - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Multi-Location Prep (Option A)

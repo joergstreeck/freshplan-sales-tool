@@ -158,6 +158,34 @@ class UserMapperTest {
   }
 
   @Test
+  void testToResponse_WithXentralSalesRepId_ShouldIncludeInResponse() {
+    // Given
+    User user = createTestUserWithId();
+    user.setXentralSalesRepId("XENT-EMP-001");
+
+    // When
+    UserResponse response = mapper.toResponse(user);
+
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getXentralSalesRepId()).isEqualTo("XENT-EMP-001");
+  }
+
+  @Test
+  void testToResponse_WithNullXentralSalesRepId_ShouldReturnNull() {
+    // Given
+    User user = createTestUserWithId();
+    user.setXentralSalesRepId(null);
+
+    // When
+    UserResponse response = mapper.toResponse(user);
+
+    // Then
+    assertThat(response).isNotNull();
+    assertThat(response.getXentralSalesRepId()).isNull();
+  }
+
+  @Test
   void testToResponse_WithNullUser_ShouldReturnNull() {
     // When
     UserResponse response = mapper.toResponse(null);

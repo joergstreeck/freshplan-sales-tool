@@ -80,8 +80,9 @@ class UserQueryServiceTest {
             "test@example.com",
             true,
             Arrays.asList("sales"),
-            null,
-            null);
+            null, // xentralSalesRepId
+            null, // createdAt
+            null); // updatedAt
 
     testUserResponse2 =
         new UserResponse(
@@ -92,8 +93,9 @@ class UserQueryServiceTest {
             "test2@example.com",
             false,
             Arrays.asList("sales"),
-            null,
-            null);
+            null, // xentralSalesRepId
+            null, // createdAt
+            null); // updatedAt
 
     // Reset mocks
     reset(userRepository, userMapper);

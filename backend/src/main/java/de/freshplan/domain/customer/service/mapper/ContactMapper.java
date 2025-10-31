@@ -56,6 +56,11 @@ public class ContactMapper {
     dto.setChildrenCount(contact.getChildrenCount());
     dto.setPersonalNotes(contact.getPersonalNotes());
 
+    // V2 Fields (Sprint 2.1.7.2 D11.1)
+    dto.setLinkedin(contact.getLinkedin());
+    dto.setXing(contact.getXing());
+    dto.setNotes(contact.getNotes());
+
     // Audit Info
     dto.setCreatedAt(contact.getCreatedAt());
     dto.setUpdatedAt(contact.getUpdatedAt());
@@ -168,6 +173,17 @@ public class ContactMapper {
     }
     if (dto.getPersonalNotes() != null) {
       contact.setPersonalNotes(dto.getPersonalNotes());
+    }
+
+    // V2 Fields (Sprint 2.1.7.2 D11.1)
+    if (dto.getLinkedin() != null) {
+      contact.setLinkedin(dto.getLinkedin());
+    }
+    if (dto.getXing() != null) {
+      contact.setXing(dto.getXing());
+    }
+    if (dto.getNotes() != null) {
+      contact.setNotes(dto.getNotes());
     }
 
     // Note: Location assignment is handled in service layer

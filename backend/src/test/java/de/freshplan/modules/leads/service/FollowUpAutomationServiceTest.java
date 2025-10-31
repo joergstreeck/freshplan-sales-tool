@@ -277,10 +277,17 @@ class FollowUpAutomationServiceTest {
     // Given: Lead ist 4 Tage alt und hat bereits T+3 Follow-up erhalten
     TestTx.committed(
         () -> {
+          // Disqualifiziere ALLE anderen Leads im System (z.B. aus Migrationen)
+          em.createQuery("UPDATE Lead l SET l.clockStoppedAt = :now WHERE l.id != :testLeadId")
+              .setParameter("now", LocalDateTime.now())
+              .setParameter("testLeadId", testLead.id)
+              .executeUpdate();
+
           testLead.registeredAt = LocalDateTime.now().minusDays(4);
           testLead.t3FollowupSent = true; // Flag setzen statt Activity erstellen
           testLead.lastFollowupAt = LocalDateTime.now().minusDays(1);
           testLead.followupCount = 1;
+          testLead.clockStoppedAt = null; // Ensure clock not stopped for this lead
           testLead = em.merge(testLead);
         });
 

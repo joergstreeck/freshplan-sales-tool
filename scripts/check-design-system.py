@@ -40,7 +40,13 @@ CRITICAL_PATTERNS_STRICT = [
     (r'fontFamily:\s*["\'](?!inherit|var\()[A-Za-z]',
      "HARDCODED FONT: Use theme.typography instead"),
 
-    # 4. Englische UI-Texte (Common violations)
+    # 4. MUI Grid v2 Migration (Grid v1 is deprecated in MUI v6+)
+    (r'<Grid\s+item(?:\s|>)',
+     "DEPRECATED GRID v1: Use <Grid size={{ xs: 12 }}> instead of <Grid item xs={12}>"),
+    (r'<Grid\s+(?:xs|sm|md|lg|xl)=\{',
+     "DEPRECATED GRID v1: Use size={{ xs: 12 }} instead of xs={12}"),
+
+    # 5. Englische UI-Texte (Common violations)
     (r'[>"]Save[<"]',
      "ENGLISH TEXT: Use 'Speichern' (German)"),
     (r'[>"]Delete[<"]',
@@ -61,6 +67,26 @@ CRITICAL_PATTERNS_STRICT = [
      "ENGLISH TEXT: Use 'Filtern' (German)"),
     (r'[>"]Export[<"]',
      "ENGLISH TEXT: Use 'Exportieren' (German)"),
+
+    # 6. Hardcoded Shadows (should use theme.shadows[X])
+    (r'boxShadow:\s*["\'][^"\']*px[^"\']*["\']',
+     "HARDCODED SHADOW: Use theme.shadows[X] instead (0-24)"),
+
+    # 7. Hardcoded Transition Durations (should use theme.transitions.duration.X)
+    (r'transition(?:Duration)?:\s*["\']?\d+ms["\']?',
+     "HARDCODED TRANSITION: Use theme.transitions.duration.standard (150-375ms)"),
+
+    # 8. Status Colors hardcoded (should use theme.palette.status.X)
+    (r'["\']#66BB6A["\']',  # won/probabilityHigh color
+     "STATUS COLOR: Use theme.palette.status.won or theme.palette.status.probabilityHigh"),
+    (r'["\']#EF5350["\']',  # lost color
+     "STATUS COLOR: Use theme.palette.status.lost"),
+    (r'["\']#2196F3["\']',  # reactivate color
+     "STATUS COLOR: Use theme.palette.status.reactivate"),
+    (r'["\']#FFA726["\']',  # probabilityMedium color
+     "STATUS COLOR: Use theme.palette.status.probabilityMedium"),
+    (r'["\']#FF7043["\']',  # probabilityLow color
+     "STATUS COLOR: Use theme.palette.status.probabilityLow"),
 ]
 
 # KRITISCHE VIOLATIONS - Chart Files (Relaxed - Brand colors allowed for Recharts)
@@ -105,11 +131,15 @@ def is_chart_file(file_path: Path) -> bool:
     return any(chart_file in str(file_path) for chart_file in CHART_FILES)
 
 def check_file(file_path: Path) -> List[Tuple[int, str, str]]:
-    """Check file for design system violations"""
-    violations = []
+    """Check file for design system violations
+
+    Returns:
+        List of critical violations (line_num, line, message)
+    """
+    critical_violations = []
 
     # Select pattern set based on file type
-    patterns = CRITICAL_PATTERNS_CHARTS if is_chart_file(file_path) else CRITICAL_PATTERNS_STRICT
+    critical_patterns = CRITICAL_PATTERNS_CHARTS if is_chart_file(file_path) else CRITICAL_PATTERNS_STRICT
 
     try:
         content = file_path.read_text()
@@ -119,14 +149,15 @@ def check_file(file_path: Path) -> List[Tuple[int, str, str]]:
             if should_ignore_line(line, file_path):
                 continue
 
-            for pattern, message in patterns:
+            # Check critical patterns
+            for pattern, message in critical_patterns:
                 if re.search(pattern, line):
-                    violations.append((line_num, line.strip()[:100], message))
+                    critical_violations.append((line_num, line.strip()[:100], message))
 
     except Exception:
         pass  # Skip files that can't be read
 
-    return violations
+    return critical_violations
 
 def main():
     print("🎨 Design System Compliance Check")
@@ -136,7 +167,11 @@ def main():
     print("🔍 Checking:")
     print("  ❌ No hardcoded colors (use theme.palette)")
     print("  ❌ No hardcoded fonts (use theme.typography)")
+    print("  ❌ No Grid v1 (use Grid v2: size={{ xs: 12 }})")
     print("  ❌ No English UI text (use German)")
+    print("  ❌ No hardcoded shadows (use theme.shadows[X])")
+    print("  ❌ No hardcoded transitions (use theme.transitions.duration)")
+    print("  ❌ No hardcoded status colors (use theme.palette.status)")
     print()
     
     # Find TypeScript/TSX files only
@@ -169,38 +204,44 @@ def main():
     
     print(f"✅ Found {len(all_files)} files")
     print()
-    
-    # Check files (separate STRICT vs RELAXED violations)
-    strict_violations = {}  # Normal files (must be fixed)
-    chart_violations = {}   # Chart files (warnings only)
+
+    # Check files (CRITICAL violations only - all patterns now blocking)
+    strict_violations = {}  # Normal files - critical violations (must be fixed)
+    chart_violations = {}   # Chart files - critical violations (relaxed rules)
     total_strict = 0
     total_chart = 0
 
     for file_path in all_files:
-        violations = check_file(file_path)
-        if violations:
-            relative_path = file_path.relative_to(PROJECT_ROOT)
+        critical_vios = check_file(file_path)
+        relative_path = file_path.relative_to(PROJECT_ROOT)
+
+        # Collect critical violations
+        if critical_vios:
             if is_chart_file(file_path):
-                chart_violations[relative_path] = violations
-                total_chart += len(violations)
+                chart_violations[relative_path] = critical_vios
+                total_chart += len(critical_vios)
             else:
-                strict_violations[relative_path] = violations
-                total_strict += len(violations)
+                strict_violations[relative_path] = critical_vios
+                total_strict += len(critical_vios)
 
     # Report
-    total_violations = total_strict + total_chart
+    total_critical = total_strict + total_chart
 
-    if total_violations == 0:
+    if total_critical == 0:
         print("✅ SUCCESS: Design System compliant!")
         print(f"   Files checked: {len(all_files)}")
         print(f"   Violations: 0")
         print()
         print("   ✓ No hardcoded colors")
         print("   ✓ No hardcoded fonts")
+        print("   ✓ Grid v2 (MUI v7)")
         print("   ✓ German UI text")
+        print("   ✓ Theme-based shadows")
+        print("   ✓ Theme-based transitions")
+        print("   ✓ Theme-based status colors")
         sys.exit(0)
 
-    # Print violations (STRICT first, then CHART)
+    # Print CRITICAL violations first (STRICT first, then CHART)
     if total_strict > 0:
         print(f"❌ CRITICAL: {total_strict} STRICT violations found (must be fixed):")
         print()
@@ -217,7 +258,7 @@ def main():
             print()
 
     if total_chart > 0:
-        print(f"⚠️  WARNING: {total_chart} RELAXED violations in chart files (informational):")
+        print(f"⚠️  CRITICAL: {total_chart} RELAXED violations in chart files (must be reviewed):")
         print()
         for file_path, violations in sorted(chart_violations.items()):
             print(f"  📊 {file_path} (Chart File - Recharts colors allowed)")
@@ -229,22 +270,26 @@ def main():
 
     print("━" * 50)
 
-    # Exit based on STRICT violations only
+    # Exit based on STRICT violations only (Chart violations are warnings)
     if total_strict > 0:
         print("🚫 Design System Rules Violated")
         print()
-        print("🔧 How to fix:")
+        print("🔧 How to fix violations:")
         print("   • Colors: sx={{ color: 'primary.main' }}")
         print("   • Fonts: sx={{ fontFamily: 'heading' }}")
+        print("   • Grid: <Grid size={{ xs: 12, md: 6 }}> (v7)")
         print("   • Text: Use German (Save → Speichern)")
+        print("   • Shadows: sx={{ boxShadow: 2 }} or theme.shadows[2]")
+        print("   • Transitions: theme.transitions.duration.standard")
+        print("   • Status Colors: theme.palette.status.won")
         print()
         print("📖 See: docs/planung/grundlagen/DESIGN_SYSTEM.md")
         sys.exit(1)
-    else:
-        print("✅ SUCCESS: No STRICT violations (Chart warnings are OK)")
-        print(f"   Files checked: {len(all_files)}")
-        print(f"   STRICT violations: 0")
-        print(f"   Chart warnings: {total_chart} (informational)")
+
+    # Chart violations are WARNINGS only (exit 0)
+    if total_chart > 0:
+        print("⚠️  Chart files have relaxed violations - please review, but not blocking")
+        print("✅ CI passes - Chart colors for Recharts are allowed")
         sys.exit(0)
 
 if __name__ == '__main__':

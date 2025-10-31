@@ -66,6 +66,46 @@ public class User extends PanacheEntityBase {
   @Column(name = "role")
   private List<String> roles = new ArrayList<>();
 
+  // ============================================================================
+  // Xentral Integration Fields (Sprint 2.1.7.2 - Migration V10035)
+  // ============================================================================
+
+  /**
+   * Xentral Employee ID - Maps FreshPlan User to Xentral Sales Rep.
+   *
+   * <p>Auto-synced via Nightly Sales-Rep Sync Job (Email-Matching). Used for RLS Security: Sales
+   * users see only customers assigned to them in Xentral.
+   */
+  @Column(name = "xentral_sales_rep_id", length = 50)
+  private String xentralSalesRepId;
+
+  /**
+   * Manager reference - Team hierarchy for RLS Security.
+   *
+   * <p>Managers can see all customers of their team members. Set manually via Admin-UI User
+   * Management.
+   */
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "manager_id")
+  private User manager;
+
+  /**
+   * Team members reporting to this user (inverse side of manager relationship).
+   *
+   * <p>Used to calculate which customers a manager can see (all customers of team members).
+   */
+  @OneToMany(mappedBy = "manager", fetch = FetchType.LAZY)
+  private List<User> teamMembers = new ArrayList<>();
+
+  /**
+   * Manager privilege: Can see customers without assigned sales rep.
+   *
+   * <p>Default: false. When true, manager sees Team-Kunden + Unassigned-Kunden. Future: Migrate to
+   * customer_groups system if more flexibility needed.
+   */
+  @Column(name = "can_see_unassigned_customers", nullable = false)
+  private Boolean canSeeUnassignedCustomers = false;
+
   /** Default constructor required by JPA. */
   protected User() {
     // Required by JPA
@@ -212,6 +252,39 @@ public class User extends PanacheEntityBase {
    */
   public boolean hasRole(String role) {
     return roles.contains(role);
+  }
+
+  // ============================================================================
+  // Xentral Integration Field Accessors (Sprint 2.1.7.2)
+  // ============================================================================
+
+  public String getXentralSalesRepId() {
+    return xentralSalesRepId;
+  }
+
+  public void setXentralSalesRepId(String xentralSalesRepId) {
+    this.xentralSalesRepId = xentralSalesRepId;
+  }
+
+  public User getManager() {
+    return manager;
+  }
+
+  public void setManager(User manager) {
+    this.manager = manager;
+  }
+
+  public List<User> getTeamMembers() {
+    return new ArrayList<>(teamMembers); // Defensive copy
+  }
+
+  public Boolean getCanSeeUnassignedCustomers() {
+    return canSeeUnassignedCustomers != null ? canSeeUnassignedCustomers : false;
+  }
+
+  public void setCanSeeUnassignedCustomers(Boolean canSeeUnassignedCustomers) {
+    this.canSeeUnassignedCustomers =
+        canSeeUnassignedCustomers != null ? canSeeUnassignedCustomers : false;
   }
 
   @Override

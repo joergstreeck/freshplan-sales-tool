@@ -1,4 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+/**
+ * PainScoreForm - Schema-Driven Pain Score Form
+ * Sprint 2.1.7.2 D11.2 - Server-Driven UI for Lead Scoring
+ *
+ * @description Dynamic form rendering based on backend schema (ScoreSchemaResource.java)
+ * @since 2025-10-29 - Migrated from hardcoded to schema-driven
+ */
+
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import {
   Box,
   FormControlLabel,
@@ -10,36 +18,74 @@ import {
   TextField,
   Alert,
   Typography,
-  Divider,
   Chip,
+  CircularProgress,
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import type { Lead } from '../types';
+import { useScoreSchema } from '@/hooks/useScoreSchema';
+import { useEnumOptions } from '@/hooks/useEnumOptions';
+import type { FieldDefinition, FieldType } from '@/hooks/useContactSchema';
 
 interface PainScoreFormProps {
   lead: Lead;
   onUpdate: (updates: Partial<Lead>) => Promise<void>;
 }
 
+/**
+ * Get default value for a field type
+ */
+function getDefaultValue(type: FieldType): unknown {
+  switch (type) {
+    case 'TEXT':
+    case 'TEXTAREA':
+      return '';
+    case 'NUMBER':
+    case 'CURRENCY':
+      return null;
+    case 'BOOLEAN':
+      return false;
+    case 'ENUM':
+      return '';
+    case 'DATE':
+    case 'DATETIME':
+      return null;
+    default:
+      return null;
+  }
+}
+
 export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
-  const [formData, setFormData] = useState({
-    // 8 Pain Points
-    painStaffShortage: lead.painStaffShortage || false,
-    painHighCosts: lead.painHighCosts || false,
-    painFoodWaste: lead.painFoodWaste || false,
-    painQualityInconsistency: lead.painQualityInconsistency || false,
-    painUnreliableDelivery: lead.painUnreliableDelivery || false,
-    painPoorService: lead.painPoorService || false,
-    painSupplierQuality: lead.painSupplierQuality || false,
-    painTimePressure: lead.painTimePressure || false,
+  // ========== SCHEMA LOADING ==========
+  const { data: schemas, isLoading: schemaLoading } = useScoreSchema();
+  const painSchema = useMemo(() => schemas?.find(s => s.cardId === 'pain_score'), [schemas]);
+  const painSection = useMemo(() => painSchema?.sections?.[0], [painSchema]);
+  const fields = useMemo(() => painSection?.fields || [], [painSection]);
 
-    // Urgency
-    urgencyLevel: lead.urgencyLevel || 'NORMAL',
+  // ========== FORM DATA (DYNAMIC) ==========
+  const [formData, setFormData] = useState<Record<string, unknown>>(() => {
+    const initial: Record<string, unknown> = {};
 
-    // Details
-    painNotes: lead.painNotes || '',
+    // Initialize all fields with lead values or defaults
+    // Note: This runs before schema loads, so we initialize with empty object
+    // and update in useEffect when schema arrives
+    return initial;
   });
 
+  // Update formData when schema arrives (first render)
+  useEffect(() => {
+    if (fields.length > 0 && Object.keys(formData).length === 0) {
+      const initial: Record<string, unknown> = {};
+      fields.forEach(field => {
+        const leadValue = lead[field.fieldKey as keyof Lead];
+        initial[field.fieldKey] = leadValue !== undefined ? leadValue : getDefaultValue(field.type);
+      });
+      setFormData(initial);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fields.length]); // Only run when schema arrives
+
+  // ========== AUTO-SAVE LOGIC (UNCHANGED FROM ORIGINAL) ==========
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const isFirstRenderRef = useRef(true);
@@ -96,17 +142,17 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
     }
 
     // Check if data actually changed from lead props (prevent save on mount)
-    const hasChanges =
-      formData.painStaffShortage !== (lead.painStaffShortage || false) ||
-      formData.painHighCosts !== (lead.painHighCosts || false) ||
-      formData.painFoodWaste !== (lead.painFoodWaste || false) ||
-      formData.painQualityInconsistency !== (lead.painQualityInconsistency || false) ||
-      formData.painUnreliableDelivery !== (lead.painUnreliableDelivery || false) ||
-      formData.painPoorService !== (lead.painPoorService || false) ||
-      formData.painSupplierQuality !== (lead.painSupplierQuality || false) ||
-      formData.painTimePressure !== (lead.painTimePressure || false) ||
-      formData.urgencyLevel !== (lead.urgencyLevel || 'NORMAL') ||
-      formData.painNotes !== (lead.painNotes || '');
+    const hasChanges = Object.keys(formData).some(key => {
+      const leadValue = lead[key as keyof Lead];
+      const formValue = formData[key];
+
+      // Compare with lead value (handle undefined/null/false equivalence)
+      const leadDefault =
+        leadValue !== undefined
+          ? leadValue
+          : getDefaultValue(fields.find(f => f.fieldKey === key)?.type || 'TEXT');
+      return formValue !== leadDefault;
+    });
 
     // Only save if there are actual changes
     if (hasChanges) {
@@ -128,6 +174,92 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
     };
   }, []);
 
+  // ========== FIELD RENDERING ==========
+  const renderField = (field: FieldDefinition) => {
+    const value = formData[field.fieldKey];
+
+    switch (field.type) {
+      case 'BOOLEAN':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={Boolean(value)}
+                  onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.checked })}
+                />
+              }
+              label={field.label}
+            />
+            {field.helpText && (
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', ml: 4 }}>
+                {field.helpText}
+              </Typography>
+            )}
+          </Grid>
+        );
+
+      case 'ENUM':
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <EnumSelect
+              field={field}
+              value={String(value || '')}
+              onChange={newValue => setFormData({ ...formData, [field.fieldKey]: newValue })}
+            />
+          </Grid>
+        );
+
+      case 'TEXTAREA':
+        return (
+          <Grid size={{ xs: 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              multiline
+              rows={4}
+              value={String(value || '')}
+              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+
+      default:
+        return (
+          <Grid size={{ xs: 12, sm: field.gridCols || 12 }} key={field.fieldKey}>
+            <TextField
+              label={field.label}
+              value={String(value || '')}
+              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              fullWidth
+              placeholder={field.placeholder}
+              helperText={field.helpText}
+            />
+          </Grid>
+        );
+    }
+  };
+
+  // ========== LOADING STATE ==========
+  if (schemaLoading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!painSchema || !painSection) {
+    return (
+      <Alert severity="error">
+        Schema nicht gefunden. Bitte Backend prüfen (ScoreSchemaResource.java).
+      </Alert>
+    );
+  }
+
+  // ========== RENDER ==========
   return (
     <Box sx={{ p: 2 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
@@ -143,166 +275,59 @@ export function PainScoreForm({ lead, onUpdate }: PainScoreFormProps) {
         {saveStatus === 'saved' && <Chip label="Gespeichert ✓" size="small" color="success" />}
       </Box>
 
+      {/* Section Title (from schema) */}
+      {painSection.title && (
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {painSection.title}
+        </Typography>
+      )}
+      {painSection.subtitle && (
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          {painSection.subtitle}
+        </Typography>
+      )}
+
+      {/* Dynamic Fields (from schema) */}
       <Grid container spacing={3}>
-        {/* Section 1: Operational Pains */}
-        <Grid size={{ xs: 12 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Operational Pains (Strukturelle Betriebsprobleme)
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painStaffShortage}
-                onChange={e => setFormData({ ...formData, painStaffShortage: e.target.checked })}
-              />
-            }
-            label="Personalmangel / Fachkräftemangel"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painHighCosts}
-                onChange={e => setFormData({ ...formData, painHighCosts: e.target.checked })}
-              />
-            }
-            label="Hoher Kostendruck"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painFoodWaste}
-                onChange={e => setFormData({ ...formData, painFoodWaste: e.target.checked })}
-              />
-            }
-            label="Food Waste / Überproduktion"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painQualityInconsistency}
-                onChange={e =>
-                  setFormData({ ...formData, painQualityInconsistency: e.target.checked })
-                }
-              />
-            }
-            label="Interne Qualitätsinkonsistenz"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painTimePressure}
-                onChange={e => setFormData({ ...formData, painTimePressure: e.target.checked })}
-              />
-            }
-            label="Zeitdruck / Effizienz"
-          />
-        </Grid>
-
-        {/* Section 2: Lieferanten-Probleme */}
-        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Lieferanten-Probleme
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painSupplierQuality}
-                onChange={e => setFormData({ ...formData, painSupplierQuality: e.target.checked })}
-              />
-            }
-            label="Qualitätsprobleme beim Lieferanten"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painUnreliableDelivery}
-                onChange={e =>
-                  setFormData({ ...formData, painUnreliableDelivery: e.target.checked })
-                }
-              />
-            }
-            label="Unzuverlässige Lieferzeiten"
-          />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={formData.painPoorService}
-                onChange={e => setFormData({ ...formData, painPoorService: e.target.checked })}
-              />
-            }
-            label="Schlechter Service/Support"
-          />
-        </Grid>
-
-        {/* Section 3: Dringlichkeit */}
-        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Dringlichkeit
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-        </Grid>
-
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <FormControl fullWidth>
-            <InputLabel>Dringlichkeitsstufe</InputLabel>
-            <Select
-              value={formData.urgencyLevel}
-              onChange={e => setFormData({ ...formData, urgencyLevel: e.target.value })}
-            >
-              <MenuItem value="NORMAL">⏸️ Normal (0 Punkte)</MenuItem>
-              <MenuItem value="MEDIUM">⏰ Mittel (15 Punkte)</MenuItem>
-              <MenuItem value="HIGH">🔥 Hoch (22 Punkte)</MenuItem>
-              <MenuItem value="EMERGENCY">🚨 Notfall (30 Punkte)</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-
-        {/* Section 4: Details */}
-        <Grid size={{ xs: 12 }} sx={{ mt: 2 }}>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'bold', mb: 1 }}>
-            Weitere Details
-          </Typography>
-          <Divider sx={{ mb: 2 }} />
-        </Grid>
-
-        <Grid size={{ xs: 12 }}>
-          <TextField
-            label="Weitere Details zu Pain-Faktoren (optional)"
-            multiline
-            rows={4}
-            value={formData.painNotes}
-            onChange={e => setFormData({ ...formData, painNotes: e.target.value })}
-            fullWidth
-            placeholder="Beschreiben Sie konkrete Probleme, Auswirkungen oder besondere Umstände..."
-          />
-        </Grid>
+        {fields.map(field => renderField(field))}
       </Grid>
     </Box>
+  );
+}
+
+/**
+ * EnumSelect Component - Loads enum options from backend dynamically
+ */
+interface EnumSelectProps {
+  field: FieldDefinition;
+  value: string;
+  onChange: (value: string) => void;
+}
+
+function EnumSelect({ field, value, onChange }: EnumSelectProps) {
+  const { data: options, isLoading } = useEnumOptions(field.enumSource || '');
+
+  return (
+    <FormControl fullWidth>
+      <InputLabel>{field.label}</InputLabel>
+      <Select
+        value={value}
+        onChange={e => onChange(e.target.value)}
+        label={field.label}
+        disabled={isLoading}
+      >
+        {isLoading && <MenuItem disabled>Lädt...</MenuItem>}
+        {options?.map(option => (
+          <MenuItem key={option.value} value={option.value}>
+            {option.label}
+          </MenuItem>
+        ))}
+      </Select>
+      {field.helpText && (
+        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.75 }}>
+          {field.helpText}
+        </Typography>
+      )}
+    </FormControl>
   );
 }

@@ -101,6 +101,7 @@ public enum BusinessType {
       case GESUNDHEITSWESEN -> GESUNDHEIT;
       case BILDUNG -> BILDUNG;
       case EINZELHANDEL -> LEH; // Retail → LEH (Lebensmitteleinzelhandel)
+      case FOOD_SERVICE -> RESTAURANT; // Legacy: Food Service → Restaurant
       case VERANSTALTUNG, SONSTIGE -> SONSTIGES;
     };
   }

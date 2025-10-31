@@ -143,8 +143,8 @@ public class LeadScoringService {
    *
    * <ul>
    *   <li>Pain count (0-8 pains): 5 points each = max 40 points
-   *   <li>Multi-pain bonus: +30 points (if multiPainBonus > 0)
-   *   <li>Urgency level: EMERGENCY=30, HIGH=22, MEDIUM=15, NORMAL=8 points
+   *   <li>Multi-pain bonus: +30 points (automatic if ≥3 pain points = systemic problem)
+   *   <li>Urgency level: EMERGENCY=30, HIGH=22, MEDIUM=15, NORMAL=0 points
    * </ul>
    *
    * @param lead The lead to score
@@ -166,8 +166,9 @@ public class LeadScoringService {
 
     score += Math.min(painCount * 5, 40); // Max 40 points (8 pains × 5)
 
-    // 2. Multi-pain bonus (30 points)
-    if (lead.multiPainBonus != null && lead.multiPainBonus > 0) {
+    // 2. Multi-pain bonus (30 points) - AUTOMATIC if ≥3 pains
+    // Rationale: 3+ pain points indicate systemic problem, not just isolated issue
+    if (painCount >= 3) {
       score += 30;
     }
 
@@ -195,10 +196,14 @@ public class LeadScoringService {
    * <p>Scoring breakdown:
    *
    * <ul>
-   *   <li>Estimated volume (annual): ENTERPRISE=40, LARGE=30, MEDIUM=20, SMALL=10
+   *   <li>Estimated volume (annual): ENTERPRISE=40 (>2M), LARGE=30 (1M-2M), MEDIUM=20 (200k-1M),
+   *       SMALL=10 (<200k)
    *   <li>Budget confirmed: +30 points
-   *   <li>Deal size category: ENTERPRISE=30, LARGE=22, MEDIUM=15, SMALL=8
+   *   <li>Deal size category (auto-calculated): ENTERPRISE=30, LARGE=22, MEDIUM=15, SMALL=8
    * </ul>
+   *
+   * <p><strong>IMPORTANT:</strong> estimatedVolume is ANNUAL (not monthly) since Sprint 2.1.7.2 D11
+   * Phase 2
    *
    * @param lead The lead to score
    * @return Revenue score (0-100)
@@ -207,17 +212,18 @@ public class LeadScoringService {
     int score = 0;
 
     // 1. Estimated Volume (40 points max)
+    // NOTE: estimatedVolume is ANNUAL revenue (changed from monthly in Sprint 2.1.7.2)
     if (lead.estimatedVolume != null) {
-      BigDecimal annualVolume = lead.estimatedVolume.multiply(new BigDecimal("12"));
+      BigDecimal annualVolume = lead.estimatedVolume; // Already annual!
 
-      if (annualVolume.compareTo(new BigDecimal("100000")) >= 0) {
-        score += 40; // Enterprise: 100k+ €/year
-      } else if (annualVolume.compareTo(new BigDecimal("20000")) >= 0) {
-        score += 30; // Large: 20-100k €/year
-      } else if (annualVolume.compareTo(new BigDecimal("5000")) >= 0) {
-        score += 20; // Medium: 5-20k €/year
+      if (annualVolume.compareTo(new BigDecimal("2000000")) >= 0) {
+        score += 40; // Enterprise: 2M+ €/year
+      } else if (annualVolume.compareTo(new BigDecimal("1000000")) >= 0) {
+        score += 30; // Large: 1M-2M €/year
+      } else if (annualVolume.compareTo(new BigDecimal("200000")) >= 0) {
+        score += 20; // Medium: 200k-1M €/year
       } else {
-        score += 10; // Small: 1-5k €/year
+        score += 10; // Small: <200k €/year
       }
     }
 
@@ -226,7 +232,7 @@ public class LeadScoringService {
       score += 30;
     }
 
-    // 3. Deal Size Category (30 points max)
+    // 3. Deal Size Category (30 points max) - Auto-calculated from estimatedVolume
     if (lead.dealSize != null) {
       score +=
           switch (lead.dealSize) {
@@ -236,8 +242,8 @@ public class LeadScoringService {
             case SMALL -> 8;
           };
     } else if (lead.estimatedVolume != null) {
-      // Auto-calculate deal size if not set
-      BigDecimal annualVolume = lead.estimatedVolume.multiply(new BigDecimal("12"));
+      // Auto-calculate deal size if not set (internal helper, not exposed in UI)
+      BigDecimal annualVolume = lead.estimatedVolume; // Already annual!
       DealSize autoSize = DealSize.fromAnnualVolume(annualVolume);
       if (autoSize != null) {
         lead.dealSize = autoSize; // Set it for next time

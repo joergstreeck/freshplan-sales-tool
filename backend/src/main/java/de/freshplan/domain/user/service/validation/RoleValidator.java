@@ -86,8 +86,11 @@ public class RoleValidator {
    * Normalizes and validates a list of roles. This method combines normalization and validation in
    * one step.
    *
+   * <p>NOTE: Automatically deduplicates roles to prevent database constraint violations when
+   * duplicate roles are provided in the input list.
+   *
    * @param roles the roles to normalize and validate
-   * @return list of normalized and validated roles
+   * @return list of normalized, validated, and deduplicated roles
    * @throws de.freshplan.domain.user.service.exception.InvalidRoleException if any role is invalid
    */
   public static List<String> normalizeAndValidateRoles(List<String> roles) {
@@ -107,6 +110,7 @@ public class RoleValidator {
               }
               return normalized;
             })
+        .distinct() // Deduplicate to prevent database constraint violations
         .toList();
   }
 }

@@ -29,7 +29,7 @@ const StyledDrawer = styled(Drawer, {
     overflowX: 'hidden',
     backgroundColor: 'grey.50', // Leicht grauer Hintergrund für besseren Kontrast
     borderRight: '2px solid #94C456', // Freshfoodz Grün als Akzent
-    boxShadow: '2px 0 8px rgba(0, 0, 0, 0.05)',
+    boxShadow: 1,
   },
 }));
 

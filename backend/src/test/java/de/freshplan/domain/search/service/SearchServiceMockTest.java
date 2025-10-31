@@ -112,7 +112,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(testContact1));
 
     // When
-    SearchResults results = searchService.universalSearch(query, true, false, 20);
+    SearchResults results = searchService.universalSearch(query, true, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);
@@ -143,7 +143,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(testContact1));
 
     // When
-    SearchResults results = searchService.universalSearch(emailQuery, true, false, 20);
+    SearchResults results = searchService.universalSearch(emailQuery, true, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);
@@ -168,7 +168,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(testContact1));
 
     // When
-    SearchResults results = searchService.universalSearch(phoneQuery, true, false, 20);
+    SearchResults results = searchService.universalSearch(phoneQuery, true, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);
@@ -190,7 +190,8 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList());
 
     // When
-    SearchResults results = searchService.universalSearch(customerNumberQuery, true, false, 20);
+    SearchResults results =
+        searchService.universalSearch(customerNumberQuery, true, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);
@@ -209,7 +210,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(testCustomer1, inactiveCustomer));
 
     // When
-    SearchResults results = searchService.universalSearch(query, false, true, 20);
+    SearchResults results = searchService.universalSearch(query, false, true, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(2);
@@ -231,7 +232,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(testCustomer1, inactiveCustomer));
 
     // When
-    SearchResults results = searchService.universalSearch(query, false, false, 20);
+    SearchResults results = searchService.universalSearch(query, false, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);
@@ -250,7 +251,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(testCustomer1));
 
     // When
-    SearchResults results = searchService.universalSearch(query, false, false, 20);
+    SearchResults results = searchService.universalSearch(query, false, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(1);
@@ -307,7 +308,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(exactMatchCustomer, partialMatchCustomer));
 
     // When
-    SearchResults results = searchService.universalSearch(query, false, false, 20);
+    SearchResults results = searchService.universalSearch(query, false, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(2);
@@ -337,7 +338,7 @@ class SearchServiceMockTest {
         .thenReturn(Arrays.asList(primaryContact, secondaryContact));
 
     // When
-    SearchResults results = searchService.universalSearch(query, true, false, 20);
+    SearchResults results = searchService.universalSearch(query, true, false, 20, "customers");
 
     // Then
     assertThat(results.getContacts()).hasSize(2);
@@ -364,7 +365,7 @@ class SearchServiceMockTest {
     when(contactRepository.searchContactsFullText(eq(query), eq(20))).thenReturn(Arrays.asList());
 
     // When
-    SearchResults results = searchService.universalSearch(query, true, false, 20);
+    SearchResults results = searchService.universalSearch(query, true, false, 20, "customers");
 
     // Then
     assertThat(results.getCustomers()).hasSize(0);
@@ -383,7 +384,7 @@ class SearchServiceMockTest {
 
     // When & Then
     try {
-      searchService.universalSearch(query, true, false, 20);
+      searchService.universalSearch(query, true, false, 20, "customers");
       throw new AssertionError("Expected RuntimeException to be thrown");
     } catch (RuntimeException e) {
       assertThat(e.getMessage()).isEqualTo("Database connection failed");

@@ -44,6 +44,8 @@ const OpportunityDetailPage = lazy(() =>
 const AuditAdminPage = lazy(() =>
   import('./pages/admin/AuditAdminPage').then(m => ({ default: m.AuditAdminPage }))
 );
+const XentralSettingsPage = lazy(() => import('./pages/admin/XentralSettingsPage'));
+const UserManagementPage = lazy(() => import('./pages/admin/UserManagementPage'));
 const CustomerDetailPage = lazy(() =>
   import('./pages/CustomerDetailPage').then(m => ({ default: m.CustomerDetailPage }))
 );
@@ -219,6 +221,15 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                               </ProtectedRoute>
                             }
                           />
+                          {/* Admin User Management - Xentral Sales-Rep Mapping (Sprint 2.1.7.2 D6) */}
+                          <Route
+                            path="/admin/users/sales-rep-mapping"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <UserManagementPage />
+                              </ProtectedRoute>
+                            }
+                          />
 
                           {/* Admin System Routes */}
                           <Route
@@ -374,7 +385,7 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             path="/admin/integrations/xentral"
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
-                                <Placeholders.XentralIntegration />
+                                <XentralSettingsPage />
                               </ProtectedRoute>
                             }
                           />

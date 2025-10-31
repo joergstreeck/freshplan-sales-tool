@@ -6,7 +6,7 @@ import {
   useSensor,
   useSensors,
   DragOverlay,
-  closestCenter,
+  pointerWithin,
 } from '@dnd-kit/core';
 import type { DragEndEvent, DragStartEvent } from '@dnd-kit/core';
 import { sortableKeyboardCoordinates } from '@dnd-kit/sortable';
@@ -69,7 +69,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const [animatingIds, setAnimatingIds] = useState<Set<string>>(new Set());
 
   // Feature 1: Status Filter (Sprint 2.1.7.1)
-  const [statusFilter, setStatusFilter] = useState<'active' | 'closed' | 'all'>('active');
+  const [statusFilter, setStatusFilter] = useState<'active' | 'closed' | 'all'>('all');
 
   // Feature 2: Benutzer-Filter (Sprint 2.1.7.1 - Manager View)
   const [selectedUserId, setSelectedUserId] = useState<string>('all');
@@ -209,11 +209,9 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       try {
-        console.log('[KANBAN DRAG START] 🚀', { activeId: event.active.id });
         componentLogger.debug('Drag operation started', { activeId: event.active.id });
         setActiveId(event.active.id as string);
       } catch (error) {
-        console.error('[KANBAN DRAG START ERROR]', error);
         componentLogger.error('Error in handleDragStart', { error });
         errorHandler(error as Error);
       }
@@ -536,7 +534,7 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
       {/* Kanban Board */}
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={pointerWithin}
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >

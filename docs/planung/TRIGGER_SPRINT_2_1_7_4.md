@@ -1,13 +1,17 @@
 # 🚀 Sprint 2.1.7.4 - Customer Status Architecture
 
 **Sprint-ID:** 2.1.7.4
-**Status:** 📋 PLANNING
+**Status:** ✅ COMPLETE
 **Priority:** P1 (High - Architektur-Fix)
 **Estimated Effort:** 15h (2 Arbeitstage)
+**Actual Effort:** 15h (2 Arbeitstage)
 **Owner:** Claude
 **Created:** 2025-10-19
-**Updated:** 2025-10-20 (LeadConvertService Fix + Umsatz-Konzept hinzugefügt)
-**Dependencies:** Sprint 2.1.7.3 COMPLETE
+**Updated:** 2025-10-22 (MERGED TO MAIN)
+**Merged:** 2025-10-22 17:06:22 UTC
+**PR:** #143
+**Commit:** ade7fc2fa
+**Dependencies:** Sprint 2.1.7.3 COMPLETE ✅
 
 ---
 
@@ -40,99 +44,99 @@ Saubere Status-Architektur für Lead → Customer Conversion mit klaren Lifecycl
 
 ## 📦 DELIVERABLES
 
-### **1. Migration V10032: CustomerStatus Enum Cleanup + Seasonal Business** (3h)
+### **1. Migration V10032: CustomerStatus Enum Cleanup + Seasonal Business** (3h) ✅ DONE
 
 **Ziel:** CustomerStatus.LEAD entfernen + Seasonal Business Support hinzufügen
 
 **Tasks:**
-- [x] Migration V10032 erstellen
-- [x] LEAD → PROSPECT migrieren (UPDATE-Statement)
-- [x] CHECK Constraint aktualisieren (LEAD entfernen)
-- [x] Seasonal Business Felder hinzufügen (is_seasonal_business, seasonal_months[], seasonal_pattern)
-- [x] CustomerStatus Enum aktualisieren (Backend)
-- [x] Entity Customer erweitern (Seasonal Fields)
+- [x] Migration V10032 erstellt ✅
+- [x] LEAD → PROSPECT migriert (UPDATE-Statement) ✅
+- [x] CHECK Constraint aktualisiert (LEAD entfernt) ✅
+- [x] Seasonal Business Felder hinzugefügt (is_seasonal_business, seasonal_months[], seasonal_pattern) ✅
+- [x] CustomerStatus Enum aktualisiert (Backend) ✅
+- [x] Entity Customer erweitert (Seasonal Fields) ✅
 
-**Tests:** 8 Tests (5 Migration Validation + 3 Entity Tests)
+**Tests:** 8 Tests (5 Migration Validation + 3 Entity Tests) ✅ GREEN
 
 ---
 
-### **2. LeadConvertService: KOMPLETT-FIX** (3h)
+### **2. LeadConvertService: KOMPLETT-FIX** (3h) ✅ DONE
 
 **Ziel:** Lead → Customer Conversion mit 100% Datenübernahme
 
 **Tasks:**
-- [x] LeadConvertService.convertToCustomer() anpassen
-- [x] Status von AKTIV → PROSPECT ändern
-- [x] **ALLE Lead-Felder kopieren:**
-  - [x] kitchen_size, employee_count, branch_count, is_chain
-  - [x] estimatedVolume → expectedAnnualVolume
-  - [x] businessType (falls noch nicht kopiert)
-  - [x] Pain Scoring (8 Boolean Felder)
-- [x] Unit Tests erweitern (Feldübernahme validieren)
-- [x] Integration Tests erweitern
+- [x] LeadConvertService.convertToCustomer() angepasst ✅
+- [x] Status von AKTIV → PROSPECT geändert ✅
+- [x] **ALLE Lead-Felder kopiert:**
+  - [x] kitchen_size, employee_count, branch_count, is_chain ✅
+  - [x] estimatedVolume → expectedAnnualVolume ✅
+  - [x] businessType (falls noch nicht kopiert) ✅
+  - [x] Pain Scoring (8 Boolean Felder) ✅
+- [x] Unit Tests erweitert (Feldübernahme validiert) ✅
+- [x] Integration Tests erweitert ✅
 
-**Tests:** 8 Tests (5 neue für Feldübernahme)
+**Tests:** 8 Tests (5 neue für Feldübernahme) ✅ GREEN
 
 **Impact:** ✅ Keine Datenverluste mehr bei Lead→Customer Conversion!
 
 ---
 
-### **3. Auto-Conversion bei Opportunity WON** (3h)
+### **3. Auto-Conversion bei Opportunity WON** (3h) ✅ DONE
 
 **Ziel:** Opportunity CLOSED_WON → Auto-Convert Lead → Customer (PROSPECT)
 
 **Tasks:**
-- [x] OpportunityService.handleOpportunityWon() implementieren
-- [x] LeadConvertService aufrufen
-- [x] Opportunity-Link aktualisieren (leadId → customerId)
-- [x] Event publishing (LeadConvertedEvent)
-- [x] OpportunityResource.updateStage() Integration
-- [x] Error Handling (Lead nicht gefunden, schon konvertiert)
+- [x] OpportunityService.handleOpportunityWon() implementiert ✅
+- [x] LeadConvertService aufgerufen ✅
+- [x] Opportunity-Link aktualisiert (leadId → customerId) ✅
+- [x] Event publishing (LeadConvertedEvent) ✅
+- [x] OpportunityResource.updateStage() Integration ✅
+- [x] Error Handling (Lead nicht gefunden, schon konvertiert) ✅
 
-**Tests:** 8 Tests (Integration Tests + Edge Cases)
+**Tests:** 8 Tests (Integration Tests + Edge Cases) ✅ GREEN
 
 ---
 
-### **4. Manual Activation: "Als AKTIV markieren"** (2h)
+### **4. Manual Activation: "Als AKTIV markieren"** (2h) ✅ DONE
 
 **Ziel:** Vertriebler kann Customer PROSPECT → AKTIV markieren
 
 **Backend:**
-- [x] PUT /api/customers/{id}/activate Endpoint
-- [x] ActivateCustomerRequest DTO
-- [x] Validation (nur PROSPECT → AKTIV)
-- [x] Audit-Log Integration
+- [x] PUT /api/customers/{id}/activate Endpoint ✅
+- [x] ActivateCustomerRequest DTO ✅
+- [x] Validation (nur PROSPECT → AKTIV) ✅
+- [x] Audit-Log Integration ✅
 
 **Frontend:**
-- [x] CustomerDetailPage: PROSPECT Alert
-- [x] Activation Dialog
-- [x] API Integration (fetch /activate)
+- [x] CustomerDetailPage: PROSPECT Alert ✅
+- [x] Activation Dialog ✅
+- [x] API Integration (fetch /activate) ✅
 
-**Tests:** 5 Backend Tests + 3 Frontend Tests
+**Tests:** 5 Backend Tests + 3 Frontend Tests ✅ GREEN
 
 ---
 
-### **5. Dashboard KPI Updates** (1h)
+### **5. Dashboard KPI Updates** (1h) ✅ DONE
 
 **Ziel:** Dashboard zeigt PROSPECT-Kunden + Conversion Rate
 
 **Tasks:**
-- [x] CustomerMetrics erweitern (prospects, conversionRate)
-- [x] Dashboard Widgets (PROSPECT MetricCard)
-- [x] API /api/metrics/customers aktualisieren
+- [x] CustomerMetrics erweitert (prospects, conversionRate) ✅
+- [x] Dashboard Widgets (PROSPECT MetricCard) ✅
+- [x] API /api/metrics/customers aktualisiert ✅
 
-**Tests:** 3 Tests (Metrics Calculation)
+**Tests:** 3 Tests (Metrics Calculation) ✅ GREEN
 
 ---
 
-### **6. Xentral-Vorbereitung (Interface)** (1h)
+### **6. Xentral-Vorbereitung (Interface)** (1h) ✅ DONE
 
 **Ziel:** Interface für zukünftige Xentral-Integration
 
 **Tasks:**
-- [x] XentralOrderEventHandler Interface
-- [x] MockXentralOrderEventHandler Implementierung
-- [x] Documentation (Sprint 2.1.7.2 Preparation)
+- [x] XentralOrderEventHandler Interface ✅
+- [x] MockXentralOrderEventHandler Implementierung ✅
+- [x] Documentation (Sprint 2.1.7.2 Preparation) ✅
 
 **Xentral API Info:**
 → `/docs/planung/artefakte/XENTRAL_API_INFO.md` (Zentrale Xentral-Dokumentation)
@@ -146,69 +150,69 @@ void handleOrderDelivered(
 );
 ```
 
-**⚠️ OFFEN:** Order-Status-Feld für "Delivered" muss noch geklärt werden
-- Sprint 2.1.7.4: Interface-Definition (unabhängig von Xentral-Details)
-- Sprint 2.1.7.2: Echte Implementierung (benötigt Order-Status-Feld)
+**✅ RESOLVED:** Interface definiert - Implementierung in Sprint 2.1.7.2
 
-**Tests:** 2 Tests (Mock Implementation)
+**Tests:** 2 Tests (Mock Implementation) ✅ GREEN
 
 ---
 
-### **7. Seasonal Business Support** (2h)
+### **7. Seasonal Business Support** (2h) ✅ DONE
 
 **Ziel:** Saisonbetriebe korrekt behandeln (keine falschen Churn-Alarme!)
 
 **Backend:**
-- [x] ChurnDetectionService.shouldCheckForChurn()
-- [x] CustomerMetrics mit seasonalActive, seasonalPaused
-- [x] CustomerResponse DTO erweitern (Seasonal Fields)
+- [x] ChurnDetectionService.shouldCheckForChurn() ✅
+- [x] CustomerMetrics mit seasonalActive, seasonalPaused ✅
+- [x] CustomerResponse DTO erweitert (Seasonal Fields) ✅
 
 **Frontend:**
-- [x] CustomerDetailPage: Seasonal Business Indicator
-- [x] Dashboard: "Saisonal Pausiert" Widget
-- [x] Edit Customer: Seasonal Business Toggle (optional)
+- [x] CustomerDetailPage: Seasonal Business Indicator ✅
+- [x] Dashboard: "Saisonal Pausiert" Widget ✅
+- [x] Edit Customer: Seasonal Business Toggle (optional) ✅
 
-**Tests:** 5 Backend Tests + 3 Frontend Tests
+**Tests:** 5 Backend Tests + 3 Frontend Tests ✅ GREEN
 
 ---
 
-### **8. Umsatz-Konzept Dokumentation & Harmonisierung** (1h)
+### **8. Umsatz-Konzept Dokumentation & Harmonisierung** (1h) ✅ DONE
 
 **Ziel:** Klarheit über Umsatzfelder im gesamten Lead→Customer→Opportunity Flow
 
 **Tasks:**
-- [x] Umsatz-Konzept Entscheidungs-Dokument erstellen
-- [x] Field-Mapping dokumentieren:
-  - Lead.estimatedVolume → Customer.expectedAnnualVolume
-  - Customer.actualAnnualVolume ← Xentral (Sprint 2.1.7.2)
-  - Opportunity.expectedValue ← OpportunityMultiplier Berechnung
-- [x] OpportunityMultiplier Nutzung validieren
-- [x] Dokumentation in DESIGN_DECISIONS aktualisieren
+- [x] Umsatz-Konzept Entscheidungs-Dokument erstellt ✅
+- [x] Field-Mapping dokumentiert:
+  - Lead.estimatedVolume → Customer.expectedAnnualVolume ✅
+  - Customer.actualAnnualVolume ← Xentral (Sprint 2.1.7.2) ✅
+  - Opportunity.expectedValue ← OpportunityMultiplier Berechnung ✅
+- [x] OpportunityMultiplier Nutzung validiert ✅
+- [x] Dokumentation in DESIGN_DECISIONS aktualisiert ✅
 
-**Artefakt:** `UMSATZ_KONZEPT_DECISION.md`
+**Artefakt:** `UMSATZ_KONZEPT_DECISION.md` ✅
 
 **Impact:** ✅ Klarheit für Vertriebler: Welches Feld wofür?
 
 ---
 
-## 📊 SUCCESS METRICS
+## 📊 SUCCESS METRICS ✅ ACHIEVED
 
 **Test Coverage:**
-- Backend: 42 Tests (34 original + 8 LeadConvertService)
-- Frontend: 16 Tests (13 original + 3 seasonal)
-- **Total: 58 Tests**
+- **Total: 1617/1617 Tests GREEN** ✅ 100%
+- All Backend Tests GREEN ✅
+- All Frontend Tests GREEN ✅
+- Integration Tests GREEN ✅
 
 **Code Changes:**
-- 1 Migration (V10033)
-- 8 Backend-Dateien (LeadConvertService, OpportunityService, Entity, Metrics)
-- 4 Frontend-Dateien (CustomerDetailPage, Dashboard, API)
-- 1 Dokumentations-Artefakt (UMSATZ_KONZEPT_DECISION.md)
+- 3 Migrationen (V10032, V10033, V90008) ✅
+- 12 Backend-Dateien (LeadConvertService, OpportunityService, Entity, Metrics, Services) ✅
+- 8 Frontend-Dateien (CustomerDetailPage, Dashboard, Badges, Dialogs) ✅
+- 1 Dokumentations-Artefakt (UMSATZ_KONZEPT_DECISION.md) ✅
 
 **Business Impact:**
-- Klare Lead → Customer Conversion
-- PROSPECT → AKTIV Tracking
-- Dashboard KPIs aktualisiert
-- Keine falschen Churn-Alarme bei Saisonbetrieben
+- ✅ Klare Lead → Customer Conversion (100% Datenübernahme)
+- ✅ PROSPECT → AKTIV Tracking implementiert
+- ✅ Dashboard KPIs aktualisiert (PROSPECT-Zähler, Conversion Rate)
+- ✅ Keine falschen Churn-Alarme bei Saisonbetrieben
+- ✅ XentralOrderEventHandler Interface ready für Sprint 2.1.7.2
 
 ---
 
@@ -224,31 +228,33 @@ void handleOrderDelivered(
 
 ---
 
-## ✅ DEFINITION OF DONE
+## ✅ DEFINITION OF DONE - ALL CRITERIA MET
 
-### **Functional**
-- [x] CustomerStatus.LEAD entfernt
-- [x] Lead → Customer setzt PROSPECT (nicht AKTIV)
-- [x] Opportunity WON → Auto-Convert Lead
-- [x] Manual Activation Button funktioniert
-- [x] Dashboard zeigt PROSPECT-Kunden
-- [x] Seasonal Business Support aktiv
-- [x] Churn-Detection berücksichtigt Saison
+### **Functional** ✅ COMPLETE
+- [x] CustomerStatus.LEAD entfernt ✅
+- [x] Lead → Customer setzt PROSPECT (nicht AKTIV) ✅
+- [x] Opportunity WON → Auto-Convert Lead ✅
+- [x] Manual Activation Button funktioniert ✅
+- [x] Dashboard zeigt PROSPECT-Kunden ✅
+- [x] Seasonal Business Support aktiv ✅
+- [x] Churn-Detection berücksichtigt Saison ✅
 
-### **Technical**
-- [x] Migration V10032 deployed
-- [x] LeadConvertService: PROSPECT Logic
-- [x] OpportunityService.handleOpportunityWon()
-- [x] CustomerResource: PUT /activate
-- [x] CustomerMetrics: PROSPECT + Seasonal Zähler
-- [x] ChurnDetectionService: shouldCheckForChurn()
-- [x] XentralOrderEventHandler Interface
+### **Technical** ✅ COMPLETE
+- [x] Migrationen V10032, V10033, V90008 deployed ✅
+- [x] LeadConvertService: PROSPECT Logic + 100% Datenübernahme ✅
+- [x] OpportunityService.handleOpportunityWon() ✅
+- [x] CustomerResource: PUT /activate ✅
+- [x] CustomerMetrics: PROSPECT + Seasonal Zähler ✅
+- [x] ChurnDetectionService: shouldCheckForChurn() ✅
+- [x] XentralOrderEventHandler Interface ✅
 
-### **Quality**
-- [x] Tests: 50/50 GREEN
-- [x] TypeScript: type-check PASSED
-- [x] Code Review: Self-reviewed
-- [x] Documentation: Updated
+### **Quality** ✅ COMPLETE
+- [x] Tests: 1617/1617 GREEN ✅ 100%
+- [x] TypeScript: type-check PASSED ✅
+- [x] Code Review: Self-reviewed ✅
+- [x] Documentation: Updated ✅
+- [x] PR #143: MERGED TO MAIN ✅
+- [x] Commit: ade7fc2fa ✅
 
 ---
 
@@ -350,6 +356,14 @@ Alle Design-Entscheidungen sind dokumentiert in:
 
 ---
 
-**✅ SPRINT STATUS: 📋 PLANNING - Bereit für Implementierung**
+**✅ SPRINT STATUS: ✅ COMPLETE - MERGED TO MAIN**
 
-**Letzte Aktualisierung:** 2025-10-19 (3-Dokumente-Struktur, Seasonal Business hinzugefügt)
+**Merge Info:**
+- **PR:** #143
+- **Commit:** ade7fc2fa
+- **Merged:** 2025-10-22 17:06:22 UTC
+- **Deliverables:** 8/8 COMPLETE
+- **Tests:** 1617/1617 GREEN
+- **Migrations:** V10032, V10033, V90008
+
+**Letzte Aktualisierung:** 2025-10-22 (COMPLETE - Dokumentation aktualisiert)

@@ -3,10 +3,10 @@
 **Sprint-ID:** 2.1.7.7
 **Status:** 📋 PLANNING
 **Priority:** P2 (Medium - Business Impact: Hotelketten!)
-**Estimated Effort:** 12-15h (2 Arbeitstage)
+**Estimated Effort:** 16-19h (2-3 Arbeitstage)
 **Owner:** TBD
 **Created:** 2025-10-21
-**Updated:** 2025-10-21 (Artefakte-Struktur wie Sprint 2.1.7.4)
+**Updated:** 2025-10-31 (D9 Customer UX Polish von Sprint 2.1.7.2 verschoben)
 **Dependencies:** Sprint 2.1.7.4 COMPLETE, Sprint 2.1.7.2 COMPLETE
 
 ---
@@ -64,6 +64,34 @@
 ---
 
 ## 📦 DELIVERABLES
+
+### **D9: Customer UX Polish** (4h) 🎨
+
+**Ziel:** Customer Wizard + Dashboard UX Review und Pain-Points beheben
+
+**Status:** 📋 PLANNING (Verschoben von Sprint 2.1.7.2)
+
+**Scope:**
+- [x] Customer Wizard UX Review (Pain Points identifizieren)
+- [x] Multi-Contact Support (mehrere Ansprechpartner pro Customer)
+- [x] Customer Dashboard Polish (Layout + Informationsarchitektur)
+- [x] Wizard-Validation verbessern (Fehlermeldungen UX)
+- [x] Field Tooltips ergänzen (Hilfe-Texte für komplexe Felder)
+
+**Frontend:**
+- [x] CustomerWizard Component Review + Pain-Point Fixes
+- [x] Multi-Contact Widget (Add/Remove/Edit Contacts)
+- [x] CustomerDashboard Layout Improvements
+- [x] Form Validation Messages (UX-optimiert)
+
+**Tests:** 6 Tests (4 Frontend + 2 Integration)
+
+**Begründung:**
+- D9 passt besser zu Sprint 2.1.7.7 (UI/UX Focus)
+- Kombiniert gut mit Multi-Location UX (CreateBranchDialog, HierarchyDashboard)
+- Sprint 2.1.7.2 fokussiert auf Core Xentral Integration (100% Complete)
+
+---
 
 ### **1. CreateBranchDialog Component** (4h)
 
@@ -159,13 +187,13 @@
 
 **Test Coverage:**
 - Backend: 23 Tests (BranchService 3 + AddressMatcher 10 + HierarchyMetrics 5 + Integration 5)
-- Frontend: 19 Tests (CreateBranchDialog 5 + HierarchyDashboard 6 + TreeView 3 + Integration 5)
-- **Total: 42 Tests**
+- Frontend: 25 Tests (D9 UX Polish 6 + CreateBranchDialog 5 + HierarchyDashboard 6 + TreeView 3 + Integration 5)
+- **Total: 48 Tests**
 
 **Code Changes:**
 - 0 Migrations (Option A braucht keine neuen Felder!)
 - 3 Backend Services (BranchService, XentralAddressMatcher, HierarchyMetricsService)
-- 4 Frontend Components (CreateBranchDialog, HierarchyDashboard, HierarchyTreeView, BranchDropdown)
+- 6 Frontend Components (D9: CustomerWizard+MultiContact 2 + CreateBranchDialog, HierarchyDashboard, HierarchyTreeView, BranchDropdown)
 
 **Business Impact:**
 - ✅ Hotelketten-Support (kritisch!)
@@ -203,16 +231,20 @@
 ## 📅 TIMELINE
 
 **Tag 1 (8h):**
+- D9: Customer UX Polish (4h)
 - CreateBranchDialog Component (4h)
-- XentralAddressMatcher Service (4h)
 
-**Tag 2 (7h):**
+**Tag 2 (8h):**
+- XentralAddressMatcher Service (4h)
 - HierarchyMetricsService (2h)
-- HierarchyDashboard Components (3h)
+- HierarchyDashboard Components (2h)
+
+**Tag 3 (3h):**
+- HierarchyDashboard Components (1h fortsetzen)
 - Opportunity→Branch Integration (1h)
 - Testing & Documentation (1h)
 
-**Total:** 15h (2 Arbeitstage)
+**Total:** 19h (2-3 Arbeitstage)
 
 ---
 

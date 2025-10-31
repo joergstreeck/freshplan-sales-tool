@@ -39,13 +39,13 @@ public class LeadScoringServiceTest {
   @DisplayName("Revenue Score: High volume + budget confirmed = high score")
   public void testRevenueScore_HighVolumeWithBudget() {
     Lead lead = new Lead();
-    lead.estimatedVolume = new BigDecimal("10000"); // 120k €/year = ENTERPRISE
+    lead.estimatedVolume = new BigDecimal("2100000"); // 2.1M €/year = ENTERPRISE
     lead.budgetConfirmed = true;
     lead.dealSize = DealSize.ENTERPRISE;
 
     int score = scoringService.calculateRevenueScore(lead);
 
-    // 40 (volume) + 30 (budget) + 30 (deal size) = 100
+    // 40 (volume >= 2M) + 30 (budget) + 30 (deal size) = 100
     assertEquals(100, score);
   }
 
@@ -141,7 +141,7 @@ public class LeadScoringServiceTest {
     Lead lead = new Lead();
 
     // Perfect revenue
-    lead.estimatedVolume = new BigDecimal("10000");
+    lead.estimatedVolume = new BigDecimal("2100000"); // 2.1M €/year = ENTERPRISE
     lead.budgetConfirmed = true;
     lead.dealSize = DealSize.ENTERPRISE;
 

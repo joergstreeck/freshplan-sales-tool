@@ -125,6 +125,13 @@ public class CustomerContact extends PanacheEntityBase {
   @Column(name = "hobbies", length = 500)
   private String hobbies; // Comma-separated list
 
+  // V2 Fields (Sprint 2.1.7.2 D11.1 - Contact Management)
+  @Column(name = "linkedin", length = 500)
+  private String linkedin;
+
+  @Column(name = "xing", length = 500)
+  private String xing;
+
   @Column(name = "family_status", length = 50)
   private String familyStatus; // single, married, divorced, widowed
 
@@ -618,6 +625,22 @@ public class CustomerContact extends PanacheEntityBase {
 
   public void setPersonalNotes(String personalNotes) {
     this.personalNotes = personalNotes;
+  }
+
+  public String getLinkedin() {
+    return linkedin;
+  }
+
+  public void setLinkedin(String linkedin) {
+    this.linkedin = linkedin;
+  }
+
+  public String getXing() {
+    return xing;
+  }
+
+  public void setXing(String xing) {
+    this.xing = xing;
   }
 
   public LocalDateTime getLastInteractionDate() {

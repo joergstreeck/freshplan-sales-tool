@@ -1,6 +1,12 @@
 /**
  * Step 3: Multi-Contact Management
  *
+ * Sprint 2.1.7.2 D11: Server-Driven Customer Wizard
+ *
+ * NOTE: Step 3 manages Contact Entities (separate from Customer fields).
+ * This step does NOT use useCustomerSchema - it manages contacts via
+ * useCustomerOnboardingStore's contact management functions.
+ *
  * Advanced contact management with CRUD operations, smart cards,
  * and relationship intelligence features.
  *

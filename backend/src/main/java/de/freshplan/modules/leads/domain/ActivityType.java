@@ -59,4 +59,62 @@ public enum ActivityType {
   public boolean countsAsProgress() {
     return countsAsProgress;
   }
+
+  /**
+   * Check if this activity type is user-selectable in ActivityDialog.
+   *
+   * <p>User-selectable activities (10 types): - Progress Activities (5): QUALIFIED_CALL, MEETING,
+   * DEMO, ROI_PRESENTATION, SAMPLE_SENT - Non-Progress Activities (5): NOTE, FOLLOW_UP, EMAIL,
+   * CALL, SAMPLE_FEEDBACK
+   *
+   * <p>NOT user-selectable (13 types): - System Activities (3): FIRST_CONTACT_DOCUMENTED,
+   * EMAIL_RECEIVED, LEAD_ASSIGNED - Legacy Activities (10): ORDER, STATUS_CHANGE, CREATED, etc.
+   *
+   * @return true if users can manually select this activity type
+   */
+  public boolean isUserSelectable() {
+    return switch (this) {
+        // Progress Activities (5)
+      case QUALIFIED_CALL, MEETING, DEMO, ROI_PRESENTATION, SAMPLE_SENT -> true;
+        // Non-Progress Activities (5)
+      case NOTE, FOLLOW_UP, EMAIL, CALL, SAMPLE_FEEDBACK -> true;
+        // System & Legacy Activities (13) - NOT user-selectable
+      default -> false;
+    };
+  }
+
+  /**
+   * Get user-friendly display name for this activity type.
+   *
+   * <p>Used for: EnumResource API, ActivityDialog dropdown
+   *
+   * @return Localized display name (German)
+   */
+  public String getDisplayName() {
+    return switch (this) {
+      case QUALIFIED_CALL -> "Qualifizierter Anruf";
+      case MEETING -> "Meeting";
+      case DEMO -> "Demo";
+      case ROI_PRESENTATION -> "ROI-Präsentation";
+      case SAMPLE_SENT -> "Muster versendet";
+      case NOTE -> "Notiz";
+      case FOLLOW_UP -> "Follow-up";
+      case EMAIL -> "E-Mail";
+      case CALL -> "Anruf";
+      case SAMPLE_FEEDBACK -> "Muster-Feedback";
+      case FIRST_CONTACT_DOCUMENTED -> "Erstkontakt dokumentiert";
+      case EMAIL_RECEIVED -> "E-Mail erhalten";
+      case LEAD_ASSIGNED -> "Lead zugewiesen";
+      case ORDER -> "Bestellung";
+      case STATUS_CHANGE -> "Statusänderung";
+      case CREATED -> "Erstellt";
+      case DELETED -> "Gelöscht";
+      case REMINDER_SENT -> "Erinnerung gesendet";
+      case GRACE_PERIOD_STARTED -> "Schonfrist gestartet";
+      case EXPIRED -> "Abgelaufen";
+      case REACTIVATED -> "Reaktiviert";
+      case CLOCK_STOPPED -> "Uhr gestoppt";
+      case CLOCK_RESUMED -> "Uhr fortgesetzt";
+    };
+  }
 }

@@ -128,6 +128,39 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "estimated_volume", precision = 12, scale = 2)
   private BigDecimal estimatedVolume;
 
+  // ============================================================================
+  // Xentral Integration Field (Sprint 2.1.7.2 - Migration V10035)
+  // ============================================================================
+
+  /**
+   * Xentral Customer ID - Maps FreshPlan Customer to Xentral Customer.
+   *
+   * <p>Set manually in ConvertToCustomerDialog (user selects from Xentral dropdown) or via API
+   * sync. Used to fetch revenue data from Xentral and for RLS Security filtering.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "xentral_customer_id", length = 50)
+  private String xentralCustomerId;
+
+  /**
+   * Churn-Alarm Schwelle in Tagen (Sprint 2.1.7.2 - D4, Migration V10036) Kundenspezifisch
+   * konfigurierbar (Default: 90 Tage) Gültiger Bereich: 14-365 Tage
+   */
+  @Column(name = "churn_threshold_days", nullable = false)
+  private Integer churnThresholdDays = 90;
+
+  /**
+   * Last Order Date - Datum der letzten Bestellung (Sprint 2.1.7.2 - D7 Webhook)
+   *
+   * <p>Wird automatisch aktualisiert durch Xentral Webhook "Order Delivered". Verwendet für
+   * Churn-Detection und Customer-Health-Monitoring.
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "last_order_date")
+  private java.time.LocalDate lastOrderDate;
+
   // Hierarchy Support
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "parent_customer_id")
@@ -161,6 +194,39 @@ public class Customer extends PanacheEntityBase {
   @Column(name = "actual_annual_volume", precision = 12, scale = 2)
   private BigDecimal actualAnnualVolume;
 
+  /**
+   * Revenue (Umsatz) der letzten 30 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
+   *
+   * <p>Befüllung: Später via Xentral API Sync Verwendung: - Customer-Scoring (Ranking nach Umsatz)
+   * - Dashboard Revenue-Analysen - CustomerSchemaResource (Card "Geschäftspotenzial")
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "revenue_30_days", precision = 12, scale = 2)
+  private BigDecimal revenue30Days;
+
+  /**
+   * Revenue (Umsatz) der letzten 90 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
+   *
+   * <p>Befüllung: Später via Xentral API Sync Verwendung: - Trend-Analysen (30/90/365 Tage
+   * Vergleich) - Dashboard Revenue-Entwicklung - CustomerSchemaResource (Card "Geschäftspotenzial")
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "revenue_90_days", precision = 12, scale = 2)
+  private BigDecimal revenue90Days;
+
+  /**
+   * Revenue (Umsatz) der letzten 365 Tage - aus Xentral (Sprint 2.1.7.2 - D11 Server-Driven UI)
+   *
+   * <p>Befüllung: Später via Xentral API Sync Verwendung: - Jahres-Scoring (Top-Kunden Ranking) -
+   * Revenue-Forecast - CustomerSchemaResource (Card "Geschäftspotenzial")
+   *
+   * @since 2.1.7.2
+   */
+  @Column(name = "revenue_365_days", precision = 12, scale = 2)
+  private BigDecimal revenue365Days;
+
   @Enumerated(EnumType.STRING)
   @Column(name = "payment_terms", length = 20)
   private PaymentTerms paymentTerms = PaymentTerms.NETTO_30;
@@ -190,6 +256,77 @@ public class Customer extends PanacheEntityBase {
 
   @Column(name = "expansion_planned", length = 10)
   private String expansionPlanned;
+
+  // Structured Address Fields (Sprint 2.1.7.2 D11 Phase 1)
+  // WICHTIG: Feldnamen EXAKT wie Lead Entity für 1:1 Konversion!
+
+  /**
+   * Street address (includes house number). Matches Lead.street for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "street")
+  private String street;
+
+  /**
+   * Postal code (PLZ). Matches Lead.postalCode for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "postal_code", length = 20)
+  private String postalCode;
+
+  /**
+   * City name. Matches Lead.city for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "city", length = 100)
+  private String city;
+
+  /**
+   * Country code (DE, CH, AT). Matches Lead.countryCode for 1:1 conversion.
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "country_code", length = 2)
+  private String countryCode;
+
+  // Multi-Location Address Support (Sprint 2.1.7.2 D11 Phase 1)
+
+  /**
+   * Array of delivery addresses for multi-location customers. Stored as JSONB array of address
+   * objects: [{locationName, street, postalCode, city, countryCode, isActive}, ...]
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "delivery_addresses", columnDefinition = "jsonb")
+  private List<String> deliveryAddresses = new ArrayList<>();
+
+  /**
+   * Number of locations in Germany
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "locations_de")
+  private Integer locationsDE;
+
+  /**
+   * Number of locations in Switzerland
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "locations_ch")
+  private Integer locationsCH;
+
+  /**
+   * Number of locations in Austria
+   *
+   * @since 2.1.7.2 D11 Phase 1
+   */
+  @Column(name = "locations_at")
+  private Integer locationsAT;
 
   // Business Model - NEW for Sprint 2
   @Enumerated(EnumType.STRING)
@@ -531,6 +668,34 @@ public class Customer extends PanacheEntityBase {
     this.estimatedVolume = estimatedVolume;
   }
 
+  // ============================================================================
+  // Xentral Integration Field Accessor (Sprint 2.1.7.2)
+  // ============================================================================
+
+  public String getXentralCustomerId() {
+    return xentralCustomerId;
+  }
+
+  public void setXentralCustomerId(String xentralCustomerId) {
+    this.xentralCustomerId = xentralCustomerId;
+  }
+
+  public Integer getChurnThresholdDays() {
+    return churnThresholdDays;
+  }
+
+  public void setChurnThresholdDays(Integer churnThresholdDays) {
+    this.churnThresholdDays = churnThresholdDays;
+  }
+
+  public java.time.LocalDate getLastOrderDate() {
+    return lastOrderDate;
+  }
+
+  public void setLastOrderDate(java.time.LocalDate lastOrderDate) {
+    this.lastOrderDate = lastOrderDate;
+  }
+
   public Customer getParentCustomer() {
     return parentCustomer;
   }
@@ -593,6 +758,30 @@ public class Customer extends PanacheEntityBase {
 
   public void setActualAnnualVolume(BigDecimal actualAnnualVolume) {
     this.actualAnnualVolume = actualAnnualVolume;
+  }
+
+  public BigDecimal getRevenue30Days() {
+    return revenue30Days;
+  }
+
+  public void setRevenue30Days(BigDecimal revenue30Days) {
+    this.revenue30Days = revenue30Days;
+  }
+
+  public BigDecimal getRevenue90Days() {
+    return revenue90Days;
+  }
+
+  public void setRevenue90Days(BigDecimal revenue90Days) {
+    this.revenue90Days = revenue90Days;
+  }
+
+  public BigDecimal getRevenue365Days() {
+    return revenue365Days;
+  }
+
+  public void setRevenue365Days(BigDecimal revenue365Days) {
+    this.revenue365Days = revenue365Days;
   }
 
   public PaymentTerms getPaymentTerms() {
@@ -794,6 +983,72 @@ public class Customer extends PanacheEntityBase {
 
   public void setExpansionPlanned(String expansionPlanned) {
     this.expansionPlanned = expansionPlanned;
+  }
+
+  // Structured Address Getters/Setters (Sprint 2.1.7.2 D11 Phase 1)
+
+  public String getStreet() {
+    return street;
+  }
+
+  public void setStreet(String street) {
+    this.street = street;
+  }
+
+  public String getPostalCode() {
+    return postalCode;
+  }
+
+  public void setPostalCode(String postalCode) {
+    this.postalCode = postalCode;
+  }
+
+  public String getCity() {
+    return city;
+  }
+
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  public String getCountryCode() {
+    return countryCode;
+  }
+
+  public void setCountryCode(String countryCode) {
+    this.countryCode = countryCode;
+  }
+
+  public List<String> getDeliveryAddresses() {
+    return deliveryAddresses;
+  }
+
+  public void setDeliveryAddresses(List<String> deliveryAddresses) {
+    this.deliveryAddresses = deliveryAddresses;
+  }
+
+  public Integer getLocationsDE() {
+    return locationsDE;
+  }
+
+  public void setLocationsDE(Integer locationsDE) {
+    this.locationsDE = locationsDE;
+  }
+
+  public Integer getLocationsCH() {
+    return locationsCH;
+  }
+
+  public void setLocationsCH(Integer locationsCH) {
+    this.locationsCH = locationsCH;
+  }
+
+  public Integer getLocationsAT() {
+    return locationsAT;
+  }
+
+  public void setLocationsAT(Integer locationsAT) {
+    this.locationsAT = locationsAT;
   }
 
   public FinancingType getPrimaryFinancing() {

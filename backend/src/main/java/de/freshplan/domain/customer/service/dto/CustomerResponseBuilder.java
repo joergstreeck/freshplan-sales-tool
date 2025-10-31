@@ -18,6 +18,7 @@ public final class CustomerResponseBuilder {
   // Identifier
   private String id;
   private String customerNumber;
+  private String xentralCustomerId; // Sprint 2.1.7.2 - Xentral Integration
 
   // Basic Information
   private String companyName;
@@ -52,6 +53,7 @@ public final class CustomerResponseBuilder {
   private boolean atRisk;
   private LocalDateTime lastContactDate;
   private LocalDateTime nextFollowUpDate;
+  private Integer churnThresholdDays; // Sprint 2.1.7.2 - D4
 
   // Chain Structure - NEW for Sprint 2
   private Integer totalLocationsEU;
@@ -96,6 +98,11 @@ public final class CustomerResponseBuilder {
 
   public CustomerResponseBuilder customerNumber(String customerNumber) {
     this.customerNumber = customerNumber;
+    return this;
+  }
+
+  public CustomerResponseBuilder xentralCustomerId(String xentralCustomerId) {
+    this.xentralCustomerId = xentralCustomerId;
     return this;
   }
 
@@ -209,6 +216,11 @@ public final class CustomerResponseBuilder {
     return this;
   }
 
+  public CustomerResponseBuilder churnThresholdDays(Integer churnThresholdDays) {
+    this.churnThresholdDays = churnThresholdDays;
+    return this;
+  }
+
   public CustomerResponseBuilder createdAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
     return this;
@@ -309,6 +321,7 @@ public final class CustomerResponseBuilder {
   public CustomerResponseBuilder fromEntity(Customer customer) {
     this.id = customer.getId().toString();
     this.customerNumber = customer.getCustomerNumber();
+    this.xentralCustomerId = customer.getXentralCustomerId(); // Sprint 2.1.7.2
     this.companyName = customer.getCompanyName();
     this.tradingName = customer.getTradingName();
     this.legalForm = customer.getLegalForm();
@@ -339,6 +352,7 @@ public final class CustomerResponseBuilder {
     this.atRisk = customer.isAtRisk();
     this.lastContactDate = customer.getLastContactDate();
     this.nextFollowUpDate = customer.getNextFollowUpDate();
+    this.churnThresholdDays = customer.getChurnThresholdDays(); // Sprint 2.1.7.2 - D4
     this.createdAt = customer.getCreatedAt();
     this.createdBy = customer.getCreatedBy();
     this.updatedAt = customer.getUpdatedAt();
@@ -374,6 +388,7 @@ public final class CustomerResponseBuilder {
     return new CustomerResponse(
         id,
         customerNumber,
+        xentralCustomerId, // Sprint 2.1.7.2 - Xentral Integration
         companyName,
         tradingName,
         legalForm,
@@ -396,6 +411,7 @@ public final class CustomerResponseBuilder {
         atRisk,
         lastContactDate,
         nextFollowUpDate,
+        churnThresholdDays, // Sprint 2.1.7.2 - D4
 
         // Chain Structure - NEW for Sprint 2
         totalLocationsEU,

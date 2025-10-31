@@ -66,6 +66,15 @@ public class ContactDTO {
 
   private String personalNotes;
 
+  // V2 Fields (Sprint 2.1.7.2 D11.1 - Contact Management)
+  @Size(max = 500)
+  private String linkedin;
+
+  @Size(max = 500)
+  private String xing;
+
+  private String notes; // Business notes (distinct from personalNotes)
+
   // Audit Info (read-only)
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
@@ -245,6 +254,30 @@ public class ContactDTO {
 
   public void setPersonalNotes(String personalNotes) {
     this.personalNotes = personalNotes;
+  }
+
+  public String getLinkedin() {
+    return linkedin;
+  }
+
+  public void setLinkedin(String linkedin) {
+    this.linkedin = linkedin;
+  }
+
+  public String getXing() {
+    return xing;
+  }
+
+  public void setXing(String xing) {
+    this.xing = xing;
+  }
+
+  public String getNotes() {
+    return notes;
+  }
+
+  public void setNotes(String notes) {
+    this.notes = notes;
   }
 
   public LocalDateTime getCreatedAt() {

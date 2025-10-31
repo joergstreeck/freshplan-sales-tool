@@ -8,6 +8,9 @@ public enum CustomerLifecycleStage {
   /** Customer onboarding and integration. */
   ONBOARDING,
 
+  /** Actively engaged customer with regular orders. */
+  ACTIVE,
+
   /** Active growth and expansion phase. */
   GROWTH,
 
