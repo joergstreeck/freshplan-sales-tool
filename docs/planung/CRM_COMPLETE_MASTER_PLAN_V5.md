@@ -175,13 +175,13 @@
   - ⚠️ D6 Sales-Rep Sync: TEILWEISE (Backend SalesRepSyncJob ✅, Frontend UserManagementPage ❌)
   - ✅ D7 Xentral Webhook: COMPLETE (Previous Session)
   - ❌ D8 Unified Communication: NICHT IMPLEMENTIERT (Spec: 📋 PLANNING)
-  - ❌ D9 Customer UX Polish: NICHT IMPLEMENTIERT (Pain Points, Multi-Contact)
-  - ❌ D10 Multi-Location Prep: NICHT IMPLEMENTIERT (hierarchyType Dropdown)
+  - 📦 D9 Customer UX Polish: MOVED TO Sprint 2.1.7.7 (UI/UX Focus, +4h)
+  - 📦 D10 Multi-Location Prep: MOVED TO Sprint 2.1.7.7 (hierarchyType Dropdown, +1h)
 
 **Migration:** V10035 (Xentral Integration), V10036 (Churn Threshold) existieren ✅
 **Branch:** feature/sprint-2-1-7-2-customer-xentral-integration
 **Tests:** Keine neuen Tests ausgeführt (nur Code-Analyse)
-**Status:** 📋 IN PROGRESS - 7/10 COMPLETE, 3 Deliverables offen (D8, D9, D10)
+**Status:** 📋 IN PROGRESS - 7/10 DELIVERABLES, D8 offen, D9+D10 nach Sprint 2.1.7.7 verschoben
 
 **NEXT STEPS:** User-Entscheidung zu nächstem Deliverable (D6 Frontend Quick-Win 30min vs. D8 Pre-Live Critical 8h)
 
@@ -1788,8 +1788,8 @@
     - **D6:** ⚠️ Sales-Rep Mapping Auto-Sync (Backend SalesRepSyncJob ✅ 162 LOC, Frontend UserManagementPage ❌)
     - **D7:** ✅ Xentral Webhook → PROSPECT automatisch aktivieren ⚡ (Previous Session)
     - **D8:** ❌ Unified Communication System (Lead + Customer) ⭐ OFFEN - Activity Entity/Service/Timeline fehlen
-    - **D9:** ❌ Customer UX Polish (Wizard + Dashboard Review) ⭐ OFFEN - Pain Points + Multi-Contact fehlen
-    - **D10:** ❌ Multi-Location Vorbereitung (UI disabled) ⭐ OFFEN - hierarchyType Dropdown fehlt in ConvertDialog
+    - **D9:** 📦 Customer UX Polish → MOVED TO Sprint 2.1.7.7 (UI/UX Focus besser kombiniert mit Multi-Location)
+    - **D10:** 📦 Multi-Location Vorbereitung → MOVED TO Sprint 2.1.7.7 (hierarchyType Dropdown + CreateBranchDialog)
   - **Integration mit Sprint 2.1.7.4:**
     - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
     - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)

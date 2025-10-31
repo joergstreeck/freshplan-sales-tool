@@ -230,6 +230,48 @@
 
 ---
 
+### **D9: Customer UX Polish** (MOVED TO Sprint 2.1.7.7)
+
+**Status:** 📦 MOVED TO Sprint 2.1.7.7
+**Estimated Effort:** 4h
+
+**Ziel:** Customer Wizard + Dashboard UX Review und Pain-Points beheben
+
+**Scope:**
+- Customer Wizard UX Review (Pain Points + Multi-Contact Support)
+- Customer Dashboard Polish (Layout + Informationsarchitektur)
+- Wizard-Validation verbessern
+
+**Begründung der Verschiebung:**
+- D9 ist kein Blocker für Xentral Integration (D1-D8, D11)
+- Sprint 2.1.7.2 Fokus: Core Xentral Integration (100% Complete)
+- D9 passt besser zu Sprint 2.1.7.7 (UI/UX Improvements für Multi-Location)
+
+**→ Siehe:** [TRIGGER_SPRINT_2_1_7_7.md](TRIGGER_SPRINT_2_1_7_7.md#d9-customer-ux-polish)
+
+---
+
+### **D10: Multi-Location Vorbereitung** (MOVED TO Sprint 2.1.7.7)
+
+**Status:** 📦 MOVED TO Sprint 2.1.7.7
+**Estimated Effort:** 1h
+
+**Ziel:** hierarchyType Dropdown in ConvertToCustomerDialog vorbereiten (UI disabled)
+
+**Scope:**
+- hierarchyType Dropdown (HEADQUARTER/FILIALE/STANDALONE)
+- Initial disabled (kein CreateBranch UI yet)
+- Foundation für Sprint 2.1.7.7
+
+**Begründung der Verschiebung:**
+- Sprint 2.1.7.7 implementiert vollständiges Multi-Location Management
+- D10 ist Vorbereitung, macht ohne D9 (CreateBranchDialog) keinen Sinn
+- Bessere Kohärenz: Alle Multi-Location Features in einem Sprint
+
+**→ Siehe:** [TRIGGER_SPRINT_2_1_7_7.md](TRIGGER_SPRINT_2_1_7_7.md#deliverables)
+
+---
+
 ## 📊 SUCCESS METRICS
 
 **Test Coverage:**
