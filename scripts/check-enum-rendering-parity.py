@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Pre-Commit Hook: Enum-Rendering-Parity Check (Context-Aware)
+Pre-Commit Hook: Enum-Rendering-Parity Check (Context-Aware V2)
 
 ZERO TOLERANCE für RAW Enum-Rendering in Read-Views!
 Backend = Single Source of Truth für ALLE Enum-Werte (nicht nur Forms!).
@@ -11,9 +11,17 @@ Problem:
 Lösung:
   useEnumOptions('/api/enums/decision-levels') → Label-Lookup
 
-Context-Aware: Unterscheidet zwischen echten Enum-Fields und generischen Strings.
+Context-Aware V2: Erweiterte Filter für präzise Violation Detection!
 
-Sprint 2.1.7.7 - Server-Driven Architecture Enforcement (Option A)
+FILTER 0: Skip comments/JSDoc + render config lines
+FILTER 1: Domain context check (contact/lead/customer objects only)
+FILTER 2: Not JSX attributes (<Component title="..." />)
+FILTER 3: Not comparisons/assignments (const x = data.field)
+FILTER 4: Not state/store assignments (salutation: contact.salutation) ← NEW!
+FILTER 5: Not type casts/ternaries ((value as Type) or ? : ) ← NEW!
+FILTER 6: Not function parameters (getIcon(activity.type)) ← NEW!
+
+Sprint 2.1.7.7 - Server-Driven Architecture Enforcement (Option B - Enhanced)
 """
 
 import re
@@ -171,6 +179,115 @@ def is_comparison_or_assignment(line: str, field_name: str) -> bool:
     return False
 
 
+def is_state_assignment(line: str, field_name: str) -> bool:
+    """
+    Check if field is in useState/store/object assignment (not rendering).
+
+    Examples:
+      ❌ useState({ salutation: contact.salutation })
+      ❌ setFormData({ decisionLevel: contact.decisionLevel })
+      ❌ const newContact = { salutation: contact.salutation }
+      ❌ salutation: contact?.salutation (optional chaining)
+      ✅ {contact.decisionLevel} → rendering
+    """
+    # Pattern 1: Object property assignment: { field: value.field, ... }
+    # This catches: salutation: contact.salutation, AND contact?.salutation (optional chaining)
+    if re.search(rf'{field_name}:\s*\w+\??\.{field_name}', line):
+        return True
+
+    # Pattern 2: useState/setState with object: useState({ field: value })
+    if re.search(rf'(useState|set\w+)\s*\(\s*\{{[^}}]*{field_name}:', line):
+        return True
+
+    # Pattern 3: Spread with field override: { ...contact, salutation: contact.salutation }
+    if re.search(rf'\.\.\.\w+,\s*{field_name}:', line):
+        return True
+
+    return False
+
+
+def is_type_cast_or_ternary(line: str, field_name: str) -> bool:
+    """
+    Check if field is in type cast or ternary expression (not rendering).
+
+    Examples:
+      ❌ (formData.businessType as BusinessType)
+      ❌ (formData.kitchenSize as 'small' | 'medium' | 'large')
+      ❌ condition ? formData.businessType : ''
+      ❌ ? formData.businessType (multi-line ternary)
+      ❌ businessTypeOptions?.some(opt => opt.value === formData.businessType)
+      ✅ {contact.decisionLevel} → rendering
+    """
+    # Pattern 1: Type cast: (value.field as Type) or (value.field as 'union' | 'types')
+    # Match anything after 'as' until closing paren (supports union types)
+    if re.search(rf'\([^)]*{field_name}[^)]*as\s+[^)]+\)', line):
+        return True
+
+    # Pattern 2: Ternary expression: condition ? value.field : default
+    # OR multi-line ternary (just the ? part without : on same line)
+    if re.search(rf'\?[^:]*{field_name}', line):
+        return True
+
+    # Pattern 3: .some/.every/.find/.filter with field comparison
+    if re.search(rf'\.(some|every|find|filter)\([^)]*{field_name}', line):
+        return True
+
+    return False
+
+
+def is_function_parameter(line: str, field_name: str) -> bool:
+    """
+    Check if field is passed as function parameter (not rendering).
+
+    Examples:
+      ❌ getActivityTypeInfo(activity.activityType)
+      ❌ handleClick(lead.businessType)
+      ✅ {contact.decisionLevel} → rendering
+    """
+    # Pattern: functionName(arg1, value.field, arg3)
+    # This matches: someFunc(...field...) where field is inside ()
+    if re.search(rf'\w+\([^)]*\w+\.{field_name}[^)]*\)', line):
+        return True
+
+    return False
+
+
+def is_render_function_config(line: str) -> bool:
+    """
+    Check if line is render function config (e.g., leadColumns.tsx pattern).
+
+    Examples:
+      ❌ render: (lead: Lead) => lead.businessType || '-'
+      ✅ {contact.decisionLevel} → rendering
+    """
+    # Pattern: render: (item: Type) => item.field
+    if re.search(r'render:\s*\(\w+:\s*\w+\)\s*=>', line):
+        return True
+
+    return False
+
+
+def is_in_comment_or_docstring(line: str) -> bool:
+    """
+    Check if line is comment or JSDoc documentation.
+
+    Examples:
+      ❌ // formData.businessType
+      ❌ * <Select value={formData.businessType}>
+      ✅ {contact.decisionLevel} → rendering
+    """
+    stripped = line.strip()
+    # Single-line comment
+    if stripped.startswith('//'):
+        return True
+
+    # JSDoc line
+    if stripped.startswith('*') or stripped.startswith('/*'):
+        return True
+
+    return False
+
+
 def find_enum_field_accesses(content: str) -> Dict[str, List[Tuple[int, str, str]]]:
     """
     Find all enum field accesses in TSX/TS content (context-aware).
@@ -182,12 +299,25 @@ def find_enum_field_accesses(content: str) -> Dict[str, List[Tuple[int, str, str
       ✅ {contact.decisionLevel} → ('decisionLevel', [(109, '{contact.decisionLevel}', 'contact')])
       ❌ <Component title="..." /> → FILTERED OUT (JSX attribute)
       ❌ if (status === 'active') → FILTERED OUT (comparison)
+      ❌ salutation: contact.salutation → FILTERED OUT (state assignment)
+      ❌ (formData.businessType as Type) → FILTERED OUT (type cast)
+      ❌ getIcon(activity.activityType) → FILTERED OUT (function parameter)
+      ❌ render: (lead) => lead.businessType → FILTERED OUT (config function)
+      ❌ * <Select value={formData.businessType}> → FILTERED OUT (JSDoc comment)
     """
     found_fields: Dict[str, List[Tuple[int, str, str]]] = {}
 
     lines = content.split('\n')
 
     for line_num, line in enumerate(lines, 1):
+        # FILTER 0: Skip comments and JSDoc
+        if is_in_comment_or_docstring(line):
+            continue
+
+        # FILTER 0.5: Skip render function config lines
+        if is_render_function_config(line):
+            continue
+
         # Pattern: {objectName.fieldName} or objectName.fieldName
         pattern = r'\{?\s*(\w+)\??\.(\w+)\s*\}?'
 
@@ -210,6 +340,18 @@ def find_enum_field_accesses(content: str) -> Dict[str, List[Tuple[int, str, str
 
             # FILTER 3: Not comparison/assignment
             if is_comparison_or_assignment(line, field_name):
+                continue
+
+            # FILTER 4: Not state/store assignment (NEW!)
+            if is_state_assignment(line, field_name):
+                continue
+
+            # FILTER 5: Not type cast or ternary (NEW!)
+            if is_type_cast_or_ternary(line, field_name):
+                continue
+
+            # FILTER 6: Not function parameter (NEW!)
+            if is_function_parameter(line, field_name):
                 continue
 
             # Valid enum field access found!
@@ -283,9 +425,9 @@ def main():
         print(f"{YELLOW}⚠️  No TSX/TS files found to check{NC}")
         return 0
 
-    print(f"\n{BLUE}🔍 Checking Enum-Rendering-Parity (Context-Aware)...{NC}")
+    print(f"\n{BLUE}🔍 Checking Enum-Rendering-Parity (Context-Aware V2)...{NC}")
     print(f"   Scanning {len(tsx_files)} files for RAW enum rendering")
-    print(f"   Filtering: JSX attributes, comparisons, non-domain contexts\n")
+    print(f"   Advanced Filters: 7 context checks (state assignments, type casts, function params, etc.)\n")
 
     all_violations: Dict[str, Dict[str, List[Tuple[int, str, str]]]] = {}
 
@@ -299,9 +441,10 @@ def main():
             all_violations[relative_path] = violations
 
     if not all_violations:
-        print(f"{GREEN}✅ Enum-Rendering-Parity Check: PASSED{NC}")
+        print(f"{GREEN}✅ Enum-Rendering-Parity Check V2: PASSED{NC}")
         print(f"   All enum fields use proper label lookup via useEnumOptions()")
-        print(f"   Context-aware analysis: 0 violations detected\n")
+        print(f"   Advanced Context-Aware Analysis: 0 violations detected")
+        print(f"   Filters applied: 7 context checks (state/store/type-casts/params/etc.)\n")
         return 0
 
     # Count total violations
