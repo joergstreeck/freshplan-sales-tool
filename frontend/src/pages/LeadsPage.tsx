@@ -76,8 +76,8 @@ export default function LeadsPage({
   const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [stopClockDialogOpen, setStopClockDialogOpen] = useState(false);
-  const [timelineDialogOpen, setTimelineDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
 
   // Hooks
   const { user } = useAuth();
@@ -279,10 +279,9 @@ export default function LeadsPage({
     });
   };
 
-  // Handle timeline click
+  // Handle timeline click - toggle expansion
   const handleTimelineClick = (lead: Lead) => {
-    setSelectedLead(lead);
-    setTimelineDialogOpen(true);
+    setExpandedLeadId(prev => (prev === lead.id ? null : lead.id));
   };
 
   // Handle stop-the-clock click
@@ -292,34 +291,37 @@ export default function LeadsPage({
   };
 
   // Custom actions renderer for lead-specific actions
-  const renderLeadActions = (lead: Lead) => (
-    <>
-      <Tooltip title="Timeline anzeigen">
-        <IconButton
-          size="small"
-          onClick={e => {
-            e.stopPropagation();
-            handleTimelineClick(lead);
-          }}
-          sx={{ color: 'info.main' }}
-        >
-          <TimelineIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
-      <Tooltip title={lead.clockStoppedAt ? 'Fortsetzen' : 'Pausieren'}>
-        <IconButton
-          size="small"
-          onClick={e => {
-            e.stopPropagation();
-            handleStopClockClick(lead);
-          }}
-          sx={{ color: lead.clockStoppedAt ? 'success.main' : 'warning.main' }}
-        >
-          <PauseIcon fontSize="small" />
-        </IconButton>
-      </Tooltip>
-    </>
-  );
+  const renderLeadActions = (lead: Lead) => {
+    const isExpanded = expandedLeadId === lead.id;
+    return (
+      <>
+        <Tooltip title={isExpanded ? 'Timeline schließen' : 'Timeline öffnen'}>
+          <IconButton
+            size="small"
+            onClick={e => {
+              e.stopPropagation();
+              handleTimelineClick(lead);
+            }}
+            sx={{ color: isExpanded ? 'primary.main' : 'info.main' }}
+          >
+            <TimelineIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title={lead.clockStoppedAt ? 'Fortsetzen' : 'Pausieren'}>
+          <IconButton
+            size="small"
+            onClick={e => {
+              e.stopPropagation();
+              handleStopClockClick(lead);
+            }}
+            sx={{ color: lead.clockStoppedAt ? 'success.main' : 'warning.main' }}
+          >
+            <PauseIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </>
+    );
+  };
 
   // Loading state
   if (isLoading && leads.length === 0) {
@@ -399,6 +401,13 @@ export default function LeadsPage({
                   emptyMessage="Keine Leads gefunden"
                   sortConfig={sortConfig}
                   onSortChange={handleSortChange}
+                  expandedRowId={expandedLeadId}
+                  onRowExpand={setExpandedLeadId}
+                  renderExpandedRow={lead => (
+                    <Box sx={{ p: 3 }}>
+                      <LeadActivityTimeline leadId={parseInt(lead.id)} />
+                    </Box>
+                  )}
                 />
               </Box>
             ))}
@@ -455,14 +464,6 @@ export default function LeadsPage({
                 setStopClockDialogOpen(false);
                 setSelectedLead(null);
                 await refetch();
-              }}
-            />
-            <LeadActivityTimeline
-              open={timelineDialogOpen}
-              lead={selectedLead}
-              onClose={() => {
-                setTimelineDialogOpen(false);
-                setSelectedLead(null);
               }}
             />
           </>

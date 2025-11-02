@@ -61,6 +61,9 @@ export function DataTable<T>({
   emptyMessage = 'Keine Daten vorhanden',
   height,
   rowHeight = 53,
+  expandedRowId,
+  onRowExpand,
+  renderExpandedRow,
 }: DataTableProps<T>) {
   // Internal pagination state (uncontrolled)
   const [internalPage, setInternalPage] = React.useState(0);
@@ -213,60 +216,70 @@ export function DataTable<T>({
                 rowWithCreatedAt.createdAt &&
                 new Date(rowWithCreatedAt.createdAt) >
                   new Date(Date.now() - 24 * 60 * 60 * 1000);
+              const isExpanded = expandedRowId === rowId;
+              const colSpan = sortedColumns.length + (showActions ? 1 : 0);
 
               return (
-                <TableRow
-                  key={rowId}
-                  hover
-                  onClick={() => onRowClick?.(row)}
-                  sx={{
-                    cursor: onRowClick ? 'pointer' : 'default',
-                    bgcolor: isNew ? 'rgba(148, 196, 86, 0.08)' : undefined,
-                    '&:hover': {
-                      bgcolor: isNew ? 'rgba(148, 196, 86, 0.15)' : 'action.hover',
-                    },
-                    height: rowHeight,
-                  }}
-                >
-                  {sortedColumns.map(column => (
-                    <TableCell key={column.id} align={column.align || 'left'}>
-                      {renderCellContent(row, column)}
-                    </TableCell>
-                  ))}
-                  {showActions && (
-                    <TableCell align="right">
-                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-                        {customActions && customActions(row)}
-                        {onEdit && (
-                          <IconButton
-                            size="small"
-                            onClick={e => {
-                              e.stopPropagation();
-                              onEdit(row);
-                            }}
-                            title="Bearbeiten"
-                            sx={{ color: 'primary.main' }}
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                        )}
-                        {onDelete && (
-                          <IconButton
-                            size="small"
-                            onClick={e => {
-                              e.stopPropagation();
-                              onDelete(row);
-                            }}
-                            title="Löschen"
-                            sx={{ color: 'error.main' }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        )}
-                      </Box>
-                    </TableCell>
+                <React.Fragment key={rowId}>
+                  <TableRow
+                    hover
+                    onClick={() => onRowClick?.(row)}
+                    sx={{
+                      cursor: onRowClick ? 'pointer' : 'default',
+                      bgcolor: isNew ? 'rgba(148, 196, 86, 0.08)' : undefined,
+                      '&:hover': {
+                        bgcolor: isNew ? 'rgba(148, 196, 86, 0.15)' : 'action.hover',
+                      },
+                      height: rowHeight,
+                    }}
+                  >
+                    {sortedColumns.map(column => (
+                      <TableCell key={column.id} align={column.align || 'left'}>
+                        {renderCellContent(row, column)}
+                      </TableCell>
+                    ))}
+                    {showActions && (
+                      <TableCell align="right">
+                        <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
+                          {customActions && customActions(row)}
+                          {onEdit && (
+                            <IconButton
+                              size="small"
+                              onClick={e => {
+                                e.stopPropagation();
+                                onEdit(row);
+                              }}
+                              title="Bearbeiten"
+                              sx={{ color: 'primary.main' }}
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                          {onDelete && (
+                            <IconButton
+                              size="small"
+                              onClick={e => {
+                                e.stopPropagation();
+                                onDelete(row);
+                              }}
+                              title="Löschen"
+                              sx={{ color: 'error.main' }}
+                            >
+                              <DeleteIcon fontSize="small" />
+                            </IconButton>
+                          )}
+                        </Box>
+                      </TableCell>
+                    )}
+                  </TableRow>
+                  {isExpanded && renderExpandedRow && (
+                    <TableRow>
+                      <TableCell colSpan={colSpan} sx={{ p: 0, bgcolor: 'grey.50' }}>
+                        {renderExpandedRow(row)}
+                      </TableCell>
+                    </TableRow>
                   )}
-                </TableRow>
+                </React.Fragment>
               );
             })}
           </TableBody>

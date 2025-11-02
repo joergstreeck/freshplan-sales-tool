@@ -132,6 +132,11 @@ export interface DataTableProps<T> {
 
   /** Row height (for virtualization) */
   rowHeight?: number;
+
+  /** Expandable rows support */
+  expandedRowId?: string | null;
+  onRowExpand?: (rowId: string | null) => void;
+  renderExpandedRow?: (row: T) => ReactNode;
 }
 
 /**
