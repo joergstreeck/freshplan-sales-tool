@@ -52,21 +52,6 @@ export interface ActivityDialogProps {
 }
 
 // ============================================================================
-// OUTCOME OPTIONS
-// ============================================================================
-
-const OUTCOME_OPTIONS = [
-  { value: '', label: 'Kein Ergebnis' },
-  { value: 'SUCCESSFUL', label: 'Erfolgreich' },
-  { value: 'UNSUCCESSFUL', label: 'Nicht erfolgreich' },
-  { value: 'NO_ANSWER', label: 'Nicht erreicht' },
-  { value: 'CALLBACK_REQUESTED', label: 'Rückruf gewünscht' },
-  { value: 'INFO_SENT', label: 'Informationen gesendet' },
-  { value: 'QUALIFIED', label: 'Qualifiziert' },
-  { value: 'DISQUALIFIED', label: 'Disqualifiziert' },
-];
-
-// ============================================================================
 // COMPONENT
 // ============================================================================
 
@@ -82,8 +67,9 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
   // SERVER-DRIVEN ENUMS
   // ============================================================================
 
-  // Sprint 2.1.7.7 - Enum-Rendering-Parity Migration BATCH 4
+  // Sprint 2.1.7.7 - Schema-Driven Forms Migration
   const { data: activityTypeOptions } = useEnumOptions('/api/enums/activity-types');
+  const { data: outcomeOptions } = useEnumOptions('/api/enums/activity-outcomes');
 
   // ============================================================================
   // STATE
@@ -268,7 +254,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
               label="Ergebnis"
               onChange={e => setOutcome(e.target.value)}
             >
-              {OUTCOME_OPTIONS.map(option => (
+              {outcomeOptions?.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>

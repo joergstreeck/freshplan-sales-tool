@@ -1165,7 +1165,9 @@ public class LeadResource {
 
       // 3. Map to DTOs
       List<LeadContactDTO> contactDTOs =
-          contacts.stream().map(this::mapContactToDTO).collect(java.util.stream.Collectors.toList());
+          contacts.stream()
+              .map(this::mapContactToDTO)
+              .collect(java.util.stream.Collectors.toList());
 
       return Response.ok(contactDTOs).build();
 
@@ -1293,7 +1295,8 @@ public class LeadResource {
       // Relationship Data - CRM Intelligence
       if (contactDTO.getBirthday() != null) contact.setBirthday(contactDTO.getBirthday());
       if (contactDTO.getHobbies() != null) contact.setHobbies(contactDTO.getHobbies());
-      if (contactDTO.getFamilyStatus() != null) contact.setFamilyStatus(contactDTO.getFamilyStatus());
+      if (contactDTO.getFamilyStatus() != null)
+        contact.setFamilyStatus(contactDTO.getFamilyStatus());
       if (contactDTO.getChildrenCount() != null)
         contact.setChildrenCount(contactDTO.getChildrenCount());
       if (contactDTO.getPersonalNotes() != null)

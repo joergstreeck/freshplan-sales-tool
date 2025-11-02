@@ -44,6 +44,8 @@ import CalculateIcon from '@mui/icons-material/Calculate';
 import { httpClient } from '../../../lib/apiClient';
 import { OpportunityType } from '../types/opportunity.types';
 import type { CustomerResponse } from '../../customer/types/customer.types';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
+import { useMemo } from 'react';
 
 interface CreateOpportunityForCustomerDialogProps {
   open: boolean;
@@ -82,18 +84,8 @@ interface ValidationErrors {
 }
 
 /**
- * OpportunityType Labels (German)
- * @see OpportunityCard.tsx getOpportunityTypeLabel()
- */
-const OPPORTUNITY_TYPE_LABELS: Record<OpportunityType, string> = {
-  [OpportunityType.NEUGESCHAEFT]: 'Neugeschäft',
-  [OpportunityType.SORTIMENTSERWEITERUNG]: 'Sortimentserweiterung',
-  [OpportunityType.NEUER_STANDORT]: 'Neuer Standort',
-  [OpportunityType.VERLAENGERUNG]: 'Vertragsverlängerung',
-};
-
-/**
- * OpportunityType Icons (Emojis)
+ * OpportunityType Icons (Emojis) - UI-Concern, bleibt im Frontend
+ * Labels kommen vom Backend via useEnumOptions (Sprint 2.1.7.7 Schema-Driven Forms)
  * @see OpportunityCard.tsx getOpportunityTypeIcon()
  */
 const OPPORTUNITY_TYPE_ICONS: Record<OpportunityType, string> = {
@@ -121,12 +113,12 @@ function getBaseVolume(customer: CustomerResponse): number {
 
 /**
  * Generate default description for Opportunity
+ * (Server-Driven: typeLabel kommt vom Backend)
  */
 function generateDefaultDescription(
   customer: CustomerResponse,
-  opportunityType: OpportunityType
+  typeLabel: string
 ): string {
-  const typeLabel = OPPORTUNITY_TYPE_LABELS[opportunityType];
   const baseVolume = getBaseVolume(customer);
   return `${typeLabel}-Opportunity für Bestandskunde ${customer.companyName}.${
     baseVolume > 0 ? ` Aktuelles Jahresvolumen: ${baseVolume.toLocaleString('de-DE')}€` : ''
@@ -139,6 +131,21 @@ export default function CreateOpportunityForCustomerDialog({
   onClose,
   onSuccess,
 }: CreateOpportunityForCustomerDialogProps) {
+  // Server-Driven Enums (Sprint 2.1.7.7 - Schema-Driven Forms Migration)
+  const { data: opportunityTypeOptions } = useEnumOptions('/api/enums/opportunity-types');
+
+  // Create label lookup map for O(1) lookups
+  const opportunityTypeLabels = useMemo(() => {
+    if (!opportunityTypeOptions) return {};
+    return opportunityTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [opportunityTypeOptions]);
+
   // Form State
   const [name, setName] = useState(customer.companyName); // Pre-filled (OHNE Type-Präfix!)
   const [opportunityType, setOpportunityType] = useState<OpportunityType>(
@@ -261,7 +268,9 @@ export default function CreateOpportunityForCustomerDialog({
       setOpportunityType(OpportunityType.SORTIMENTSERWEITERUNG);
       setExpectedValue(undefined);
       setExpectedCloseDate(addDays(new Date(), 60));
-      setDescription(generateDefaultDescription(customer, OpportunityType.SORTIMENTSERWEITERUNG));
+      const label =
+        opportunityTypeLabels[OpportunityType.SORTIMENTSERWEITERUNG] || 'Sortimentserweiterung';
+      setDescription(generateDefaultDescription(customer, label));
       setApiError(null);
       setValidationErrors({});
       setMultipliers([]);
@@ -333,7 +342,7 @@ export default function CreateOpportunityForCustomerDialog({
                   {customer.actualAnnualVolume ? 'Xentral' : 'Lead-Schätzung'})
                   <br />
                   Multiplier: {currentMultiplier} ({customer.industry || 'UNKNOWN'} ×{' '}
-                  {OPPORTUNITY_TYPE_LABELS[opportunityType]})
+                  {opportunityTypeLabels[opportunityType] || opportunityType})
                   <br />
                   <strong>Erwarteter Wert: {expectedValue?.toLocaleString('de-DE')}€</strong>
                 </Typography>
@@ -360,7 +369,7 @@ export default function CreateOpportunityForCustomerDialog({
               }}
             />
 
-            {/* Opportunity Type Select */}
+            {/* Opportunity Type Select (Sprint 2.1.7.7 - Server-Driven Enums) */}
             <FormControl fullWidth disabled={isSubmitting}>
               <InputLabel>Opportunity-Typ</InputLabel>
               <Select
@@ -368,11 +377,13 @@ export default function CreateOpportunityForCustomerDialog({
                 onChange={e => setOpportunityType(e.target.value as OpportunityType)}
                 label="Opportunity-Typ"
               >
-                {Object.values(OpportunityType).map(type => (
-                  <MenuItem key={type} value={type}>
+                {opportunityTypeOptions?.map(option => (
+                  <MenuItem key={option.value} value={option.value}>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography>{OPPORTUNITY_TYPE_ICONS[type]}</Typography>
-                      <Typography>{OPPORTUNITY_TYPE_LABELS[type]}</Typography>
+                      <Typography>
+                        {OPPORTUNITY_TYPE_ICONS[option.value as OpportunityType]}
+                      </Typography>
+                      <Typography>{option.label}</Typography>
                     </Stack>
                   </MenuItem>
                 ))}

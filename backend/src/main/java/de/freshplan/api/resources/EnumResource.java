@@ -10,6 +10,7 @@ import de.freshplan.domain.customer.entity.LegalForm;
 import de.freshplan.domain.customer.entity.PaymentTerms;
 import de.freshplan.domain.customer.entity.Salutation;
 import de.freshplan.domain.customer.entity.Title;
+import de.freshplan.domain.opportunity.entity.OpportunityType;
 import de.freshplan.domain.shared.BudgetAvailability;
 import de.freshplan.domain.shared.BusinessType;
 import de.freshplan.domain.shared.CountryCode;
@@ -587,6 +588,32 @@ public class EnumResource {
   public List<EnumValue> getDealSizes() {
     return Arrays.stream(DealSize.values())
         .map(size -> new EnumValue(size.name(), size.getDisplayName()))
+        .toList();
+  }
+
+  /**
+   * Get all OpportunityType enum values.
+   *
+   * <p>Used for: CreateOpportunityDialog, OpportunityForm
+   *
+   * <p>Sprint 2.1.7.7: Schema-Driven Forms Migration
+   *
+   * <p>Business Rule: Freshfoodz-specific opportunity types (Neugeschäft, Sortimentserweiterung,
+   * Neuer Standort, Vertragsverlängerung).
+   *
+   * @return List of OpportunityType values with display names
+   */
+  @GET
+  @Path("/opportunity-types")
+  @PermitAll
+  @Operation(summary = "Get all Opportunity Type enum values")
+  @APIResponse(
+      responseCode = "200",
+      description = "List of Opportunity Type values",
+      content = @Content(schema = @Schema(implementation = EnumValue.class)))
+  public List<EnumValue> getOpportunityTypes() {
+    return Arrays.stream(OpportunityType.values())
+        .map(type -> new EnumValue(type.name(), type.getLabel()))
         .toList();
   }
 
