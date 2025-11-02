@@ -1137,6 +1137,47 @@ public class LeadResource {
   // ===========================
 
   /**
+   * GET /api/leads/{id}/contacts - Get all contacts for a lead
+   *
+   * @param leadId Lead ID
+   * @return List of contacts
+   */
+  @GET
+  @Path("/{id}/contacts")
+  @Transactional
+  public Response getLeadContacts(@PathParam("id") Long leadId) {
+    try {
+      // 1. Verify lead exists
+      Lead lead = em.find(Lead.class, leadId);
+      if (lead == null) {
+        return Response.status(Response.Status.NOT_FOUND)
+            .entity(new ErrorResponse("Lead not found"))
+            .build();
+      }
+
+      // 2. Load all active contacts for this lead
+      List<LeadContact> contacts =
+          em.createQuery(
+                  "SELECT c FROM LeadContact c WHERE c.lead.id = :leadId AND c.isDeleted = false ORDER BY c.isPrimary DESC, c.createdAt DESC",
+                  LeadContact.class)
+              .setParameter("leadId", leadId)
+              .getResultList();
+
+      // 3. Map to DTOs
+      List<LeadContactDTO> contactDTOs =
+          contacts.stream().map(this::mapContactToDTO).collect(java.util.stream.Collectors.toList());
+
+      return Response.ok(contactDTOs).build();
+
+    } catch (Exception e) {
+      LOG.errorf(e, "Failed to get contacts for lead %d: %s", leadId, e.getMessage());
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Failed to get contacts"))
+          .build();
+    }
+  }
+
+  /**
    * POST /api/leads/{id}/contacts - Create new contact for lead
    *
    * @param leadId Lead ID
