@@ -36,8 +36,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const keycloak = useKeycloak();
 
   // State for auth bypass mode (reactive to localStorage changes)
-  const [bypassUser, setBypassUser] = useState<User | null>(null);
-  const [bypassToken, setBypassToken] = useState<string | null>(null);
+  // Use lazy initializer to read localStorage IMMEDIATELY on first render (fixes "Gast" issue)
+  const [bypassUser, setBypassUser] = useState<User | null>(() => {
+    if (import.meta.env.VITE_AUTH_BYPASS !== 'true') return null;
+
+    const storedUserJson = localStorage.getItem('auth-user');
+    const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
+
+    console.log('🚀 AuthContext useState initializer:', {
+      hasStoredUser: !!storedUser,
+      storedUser,
+    });
+
+    // Return stored user OR fallback to default mock
+    return (
+      storedUser || {
+        id: 'dev-user',
+        name: 'Dev User',
+        email: 'dev@freshplan.de',
+        username: 'devuser',
+        roles: ['admin', 'manager', 'sales', 'auditor'],
+      }
+    );
+  });
+
+  const [bypassToken, setBypassToken] = useState<string | null>(() => {
+    if (import.meta.env.VITE_AUTH_BYPASS !== 'true') return null;
+    return localStorage.getItem('auth-token') || 'mock-dev-token';
+  });
 
   // Load user/token from localStorage on mount and changes (for auth bypass mode)
   useEffect(() => {
@@ -48,6 +74,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedToken = localStorage.getItem('auth-token');
       const storedUserJson = localStorage.getItem('auth-user');
       const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
+
+      console.log('🔍 AuthContext useEffect:', {
+        hasStoredUser: !!storedUser,
+        storedUserJson,
+        storedUser,
+      });
 
       // Use stored user if available, otherwise fallback to default mock
       const user = storedUser || {
@@ -60,6 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const token = storedToken || 'mock-dev-token';
 
+      console.log('✅ AuthContext setting bypassUser:', user);
       setBypassUser(user);
       setBypassToken(token);
     };
@@ -77,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check for auth bypass mode first
   if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
+    console.log('🔑 AuthContext rendering with bypassUser:', bypassUser);
 
     // Provide mock auth context for development
     // NOTE: All roles are lowercase for consistency with frontend role checks
