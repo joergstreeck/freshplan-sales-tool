@@ -121,11 +121,9 @@ export function LeadContactsCard({
       />
       <Box sx={{ pl: 2, pr: 10, pb: 1 }}>
         <Stack spacing={0.5}>
-          {contact.position && (
+          {(contact.position || contact.decisionLevel) && (
             <Typography variant="body2" color="text.secondary">
-              {contact.position}
-              {contact.decisionLevel &&
-                ` • ${decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel}`}
+              {contact.position || (decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel)}
             </Typography>
           )}
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
