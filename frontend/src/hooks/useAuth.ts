@@ -58,7 +58,7 @@ export function useAuth() {
       userId: authContext.user?.id,
       username: authContext.user?.username,
       email: authContext.user?.email,
-      hasRole: (role: string) => authContext.user?.roles?.includes(role) || false,
+      hasRole: authContext.hasRole, // Use AuthContext's hasRole (includes .toLowerCase())
       userRoles: authContext.user?.roles || [],
     };
   }
