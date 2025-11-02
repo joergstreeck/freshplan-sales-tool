@@ -161,6 +161,28 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-11-02 22:58 - Sprint 2.1.7.7 - Lead Contact UX Fixes + Migration V10043 (Enum CHECK Constraints)
+
+**Kontext:** User berichtete über mehrere UX-Probleme in Lead Contact Dashboard + Advisory Warnings zu fehlenden Enum-Constraints.
+
+**Erledigt:**
+- ✅ **UX Fix 1:** Redundante Position/DecisionLevel Anzeige (Commit `149a6217`) - Position hat Priorität über decisionLevel
+- ✅ **UX Fix 2:** Lead Contact Dashboard Layout (Commit `afea45d8`) - `embedded` prop für LeadContactsCard reduziert Verschachtelung 6→4 Ebenen
+- ✅ **UX Fix 3:** MUI ListItemText Secondary Pattern (Commit `bb2d07b3`) - Details als `secondary` prop statt separate Box
+- ✅ **UX Fix 4:** Mobile + Last Contact Date (Commit `cd4ea3b6`) - CRM Best Practice compliant (Mobile, Last Contact Date mit relativer Zeit)
+- ✅ **ESLint Fix:** 4 Errors behoben (Commit `ae59bd9e`) - unused vars, any types, wrong logic
+- ✅ **DOM Nesting Fix:** (Commit `2c6ae675`) - `secondaryTypographyProps={{ component: 'div' }}` für HTML-Validität
+- ✅ **Migration V10043:** (Commit `fb4690e6`) - 7 CHECK Constraints mit 2-Step Approach (Data Cleanup → Constraints)
+  - LegalForm (10 Werte), BusinessType (9 Werte, customers + leads), KitchenSize (4 Werte), PaymentTerms (11 Werte), DeliveryCondition (6 Werte)
+  - 3-Layer Validation: Frontend (MUI Select) → Backend (Java Enum) → Database (CHECK Constraints)
+
+**Migration:** V10043 - Database Enum CHECK Constraints (7 Constraints für 5 Enum-Felder)
+**Branch:** feature/sprint-2-1-7-7-multi-location-management
+**Tests:** Backend Startup OK, Migration applied (execution time 00:00.104s), 7 Constraints created
+**Status:** ✅ COMPLETE - Backend läuft auf http://localhost:8080
+
+---
+
 ### 2025-11-02 17:30 - Sprint 2.1.7.7 - Enum-Rendering-Parity Migration (Option A)
 
 **Kontext:** Lead Contact Card zeigt RAW Enum-Werte (z.B. "EXECUTIVE") statt deutsche Labels (z.B. "Geschäftsführer/Inhaber"). Server-Driven Architecture gilt nur für Forms, NICHT für Read-Views → Architektur-Inkonsistenz.
@@ -1995,6 +2017,14 @@
   - Mobile-First UI Optimierung (Touch, Breakpoints, Performance <3.5s 3G)
   - Offline-Fähigkeit (Service Worker + IndexedDB + Background Sync)
   - QR-Code-Scanner (Camera-API, vCard/meCard, Desktop-Fallback)
+
+**📋 IMMEDIATE NEXT STEPS (Sprint 2.1.7.7):**
+- ✅ Migration V10043 erfolgreich (7 CHECK Constraints, Backend läuft)
+- ✅ Lead Contact UX Fixes COMPLETE (6 Commits: Layout, Mobile, Last Contact Date, ESLint, DOM Nesting)
+- **READY FOR:** Multi-Location Management Implementation (Branch features bereits vorhanden, siehe Todo-Liste)
+  - D9: Customer UX Polish (2h - Multi-Contact bereits vorhanden!)
+  - D0-D6: Branch Service + Hierarchy Dashboard + Integration Tests (~18h)
+
 <!-- MP5:NEXT_STEPS:END -->
 
 ## Risks
