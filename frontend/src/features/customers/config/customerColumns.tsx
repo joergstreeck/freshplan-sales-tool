@@ -68,8 +68,6 @@ export function getCustomerTableColumns(): DataTableColumn<CustomerResponse>[] {
                 sx={{
                   bgcolor: 'primary.main',
                   color: 'white',
-                  fontSize: '0.7rem',
-                  height: 20,
                 }}
               />
             )}
@@ -182,7 +180,7 @@ export function getCustomerTableColumns(): DataTableColumn<CustomerResponse>[] {
       ),
     },
     {
-      id: 'contactCount',
+      id: 'contactsCount',
       label: 'Kontakte',
       field: 'contactsCount',
       visible: false,
@@ -210,7 +208,7 @@ export function getCustomerTableColumns(): DataTableColumn<CustomerResponse>[] {
       render: (customer: CustomerResponse) => formatCurrency(customer.revenue),
     },
     {
-      id: 'location',
+      id: 'city',
       label: 'Standort',
       field: 'city',
       visible: false,

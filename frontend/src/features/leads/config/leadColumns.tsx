@@ -148,16 +148,20 @@ export function getLeadTableColumns(): DataTableColumn<Lead>[] {
         return (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box>
-              <Box sx={{ fontWeight: 'medium' }}>{lead.companyName}</Box>
+              <Typography variant="body2" fontWeight="medium">
+                {lead.companyName}
+              </Typography>
               {lead.city && (
-                <Box sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{lead.city}</Box>
+                <Typography variant="caption" color="text.secondary">
+                  {lead.city}
+                </Typography>
               )}
             </Box>
             {isNew && (
               <Chip
                 label="NEU"
                 size="small"
-                sx={{ bgcolor: 'primary.main', color: 'white', fontSize: '0.7rem', height: 20 }}
+                sx={{ bgcolor: 'primary.main', color: 'white' }}
               />
             )}
           </Box>
