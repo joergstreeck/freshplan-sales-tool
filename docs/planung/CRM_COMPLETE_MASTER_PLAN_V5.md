@@ -161,6 +161,37 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-11-02 04:40 - Sprint 2.1.7.7 Technical Debt - Contact API Integration Gap (Sprint 2.1.7.2 Phase 4)
+
+**Kontext:** Contact Create/Update/Delete API-Calls sind seit Sprint 2.1.7.2 D11 NICHT implementiert - TODOs "Phase 4" existieren seit Commit e7b489915.
+
+**Problem identifiziert:**
+- ❌ **Lead Contacts:** DecisionLevel kann NICHT gespeichert werden → MUI Enum Violation
+- ❌ **Customer Contacts:** DecisionLevel kann NICHT gespeichert werden
+- ❌ Alle Contact-Edits gehen verloren (nur console.log, keine API Calls)
+
+**Root Cause:**
+- Sprint 2.1.7.2 Phase 4 Plan war unvollständig (fokussierte auf "Polish" statt "Complete")
+- Backend API existiert seit 2.1.7.2 ✅ (ContactResource.java)
+- Frontend Hook fehlt ❌ (useCustomerContacts.ts)
+- Frontend Component nutzt hardcoded empty state ❌
+
+**Erledigt:**
+- ✅ **Technical Debt Dokumentation:** `/docs/planung/artefakte/sprint-2.1.7.7/TECHNICAL_DEBT_CONTACT_API_INTEGRATION.md`
+  - Root Cause Analysis (Git History, SPEC Gap)
+  - Implementation Plan (4 Tasks, 15-20 min)
+  - Acceptance Criteria (14 Punkte)
+- ✅ **TodoWrite:** Task "Contact API Integration" hinzugefügt
+
+**Migration:** n/a (kein DB-Schema-Change)
+**Branch:** main (wird lokal gefixt)
+**Tests:** Keine Tests notwendig (nur API-Hook Integration)
+**Status:** 📋 DOCUMENTED - Ready for Implementation (15-20 min)
+
+**NEXT STEPS:** Task 1 - useCustomerContacts Hook erstellen
+
+---
+
 ### 2025-10-24 16:45 - Sprint 2.1.7.2 Status-Check - 7/10 Deliverables COMPLETE
 
 **Kontext:** Sprint 2.1.7.2 Codebase-Analyse nach Context-Resume - Implementierungsstand aller 10 Deliverables geprüft.
