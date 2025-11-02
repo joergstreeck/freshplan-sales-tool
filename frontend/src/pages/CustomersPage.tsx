@@ -327,6 +327,38 @@ export default function CustomersPage({
     return filtered;
   }, [customers, filterConfig, hasStructuredFilters]);
 
+  // Apply client-side sorting (after filtering)
+  const sortedCustomers = useMemo(() => {
+    const sorted = [...filteredCustomers];
+
+    if (!sortConfig.field) return sorted;
+
+    sorted.sort((a, b) => {
+      const aValue = a[sortConfig.field as keyof CustomerResponse];
+      const bValue = b[sortConfig.field as keyof CustomerResponse];
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // Compare values
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else {
+        // Fallback: convert to string and compare
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [filteredCustomers, sortConfig]);
+
   // Handle customer creation
   const handleCustomerCreated = async (customer: Customer) => {
     // Create initial task
@@ -440,12 +472,12 @@ export default function CustomersPage({
 
                 {/* Customer Table */}
                 <DataTable<CustomerResponse>
-                  data={filteredCustomers}
+                  data={sortedCustomers}
                   columns={tableColumns}
                   getRowId={customer => customer.id}
                   onRowClick={handleRowClick}
                   highlightNew
-                  loading={isLoading && filteredCustomers.length > 0}
+                  loading={isLoading && sortedCustomers.length > 0}
                   emptyMessage="Keine Kunden gefunden"
                 />
 

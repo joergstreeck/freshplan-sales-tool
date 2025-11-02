@@ -238,6 +238,38 @@ export default function LeadsPage({
     return filtered;
   }, [leads, filterConfig]);
 
+  // Apply client-side sorting (after filtering)
+  const sortedLeads = useMemo(() => {
+    const sorted = [...filteredLeads];
+
+    if (!sortConfig.field) return sorted;
+
+    sorted.sort((a, b) => {
+      const aValue = a[sortConfig.field as keyof Lead];
+      const bValue = b[sortConfig.field as keyof Lead];
+
+      // Handle null/undefined values
+      if (aValue == null && bValue == null) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      // Compare values
+      let comparison = 0;
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
+        comparison = aValue.localeCompare(bValue);
+      } else if (typeof aValue === 'number' && typeof bValue === 'number') {
+        comparison = aValue - bValue;
+      } else {
+        // Fallback: convert to string and compare
+        comparison = String(aValue).localeCompare(String(bValue));
+      }
+
+      return sortConfig.direction === 'asc' ? comparison : -comparison;
+    });
+
+    return sorted;
+  }, [filteredLeads, sortConfig]);
+
   // Handle lead creation
   const handleLeadCreated = async (lead: Customer) => {
     // Create initial task
@@ -416,7 +448,7 @@ export default function LeadsPage({
 
                 {/* Lead Table */}
                 <DataTable<Lead>
-                  data={filteredLeads}
+                  data={sortedLeads}
                   columns={tableColumns}
                   getRowId={lead => lead.id}
                   onRowClick={handleRowClick}
@@ -425,7 +457,7 @@ export default function LeadsPage({
                   showActions
                   customActions={renderLeadActions}
                   highlightNew
-                  loading={isLoading && filteredLeads.length > 0}
+                  loading={isLoading && sortedLeads.length > 0}
                   emptyMessage="Keine Leads gefunden"
                   sortConfig={sortConfig}
                   onSortChange={handleSortChange}
