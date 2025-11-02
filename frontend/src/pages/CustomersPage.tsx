@@ -37,6 +37,7 @@ import { useCustomers, useCustomerSearchAdvanced } from '../features/customer/ap
 import { useAuth } from '../contexts/AuthContext';
 import { useFocusListStore } from '../features/customer/store/focusListStore';
 import { taskEngine } from '../services/taskEngine';
+import { useEnumOptions } from '../hooks/useEnumOptions';
 
 // Types & Config
 import type { CustomerResponse } from '../features/customer/types/customer.types';
@@ -73,23 +74,46 @@ export default function CustomersPage({
   const navigate = useNavigate();
   const { sortBy, setSortBy } = useFocusListStore();
 
-  // Column Configuration
+  // Server-Driven Enums (1x Hook Call für die ganze Tabelle!)
+  const { data: businessTypeOptions } = useEnumOptions('/api/enums/business-types');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const businessTypeLabels = useMemo(() => {
+    if (!businessTypeOptions) return {};
+    return businessTypeOptions.reduce((acc, item) => {
+      acc[item.value] = item.label;
+      return acc;
+    }, {} as Record<string, string>);
+  }, [businessTypeOptions]);
+
+  // Column Configuration mit Server-Driven Labels
   const tableColumns = useMemo(() => {
     const columns = getCustomerTableColumns();
 
     // Apply user column preferences if available
-    if (activeColumns.length > 0) {
-      return columns.map(col => {
-        const userCol = activeColumns.find(uc => uc.id === col.id);
-        if (userCol) {
-          return { ...col, visible: userCol.visible };
-        }
-        return col;
-      });
-    }
+    const columnsWithPreferences = activeColumns.length > 0
+      ? columns.map(col => {
+          const userCol = activeColumns.find(uc => uc.id === col.id);
+          if (userCol) {
+            return { ...col, visible: userCol.visible };
+          }
+          return col;
+        })
+      : columns;
 
-    return columns;
-  }, [activeColumns]);
+    // Override industry column with Server-Driven labels
+    // Note: customer.industry is DEPRECATED, should migrate to customer.businessType
+    return columnsWithPreferences.map(col => {
+      if (col.id === 'industry') {
+        return {
+          ...col,
+          render: (customer: CustomerResponse) =>
+            businessTypeLabels[customer.industry || ''] || customer.industry || '-'
+        };
+      }
+      return col;
+    });
+  }, [activeColumns, businessTypeLabels]);
 
   // Sort Configuration
   const sortConfig = useMemo(

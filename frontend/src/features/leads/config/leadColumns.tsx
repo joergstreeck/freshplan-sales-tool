@@ -14,42 +14,26 @@ import type { DataTableColumn } from '../../shared/components/data-table/DataTab
 import type { Lead } from '../types';
 import { formatCurrency, formatDate } from '../../shared/utils/dataFormatters';
 
-// Lead Stage Labels (User-friendly display - from Backend LeadStage enum)
+// Lead Stage Labels (Progressive Profiling - 3 stages only)
+// Backend LeadStage enum: VORMERKUNG (0), REGISTRIERUNG (1), QUALIFIZIERT (2)
+// API sends stage as STRING, not number
 const leadStageLabels: Record<string, string> = {
-  VORMERKUNG: 'Vormerkung',
-  REGISTRIERUNG: 'Registrierung',
-  KONTAKTIERT: 'Kontaktiert',
-  QUALIFIZIERT: 'Qualifiziert',
-  ANGEBOT: 'Angebot',
-  VERHANDLUNG: 'Verhandlung',
-  GEWONNEN: 'Gewonnen',
-  VERLOREN: 'Verloren',
-  INAKTIV: 'Inaktiv',
+  VORMERKUNG: 'Vormerkung',       // Stage 0: Pre-Claim (minimal company data)
+  REGISTRIERUNG: 'Registrierung', // Stage 1: Registered (contact added)
+  QUALIFIZIERT: 'Qualifiziert',   // Stage 2: Qualified (full business data)
 };
 
-// Lead Stage Color Mapping (Progressive Farbskala)
+// Lead Stage Color Mapping (Progressive Profiling 3 stages)
 const getLeadStageColor = (stage: string, theme: Theme): string => {
   switch (stage) {
     case 'VORMERKUNG':
-      return theme.palette.grey[500];           // Grau - noch nicht begonnen
+      return theme.palette.grey[500];     // Grau - Pre-Claim (noch nicht geschützt)
     case 'REGISTRIERUNG':
-      return theme.palette.info.main;           // Blau - registriert
-    case 'KONTAKTIERT':
-      return theme.palette.primary.main;        // FreshFoodz Grün - aktiv
+      return theme.palette.info.main;     // Blau - Registriert (Schutz aktiv)
     case 'QUALIFIZIERT':
-      return theme.palette.success.main;        // Grün - qualifiziert
-    case 'ANGEBOT':
-      return theme.palette.warning.main;        // Orange - Angebot erstellt
-    case 'VERHANDLUNG':
-      return theme.palette.warning.dark;        // Dunkelorange - Verhandlung
-    case 'GEWONNEN':
-      return theme.palette.success.dark;        // Dunkelgrün - gewonnen
-    case 'VERLOREN':
-      return theme.palette.error.main;          // Rot - verloren
-    case 'INAKTIV':
-      return theme.palette.grey[600];           // Dunkelgrau - inaktiv
+      return theme.palette.success.main;  // Grün - Qualifiziert (bereit für Conversion)
     default:
-      return theme.palette.grey[400];
+      return theme.palette.grey[400];     // Fallback
   }
 };
 
