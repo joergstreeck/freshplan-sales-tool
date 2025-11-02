@@ -192,17 +192,29 @@ export function DataTable<T>({
                         sortConfig?.field === column.field ? sortConfig.direction : 'asc'
                       }
                       onClick={() => column.field && handleSort(String(column.field))}
+                      sx={{
+                        '& .MuiTableSortLabel-root': {
+                          fontSize: 'inherit',
+                          fontWeight: 'inherit',
+                        },
+                      }}
                     >
-                      {column.label}
+                      <Typography variant="subtitle2" component="span">
+                        {column.label}
+                      </Typography>
                     </TableSortLabel>
                   ) : (
-                    column.label
+                    <Typography variant="subtitle2" component="span">
+                      {column.label}
+                    </Typography>
                   )}
                 </TableCell>
               ))}
               {showActions && (
                 <TableCell align="right" sx={{ width: customActions ? 180 : 120 }}>
-                  Aktionen
+                  <Typography variant="subtitle2" component="span">
+                    Aktionen
+                  </Typography>
                 </TableCell>
               )}
             </TableRow>
