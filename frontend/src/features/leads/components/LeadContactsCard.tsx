@@ -179,6 +179,7 @@ export function LeadContactsCard({
             )}
           </Stack>
         }
+        secondaryTypographyProps={{ component: 'div' }}
       />
       {!readonly && (
         <ListItemSecondaryAction>
