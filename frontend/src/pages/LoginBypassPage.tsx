@@ -29,18 +29,27 @@ export function LoginBypassPage() {
     const mockUsers = {
       admin: {
         id: 'mock-admin-user',
+        name: 'Admin User',
+        firstName: 'Admin',
+        lastName: 'User',
         username: 'admin',
         email: 'admin@freshplan.de',
         roles: ['admin'],
       },
       manager: {
         id: 'mock-manager-user',
+        name: 'Manager User',
+        firstName: 'Manager',
+        lastName: 'User',
         username: 'manager',
         email: 'manager@freshplan.de',
         roles: ['manager'],
       },
       sales: {
         id: 'mock-sales-user',
+        name: 'Sales User',
+        firstName: 'Sales',
+        lastName: 'User',
         username: 'sales',
         email: 'sales@freshplan.de',
         roles: ['sales'],
