@@ -1215,6 +1215,12 @@ public class LeadResource {
       contact.setMobile(contactDTO.getMobile());
       contact.setPrimary(contactDTO.isPrimary());
       contact.setActive(true);
+      // Relationship Data - CRM Intelligence
+      contact.setBirthday(contactDTO.getBirthday());
+      contact.setHobbies(contactDTO.getHobbies());
+      contact.setFamilyStatus(contactDTO.getFamilyStatus());
+      contact.setChildrenCount(contactDTO.getChildrenCount());
+      contact.setPersonalNotes(contactDTO.getPersonalNotes());
       contact.setCreatedBy(currentUserId);
       contact.setUpdatedBy(currentUserId);
 
@@ -1228,11 +1234,10 @@ public class LeadResource {
       // 4. Persist
       contact.persist();
 
-      // 5. Create activity log
-      createAndPersistActivity(
-          lead, currentUserId, ActivityType.NOTE, "Kontakt hinzugefügt: " + contact.getFullName());
+      // Note: No activity log for technical CRUD operations
+      // Audit trail is handled via updated_by/updated_at fields
 
-      // 6. Build response DTO
+      // 5. Build response DTO
       LeadContactDTO responseDTO = mapContactToDTO(contact);
 
       return Response.created(URI.create(uriInfo.getPath() + "/" + contact.getId()))
@@ -1274,16 +1279,25 @@ public class LeadResource {
             .build();
       }
 
-      // 2. Update fields
-      contact.setFirstName(contactDTO.getFirstName());
-      contact.setLastName(contactDTO.getLastName());
-      contact.setSalutation(contactDTO.getSalutation());
-      contact.setTitle(contactDTO.getTitle());
-      contact.setPosition(contactDTO.getPosition());
-      contact.setDecisionLevel(contactDTO.getDecisionLevel());
-      contact.setEmail(contactDTO.getEmail());
-      contact.setPhone(contactDTO.getPhone());
-      contact.setMobile(contactDTO.getMobile());
+      // 2. Update fields (PATCH semantics: only update non-null fields)
+      if (contactDTO.getFirstName() != null) contact.setFirstName(contactDTO.getFirstName());
+      if (contactDTO.getLastName() != null) contact.setLastName(contactDTO.getLastName());
+      if (contactDTO.getSalutation() != null) contact.setSalutation(contactDTO.getSalutation());
+      if (contactDTO.getTitle() != null) contact.setTitle(contactDTO.getTitle());
+      if (contactDTO.getPosition() != null) contact.setPosition(contactDTO.getPosition());
+      if (contactDTO.getDecisionLevel() != null)
+        contact.setDecisionLevel(contactDTO.getDecisionLevel());
+      if (contactDTO.getEmail() != null) contact.setEmail(contactDTO.getEmail());
+      if (contactDTO.getPhone() != null) contact.setPhone(contactDTO.getPhone());
+      if (contactDTO.getMobile() != null) contact.setMobile(contactDTO.getMobile());
+      // Relationship Data - CRM Intelligence
+      if (contactDTO.getBirthday() != null) contact.setBirthday(contactDTO.getBirthday());
+      if (contactDTO.getHobbies() != null) contact.setHobbies(contactDTO.getHobbies());
+      if (contactDTO.getFamilyStatus() != null) contact.setFamilyStatus(contactDTO.getFamilyStatus());
+      if (contactDTO.getChildrenCount() != null)
+        contact.setChildrenCount(contactDTO.getChildrenCount());
+      if (contactDTO.getPersonalNotes() != null)
+        contact.setPersonalNotes(contactDTO.getPersonalNotes());
       contact.setUpdatedBy(currentUserId);
 
       // 3. If primary flag changed, handle uniqueness
@@ -1297,14 +1311,10 @@ public class LeadResource {
       // 4. Persist
       em.merge(contact);
 
-      // 5. Create activity log
-      createAndPersistActivity(
-          contact.getLead(),
-          currentUserId,
-          ActivityType.NOTE,
-          "Kontakt aktualisiert: " + contact.getFullName());
+      // Note: No activity log for technical CRUD operations
+      // Audit trail is handled via updated_by/updated_at fields
 
-      // 6. Build response DTO
+      // 5. Build response DTO
       LeadContactDTO responseDTO = mapContactToDTO(contact);
 
       return Response.ok(responseDTO).build();
@@ -1348,12 +1358,8 @@ public class LeadResource {
       contact.setUpdatedBy(currentUserId);
       em.merge(contact);
 
-      // 3. Create activity log
-      createAndPersistActivity(
-          contact.getLead(),
-          currentUserId,
-          ActivityType.NOTE,
-          "Kontakt gelöscht: " + contact.getFullName());
+      // Note: No activity log for technical CRUD operations
+      // Audit trail is handled via updated_by/updated_at fields
 
       return Response.noContent().build();
 
