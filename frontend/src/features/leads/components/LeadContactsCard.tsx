@@ -22,8 +22,12 @@ import {
   StarBorder as StarBorderIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
+  Smartphone as SmartphoneIcon,
+  Schedule as ScheduleIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import { formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
 import type { LeadContactDTO } from '../types';
 import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
@@ -127,7 +131,7 @@ export function LeadContactsCard({
                 {contact.position || (decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel)}
               </Typography>
             )}
-            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
               {contact.email && (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                   <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
@@ -143,6 +147,28 @@ export function LeadContactsCard({
                     {contact.phone}
                   </Typography>
                 </Box>
+              )}
+              {contact.mobile && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <SmartphoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.mobile}
+                  </Typography>
+                </Box>
+              )}
+              {contact.lastInteractionDate && (
+                <Chip
+                  icon={<ScheduleIcon sx={{ fontSize: 14 }} />}
+                  label={`Letzter Kontakt: ${formatDistanceToNow(new Date(contact.lastInteractionDate), { addSuffix: true, locale: de })}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    height: 24,
+                    fontSize: '0.75rem',
+                    borderColor: 'text.secondary',
+                    color: 'text.secondary',
+                  }}
+                />
               )}
             </Box>
             {contact.dataQualityScore && contact.dataQualityScore < 70 && (
