@@ -104,8 +104,7 @@ function LeadStageChip({ stage }: { stage: string }) {
       sx={{
         bgcolor: stageColor,
         color: 'white',
-        fontFamily: 'Antonio, sans-serif', // Design System: Bold Chips
-        fontWeight: 700,
+        fontWeight: 700, // Bold weight for emphasis
       }}
     />
   );
