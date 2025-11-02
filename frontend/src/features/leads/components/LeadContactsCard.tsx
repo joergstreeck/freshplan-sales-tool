@@ -34,6 +34,7 @@ interface LeadContactsCardProps {
   onDelete?: (contactId: string) => void;
   onSetPrimary?: (contactId: string) => void;
   readonly?: boolean;
+  embedded?: boolean; // If true, renders without Card wrapper (for use in Accordions)
 }
 
 /**
@@ -55,6 +56,7 @@ export function LeadContactsCard({
   onDelete,
   onSetPrimary,
   readonly = false,
+  embedded = false,
 }: LeadContactsCardProps) {
   const theme = useTheme();
 
@@ -119,7 +121,7 @@ export function LeadContactsCard({
           </Box>
         }
       />
-      <Box sx={{ pl: 2, pr: 10, pb: 1 }}>
+      <Box sx={{ pl: 2, pr: 2, pb: 1 }}>
         <Stack spacing={0.5}>
           {(contact.position || contact.decisionLevel) && (
             <Typography variant="body2" color="text.secondary">
@@ -186,6 +188,40 @@ export function LeadContactsCard({
     </ListItem>
   );
 
+  // Contact List Content (reused in both embedded and standalone modes)
+  const contactListContent = contacts.length === 0 ? (
+    <Box
+      sx={{
+        textAlign: 'center',
+        py: embedded ? 2 : 4,
+        color: 'text.secondary',
+      }}
+    >
+      <Typography variant="body2">Noch keine Kontakte erfasst</Typography>
+      {!readonly && onAdd && (
+        <Button startIcon={<AddIcon />} onClick={onAdd} sx={{ mt: 2 }}>
+          Ersten Kontakt hinzufügen
+        </Button>
+      )}
+    </Box>
+  ) : (
+    <List sx={{ py: 0 }}>
+      {primaryContact && (
+        <>
+          {renderContactItem(primaryContact, true)}
+          {secondaryContacts.length > 0 && <Divider sx={{ my: 2 }} />}
+        </>
+      )}
+      {secondaryContacts.map(contact => renderContactItem(contact, false))}
+    </List>
+  );
+
+  // Embedded Mode: Render without Card wrapper (for use in Accordions)
+  if (embedded) {
+    return <Box sx={{ width: '100%' }}>{contactListContent}</Box>;
+  }
+
+  // Standalone Mode: Render with Card wrapper
   return (
     <Card>
       <CardHeader
@@ -205,34 +241,7 @@ export function LeadContactsCard({
         }
       />
       <Divider />
-      <CardContent>
-        {contacts.length === 0 ? (
-          <Box
-            sx={{
-              textAlign: 'center',
-              py: 4,
-              color: 'text.secondary',
-            }}
-          >
-            <Typography variant="body2">Noch keine Kontakte erfasst</Typography>
-            {!readonly && onAdd && (
-              <Button startIcon={<AddIcon />} onClick={onAdd} sx={{ mt: 2 }}>
-                Ersten Kontakt hinzufügen
-              </Button>
-            )}
-          </Box>
-        ) : (
-          <List sx={{ py: 0 }}>
-            {primaryContact && (
-              <>
-                {renderContactItem(primaryContact, true)}
-                {secondaryContacts.length > 0 && <Divider sx={{ my: 2 }} />}
-              </>
-            )}
-            {secondaryContacts.map(contact => renderContactItem(contact, false))}
-          </List>
-        )}
-      </CardContent>
+      <CardContent>{contactListContent}</CardContent>
     </Card>
   );
 }

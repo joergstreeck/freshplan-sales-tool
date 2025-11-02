@@ -419,6 +419,7 @@ export function LeadDetailPage() {
               <AccordionDetails>
                 <LeadContactsCard
                   contacts={contacts}
+                  embedded={true}
                   onAdd={() => {
                     setEditingContact(null);
                     setContactDialogOpen(true);
