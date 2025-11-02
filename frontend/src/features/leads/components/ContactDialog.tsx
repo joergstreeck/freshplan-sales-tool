@@ -112,8 +112,8 @@ export function ContactDialog({
     if (contact) {
       setFormData({
         ...contact,
-        // Normalize salutation to UPPERCASE (backend may have mixed-case)
-        salutation: contact.salutation?.toUpperCase() || '',
+        // Sprint 2.1.7.7: Backend already provides UPPERCASE enums (Server-Driven Architecture)
+        salutation: contact.salutation || '',
       });
     } else {
       setFormData({

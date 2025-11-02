@@ -1,4 +1,6 @@
+import { useMemo } from 'react';
 import { Box, List, ListItem, ListItemIcon, ListItemText, Alert } from '@mui/material';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 import type { Lead } from '../types';
 
 interface FitScoreDisplayProps {
@@ -41,6 +43,21 @@ function getSourceQualityLabel(source?: string): string {
 }
 
 export function FitScoreDisplay({ lead }: FitScoreDisplayProps) {
+  // Server-Driven Enums (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: businessTypeOptions } = useEnumOptions('/api/enums/business-types');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const businessTypeLabels = useMemo(() => {
+    if (!businessTypeOptions) return {};
+    return businessTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [businessTypeOptions]);
+
   return (
     <Box sx={{ p: 2 }}>
       <Alert severity="info" sx={{ mb: 2 }}>
@@ -62,7 +79,7 @@ export function FitScoreDisplay({ lead }: FitScoreDisplayProps) {
           </ListItemIcon>
           <ListItemText
             primary="Geschäftstyp"
-            secondary={`${lead.businessType || 'Nicht angegeben'} ${isIdealSegment(lead.businessType) ? '(Ideal)' : ''}`}
+            secondary={`${lead.businessType ? businessTypeLabels[lead.businessType] || lead.businessType : 'Nicht angegeben'} ${isIdealSegment(lead.businessType) ? '(Ideal)' : ''}`}
           />
         </ListItem>
 
