@@ -120,40 +120,40 @@ export function LeadContactsCard({
             )}
           </Box>
         }
+        secondary={
+          <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+            {(contact.position || contact.decisionLevel) && (
+              <Typography variant="body2" color="text.secondary">
+                {contact.position || (decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel)}
+              </Typography>
+            )}
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+              {contact.email && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.email}
+                  </Typography>
+                </Box>
+              )}
+              {contact.phone && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.phone}
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+            {contact.dataQualityScore && contact.dataQualityScore < 70 && (
+              <Typography variant="caption" color="warning.main">
+                ⚠️ Datenqualität: {contact.dataQualityScore}%
+                {contact.dataQualityRecommendations && ` - ${contact.dataQualityRecommendations}`}
+              </Typography>
+            )}
+          </Stack>
+        }
       />
-      <Box sx={{ pl: 2, pr: 2, pb: 1 }}>
-        <Stack spacing={0.5}>
-          {(contact.position || contact.decisionLevel) && (
-            <Typography variant="body2" color="text.secondary">
-              {contact.position || (decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel)}
-            </Typography>
-          )}
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {contact.email && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">
-                  {contact.email}
-                </Typography>
-              </Box>
-            )}
-            {contact.phone && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">
-                  {contact.phone}
-                </Typography>
-              </Box>
-            )}
-          </Box>
-          {contact.dataQualityScore && contact.dataQualityScore < 70 && (
-            <Typography variant="caption" color="warning.main">
-              ⚠️ Datenqualität: {contact.dataQualityScore}%
-              {contact.dataQualityRecommendations && ` - ${contact.dataQualityRecommendations}`}
-            </Typography>
-          )}
-        </Stack>
-      </Box>
       {!readonly && (
         <ListItemSecondaryAction>
           <Stack direction="row" spacing={0.5}>
