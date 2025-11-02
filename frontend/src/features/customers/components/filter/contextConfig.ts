@@ -107,13 +107,13 @@ export const CUSTOMERS_TABLE_COLUMNS: TableColumn[] = [
 
 /**
  * Sort options for Leads context
- * Sprint 2.1.6 Phase 4: Added leadScore sorting, removed redundant stage
+ * Sprint 2.1.7.7: Fixed field names (stage, estimatedVolume)
  */
 export const LEADS_SORT_OPTIONS: SortOption[] = [
   { field: 'companyName', label: 'Name', icon: '📋' },
   { field: 'leadScore', label: 'Lead-Score', icon: '⭐' },
-  { field: 'status', label: 'Status', icon: '🔄' },
-  { field: 'expectedAnnualVolume', label: 'Erwarteter Umsatz', icon: '💰' },
+  { field: 'stage', label: 'Stage', icon: '🔄' },
+  { field: 'estimatedVolume', label: 'Erwarteter Umsatz', icon: '💰' },
   { field: 'createdAt', label: 'Erstellt am', icon: '📅' },
 ];
 
