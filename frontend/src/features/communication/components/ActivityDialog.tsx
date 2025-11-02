@@ -29,6 +29,7 @@ import {
   Alert,
   Box,
 } from '@mui/material';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 import type { Activity } from './ActivityTimeline';
 
 // ============================================================================
@@ -49,23 +50,6 @@ export interface ActivityDialogProps {
   /** Optional callback after successful save */
   onSaved?: () => void;
 }
-
-// ============================================================================
-// ACTIVITY TYPE OPTIONS
-// ============================================================================
-
-const ACTIVITY_TYPE_OPTIONS = [
-  { value: 'QUALIFIED_CALL', label: 'Qualifizierter Anruf' },
-  { value: 'MEETING', label: 'Termin' },
-  { value: 'DEMO', label: 'Produktdemo' },
-  { value: 'ROI_PRESENTATION', label: 'ROI-Präsentation' },
-  { value: 'SAMPLE_SENT', label: 'Muster versendet' },
-  { value: 'NOTE', label: 'Notiz' },
-  { value: 'FOLLOW_UP', label: 'Follow-up' },
-  { value: 'EMAIL', label: 'E-Mail' },
-  { value: 'CALL', label: 'Anruf' },
-  { value: 'SAMPLE_FEEDBACK', label: 'Muster-Feedback' },
-];
 
 // ============================================================================
 // OUTCOME OPTIONS
@@ -94,6 +78,13 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
   activity,
   onSaved,
 }) => {
+  // ============================================================================
+  // SERVER-DRIVEN ENUMS
+  // ============================================================================
+
+  // Sprint 2.1.7.7 - Enum-Rendering-Parity Migration BATCH 4
+  const { data: activityTypeOptions } = useEnumOptions('/api/enums/activity-types');
+
   // ============================================================================
   // STATE
   // ============================================================================
@@ -224,7 +215,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
               label="Typ"
               onChange={e => setActivityType(e.target.value)}
             >
-              {ACTIVITY_TYPE_OPTIONS.map(option => (
+              {activityTypeOptions?.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>

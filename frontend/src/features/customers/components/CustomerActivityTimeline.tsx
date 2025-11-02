@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Timeline,
   TimelineItem,
@@ -20,6 +20,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
 interface CustomerActivity {
   id: number;
@@ -39,6 +40,21 @@ interface CustomerActivityTimelineProps {
  * Zeigt chronologische Aktivitätshistorie eines Kunden.
  */
 export default function CustomerActivityTimeline({ customerId }: CustomerActivityTimelineProps) {
+  // Sprint 2.1.7.7 - Enum-Rendering-Parity Migration BATCH 4
+  const { data: activityTypeOptions } = useEnumOptions('/api/enums/activity-types');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const activityTypeLabels = useMemo(() => {
+    if (!activityTypeOptions) return {};
+    return activityTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [activityTypeOptions]);
+
   const [activities, setActivities] = useState<CustomerActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -152,7 +168,9 @@ export default function CustomerActivityTimeline({ customerId }: CustomerActivit
           </TimelineSeparator>
           <TimelineContent>
             <Paper elevation={1} sx={{ p: 1.5 }}>
-              <Typography variant="subtitle2">{activity.activityType}</Typography>
+              <Typography variant="subtitle2">
+                {activityTypeLabels[activity.activityType] || activity.activityType}
+              </Typography>
               {activity.description && (
                 <Typography variant="body2" color="text.secondary">
                   {activity.description}

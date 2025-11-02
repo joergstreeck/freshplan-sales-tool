@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   Timeline,
   TimelineItem,
@@ -22,6 +22,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { useEnumOptions } from '../../hooks/useEnumOptions';
 
 interface LeadActivity {
   id: number;
@@ -48,6 +49,21 @@ interface LeadActivityTimelineProps {
  * - CLOCK_STOPPED, CLOCK_RESUMED: Stop-the-Clock
  */
 export default function LeadActivityTimeline({ leadId }: LeadActivityTimelineProps) {
+  // Sprint 2.1.7.7 - Enum-Rendering-Parity Migration BATCH 4
+  const { data: activityTypeOptions } = useEnumOptions('/api/enums/activity-types');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const activityTypeLabels = useMemo(() => {
+    if (!activityTypeOptions) return {};
+    return activityTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [activityTypeOptions]);
+
   const [activities, setActivities] = useState<LeadActivity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -112,21 +128,7 @@ export default function LeadActivityTimeline({ leadId }: LeadActivityTimelinePro
   };
 
   const getActivityLabel = (type: string): string => {
-    const labels: Record<string, string> = {
-      EMAIL: 'E-Mail',
-      CALL: 'Anruf',
-      MEETING: 'Termin',
-      SAMPLE_SENT: 'Muster versendet',
-      ORDER: 'Bestellung',
-      NOTE: 'Notiz',
-      STATUS_CHANGE: 'Statusänderung',
-      CLOCK_STOPPED: 'Schutzfrist pausiert',
-      CLOCK_RESUMED: 'Schutzfrist fortgesetzt',
-      LEAD_CREATED: 'Lead erstellt',
-      LEAD_ASSIGNED: 'Lead zugewiesen',
-      LEAD_IMPORTED: 'Lead importiert',
-    };
-    return labels[type] || type;
+    return activityTypeLabels[type] || type;
   };
 
   if (loading) {

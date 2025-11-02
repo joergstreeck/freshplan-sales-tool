@@ -20,7 +20,7 @@
  * - ✅ Deutsche UI-Sprache
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Timeline,
   TimelineItem,
@@ -46,6 +46,7 @@ import {
 } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
 // ============================================================================
 // TYPES (EXPORTED for use in other components)
@@ -86,6 +87,25 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   entityId,
   onEdit,
 }) => {
+  // ============================================================================
+  // SERVER-DRIVEN ENUMS
+  // ============================================================================
+
+  // Sprint 2.1.7.7 - Enum-Rendering-Parity Migration BATCH 4
+  const { data: activityTypeOptions } = useEnumOptions('/api/enums/activity-types');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const activityTypeLabels = useMemo(() => {
+    if (!activityTypeOptions) return {};
+    return activityTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [activityTypeOptions]);
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -217,36 +237,11 @@ export const ActivityTimeline: React.FC<ActivityTimelineProps> = ({
   };
 
   // ============================================================================
-  // ACTIVITY LABEL MAPPING (German)
+  // ACTIVITY LABEL MAPPING (Server-Driven - Sprint 2.1.7.7 BATCH 4)
   // ============================================================================
 
   const getActivityLabel = (type: string): string => {
-    const labels: Record<string, string> = {
-      QUALIFIED_CALL: 'Qualifizierter Anruf',
-      MEETING: 'Termin',
-      DEMO: 'Produktdemo',
-      ROI_PRESENTATION: 'ROI-Präsentation',
-      SAMPLE_SENT: 'Muster versendet',
-      NOTE: 'Notiz',
-      FOLLOW_UP: 'Follow-up',
-      EMAIL: 'E-Mail',
-      CALL: 'Anruf',
-      SAMPLE_FEEDBACK: 'Muster-Feedback',
-      FIRST_CONTACT_DOCUMENTED: 'Erstkontakt dokumentiert',
-      EMAIL_RECEIVED: 'E-Mail erhalten',
-      LEAD_ASSIGNED: 'Lead zugewiesen',
-      ORDER: 'Bestellung',
-      STATUS_CHANGE: 'Statusänderung',
-      CREATED: 'Erstellt',
-      DELETED: 'Gelöscht',
-      REMINDER_SENT: 'Erinnerung versendet',
-      GRACE_PERIOD_STARTED: 'Schutzfrist pausiert',
-      EXPIRED: 'Abgelaufen',
-      REACTIVATED: 'Reaktiviert',
-      CLOCK_STOPPED: 'Schutzfrist gestoppt',
-      CLOCK_RESUMED: 'Schutzfrist fortgesetzt',
-    };
-    return labels[type] || type;
+    return activityTypeLabels[type] || type;
   };
 
   // ============================================================================
