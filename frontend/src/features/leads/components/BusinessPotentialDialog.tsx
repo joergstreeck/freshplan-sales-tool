@@ -167,6 +167,17 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
   const branchCountFieldDef = fields.find(f => f.fieldKey === 'branchCount');
   const isChainFieldDef = fields.find(f => f.fieldKey === 'isChain');
 
+  // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
+  // Only use value if it exists in loaded options
+  const safeBusinessType =
+    businessTypeOptions?.some(opt => opt.value === formData.businessType)
+      ? formData.businessType
+      : '';
+  const safeKitchenSize =
+    kitchenSizeOptions?.some(opt => opt.value === formData.kitchenSize)
+      ? formData.kitchenSize
+      : '';
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
@@ -204,7 +215,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
             <FormControl fullWidth sx={{ mb: 2 }} required={businessTypeFieldDef.required}>
               <InputLabel>{businessTypeFieldDef.label}</InputLabel>
               <Select
-                value={formData.businessType}
+                value={safeBusinessType}
                 label={businessTypeFieldDef.label}
                 onChange={e => setFormData({ ...formData, businessType: e.target.value })}
               >
@@ -228,7 +239,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel>{kitchenSizeFieldDef.label}</InputLabel>
               <Select
-                value={formData.kitchenSize}
+                value={safeKitchenSize}
                 label={kitchenSizeFieldDef.label}
                 onChange={e => setFormData({ ...formData, kitchenSize: e.target.value })}
               >

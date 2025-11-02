@@ -299,11 +299,15 @@ interface EnumSelectProps {
 function EnumSelect({ field, value, onChange }: EnumSelectProps) {
   const { data: options, isLoading } = useEnumOptions(field.enumSource || '');
 
+  // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
+  // Only use value if it exists in loaded options
+  const safeValue = options?.some(opt => opt.value === value) ? value : '';
+
   return (
     <FormControl fullWidth>
       <InputLabel>{field.label}</InputLabel>
       <Select
-        value={value}
+        value={safeValue}
         onChange={e => onChange(e.target.value)}
         label={field.label}
         disabled={isLoading}

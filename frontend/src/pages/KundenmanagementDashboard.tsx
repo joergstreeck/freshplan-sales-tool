@@ -50,7 +50,7 @@ export function KundenmanagementDashboard() {
       title: 'Alle Kunden',
       description: 'Verwalten Sie Ihre gesamte Kundenbasis',
       icon: <PeopleIcon sx={{ fontSize: 48, color: theme.palette.secondary.main }} />,
-      path: '/customers',
+      path: '/customer-management/customers', // M4: Neue CustomersPage
       stats: '1.247 aktiv',
       color: theme.palette.secondary.main,
     },

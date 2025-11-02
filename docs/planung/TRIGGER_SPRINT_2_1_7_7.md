@@ -1,13 +1,48 @@
 # 🚀 Sprint 2.1.7.7 - Multi-Location Management & Xentral Filial-Sync
 
 **Sprint-ID:** 2.1.7.7
-**Status:** 📋 PLANNING
+**Status:** 🔄 IN PROGRESS (Migration Prerequisite)
 **Priority:** P2 (Medium - Business Impact: Hotelketten!)
-**Estimated Effort:** 16-19h (2-3 Arbeitstage)
-**Owner:** TBD
+**Estimated Effort:** 28h (3,5 Arbeitstage) - inkl. Migration
+**Owner:** Claude Code
 **Created:** 2025-10-21
-**Updated:** 2025-10-31 (D9 Customer UX Polish von Sprint 2.1.7.2 verschoben)
+**Updated:** 2025-11-01 (Migration CustomersPageV2 → CustomersPage + LeadsPage)
 **Dependencies:** Sprint 2.1.7.4 COMPLETE, Sprint 2.1.7.2 COMPLETE
+
+---
+
+## 🔄 PREREQUISITE: Migration CustomersPageV2
+
+**Status:** 🚀 IN PROGRESS - M1 (Shared Infrastructure)
+**Detaillierter Plan:** [MIGRATION_PLAN.md](./artefakte/SPRINT_2_1_7_7/MIGRATION_PLAN.md)
+**Aufwand:** 12h (Tag 1-2)
+**Strategie:** Strangler Fig Pattern
+
+### **Warum zuerst?**
+
+CustomersPageV2 ist eine **monolithische 690-Zeilen Komponente** mit:
+- **26 Context-Verzweigungen** (`context === 'leads' ? ... : ...`)
+- **Nur 40% Shared Logic** → schlechte Abstraktion!
+- **AI-Agent Confusion** (schwer wartbar)
+
+**Multi-Location (D0-D6) würde CustomersPageV2 NOCH komplexer machen** → Migration JETZT!
+
+### **Migration-Phasen (M1-M6):**
+
+| Phase | Aufwand | Beschreibung | Status |
+|-------|---------|--------------|--------|
+| **M1** | 4h | Shared Infrastructure extrahieren | 🔄 IN PROGRESS |
+| **M2** | 4h | CustomersPage (neu) implementieren | ⏳ PENDING |
+| **M3** | 3h | LeadsPage (neu) implementieren | ⏳ PENDING |
+| **M4** | 1h | Routing aktualisieren | ⏳ PENDING |
+| **M5** | 2h | Tests schreiben | ⏳ PENDING |
+| **M6** | 30min | CustomersPageV2 löschen | ⏳ PENDING |
+
+**Ergebnis nach Migration:**
+- CustomersPage: ~200 LOC, 0 Branches
+- LeadsPage: ~180 LOC, 0 Branches
+- Shared Components: DataTable, FilterBar, Pagination
+- **Wartbarkeit: +100%**, **Bundle Size: -15%**
 
 ---
 

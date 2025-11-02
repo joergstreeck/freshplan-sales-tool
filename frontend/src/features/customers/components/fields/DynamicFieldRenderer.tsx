@@ -178,7 +178,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   if (useAdaptiveLayout) {
     return (
       <AdaptiveFormContainer variant="flexbox">
-        {visibleFields.map(field => {
+        {visibleFields.map((field, index) => {
           // Spezielle CSS-Klasse für Dropdowns zur automatischen Breitenberechnung
           const sizeClass =
             field.fieldType === 'select' || field.fieldType === 'dropdown'
@@ -192,7 +192,7 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
           const style: React.CSSProperties = {};
 
           return (
-            <Box key={field.key} className={sizeClass} sx={style}>
+            <Box key={field.key || `field-adaptive-${index}`} className={sizeClass} sx={style}>
               {renderField(field)}
             </Box>
           );
@@ -204,12 +204,12 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   // Traditionelles Grid Layout
   return (
     <Grid container spacing={3}>
-      {visibleFields.map(field => {
+      {visibleFields.map((field, index) => {
         const themeSize = getFieldSize(field);
         const gridSize = themeSize;
 
         return (
-          <Grid key={field.key} size={{ xs: gridSize.xs, sm: gridSize.sm, md: gridSize.md }}>
+          <Grid key={field.key || `field-grid-${index}`} size={{ xs: gridSize.xs, sm: gridSize.sm, md: gridSize.md }}>
             {renderField(field)}
           </Grid>
         );

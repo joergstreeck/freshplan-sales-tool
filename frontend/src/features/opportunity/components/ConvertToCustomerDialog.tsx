@@ -169,7 +169,7 @@ export default function ConvertToCustomerDialog({
       }
 
       onClose();
-      navigate(`/customers/${customer.id}`);
+      navigate(`/customer-management/customers/${customer.id}`);
     } catch (error: unknown) {
       console.error('Failed to convert opportunity:', error);
       const errorMessage =

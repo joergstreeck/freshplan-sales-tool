@@ -76,10 +76,15 @@ export const EnumField: React.FC<EnumFieldProps> = ({
       console.warn(`Unknown enumSource: ${enumSource}`);
   }
 
+  // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
+  // Only use value if options are loaded AND value exists in options
+  const valueExists = options.some(opt => opt.value === value);
+  const safeValue = isLoading || !valueExists ? '' : (value || '');
+
   return (
     <FormControl fullWidth error={error} disabled={disabled || readOnly} required={required}>
       <Select
-        value={value || ''}
+        value={safeValue}
         onChange={e => onChange(e.target.value)}
         onBlur={onBlur}
         displayEmpty

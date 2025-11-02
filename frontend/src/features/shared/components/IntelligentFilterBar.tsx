@@ -37,10 +37,10 @@ import {
   Clear as ClearIcon,
 } from '@mui/icons-material';
 
-import { useDebounce } from '../../hooks/useDebounce';
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-import { useUniversalSearch } from '../../hooks/useUniversalSearch';
-import { SearchResultsDropdown } from '../search/SearchResultsDropdown';
+import { useDebounce } from '../../customers/hooks/useDebounce';
+import { useLocalStorage } from '../../customers/hooks/useLocalStorage';
+import { useUniversalSearch } from '../../customers/hooks/useUniversalSearch';
+import { SearchResultsDropdown } from '../../customers/components/search/SearchResultsDropdown';
 import { useNavigate } from 'react-router-dom';
 
 import type {
@@ -48,14 +48,14 @@ import type {
   SortConfig,
   ColumnConfig,
   SavedFilterSet,
-} from '../../types/filter.types';
+} from '../../customers/types/filter.types';
 
 // Import refactored components
-import { FilterDrawer } from './FilterDrawer';
-import { ColumnManagerDrawer } from './ColumnManagerDrawer';
-import { QuickFilters, type QuickFilter } from './QuickFilters';
-import { SearchBar } from './SearchBar';
-import { getSortOptionsForContext, getTableColumnsForContext } from './contextConfig';
+import { FilterDrawer } from '../../customers/components/filter/FilterDrawer';
+import { ColumnManagerDrawer } from '../../customers/components/filter/ColumnManagerDrawer';
+import { QuickFilters, type QuickFilter } from '../../customers/components/filter/QuickFilters';
+import { SearchBar } from '../../customers/components/filter/SearchBar';
+import { getSortOptionsForContext, getTableColumnsForContext } from '../../customers/components/filter/contextConfig';
 
 interface IntelligentFilterBarProps {
   onFilterChange: (filters: FilterConfig) => void;
@@ -268,7 +268,7 @@ export function IntelligentFilterBar({
   // Search Result Handlers
   const handleCustomerClick = useCallback(
     (customerId: string) => {
-      const basePath = context === 'leads' ? '/lead-generation/leads' : '/customers';
+      const basePath = context === 'leads' ? '/lead-generation/leads' : '/customer-management/customers';
       navigate(`${basePath}/${customerId}`);
       setShowSearchResults(false);
       clearResults();
@@ -283,7 +283,7 @@ export function IntelligentFilterBar({
         navigate(`/lead-generation/leads/${customerId}`);
       } else {
         // Customers haben Tab-Struktur (Tab 2 = Kontakte)
-        navigate(`/customers/${customerId}?tab=2&highlightContact=${contactId}`);
+        navigate(`/customer-management/customers/${customerId}?tab=2&highlightContact=${contactId}`);
       }
       setShowSearchResults(false);
       clearResults();
