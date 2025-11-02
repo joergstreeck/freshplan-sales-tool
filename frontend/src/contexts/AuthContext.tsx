@@ -37,28 +37,41 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check for auth bypass mode first
   if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
+    // Check localStorage first (set by LoginBypassPage)
+    const storedToken = localStorage.getItem('auth-token');
+    const storedUserJson = localStorage.getItem('auth-user');
+    const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
+
+    // Use stored user if available, otherwise fallback to default mock
+    const user = storedUser || {
+      id: 'dev-user',
+      name: 'Dev User',
+      email: 'dev@freshplan.de',
+      username: 'devuser',
+      roles: ['admin', 'manager', 'sales', 'auditor'],
+    };
+
+    const token = storedToken || 'mock-dev-token';
+
     // Provide mock auth context for development
     // NOTE: All roles are lowercase for consistency with frontend role checks
     const mockContext: AuthContextType = {
-      user: {
-        id: 'dev-user',
-        name: 'Dev User',
-        email: 'dev@freshplan.de',
-        username: 'devuser',
-        roles: ['admin', 'manager', 'sales', 'auditor'],
-      },
+      user,
       isAuthenticated: true,
       isLoading: false,
       login: async () => {},
-      logout: () => {},
-      token: 'mock-dev-token',
-      hasRole: (role: string) =>
-        ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase()),
+      logout: () => {
+        // Clear localStorage on logout
+        localStorage.removeItem('auth-token');
+        localStorage.removeItem('auth-user');
+      },
+      token,
+      hasRole: (role: string) => user?.roles?.includes(role.toLowerCase()) ?? false,
       hasAnyRole: (roles: string[]) =>
-        roles.some(role => ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase())),
-      getValidToken: async () => 'mock-dev-token',
+        roles.some(role => user?.roles?.includes(role.toLowerCase()) ?? false),
+      getValidToken: async () => token,
       refreshToken: async () => true,
-      authInfo: () => ({ mockAuth: true }),
+      authInfo: () => ({ mockAuth: true, user }),
     };
 
     return <AuthContext.Provider value={mockContext}>{children}</AuthContext.Provider>;
