@@ -38,7 +38,7 @@ interface FilterDrawerProps {
   onClose: () => void;
   filters: FilterConfig;
   onFiltersChange: (filters: FilterConfig) => void;
-  onApply: () => void;
+  onApply: (filters?: FilterConfig) => void;
   onClear: () => void;
   context?: 'customers' | 'leads'; // Lifecycle Context for filtering
 }
@@ -301,10 +301,10 @@ export function FilterDrawer({
             variant="contained"
             fullWidth
             onClick={() => {
-              // Commit local changes to parent
+              // Commit local changes to parent AND pass directly to apply
               onFiltersChange(localFilters);
-              // Then trigger apply handler
-              onApply();
+              // Pass localFilters directly to avoid React state timing issues
+              onApply(localFilters);
             }}
             sx={{
               bgcolor: theme.palette.primary.main,

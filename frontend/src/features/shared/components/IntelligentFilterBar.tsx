@@ -313,10 +313,11 @@ export function IntelligentFilterBar({
   );
 
   // Filter Application
-  const applyFilters = useCallback(() => {
+  const applyFilters = useCallback((filtersToApply?: FilterConfig) => {
     // When applying filters from drawer, ensure quick filters are not auto-activated
     // Quick filters should only be active when explicitly clicked
-    onFilterChange(activeFilters);
+    // Use provided filters or fallback to activeFilters
+    onFilterChange(filtersToApply || activeFilters);
     setFilterDrawerOpen(false);
   }, [activeFilters, onFilterChange]);
 
