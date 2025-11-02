@@ -60,8 +60,15 @@ export function LoginBypassPage() {
     localStorage.setItem('auth-token', mockTokens[role]);
     localStorage.setItem('auth-user', JSON.stringify(mockUsers[role]));
 
-    // Reload to apply auth context
-    window.location.href = '/';
+    // Debug: Log to console
+    console.log('🔒 Auth-Bypass Login:', {
+      role,
+      user: mockUsers[role],
+      storedInLocalStorage: localStorage.getItem('auth-user'),
+    });
+
+    // Reload to apply auth context - navigate directly to cockpit
+    window.location.href = '/cockpit';
   };
 
   return (
