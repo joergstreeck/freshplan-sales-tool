@@ -195,7 +195,7 @@ export function getLeadTableColumns(): DataTableColumn<Lead>[] {
       render: (lead: Lead) => <LeadScoreDisplay score={lead.leadScore} />,
     },
     {
-      id: 'expectedAnnualVolume',
+      id: 'estimatedVolume',
       label: 'Erwarteter Umsatz',
       field: 'estimatedVolume',
       visible: true,
@@ -216,7 +216,7 @@ export function getLeadTableColumns(): DataTableColumn<Lead>[] {
       render: (lead: Lead) => formatDate(lead.createdAt),
     },
     {
-      id: 'assignedTo',
+      id: 'ownerUserId',
       label: 'Zugewiesen an',
       field: 'ownerUserId',
       visible: false,
