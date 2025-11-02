@@ -336,10 +336,38 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/help/support" element={<Placeholders.Support />} />
 
                           {/* Admin - mit neuem Dashboard */}
-                          <Route path="/admin" element={<AdminDashboard />} />
-                          <Route path="/admin/system" element={<SystemDashboard />} />
-                          <Route path="/admin/integrations" element={<IntegrationsDashboard />} />
-                          <Route path="/admin/help" element={<HelpConfigDashboard />} />
+                          <Route
+                            path="/admin"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <AdminDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/system"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <SystemDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/integrations"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <IntegrationsDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
+                          <Route
+                            path="/admin/help"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin']}>
+                                <HelpConfigDashboard />
+                              </ProtectedRoute>
+                            }
+                          />
                           <Route
                             path="/admin/settings"
                             element={
