@@ -11,6 +11,8 @@ interface User {
   name: string;
   email: string;
   username?: string;
+  firstName?: string; // For display name (e.g., "John Doe")
+  lastName?: string; // For display name (e.g., "John Doe")
   roles?: string[];
   xentralSalesRepId?: string; // Sprint 2.1.7.2 D1 - Sales Rep ID from backend
 }
