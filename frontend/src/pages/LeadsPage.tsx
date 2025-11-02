@@ -81,8 +81,11 @@ export default function LeadsPage({
   const [expandedLeadId, setExpandedLeadId] = useState<string | null>(null);
 
   // Hooks
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const navigate = useNavigate();
+
+  // RBAC: Stop-the-Clock nur für ADMIN und MANAGER
+  const canStopClock = hasRole('ADMIN') || hasRole('MANAGER');
   const { sortBy, setSortBy } = useFocusListStore();
 
   // Server-Driven Enums (1x Hook Call für die ganze Tabelle!)
@@ -367,18 +370,20 @@ export default function LeadsPage({
             <TimelineIcon fontSize="small" />
           </IconButton>
         </Tooltip>
-        <Tooltip title={lead.clockStoppedAt ? 'Fortsetzen' : 'Pausieren'}>
-          <IconButton
-            size="small"
-            onClick={e => {
-              e.stopPropagation();
-              handleStopClockClick(lead);
-            }}
-            sx={{ color: lead.clockStoppedAt ? 'success.main' : 'warning.main' }}
-          >
-            <PauseIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
+        {canStopClock && (
+          <Tooltip title={lead.clockStoppedAt ? 'Fortsetzen' : 'Pausieren'}>
+            <IconButton
+              size="small"
+              onClick={e => {
+                e.stopPropagation();
+                handleStopClockClick(lead);
+              }}
+              sx={{ color: lead.clockStoppedAt ? 'success.main' : 'warning.main' }}
+            >
+              <PauseIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        )}
       </>
     );
   };
