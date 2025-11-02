@@ -172,6 +172,11 @@ export default function LeadsPage({
       filtered = filtered.filter(l => filterConfig.status?.includes(l.status));
     }
 
+    // Stage filter (Lead-specific - VORMERKUNG, REGISTRIERUNG, QUALIFIZIERT)
+    if (filterConfig.stage?.length) {
+      filtered = filtered.filter(l => filterConfig.stage?.includes(l.stage));
+    }
+
     // Business Type filter (Lead-spezifisch statt industry!)
     if (filterConfig.industry?.length) {
       // Note: FilterConfig uses "industry" field, but Leads use "businessType"

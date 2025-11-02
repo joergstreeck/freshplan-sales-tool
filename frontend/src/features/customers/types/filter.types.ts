@@ -24,6 +24,12 @@ export interface FilterConfig {
   text?: string;
   status?: CustomerStatus[];
   /**
+   * Lead Stage filter (for Leads context only)
+   * Values: 'VORMERKUNG', 'REGISTRIERUNG', 'QUALIFIZIERT'
+   * @since Sprint 2.1.7.7 - Lead Quick Filters
+   */
+  stage?: string[];
+  /**
    * @deprecated Use businessType instead. Will be removed in future version.
    * @since 2.1.6 - Replaced by businessType field
    */

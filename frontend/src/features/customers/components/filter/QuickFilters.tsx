@@ -11,6 +11,7 @@ import React from 'react';
 import { Stack, Chip } from '@mui/material';
 import {
   CheckCircle as ActiveIcon,
+  CheckCircle,
   Cancel as InactiveIcon,
   BookmarkBorder as PreClaimIcon,
 } from '@mui/icons-material';
@@ -45,22 +46,22 @@ export const QUICK_FILTERS: QuickFilter[] = [
 
 export const LEAD_FILTERS: QuickFilter[] = [
   {
-    id: 'leads',
-    label: 'Leads',
-    icon: <ActiveIcon fontSize="small" />,
-    filter: { status: [CustomerStatus.LEAD] },
-  },
-  {
-    id: 'prospects',
-    label: 'Interessenten',
-    icon: <InactiveIcon fontSize="small" />,
-    filter: { status: [CustomerStatus.PROSPECT] },
-  },
-  {
-    id: 'pre-claim',
-    label: 'Vormerkungen',
+    id: 'vormerkung',
+    label: 'Vormerkung',
     icon: <PreClaimIcon fontSize="small" />,
-    filter: { leadStage: ['REGISTERED'], hasFirstContact: false },
+    filter: { stage: ['VORMERKUNG'] },
+  },
+  {
+    id: 'registrierung',
+    label: 'Registrierung',
+    icon: <ActiveIcon fontSize="small" />,
+    filter: { stage: ['REGISTRIERUNG'] },
+  },
+  {
+    id: 'qualifiziert',
+    label: 'Qualifiziert',
+    icon: <CheckCircle fontSize="small" />,
+    filter: { stage: ['QUALIFIZIERT'] },
   },
 ];
 

@@ -102,6 +102,7 @@ export function IntelligentFilterBar({
     const defaults: FilterConfig = {
       text: '',
       status: [],
+      stage: [], // Lead Stage filter (Leads context only)
       industry: [],
       location: [],
       revenueRange: null,
