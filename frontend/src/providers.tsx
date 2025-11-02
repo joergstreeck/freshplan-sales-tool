@@ -23,9 +23,8 @@ const UsersPage = lazy(() => import('./pages/UsersPage').then(m => ({ default: m
 const IntegrationTestPage = lazy(() =>
   import('./pages/IntegrationTestPage').then(m => ({ default: m.IntegrationTestPage }))
 );
-const CustomersPageV2 = lazy(() =>
-  import('./pages/CustomersPageV2').then(m => ({ default: m.CustomersPageV2 }))
-);
+// M6: CustomersPageV2 removed - all routes now use CustomersPage
+const CustomersPage = lazy(() => import('./pages/CustomersPage'));
 const CockpitPage = lazy(() =>
   import('./pages/CockpitPage').then(m => ({ default: m.CockpitPage }))
 );
@@ -177,16 +176,26 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                           <Route path="/cockpit" element={<CockpitPage />} />
                           <Route path="/cockpit-v2" element={<CockpitPageV2 />} />
                           <Route path="/users" element={<UsersPage />} />
-                          <Route path="/customers" element={<CustomersPageV2 />} />
+                          {/* M6: Legacy route now uses CustomersPage (for old bookmarks) */}
+                          <Route path="/customers" element={<CustomersPage />} />
                           <Route
                             path="/customers/new"
-                            element={<CustomersPageV2 openWizard={true} />}
+                            element={<CustomersPage openWizard={true} />}
                           />
                           <Route path="/customers/:customerId" element={<CustomerDetailPage />} />
                           {/* Customer Management Routes */}
                           <Route
                             path="/customer-management"
                             element={<KundenmanagementDashboard />}
+                          />
+                          {/* M4: NEW CustomersPage auf neuer URL-Struktur */}
+                          <Route
+                            path="/customer-management/customers"
+                            element={<CustomersPage />}
+                          />
+                          <Route
+                            path="/customer-management/customers/:customerId"
+                            element={<CustomerDetailPage />}
                           />
                           <Route
                             path="/customer-management/opportunities"
