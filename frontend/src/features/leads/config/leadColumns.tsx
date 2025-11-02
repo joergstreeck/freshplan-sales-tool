@@ -159,7 +159,7 @@ export function getLeadTableColumns(): DataTableColumn<Lead>[] {
       order: 1,
       width: 140,
       align: 'left',
-      render: (lead: any) => <LeadStageChip stage={lead.stage || 'VORMERKUNG'} />,
+      render: (lead: Lead) => <LeadStageChip stage={lead.stage || 'VORMERKUNG'} />,
     },
     {
       id: 'businessType',

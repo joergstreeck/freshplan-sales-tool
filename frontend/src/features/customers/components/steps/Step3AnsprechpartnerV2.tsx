@@ -92,17 +92,6 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
     );
   }, [salutationOptions]);
 
-  const decisionLevelLabels = useMemo(() => {
-    if (!decisionLevelOptions) return {};
-    return decisionLevelOptions.reduce(
-      (acc, item) => {
-        acc[item.value] = item.label;
-        return acc;
-      },
-      {} as Record<string, string>,
-    );
-  }, [decisionLevelOptions]);
-
   // Initialisiere Kontakte aus customerData wenn vorhanden
   const [contacts, setContacts] = useState<ContactFormData[]>(() => {
     if (customerData.contacts && Array.isArray(customerData.contacts)) {

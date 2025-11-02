@@ -316,7 +316,7 @@ export default function LeadsPage({
   const handleEditClick = (lead: Lead) => {
     // LEAD-SPEZIFISCH: VORMERKUNG Stage → AddFirstContactDialog
     // Note: Backend sends stage as string (e.g., "VORMERKUNG"), not enum number
-    if (lead.stage === 0 || (lead.status as any) === 'REGISTERED') {
+    if (lead.stage === 'VORMERKUNG') {
       setSelectedLead(lead);
       setFirstContactDialogOpen(true);
     } else {

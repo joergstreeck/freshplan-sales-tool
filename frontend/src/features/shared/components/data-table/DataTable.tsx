@@ -62,7 +62,7 @@ export function DataTable<T>({
   height,
   rowHeight = 53,
   expandedRowId,
-  onRowExpand,
+  onRowExpand: _onRowExpand,
   renderExpandedRow,
 }: DataTableProps<T>) {
   // Internal pagination state (uncontrolled)
