@@ -1155,7 +1155,7 @@ INSERT INTO lead_contacts (
   '+49 160 1234501',
   TRUE, -- is_primary (sync to leads!)
   TRUE, -- is_decision_maker
-  'Entscheider',
+  'EXECUTIVE',
   75,
   'Sehr offen für Gespräch. Dringend auf der Suche nach zuverlässigem Partner. Koch kündigt nächsten Monat.',
   NOW() - INTERVAL '5 days',
@@ -1197,7 +1197,7 @@ INSERT INTO lead_contacts (
   '+49 171 8765401',
   TRUE, -- is_primary
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   45,
   'War enthusiastisch nach Messe, aber schwer erreichbar. Antwortet selten auf E-Mails.',
   NOW() - INTERVAL '58 days',
@@ -1239,7 +1239,7 @@ INSERT INTO lead_contacts (
   '+49 160 7890101',
   TRUE, -- is_primary
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   95, -- ADVOCATE warmth!
   'CHAMPION! Kämpft intern für uns. Extrem dringlich - Saison startet in 2 Wochen. Selgros fiel komplett aus!',
   NOW() - INTERVAL '30 days',
@@ -1319,7 +1319,7 @@ INSERT INTO lead_contacts (
   NULL,
   FALSE,
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   20,
   'Blockierte Gespräch. Wollte nur etablierte Player (Compass, Aramark). Zu risikoavers für Startup.',
   NOW() - INTERVAL '80 days',
@@ -1342,7 +1342,7 @@ INSERT INTO lead_contacts (
   '+49 170 1234501',
   TRUE, -- is_primary
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   25, -- COLD warmth!
   'Schwer erreichbar. Hat nach erstem Gespräch nie wieder geantwortet. GRACE PERIOD läuft!',
   NOW() - INTERVAL '68 days',
@@ -1389,7 +1389,7 @@ INSERT INTO lead_contacts (
   '+49 160 2345601',
   TRUE, -- is_primary
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   80,
   'Sehr offen! Aramark-Vertrag nicht verlängert. Sucht dringend Alternative. Semester-Start April!',
   NOW() - INTERVAL '25 days',
@@ -1450,7 +1450,7 @@ INSERT INTO lead_contacts (
   '+49 160 8901201',
   TRUE, -- is_primary
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   90, -- TRUSTED warmth!
   'Exzellente Beziehung! Teilt interne Zahlen. Vertraut uns. Event-Saison startet - will SOFORT wechseln!',
   NOW() - INTERVAL '15 days',
@@ -1553,7 +1553,7 @@ INSERT INTO lead_contacts (
   '+49 160 5678901',
   TRUE, -- is_primary
   TRUE,
-  'Entscheider',
+  'EXECUTIVE',
   60,
   'Freundlich, aber nicht dringlich. Beschwert sich über Metro-Service, aber nicht handlungsbereit.',
   NOW() - INTERVAL '12 days',
