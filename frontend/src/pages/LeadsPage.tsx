@@ -198,7 +198,7 @@ export default function LeadsPage({
     // Contacts filter
     if (filterConfig.hasContacts !== null && filterConfig.hasContacts !== undefined) {
       filtered = filtered.filter(l => {
-        const hasContacts = (l.contactsCount || 0) > 0;
+        const hasContacts = (l.contacts?.length || 0) > 0;
         return filterConfig.hasContacts === hasContacts;
       });
     }
@@ -206,21 +206,21 @@ export default function LeadsPage({
     // Last Contact Days filter
     if (filterConfig.lastContactDays) {
       filtered = filtered.filter(l => {
-        if (!l.lastContactDate) return false;
+        if (!l.lastActivityAt) return false;
         const daysSince = Math.floor(
-          (Date.now() - new Date(l.lastContactDate).getTime()) / (1000 * 60 * 60 * 24)
+          (Date.now() - new Date(l.lastActivityAt).getTime()) / (1000 * 60 * 60 * 24)
         );
         return daysSince >= filterConfig.lastContactDays!;
       });
     }
 
-    // Revenue Range filter
+    // Revenue Range filter (Lead: estimatedVolume statt expectedAnnualVolume)
     if (filterConfig.revenueRange) {
       filtered = filtered.filter(l => {
-        if (l.expectedAnnualVolume === null || l.expectedAnnualVolume === undefined) return false;
+        if (l.estimatedVolume === null || l.estimatedVolume === undefined) return false;
         const { min, max } = filterConfig.revenueRange || {};
-        if (min !== null && min !== undefined && l.expectedAnnualVolume < min) return false;
-        if (max !== null && max !== undefined && l.expectedAnnualVolume > max) return false;
+        if (min !== null && min !== undefined && l.estimatedVolume < min) return false;
+        if (max !== null && max !== undefined && l.estimatedVolume > max) return false;
         return true;
       });
     }
