@@ -9,7 +9,7 @@
  * @see /docs/features/FC-005-CUSTOMER-MANAGEMENT/Step3/SMART_CONTACT_CARDS.md
  */
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Card,
   CardContent,
@@ -51,6 +51,7 @@ import { ContactQuickActions } from './ContactQuickActions';
 import { MiniAuditTimeline } from '../../../audit/components/MiniAuditTimeline';
 import { useAuth } from '../../../../contexts/AuthContext';
 import { LazyComponent } from '../../../../components/common/LazyComponent';
+import { useEnumOptions } from '../../../../hooks/useEnumOptions';
 
 export interface SmartContactCardProps {
   contact: Contact;
@@ -87,6 +88,21 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   const { user } = useAuth();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isCardHovered, setIsCardHovered] = useState(false);
+
+  // Server-Driven Enum: DecisionLevel Labels (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: decisionLevelOptions } = useEnumOptions('/api/enums/decision-levels');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const decisionLevelLabels = useMemo(() => {
+    if (!decisionLevelOptions) return {};
+    return decisionLevelOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [decisionLevelOptions]);
 
   // Check if user can view audit trail
   // In development with authBypass, always allow audit viewing
@@ -173,14 +189,23 @@ export const SmartContactCard: React.FC<SmartContactCardProps> = ({
   };
 
   const getDecisionLevelConfig = () => {
+    // UI Presentation Logic (Frontend-only: colors, icons) - Sprint 2.1.7.7 Fix
+    // Labels kommen vom Backend via useEnumOptions
     const configs = {
-      entscheider: { label: 'Entscheider', color: 'error' as const, icon: <StarIcon /> },
-      mitentscheider: { label: 'Mitentscheider', color: 'warning' as const, icon: <GroupsIcon /> },
-      einflussnehmer: { label: 'Einflussnehmer', color: 'info' as const, icon: <BusinessIcon /> },
-      nutzer: { label: 'Nutzer', color: 'success' as const, icon: <PersonAddIcon /> },
-      gatekeeper: { label: 'Gatekeeper', color: 'default' as const, icon: <BusinessIcon /> },
+      EXECUTIVE: { color: 'error' as const, icon: <StarIcon /> },
+      MANAGER: { color: 'warning' as const, icon: <GroupsIcon /> },
+      OPERATIONAL: { color: 'info' as const, icon: <BusinessIcon /> },
+      INFLUENCER: { color: 'success' as const, icon: <PersonAddIcon /> },
     };
-    return configs[contact.decisionLevel || 'nutzer'];
+
+    const decisionLevel = contact.decisionLevel || 'OPERATIONAL';
+    const config = configs[decisionLevel] || configs.OPERATIONAL;
+
+    return {
+      label: decisionLevelLabels[decisionLevel] || decisionLevel,
+      color: config.color,
+      icon: config.icon,
+    };
   };
 
   const getDaysUntilBirthday = (birthday?: string): number => {

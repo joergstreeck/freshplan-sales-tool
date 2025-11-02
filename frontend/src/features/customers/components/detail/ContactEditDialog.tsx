@@ -146,8 +146,8 @@ export const ContactEditDialog: React.FC<ContactEditDialogProps> = ({
     if (contact) {
       setFormData({
         ...contact,
-        // Normalize salutation to UPPERCASE (backend may have mixed-case like "Frau")
-        salutation: contact.salutation?.toUpperCase() || '',
+        // Sprint 2.1.7.7: Backend already provides UPPERCASE enums (HERR, FRAU, DIVERS)
+        salutation: contact.salutation || '',
       });
     } else {
       setFormData({

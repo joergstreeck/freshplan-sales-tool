@@ -161,6 +161,58 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-11-02 17:30 - Sprint 2.1.7.7 - Enum-Rendering-Parity Migration (Option A)
+
+**Kontext:** Lead Contact Card zeigt RAW Enum-Werte (z.B. "EXECUTIVE") statt deutsche Labels (z.B. "Geschäftsführer/Inhaber"). Server-Driven Architecture gilt nur für Forms, NICHT für Read-Views → Architektur-Inkonsistenz.
+
+**Problem identifiziert:**
+- ❌ **Read-Views:** 20 Files rendern RAW Enums statt Backend-Labels (49 Violations)
+- ❌ **Architektur-Drift:** Backend = Single Source of Truth für Forms, NICHT für Read-Views
+- ✅ **Forms:** useEnumOptions + fieldCatalog.json funktioniert perfekt (seit Sprint 2.1.7.2)
+
+**Root Cause:**
+- Server-Driven Architecture wurde nur für FORMS implementiert (Sprint 2.1.7.2)
+- Read-Views nutzen weiterhin hardcoded JSX-Templates mit RAW Enum-Rendering
+- Kein Pre-Commit Hook prüfte bisher Enum-Rendering-Parity
+
+**Erledigt:**
+- ✅ **Pre-Commit Hook:** `/scripts/check-enum-rendering-parity.py` (Context-Aware, ZERO FALSE POSITIVES)
+  - 3-Layer Filtering: Domain Context + JSX Attribute + Comparison/Assignment
+  - Reduziert Violations von 68 → 20 Files (71% False Positive Elimination)
+  - Integriert als PRÜFUNG 2.5 in `.husky/pre-commit`
+- ✅ **Referenz-Implementation:** `LeadContactsCard.tsx` (decisionLevel → Label-Lookup)
+  - Pattern: `useEnumOptions('/api/enums/decision-levels')` + `useMemo()` Label-Map
+  - Performance: O(1) Lookup statt O(n) `.find()`
+- ✅ **Sprint-Planung:** 5 Batches à 4-6 Files (Total 4h 15min)
+  - Batch 1: Customer Contact Components (5 Files, 10 Violations, 1h)
+  - Batch 2: Customer Wizard/Store (3 Files, 6 Violations, 45min)
+  - Batch 3: Lead Components (5 Files, 8 Violations, 1h)
+  - Batch 4: Activity Components (5 Files, 10 Violations, 1h)
+  - Batch 5: Verification + Commit (30min)
+
+**Violations Details:**
+- **decisionLevel** (10x): ContactCard, SmartContactCard, Step3Ansprechpartner, Step3MultiContact, customerOnboardingStore, ContactDialog, LeadContactsCard ✅
+- **salutation** (3x): ContactEditDialog, Step3Ansprechpartner, customerOnboardingStore, ContactDialog
+- **activityType** (10x): ActivityDialog, ActivityTimeline (3x), CustomerActivityTimeline (3x), LeadActivityTimeline, LeadActivityTimelineGrouped
+- **businessType** (6x): BusinessPotentialCard, BusinessPotentialDialog, FitScoreDisplay, leadColumns
+- **kitchenSize** (2x): BusinessPotentialCard, BusinessPotentialDialog
+- **legalForm** (2x): CustomerOnboardingWizard
+- **customerType** (1x): ActionCenterColumnMUI
+- **paymentTerms** (3x): ActionCenterColumnMUI
+
+**Migration:** n/a (kein DB-Schema-Change, nur Frontend Label-Rendering)
+**Branch:** main (wird lokal gefixt)
+**Tests:** Pre-Commit Hook MUSS EXIT 0 zeigen (0 Violations)
+**Status:** 📋 IN PROGRESS - 1/20 Files gefixt (LeadContactsCard.tsx ✅), Hook ready, 19 Files pending
+
+**NEXT STEPS:**
+1. BATCH 1: Customer Contact Components (5 Files, 1h)
+2. BATCH 2-4: Remaining Components (13 Files, 2h 45min)
+3. Verification: TypeScript + Hook Test (30min)
+4. Commit: "Sprint 2.1.7.7 - Enum-Rendering-Parity Migration (Option A)"
+
+---
+
 ### 2025-11-02 04:40 - Sprint 2.1.7.7 Technical Debt - Contact API Integration Gap (Sprint 2.1.7.2 Phase 4)
 
 **Kontext:** Contact Create/Update/Delete API-Calls sind seit Sprint 2.1.7.2 D11 NICHT implementiert - TODOs "Phase 4" existieren seit Commit e7b489915.
@@ -1841,8 +1893,10 @@
   - **Trigger:** `/docs/planung/TRIGGER_SPRINT_2_1_7_2.md` (status: merged)
 
 - **📋 SPRINT 2.1.7.7 - MULTI-LOCATION MANAGEMENT ⚡ NACH 2.1.7.2!**
-  - **Status:** 📋 READY TO START - Nach Sprint 2.1.7.2 COMPLETE
-  - **SCOPE:** Parent-Child Hierarchie für Filialisten (Option A - Aktivierung statt Neubau)
+  - **Status:** 🟡 IN PROGRESS - Enum-Rendering-Parity Migration (PRE-WORK 4h) läuft, Multi-Location folgt
+  - **SCOPE:**
+    - **Phase 1 (PRE-WORK):** Enum-Rendering-Parity Migration (4h 15min) - Backend = Single Source of Truth für ALLE Enum-Werte
+    - **Phase 2 (MAIN WORK):** Parent-Child Hierarchie für Filialisten (Option A - Aktivierung statt Neubau, 30h)
   - **WHY NOW:** Sprint 2.1.7.2 hat UI bereits vorbereitet → Nur Aktivierung + Backend!
   - **Aufwand:** 30h = 3-4 Arbeitstage (reduziert von 36h - **Option A spart 6h!**)
   - **Aufwands-Reduktion:**
@@ -1853,15 +1907,24 @@
   - **Prerequisites:** Sprint 2.1.7.2 COMPLETE ✅ (hierarchyType UI-Vorbereitung!)
   - **Migrations:** Keine (hierarchyType existiert bereits aus Sprint 2.1.7.4)
   - **Tests:** 48 Tests (28 Backend + 20 Frontend)
-  - **Deliverables:** 7 Deliverables + UI-Aktivierung
-    - **D0:** UI-Aktivierung (FILIALE enabled + Parent-Selection Autocomplete) ⭐ 1h statt 6h!
-    - **D1:** Backend BranchService (createBranch, validateParent)
-    - **D2:** Backend Address-Matching Service (Xentral-Integration)
-    - **D3:** Backend Hierarchy Metrics Service (Roll-up Umsätze)
-    - **D4:** Frontend CreateBranchDialog Component
-    - **D5:** Frontend HierarchyDashboard (Branch-Übersicht)
-    - **D6:** Frontend HierarchyTreeView (Visuelle Hierarchie)
-    - **D7:** CustomerDetailPage Integration (Tab "Filialen")
+  - **Deliverables:**
+    - **PHASE 1 (PRE-WORK): Enum-Rendering-Parity Migration (4h 15min)**
+      - **E1:** ✅ Pre-Commit Hook (`check-enum-rendering-parity.py`) - COMPLETE
+      - **E2:** ✅ Referenz-Implementation (LeadContactsCard.tsx) - COMPLETE
+      - **E3:** BATCH 1: Customer Contact Components (5 Files, 10 Violations, 1h)
+      - **E4:** BATCH 2: Customer Wizard/Store (3 Files, 6 Violations, 45min)
+      - **E5:** BATCH 3: Lead Components (5 Files, 8 Violations, 1h)
+      - **E6:** BATCH 4: Activity Components (5 Files, 10 Violations, 1h)
+      - **E7:** Verification + Commit (TypeScript + Hook Test, 30min)
+    - **PHASE 2 (MAIN WORK): Multi-Location Management (30h)**
+      - **D0:** UI-Aktivierung (FILIALE enabled + Parent-Selection Autocomplete) ⭐ 1h statt 6h!
+      - **D1:** Backend BranchService (createBranch, validateParent)
+      - **D2:** Backend Address-Matching Service (Xentral-Integration)
+      - **D3:** Backend Hierarchy Metrics Service (Roll-up Umsätze)
+      - **D4:** Frontend CreateBranchDialog Component
+      - **D5:** Frontend HierarchyDashboard (Branch-Übersicht)
+      - **D6:** Frontend HierarchyTreeView (Visuelle Hierarchie)
+      - **D7:** CustomerDetailPage Integration (Tab "Filialen")
   - **Artefakte:**
     - [SPEC_SPRINT_2_1_7_7_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md) (10 Sections, 1,598 Zeilen)
     - [SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_7_DESIGN_DECISIONS.md)

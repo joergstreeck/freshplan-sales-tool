@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Card,
   CardHeader,
@@ -24,6 +25,7 @@ import {
   Add as AddIcon,
 } from '@mui/icons-material';
 import type { LeadContactDTO } from '../types';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
 interface LeadContactsCardProps {
   contacts: LeadContactDTO[];
@@ -55,6 +57,22 @@ export function LeadContactsCard({
   readonly = false,
 }: LeadContactsCardProps) {
   const theme = useTheme();
+
+  // Server-Driven Enum: DecisionLevel Labels (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: decisionLevelOptions } = useEnumOptions('/api/enums/decision-levels');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const decisionLevelLabels = useMemo(() => {
+    if (!decisionLevelOptions) return {};
+    return decisionLevelOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [decisionLevelOptions]);
+
   const primaryContact = contacts.find(c => c.primary);
   const secondaryContacts = contacts.filter(c => !c.primary);
 
@@ -106,7 +124,8 @@ export function LeadContactsCard({
           {contact.position && (
             <Typography variant="body2" color="text.secondary">
               {contact.position}
-              {contact.decisionLevel && ` • ${contact.decisionLevel}`}
+              {contact.decisionLevel &&
+                ` • ${decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel}`}
             </Typography>
           )}
           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>

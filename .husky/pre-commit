@@ -6,6 +6,7 @@
 #
 # PRÜFUNG 1: Design System Compliance (BLOCKIEREND)
 # PRÜFUNG 2: Server-Driven Architecture Parity (BLOCKIEREND)
+# PRÜFUNG 2.5: Enum-Rendering-Parity (BLOCKIEREND) - NEW Sprint 2.1.7.7
 # PRÜFUNG 3: Server-Driven Sections Architecture (BLOCKIEREND)
 # PRÜFUNG 4: Backend Code Formatting (Spotless Auto-Format)
 # PRÜFUNG 5: Frontend Code Formatting (Lint-Staged Auto-Format)
@@ -74,6 +75,36 @@ fi
 
 echo ""
 echo -e "${GREEN}✅ Server-Driven Parity: PASSED${NC}"
+echo ""
+
+# ============================================================================
+# PRÜFUNG 2.5: Enum-Rendering-Parity Check (Context-Aware)
+# ============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🔍 Enum-Rendering-Parity Check (Context-Aware)${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Run Enum-Rendering-Parity Check (Python script)
+if ! python3 ./scripts/check-enum-rendering-parity.py; then
+  echo ""
+  echo -e "${RED}🚫 PRE-COMMIT HOOK: Enum-Rendering-Parity Violations detected!${NC}"
+  echo ""
+  echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die RAW Enum-Rendering Violations:${NC}"
+  echo ""
+  echo -e "   ${YELLOW}• ZERO TOLERANCE: Backend = Single Source of Truth für ALLE Enum-Werte${NC}"
+  echo -e "   ${YELLOW}• Lösung: Nutze useEnumOptions() + Label-Lookup${NC}"
+  echo -e "   ${YELLOW}• Beispiel: decisionLevelLabels[contact.decisionLevel]${NC}"
+  echo ""
+  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✅ Enum-Rendering-Parity: PASSED${NC}"
 echo ""
 
 # ============================================================================

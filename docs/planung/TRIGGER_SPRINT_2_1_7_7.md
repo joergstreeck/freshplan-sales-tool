@@ -1,13 +1,53 @@
 # 🚀 Sprint 2.1.7.7 - Multi-Location Management & Xentral Filial-Sync
 
 **Sprint-ID:** 2.1.7.7
-**Status:** 🔄 IN PROGRESS (Migration Prerequisite)
+**Status:** 🟡 IN PROGRESS (Phase 1: Enum-Rendering-Parity Migration)
 **Priority:** P2 (Medium - Business Impact: Hotelketten!)
-**Estimated Effort:** 28h (3,5 Arbeitstage) - inkl. Migration
+**Estimated Effort:** 34h 15min (4,5 Arbeitstage) - inkl. Migration + Enum-Parity
 **Owner:** Claude Code
 **Created:** 2025-10-21
-**Updated:** 2025-11-01 (Migration CustomersPageV2 → CustomersPage + LeadsPage)
+**Updated:** 2025-11-02 (Phase 1 PRE-WORK: Enum-Rendering-Parity Migration hinzugefügt)
 **Dependencies:** Sprint 2.1.7.4 COMPLETE, Sprint 2.1.7.2 COMPLETE
+
+---
+
+## 🔄 PHASE 1 (PRE-WORK): Enum-Rendering-Parity Migration ← **AKTUELL**
+
+**Status:** 🟡 IN PROGRESS - 2/7 Deliverables COMPLETE
+**Detaillierter Plan:** [ENUM_RENDERING_PARITY_MIGRATION.md](./artefakte/sprint-2.1.7.7/ENUM_RENDERING_PARITY_MIGRATION.md)
+**Aufwand:** 4h 15min
+**Strategie:** Context-Aware Pre-Commit Hook + Batch-Fixes
+
+### **Warum zuerst?**
+
+**Problem:** Lead Contact Card zeigt RAW Enum-Werte (z.B. "EXECUTIVE") statt deutsche Labels (z.B. "Geschäftsführer/Inhaber").
+
+**Root Cause:** Server-Driven Architecture gilt nur für **Forms**, NICHT für **Read-Views** → Architektur-Inkonsistenz seit Sprint 2.1.7.2!
+
+**Impact:**
+- ❌ 20 Files rendern RAW Enums (49 Violations)
+- ❌ User Confusion (Forms: "Geschäftsführer", Cards: "EXECUTIVE")
+- ✅ Backend = Single Source of Truth (nur für Forms, nicht für Read-Views)
+
+**Multi-Location (D0-D6) würde auf inkonsistenter Basis gebaut** → Parity JETZT!
+
+### **Enum-Parity Batches (E1-E7):**
+
+| Phase | Aufwand | Beschreibung | Status |
+|-------|---------|--------------|--------|
+| **E1** | 1h | Pre-Commit Hook (Context-Aware) | ✅ COMPLETE |
+| **E2** | 15min | Referenz-Implementation (LeadContactsCard.tsx) | ✅ COMPLETE |
+| **E3** | 1h | BATCH 1: Customer Contact Components (5 Files) | ⏳ PENDING |
+| **E4** | 45min | BATCH 2: Customer Wizard/Store (3 Files) | ⏳ PENDING |
+| **E5** | 1h | BATCH 3: Lead Components (5 Files) | ⏳ PENDING |
+| **E6** | 1h | BATCH 4: Activity Components (5 Files) | ⏳ PENDING |
+| **E7** | 30min | Verification + Commit (Hook Test, TypeScript) | ⏳ PENDING |
+
+**Ergebnis nach Enum-Parity:**
+- 20 Files: RAW Enums → Deutsche Labels ✅
+- Pre-Commit Hook: Blockiert neue Violations ✅
+- Architektur: 100% Server-Driven (Forms + Read-Views) ✅
+- **Code Quality: +100%**, **UX Consistency: +100%**
 
 ---
 
@@ -285,7 +325,15 @@ CustomersPageV2 ist eine **monolithische 690-Zeilen Komponente** mit:
 
 ## 📄 ARTEFAKTE
 
-**Technische Spezifikation:**
+**Phase 1 (PRE-WORK): Enum-Rendering-Parity Migration:**
+→ `/docs/planung/artefakte/sprint-2.1.7.7/ENUM_RENDERING_PARITY_MIGRATION.md`
+- Problem Analysis (20 Files mit 49 Violations)
+- Pre-Commit Hook Architecture (Context-Aware 3-Layer Filtering)
+- Implementation Pattern (useEnumOptions + useMemo Label-Lookup)
+- Batch-Fix Strategie (E1-E7)
+- Success Criteria (TypeScript + Hook Test)
+
+**Phase 2 (MAIN WORK): Multi-Location Management:**
 → `/docs/planung/artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md`
 - BranchService Implementation (vollständig)
 - XentralAddressMatcher Service (Fuzzy-Matching 80%)
