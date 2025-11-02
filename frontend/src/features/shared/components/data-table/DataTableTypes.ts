@@ -100,6 +100,9 @@ export interface DataTableProps<T> {
   /** Show action column */
   showActions?: boolean;
 
+  /** Custom actions renderer (replaces default Edit/Delete if provided) */
+  customActions?: (row: T) => ReactNode;
+
   /** Enable pagination */
   pagination?: boolean;
 

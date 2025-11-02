@@ -9,7 +9,8 @@
  */
 
 import { useState, useEffect, useMemo } from 'react';
-import { Box, Tabs, Tab } from '@mui/material';
+import { Box, Tabs, Tab, IconButton, Tooltip } from '@mui/material';
+import { Timeline as TimelineIcon, Pause as PauseIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 
@@ -28,6 +29,8 @@ import { LeadProtectionManager } from '../features/leads/components/intelligence
 import LeadWizard from '../features/leads/LeadWizard';
 import AddFirstContactDialog from '../features/leads/AddFirstContactDialog';
 import DeleteLeadDialog from '../features/leads/DeleteLeadDialog';
+import StopTheClockDialog from '../features/leads/StopTheClockDialog';
+import LeadActivityTimeline from '../features/leads/LeadActivityTimeline';
 
 // Shared Components (M1)
 import { DataTable } from '../features/shared/components/data-table';
@@ -72,6 +75,8 @@ export default function LeadsPage({
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
   const [firstContactDialogOpen, setFirstContactDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [stopClockDialogOpen, setStopClockDialogOpen] = useState(false);
+  const [timelineDialogOpen, setTimelineDialogOpen] = useState(false);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
 
   // Hooks
@@ -274,6 +279,42 @@ export default function LeadsPage({
     });
   };
 
+  // Handle timeline click
+  const handleTimelineClick = (lead: Lead) => {
+    setSelectedLead(lead);
+    setTimelineDialogOpen(true);
+  };
+
+  // Handle stop-the-clock click
+  const handleStopClockClick = (lead: Lead) => {
+    setSelectedLead(lead);
+    setStopClockDialogOpen(true);
+  };
+
+  // Custom actions renderer for lead-specific actions
+  const renderLeadActions = (lead: Lead) => (
+    <>
+      <Tooltip title="Timeline anzeigen">
+        <IconButton
+          size="small"
+          onClick={() => handleTimelineClick(lead)}
+          sx={{ color: 'info.main' }}
+        >
+          <TimelineIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title={lead.clockStoppedAt ? 'Fortsetzen' : 'Pausieren'}>
+        <IconButton
+          size="small"
+          onClick={() => handleStopClockClick(lead)}
+          sx={{ color: lead.clockStoppedAt ? 'success.main' : 'warning.main' }}
+        >
+          <PauseIcon fontSize="small" />
+        </IconButton>
+      </Tooltip>
+    </>
+  );
+
   // Loading state
   if (isLoading && leads.length === 0) {
     return (
@@ -343,9 +384,8 @@ export default function LeadsPage({
                   columns={tableColumns}
                   getRowId={lead => lead.id}
                   onRowClick={handleRowClick}
-                  onEdit={handleEditClick}
-                  onDelete={handleDeleteClick}
                   showActions
+                  customActions={renderLeadActions}
                   highlightNew
                   loading={isLoading && filteredLeads.length > 0}
                   emptyMessage="Keine Leads gefunden"
@@ -394,6 +434,27 @@ export default function LeadsPage({
                 setDeleteDialogOpen(false);
                 setSelectedLead(null);
                 await refetch();
+              }}
+            />
+            <StopTheClockDialog
+              open={stopClockDialogOpen}
+              lead={selectedLead}
+              onClose={() => {
+                setStopClockDialogOpen(false);
+                setSelectedLead(null);
+              }}
+              onSuccess={async () => {
+                setStopClockDialogOpen(false);
+                setSelectedLead(null);
+                await refetch();
+              }}
+            />
+            <LeadActivityTimeline
+              open={timelineDialogOpen}
+              lead={selectedLead}
+              onClose={() => {
+                setTimelineDialogOpen(false);
+                setSelectedLead(null);
               }}
             />
           </>
