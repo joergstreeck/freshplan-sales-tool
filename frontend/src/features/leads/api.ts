@@ -99,7 +99,12 @@ export async function addFirstContact(
 
 export async function getLeadById(id: string): Promise<Lead> {
   const res = await fetch(`${BASE}/api/leads/${id}`, {
-    headers: { Accept: 'application/json', ...authHeaders() },
+    headers: {
+      Accept: 'application/json',
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      Pragma: 'no-cache',
+      ...authHeaders(),
+    },
     credentials: 'include',
   });
   if (!res.ok) throw await toProblem(res);
