@@ -45,11 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const storedUserJson = localStorage.getItem('auth-user');
     const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
 
-    console.log('🚀 AuthContext useState initializer:', {
-      hasStoredUser: !!storedUser,
-      storedUser,
-    });
-
     // Return stored user OR fallback to default mock
     return (
       storedUser || {
@@ -77,12 +72,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const storedUserJson = localStorage.getItem('auth-user');
       const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
 
-      console.log('🔍 AuthContext useEffect:', {
-        hasStoredUser: !!storedUser,
-        storedUserJson,
-        storedUser,
-      });
-
       // Use stored user if available, otherwise fallback to default mock
       const user = storedUser || {
         id: 'dev-user',
@@ -94,7 +83,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const token = storedToken || 'mock-dev-token';
 
-      console.log('✅ AuthContext setting bypassUser:', user);
       setBypassUser(user);
       setBypassToken(token);
     };
@@ -112,8 +100,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Check for auth bypass mode first
   if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
-    console.log('🔑 AuthContext rendering with bypassUser:', bypassUser);
-
     // Provide mock auth context for development
     // NOTE: All roles are lowercase for consistency with frontend role checks
     const mockContext: AuthContextType = {
