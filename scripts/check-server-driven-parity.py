@@ -52,6 +52,7 @@ SCHEMA_DRIVEN_WHITELIST = {
     'DeleteLeadDialog.tsx',           # Nur Bestätigung
     'StopTheClockDialog.tsx',         # Nur Bestätigung
     'ConvertToCustomerDialog.tsx',    # Nur Bestätigung + einfache Auswahl
+    'AddFirstContactDialog.tsx',      # Einfacher First-Contact-Dialog (4 TextFields, keine Enums)
     'AdvancedFilterDialog.tsx',       # Filter UI, keine Entity-Daten
     'CalculatorForm.tsx',             # Calculator-spezifisch, keine Server-Daten
     'EngagementScoreForm.tsx',        # Score-Formular, kein Entity
