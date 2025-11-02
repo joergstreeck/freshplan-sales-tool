@@ -238,21 +238,32 @@ def check_database_constraints(field_name: str, enum_source: str) -> Tuple[bool,
     """
     Check if VARCHAR field has CHECK constraint in migrations
 
+    Handles camelCase → snake_case conversion (e.g., legalForm → legal_form)
+    to match database column names in SQL migrations.
+
     Returns: (has_constraint: bool, constraint_line: str)
     """
     if not MIGRATIONS_DIR.exists():
         return False, ""
 
-    # Pattern: CHECK (field_name IN ('val1', 'val2'))
-    constraint_pattern = rf'CHECK\s*\(\s*{field_name}\s+IN\s*\('
+    # Convert camelCase to snake_case (e.g., legalForm → legal_form)
+    snake_case_name = re.sub(r'(?<!^)(?=[A-Z])', '_', field_name).lower()
+
+    # Try both camelCase and snake_case patterns
+    # (Schema uses camelCase, DB uses snake_case)
+    patterns = [
+        rf'CHECK\s*\(\s*{field_name}\s+IN\s*\(',       # camelCase (rare)
+        rf'CHECK\s*\(\s*{snake_case_name}\s+IN\s*\(',  # snake_case (common)
+    ]
 
     for migration in sorted(MIGRATIONS_DIR.glob("V*.sql")):
         content = migration.read_text()
-        if re.search(constraint_pattern, content, re.IGNORECASE):
-            # Extract constraint line
-            for line in content.split('\n'):
-                if re.search(constraint_pattern, line, re.IGNORECASE):
-                    return True, line.strip()
+        for pattern in patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                # Extract constraint line
+                for line in content.split('\n'):
+                    if re.search(pattern, line, re.IGNORECASE):
+                        return True, line.strip()
 
     return False, ""
 
@@ -374,7 +385,7 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
     content = file_path.read_text()
     violations = []
 
-    # Check 1: Does it use any use*Schema() hook?
+    # Check 1: Does it use any use*Schema() hook OR useEnumOptions()?
     schema_hooks = [
         'useContactSchema()',
         'useCustomerSchema()',
@@ -383,6 +394,14 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
         'useUserSchema()',
     ]
     uses_schema_hook = any(hook in content for hook in schema_hooks)
+
+    # Check 1b: Does it use useEnumOptions() for server-driven enums?
+    # (Sprint 2.1.7.7 - Schema-Driven Forms Migration)
+    # Dialogs that only need enum options (not full schema) are also compliant
+    uses_enum_options = 'useEnumOptions(' in content
+
+    # Schema-driven if EITHER pattern is present
+    uses_server_driven = uses_schema_hook or uses_enum_options
 
     # Check 2: Does it have dynamic rendering?
     has_dynamic_rendering = bool(
@@ -410,14 +429,17 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
         hardcoded_count += len(matches)
 
     # Determine if schema-driven
-    is_schema_driven = uses_schema_hook and has_dynamic_rendering
+    # Two valid patterns:
+    # 1. Full Schema-Driven: useSchema() + dynamic rendering (.map over sections/fields)
+    # 2. Enum-Only Schema-Driven: useEnumOptions() for server-driven enum selects
+    is_schema_driven = (uses_schema_hook and has_dynamic_rendering) or uses_enum_options
 
     # Build violation messages
-    if not uses_schema_hook and hardcoded_count > 3:
+    if not uses_server_driven and hardcoded_count > 3:
         # Only complain if there are significant hardcoded fields (3+ fields)
-        violations.append(f"Missing use*Schema() hook, found {hardcoded_count} hardcoded fields")
+        violations.append(f"Missing use*Schema() or useEnumOptions() hook, found {hardcoded_count} hardcoded fields")
 
-    if uses_schema_hook and not has_dynamic_rendering:
+    if uses_schema_hook and not has_dynamic_rendering and not uses_enum_options:
         violations.append("Has schema hook but NO dynamic rendering (.map over sections/fields)")
 
     if hardcoded_count > 5 and not is_schema_driven:
