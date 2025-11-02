@@ -197,7 +197,11 @@ export function DataTable<T>({
                   )}
                 </TableCell>
               ))}
-              {showActions && <TableCell align="right" sx={{ width: 120 }} />}
+              {showActions && (
+                <TableCell align="right" sx={{ width: customActions ? 180 : 120 }}>
+                  Aktionen
+                </TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -231,41 +235,33 @@ export function DataTable<T>({
                   ))}
                   {showActions && (
                     <TableCell align="right">
-                      <Box
-                        sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        {customActions ? (
-                          customActions(row)
-                        ) : (
-                          <>
-                            {onEdit && (
-                              <IconButton
-                                size="small"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  onEdit(row);
-                                }}
-                                title="Bearbeiten"
-                                sx={{ color: 'primary.main' }}
-                              >
-                                <EditIcon fontSize="small" />
-                              </IconButton>
-                            )}
-                            {onDelete && (
-                              <IconButton
-                                size="small"
-                                onClick={e => {
-                                  e.stopPropagation();
-                                  onDelete(row);
-                                }}
-                                title="Löschen"
-                                sx={{ color: 'error.main' }}
-                              >
-                                <DeleteIcon fontSize="small" />
-                              </IconButton>
-                            )}
-                          </>
+                      <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
+                        {customActions && customActions(row)}
+                        {onEdit && (
+                          <IconButton
+                            size="small"
+                            onClick={e => {
+                              e.stopPropagation();
+                              onEdit(row);
+                            }}
+                            title="Bearbeiten"
+                            sx={{ color: 'primary.main' }}
+                          >
+                            <EditIcon fontSize="small" />
+                          </IconButton>
+                        )}
+                        {onDelete && (
+                          <IconButton
+                            size="small"
+                            onClick={e => {
+                              e.stopPropagation();
+                              onDelete(row);
+                            }}
+                            title="Löschen"
+                            sx={{ color: 'error.main' }}
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
                         )}
                       </Box>
                     </TableCell>

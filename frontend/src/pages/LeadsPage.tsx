@@ -297,7 +297,10 @@ export default function LeadsPage({
       <Tooltip title="Timeline anzeigen">
         <IconButton
           size="small"
-          onClick={() => handleTimelineClick(lead)}
+          onClick={e => {
+            e.stopPropagation();
+            handleTimelineClick(lead);
+          }}
           sx={{ color: 'info.main' }}
         >
           <TimelineIcon fontSize="small" />
@@ -306,7 +309,10 @@ export default function LeadsPage({
       <Tooltip title={lead.clockStoppedAt ? 'Fortsetzen' : 'Pausieren'}>
         <IconButton
           size="small"
-          onClick={() => handleStopClockClick(lead)}
+          onClick={e => {
+            e.stopPropagation();
+            handleStopClockClick(lead);
+          }}
           sx={{ color: lead.clockStoppedAt ? 'success.main' : 'warning.main' }}
         >
           <PauseIcon fontSize="small" />
@@ -384,6 +390,8 @@ export default function LeadsPage({
                   columns={tableColumns}
                   getRowId={lead => lead.id}
                   onRowClick={handleRowClick}
+                  onEdit={handleEditClick}
+                  onDelete={handleDeleteClick}
                   showActions
                   customActions={renderLeadActions}
                   highlightNew
