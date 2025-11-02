@@ -41,6 +41,7 @@ interface NavigationItemProps {
   isCollapsed: boolean;
   onItemClick: () => void;
   onSubItemClick: (pathOrAction: string, isAction?: boolean) => void;
+  userPermissions: string[];
 }
 
 export const NavigationItem: React.FC<NavigationItemProps> = ({
@@ -50,8 +51,18 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
   isCollapsed,
   onItemClick,
   onSubItemClick,
+  userPermissions,
 }) => {
   const Icon = item.icon;
+
+  // Filter subItems based on permissions
+  const filteredSubItems = React.useMemo(() => {
+    if (!item.subItems) return undefined;
+
+    return item.subItems.filter(
+      subItem => !subItem.permissions || subItem.permissions.some(p => userPermissions.includes(p))
+    );
+  }, [item.subItems, userPermissions]);
 
   // Lazy loading for submenu items
   const {
@@ -59,7 +70,7 @@ export const NavigationItem: React.FC<NavigationItemProps> = ({
     isLoading,
     preloadItems,
   } = useLazySubMenu({
-    items: item.subItems,
+    items: filteredSubItems,
     isExpanded,
     preload: isActive, // Preload if this is the active menu
   });
