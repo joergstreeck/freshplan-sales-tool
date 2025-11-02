@@ -1,8 +1,8 @@
 -- Sprint 2.1.7.7 - Add Database CHECK Constraints for Enum Fields
--- Migration V10043: Add DB-Level Enum Validation
+-- Migration V10043: Add DB-Level Enum Validation (with Data Cleanup)
 --
 -- Problem: Backend & Frontend haben Enum-Validierung, aber DB nicht!
--- Lösung: CHECK Constraints für 5 Enum-Felder hinzufügen
+-- Lösung: ZUERST ungültige Daten bereinigen, DANN CHECK Constraints hinzufügen
 --
 -- ZERO TOLERANCE für Frontend-only Enum-Werte → 3-Layer Validation:
 --   1. Frontend: MUI Select mit Server-Driven Enums
@@ -10,6 +10,64 @@
 --   3. Database: CHECK Constraints (NEU!)
 --
 -- Affected Tables: customers, leads
+
+-- =============================================================================
+-- STEP 1: DATA CLEANUP - Set invalid values to NULL
+-- =============================================================================
+
+-- Cleanup: LegalForm (customers)
+UPDATE customers
+SET legal_form = NULL
+WHERE legal_form IS NOT NULL
+  AND legal_form NOT IN (
+    'GMBH', 'AG', 'GMBH_CO_KG', 'KG', 'OHG',
+    'EINZELUNTERNEHMEN', 'GBR', 'EV', 'STIFTUNG', 'SONSTIGE'
+  );
+
+-- Cleanup: BusinessType (customers)
+UPDATE customers
+SET business_type = NULL
+WHERE business_type IS NOT NULL
+  AND business_type NOT IN (
+    'RESTAURANT', 'HOTEL', 'CATERING', 'KANTINE',
+    'GROSSHANDEL', 'LEH', 'BILDUNG', 'GESUNDHEIT', 'SONSTIGES'
+  );
+
+-- Cleanup: BusinessType (leads)
+UPDATE leads
+SET business_type = NULL
+WHERE business_type IS NOT NULL
+  AND business_type NOT IN (
+    'RESTAURANT', 'HOTEL', 'CATERING', 'KANTINE',
+    'GROSSHANDEL', 'LEH', 'BILDUNG', 'GESUNDHEIT', 'SONSTIGES'
+  );
+
+-- Cleanup: KitchenSize (leads)
+UPDATE leads
+SET kitchen_size = NULL
+WHERE kitchen_size IS NOT NULL
+  AND kitchen_size NOT IN ('KLEIN', 'MITTEL', 'GROSS', 'SEHR_GROSS');
+
+-- Cleanup: PaymentTerms (customers)
+UPDATE customers
+SET payment_terms = NULL
+WHERE payment_terms IS NOT NULL
+  AND payment_terms NOT IN (
+    'SOFORT', 'NETTO_7', 'NETTO_14', 'NET_15', 'NETTO_30', 'NET_30',
+    'NETTO_60', 'NETTO_90', 'VORKASSE', 'LASTSCHRIFT'
+  );
+
+-- Cleanup: DeliveryCondition (customers)
+UPDATE customers
+SET delivery_condition = NULL
+WHERE delivery_condition IS NOT NULL
+  AND delivery_condition NOT IN (
+    'STANDARD', 'EXPRESS', 'DAP', 'SELBSTABHOLUNG', 'FREI_HAUS', 'SONDERKONDITIONEN'
+  );
+
+-- =============================================================================
+-- STEP 2: ADD CHECK CONSTRAINTS
+-- =============================================================================
 
 -- =============================================================================
 -- 1. LegalForm Enum (Customer.legalForm)
