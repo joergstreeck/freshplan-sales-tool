@@ -11,7 +11,7 @@
 import { Box, Chip, Typography, useTheme } from '@mui/material';
 import type { Theme } from '@mui/material/styles';
 import type { DataTableColumn } from '../../shared/components/data-table/DataTableTypes';
-import type { CustomerResponse } from '../../customer/types/customer.types';
+import type { Lead } from '../types';
 import { formatCurrency, formatDate } from '../../shared/utils/dataFormatters';
 
 // Lead Stage Labels (User-friendly display - from Backend LeadStage enum)
@@ -133,7 +133,7 @@ function LeadStageChip({ stage }: { stage: string }) {
  * Returns column configuration for DataTable component.
  * Based on LEADS_TABLE_COLUMNS but with custom rendering.
  */
-export function getLeadTableColumns(): DataTableColumn<CustomerResponse>[] {
+export function getLeadTableColumns(): DataTableColumn<Lead>[] {
   return [
     {
       id: 'companyName',
@@ -142,7 +142,7 @@ export function getLeadTableColumns(): DataTableColumn<CustomerResponse>[] {
       visible: true,
       order: 0,
       width: 250,
-      render: (lead: CustomerResponse) => {
+      render: (lead: Lead) => {
         const isNew =
           lead.createdAt && new Date(lead.createdAt) > new Date(Date.now() - 24 * 60 * 60 * 1000);
         return (
@@ -181,7 +181,7 @@ export function getLeadTableColumns(): DataTableColumn<CustomerResponse>[] {
       visible: true,
       order: 2,
       width: 150,
-      render: (lead: CustomerResponse) => lead.businessType || '-',
+      render: (lead: Lead) => lead.businessType || '-',
     },
     {
       id: 'leadScore',
@@ -192,18 +192,18 @@ export function getLeadTableColumns(): DataTableColumn<CustomerResponse>[] {
       width: 120,
       align: 'left',
       sortable: true,
-      render: (lead: CustomerResponse) => <LeadScoreDisplay score={lead.leadScore} />,
+      render: (lead: Lead) => <LeadScoreDisplay score={lead.leadScore} />,
     },
     {
       id: 'expectedAnnualVolume',
       label: 'Erwarteter Umsatz',
-      field: 'expectedAnnualVolume',
+      field: 'estimatedVolume',
       visible: true,
       order: 4,
       width: 150,
       align: 'right',
       sortable: true,
-      render: (lead: CustomerResponse) => formatCurrency(lead.expectedAnnualVolume),
+      render: (lead: Lead) => formatCurrency(lead.estimatedVolume),
     },
     {
       id: 'createdAt',
@@ -213,16 +213,16 @@ export function getLeadTableColumns(): DataTableColumn<CustomerResponse>[] {
       order: 5,
       width: 120,
       sortable: true,
-      render: (lead: CustomerResponse) => formatDate(lead.createdAt),
+      render: (lead: Lead) => formatDate(lead.createdAt),
     },
     {
       id: 'assignedTo',
       label: 'Zugewiesen an',
-      field: 'assignedTo',
+      field: 'ownerUserId',
       visible: false,
       order: 6,
       width: 150,
-      render: (lead: CustomerResponse) => lead.assignedTo || '-',
+      render: (lead: Lead) => lead.ownerUserId || '-',
     },
   ];
 }

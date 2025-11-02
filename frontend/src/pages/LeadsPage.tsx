@@ -42,7 +42,6 @@ import { taskEngine } from '../services/taskEngine';
 // Types & Config
 import type { Lead } from '../features/leads/types';
 import type { Customer } from '../types/customer.types';
-import type { CustomerResponse } from '../features/customer/types/customer.types';
 import type {
   FilterConfig,
   SortConfig,
@@ -242,17 +241,18 @@ export default function LeadsPage({
   };
 
   // Handle row click - LEAD-SPEZIFISCH: Slug-Navigation!
-  const handleRowClick = (lead: CustomerResponse) => {
+  const handleRowClick = (lead: Lead) => {
     // Slug-basierte Navigation: /lead-generation/leads/baeckerei-mueller-123
     const url = generateLeadUrl(lead.companyName || 'lead', lead.id);
     navigate(url);
   };
 
   // Handle row edit click (for VORMERKUNG stage)
-  const handleEditClick = (lead: CustomerResponse) => {
+  const handleEditClick = (lead: Lead) => {
     // LEAD-SPEZIFISCH: VORMERKUNG Stage → AddFirstContactDialog
-    if (lead.leadStage === 'VORMERKUNG') {
-      setSelectedLead(lead as unknown as Lead);
+    // Note: Backend sends stage as string (e.g., "VORMERKUNG"), not enum number
+    if (lead.stage === 0 || (lead.status as any) === 'REGISTERED') {
+      setSelectedLead(lead);
       setFirstContactDialogOpen(true);
     } else {
       // Normal edit → navigate to detail
@@ -261,8 +261,8 @@ export default function LeadsPage({
   };
 
   // Handle row delete click
-  const handleDeleteClick = (lead: CustomerResponse) => {
-    setSelectedLead(lead as unknown as Lead);
+  const handleDeleteClick = (lead: Lead) => {
+    setSelectedLead(lead);
     setDeleteDialogOpen(true);
   };
 
@@ -338,7 +338,7 @@ export default function LeadsPage({
                 />
 
                 {/* Lead Table */}
-                <DataTable<CustomerResponse>
+                <DataTable<Lead>
                   data={filteredLeads}
                   columns={tableColumns}
                   getRowId={lead => lead.id}
