@@ -5,7 +5,7 @@
  * Integriert verschiedene Module wie Calculator, Customer Details etc.
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -42,6 +42,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import { useCustomerDetails } from '../../customer/hooks/useCustomerDetails';
 import { customerStatusLabels, industryLabels } from '../../customer/types/customer.types';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -81,6 +82,33 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
 
   // Lade Kundendaten
   const { data: customer, isLoading, isError } = useCustomerDetails(selectedCustomerId);
+
+  // Server-Driven Enums (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: customerTypeOptions } = useEnumOptions('/api/enums/customer-types');
+  const { data: paymentTermsOptions } = useEnumOptions('/api/enums/payment-terms');
+
+  // Create fast lookup maps (O(1) statt O(n) mit .find())
+  const customerTypeLabels = useMemo(() => {
+    if (!customerTypeOptions) return {};
+    return customerTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [customerTypeOptions]);
+
+  const paymentTermsLabels = useMemo(() => {
+    if (!paymentTermsOptions) return {};
+    return paymentTermsOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [paymentTermsOptions]);
 
   // Empty State wenn kein Kunde ausgewählt
   if (!selectedCustomerId) {
@@ -405,7 +433,9 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                     <Typography variant="body2" color="text.secondary">
                       Kundentyp:
                     </Typography>
-                    <Typography variant="body2">{customer.customerType}</Typography>
+                    <Typography variant="body2">
+                      {customerTypeLabels[customer.customerType] || customer.customerType}
+                    </Typography>
                   </Box>
                   {customer.classification && (
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -474,7 +504,9 @@ export function ActionCenterColumnMUI({ selectedCustomerId, onClose }: ActionCen
                       <Typography variant="body2" color="text.secondary">
                         Zahlungsziel:
                       </Typography>
-                      <Typography variant="body2">{customer.paymentTerms}</Typography>
+                      <Typography variant="body2">
+                        {paymentTermsLabels[customer.paymentTerms] || customer.paymentTerms}
+                      </Typography>
                     </Box>
                   )}
                 </Stack>

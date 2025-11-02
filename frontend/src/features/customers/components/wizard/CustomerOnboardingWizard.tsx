@@ -116,19 +116,12 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     if (editMode && initialData) {
       console.log('[CustomerOnboardingWizard] Loading initial data for edit mode:', initialData);
 
-      // Transform DB values to UI format (UPPERCASE → lowercase for compatibility)
+      // Sprint 2.1.7.7: Backend liefert bereits UPPERCASE Enum-Werte (Server-Driven Architecture)
+      // Keine Transformation nötig - Backend = Single Source of Truth
       const transformedData = { ...initialData };
 
-      // Transform legalForm: "GmbH" → "gmbh"
-      if (transformedData.legalForm && typeof transformedData.legalForm === 'string') {
-        transformedData.legalForm = (transformedData.legalForm as string)
-          .toLowerCase()
-          .replace(/ /g, '_')
-          .replace(/\./g, '');
-      }
-
-      // businessType stays UPPERCASE (enum field)
-      // Other enum fields can stay as-is
+      // legalForm, businessType, und andere Enum-Felder bleiben UPPERCASE (as-is)
+      // Forms nutzen useEnumOptions() für Label-Darstellung
 
       setInitialData(transformedData, customerId);
     }
