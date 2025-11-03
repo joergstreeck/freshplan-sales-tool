@@ -482,6 +482,56 @@ public class OpportunityService {
     customer.setLifecycleStage(
         de.freshplan.domain.customer.entity.CustomerLifecycleStage.ONBOARDING);
 
+    // 7.5. Set hierarchy type (Sprint 2.1.7.7 Multi-Location Management - D0)
+    if (request.getHierarchyType() != null && !request.getHierarchyType().isBlank()) {
+      try {
+        de.freshplan.domain.customer.entity.CustomerHierarchyType hierarchyType =
+            de.freshplan.domain.customer.entity.CustomerHierarchyType.valueOf(
+                request.getHierarchyType());
+        customer.setHierarchyType(hierarchyType);
+
+        // If FILIALE: validate parent and set relation
+        if (hierarchyType == de.freshplan.domain.customer.entity.CustomerHierarchyType.FILIALE) {
+          if (request.getParentCustomerId() == null) {
+            throw new IllegalArgumentException(
+                "Parent customer ID required for FILIALE hierarchy type");
+          }
+          Customer parent =
+              customerRepository
+                  .findByIdOptional(request.getParentCustomerId())
+                  .orElseThrow(
+                      () ->
+                          new IllegalArgumentException(
+                              "Parent customer not found: " + request.getParentCustomerId()));
+
+          if (parent.getHierarchyType()
+              != de.freshplan.domain.customer.entity.CustomerHierarchyType.HEADQUARTER) {
+            throw new IllegalArgumentException("Parent customer must be HEADQUARTER type");
+          }
+
+          customer.setParentCustomer(parent);
+          // Copy xentral_customer_id from parent (same customer ID in Xentral!)
+          if (parent.getXentralCustomerId() != null) {
+            customer.setXentralCustomerId(parent.getXentralCustomerId());
+            logger.info(
+                "Copied xentral_customer_id {} from parent {} to FILIALE {}",
+                parent.getXentralCustomerId(),
+                parent.getId(),
+                customer.getId());
+          }
+        }
+        logger.info("Set hierarchy type {} for customer", hierarchyType);
+      } catch (IllegalArgumentException e) {
+        logger.warn(
+            "Invalid hierarchy type: {}, defaulting to STANDALONE", request.getHierarchyType());
+        customer.setHierarchyType(
+            de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
+      }
+    } else {
+      customer.setHierarchyType(
+          de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
+    }
+
     // 8. Copy data from Lead (if opportunity came from lead)
     if (opportunity.getLead() != null) {
       de.freshplan.modules.leads.domain.Lead lead = opportunity.getLead();
