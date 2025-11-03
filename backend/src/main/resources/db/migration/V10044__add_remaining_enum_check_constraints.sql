@@ -32,7 +32,7 @@ WHERE primary_financing IS NOT NULL
   AND primary_financing NOT IN ('PRIVATE', 'PUBLIC', 'MIXED');
 
 -- =============================================================================
--- STEP 2: ADD CHECK CONSTRAINTS
+-- STEP 2: ADD CHECK CONSTRAINTS (IDEMPOTENT - DROP IF EXISTS FIRST)
 -- =============================================================================
 
 -- =============================================================================
@@ -40,6 +40,9 @@ WHERE primary_financing IS NOT NULL
 -- =============================================================================
 -- Values: NEUKUNDE, UNTERNEHMEN, INSTITUTION, PRIVAT, VEREIN, SONSTIGE
 -- Entity: de.freshplan.domain.customer.entity.CustomerType
+
+-- Drop constraint if it already exists (idempotent)
+ALTER TABLE customers DROP CONSTRAINT IF EXISTS chk_customers_customer_type;
 
 ALTER TABLE customers
 ADD CONSTRAINT chk_customers_customer_type
@@ -60,6 +63,9 @@ COMMENT ON CONSTRAINT chk_customers_customer_type ON customers IS
 -- =============================================================================
 -- Values: PRIVATE, PUBLIC, MIXED
 -- Entity: de.freshplan.domain.customer.entity.FinancingType
+
+-- Drop constraint if it already exists (idempotent)
+ALTER TABLE customers DROP CONSTRAINT IF EXISTS chk_customers_primary_financing;
 
 ALTER TABLE customers
 ADD CONSTRAINT chk_customers_primary_financing

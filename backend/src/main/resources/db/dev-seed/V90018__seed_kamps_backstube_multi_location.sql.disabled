@@ -224,9 +224,8 @@ INSERT INTO customers (
 -- Contact 1: Geschäftsführer (EXECUTIVE)
 INSERT INTO customer_contacts (
     id, customer_id, salutation, first_name, last_name,
-    position, decision_level, warmth_level,
     email, phone, mobile,
-    is_primary, preferred_contact_method, notes,
+    is_primary, preferred_communication_method, notes,
     is_deleted, created_at, created_by
 ) VALUES (
     '33333333-3333-C001-0000-000000000001'::uuid,
@@ -243,9 +242,8 @@ INSERT INTO customer_contacts (
 -- Contact 2: Einkaufsleiter (MANAGER)
 INSERT INTO customer_contacts (
     id, customer_id, salutation, first_name, last_name,
-    position, decision_level, warmth_level,
     email, phone, mobile,
-    is_primary, preferred_contact_method, notes,
+    is_primary, preferred_communication_method, notes,
     is_deleted, created_at, created_by
 ) VALUES (
     '33333333-3333-C001-0000-000000000002'::uuid,
@@ -265,9 +263,8 @@ INSERT INTO customer_contacts (
 
 INSERT INTO customer_contacts (
     id, customer_id, salutation, first_name, last_name,
-    position, decision_level, warmth_level,
     email, phone, mobile,
-    is_primary, preferred_contact_method, notes,
+    is_primary, preferred_communication_method, notes,
     is_deleted, created_at, created_by
 ) VALUES (
     '33333333-3333-C002-0000-000000000001'::uuid,
