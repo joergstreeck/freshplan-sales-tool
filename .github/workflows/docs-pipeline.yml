@@ -1,0 +1,591 @@
+name: Docs Pipeline
+
+# Consolidated Documentation Workflow
+# Sprint 2.1.7.7 - CI/CD Konsolidierung
+#
+# Replaces 7 workflows:
+# - docs-compliance.yml
+# - docs-guard.yml
+# - docs-link-check.yml
+# - docs-only-check.yml
+# - update-docs.yml
+# - link-check.yml
+# - deploy-docs.yml
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'CLAUDE.md'
+      - 'WAY_OF_WORKING.*'
+      - '.github/workflows/docs-pipeline.yml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'docs/**'
+      - '*.md'
+      - 'CLAUDE.md'
+      - 'WAY_OF_WORKING.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: docs-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. Docs Guard (CLAUDE.md + Scripts)
+  # ============================================================================
+  guard:
+    name: Docs Guard Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Stamp CLAUDE.md date
+        run: |
+          bash scripts/update-claude-date.sh
+          if ! git diff --exit-code CLAUDE.md; then
+            git add CLAUDE.md
+            echo "✅ CLAUDE.md date stamped"
+          fi
+
+      - name: Enforce CLAUDE.md length
+        run: bash scripts/lint-claude-length.sh
+
+      - name: Block hardcoded migration numbers
+        run: bash scripts/deny-hardcoded-migrations.sh
+
+      - name: Validate all scripts exist
+        run: |
+          if [ ! -f scripts/get-next-migration.sh ]; then
+            echo "❌ scripts/get-next-migration.sh missing!"
+            exit 1
+          fi
+          echo "✅ All required scripts exist"
+
+  # ============================================================================
+  # 2. Docs Compliance (Hybrid-Methodik)
+  # ============================================================================
+  compliance:
+    name: Docs Compliance Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: contains(github.event.pull_request.head.ref, 'docs') || contains(github.event.pull_request.head.ref, 'research') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run compliance analysis
+        id: analyze
+        run: |
+          python3 - << 'PY' > compliance_report.json
+          import os, re, json, pathlib
+
+          # --- YAML Front-Matter Reader mit Fallback ---
+          def parse_simple_yaml_block(block: str):
+              fm = {}
+              current_key = None
+              for raw in block.splitlines():
+                  line = raw.rstrip()
+                  if not line.strip():
+                      continue
+                  m = re.match(r'^([A-Za-z0-9_\-]+):\s*(.*)', line)
+                  if m:
+                      key, val = m.group(1).strip(), m.group(2).strip()
+                      if val == "":
+                          fm[key] = []
+                          current_key = key
+                      else:
+                          fm[key] = val.strip().strip('"\'')
+                          current_key = None
+                      continue
+                  if current_key and line.lstrip().startswith('- '):
+                      fm[current_key].append(line.lstrip()[2:].strip().strip('"\''))
+              return fm
+
+          def read_front_matter(p: pathlib.Path):
+              try:
+                  txt = p.read_text(encoding='utf-8', errors='ignore')
+              except Exception:
+                  return {}
+              txt = txt.lstrip()
+              if not txt.startswith('---'):
+                  return {}
+              parts = txt.split('---', 2)
+              if len(parts) < 3:
+                  return {}
+              block = parts[1]
+              # Try PyYAML first
+              try:
+                  import yaml
+                  fm = yaml.safe_load(block) or {}
+                  if isinstance(fm, dict):
+                      return fm
+              except Exception:
+                  pass
+              # Fallback: simple parser with list support
+              return parse_simple_yaml_block(block)
+
+          # --- Settings ---
+          ROOT = pathlib.Path("docs/planung/features-neu")
+          MODULES = ["02_neukundengewinnung","03_kundenmanagement"]
+
+          CORE_DIRS = {"backend","frontend","shared","analyse","artefakte"}
+          STUB_DIRS = {"lead-erfassung","email-posteingang","kampagnen","implementation-plans",
+                       "diskussionen","test-coverage","testing","postmortem"}
+          ALLOWED_ROOT_FILES = {"_index.md","SPRINT_MAP.md","technical-concept.md","README.md"}
+          IGNORE_FILES = {".DS_Store"}
+
+          def is_stub_dir(modpath: pathlib.Path, dname: str):
+              d = modpath / dname
+              if not d.is_dir():
+                  return False, "not_dir"
+              subdirs = [p for p in d.iterdir() if p.is_dir()]
+              if subdirs:
+                  return False, "has_subdirs"
+              md_files = list(d.glob("*.md"))
+              if not md_files:
+                  return False, "no_md_files"
+              for f in md_files:
+                  fm = read_front_matter(f)
+                  if not (fm.get("doc_type") == "stub" or fm.get("status") == "moved"):
+                      return False, f"non_stub_file:{f.name}"
+              return True, "ok"
+
+          def check_readme_redirect(modpath: pathlib.Path):
+              candidates = [p for p in [modpath/"README.md", modpath/"readme.md"] if p.exists()]
+              if not candidates:
+                  return True, "absent"
+              p = candidates[0]
+              fm = read_front_matter(p)
+              ok = (fm.get("doc_type") == "stub" and str(fm.get("moved_to")) in ("./_index.md","_index.md"))
+              return ok, "redirect_ok" if ok else "redirect_missing_or_wrong"
+
+          def pattern_frontmatter_issues(modpath: pathlib.Path, module_name: str):
+              issues = []
+              af = modpath / "artefakte"
+              if af.is_dir():
+                  for p in af.glob("*_PATTERN.md"):
+                      fm = read_front_matter(p)
+                      missing = [k for k in ["module","domain","doc_type","status","owner","updated"] if not fm.get(k)]
+                      if missing:
+                          issues.append({"path": str(p.relative_to(modpath)), "missing": missing})
+              return issues
+
+          def required_files_present(modpath: pathlib.Path):
+              req = {"_index.md","SPRINT_MAP.md","technical-concept.md"}
+              present = {f for f in req if (modpath/f).exists()}
+              missing = sorted(req - present)
+              return len(missing)==0, missing
+
+          def find_misplaced_analysis_docs(modpath: pathlib.Path):
+              misplaced = []
+              for p in modpath.glob("*"):
+                  if p.is_file() and p.suffix.lower()==".md":
+                      name = p.name
+                      if name in {"_index.md","SPRINT_MAP.md","technical-concept.md","README.md"}:
+                          continue
+                      if re.search(r"ANALYSE", name, re.IGNORECASE) or name == "VERZEICHNISSTRUKTUR_ANALYSE.md":
+                          misplaced.append(name)
+              return misplaced
+
+          def resolve_entry_point(ep: str):
+              base = pathlib.Path("docs/planung")
+              ep_clean = ep.lstrip("./")
+              candidates = [
+                  base / ep_clean,
+                  base / (ep_clean.rstrip("/")),
+                  base / (ep_clean.rstrip("/")) / "_index.md",
+              ]
+              for c in candidates:
+                  if c.exists():
+                      return c
+              return None
+
+          def analyze_triggers():
+              base = pathlib.Path("docs/planung")
+              out = {}
+              for fn in ["TRIGGER_SPRINT_2_1.md","TRIGGER_SPRINT_2_1_1.md"]:
+                  p = base/fn
+                  if not p.exists():
+                      out[fn] = {"exists": False}
+                      continue
+                  txt = p.read_text(encoding="utf-8", errors="ignore").lstrip()
+                  if not txt.startswith("---"):
+                      out[fn] = {"exists": True, "has_yaml_header": False}
+                      continue
+                  fm = read_front_matter(p)
+                  eps = fm.get("entry_points") or []
+                  ok = True
+                  missing = []
+                  for ep in eps:
+                      r = resolve_entry_point(str(ep))
+                      if r is None:
+                          ok = False
+                          missing.append(ep)
+                  out[fn] = {
+                      "exists": True,
+                      "has_yaml_header": True,
+                      "fields_present": [k for k in ("sprint_id","module_focus","entry_points","updated") if k in fm],
+                      "entry_points_ok": ok,
+                      "entry_points_missing": missing
+                  }
+              return out
+
+          def analyze_module(module: str):
+              modpath = ROOT / module
+              root_dirs = sorted([p.name for p in modpath.iterdir() if p.is_dir()])
+              root_files = sorted([p.name for p in modpath.iterdir() if p.is_file()])
+
+              result = {
+                  "root_dirs": root_dirs,
+                  "root_files": root_files,
+                  "required_files": {},
+                  "readme_redirect_ok": None,
+                  "pattern_frontmatter_issues": [],
+                  "unexpected_root_dirs": [],
+                  "unexpected_root_files": [],
+                  "stub_dirs_status": {},
+                  "legacy_planning_has_index": None,
+              }
+
+              # 1) Verzeichnis-Klassifizierung
+              for d in root_dirs:
+                  if d in CORE_DIRS or d == "legacy-planning":
+                      continue
+                  elif d in STUB_DIRS:
+                      ok, why = is_stub_dir(modpath, d)
+                      result["stub_dirs_status"][d] = {"ok": ok, "why": why}
+                      if not ok:
+                          result["unexpected_root_dirs"].append({"name": d, "reason": f"stub_violation:{why}"})
+                  elif d.startswith("."):
+                      result["unexpected_root_dirs"].append({"name": d, "reason": "hidden_dir_in_root"})
+                  else:
+                      result["unexpected_root_dirs"].append({"name": d, "reason": "not_allowed_in_root"})
+
+              # 2) Pflicht-Dateien
+              ok_req, missing = required_files_present(modpath)
+              result["required_files"]["ok"] = ok_req
+              result["required_files"]["missing"] = missing
+
+              # 3) README Redirect
+              ok_rd, why = check_readme_redirect(modpath)
+              result["readme_redirect_ok"] = ok_rd
+              if not ok_rd:
+                  result.setdefault("violations", []).append(f"readme_redirect:{why}")
+
+              # 4) Pattern Front-Matter
+              pfm = pattern_frontmatter_issues(modpath, module)
+              result["pattern_frontmatter_issues"] = pfm
+              if pfm:
+                  result.setdefault("violations", []).append("pattern_frontmatter_issues")
+
+              # 5) Fehlplatzierte Analyse-Dokumente
+              misplaced = find_misplaced_analysis_docs(modpath)
+              result["misplaced_analysis_docs"] = misplaced
+              if misplaced:
+                  result.setdefault("violations", []).append("analysis_docs_in_root")
+
+              # 6) Unerlaubte Root-Dateien
+              for f in root_files:
+                  if f in IGNORE_FILES:
+                      continue
+                  if f not in ALLOWED_ROOT_FILES:
+                      result["unexpected_root_files"].append(f)
+
+              # 7) legacy-planning Index-Hinweis
+              if "legacy-planning" in root_dirs:
+                  result["legacy_planning_has_index"] = (modpath/"legacy-planning/_index.md").exists()
+
+              # 8) 8-Items-Regel
+              disallowed_dirs = [d for d in root_dirs if (d not in CORE_DIRS and d != "legacy-planning" and d not in STUB_DIRS and not d.startswith("."))]
+              passes_dirs = (len(disallowed_dirs) == 0)
+              disallowed_files = [f for f in root_files if (f not in ALLOWED_ROOT_FILES and f not in IGNORE_FILES)]
+              passes_files = (len(disallowed_files) == 0)
+              passes_8_rule = passes_dirs and passes_files and ok_req
+              result["passes_8_items_rule"] = passes_8_rule
+              if not passes_dirs:
+                  result.setdefault("violations", []).append({"unexpected_root_dirs": disallowed_dirs})
+              if not passes_files:
+                  result.setdefault("violations", []).append({"unexpected_root_files": disallowed_files})
+
+              # overall ok
+              ok = passes_8_rule and ok_rd and ok_req and not pfm and not misplaced
+              result["ok"] = ok
+              return result
+
+          # --- Build report ---
+          report = {
+              "ref": os.popen("git rev-parse --abbrev-ref HEAD").read().strip(),
+              "commit": os.popen("git rev-parse --short HEAD").read().strip(),
+              "modules": {},
+              "triggers": analyze_triggers(),
+          }
+
+          for m in MODULES:
+              report["modules"][m] = analyze_module(m)
+
+          summary = {}
+          for m, data in report["modules"].items():
+              viol = []
+              if not data["passes_8_items_rule"]: viol.append("8_items_rule")
+              if not data["required_files"]["ok"]: viol.append("required_files")
+              if not data["readme_redirect_ok"]: viol.append("readme_redirect")
+              if data["pattern_frontmatter_issues"]: viol.append("pattern_frontmatter")
+              if data["misplaced_analysis_docs"]: viol.append("analysis_docs_in_root")
+              if data.get("unexpected_root_dirs"): viol.append("unexpected_root_dirs")
+              if data.get("unexpected_root_files"): viol.append("unexpected_root_files")
+              summary[m] = {"ok": data["ok"], "violations": viol}
+
+          report["compliance_summary"] = summary
+          print(json.dumps(report, indent=2, ensure_ascii=False))
+          PY
+          echo "analysis_completed=true" >> $GITHUB_OUTPUT
+
+      - name: Save compliance report
+        if: steps.analyze.outputs.analysis_completed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-compliance-report-${{ github.run_number }}
+          path: compliance_report.json
+          retention-days: 7
+
+      - name: Check violations
+        id: check_violations
+        if: steps.analyze.outputs.analysis_completed == 'true'
+        run: |
+          python3 -c "
+          import json, os
+          with open('compliance_report.json') as f:
+              r = json.load(f)
+          violations = [k for k,v in r.get('compliance_summary',{}).items() if not v.get('ok')]
+          if violations:
+              print(f'❌ Compliance violations in: {violations}')
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write('has_violations=true\n')
+              exit(1)
+          print('✅ All modules compliant')
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write('has_violations=false\n')
+          "
+
+      - name: Comment on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            try {
+              const r = JSON.parse(fs.readFileSync('compliance_report.json', 'utf8'));
+              const mod = r.compliance_summary || {};
+              const lines = ['### 📊 Docs Compliance Check - FAILED'];
+              for (const [k,v] of Object.entries(mod)) {
+                lines.push(`- **${k}**: ${v.ok ? '✅ OK' : '❌ ' + (v.violations?.join(', ') || 'violations')}`);
+              }
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: lines.join('\n')
+              });
+            } catch(e) {
+              console.log('Failed to parse compliance report:', e);
+            }
+
+  # ============================================================================
+  # 3. Docs-Only Branch Guard
+  # ============================================================================
+  docs-only-check:
+    name: Research/Docs Branch Guard
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    if: github.event_name == 'pull_request' && (contains(github.head_ref, 'research') || contains(github.head_ref, 'docs'))
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files_ignore: |
+            docs/**
+            *.md
+            .github/workflows/docs-pipeline.yml
+            CLAUDE.md
+            README.md
+            TRIGGER*.md
+
+      - name: Check for non-docs changes
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "❌ ERROR: Research/Docs branches should only contain documentation changes!"
+          echo "Found non-documentation changes in:"
+          echo "${{ steps.changed-files.outputs.all_changed_files }}"
+          echo ""
+          echo "This PR is marked as research/documentation only."
+          echo "Please move code changes to a separate feature branch."
+          exit 1
+
+      - name: Success - Docs only
+        if: steps.changed-files.outputs.any_changed == 'false'
+        run: |
+          echo "✅ SUCCESS: Only documentation files changed"
+          echo "This PR contains documentation changes only, as expected."
+
+  # ============================================================================
+  # 4. Link Checking (Comprehensive)
+  # ============================================================================
+  link-check:
+    name: Markdown Link Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check all markdown links
+        uses: lycheeverse/lychee-action@v1
+        with:
+          args: >-
+            --verbose
+            --no-progress
+            --accept 200,429
+            --require-https
+            docs/**/*.md
+            CLAUDE.md
+            *.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Broken Links Detected\n\n' +
+                    'Markdown link check failed!\n\n' +
+                    '**Action required:**\n' +
+                    '1. Review workflow logs for broken links\n' +
+                    '2. Fix or remove broken links\n' +
+                    '3. Commit changes and re-run checks\n\n' +
+                    'See workflow logs for details.'
+            })
+
+  # ============================================================================
+  # 5. WAY_OF_WORKING Sync Check
+  # ============================================================================
+  update-docs:
+    name: WAY_OF_WORKING Sync Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    if: contains(github.event.head_commit.message, 'WAY_OF_WORKING') || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if files are in sync
+        run: |
+          # Extract key sections from markdown
+          MD_CHECKSUM=$(grep -E "^(#|##|###|\||Sprint)" WAY_OF_WORKING.md | md5sum | cut -d' ' -f1 || echo "none")
+          echo "Markdown structure checksum: $MD_CHECKSUM"
+          echo "::warning::Remember to update WAY_OF_WORKING.html when changing the markdown!"
+
+  # ============================================================================
+  # 6. Deploy to GitHub Pages (Main branch only)
+  # ============================================================================
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [guard, link-check]
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Create docs directory
+        run: |
+          mkdir -p docs
+          cp WAY_OF_WORKING.html docs/index.html
+          cp WAY_OF_WORKING.md docs/
+
+          # Create a simple landing page
+          cat > docs/README.md << 'EOF'
+          # FreshPlan Documentation
+
+          - [Way of Working (HTML)](./index.html)
+          - [Way of Working (Markdown)](./WAY_OF_WORKING.md)
+          EOF
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./docs
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  # ============================================================================
+  # Final Pipeline Gate
+  # ============================================================================
+  docs-pipeline-complete:
+    name: Docs Pipeline Complete
+    needs: [guard, link-check]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.guard.result }}" == "failure" ]] || \
+             [[ "${{ needs.link-check.result }}" == "failure" ]]; then
+            echo "❌ Docs Pipeline FAILED"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Docs Pipeline - FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Guard checks: ${{ needs.guard.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Link check: ${{ needs.link-check.result }}" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ Docs Pipeline PASSED!"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Docs Pipeline - PASSED" >> $GITHUB_STEP_SUMMARY

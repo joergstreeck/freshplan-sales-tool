@@ -1,0 +1,381 @@
+name: Integration Tests
+
+# Consolidated Integration & E2E Testing Workflow
+# Sprint 2.1.7.7 - CI/CD Konsolidierung
+#
+# Replaces 3 workflows:
+# - ci-integration.yml (Backend Integration + E2E Smoke)
+# - mini-e2e.yml (Playwright Matrix)
+# - smoke-tests.yml (Playwright Smoke)
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop, ci-minimal-working]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: integration-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. Backend Integration Tests
+  # ============================================================================
+  backend-integration:
+    name: Backend Integration Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Run integration tests
+        run: |
+          ./mvnw -B clean test \
+            -Dtest="*IT,*IntegrationTest" \
+            -DfailIfNoTests=false \
+            -Dquarkus.profile=test \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dsurefire.rerunFailingTestsCount=2 \
+            2>&1 | tee backend-integration-test.log
+        env:
+          CI_GREEN: true
+          KEYCLOAK_CLIENT_SECRET: ${{ secrets.KEYCLOAK_CLIENT_SECRET || 'secret' }}
+          DATABASE_URL: postgresql://freshplan:freshplan@localhost:5432/freshplan
+
+      - name: Upload test logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-integration-test-logs
+          path: |
+            backend-integration-test.log
+            backend/target/surefire-reports/
+            backend/target/failsafe-reports/
+          retention-days: 7
+
+      - name: Debug test failures
+        if: failure()
+        run: |
+          echo "=== Failed test summary ==="
+          grep -E "FAILURE|ERROR" backend-integration-test.log | head -50 || true
+          echo "=== Test report files ==="
+          ls -la target/surefire-reports/*.txt 2>/dev/null || true
+          ls -la target/failsafe-reports/*.txt 2>/dev/null || true
+
+  # ============================================================================
+  # 2. E2E Smoke Tests (Full Stack)
+  # ============================================================================
+  e2e-smoke:
+    name: E2E Smoke Tests (Backend + Frontend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          echo "🔨 Building frontend application..."
+          VITE_API_URL=http://localhost:8080 npm run build
+          echo "✅ Build completed. Checking build output:"
+          ls -la dist/ | head -10
+          echo "Index.html content preview:"
+          head -20 dist/index.html || echo "index.html not found"
+
+      - name: Install Playwright (chromium only)
+        run: cd frontend && npx playwright install --with-deps chromium
+
+      - name: Start Backend (background)
+        run: |
+          # Use CI profile for stable configuration
+          export QUARKUS_PROFILE=ci
+
+          # First ensure it's compiled
+          ./mvnw -B compile
+
+          # Start backend with CI profile
+          ./mvnw -B quarkus:dev \
+            -Dquarkus.http.host=0.0.0.0 \
+            > backend.log 2>&1 &
+
+          # Store PID
+          BACKEND_PID=$!
+          echo "Backend started with PID: $BACKEND_PID"
+
+          # Wait for backend to be ready
+          echo "Waiting for backend to start..."
+          for i in {1..30}; do
+            if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
+              echo "Backend is ready!"
+              break
+            fi
+            echo "Attempt $i/30: Backend not ready yet..."
+            sleep 2
+          done
+
+          # Show startup log for debugging
+          echo "=== Backend startup log ==="
+          tail -n 50 backend.log || true
+        working-directory: ./backend
+        shell: bash
+        env:
+          QUARKUS_PROFILE: ci
+          KEYCLOAK_CLIENT_SECRET: secret
+          QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
+          QUARKUS_OIDC_ENABLED: false
+          QUARKUS_SECURITY_USERS_EMBEDDED_ENABLED: true
+
+      - name: Wait for Backend
+        run: |
+          echo "Waiting for backend to be ready..."
+          for i in {1..60}; do
+            # Try multiple endpoints
+            if curl -f http://localhost:8080/q/health/ready 2>/dev/null; then
+              echo "Backend is ready (health check)!"
+              exit 0
+            elif curl -f http://localhost:8080/api/ping 2>/dev/null; then
+              echo "Backend is ready (ping endpoint)!"
+              exit 0
+            elif curl -f http://localhost:8080/q/health 2>/dev/null; then
+              echo "Backend is ready (basic health)!"
+              exit 0
+            fi
+            echo "Attempt $i/60 - Backend not ready yet..."
+            sleep 3
+          done
+          echo "Backend failed to start!"
+          # Show more logs for debugging
+          echo "=== Full backend log ==="
+          cat backend/backend.log || true
+          exit 1
+        env:
+          KEYCLOAK_CLIENT_SECRET: secret
+
+      - name: Start Frontend Preview Server
+        run: |
+          cd frontend
+          # Start preview server in background
+          npm run preview > frontend.log 2>&1 &
+          # Wait for it to be ready
+          echo "Waiting for frontend preview server..."
+          for i in {1..20}; do
+            if curl -f http://localhost:4173 2>/dev/null; then
+              echo "Frontend is ready!"
+              break
+            fi
+            echo "Attempt $i/20 - Frontend not ready yet..."
+            sleep 2
+          done
+
+      - name: Run Playwright E2E tests
+        run: |
+          # Final health check before running tests
+          echo "🎭 Final backend health check before E2E tests..."
+          curl -f http://localhost:8080/q/health/ready || curl -f http://localhost:8080/api/ping || {
+            echo "Backend is not ready, but proceeding with tests (may use fallback mechanisms)"
+          }
+
+          # Set API URL for tests
+          export VITE_API_URL=http://localhost:8080
+          export CI=true
+          cd frontend
+          echo "🎭 Starting Playwright tests with debug output..."
+          echo "Current directory: $(pwd)"
+          echo "Files in dist folder:"
+          ls -la dist/ || echo "dist folder not found"
+          echo "Running tests..."
+          DEBUG=pw:api npx playwright test --config=playwright.config.ci.ts --project=chromium --reporter=list
+        env:
+          CI: true
+          DEBUG: pw:api,pw:browser
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-smoke-playwright-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7
+
+      - name: Debug Backend/Frontend Failure
+        if: failure()
+        run: |
+          echo "=== Backend logs on failure ==="
+          cd backend
+          cat backend.log || true
+          echo "=== Frontend logs on failure ==="
+          cd ../frontend
+          cat frontend.log || true
+          echo "=== Check if processes are running ==="
+          ps aux | grep -E 'quarkus|vite|node' || true
+          echo "=== Check ports ==="
+          netstat -tlnp 2>/dev/null | grep -E '8080|4173|5173' || true
+
+      - name: Cleanup processes
+        if: always()
+        run: |
+          pkill -f quarkus:dev || true
+          pkill -f "npm run preview" || true
+
+  # ============================================================================
+  # 3. Playwright Matrix Tests (Multi-Browser)
+  # ============================================================================
+  playwright-matrix:
+    name: Playwright Tests (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: cd frontend && npm ci
+
+      - name: Build frontend
+        run: cd frontend && npm run build
+
+      - name: Install Playwright ${{ matrix.browser }}
+        run: |
+          cd frontend
+          npx playwright install ${{ matrix.browser }}
+          npx playwright install-deps ${{ matrix.browser }}
+
+      - name: Run Playwright tests on ${{ matrix.browser }}
+        run: cd frontend && npx playwright test --project=${{ matrix.browser }}
+        continue-on-error: false
+
+      - name: Upload results on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-results-${{ matrix.browser }}
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 3
+
+      - name: Upload HTML report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-${{ matrix.browser }}
+          path: frontend/playwright-report/
+          retention-days: 7
+
+  # ============================================================================
+  # Final Pipeline Gate
+  # ============================================================================
+  integration-tests-complete:
+    name: Integration Tests Complete
+    needs: [backend-integration, e2e-smoke]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.backend-integration.result }}" == "failure" ]] || \
+             [[ "${{ needs.e2e-smoke.result }}" == "failure" ]]; then
+            echo "❌ Integration Tests FAILED"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Integration Tests - FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Backend Integration: ${{ needs.backend-integration.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- E2E Smoke Tests: ${{ needs.e2e-smoke.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check logs in artifacts for details." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ All integration tests passed!"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Integration Tests - PASSED" >> $GITHUB_STEP_SUMMARY
