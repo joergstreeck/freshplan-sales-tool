@@ -1,0 +1,310 @@
+name: Backend Pipeline
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-pipeline.yml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:  # Manual trigger for coverage reports
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  # ============================================================================
+  # 1. Compile (Fast Feedback)
+  # ============================================================================
+  compile:
+    name: Compile Backend
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Build Project without Tests
+        working-directory: backend
+        run: |
+          echo "🏗️ Building project with DevServices disabled..."
+          ./mvnw -B clean compile \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -DskipTests=true
+          echo "✅ Build completed"
+
+  # ============================================================================
+  # 2. Unit Tests + Coverage
+  # ============================================================================
+  test:
+    name: Backend Unit Tests + Coverage
+    needs: compile
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25  # 58 @QuarkusTest with 2-thread parallelism
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Clean Corrupted Maven Dependencies
+        run: |
+          echo "🧹 Cleaning potentially corrupted Maven dependencies..."
+          rm -rf ~/.m2/repository/org/jboss/threads/jboss-threads/3.8.0.Final
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-junit5
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-test-common
+          echo "✅ Maven cache cleaned"
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: DB Schema Reset (Hard Reset for Clean Start)
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          psql -h localhost -U freshplan -d freshplan -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+          echo "✅ Schema reset - guaranteed clean start"
+
+      - name: Environment Diagnostics
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== Environment Check - CRITICAL VALIDATION ==="
+
+          # CRITICAL: Flyway Locations Check
+          FLYWAY_LOCATIONS=$(grep -r "quarkus.flyway.locations" backend/src/main/resources/ || echo "classpath:db/migration")
+          if [[ "$FLYWAY_LOCATIONS" != *"classpath:db/migration"* ]] || [[ "$FLYWAY_LOCATIONS" == *"testdata"* ]] || [[ "$FLYWAY_LOCATIONS" == *"ci-migrations"* ]]; then
+            echo "❌ ABORT: Invalid flyway.locations: $FLYWAY_LOCATIONS"
+            echo "   MUST BE: classpath:db/migration (nothing else!)"
+            exit 1
+          fi
+          echo "✅ Flyway locations: classpath:db/migration"
+
+          # CRITICAL: DevServices disabled in CI
+          if ! grep -q "quarkus.datasource.devservices.enabled=false" backend/src/test/resources/application-ci.properties; then
+            echo "❌ ABORT: DevServices not disabled in CI profile"
+            echo "   Add: quarkus.datasource.devservices.enabled=false to application-ci.properties"
+            exit 1
+          fi
+          echo "✅ DevServices disabled in CI profile"
+
+          # DB Connection Verification
+          psql -h localhost -U freshplan -d freshplan -c "SELECT current_user, current_database();" || exit 1
+          echo "✅ Connected as expected: freshplan@freshplan"
+
+      - name: Run Unit Tests with Coverage
+        working-directory: backend
+        timeout-minutes: 20
+        run: |
+          ./mvnw -B clean test \
+            -Dtest="A00_EnvDiagTest,*Test" \
+            -DexcludedGroups="integration,slow" \
+            -DfailIfNoTests=false \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.test.hang-detection-timeout=60s \
+            -Dquarkus.test.continuous-testing=disabled \
+            -Dtest.run.id=${{ github.run_id }} \
+            -DthreadCount=2 \
+            -DreuseForks=false \
+            -Pcoverage
+
+      - name: Generate JaCoCo Coverage Report
+        if: always()
+        working-directory: backend
+        run: ./mvnw jacoco:report
+
+      - name: Upload Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Backend Unit Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: Archive Coverage Report (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/target/site/jacoco/
+          retention-days: 30
+
+      - name: Archive Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: backend/target/surefire-reports/
+          retention-days: 7
+
+      - name: Check DB Invariants
+        if: always()
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== DB Invariant Checks ==="
+
+          # Check if customers table exists
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.customers') IS NOT NULL" | grep -q 't'; then
+            echo "✅ Table 'customers' exists in CI-DB"
+
+            # Check for duplicate customer_numbers
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT customer_number FROM customers GROUP BY customer_number HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate customer_numbers:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT customer_number, COUNT(*) FROM customers GROUP BY customer_number HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate customer_numbers found"
+            fi
+          else
+            echo "⚠️ Table 'customers' does not exist in CI-DB"
+          fi
+
+          # Check for duplicate idempotency keys
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.idempotency_keys') IS NOT NULL" | grep -q 't'; then
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT idempotency_key FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate idempotency keys:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT idempotency_key, COUNT(*) FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate idempotency keys found"
+            fi
+          else
+            echo "ℹ️ No idempotency_keys table found (OK if not implemented yet)"
+          fi
+
+      - name: Test Summary
+        if: success()
+        run: |
+          echo "✅ All unit tests passed!" >> $GITHUB_STEP_SUMMARY
+          echo "**Coverage Report:** Available in artifacts" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 3. Integration Tests (Optional - Only on Push to Main)
+  # ============================================================================
+  integration-tests:
+    name: Backend Integration Tests
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: Run Integration Tests
+        working-directory: backend
+        run: |
+          ./mvnw -B test \
+            -Dgroups="integration" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -DfailIfNoTests=false
+
+      - name: Upload Integration Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Backend Integration Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+  # ============================================================================
+  # Final Pipeline Gate
+  # ============================================================================
+  pipeline-gate:
+    name: Backend Pipeline Complete
+    needs: [compile, test]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.compile.result }}" == "failure" ]] || \
+             [[ "${{ needs.test.result }}" == "failure" ]]; then
+            echo "❌ Backend Pipeline FAILED"
+            exit 1
+          fi
+
+          echo "✅ Backend Pipeline PASSED!"
