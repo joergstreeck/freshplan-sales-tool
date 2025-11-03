@@ -1,0 +1,712 @@
+-- ============================================================================
+-- Migration V90017: Seed NH Hotels Multi-Location (COMPLETE WITH DEPTH!)
+-- Sprint 2.1.7.7 - Multi-Location Management
+-- ============================================================================
+-- PURPOSE:
+--   Provides realistic DEEP SEED data for NH Hotels chain with:
+--   - 1 HEADQUARTER (Hamburg) with full company details
+--   - 3 FILIALE customers (Berlin, München, Frankfurt)
+--   - 3-5 Contacts per location (Geschäftsführer, Küchenchef, Einkauf)
+--   - Timeline Events (Customer Creation, Notes, Activities)
+--   - Pain Points, Financial Details, CRM Tracking
+--   - Same xentral_customer_id (56037) for Fuzzy-Matching testing
+--
+-- TEST SCENARIOS ENABLED:
+--   1. Hierarchy Dashboard (parent shows all children with aggregated metrics)
+--   2. Fuzzy-Matching (Xentral orders → branches via address matching)
+--   3. Roll-Up Metrics (parent aggregates child revenue/risk)
+--   4. Branch Creation UI (HEADQUARTER available in dropdown)
+--   5. Contact Management (realistic sales rep workflow)
+-- ============================================================================
+
+-- ============================================================================
+-- 1️⃣ NH HOTELS GMBH - HEADQUARTER (Hamburg)
+-- ============================================================================
+
+INSERT INTO customers (
+    -- Primary Keys & Identifiers
+    id,
+    customer_number,
+
+    -- Company Information
+    company_name,
+    trading_name,
+    legal_form,
+    customer_type,
+    business_type,
+
+    -- Hierarchy (NEW - Multi-Location!)
+    hierarchy_type,
+    parent_customer_id,
+
+    -- Status & Lifecycle
+    status,
+    lifecycle_stage,
+    partner_status,
+
+    -- Lead Parity Fields (Sprint 2.1.7.2)
+    kitchen_size,
+    employee_count,
+    branch_count,
+    is_chain,
+    estimated_volume,
+
+    -- Financial Information
+    expected_annual_volume,
+    actual_annual_volume,
+    payment_terms,
+    credit_limit,
+    delivery_condition,
+
+    -- Location Information (Phase 1 Fields - Sprint 2.1.7.2 D11)
+    street,
+    postal_code,
+    city,
+    country_code,
+    locations_de,
+    locations_ch,
+    locations_at,
+
+    -- Pain Points (8 Boolean Flags)
+    pain_staff_shortage,
+    pain_high_costs,
+    pain_food_waste,
+    pain_quality_inconsistency,
+    pain_time_pressure,
+    pain_supplier_quality,
+    pain_unreliable_delivery,
+    pain_poor_service,
+    pain_notes,
+
+    -- Business Details
+    primary_financing,
+    is_seasonal_business,
+    seasonal_pattern,
+
+    -- CRM Tracking
+    risk_score,
+    last_contact_date,
+    next_follow_up_date,
+    churn_threshold_days,
+    last_order_date,
+
+    -- Integration (Sprint 2.1.7.2)
+    xentral_customer_id,
+
+    -- Flags
+    is_test_data,
+    is_deleted,
+
+    -- Audit Fields
+    created_at,
+    created_by,
+    updated_at,
+    updated_by
+) VALUES (
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'C-ML-NH-HQ',
+
+    'NH Hotels Deutschland GmbH',
+    'NH Hotels',
+    'GMBH',
+    'UNTERNEHMEN',
+    'HOTEL',
+
+    'HEADQUARTER',  -- ← Parent!
+    NULL,           -- ← Kein Parent
+
+    'AKTIV',
+    'GROWTH',
+    'KEIN_PARTNER',
+
+    'PROFESSIONAL', -- kitchen_size (große Hotel-Küchen)
+    320,            -- employee_count (gesamt über alle Standorte)
+    4,              -- branch_count (HQ + 3 Filialen)
+    TRUE,           -- is_chain
+    5200000.00,     -- estimated_volume (5.2M € für Gesamtkette)
+
+    5200000.00,     -- expected_annual_volume
+    4850000.00,     -- actual_annual_volume (leicht unter Erwartung)
+    'NETTO_14',     -- payment_terms (Hotelkette mit guter Bonität)
+    150000.00,      -- credit_limit (hohes Limit für Großkunde)
+    'EXPRESS',      -- delivery_condition (Hotels brauchen schnelle Lieferung!)
+
+    -- Main Address (Zentrale Hamburg)
+    'Neuer Wall 63',
+    '20354',
+    'Hamburg',
+    'DE',
+    4,              -- locations_de (HQ + 3 Branches in Germany)
+    0,              -- locations_ch
+    0,              -- locations_at
+
+    -- Pain Points (realistische Hotel-Probleme)
+    TRUE,           -- pain_staff_shortage (Fachkräftemangel in Gastronomie)
+    TRUE,           -- pain_high_costs (Energiekosten, Lebensmittelpreise gestiegen)
+    TRUE,           -- pain_food_waste (Buffet-Betrieb → viel Waste)
+    FALSE,          -- pain_quality_inconsistency (NH hat hohe Standards)
+    TRUE,           -- pain_time_pressure (Frühstücksbuffet muss pünktlich stehen!)
+    TRUE,           -- pain_supplier_quality (sucht verlässliche Premium-Lieferanten)
+    FALSE,          -- pain_unreliable_delivery (aktuell stabil)
+    FALSE,          -- pain_poor_service (zufrieden)
+    'Hauptproblem: Frühstücksbuffet-Belieferung für 4 Hotels koordinieren. Interesse an Bio-Produkten und regionalen Lieferanten. Möchte Foodwaste reduzieren durch bessere Mengenplanung.',
+
+    'PRIVATE',      -- primary_financing
+    TRUE,           -- is_seasonal_business (Sommer-Peak durch Tourismus!)
+    'SUMMER_PEAK',  -- seasonal_pattern (Sommer-Hochsaison)
+
+    25,             -- risk_score (niedrig - etablierte Hotelkette)
+    CURRENT_DATE - INTERVAL '7 days',   -- last_contact_date
+    CURRENT_DATE + INTERVAL '14 days',  -- next_follow_up_date
+    90,             -- churn_threshold_days
+    CURRENT_DATE - INTERVAL '3 days',   -- last_order_date
+
+    '56037',        -- xentral_customer_id (SHARED across all branches!)
+
+    FALSE,          -- is_test_data (SEED-Daten sind keine Test-Daten!)
+    FALSE,          -- is_deleted
+
+    NOW() - INTERVAL '180 days',
+    'SYSTEM_SEED',
+    NOW() - INTERVAL '7 days',
+    'SYSTEM_SEED'
+);
+
+-- ============================================================================
+-- 2️⃣ NH HOTEL BERLIN - FILIALE
+-- ============================================================================
+
+INSERT INTO customers (
+    id,
+    customer_number,
+    company_name,
+    trading_name,
+    legal_form,
+    customer_type,
+    business_type,
+    hierarchy_type,
+    parent_customer_id,  -- ← Parent: NH Hotels GmbH
+    status,
+    lifecycle_stage,
+    partner_status,
+    kitchen_size,
+    employee_count,
+    branch_count,
+    is_chain,
+    estimated_volume,
+    expected_annual_volume,
+    actual_annual_volume,
+    payment_terms,
+    credit_limit,
+    delivery_condition,
+    street,
+    postal_code,
+    city,
+    country_code,
+    locations_de,
+    locations_ch,
+    locations_at,
+    pain_staff_shortage,
+    pain_high_costs,
+    pain_food_waste,
+    pain_quality_inconsistency,
+    pain_time_pressure,
+    pain_supplier_quality,
+    pain_unreliable_delivery,
+    pain_poor_service,
+    pain_notes,
+    primary_financing,
+    is_seasonal_business,
+    seasonal_pattern,
+    risk_score,
+    last_contact_date,
+    next_follow_up_date,
+    churn_threshold_days,
+    last_order_date,
+    xentral_customer_id,  -- ← SAME as parent! (Fuzzy-Matching wichtig!)
+    is_test_data,
+    is_deleted,
+    created_at,
+    created_by,
+    updated_at,
+    updated_by
+) VALUES (
+    '11111111-1111-1111-1111-000000000002'::uuid,
+    'C-ML-NH-BERLIN',
+    'NH Hotel Berlin Friedrichstraße',
+    'NH Berlin City',
+    'GMBH',  -- Gleiche Rechtsform wie Parent (Teil der Kette)
+    'UNTERNEHMEN',
+    'HOTEL',
+    'FILIALE',  -- ← Child!
+    '11111111-1111-1111-1111-000000000001'::uuid,  -- ← Parent: NH Hotels GmbH
+    'AKTIV',
+    'GROWTH',
+    'KEIN_PARTNER',
+    'PROFESSIONAL',
+    85,      -- employee_count (nur Berlin)
+    1,       -- branch_count (1 Standort = diese Filiale)
+    FALSE,   -- is_chain (Filiale selbst ist keine Kette)
+    1800000.00,
+    1800000.00,
+    1650000.00,  -- actual (leicht unter Erwartung)
+    'NETTO_14',  -- Inherited payment_terms from parent
+    150000.00,   -- Inherited credit_limit from parent (shared)
+    'EXPRESS',
+    'Friedrichstraße 96',  -- ← Fuzzy-Matching: "Friedrichstr. 96", "Friedrichstrasse 96"
+    '10117',
+    'Berlin',
+    'DE',
+    1,  -- locations_de (nur Berlin)
+    0,
+    0,
+    TRUE,   -- pain_staff_shortage (Berlin-spezifisch: schwer Köche zu finden)
+    TRUE,   -- pain_high_costs
+    TRUE,   -- pain_food_waste
+    FALSE,
+    TRUE,   -- pain_time_pressure (Businesshotel mit frühem Frühstück!)
+    TRUE,   -- pain_supplier_quality
+    FALSE,
+    FALSE,
+    'Berlin-Standort: Businesshotel mit 120 Zimmern. Frühstücksbuffet Mo-Fr 6:00-10:00, Sa-So 7:00-11:00. Sucht Bio-Lieferanten für Premium-Frühstück. Problem: Personalmangel in Küche.',
+    'PRIVATE',
+    TRUE,
+    'SUMMER_PEAK',
+    18,  -- risk_score (niedriger als HQ - gut laufender Standort)
+    CURRENT_DATE - INTERVAL '5 days',
+    CURRENT_DATE + INTERVAL '14 days',
+    90,
+    CURRENT_DATE - INTERVAL '2 days',
+    '56037',  -- ← SAME xentral_customer_id! (Fuzzy-Matching via address!)
+    FALSE,
+    FALSE,
+    NOW() - INTERVAL '150 days',
+    'SYSTEM_SEED',
+    NOW() - INTERVAL '5 days',
+    'SYSTEM_SEED'
+);
+
+-- ============================================================================
+-- 3️⃣ NH HOTEL MÜNCHEN - FILIALE
+-- ============================================================================
+
+INSERT INTO customers (
+    id, customer_number, company_name, trading_name, legal_form, customer_type, business_type,
+    hierarchy_type, parent_customer_id,
+    status, lifecycle_stage, partner_status,
+    kitchen_size, employee_count, branch_count, is_chain, estimated_volume,
+    expected_annual_volume, actual_annual_volume,
+    payment_terms, credit_limit, delivery_condition,
+    street, postal_code, city, country_code,
+    locations_de, locations_ch, locations_at,
+    pain_staff_shortage, pain_high_costs, pain_food_waste, pain_quality_inconsistency,
+    pain_time_pressure, pain_supplier_quality, pain_unreliable_delivery, pain_poor_service,
+    pain_notes,
+    primary_financing, is_seasonal_business, seasonal_pattern,
+    risk_score, last_contact_date, next_follow_up_date, churn_threshold_days, last_order_date,
+    xentral_customer_id,
+    is_test_data, is_deleted,
+    created_at, created_by, updated_at, updated_by
+) VALUES (
+    '11111111-1111-1111-1111-000000000003'::uuid,
+    'C-ML-NH-MUENCHEN',
+    'NH Hotel München Arnulfpark',
+    'NH München Airport',
+    'GMBH',
+    'UNTERNEHMEN',
+    'HOTEL',
+    'FILIALE',
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'AKTIV',
+    'GROWTH',
+    'KEIN_PARTNER',
+    'PROFESSIONAL',
+    78,  -- employee_count
+    1,
+    FALSE,
+    1600000.00,
+    1600000.00,
+    1480000.00,
+    'NETTO_14',
+    150000.00,
+    'EXPRESS',
+    'Arnulfstraße 12',
+    '80335',
+    'München',
+    'DE',
+    1, 0, 0,
+    TRUE, TRUE, TRUE, FALSE, TRUE, TRUE, FALSE, FALSE,
+    'München-Standort: Airport-Hotel mit 95 Zimmern. Frühstücksbuffet ab 5:30 Uhr (Flughafen-Nähe!). Internationale Gäste → Interesse an regionalem bayerischen Frühstück-Sortiment. Problem: Frühe Lieferzeiten (5:00 Uhr) schwer zu bekommen.',
+    'PRIVATE',
+    TRUE,
+    'SUMMER_PEAK',
+    22,  -- risk_score (höher wegen früher Lieferzeiten-Problem)
+    CURRENT_DATE - INTERVAL '8 days',
+    CURRENT_DATE + INTERVAL '14 days',
+    90,
+    CURRENT_DATE - INTERVAL '4 days',
+    '56037',
+    FALSE, FALSE,
+    NOW() - INTERVAL '140 days',
+    'SYSTEM_SEED',
+    NOW() - INTERVAL '8 days',
+    'SYSTEM_SEED'
+);
+
+-- ============================================================================
+-- 4️⃣ NH HOTEL FRANKFURT - FILIALE
+-- ============================================================================
+
+INSERT INTO customers (
+    id, customer_number, company_name, trading_name, legal_form, customer_type, business_type,
+    hierarchy_type, parent_customer_id,
+    status, lifecycle_stage, partner_status,
+    kitchen_size, employee_count, branch_count, is_chain, estimated_volume,
+    expected_annual_volume, actual_annual_volume,
+    payment_terms, credit_limit, delivery_condition,
+    street, postal_code, city, country_code,
+    locations_de, locations_ch, locations_at,
+    pain_staff_shortage, pain_high_costs, pain_food_waste, pain_quality_inconsistency,
+    pain_time_pressure, pain_supplier_quality, pain_unreliable_delivery, pain_poor_service,
+    pain_notes,
+    primary_financing, is_seasonal_business, seasonal_pattern,
+    risk_score, last_contact_date, next_follow_up_date, churn_threshold_days, last_order_date,
+    xentral_customer_id,
+    is_test_data, is_deleted,
+    created_at, created_by, updated_at, updated_by
+) VALUES (
+    '11111111-1111-1111-1111-000000000004'::uuid,
+    'C-ML-NH-FRANKFURT',
+    'NH Hotel Frankfurt Messe',
+    'NH Frankfurt Trade Fair',
+    'GMBH',
+    'UNTERNEHMEN',
+    'HOTEL',
+    'FILIALE',
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'AKTIV',
+    'GROWTH',
+    'KEIN_PARTNER',
+    'PROFESSIONAL',
+    72,  -- employee_count
+    1,
+    FALSE,
+    1400000.00,
+    1400000.00,
+    1280000.00,
+    'NETTO_14',
+    150000.00,
+    'EXPRESS',
+    'Theodor-Heuss-Allee 3',
+    '60486',
+    'Frankfurt am Main',
+    'DE',
+    1, 0, 0,
+    FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, FALSE, FALSE,  -- ← Personal gut, Kosten hoch
+    'Frankfurt-Standort: Messe-Hotel mit 85 Zimmern. Stark messeabhängig (IAA, Buchmesse). Frühstücksbuffet 6:30-10:30. Problem: Schwankende Auslastung → Mengenplanung schwierig. Interesse an flexiblen Liefermengen.',
+    'PRIVATE',
+    TRUE,
+    'EVENT_BASED',  -- ← Messe-abhängig!
+    28,  -- risk_score (höher wegen Messe-Abhängigkeit)
+    CURRENT_DATE - INTERVAL '10 days',
+    CURRENT_DATE + INTERVAL '21 days',
+    90,
+    CURRENT_DATE - INTERVAL '5 days',
+    '56037',
+    FALSE, FALSE,
+    NOW() - INTERVAL '120 days',
+    'SYSTEM_SEED',
+    NOW() - INTERVAL '10 days',
+    'SYSTEM_SEED'
+);
+
+-- ============================================================================
+-- 🧑‍💼 CONTACTS: NH Hotels GmbH (HEADQUARTER)
+-- ============================================================================
+
+-- Contact 1: Geschäftsführer (EXECUTIVE - Entscheider)
+INSERT INTO customer_contacts (
+    id, customer_id,
+    salutation, first_name, last_name,
+    position, decision_level, warmth_level,
+    email, phone, mobile,
+    is_primary,
+    preferred_contact_method,
+    notes,
+    is_deleted, created_at, created_by
+) VALUES (
+    '11111111-1111-C001-0000-000000000001'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'HERR',
+    'Klaus',
+    'Müller',
+    'Geschäftsführer NH Hotels Deutschland',
+    'EXECUTIVE',
+    75,  -- warmth_level (gute Beziehung)
+    'klaus.mueller@nh-hotels.de',
+    '+49 40 123456-10',
+    '+49 171 1234567',
+    TRUE,  -- is_primary
+    'EMAIL',
+    'Hauptansprechpartner für strategische Entscheidungen. Interesse an nachhaltigen Lieferkonzepten. Trifft finale Entscheidung für Gesamtkette. Ansprechbar: Mo-Fr 9-17 Uhr',
+    FALSE,
+    NOW() - INTERVAL '180 days',
+    'SYSTEM_SEED'
+);
+
+-- Contact 2: Einkaufsleiter (MANAGER - Genehmiger)
+INSERT INTO customer_contacts (
+    id, customer_id,
+    salutation, first_name, last_name,
+    position, decision_level, warmth_level,
+    email, phone, mobile,
+    is_primary,
+    preferred_contact_method,
+    notes,
+    is_deleted, created_at, created_by
+) VALUES (
+    '11111111-1111-C001-0000-000000000002'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'FRAU',
+    'Maria',
+    'Schmidt',
+    'Leiterin Zentraleinkauf',
+    'MANAGER',
+    82,  -- warmth_level (sehr gute Beziehung - regelmäßiger Kontakt)
+    'maria.schmidt@nh-hotels.de',
+    '+49 40 123456-25',
+    '+49 160 9876543',
+    FALSE,
+    'PHONE',  -- Bevorzugt Telefon
+    'Operative Hauptansprechpartnerin für Bestellungen und Lieferkoordination. Verhandelt Preise und Konditionen. Sehr offen für neue Produkte. Tipp: Immer Bio-Alternativen anbieten!',
+    FALSE,
+    NOW() - INTERVAL '175 days',
+    'SYSTEM_SEED'
+);
+
+-- Contact 3: Qualitätsmanager (OPERATIONAL - Influencer)
+INSERT INTO customer_contacts (
+    id, customer_id,
+    salutation, first_name, last_name,
+    position, decision_level, warmth_level,
+    email, phone, mobile,
+    is_primary,
+    preferred_contact_method,
+    notes,
+    is_deleted, created_at, created_by
+) VALUES (
+    '11111111-1111-C001-0000-000000000003'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'HERR',
+    'Thomas',
+    'Weber',
+    'Qualitätsmanager Food & Beverage',
+    'INFLUENCER',
+    68,  -- warmth_level
+    'thomas.weber@nh-hotels.de',
+    '+49 40 123456-42',
+    NULL,  -- Kein Mobile
+    FALSE,
+    'EMAIL',
+    'Prüft Produktqualität und Lieferantenstandards. Wichtiger Influencer bei Produktneueinführungen. Sehr kritisch bei Qualität - aber fair.',
+    FALSE,
+    NOW() - INTERVAL '170 days',
+    'SYSTEM_SEED'
+);
+
+-- ============================================================================
+-- 🧑‍💼 CONTACTS: NH Hotel Berlin (Branch-spezifisch)
+-- ============================================================================
+
+-- Contact 1: Hotelmanager Berlin (MANAGER - lokaler Entscheider)
+INSERT INTO customer_contacts (
+    id, customer_id,
+    salutation, first_name, last_name,
+    position, decision_level, warmth_level,
+    email, phone, mobile,
+    is_primary,
+    preferred_contact_method,
+    notes,
+    is_deleted, created_at, created_by
+) VALUES (
+    '11111111-1111-C002-0000-000000000001'::uuid,
+    '11111111-1111-1111-1111-000000000002'::uuid,  -- Berlin
+    'HERR',
+    'Stefan',
+    'Becker',
+    'Hotelmanager NH Berlin',
+    'MANAGER',
+    70,
+    'stefan.becker@nh-hotels.de',
+    '+49 30 2345678-10',
+    '+49 170 7654321',
+    TRUE,
+    'PHONE',
+    'Lokaler Ansprechpartner für Berlin-Standort. Entscheidet über lokale Sonderbestellungen. Sehr serviceorientiert. Hinweis: Bevorzugt Lieferung über Hintereingang (Zufahrt Charlottenstraße).',
+    FALSE,
+    NOW() - INTERVAL '150 days',
+    'SYSTEM_SEED'
+);
+
+-- Contact 2: Küchenchef Berlin (OPERATIONAL - Operational Level)
+INSERT INTO customer_contacts (
+    id, customer_id,
+    salutation, first_name, last_name,
+    position, decision_level, warmth_level,
+    email, phone, mobile,
+    is_primary,
+    preferred_contact_method,
+    notes,
+    is_deleted, created_at, created_by
+) VALUES (
+    '11111111-1111-C002-0000-000000000002'::uuid,
+    '11111111-1111-1111-1111-000000000002'::uuid,
+    'HERR',
+    'Hans',
+    'Zimmermann',
+    'Executive Chef',
+    'OPERATIONAL',
+    85,  -- warmth_level (sehr gut!)
+    'hans.zimmermann@nh-hotels.de',
+    '+49 30 2345678-44',
+    '+49 171 4445566',
+    FALSE,
+    'PHONE',
+    'Küchenchef mit 15 Jahren Erfahrung. Sehr offen für neue Produkte. Interesse an regionalen Bio-Produkten. Tipp: Produktmuster immer willkommen! Am besten erreichbar Di/Do 10-12 Uhr.',
+    FALSE,
+    NOW() - INTERVAL '145 days',
+    'SYSTEM_SEED'
+);
+
+-- ============================================================================
+-- 📋 TIMELINE EVENTS: Customer Creation + Notes
+-- ============================================================================
+
+-- Event 1: Customer Created (HEADQUARTER)
+INSERT INTO customer_timeline_events (
+    id, customer_id,
+    event_type, event_date,
+    title, description,
+    category, importance,
+    performed_by,
+    created_at
+) VALUES (
+    '11111111-1111-E001-0000-000000000001'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'CUSTOMER_CREATED',
+    NOW() - INTERVAL '180 days',
+    'Kunde angelegt',
+    'NH Hotels Deutschland GmbH als Headquarter-Kunde angelegt. 4 Standorte in Deutschland. Xentral-Kunde 56037 verknüpft.',
+    'SYSTEM',
+    'HIGH',
+    'SYSTEM_SEED',
+    NOW() - INTERVAL '180 days'
+);
+
+-- Event 2: Erstgespräch (Note)
+INSERT INTO customer_timeline_events (
+    id, customer_id,
+    event_type, event_date,
+    title, description,
+    category, importance,
+    performed_by,
+    created_at
+) VALUES (
+    '11111111-1111-E001-0000-000000000002'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'NOTE_ADDED',
+    NOW() - INTERVAL '178 days',
+    'Erstgespräch mit GF Klaus Müller',
+    'Erstgespräch geführt. NH Hotels sucht Premium-Lieferanten für Bio-Frühstücksprodukte. Interesse an Gesamtkonzept für 4 Standorte. Angebot soll regionale Produkte enthalten. Follow-up: Produktmuster senden.',
+    'NOTE',
+    'HIGH',
+    'Sales Rep - Max Mustermann',
+    NOW() - INTERVAL '178 days'
+);
+
+-- Event 3: Angebot gesendet
+INSERT INTO customer_timeline_events (
+    id, customer_id,
+    event_type, event_date,
+    title, description,
+    category, importance,
+    performed_by,
+    created_at
+) VALUES (
+    '11111111-1111-E001-0000-000000000003'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'NOTE_ADDED',
+    NOW() - INTERVAL '165 days',
+    'Angebot gesendet',
+    'Angebot für 4 Standorte gesendet: 52.000€/Monat (gesamt). Enthält Bio-Sortiment, regionale Produkte, flexible Lieferzeiten. Preis-Feedback: Leicht über Budget. Verhandlung geplant.',
+    'NOTE',
+    'MEDIUM',
+    'Sales Rep - Max Mustermann',
+    NOW() - INTERVAL '165 days'
+);
+
+-- Event 4: Vertragsabschluss
+INSERT INTO customer_timeline_events (
+    id, customer_id,
+    event_type, event_date,
+    title, description,
+    category, importance,
+    performed_by,
+    created_at
+) VALUES (
+    '11111111-1111-E001-0000-000000000004'::uuid,
+    '11111111-1111-1111-1111-000000000001'::uuid,
+    'STATUS_CHANGE',
+    NOW() - INTERVAL '155 days',
+    'Vertragsabschluss',
+    'Vertrag unterzeichnet: 48.500€/Monat für 4 Standorte. Zahlungsziel: 14 Tage. Kreditlimit: 150.000€. Lieferstart ab nächster Woche.',
+    'STATUS_UPDATE',
+    'HIGH',
+    'Sales Rep - Max Mustermann',
+    NOW() - INTERVAL '155 days'
+);
+
+-- ============================================================================
+-- VERIFICATION QUERIES (for manual testing)
+-- ============================================================================
+
+-- 1️⃣ Show NH Hotels hierarchy (should show 1 parent + 3 children):
+-- SELECT
+--   CASE
+--     WHEN hierarchy_type = 'HEADQUARTER' THEN '📂 ' || company_name
+--     ELSE '  ├─ 🏢 ' || company_name
+--   END AS hierarchy,
+--   city,
+--   employee_count,
+--   actual_annual_volume,
+--   risk_score
+-- FROM customers
+-- WHERE xentral_customer_id = '56037'
+-- ORDER BY
+--   CASE hierarchy_type WHEN 'HEADQUARTER' THEN 0 ELSE 1 END,
+--   company_name;
+
+-- 2️⃣ Show all contacts for NH Hotels (should show 5 contacts):
+-- SELECT
+--   c.company_name,
+--   cc.first_name || ' ' || cc.last_name AS contact_name,
+--   cc.position,
+--   cc.decision_level,
+--   cc.warmth_level,
+--   cc.is_primary
+-- FROM customer_contacts cc
+-- JOIN customers c ON cc.customer_id = c.id
+-- WHERE c.xentral_customer_id = '56037'
+-- ORDER BY c.hierarchy_type, cc.is_primary DESC, cc.warmth_level DESC;
+
+-- 3️⃣ Aggregate metrics for NH Hotels (Roll-Up Pattern):
+-- SELECT
+--   p.company_name AS headquarter,
+--   COUNT(c.id) AS branch_count,
+--   SUM(c.actual_annual_volume) AS total_revenue,
+--   AVG(c.risk_score) AS avg_risk_score,
+--   SUM(c.employee_count) AS total_employees
+-- FROM customers p
+-- LEFT JOIN customers c ON c.parent_customer_id = p.id
+-- WHERE p.id = '11111111-1111-1111-1111-000000000001'::uuid
+-- GROUP BY p.id, p.company_name;
