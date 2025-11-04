@@ -38,16 +38,13 @@ public class BranchService {
 
   private final CustomerRepository customerRepository;
   private final CustomerService customerService;
-  private final CustomerResponseBuilder responseBuilder;
 
   @Inject
   public BranchService(
       CustomerRepository customerRepository,
-      CustomerService customerService,
-      CustomerResponseBuilder responseBuilder) {
+      CustomerService customerService) {
     this.customerRepository = customerRepository;
     this.customerService = customerService;
-    this.responseBuilder = responseBuilder;
   }
 
   // ========== BRANCH CRUD OPERATIONS ==========
@@ -128,7 +125,7 @@ public class BranchService {
     log.info("Found {} branches for headquarter {}", branches.size(), headquarter.getCompanyName());
 
     return branches.stream()
-        .map(branch -> responseBuilder.fromEntity(branch).build())
+        .map(branch -> new CustomerResponseBuilder().fromEntity(branch).build())
         .collect(Collectors.toList());
   }
 
