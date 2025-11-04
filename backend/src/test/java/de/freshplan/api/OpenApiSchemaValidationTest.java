@@ -167,15 +167,14 @@ public class OpenApiSchemaValidationTest {
 
         // These DTOs are critical for Frontend TypeScript generation
         // If missing, Frontend types will be incomplete!
-        Object schemas = schema.getMap("components.schemas");
-        assertThat("CustomerResponse schema should exist",
-                   schemas, hasKey("CustomerResponse"));
-        assertThat("LeadResponse schema should exist",
-                   schemas, hasKey("LeadResponse"));
-        assertThat("CreateCustomerRequest schema should exist",
-                   schemas, hasKey("CreateCustomerRequest"));
-        assertThat("UpdateCustomerRequest schema should exist",
-                   schemas, hasKey("UpdateCustomerRequest"));
+        assertNotNull(schema.getMap("components.schemas.CustomerResponse"),
+                      "CustomerResponse schema should exist");
+        assertNotNull(schema.getMap("components.schemas.LeadResponse"),
+                      "LeadResponse schema should exist");
+        assertNotNull(schema.getMap("components.schemas.CreateCustomerRequest"),
+                      "CreateCustomerRequest schema should exist");
+        assertNotNull(schema.getMap("components.schemas.UpdateCustomerRequest"),
+                      "UpdateCustomerRequest schema should exist");
     }
 
     @Test
