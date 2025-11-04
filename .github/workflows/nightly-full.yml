@@ -107,10 +107,12 @@ jobs:
           retention-days: 30
 
   # ============================================================================
-  # 2. Architecture Checks (MONITORING MODE - Non-Blocking!)
+  # 2. SOLID Principles Check (MONITORING MODE - Non-Blocking!)
   # ============================================================================
+  # Note: Dependency Cycles and Code Complexity are now in PR workflow (quality-gates.yml)
+  # This job focuses on subjective SOLID Principles monitoring only
   architecture-checks:
-    name: Architecture Checks (Monitoring)
+    name: SOLID Principles Check (Monitoring)
     runs-on: ubuntu-latest
     timeout-minutes: 10
     continue-on-error: true  # ⚠️ CRITICAL: Does not block nightly pipeline!
@@ -119,57 +121,45 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
 
-      # Dependency Cycle Check
-      - name: Dependency Cycle Check
-        continue-on-error: true
-        run: |
-          echo "🔍 Checking for circular dependencies..."
-          python3 scripts/check-dependency-cycles.py || {
-            echo "⚠️ Dependency cycles detected - tracked for monitoring"
-            echo "This does not fail the nightly build"
-          }
-
-      # Code Complexity Check (Optional - implement if needed)
-      - name: Code Complexity Check
-        continue-on-error: true
-        run: |
-          echo "📊 Checking code complexity..."
-          # TODO: Implement complexity check script
-          # For now, just a placeholder
-          echo "✅ Code complexity check skipped (not yet implemented)"
-
-      # SOLID Principles Check (Optional - implement if needed)
+      # SOLID Principles Check (Monitoring only - subjective checks)
       - name: SOLID Principles Check
         continue-on-error: true
         run: |
           echo "🏗️ Checking SOLID principles..."
+          echo ""
+          echo "📋 SOLID Principles:"
+          echo "  • Single Responsibility Principle (SRP)"
+          echo "  • Open/Closed Principle (OCP)"
+          echo "  • Liskov Substitution Principle (LSP)"
+          echo "  • Interface Segregation Principle (ISP)"
+          echo "  • Dependency Inversion Principle (DIP)"
+          echo ""
           # TODO: Implement SOLID check using ArchUnit or similar
           # For now, just a placeholder
           echo "✅ SOLID principles check skipped (not yet implemented)"
+          echo ""
+          echo "💡 Note: SOLID checks are subjective and run in monitoring mode only."
+          echo "   Objective checks (Dependency Cycles, Code Complexity) are in PR workflow."
 
       - name: Architecture Report
         if: always()
         run: |
-          echo "## 🏗️ Architecture Checks Report" >> $GITHUB_STEP_SUMMARY
+          echo "## 🏗️ SOLID Principles Check Report" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Status:** Monitoring Mode (Non-Blocking)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "- Dependency Cycles: Checked" >> $GITHUB_STEP_SUMMARY
-          echo "- Code Complexity: Skipped (not implemented)" >> $GITHUB_STEP_SUMMARY
-          echo "- SOLID Principles: Skipped (not implemented)" >> $GITHUB_STEP_SUMMARY
+          echo "**SOLID Principles:** Skipped (not implemented)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "💡 **Note:** These checks are informational only and do not fail the pipeline." >> $GITHUB_STEP_SUMMARY
+          echo "💡 **Note:**" >> $GITHUB_STEP_SUMMARY
+          echo "- SOLID checks are subjective and run in monitoring mode only" >> $GITHUB_STEP_SUMMARY
+          echo "- Objective checks (Dependency Cycles, Code Complexity) run in PR workflow" >> $GITHUB_STEP_SUMMARY
+          echo "- This check does not fail the nightly pipeline" >> $GITHUB_STEP_SUMMARY
 
   # ============================================================================
   # 3. Database Growth Check

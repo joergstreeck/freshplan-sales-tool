@@ -610,6 +610,88 @@ jobs:
             })
 
   # ============================================================================
+  # 12. Code Complexity Check
+  # ============================================================================
+  code-complexity:
+    name: Code Complexity Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run PMD Code Complexity Check
+        continue-on-error: false  # BLOCKS PR if violations found
+        run: |
+          cd backend
+
+          echo "📊 Running Code Complexity Check (PMD)..."
+          echo ""
+          echo "Checking for:"
+          echo "  • Cyclomatic Complexity > 15"
+          echo "  • Method Length > 100 lines"
+          echo "  • Class Size > 500 lines"
+          echo "  • NPath Complexity > 200"
+          echo ""
+
+          # Run PMD with external ruleset
+          ./mvnw pmd:check \
+            -Dpmd.rulesetfiles=../.github/pmd-complexity-rules.xml \
+            -Dpmd.printFailingErrors=true \
+            -Dpmd.failOnViolation=true || {
+            echo ""
+            echo "❌ Code Complexity violations detected!"
+            echo ""
+            echo "⚠️  This PR introduces code that exceeds complexity thresholds."
+            echo "    Please refactor to improve maintainability."
+            exit 1
+          }
+
+          echo ""
+          echo "✅ All complexity checks passed!"
+
+      - name: Upload PMD Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-complexity-report
+          path: backend/target/pmd.xml
+          retention-days: 7
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Code Complexity Check Failed\n\n' +
+                    'Code complexity violations detected!\n\n' +
+                    '**Thresholds:**\n' +
+                    '• Cyclomatic Complexity: Max 15\n' +
+                    '• Method Length: Max 100 lines\n' +
+                    '• Class Size: Max 500 lines\n' +
+                    '• NPath Complexity: Max 200\n\n' +
+                    '**Action required:**\n' +
+                    '1. Check the PMD report artifact for details\n' +
+                    '2. Refactor complex methods:\n' +
+                    '   • Extract helper methods\n' +
+                    '   • Simplify conditional logic\n' +
+                    '   • Use early returns to reduce nesting\n\n' +
+                    '📖 Reference: Clean Code Principles'
+            })
+
+  # ============================================================================
   # Final Quality Gate
   # ============================================================================
   quality-gate:
@@ -626,6 +708,7 @@ jobs:
       - lint-backend
       - frontmatter-lint
       - dependency-cycles
+      - code-complexity
     runs-on: ubuntu-latest
     if: always()
 
@@ -643,7 +726,8 @@ jobs:
              [[ "${{ needs.lint-frontend.result }}" == "failure" ]] || \
              [[ "${{ needs.lint-backend.result }}" == "failure" ]] || \
              [[ "${{ needs.frontmatter-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.dependency-cycles.result }}" == "failure" ]]; then
+             [[ "${{ needs.dependency-cycles.result }}" == "failure" ]] || \
+             [[ "${{ needs.code-complexity.result }}" == "failure" ]]; then
             echo "❌ Quality Gates FAILED - At least one check failed"
             exit 1
           fi
