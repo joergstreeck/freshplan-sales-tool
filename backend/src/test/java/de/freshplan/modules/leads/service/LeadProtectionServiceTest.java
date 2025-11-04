@@ -386,7 +386,7 @@ class LeadProtectionServiceTest {
     @DisplayName("Should calculate remaining protection days correctly")
     void shouldCalculateRemainingProtectionDays() {
       // Given
-      LocalDateTime now = LocalDateTime.of(2025, 10, 13, 12, 0);
+      LocalDateTime now = LocalDateTime.of(2025, 11, 4, 12, 0);
       when(clock.instant()).thenReturn(now.toInstant(java.time.ZoneOffset.UTC));
       when(clock.getZone()).thenReturn(java.time.ZoneOffset.UTC);
 
