@@ -308,11 +308,122 @@ jobs:
           reporter: java-junit
 
   # ============================================================================
+  # 3.5. API Contract Tests (BATCH 3 - OpenAPI Schema Validation)
+  # ============================================================================
+  api-contract-tests:
+    name: API Contract Tests (OpenAPI)
+    needs: compile
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: Run API Contract Tests (OpenAPI Schema Validation)
+        working-directory: backend
+        run: |
+          echo "🔍 Running OpenAPI Schema Validation Tests..."
+          echo ""
+          echo "Testing API Contract completeness:"
+          echo "  • Customer endpoints documented"
+          echo "  • Lead endpoints documented"
+          echo "  • Enum endpoints documented"
+          echo "  • Response schemas defined"
+          echo "  • Request schemas defined"
+          echo "  • Component schemas exist"
+          echo ""
+
+          ./mvnw -B test \
+            -Dtest="OpenApiSchemaValidationTest" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false || {
+              echo ""
+              echo "❌ API Contract Validation FAILED!"
+              echo ""
+              echo "⚠️  OpenAPI schema is incomplete or missing critical endpoints."
+              echo ""
+              echo "💡 Common issues:"
+              echo "    - Endpoints missing from OpenAPI spec"
+              echo "    - Response schemas not defined"
+              echo "    - Request body schemas not defined"
+              echo "    - Component schemas missing"
+              echo ""
+              echo "📊 Review the test results above for details."
+              echo "🔧 Fix: Add @Operation annotations to REST endpoints"
+              exit 1
+            }
+
+          echo "✅ All API Contract tests passed - OpenAPI schema is complete!"
+
+      - name: Upload API Contract Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: API Contract Tests (OpenAPI)
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: API Contract Summary
+        if: always()
+        run: |
+          echo "## 📋 API Contract Tests (OpenAPI)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Purpose:** Ensure OpenAPI schema completeness" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tests:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Customer endpoints documented (GET, POST, PUT, DELETE)" >> $GITHUB_STEP_SUMMARY
+          echo "- Lead endpoints documented" >> $GITHUB_STEP_SUMMARY
+          echo "- Enum endpoints documented (Server-Driven UI critical!)" >> $GITHUB_STEP_SUMMARY
+          echo "- Response schemas defined" >> $GITHUB_STEP_SUMMARY
+          echo "- Request schemas defined" >> $GITHUB_STEP_SUMMARY
+          echo "- Component schemas exist (DTOs)" >> $GITHUB_STEP_SUMMARY
+          echo "- Security schemes documented" >> $GITHUB_STEP_SUMMARY
+          echo "- API metadata present" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Why:** Frontend depends on accurate OpenAPI spec for:" >> $GITHUB_STEP_SUMMARY
+          echo "- TypeScript type generation" >> $GITHUB_STEP_SUMMARY
+          echo "- API client code generation" >> $GITHUB_STEP_SUMMARY
+          echo "- API documentation" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
   # Final Pipeline Gate
   # ============================================================================
   pipeline-gate:
     name: Backend Pipeline Complete
-    needs: [compile, test]
+    needs: [compile, test, api-contract-tests]
     runs-on: ubuntu-latest
     if: always()
 
