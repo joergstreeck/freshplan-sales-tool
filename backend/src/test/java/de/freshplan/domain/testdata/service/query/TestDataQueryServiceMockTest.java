@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.testdata.service.TestDataService;
+import de.freshplan.domain.testdata.service.provider.TestDataStats;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -47,7 +48,7 @@ class TestDataQueryServiceMockTest {
     when(timelineRepository.count(eq("isTestData"), eq(true))).thenReturn(125L);
 
     // When
-    TestDataService.TestDataStats result = queryService.getTestDataStats();
+    TestDataStats result = queryService.getTestDataStats();
 
     // Then
     assertThat(result.customerCount()).isEqualTo(58L);
@@ -65,7 +66,7 @@ class TestDataQueryServiceMockTest {
     when(timelineRepository.count(eq("isTestData"), eq(true))).thenReturn(0L);
 
     // When
-    TestDataService.TestDataStats result = queryService.getTestDataStats();
+    TestDataStats result = queryService.getTestDataStats();
 
     // Then
     assertThat(result.customerCount()).isEqualTo(0L);
@@ -79,7 +80,7 @@ class TestDataQueryServiceMockTest {
     when(timelineRepository.count(eq("isTestData"), eq(true))).thenReturn(5000000L);
 
     // When
-    TestDataService.TestDataStats result = queryService.getTestDataStats();
+    TestDataStats result = queryService.getTestDataStats();
 
     // Then
     assertThat(result.customerCount()).isEqualTo(999999L);

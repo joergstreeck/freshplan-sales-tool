@@ -8,10 +8,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
+import de.freshplan.domain.audit.events.AuditableApplicationEvent;
 import de.freshplan.domain.audit.repository.AuditRepository;
 import de.freshplan.domain.audit.service.AuditService;
-import de.freshplan.domain.audit.service.AuditableApplicationEvent;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import de.freshplan.domain.audit.service.provider.AuditConfiguration;
+import de.freshplan.domain.audit.service.provider.AuditEvent;
+import de.freshplan.domain.audit.service.provider.AuditException;
 import de.freshplan.shared.util.SecurityUtils;
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.enterprise.event.Event;
@@ -49,8 +52,8 @@ class AuditCommandServiceTest {
   @Mock private AuditRepository auditRepository;
   @Mock private ObjectMapper objectMapper;
   @Mock private SecurityUtils securityUtils;
-  @Mock private Event<AuditService.AuditEvent> auditEventBus;
-  @Mock private AuditService.AuditConfiguration configuration;
+  @Mock private Event<AuditEvent> auditEventBus;
+  @Mock private AuditConfiguration configuration;
   @Mock private Instance<HttpServerRequest> httpRequestInstance;
 
   @InjectMocks private AuditCommandService commandService;
@@ -189,7 +192,7 @@ class AuditCommandServiceTest {
 
     // Then
     verify(auditRepository).persist(entryCaptor.capture());
-    verify(auditEventBus).fireAsync(any(AuditService.AuditEvent.class));
+    verify(auditEventBus).fireAsync(any(AuditEvent.class));
 
     AuditEntry capturedEntry = entryCaptor.getValue();
     assertNotNull(capturedEntry);
@@ -291,9 +294,9 @@ class AuditCommandServiceTest {
         .persist(any(AuditEntry.class));
 
     // When & Then
-    AuditService.AuditException exception =
+    AuditException exception =
         assertThrows(
-            AuditService.AuditException.class,
+            AuditException.class,
             () -> {
               commandService.logSync(testContext);
             });
