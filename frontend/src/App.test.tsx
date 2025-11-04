@@ -24,6 +24,7 @@ describe('App', () => {
       token: null,
       login: vi.fn(),
       logout: vi.fn(),
+      hasRole: vi.fn(() => false), // Mock hasRole - returns false by default
     });
   });
 
@@ -34,13 +35,14 @@ describe('App', () => {
     expect(screen.getByText('Ihr digitales Verkaufstool')).toBeInTheDocument();
   });
 
-  it('renders all four cards', () => {
+  it('renders all cards', () => {
     renderWithRouter(<App />);
 
-    expect(screen.getByText('FreshPlan Verkaufstool')).toBeInTheDocument();
-    expect(screen.getByText('Benutzerverwaltung')).toBeInTheDocument();
+    expect(screen.getByText('Sales Command Center')).toBeInTheDocument();
+    expect(screen.getByText('Kundenverwaltung')).toBeInTheDocument();
     expect(screen.getByText('API Verbindungstest')).toBeInTheDocument();
     expect(screen.getByText('Zähler Demo')).toBeInTheDocument();
+    expect(screen.getByText(/In-App Help System/)).toBeInTheDocument();
   });
 
   it('increments counter when button is clicked', () => {
@@ -71,6 +73,7 @@ describe('App', () => {
       token: 'test-token',
       login: vi.fn(),
       logout: vi.fn(),
+      hasRole: vi.fn(() => false),
     });
 
     mockApiService.ping.mockResolvedValue({
@@ -94,6 +97,7 @@ describe('App', () => {
       token: 'test-token',
       login: vi.fn(),
       logout: vi.fn(),
+      hasRole: vi.fn(() => false),
     });
 
     mockApiService.ping.mockRejectedValue(new Error('Network error'));
@@ -109,6 +113,15 @@ describe('App', () => {
   });
 
   it('renders user management link', () => {
+    // Mock hasRole to return true for ADMIN role
+    mockUseAuth.mockReturnValue({
+      user: { id: '1', name: 'Admin User' },
+      token: 'admin-token',
+      login: vi.fn(),
+      logout: vi.fn(),
+      hasRole: vi.fn((role: string) => role === 'ADMIN'),
+    });
+
     renderWithRouter(<App />);
 
     const userManagementLink = screen.getByRole('link', { name: /benutzerverwaltung öffnen/i });
