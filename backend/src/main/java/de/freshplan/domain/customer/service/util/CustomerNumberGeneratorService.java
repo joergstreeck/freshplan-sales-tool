@@ -1,4 +1,4 @@
-package de.freshplan.domain.customer.service;
+package de.freshplan.domain.customer.service.util;
 
 import de.freshplan.domain.customer.constants.CustomerConstants;
 import de.freshplan.domain.customer.repository.CustomerRepository;

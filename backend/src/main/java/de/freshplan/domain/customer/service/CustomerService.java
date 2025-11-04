@@ -10,6 +10,7 @@ import de.freshplan.domain.customer.entity.ImportanceLevel;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.service.dto.*;
 import de.freshplan.domain.customer.service.dto.CustomerResponseBuilder;
+import de.freshplan.domain.customer.service.util.CustomerNumberGeneratorService;
 import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsException;
 import de.freshplan.domain.customer.service.exception.CustomerHasChildrenException;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.0.0
  */
 @ApplicationScoped
-public class CustomerService {
+public class CustomerService implements CustomerActivation {
 
   private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 

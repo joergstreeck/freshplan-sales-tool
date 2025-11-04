@@ -1,4 +1,4 @@
-package de.freshplan.domain.customer.service;
+package de.freshplan.modules.xentral.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;

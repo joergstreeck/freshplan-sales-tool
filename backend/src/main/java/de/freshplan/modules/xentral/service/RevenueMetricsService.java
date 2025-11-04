@@ -1,8 +1,9 @@
-package de.freshplan.domain.customer.service;
+package de.freshplan.modules.xentral.service;
 
 import de.freshplan.domain.customer.dto.PaymentBehavior;
 import de.freshplan.domain.customer.dto.RevenueMetrics;
 import de.freshplan.domain.customer.entity.Customer;
+import de.freshplan.domain.customer.service.RevenueMetricsProvider;
 import de.freshplan.modules.xentral.dto.XentralInvoiceDTO;
 import de.freshplan.modules.xentral.service.XentralApiService;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -20,13 +21,16 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Sprint 2.1.7.2: Customer Dashboard - Revenue Metrics from Xentral
  *
+ * <p>Sprint 2.1.7.7 Cycle 2 fix: Implements RevenueMetricsProvider interface to break circular
+ * dependency between customer.service and xentral.service (Dependency Inversion Principle).
+ *
  * <p>Calculates revenue metrics (30/90/365 days) and payment behavior from Xentral invoices.
  *
  * @author FreshPlan Team
  * @since 2.0.0
  */
 @ApplicationScoped
-public class RevenueMetricsService {
+public class RevenueMetricsService implements RevenueMetricsProvider {
 
   private static final Logger logger = LoggerFactory.getLogger(RevenueMetricsService.class);
 

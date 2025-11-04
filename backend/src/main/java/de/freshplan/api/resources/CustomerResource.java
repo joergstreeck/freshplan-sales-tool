@@ -75,7 +75,7 @@ public class CustomerResource {
   de.freshplan.domain.opportunity.service.OpportunityService
       opportunityService; // For customer opportunities
 
-  @Inject de.freshplan.domain.customer.service.RevenueMetricsService revenueMetricsService;
+  @Inject de.freshplan.modules.xentral.service.RevenueMetricsService revenueMetricsService;
 
   @Inject Clock clock; // For audit timestamps (Sprint 2.1.7.2 D9.3)
 

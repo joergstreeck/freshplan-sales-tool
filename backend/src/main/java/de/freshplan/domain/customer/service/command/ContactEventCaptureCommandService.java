@@ -1,9 +1,8 @@
 package de.freshplan.domain.customer.service.command;
 
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
-import de.freshplan.domain.customer.service.ContactEventCaptureService.ContactDomainEvent;
-import de.freshplan.domain.customer.service.ContactEventCaptureService.ContactInteractionCaptured;
-import de.freshplan.domain.customer.service.ContactInteractionService;
+import de.freshplan.domain.customer.service.events.ContactDomainEvent;
+import de.freshplan.domain.customer.service.events.ContactInteractionCaptured;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
@@ -33,7 +32,7 @@ public class ContactEventCaptureCommandService {
 
   private static final Logger LOG = Logger.getLogger(ContactEventCaptureCommandService.class);
 
-  @Inject ContactInteractionService interactionService;
+  @Inject ContactInteractionCommandService interactionCommandService;
 
   @Inject Event<ContactInteractionCaptured> interactionCapturedEvent;
 
@@ -71,7 +70,7 @@ public class ContactEventCaptureCommandService {
             .build();
 
     try {
-      interactionService.createInteraction(interaction);
+      interactionCommandService.createInteraction(interaction);
     } catch (Exception e) {
       LOG.error("Failed to capture contact update", e);
     }
@@ -99,7 +98,7 @@ public class ContactEventCaptureCommandService {
             .build();
 
     try {
-      interactionService.createInteraction(interaction);
+      interactionCommandService.createInteraction(interaction);
     } catch (Exception e) {
       LOG.error("Failed to capture email sent", e);
     }
@@ -133,7 +132,7 @@ public class ContactEventCaptureCommandService {
             .build();
 
     try {
-      interactionService.createInteraction(interaction);
+      interactionCommandService.createInteraction(interaction);
     } catch (Exception e) {
       LOG.error("Failed to capture phone call", e);
     }
@@ -162,7 +161,7 @@ public class ContactEventCaptureCommandService {
             .build();
 
     try {
-      interactionService.createInteraction(interaction);
+      interactionCommandService.createInteraction(interaction);
     } catch (Exception e) {
       LOG.error("Failed to capture meeting scheduled", e);
     }
@@ -190,7 +189,7 @@ public class ContactEventCaptureCommandService {
             .build();
 
     try {
-      interactionService.createInteraction(interaction);
+      interactionCommandService.createInteraction(interaction);
     } catch (Exception e) {
       LOG.error("Failed to capture document shared", e);
     }
@@ -218,7 +217,7 @@ public class ContactEventCaptureCommandService {
             .build();
 
     try {
-      interactionService.createInteraction(interaction);
+      interactionCommandService.createInteraction(interaction);
     } catch (Exception e) {
       LOG.error("Failed to capture task created", e);
     }

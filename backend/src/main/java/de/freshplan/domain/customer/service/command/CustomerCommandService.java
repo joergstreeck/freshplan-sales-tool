@@ -6,7 +6,7 @@ import de.freshplan.domain.customer.entity.CustomerTimelineEvent;
 import de.freshplan.domain.customer.entity.EventCategory;
 import de.freshplan.domain.customer.entity.ImportanceLevel;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.customer.service.CustomerNumberGeneratorService;
+import de.freshplan.domain.customer.service.util.CustomerNumberGeneratorService;
 import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;

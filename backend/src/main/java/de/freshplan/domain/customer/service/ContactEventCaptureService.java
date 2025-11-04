@@ -3,6 +3,8 @@ package de.freshplan.domain.customer.service;
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
 import de.freshplan.domain.customer.service.command.ContactEventCaptureCommandService;
 import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
+import de.freshplan.domain.customer.service.events.ContactDomainEvent;
+import de.freshplan.domain.customer.service.events.ContactInteractionCaptured;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;
@@ -330,71 +332,6 @@ public class ContactEventCaptureService {
     return 100; // Very long calls indicate high engagement
   }
 
-  // Event classes
-
-  /** Event fired when an interaction is captured */
-  public static class ContactInteractionCaptured {
-    private final UUID contactId;
-    private final String interactionType;
-    private final String userId;
-    private final LocalDateTime timestamp;
-
-    public ContactInteractionCaptured(
-        UUID contactId, String interactionType, String userId, LocalDateTime timestamp) {
-      this.contactId = contactId;
-      this.interactionType = interactionType;
-      this.userId = userId;
-      this.timestamp = timestamp;
-    }
-
-    // Getters
-    public UUID getContactId() {
-      return contactId;
-    }
-
-    public String getInteractionType() {
-      return interactionType;
-    }
-
-    public String getUserId() {
-      return userId;
-    }
-
-    public LocalDateTime getTimestamp() {
-      return timestamp;
-    }
-  }
-
-  /** Generic contact domain event */
-  public static class ContactDomainEvent {
-    private final String eventType;
-    private final UUID contactId;
-    private final String userId;
-    private final java.util.Map<String, String> metadata;
-
-    public ContactDomainEvent(
-        String eventType, UUID contactId, String userId, java.util.Map<String, String> metadata) {
-      this.eventType = eventType;
-      this.contactId = contactId;
-      this.userId = userId;
-      this.metadata = metadata;
-    }
-
-    // Getters
-    public String getEventType() {
-      return eventType;
-    }
-
-    public UUID getContactId() {
-      return contactId;
-    }
-
-    public String getUserId() {
-      return userId;
-    }
-
-    public java.util.Map<String, String> getMetadata() {
-      return metadata;
-    }
-  }
+  // Event classes moved to de.freshplan.domain.customer.service.events package
+  // (Sprint 2.1.7.7 - Cycle 1 fix: break service ↔ service.command circular dependency)
 }
