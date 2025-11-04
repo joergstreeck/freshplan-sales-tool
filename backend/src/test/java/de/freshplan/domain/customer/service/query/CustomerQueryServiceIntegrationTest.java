@@ -57,7 +57,7 @@ class CustomerQueryServiceIntegrationTest {
     // Use unique customer number to avoid constraint violations
     testCustomer.setCustomerNumber("KD-TEST-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Test Company GmbH");
-    testCustomer.setLegalForm("GmbH");
+    testCustomer.setLegalForm("GMBH");
     testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     testCustomer.setRiskScore(50);
     testCustomer.setActualAnnualVolume(new BigDecimal("80000.00"));
@@ -364,7 +364,7 @@ class CustomerQueryServiceIntegrationTest {
       // Override specific fields to maintain test requirements
       customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", i + 1));
       customer.setCompanyName("Test Company " + i);
-      customer.setLegalForm("GmbH");
+      customer.setLegalForm("GMBH");
       customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
       customer.setRiskScore(40 + i);
       customer.setCreatedBy("test-user");
@@ -388,7 +388,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -411,7 +411,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -434,7 +434,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(riskScore);
     customer.setCreatedBy("test-user");
@@ -457,7 +457,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setLastContactDate(lastContact);
@@ -482,7 +482,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -505,7 +505,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(stage);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
