@@ -419,11 +419,123 @@ jobs:
           echo "- API documentation" >> $GITHUB_STEP_SUMMARY
 
   # ============================================================================
+  # 3.6. Migration Validation Tests (BATCH 3 - Flyway Integrity)
+  # ============================================================================
+  migration-validation-tests:
+    name: Migration Validation Tests (Flyway)
+    needs: compile
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: Run Migration Validation Tests
+        working-directory: backend
+        run: |
+          echo "🔍 Running Flyway Migration Validation Tests..."
+          echo ""
+          echo "Testing migration integrity:"
+          echo "  • All migrations applied successfully"
+          echo "  • No pending migrations"
+          echo "  • No failed migrations"
+          echo "  • Migration checksums valid"
+          echo "  • Migrations are idempotent"
+          echo "  • Migration order correct"
+          echo "  • Critical tables exist"
+          echo ""
+
+          ./mvnw -B test \
+            -Dtest="FlywayMigrationValidationTest" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false || {
+              echo ""
+              echo "❌ Migration Validation FAILED!"
+              echo ""
+              echo "⚠️  Database migrations are in an invalid state."
+              echo ""
+              echo "💡 Common issues:"
+              echo "    - Failed migrations (broken SQL scripts)"
+              echo "    - Pending migrations (not applied)"
+              echo "    - Missing migrations (files deleted after apply)"
+              echo "    - Checksum mismatches (files modified after apply)"
+              echo "    - Non-idempotent migrations (errors on re-apply)"
+              echo ""
+              echo "📊 Review the test results above for details."
+              echo "🔧 Fix: Review migration files and ensure they are correct"
+              exit 1
+            }
+
+          echo "✅ All migration validation tests passed - database is healthy!"
+
+      - name: Upload Migration Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Migration Validation Tests (Flyway)
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: Migration Validation Summary
+        if: always()
+        run: |
+          echo "## 🗄️ Migration Validation Tests (Flyway)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Purpose:** Ensure database migrations are correct and idempotent" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tests:**" >> $GITHUB_STEP_SUMMARY
+          echo "- All migrations applied successfully (no FAILED state)" >> $GITHUB_STEP_SUMMARY
+          echo "- No pending migrations (all applied)" >> $GITHUB_STEP_SUMMARY
+          echo "- No missing migrations (files not deleted)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migration checksums valid (files not modified)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migration order correct (no critical out-of-order)" >> $GITHUB_STEP_SUMMARY
+          echo "- Critical tables exist (customers, leads, users, etc.)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migrations are idempotent (re-apply safe)" >> $GITHUB_STEP_SUMMARY
+          echo "- Flyway baseline configured correctly" >> $GITHUB_STEP_SUMMARY
+          echo "- No ignored migrations (version conflicts)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Why:** Prevents production deployment with broken migrations" >> $GITHUB_STEP_SUMMARY
+          echo "**Impact:** Database schema integrity guaranteed in production" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
   # Final Pipeline Gate
   # ============================================================================
   pipeline-gate:
     name: Backend Pipeline Complete
-    needs: [compile, test, api-contract-tests]
+    needs: [compile, test, api-contract-tests, migration-validation-tests]
     runs-on: ubuntu-latest
     if: always()
 
