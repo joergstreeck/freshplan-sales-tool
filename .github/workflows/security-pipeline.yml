@@ -208,6 +208,202 @@ jobs:
           retention-days: 30
 
   # ============================================================================
+  # 3.5. Trivy Container Scanning (NEW - BATCH 2)
+  # ============================================================================
+  trivy-container-scan:
+    name: Trivy Container Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Trivy
+        run: |
+          # Install Trivy (latest version)
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+          echo "✅ Trivy installed: $(trivy --version)"
+
+      - name: Build Backend Docker Image
+        working-directory: backend
+        run: |
+          echo "🐳 Building backend Docker image..."
+          ./mvnw -B package -DskipTests
+          cd ..
+          docker build -f docker/Dockerfile.backend -t freshplan-backend:latest .
+          echo "✅ Backend image built"
+
+      - name: Build Frontend Docker Image
+        working-directory: frontend
+        run: |
+          echo "🐳 Building frontend Docker image..."
+          npm ci
+          npm run build
+          cd ..
+          docker build -f docker/Dockerfile.frontend -t freshplan-frontend:latest .
+          echo "✅ Frontend image built"
+
+      - name: Scan Backend Image with Trivy
+        run: |
+          echo "🔍 Scanning backend image for vulnerabilities..."
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format json \
+            --output trivy-backend-report.json \
+            freshplan-backend:latest
+
+          # Also generate HTML report
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format template \
+            --template "@contrib/html.tpl" \
+            --output trivy-backend-report.html \
+            freshplan-backend:latest
+
+          echo "✅ Backend scan completed"
+
+      - name: Scan Frontend Image with Trivy
+        run: |
+          echo "🔍 Scanning frontend image for vulnerabilities..."
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format json \
+            --output trivy-frontend-report.json \
+            freshplan-frontend:latest
+
+          # Also generate HTML report
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format template \
+            --template "@contrib/html.tpl" \
+            --output trivy-frontend-report.html \
+            freshplan-frontend:latest
+
+          echo "✅ Frontend scan completed"
+
+      - name: Check for Critical Vulnerabilities (Backend)
+        run: |
+          echo "🔍 Analyzing backend vulnerabilities..."
+
+          if [ -f trivy-backend-report.json ]; then
+            CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-backend-report.json)
+            HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-backend-report.json)
+            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-backend-report.json)
+
+            echo "📊 Backend Image Vulnerabilities:"
+            echo "  - CRITICAL: $CRITICAL"
+            echo "  - HIGH: $HIGH"
+            echo "  - MEDIUM: $MEDIUM"
+
+            if [ "$CRITICAL" -gt 0 ]; then
+              echo ""
+              echo "❌ CRITICAL vulnerabilities detected in backend image!"
+              echo "🔒 This is a security blocker. Review trivy-backend-report.html artifact."
+              exit 1
+            fi
+
+            if [ "$HIGH" -gt 10 ]; then
+              echo ""
+              echo "⚠️ More than 10 HIGH vulnerabilities detected in backend!"
+              echo "📊 Consider updating base image or dependencies."
+            fi
+          else
+            echo "⚠️ No backend Trivy report generated"
+          fi
+
+      - name: Check for Critical Vulnerabilities (Frontend)
+        run: |
+          echo "🔍 Analyzing frontend vulnerabilities..."
+
+          if [ -f trivy-frontend-report.json ]; then
+            CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-frontend-report.json)
+            HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-frontend-report.json)
+            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-frontend-report.json)
+
+            echo "📊 Frontend Image Vulnerabilities:"
+            echo "  - CRITICAL: $CRITICAL"
+            echo "  - HIGH: $HIGH"
+            echo "  - MEDIUM: $MEDIUM"
+
+            if [ "$CRITICAL" -gt 0 ]; then
+              echo ""
+              echo "❌ CRITICAL vulnerabilities detected in frontend image!"
+              echo "🔒 This is a security blocker. Review trivy-frontend-report.html artifact."
+              exit 1
+            fi
+
+            if [ "$HIGH" -gt 10 ]; then
+              echo ""
+              echo "⚠️ More than 10 HIGH vulnerabilities detected in frontend!"
+              echo "📊 Consider updating nginx or node base images."
+            fi
+          else
+            echo "⚠️ No frontend Trivy report generated"
+          fi
+
+      - name: Upload Trivy Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-container-scan-reports
+          path: |
+            trivy-backend-report.json
+            trivy-backend-report.html
+            trivy-frontend-report.json
+            trivy-frontend-report.html
+          retention-days: 30
+
+      - name: Trivy Scan Summary
+        if: always()
+        run: |
+          echo "## 🔒 Trivy Container Security Scan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Images Scanned:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: eclipse-temurin:17-jre-jammy" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: nginx:1.27-alpine" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f trivy-backend-report.json ] && [ -f trivy-frontend-report.json ]; then
+            BACKEND_CRIT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-backend-report.json)
+            BACKEND_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-backend-report.json)
+            FRONTEND_CRIT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-frontend-report.json)
+            FRONTEND_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-frontend-report.json)
+
+            echo "**Backend Vulnerabilities:**" >> $GITHUB_STEP_SUMMARY
+            echo "- CRITICAL: $BACKEND_CRIT" >> $GITHUB_STEP_SUMMARY
+            echo "- HIGH: $BACKEND_HIGH" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            echo "**Frontend Vulnerabilities:**" >> $GITHUB_STEP_SUMMARY
+            echo "- CRITICAL: $FRONTEND_CRIT" >> $GITHUB_STEP_SUMMARY
+            echo "- HIGH: $FRONTEND_HIGH" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            echo "📊 Detailed HTML reports available in artifacts" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Trivy reports not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ============================================================================
   # 4. Secrets Scanning (NEW)
   # ============================================================================
   secrets-scan:
