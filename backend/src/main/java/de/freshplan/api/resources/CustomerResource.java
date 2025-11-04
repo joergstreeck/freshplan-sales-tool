@@ -26,6 +26,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +89,18 @@ public class CustomerResource {
    */
   @POST
   @RolesAllowed({"admin", "manager"})
+  @APIResponses({
+    @APIResponse(
+        responseCode = "201",
+        description = "Customer created successfully",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = CustomerResponse.class))),
+    @APIResponse(responseCode = "400", description = "Invalid request data"),
+    @APIResponse(responseCode = "401", description = "Unauthorized - authentication required"),
+    @APIResponse(responseCode = "403", description = "Forbidden - admin or manager role required")
+  })
   public Response createCustomer(@Valid CreateCustomerRequest request) {
     // Additional security: verify role programmatically for audit
     securityContext.requireAnyRole("admin", "manager");
@@ -201,6 +217,16 @@ public class CustomerResource {
    * @return 200 OK with paginated customer list
    */
   @GET
+  @APIResponses({
+    @APIResponse(
+        responseCode = "200",
+        description = "Paginated list of customers",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = CustomerListResponse.class))),
+    @APIResponse(responseCode = "401", description = "Unauthorized - authentication required")
+  })
   public Response getAllCustomers(
       @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING) int page,
       @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,

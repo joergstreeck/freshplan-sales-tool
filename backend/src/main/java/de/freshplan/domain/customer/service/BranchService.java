@@ -40,9 +40,7 @@ public class BranchService {
   private final CustomerService customerService;
 
   @Inject
-  public BranchService(
-      CustomerRepository customerRepository,
-      CustomerService customerService) {
+  public BranchService(CustomerRepository customerRepository, CustomerService customerService) {
     this.customerRepository = customerRepository;
     this.customerService = customerService;
   }
