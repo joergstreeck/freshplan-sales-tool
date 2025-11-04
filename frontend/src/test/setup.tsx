@@ -156,7 +156,7 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0, // Updated from cacheTime
         staleTime: 0,
       },
       mutations: {
@@ -170,3 +170,32 @@ export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children 
   const queryClient = createTestQueryClient();
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
+
+// GLOBAL SETUP: Mock @testing-library/react to automatically wrap with QueryClient
+import * as RTL from '@testing-library/react';
+
+vi.mock('@testing-library/react', async (importOriginal) => {
+  const actual = await importOriginal<typeof RTL>();
+
+  return {
+    ...actual,
+    render: (ui: React.ReactElement, options?: RTL.RenderOptions) => {
+      const queryClient = createTestQueryClient();
+
+      function AllTheProviders({ children }: { children: React.ReactNode }) {
+        // Merge with any existing wrapper
+        if (options?.wrapper) {
+          const ExistingWrapper = options.wrapper;
+          return (
+            <QueryClientProvider client={queryClient}>
+              <ExistingWrapper>{children}</ExistingWrapper>
+            </QueryClientProvider>
+          );
+        }
+        return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+      }
+
+      return actual.render(ui, { ...options, wrapper: AllTheProviders });
+    },
+  };
+});
