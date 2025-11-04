@@ -255,7 +255,7 @@ jobs:
           ./mvnw quarkus:dev -Dquarkus.http.port=8082 &
           sleep 45
 
-      - name: k6 Full Load Testing
+      - name: k6 Full Load Testing (MONITORING MODE)
         continue-on-error: true
         run: |
           # Install k6
@@ -265,7 +265,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install k6
 
-          # Create k6 test
+          # Create k6 test with thresholds
           cat > k6-full-load.js << 'EOF'
           import http from 'k6/http';
           import { check, group } from 'k6';
@@ -294,11 +294,18 @@ jobs:
                 'health check status 200': (r) => r.status === 200,
                 'health check fast': (r) => r.timings.duration < 100,
               });
+              failureRate.add(res.status !== 200);
             });
           }
           EOF
 
-          k6 run k6-full-load.js || echo "⚠️ Performance tests had warnings"
+          echo "⚡ Running k6 full load test (16 min)..."
+          k6 run k6-full-load.js || {
+            echo ""
+            echo "⚠️ Performance thresholds not met in nightly full load test"
+            echo "   This is informational only (nightly is non-blocking)"
+            echo ""
+          }
           pkill -f quarkus || true
 
   # ============================================================================

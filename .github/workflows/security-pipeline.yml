@@ -337,7 +337,7 @@ jobs:
             exit 1
           fi
 
-      - name: Run k6 Performance Smoke Test
+      - name: Run k6 Performance Smoke Test (BLOCKING)
         run: |
           echo "⚡ Running k6 performance smoke test..."
 
@@ -346,15 +346,22 @@ jobs:
             docker run --rm -i \
               --network host \
               grafana/k6 run - < backend/src/test/k6/smoke-test.js || {
-                echo "⚠️ k6 test failed or not found"
-                echo "Target: P95 < 200ms"
+                echo ""
+                echo "❌ Performance Threshold Violation!"
+                echo ""
+                echo "⚠️  Your changes do not meet the performance requirements:"
+                echo "    • P95 response time: <200ms"
+                echo "    • Error rate: <10%"
+                echo ""
+                echo "💡 Review the k6 test output above for details."
+                exit 1
               }
+            echo "✅ Performance thresholds met (P95 <200ms, errors <10%)"
           else
             echo "⚠️ k6 smoke test file not found at backend/src/test/k6/smoke-test.js"
             echo "📝 Create this file to enable performance testing"
             echo "Target: P95 < 200ms"
           fi
-        continue-on-error: true
 
       - name: Performance Check Summary
         run: |

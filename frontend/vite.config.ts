@@ -127,13 +127,13 @@ export default defineConfig({
         'src/main.tsx',
         'src/vite-env.d.ts',
       ],
-      // Thresholds auskommentiert - Coverage wird immer generiert, auch bei failing Tests
-      // thresholds: {
-      //   lines: 80,
-      //   functions: 80,
-      //   branches: 80,
-      //   statements: 80,
-      // },
+      // ✅ ACTIVATED: CI/CD Coverage Enforcement (80% minimum)
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
+      },
     },
   },
 });

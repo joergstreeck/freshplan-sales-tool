@@ -156,6 +156,24 @@ jobs:
         working-directory: backend
         run: ./mvnw jacoco:report
 
+      - name: Enforce Coverage Thresholds (80% LINE, 70% BRANCH)
+        working-directory: backend
+        run: |
+          echo "🔒 Enforcing coverage thresholds..."
+          ./mvnw jacoco:check || {
+            echo ""
+            echo "❌ Coverage Threshold Violation!"
+            echo ""
+            echo "⚠️  Your changes do not meet the minimum coverage requirements:"
+            echo "    • LINE coverage: 80% minimum"
+            echo "    • BRANCH coverage: 70% minimum"
+            echo ""
+            echo "📊 Review the coverage report in artifacts."
+            echo "💡 Add tests for uncovered code paths."
+            exit 1
+          }
+          echo "✅ Coverage thresholds met!"
+
       - name: Upload Test Results
         uses: dorny/test-reporter@v1
         if: success() || failure()

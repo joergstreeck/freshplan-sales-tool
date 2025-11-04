@@ -279,7 +279,7 @@
                   </limits>
                 </rule>
               </rules>
-              <skip>true</skip> <!-- Vorerst deaktiviert, bis wir 80% erreichen -->
+              <skip>false</skip> <!-- ✅ ACTIVATED: CI/CD Coverage Enforcement -->
             </configuration>
           </execution>
         </executions>
