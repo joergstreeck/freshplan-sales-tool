@@ -5,7 +5,8 @@ import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
-import de.freshplan.domain.testdata.service.TestDataService;
+import de.freshplan.domain.testdata.service.provider.CleanupResult;
+import de.freshplan.domain.testdata.service.provider.SeedResult;
 import de.freshplan.modules.leads.domain.Lead;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -39,7 +40,7 @@ public class TestDataCommandService {
    * true and prefixed with [TEST].
    */
   @Transactional
-  public TestDataService.SeedResult seedTestData() {
+  public SeedResult seedTestData() {
     LOG.info("Starting test data seeding...");
 
     List<Customer> createdCustomers = new ArrayList<>();
@@ -158,7 +159,7 @@ public class TestDataCommandService {
           "Successfully seeded %d test customers with %d timeline events",
           createdCustomers.size(), createdEvents.size());
 
-      return new TestDataService.SeedResult(createdCustomers.size(), createdEvents.size());
+      return new SeedResult(createdCustomers.size(), createdEvents.size());
 
     } catch (Exception e) {
       LOG.error("Error seeding test data", e);
@@ -168,7 +169,7 @@ public class TestDataCommandService {
 
   /** Removes all test data from the database. */
   @Transactional
-  public TestDataService.CleanupResult cleanTestData() {
+  public CleanupResult cleanTestData() {
     LOG.info("Starting test data cleanup...");
 
     try {
@@ -217,7 +218,7 @@ public class TestDataCommandService {
           deletedLeads,
           deletedEvents);
 
-      return new TestDataService.CleanupResult(deletedCustomers, deletedEvents);
+      return new CleanupResult(deletedCustomers, deletedEvents);
 
     } catch (Exception e) {
       LOG.error("Error cleaning test data", e);
@@ -230,7 +231,7 @@ public class TestDataCommandService {
    * operation.
    */
   @Transactional
-  public TestDataService.CleanupResult cleanOldTestData() {
+  public CleanupResult cleanOldTestData() {
     LOG.info("Starting old test data cleanup...");
 
     try {
@@ -248,7 +249,7 @@ public class TestDataCommandService {
           "Successfully cleaned up %d old customers and %d timeline events",
           deletedCustomers, deletedEvents);
 
-      return new TestDataService.CleanupResult(deletedCustomers, deletedEvents);
+      return new CleanupResult(deletedCustomers, deletedEvents);
 
     } catch (Exception e) {
       LOG.error("Error cleaning old test data", e);
@@ -261,7 +262,7 @@ public class TestDataCommandService {
    * seedTestData() and seedComprehensiveTestData() to get the missing 14 customers.
    */
   @Transactional
-  public TestDataService.SeedResult seedAdditionalTestData() {
+  public SeedResult seedAdditionalTestData() {
     LOG.info("Seeding additional 14 test customers to reach 58 total...");
 
     List<Customer> createdCustomers = new ArrayList<>();
@@ -314,7 +315,7 @@ public class TestDataCommandService {
       }
 
       LOG.infof("Successfully seeded %d additional test customers", createdCustomers.size());
-      return new TestDataService.SeedResult(createdCustomers.size(), 0);
+      return new SeedResult(createdCustomers.size(), 0);
 
     } catch (Exception e) {
       LOG.error("Error seeding additional test data", e);
@@ -331,7 +332,7 @@ public class TestDataCommandService {
    * special character tests
    */
   @Transactional
-  public TestDataService.SeedResult seedComprehensiveTestData() {
+  public SeedResult seedComprehensiveTestData() {
     LOG.info("🧪 Starting comprehensive edge-case test data seeding...");
 
     List<Customer> createdCustomers = new ArrayList<>();
@@ -369,7 +370,7 @@ public class TestDataCommandService {
       LOG.infof("🎯 Comprehensive test data seeded! Total customers: %d", createdCustomers.size());
       LOG.info("💡 This covers all edge cases for thorough testing");
 
-      return new TestDataService.SeedResult(createdCustomers.size(), 0);
+      return new SeedResult(createdCustomers.size(), 0);
 
     } catch (Exception e) {
       LOG.error("Error seeding comprehensive test data", e);

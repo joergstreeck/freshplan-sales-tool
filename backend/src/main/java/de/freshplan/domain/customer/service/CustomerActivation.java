@@ -5,8 +5,8 @@ import java.util.UUID;
 /**
  * Interface for customer activation operations.
  *
- * <p>Extracted during Sprint 2.1.7.7 Cycle 2 fix to break circular dependency between customer.service
- * and xentral.service. Follows Dependency Inversion Principle (SOLID).
+ * <p>Extracted during Sprint 2.1.7.7 Cycle 2 fix to break circular dependency between
+ * customer.service and xentral.service. Follows Dependency Inversion Principle (SOLID).
  *
  * <p>This interface allows xentral.service (XentralOrderEventHandlerImpl) to activate customers
  * without depending on the full CustomerService class, breaking the circular dependency.

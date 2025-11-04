@@ -4,12 +4,12 @@ import de.freshplan.domain.help.entity.HelpContent;
 import de.freshplan.domain.help.entity.HelpType;
 import de.freshplan.domain.help.entity.UserLevel;
 import de.freshplan.domain.help.repository.HelpContentRepository;
-import de.freshplan.domain.help.service.HelpAnalyticsService;
-import de.freshplan.domain.help.service.UserStruggleDetectionService;
 import de.freshplan.domain.help.service.dto.HelpAnalytics;
 import de.freshplan.domain.help.service.dto.HelpRequest;
 import de.freshplan.domain.help.service.dto.HelpResponse;
 import de.freshplan.domain.help.service.dto.UserStruggle;
+import de.freshplan.domain.help.service.provider.HelpAnalyticsProvider;
+import de.freshplan.domain.help.service.provider.StruggleDetectionProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.util.List;
@@ -37,9 +37,9 @@ public class HelpContentQueryService {
 
   @Inject HelpContentRepository helpRepository;
 
-  @Inject UserStruggleDetectionService struggleDetectionService;
+  @Inject StruggleDetectionProvider struggleDetectionService;
 
-  @Inject HelpAnalyticsService analyticsService;
+  @Inject HelpAnalyticsProvider analyticsService;
 
   /**
    * Gets the best help content for a feature request.

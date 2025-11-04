@@ -5,7 +5,6 @@ import de.freshplan.domain.customer.dto.RevenueMetrics;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.service.RevenueMetricsProvider;
 import de.freshplan.modules.xentral.dto.XentralInvoiceDTO;
-import de.freshplan.modules.xentral.service.XentralApiService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;

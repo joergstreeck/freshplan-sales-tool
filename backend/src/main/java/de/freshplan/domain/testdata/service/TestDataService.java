@@ -7,6 +7,9 @@ import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
 import de.freshplan.domain.opportunity.repository.OpportunityRepository;
 import de.freshplan.domain.testdata.service.command.TestDataCommandService;
+import de.freshplan.domain.testdata.service.provider.CleanupResult;
+import de.freshplan.domain.testdata.service.provider.SeedResult;
+import de.freshplan.domain.testdata.service.provider.TestDataStats;
 import de.freshplan.domain.testdata.service.query.TestDataQueryService;
 import de.freshplan.modules.leads.domain.ActivityOutcome;
 import de.freshplan.modules.leads.domain.ActivityType;
@@ -1408,11 +1411,4 @@ public class TestDataService {
       throw new RuntimeException("Failed to seed Super-Customer scenario: " + e.getMessage(), e);
     }
   }
-
-  // Result classes
-  public record SeedResult(int customersCreated, int eventsCreated) {}
-
-  public record CleanupResult(long customersDeleted, long eventsDeleted) {}
-
-  public record TestDataStats(long customerCount, long eventCount) {}
 }

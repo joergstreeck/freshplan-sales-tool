@@ -6,7 +6,6 @@ import de.freshplan.domain.customer.entity.CustomerTimelineEvent;
 import de.freshplan.domain.customer.entity.EventCategory;
 import de.freshplan.domain.customer.entity.ImportanceLevel;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.customer.service.util.CustomerNumberGeneratorService;
 import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.dto.UpdateCustomerRequest;
@@ -14,6 +13,7 @@ import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsExcep
 import de.freshplan.domain.customer.service.exception.CustomerHasChildrenException;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerMapper;
+import de.freshplan.domain.customer.service.util.CustomerNumberGeneratorService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;

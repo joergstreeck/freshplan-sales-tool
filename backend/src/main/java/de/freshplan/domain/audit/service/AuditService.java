@@ -6,9 +6,13 @@ import de.freshplan.domain.audit.dto.ComplianceAlertDto;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
+import de.freshplan.domain.audit.events.AuditableApplicationEvent;
 import de.freshplan.domain.audit.repository.AuditRepository;
 import de.freshplan.domain.audit.service.command.AuditCommandService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import de.freshplan.domain.audit.service.provider.AuditConfiguration;
+import de.freshplan.domain.audit.service.provider.AuditEvent;
+import de.freshplan.domain.audit.service.provider.AuditException;
 import de.freshplan.domain.audit.service.query.AuditQueryService;
 import de.freshplan.domain.export.service.dto.ExportRequest;
 import de.freshplan.shared.util.SecurityUtils;
@@ -550,38 +554,5 @@ public class AuditService {
     }
     // Legacy: direkt vom Repository
     return auditRepository.streamForExport(criteria);
-  }
-
-  /** Audit service configuration */
-  @ApplicationScoped
-  public static class AuditConfiguration {
-    // These would typically come from application.properties
-    public int getAsyncThreadPoolSize() {
-      return 5;
-    }
-
-    public boolean isEventBusEnabled() {
-      return true;
-    }
-  }
-
-  /** Audit event for CDI event bus */
-  public static class AuditEvent {
-    private final AuditEntry entry;
-
-    public AuditEvent(AuditEntry entry) {
-      this.entry = entry;
-    }
-
-    public AuditEntry getEntry() {
-      return entry;
-    }
-  }
-
-  /** Exception for audit failures */
-  public static class AuditException extends RuntimeException {
-    public AuditException(String message, Throwable cause) {
-      super(message, cause);
-    }
   }
 }

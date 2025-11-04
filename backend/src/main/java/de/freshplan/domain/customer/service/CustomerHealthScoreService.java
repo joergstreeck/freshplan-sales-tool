@@ -2,7 +2,6 @@ package de.freshplan.domain.customer.service;
 
 import de.freshplan.domain.customer.dto.RevenueMetrics;
 import de.freshplan.domain.customer.entity.Customer;
-import de.freshplan.domain.customer.service.RevenueMetricsProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.LocalDate;

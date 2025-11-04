@@ -7,7 +7,6 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.customer.dto.PaymentBehavior;
 import de.freshplan.domain.customer.dto.RevenueMetrics;
 import de.freshplan.modules.xentral.dto.XentralInvoiceDTO;
-import de.freshplan.modules.xentral.service.XentralApiService;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;

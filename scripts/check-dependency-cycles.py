@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
 """
 Dependency Cycle Checker for Java Backend
-Sprint 2.1.7.7 - Pre-Commit Hook Integration
+Sprint 2.1.7.7 - ZERO TOLERANCE Policy
 
 Prüft auf zirkuläre Abhängigkeiten zwischen Java-Packages.
-ZERO TOLERANCE für Circular Dependencies!
+STRICT ENFORCEMENT: ANY circular dependency will fail the check!
+
+All dependency cycles eliminated in Sprint 2.1.7.7:
+- help.service → provider pattern (4 cycles fixed)
+- audit.service → provider + events pattern (1 cycle fixed)
+- testdata.service → provider pattern (2 cycles fixed)
 
 Usage:
   python3 ./scripts/check-dependency-cycles.py
 
 Exit Codes:
-  0 - No cycles found
-  1 - Cycles detected
+  0 - No cycles found (PASSED)
+  1 - Cycles detected (FAILED)
 """
 
 import os
@@ -150,48 +155,32 @@ class DependencyCycleChecker:
 
         self.print_cycles(cycles)
 
-        # Baseline: 6 non-critical cycles exist (help/audit/testdata services)
-        # Only block if NEW cycles are introduced (> 6)
-        BASELINE_CYCLE_COUNT = 6
-
-        if len(cycles) > BASELINE_CYCLE_COUNT:
+        # Sprint 2.1.7.7: ZERO TOLERANCE - All cycles fixed!
+        # Strict enforcement: ANY cycle is a failure
+        if len(cycles) > 0:
             print("=" * 60)
-            print(f"❌ DEPENDENCY CYCLE CHECK FAILED - NEW CYCLES!")
+            print("❌ DEPENDENCY CYCLE CHECK FAILED")
             print("=" * 60)
-            print(f"\n⚠️  Baseline: {BASELINE_CYCLE_COUNT} cycles (non-critical services)")
-            print(f"⚠️  Current:  {len(cycles)} cycles")
-            print(f"🚫 NEW: {len(cycles) - BASELINE_CYCLE_COUNT} cycle(s) introduced!")
-            print("\n💡 How to fix the NEW cycle(s):")
-            print("   1. Identify the NEW cycle(s) above")
+            print(f"\n🚫 Found {len(cycles)} circular dependency(ies)")
+            print("\n💡 How to fix:")
+            print("   1. Identify the cycle(s) above")
             print("   2. Break the cycle by:")
-            print("      • Introducing an interface/abstraction")
-            print("      • Moving shared code to a common package")
+            print("      • Introducing an interface/abstraction (Dependency Inversion)")
+            print("      • Moving shared code to a neutral package (e.g., .provider)")
             print("      • Inverting the dependency direction")
+            print("\n   See Sprint 2.1.7.7 fixes for examples:")
+            print("      • help.service → provider pattern")
+            print("      • audit.service → provider + events pattern")
+            print("      • testdata.service → provider pattern")
             print()
             return False
-        elif len(cycles) == BASELINE_CYCLE_COUNT:
-            print("=" * 60)
-            print(f"✅ DEPENDENCY CYCLE CHECK PASSED")
-            print("=" * 60)
-            print(f"\n📊 Status: {BASELINE_CYCLE_COUNT} baseline cycles exist")
-            print("   (help/audit/testdata services - will be fixed in future sprint)")
-            print("   ✅ No NEW cycles introduced - GOOD!")
-            print()
-            return True
-        elif len(cycles) < BASELINE_CYCLE_COUNT:
-            print("=" * 60)
-            print(f"✅ DEPENDENCY CYCLE CHECK PASSED - IMPROVEMENT!")
-            print("=" * 60)
-            print(f"\n🎉 Cycles reduced: {BASELINE_CYCLE_COUNT} → {len(cycles)}")
-            print(f"   ({BASELINE_CYCLE_COUNT - len(cycles)} cycle(s) fixed!)")
-            print()
-            return True
         else:
-            # 0 cycles
+            # 0 cycles - Perfect!
             print("=" * 60)
-            print("✅ DEPENDENCY CYCLE CHECK PASSED - PERFECT!")
+            print("✅ DEPENDENCY CYCLE CHECK PASSED")
             print("=" * 60)
             print("\n🎉 Zero circular dependencies - Clean architecture!")
+            print("   Sprint 2.1.7.7: All cycles eliminated ✅")
             print()
             return True
 

@@ -101,7 +101,8 @@ public class XentralOrderEventHandlerImpl implements XentralOrderEventHandler {
           customer.getCompanyName(),
           xentralCustomerId);
 
-      // Sprint 2.1.7.4: Use CustomerActivation.activateCustomer() (Cycle 2 fix: Interface abstraction)
+      // Sprint 2.1.7.4: Use CustomerActivation.activateCustomer() (Cycle 2 fix: Interface
+      // abstraction)
       customerActivation.activateCustomer(customer.getId(), orderNumber);
 
       logger.info(

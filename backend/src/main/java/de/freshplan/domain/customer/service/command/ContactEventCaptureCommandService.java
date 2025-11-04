@@ -1,9 +1,9 @@
 package de.freshplan.domain.customer.service.command;
 
 import de.freshplan.domain.customer.entity.ContactInteraction.InteractionType;
+import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import de.freshplan.domain.customer.service.events.ContactDomainEvent;
 import de.freshplan.domain.customer.service.events.ContactInteractionCaptured;
-import de.freshplan.domain.customer.service.dto.ContactInteractionDTO;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Event;
 import jakarta.enterprise.event.Observes;

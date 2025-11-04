@@ -1,4 +1,4 @@
-package de.freshplan.domain.audit.service;
+package de.freshplan.domain.audit.events;
 
 import de.freshplan.domain.audit.service.dto.AuditContext;
 

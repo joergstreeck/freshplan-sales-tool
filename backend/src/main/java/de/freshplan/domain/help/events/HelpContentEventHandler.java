@@ -1,8 +1,8 @@
 package de.freshplan.domain.help.events;
 
 import de.freshplan.domain.help.entity.HelpContent;
-import de.freshplan.domain.help.service.HelpAnalyticsService;
 import de.freshplan.domain.help.service.command.HelpContentCommandService;
+import de.freshplan.domain.help.service.provider.HelpAnalyticsProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.enterprise.event.Observes;
@@ -30,7 +30,7 @@ public class HelpContentEventHandler {
 
   @Inject HelpContentCommandService commandService;
 
-  @Inject HelpAnalyticsService analyticsService;
+  @Inject HelpAnalyticsProvider analyticsService;
 
   /**
    * Handles help content viewed events asynchronously.

@@ -2,6 +2,7 @@ package de.freshplan.domain.help.service;
 
 import de.freshplan.domain.help.service.command.UserStruggleDetectionCommandService;
 import de.freshplan.domain.help.service.dto.UserStruggle;
+import de.freshplan.domain.help.service.provider.StruggleDetectionProvider;
 import de.freshplan.domain.help.service.query.UserStruggleDetectionQueryService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -26,10 +27,13 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Part of Phase 12 CQRS migration.
  *
+ * <p>Sprint 2.1.7.7 Cycle 3-6 fix: Implements StruggleDetectionProvider interface to break circular
+ * dependency (Dependency Inversion Principle).
+ *
  * @since Phase 12 CQRS Migration
  */
 @ApplicationScoped
-public class UserStruggleDetectionService {
+public class UserStruggleDetectionService implements StruggleDetectionProvider {
 
   private static final Logger LOG = LoggerFactory.getLogger(UserStruggleDetectionService.class);
 
