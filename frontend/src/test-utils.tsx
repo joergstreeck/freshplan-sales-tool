@@ -4,7 +4,20 @@
 
 import React from 'react';
 import { render as rtlRender, RenderOptions } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { vi } from 'vitest';
+
+// Create a test query client
+const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        staleTime: 0,
+        gcTime: 0,
+      },
+    },
+  });
 
 // Mock the customer field theme provider for tests that need it
 const MockCustomerFieldThemeProvider = ({ children }: { children: React.ReactNode }) => {
@@ -18,12 +31,16 @@ interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
 
 export function render(ui: React.ReactElement, options: CustomRenderOptions = {}) {
   const { withTheme = false, ...renderOptions } = options;
+  const queryClient = createTestQueryClient();
 
   function AllTheProviders({ children }: { children: React.ReactNode }) {
-    if (withTheme) {
-      return <MockCustomerFieldThemeProvider>{children}</MockCustomerFieldThemeProvider>;
-    }
-    return <>{children}</>;
+    const content = withTheme ? (
+      <MockCustomerFieldThemeProvider>{children}</MockCustomerFieldThemeProvider>
+    ) : (
+      <>{children}</>
+    );
+
+    return <QueryClientProvider client={queryClient}>{content}</QueryClientProvider>;
   }
 
   return rtlRender(ui, { wrapper: AllTheProviders, ...renderOptions });
