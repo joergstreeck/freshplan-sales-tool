@@ -13,7 +13,7 @@ import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
 
 // Import PR4 Components
-import { IntelligentFilterBar } from '../customers/components/filter/IntelligentFilterBar';
+import { IntelligentFilterBar } from '../shared/components/IntelligentFilterBar';
 import { MiniAuditTimeline } from '../audit/components/MiniAuditTimeline';
 import { LazyComponent } from '../../components/common/LazyComponent';
 import { UniversalExportButton } from '../../components/export/UniversalExportButton';
