@@ -719,7 +719,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0001-1000-0000-000000000001'::uuid,
     'c0000000-0001-0000-0000-000000000001'::uuid,
-    'Herr',
+    'HERR',
     'Thomas',
     'Müller',
     'Geschäftsführer',
@@ -748,7 +748,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0002-1000-0000-000000000001'::uuid,
     'c0000000-0002-0000-0000-000000000001'::uuid,
-    'Frau',
+    'FRAU',
     'Sandra',
     'Schmidt',
     'Hoteldirektorin',
@@ -777,7 +777,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0003-1000-0000-000000000001'::uuid,
     'c0000000-0002-0000-0000-000000000001'::uuid,
-    'Herr',
+    'HERR',
     'Michael',
     'Weber',
     'Einkaufsleiter',
@@ -806,7 +806,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0004-1000-0000-000000000001'::uuid,
     'c0000000-0003-0000-0000-000000000001'::uuid,
-    'Herr',
+    'HERR',
     'Andreas',
     'Becker',
     'Geschäftsführer',
@@ -835,7 +835,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0005-1000-0000-000000000001'::uuid,
     'c0000000-0003-0000-0000-000000000001'::uuid,
-    'Frau',
+    'FRAU',
     'Sabine',
     'Meier',
     'Standortleiterin',
@@ -864,7 +864,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0006-1000-0000-000000000001'::uuid,
     'c0000000-0004-0000-0000-000000000001'::uuid,
-    'Frau',
+    'FRAU',
     'Julia',
     'Hoffmann',
     'Betriebsleiterin',
@@ -893,7 +893,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0007-1000-0000-000000000001'::uuid,
     'c0000000-0005-0000-0000-000000000001'::uuid,
-    'Herr',
+    'HERR',
     'Klaus',
     'Petersen',
     'Einkaufsleiter',
@@ -922,7 +922,7 @@ INSERT INTO customer_contacts (
 (
     'c0000000-0008-1000-0000-000000000001'::uuid,
     'c0000000-0001-0000-0000-000000000001'::uuid,
-    'Frau',
+    'FRAU',
     'Anna',
     'Wagner',
     'Einkauf',

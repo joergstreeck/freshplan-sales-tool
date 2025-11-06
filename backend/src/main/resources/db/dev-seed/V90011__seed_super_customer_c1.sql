@@ -366,7 +366,7 @@ INSERT INTO customer_contacts (
 ) VALUES (
     'c3000000-0123-0001-0000-000000000001'::uuid,
     'c0000000-0123-0000-0000-000000000001'::uuid,
-    'Herr',
+    'HERR',
     NULL,
     'Thomas',
     'Schneider',
@@ -420,7 +420,7 @@ INSERT INTO customer_contacts (
 ) VALUES (
     'c3000000-0123-0002-0000-000000000001'::uuid,
     'c0000000-0123-0000-0000-000000000001'::uuid,
-    'Frau',
+    'FRAU',
     'Sandra',
     'Weber',
     'Vertriebsleiterin Filiale',
