@@ -232,10 +232,10 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
         wrapper: Wrapper,
       });
 
-      // Stage 0: Vormerkung
-      expect(screen.getByText('Vormerkung')).toBeInTheDocument();
-      expect(screen.getByText('Registrierung')).toBeInTheDocument();
-      expect(screen.getByText('Qualifizierung')).toBeInTheDocument();
+      // Stage 0: Basis-Informationen (Step Labels changed in Sprint 2.1.7.2)
+      expect(screen.getByText('Basis-Informationen')).toBeInTheDocument();
+      expect(screen.getByText('Erweiterte Informationen')).toBeInTheDocument();
+      expect(screen.getByText('Nurturing & Qualifikation')).toBeInTheDocument();
 
       expect(screen.getByLabelText(/firmenname/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /weiter/i })).toBeInTheDocument();
@@ -277,7 +277,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       });
 
       // Final submit button should be visible (Karte 2: Qualifizierung speichern)
-      expect(screen.getByRole('button', { name: /qualifizierung speichern/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /qualifizierung abschließen/i })).toBeInTheDocument();
     }, 10000); // Increase timeout to 10s for slow enum loading
 
     it('should allow navigating back from Stage 2 → 1 → 0 without losing data', async () => {
@@ -427,7 +427,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
       );
-      await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
+      await user.click(screen.getByRole('button', { name: /qualifizierung abschließen/i }));
 
       await waitFor(() => {
         expect(mockCreateLead).toHaveBeenCalled();
@@ -546,7 +546,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       // Wait for value to be updated
       await waitFor(() => expect(employeeCountField).toHaveValue(25));
 
-      await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
+      await user.click(screen.getByRole('button', { name: /qualifizierung abschließen/i }));
 
       await waitFor(() => {
         expect(mockCreateLead).toHaveBeenCalled();
@@ -676,7 +676,7 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       await waitFor(() =>
         expect(screen.getByLabelText(/geschätztes volumen/i)).toBeInTheDocument()
       );
-      await user.click(screen.getByRole('button', { name: /qualifizierung speichern/i }));
+      await user.click(screen.getByRole('button', { name: /qualifizierung abschließen/i }));
 
       // Should show 409 duplicate error (from contact creation, not lead creation)
       await waitFor(
