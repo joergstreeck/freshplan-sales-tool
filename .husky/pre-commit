@@ -6,12 +6,13 @@
 #
 # PRÜFUNG 1: Design System Compliance (BLOCKIEREND)
 # PRÜFUNG 2: Server-Driven Architecture Parity (BLOCKIEREND)
+# PRÜFUNG 2.3: Enum Seed Data Case Validation (BLOCKIEREND) - NEW Sprint 2.1.7.7
 # PRÜFUNG 2.5: Enum-Rendering-Parity (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 3: Server-Driven Sections Architecture (BLOCKIEREND)
 # PRÜFUNG 4: Backend Code Formatting (Spotless Auto-Format)
-# PRÜFUNG 5: Backend Compilation Check (BLOCKIEREND) - NEW Sprint 2.1.7.7
+# PRÜFUNG 5: Backend Compilation Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 6: Frontend Code Formatting (Lint-Staged Auto-Format)
-# PRÜFUNG 7: Dependency Cycles Check (BLOCKIEREND) - NEW Sprint 2.1.7.7
+# PRÜFUNG 7: Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
 #
 # ============================================================================
 
@@ -77,6 +78,35 @@ fi
 
 echo ""
 echo -e "${GREEN}✅ Server-Driven Parity: PASSED${NC}"
+echo ""
+
+# ============================================================================
+# PRÜFUNG 2.3: Enum Value Case Validation in Seed Data
+# ============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🔢 Enum Seed Data Case Validation${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Run Enum Seed Data Case Check (Python script)
+if ! python3 ./scripts/check-enum-seed-data-case.py; then
+  echo ""
+  echo -e "${RED}🚫 PRE-COMMIT HOOK: Enum Value Case Violations detected!${NC}"
+  echo ""
+  echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
+  echo ""
+  echo -e "   ${YELLOW}• ALLE Enum-Werte in V900*.sql MÜSSEN UPPERCASE sein${NC}"
+  echo -e "   ${YELLOW}• Beispiel: 'GmbH' → 'GMBH', 'Frau' → 'FRAU'${NC}"
+  echo ""
+  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✅ Enum Seed Data Case: PASSED${NC}"
 echo ""
 
 # ============================================================================
