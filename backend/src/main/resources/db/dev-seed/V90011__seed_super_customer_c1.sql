@@ -100,7 +100,7 @@ INSERT INTO customers (
     -- Company Information (OHNE Rechtsform im Namen!)
     'Großhandel Frische Küche',
     'Fresh Kitchen Wholesale',
-    'GmbH', -- Separate legal_form field!
+    'GMBH', -- Separate legal_form field!
     'UNTERNEHMEN',
     'GROSSHANDEL', -- businessType (new field)
     -- industry omitted (DEPRECATED, auto-set to NULL)
