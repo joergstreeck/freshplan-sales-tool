@@ -71,6 +71,6 @@ export const createMockCustomer = (overrides = {}) => ({
   ...overrides,
 });
 
-// Re-export everything
-export * from '@testing-library/react';
+// Re-export everything EXCEPT render (we override it above)
+export { screen, waitFor, within, fireEvent, act } from '@testing-library/react';
 export { default as userEvent } from '@testing-library/user-event';
