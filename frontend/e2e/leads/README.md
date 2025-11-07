@@ -29,7 +29,7 @@ Diese E2E-Tests decken die 9 Szenarien ab, die aus den Integration Tests migrier
 ## ✅ Implementation Details
 
 **Wizard öffnen:**
-- Button: `"Lead erfassen"` auf `/leads` Seite
+- Button: `"Lead erfassen"` auf `/lead-generation/leads` Seite
 - Dialog: Öffnet LeadWizard als Modal
 
 **Feldstruktur (Server-Driven UI):**

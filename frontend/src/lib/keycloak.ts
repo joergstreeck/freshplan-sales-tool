@@ -27,10 +27,52 @@ export const keycloakInitOptions = {
 };
 
 /**
+ * Creates a mock Keycloak instance for E2E testing
+ */
+const createMockKeycloak = () => {
+  const mockKeycloak = keycloak as unknown as {
+    authenticated: boolean;
+    token: string;
+    tokenParsed: Record<string, unknown>;
+    init: () => Promise<boolean>;
+    login: () => void;
+    logout: () => void;
+    updateToken: () => Promise<boolean>;
+    isTokenExpired: () => boolean;
+    hasRealmRole: () => boolean;
+    hasResourceRole: () => boolean;
+  };
+
+  mockKeycloak.authenticated = true;
+  mockKeycloak.token = 'mock-e2e-token-' + Date.now();
+  mockKeycloak.tokenParsed = {
+    sub: 'e2e-test-user',
+    preferred_username: 'e2e-test-user',
+    email: 'e2e@test.com',
+    name: 'E2E Test User',
+    realm_access: { roles: ['admin', 'user'] },
+  };
+  mockKeycloak.init = () => Promise.resolve(true);
+  mockKeycloak.login = () => {};
+  mockKeycloak.logout = () => {};
+  mockKeycloak.updateToken = () => Promise.resolve(false);
+  mockKeycloak.isTokenExpired = () => false;
+  mockKeycloak.hasRealmRole = () => true;
+  mockKeycloak.hasResourceRole = () => true;
+};
+
+/**
  * Initialisiert Keycloak
  * @returns Promise<boolean> - true wenn erfolgreich initialisiert
  */
 export const initKeycloak = async (): Promise<boolean> => {
+  // E2E Mode: Use mock Keycloak
+  if (import.meta.env.VITE_E2E_MODE === 'true') {
+    createMockKeycloak();
+    isInitialized = true;
+    return true; // Authenticated in E2E mode
+  }
+
   // Check for auth bypass FIRST
   if (import.meta.env.DEV && import.meta.env.VITE_AUTH_BYPASS === 'true') {
     isInitialized = true;

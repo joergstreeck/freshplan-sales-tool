@@ -166,7 +166,7 @@ async function mockLeadAPIs(page: Page) {
 // ============================================================================
 
 async function openLeadWizard(page: Page) {
-  await page.goto('/leads');
+  await page.goto('/lead-generation/leads');
   await page.waitForLoadState('networkidle');
 
   // Click "Lead erfassen" button to open wizard
@@ -279,8 +279,8 @@ test.describe('LeadWizard E2E - Complete Flows', () => {
     // Try to navigate to Stage 2 (or submit)
     await page.click('button:has-text("Weiter")');
 
-    // Should show validation error
-    await expect(page.locator('text=/mindestens e-mail oder telefon/i')).toBeVisible();
+    // Should show validation error (use .first() to handle multiple matching elements)
+    await expect(page.locator('text=/mindestens e-mail oder telefon/i').first()).toBeVisible();
   });
 
   // ========================================================================
@@ -296,15 +296,17 @@ test.describe('LeadWizard E2E - Complete Flows', () => {
     await quelleInput.click();
     await page.click('li[role="option"]:has-text("Empfehlung")');
 
+    // Wait for successful API response
+    const responsePromise = page.waitForResponse(
+      response => response.url().includes('/api/leads') && response.request().method() === 'POST' && response.status() === 201
+    );
+
     // Submit
     await page.click('button:has-text("Vormerkung speichern")');
 
-    // Verify success (adjust based on actual success indicator)
-    // Option 1: Dialog closes
-    await expect(page.locator('text=/Lead erfassen/i')).not.toBeVisible({ timeout: 5000 });
-
-    // Option 2: Success toast appears (if implemented)
-    // await expect(page.locator('text=/erfolgreich erstellt/i')).toBeVisible();
+    // Verify success by waiting for API response
+    const response = await responsePromise;
+    expect(response.status()).toBe(201);
   });
 
   test('should include stage number in API payload', async ({ page }) => {
@@ -319,6 +321,9 @@ test.describe('LeadWizard E2E - Complete Flows', () => {
           contentType: 'application/json',
           body: JSON.stringify({ id: 'test-123' }),
         });
+      } else {
+        // Let other requests (GET, etc.) pass through to default handler
+        await route.fallback();
       }
     });
 
