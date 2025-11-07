@@ -17,6 +17,35 @@ vi.mock('date-fns', async () => {
   };
 });
 
+// Mock useEnumOptions hook (Component uses Server-Driven activity-types enum)
+// NOTE: Tests expect raw activity type values (EMAIL, CALL, etc.), so labels = values
+vi.mock('../../../hooks/useEnumOptions', () => ({
+  useEnumOptions: vi.fn((enumSource: string) => {
+    // Return activity type options
+    if (enumSource === '/api/enums/activity-types') {
+      return {
+        data: [
+          { value: 'EMAIL', label: 'EMAIL' },
+          { value: 'CALL', label: 'CALL' },
+          { value: 'MEETING', label: 'MEETING' },
+          { value: 'SAMPLE_SENT', label: 'SAMPLE_SENT' },
+          { value: 'ORDER', label: 'ORDER' },
+          { value: 'NOTE', label: 'NOTE' },
+          { value: 'STATUS_CHANGE', label: 'STATUS_CHANGE' },
+        ],
+        isLoading: false,
+        error: null,
+      };
+    }
+    // Default: empty options
+    return {
+      data: [],
+      isLoading: false,
+      error: null,
+    };
+  }),
+}));
+
 interface CustomerActivity {
   id: number;
   activityType: string;
