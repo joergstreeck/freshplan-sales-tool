@@ -38,7 +38,12 @@ const TestComponent = () => {
 describe('KeycloakContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock environment variables to disable auth bypass in tests
+    vi.stubEnv('DEV', 'false');
+    vi.stubEnv('VITE_AUTH_BYPASS', 'false');
     // Setze Standard-Mock-Werte
+    // WICHTIG: initKeycloak muss nach clearAllMocks() neu konfiguriert werden
+    (initKeycloak as ReturnType<typeof vi.fn>).mockResolvedValue(true);
     (authUtils.getToken as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
     (authUtils.getUserId as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
     (authUtils.getUsername as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
@@ -49,6 +54,7 @@ describe('KeycloakContext', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   describe('Provider Initialization', () => {
