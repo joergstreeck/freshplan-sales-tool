@@ -6,9 +6,10 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider } from '@mui/material/styles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { KanbanBoard } from './KanbanBoard';
+import freshfoodzTheme from '../../../theme/freshfoodz';
 
 // Mock the logger
 vi.mock('../../../lib/logger', () => ({
@@ -204,8 +205,6 @@ vi.mock('@hello-pangea/dnd', () => ({
   },
 }));
 
-const theme = createTheme();
-
 const renderWithProviders = (component: React.ReactElement) => {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -217,7 +216,7 @@ const renderWithProviders = (component: React.ReactElement) => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider theme={theme}>{component}</ThemeProvider>
+      <ThemeProvider theme={freshfoodzTheme}>{component}</ThemeProvider>
     </QueryClientProvider>
   );
 };
