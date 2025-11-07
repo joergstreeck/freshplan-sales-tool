@@ -1,7 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { render, screen, fireEvent } from '../../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { SidebarNavigation } from '../SidebarNavigation';
 import { useNavigationStore } from '@/store/navigationStore';
@@ -13,14 +11,6 @@ vi.mock('@/store/authStore');
 
 const mockUseNavigationStore = vi.mocked(useNavigationStore);
 const mockUseAuthStore = vi.mocked(useAuthStore);
-
-const theme = createTheme();
-
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <BrowserRouter>
-    <ThemeProvider theme={theme}>{children}</ThemeProvider>
-  </BrowserRouter>
-);
 
 const mockNavigationState = {
   activeMenuId: 'cockpit',
@@ -52,11 +42,7 @@ describe('SidebarNavigation', () => {
   });
 
   it('sollte alle erlaubten Menüpunkte anzeigen', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     // Prüfe ob die erlaubten Menüpunkte angezeigt werden
     expect(screen.getByText('Mein Cockpit')).toBeInTheDocument();
@@ -64,22 +50,14 @@ describe('SidebarNavigation', () => {
   });
 
   it('sollte Toggle-Button zum Einklappen anzeigen', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     const toggleButton = screen.getByRole('button', { name: /navigation einklappen/i });
     expect(toggleButton).toBeInTheDocument();
   });
 
   it('sollte toggleSidebar aufrufen beim Klick auf Toggle-Button', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     const toggleButton = screen.getByRole('button', { name: /navigation einklappen/i });
     fireEvent.click(toggleButton);
@@ -88,11 +66,7 @@ describe('SidebarNavigation', () => {
   });
 
   it('sollte aktiven Menüpunkt hervorheben', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     const activeItem = screen.getByText('Mein Cockpit').closest('div');
     expect(activeItem?.parentElement).toHaveClass('Mui-selected');
@@ -105,11 +79,7 @@ describe('SidebarNavigation', () => {
     };
     mockUseNavigationStore.mockReturnValue(collapsedState);
 
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     // In eingeklapptem Zustand sollten die Texte nicht sichtbar sein
     expect(screen.queryByText('Mein Cockpit')).not.toBeInTheDocument();
@@ -122,11 +92,7 @@ describe('SidebarNavigation', () => {
     };
     mockUseAuthStore.mockReturnValue(limitedAuthState);
 
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     expect(screen.getByText('Mein Cockpit')).toBeInTheDocument();
     expect(screen.queryByText('Kundenmanagement')).not.toBeInTheDocument();

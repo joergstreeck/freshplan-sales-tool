@@ -9,9 +9,7 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, waitFor } from '../../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { axe, toHaveNoViolations } from 'jest-axe';
 import { CustomerList } from './CustomerList';
@@ -69,21 +67,6 @@ const mockCustomers: CustomerListResponse = {
   last: true,
 };
 
-// Test wrapper component
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: { retry: false },
-    },
-  });
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>{children}</BrowserRouter>
-    </QueryClientProvider>
-  );
-};
-
 describe('CustomerList Component', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -95,11 +78,7 @@ describe('CustomerList Component', () => {
         () => new Promise(() => {}) // Never resolves
       );
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       expect(screen.getByRole('status')).toBeInTheDocument();
       expect(screen.getByText(/Kundendaten werden geladen/i)).toBeInTheDocument();
@@ -108,11 +87,7 @@ describe('CustomerList Component', () => {
     it('should render customer list after loading', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -123,11 +98,7 @@ describe('CustomerList Component', () => {
     it('should render error state on API failure', async () => {
       vi.mocked(customerApi.getCustomers).mockRejectedValue(new Error('Network error'));
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText(/Fehler beim Laden/i)).toBeInTheDocument();
@@ -141,11 +112,7 @@ describe('CustomerList Component', () => {
         totalElements: 0,
       });
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText(/Keine Kunden gefunden/i)).toBeInTheDocument();
@@ -158,11 +125,7 @@ describe('CustomerList Component', () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
       const user = userEvent.setup();
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -184,11 +147,7 @@ describe('CustomerList Component', () => {
       });
       const user = userEvent.setup();
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -211,11 +170,7 @@ describe('CustomerList Component', () => {
         last: true,
       });
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -233,11 +188,7 @@ describe('CustomerList Component', () => {
     it('should highlight at-risk customers', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-      const { container } = render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      const { container } = render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Risk Company AG')).toBeInTheDocument();
@@ -250,11 +201,7 @@ describe('CustomerList Component', () => {
     it('should display correct status badges', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         // Use more specific queries to avoid confusion with table header
@@ -270,11 +217,7 @@ describe('CustomerList Component', () => {
     it('should format currency correctly', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('50.000,00 €')).toBeInTheDocument();
@@ -287,11 +230,7 @@ describe('CustomerList Component', () => {
     it('should have no accessibility violations', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-      const { container } = render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      const { container } = render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -304,11 +243,7 @@ describe('CustomerList Component', () => {
     it('should have proper ARIA labels', async () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByRole('table')).toBeInTheDocument();
@@ -322,11 +257,7 @@ describe('CustomerList Component', () => {
       vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
       const user = userEvent.setup();
 
-      render(
-        <TestWrapper>
-          <CustomerList />
-        </TestWrapper>
-      );
+      render(<CustomerList />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -354,11 +285,7 @@ describe('CustomerList Component', () => {
         return <CustomerList />;
       };
 
-      const { rerender } = render(
-        <TestWrapper>
-          <TestComponent />
-        </TestWrapper>
-      );
+      const { rerender } = render(<TestComponent />);
 
       await waitFor(() => {
         expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -367,11 +294,7 @@ describe('CustomerList Component', () => {
       const initialRenderCount = renderSpy.mock.calls.length;
 
       // Re-render with same props
-      rerender(
-        <TestWrapper>
-          <TestComponent />
-        </TestWrapper>
-      );
+      rerender(<TestComponent />);
 
       // Allow for one additional render due to React Query's behavior
       // React Query may trigger an additional render when checking cache
@@ -384,11 +307,7 @@ describe('CustomerList Snapshot Tests', () => {
   it('should match snapshot for loaded state', async () => {
     vi.mocked(customerApi.getCustomers).mockResolvedValue(mockCustomers);
 
-    const { container } = render(
-      <TestWrapper>
-        <CustomerList />
-      </TestWrapper>
-    );
+    const { container } = render(<CustomerList />);
 
     await waitFor(() => {
       expect(screen.getByText('Test Company GmbH')).toBeInTheDocument();
@@ -400,11 +319,7 @@ describe('CustomerList Snapshot Tests', () => {
   it('should match snapshot for loading state', () => {
     vi.mocked(customerApi.getCustomers).mockImplementation(() => new Promise(() => {}));
 
-    const { container } = render(
-      <TestWrapper>
-        <CustomerList />
-      </TestWrapper>
-    );
+    const { container } = render(<CustomerList />);
 
     expect(container).toMatchSnapshot();
   });
@@ -412,11 +327,7 @@ describe('CustomerList Snapshot Tests', () => {
   it('should match snapshot for error state', async () => {
     vi.mocked(customerApi.getCustomers).mockRejectedValue(new Error('Network error'));
 
-    const { container } = render(
-      <TestWrapper>
-        <CustomerList />
-      </TestWrapper>
-    );
+    const { container } = render(<CustomerList />);
 
     await waitFor(() => {
       expect(screen.getByText(/Fehler beim Laden/i)).toBeInTheDocument();

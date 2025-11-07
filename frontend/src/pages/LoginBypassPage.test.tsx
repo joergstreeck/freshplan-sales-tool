@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, screen, fireEvent } from '../test/test-utils';
 import { LoginBypassPage } from './LoginBypassPage';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -45,11 +44,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('renders development login bypass UI', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     expect(screen.getByText('Development Login Bypass')).toBeInTheDocument();
     expect(
@@ -60,11 +55,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('displays all role buttons', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     expect(screen.getByRole('button', { name: /login as admin/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login as manager/i })).toBeInTheDocument();
@@ -72,11 +63,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('displays role descriptions', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     // Check for role descriptions in the list - German text
     expect(
@@ -87,11 +74,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('sets localStorage and redirects when admin button is clicked', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     const adminButton = screen.getByRole('button', { name: /login as admin/i });
     fireEvent.click(adminButton);
@@ -108,11 +91,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('navigates back to home when back button is clicked', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     const backButton = screen.getByRole('button', { name: /back to home/i });
     fireEvent.click(backButton);

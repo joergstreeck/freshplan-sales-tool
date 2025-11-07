@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, waitFor as _waitFor } from '@testing-library/react';
+import { render, waitFor as _waitFor } from '../../test/test-utils';
 import '@testing-library/jest-dom';
 import { AuthProvider, useAuth } from '../AuthContext';
 import { KeycloakProvider } from '../KeycloakContext';
