@@ -29,17 +29,17 @@ export const keycloak = mockKeycloakInstance;
 export const initKeycloak = vi.fn().mockResolvedValue(true);
 
 export const authUtils = {
-  isAuthenticated: () => mockKeycloakInstance.authenticated || false,
-  login: () => mockKeycloakInstance.login(),
-  logout: (redirectUri?: string) => mockKeycloakInstance.logout({ redirectUri }),
-  getToken: () => mockKeycloakInstance.token,
-  getUserId: () => mockKeycloakInstance.tokenParsed?.sub,
-  getUsername: () => mockKeycloakInstance.tokenParsed?.preferred_username,
-  getEmail: () => mockKeycloakInstance.tokenParsed?.email,
-  hasRole: (role: string) => mockKeycloakInstance.hasRealmRole(role),
-  getUserRoles: () => mockKeycloakInstance.tokenParsed?.realm_access?.roles || [],
-  updateToken: async (minValidity: number) => {
+  isAuthenticated: vi.fn(() => mockKeycloakInstance.authenticated || false),
+  login: vi.fn(() => mockKeycloakInstance.login()),
+  logout: vi.fn((redirectUri?: string) => mockKeycloakInstance.logout({ redirectUri })),
+  getToken: vi.fn(() => mockKeycloakInstance.token),
+  getUserId: vi.fn(() => mockKeycloakInstance.tokenParsed?.sub),
+  getUsername: vi.fn(() => mockKeycloakInstance.tokenParsed?.preferred_username),
+  getEmail: vi.fn(() => mockKeycloakInstance.tokenParsed?.email),
+  hasRole: vi.fn((role: string) => mockKeycloakInstance.hasRealmRole(role)),
+  getUserRoles: vi.fn(() => mockKeycloakInstance.tokenParsed?.realm_access?.roles || []),
+  updateToken: vi.fn(async (minValidity: number) => {
     return mockKeycloakInstance.updateToken(minValidity);
-  },
-  isTokenExpired: (minValidity?: number) => mockKeycloakInstance.isTokenExpired(minValidity),
+  }),
+  isTokenExpired: vi.fn((minValidity?: number) => mockKeycloakInstance.isTokenExpired(minValidity)),
 };
