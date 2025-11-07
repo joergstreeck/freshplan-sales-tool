@@ -1,7 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '../test/test-utils';
 import { LoginBypassPage } from './LoginBypassPage';
-import { useAuth } from '../contexts/AuthContext';
 
 // Mock dependencies
 vi.mock('react-router-dom', async () => {
@@ -12,11 +11,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../contexts/AuthContext');
+// Mock keycloak to prevent auth initialization
+vi.mock('../lib/keycloak');
 
 const mockNavigate = vi.fn();
-const mockLogin = vi.fn();
-const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
 
 // Mock localStorage
 const localStorageMock = {
@@ -25,7 +23,7 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+Object.defineProperty(window, 'localStorage', { value: localStorageMock, writable: true });
 
 // Mock window.location
 delete (window as Record<string, unknown>).location;
@@ -34,13 +32,15 @@ window.location = { href: '' } as Location;
 describe('LoginBypassPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuth.mockReturnValue({
-      login: mockLogin,
-      logout: vi.fn(),
-      user: null,
-      token: null,
-    });
+    // Disable auth bypass to prevent test-utils providers from interfering
+    vi.stubEnv('VITE_AUTH_BYPASS', 'false');
+    vi.stubEnv('DEV', 'false');
     window.location.href = '';
+    localStorageMock.getItem.mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('renders development login bypass UI', () => {
@@ -87,7 +87,7 @@ describe('LoginBypassPage', () => {
       'auth-user',
       expect.stringContaining('admin@freshplan.de')
     );
-    expect(window.location.href).toBe('/');
+    expect(window.location.href).toBe('/cockpit');
   });
 
   it('navigates back to home when back button is clicked', () => {
