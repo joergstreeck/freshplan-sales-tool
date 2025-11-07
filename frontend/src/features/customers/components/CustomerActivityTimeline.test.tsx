@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '../../../test/test-utils';
 import CustomerActivityTimeline from './CustomerActivityTimeline';
 
 // Mock date-fns format to avoid locale issues
