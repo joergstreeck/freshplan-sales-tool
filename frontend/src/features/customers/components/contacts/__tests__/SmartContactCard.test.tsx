@@ -12,6 +12,32 @@ import { SmartContactCard } from '../SmartContactCard';
 import type { Contact } from '../../../types/contact.types';
 import type { RelationshipWarmth } from '../WarmthIndicator';
 
+// Mock useEnumOptions hook (Component uses Server-Driven DecisionLevel enum)
+vi.mock('../../../../../hooks/useEnumOptions', () => ({
+  useEnumOptions: vi.fn((enumSource: string) => {
+    // Return decision level options
+    if (enumSource === '/api/enums/decision-levels') {
+      return {
+        data: [
+          { value: 'entscheider', label: 'Entscheider' },
+          { value: 'mitentscheider', label: 'Mitentscheider' },
+          { value: 'einflussnehmer', label: 'Einflussnehmer' },
+          { value: 'nutzer', label: 'Nutzer' },
+          { value: 'gatekeeper', label: 'Gatekeeper' },
+        ],
+        isLoading: false,
+        error: null,
+      };
+    }
+    // Default: empty options
+    return {
+      data: [],
+      isLoading: false,
+      error: null,
+    };
+  }),
+}));
+
 const mockContact: Contact = {
   id: '1',
   customerId: 'cust-1',
