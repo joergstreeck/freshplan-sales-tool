@@ -4,7 +4,7 @@
 --
 -- Tables affected:
 -- - lead_contacts (created in V10016)
--- - contacts (decision_level added in V201)
+-- - customer_contacts (decision_level added in V201)
 --
 -- Valid values: EXECUTIVE, MANAGER, OPERATIONAL, INFLUENCER
 
@@ -58,10 +58,10 @@ BEGIN
   GET DIAGNOSTICS lead_contacts_updated = ROW_COUNT;
 
   -- ┌─────────────────────────────────────────────────────────────────┐
-  -- │ Fix contacts table                                              │
+  -- │ Fix customer_contacts table                                     │
   -- └─────────────────────────────────────────────────────────────────┘
 
-  UPDATE contacts
+  UPDATE customer_contacts
   SET decision_level = CASE decision_level
     WHEN 'entscheider' THEN 'EXECUTIVE'
     WHEN 'Entscheider' THEN 'EXECUTIVE'
@@ -107,8 +107,8 @@ BEGIN
   IF total_updated > 0 THEN
     RAISE NOTICE '╔═══════════════════════════════════════════════════════════════╗';
     RAISE NOTICE '║  ✅ Normalized % decision_level values                       ║', total_updated;
-    RAISE NOTICE '║     - lead_contacts: % records updated                       ║', lead_contacts_updated;
-    RAISE NOTICE '║     - contacts:      % records updated                       ║', contacts_updated;
+    RAISE NOTICE '║     - lead_contacts:     % records updated                   ║', lead_contacts_updated;
+    RAISE NOTICE '║     - customer_contacts: % records updated                   ║', contacts_updated;
     RAISE NOTICE '╚═══════════════════════════════════════════════════════════════╝';
   ELSE
     RAISE NOTICE '✅ All decision_level values are already normalized';
@@ -124,7 +124,7 @@ BEGIN
       WHERE decision_level IS NOT NULL
         AND decision_level NOT IN ('EXECUTIVE', 'MANAGER', 'OPERATIONAL', 'INFLUENCER')
       UNION ALL
-      SELECT decision_level FROM contacts
+      SELECT decision_level FROM customer_contacts
       WHERE decision_level IS NOT NULL
         AND decision_level NOT IN ('EXECUTIVE', 'MANAGER', 'OPERATIONAL', 'INFLUENCER')
     ) AS invalid;
