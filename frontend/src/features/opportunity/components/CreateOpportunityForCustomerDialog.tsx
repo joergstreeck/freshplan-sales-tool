@@ -12,7 +12,7 @@
  * @since 2025-10-19
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -157,17 +157,67 @@ export default function CreateOpportunityForCustomerDialog({
 
   // Business-Type-Matrix State
   const [multipliers, setMultipliers] = useState<OpportunityMultiplierResponse[]>([]);
-  // TODO: Business-Type-Matrix Loading nicht implementiert - isLoadingMultipliers hardcoded auf false
-  const isLoadingMultipliers = false;
+  const [isLoadingMultipliers, setIsLoadingMultipliers] = useState(false);
   const [multipliersError, setMultipliersError] = useState<string | null>(null);
+
+  // Load Business-Type-Matrix Multipliers on Dialog Open
+  useEffect(() => {
+    if (!open) return;
+
+    const loadMultipliers = async () => {
+      setIsLoadingMultipliers(true);
+      setMultipliersError(null);
+      try {
+        const response = await httpClient.get<OpportunityMultiplierResponse[]>(
+          '/api/settings/opportunity-multipliers'
+        );
+        setMultipliers(response.data);
+      } catch (error) {
+        console.error('Failed to load opportunity multipliers:', error);
+        setMultipliersError('Multipliers konnten nicht geladen werden');
+        setMultipliers([]); // Fallback: Empty array
+      } finally {
+        setIsLoadingMultipliers(false);
+      }
+    };
+
+    loadMultipliers();
+  }, [open]);
 
   // UI State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [manualValueOverride, setManualValueOverride] = useState(false);
 
-  // TODO: Business-Type-Matrix Auto-Calculation nicht implementiert
-  // Die calculateExpectedValue Funktion wurde entfernt, da sie nie aufgerufen wurde
+  // Auto-Calculate Expected Value (baseVolume × multiplier)
+  useEffect(() => {
+    // Skip if user has manually overridden the value
+    if (manualValueOverride) return;
+
+    // Skip if multipliers haven't loaded yet
+    if (multipliers.length === 0) return;
+
+    const baseVolume = getBaseVolume(customer);
+    if (baseVolume === 0) return; // No volume available
+
+    // Find multiplier for current opportunityType and customer.industry
+    let multiplierValue = 1.0; // Default fallback: 1.0 (wenn keine Industry vorhanden)
+
+    if (customer.industry) {
+      const multiplier = multipliers.find(
+        m => m.businessType === customer.industry && m.opportunityType === opportunityType
+      );
+
+      if (multiplier) {
+        multiplierValue = multiplier.multiplier;
+      }
+    }
+
+    // Calculate with found multiplier or fallback (1.0)
+    const calculatedValue = Math.round(baseVolume * multiplierValue);
+    setExpectedValue(calculatedValue);
+  }, [multipliers, opportunityType, customer, manualValueOverride]);
 
   /**
    * Get current multiplier for display
@@ -398,7 +448,10 @@ export default function CreateOpportunityForCustomerDialog({
               label="Erwarteter Wert"
               type="number"
               value={expectedValue || ''}
-              onChange={e => setExpectedValue(parseFloat(e.target.value) || undefined)}
+              onChange={e => {
+                setExpectedValue(parseFloat(e.target.value) || undefined);
+                setManualValueOverride(true); // User manually changed value
+              }}
               fullWidth
               required
               disabled={isSubmitting}
