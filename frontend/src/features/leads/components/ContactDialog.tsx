@@ -47,6 +47,7 @@ import {
   useSalutations,
   useDecisionLevels,
   useTitles,
+  normalizeDecisionLevel,
 } from '../../../hooks/useContactEnums';
 import { useContactSchema } from '../../../hooks/useContactSchema';
 import type { FieldDefinition } from '../../../hooks/useContactSchema';
@@ -112,8 +113,9 @@ export function ContactDialog({
     if (contact) {
       setFormData({
         ...contact,
-        // Sprint 2.1.7.7: Backend already provides UPPERCASE enums (Server-Driven Architecture)
+        // Sprint 2.1.7.7: Normalize legacy lowercase enum values to UPPERCASE
         salutation: contact.salutation || '',
+        decisionLevel: normalizeDecisionLevel(contact.decisionLevel) || '',
       });
     } else {
       setFormData({
