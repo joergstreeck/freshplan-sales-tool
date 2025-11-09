@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -94,6 +95,16 @@ class CustomerServiceIntegrationTest {
             LocalDateTime.now().minusDays(3),
             LocalDateTime.now().plusDays(14),
             null); // churnThresholdDays
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
   }
 
   @Test

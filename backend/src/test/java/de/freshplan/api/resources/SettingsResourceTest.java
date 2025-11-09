@@ -9,6 +9,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -46,6 +47,13 @@ public class SettingsResourceTest {
       throw new IllegalStateException(
           "Migration V10031 not applied! Expected 36 multipliers, found: " + count);
     }
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Migration V10031 provides seed data (36 multipliers)
+    // No test data cleanup needed - only reads seed data
   }
 
   // ==========================================================================

@@ -14,6 +14,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -48,6 +49,16 @@ class LeadImportResourceTest {
       territory.languageCode = "de-DE";
       territory.persist();
     }
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test data after each test (FK constraint order!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
   }
 
   @Test

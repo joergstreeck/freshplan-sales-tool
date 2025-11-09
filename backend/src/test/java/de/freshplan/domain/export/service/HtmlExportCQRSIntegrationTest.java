@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -57,6 +58,13 @@ class HtmlExportCQRSIntegrationTest {
   void setUp() {
     testRunId = UUID.randomUUID().toString().substring(0, 8);
     LOG.infof("Starting test run: %s (with automatic rollback)", testRunId);
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete test customers
+    customerRepository.delete("customerNumber LIKE 'TEST-%'");
   }
 
   @Test

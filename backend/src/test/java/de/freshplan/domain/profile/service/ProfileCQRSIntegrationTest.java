@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -58,6 +59,13 @@ class ProfileCQRSIntegrationTest {
     // Clean up any existing test data
     profileRepository.deleteAll();
     profileRepository.flush();
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete test data
+    repository.delete("testMarker LIKE 'TEST-%'");
   }
 
   @Test

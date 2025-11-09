@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,15 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete in correct order
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+  }
+
+
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})

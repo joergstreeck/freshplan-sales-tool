@@ -13,6 +13,7 @@ import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +33,16 @@ public class ContactsCountConsistencyTest {
   @Inject CustomerService customerService; // Legacy
 
   @Inject CustomerQueryService queryService; // CQRS
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete contacts first (child entities)
+    customerContactRepository.delete("customerNumber LIKE ?1", "TC%");
+
+    // Delete test customers
+    customerRepository.delete("customerNumber LIKE ?1", "TC%");
+  }
 
   @Test
   @TestTransaction

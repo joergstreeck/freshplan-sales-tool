@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,6 +81,14 @@ class OpportunityServiceTest {
                   userRepository.persist(user);
                   return user;
                 });
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete in correct order
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
   }
 
   // ========== SPRINT 2.1.7.4: AUTO-CONVERSION TESTS ==========

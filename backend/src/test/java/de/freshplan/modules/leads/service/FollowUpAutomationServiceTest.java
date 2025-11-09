@@ -16,6 +16,7 @@ import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -116,6 +117,20 @@ class FollowUpAutomationServiceTest {
           em.persist(followUpTemplate);
 
           em.flush();
+        });
+  }
+
+  @AfterEach
+  void cleanup() {
+    // Clean up test data using TestTx (class has @TestTransaction)
+    TestTx.committed(
+        () -> {
+          em.createQuery("DELETE FROM Opportunity").executeUpdate();
+          em.createQuery("DELETE FROM LeadContact").executeUpdate();
+          em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+          em.createQuery("DELETE FROM Lead").executeUpdate();
+          em.createQuery("DELETE FROM CampaignTemplate").executeUpdate();
+          em.createQuery("DELETE FROM Territory").executeUpdate();
         });
   }
 

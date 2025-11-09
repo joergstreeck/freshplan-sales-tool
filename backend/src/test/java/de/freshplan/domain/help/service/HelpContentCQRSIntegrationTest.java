@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +36,14 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete test data
+    repository.delete("testMarker LIKE 'TEST-%'");
+  }
+
+
 @TestProfile(HelpContentCQRSIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.2: HelpContentService Event-Driven CQRS Integration")
 class HelpContentCQRSIntegrationTest {

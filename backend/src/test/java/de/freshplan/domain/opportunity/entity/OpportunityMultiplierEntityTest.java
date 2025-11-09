@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -37,6 +38,13 @@ public class OpportunityMultiplierEntityTest {
     // Migration V10031 seeds 36 multipliers - no cleanup needed
     long count = OpportunityMultiplier.count();
     assertThat(count).as("Migration V10031 should seed 36 multipliers").isGreaterThanOrEqualTo(36);
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Migration V10031 provides seed data (36 multipliers)
+    // No test data cleanup needed - only reads seed data
   }
 
   // ==========================================================================

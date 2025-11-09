@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -56,6 +57,19 @@ class CustomerRepositoryTest {
     em.createNativeQuery("DELETE FROM customers").executeUpdate();
     em.flush();
     em.clear();
+  }
+
+  @AfterEach
+  @jakarta.transaction.Transactional
+  void cleanup() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery("DELETE FROM opportunity_activities").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_timeline_events").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_addresses").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_locations").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers").executeUpdate();
   }
 
   /**

@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,13 @@ import org.junit.jupiter.api.Test;
 public class ContactMigrationTest {
 
   @Inject EntityManager entityManager;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Migration tests only verify database structure
+    // No test data cleanup needed - no entities created
+  }
 
   @Test
   @DisplayName("V209: contact_roles table should exist with correct structure")

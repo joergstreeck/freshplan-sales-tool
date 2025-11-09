@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -65,6 +66,16 @@ class TimelineCQRSIntegrationTest {
   void setUp() {
     // Just prepare the unique suffix, customer will be created in each test
     uniqueSuffix = String.valueOf(System.currentTimeMillis());
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
   }
 
   private void createTestCustomer() {

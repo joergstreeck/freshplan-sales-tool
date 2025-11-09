@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,13 @@ class UserLeadSettingsServiceTest {
     // Clean up any existing test data
     UserLeadSettings.deleteAll();
     testUserId = UUID.randomUUID().toString();
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up all test data after each test
+    UserLeadSettings.deleteAll();
   }
 
   @Test

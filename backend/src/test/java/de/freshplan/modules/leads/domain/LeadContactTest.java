@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Integration tests for LeadContact entity - 100% PARITY mit Contact.java tests.
@@ -75,6 +76,17 @@ class LeadContactTest {
     lead.persist();
 
     return lead;
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test data after each test (FK constraint order!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
+    em.createQuery("DELETE FROM Territory").executeUpdate();
   }
 
   // ===========================

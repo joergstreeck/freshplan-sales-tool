@@ -8,9 +8,11 @@ import de.freshplan.modules.leads.domain.Lead;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,6 +25,8 @@ import org.junit.jupiter.api.Test;
 class LeadBackdatingServiceTest {
 
   @Inject LeadBackdatingService backdatingService;
+
+  @Inject EntityManager entityManager;
 
   private static final String TEST_USER = "admin-test";
   private Lead testLead;
@@ -62,6 +66,15 @@ class LeadBackdatingServiceTest {
     Lead.getEntityManager().flush();
     Lead.getEntityManager().clear();
     testLead = Lead.findById(testLead.id);
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
+    entityManager.createQuery("DELETE FROM LeadContact").executeUpdate();
+    entityManager.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    Lead.deleteAll();
   }
 
   @Test
