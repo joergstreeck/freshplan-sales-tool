@@ -121,4 +121,43 @@ export const customerApi = {
     );
     return response.data;
   },
+
+  // ========== BRANCH MANAGEMENT (Sprint 2.1.7.7 D4) ==========
+
+  /**
+   * Create a new branch (FILIALE) under a HEADQUARTER customer
+   * POST /api/customers/{headquarterId}/branches
+   *
+   * @param headquarterId UUID of the parent HEADQUARTER
+   * @param branchData Branch creation data (companyName, status, customerType)
+   * @returns Created branch customer response
+   */
+  createBranch: async (
+    headquarterId: string,
+    branchData: {
+      companyName: string;
+      status?: string;
+      customerType?: string;
+    }
+  ): Promise<CustomerResponse> => {
+    const response = await httpClient.post<CustomerResponse>(
+      `/api/customers/${headquarterId}/branches`,
+      branchData
+    );
+    return response.data;
+  },
+
+  /**
+   * Get all branches (FILIALE) for a HEADQUARTER customer
+   * GET /api/customers/{headquarterId}/branches
+   *
+   * @param headquarterId UUID of the parent HEADQUARTER
+   * @returns List of branch customer responses
+   */
+  getBranches: async (headquarterId: string): Promise<CustomerResponse[]> => {
+    const response = await httpClient.get<CustomerResponse[]>(
+      `/api/customers/${headquarterId}/branches`
+    );
+    return response.data;
+  },
 };
