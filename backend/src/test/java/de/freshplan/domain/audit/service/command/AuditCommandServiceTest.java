@@ -10,7 +10,6 @@ import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
 import de.freshplan.domain.audit.events.AuditableApplicationEvent;
 import de.freshplan.domain.audit.repository.AuditRepository;
-import de.freshplan.domain.audit.service.AuditService;
 import de.freshplan.domain.audit.service.dto.AuditContext;
 import de.freshplan.domain.audit.service.provider.AuditConfiguration;
 import de.freshplan.domain.audit.service.provider.AuditEvent;

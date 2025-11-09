@@ -8,7 +8,6 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
-import de.freshplan.domain.testdata.service.TestDataService;
 import de.freshplan.domain.testdata.service.provider.CleanupResult;
 import de.freshplan.domain.testdata.service.provider.SeedResult;
 import java.math.BigDecimal;

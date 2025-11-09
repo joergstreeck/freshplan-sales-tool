@@ -94,12 +94,28 @@ public class BranchService {
     // 3. Create via CustomerService
     CustomerResponse branch = customerService.createCustomer(branchRequest, createdBy);
 
+    // 4. Copy xentral_customer_id from parent (CreateCustomerRequest doesn't support this field)
+    UUID branchId = UUID.fromString(branch.id());
+    Customer branchEntity =
+        customerRepository
+            .findByIdOptional(branchId)
+            .orElseThrow(() -> new CustomerNotFoundException(branchId));
+    branchEntity.setXentralCustomerId(headquarter.getXentralCustomerId());
+    customerRepository.persist(branchEntity);
+
+    // 5. Refresh response with updated xentralCustomerId
+    branch =
+        new de.freshplan.domain.customer.service.dto.CustomerResponseBuilder()
+            .fromEntity(branchEntity)
+            .build();
+
     log.info(
-        "Created branch {} (ID: {}) under headquarter {} (ID: {})",
+        "Created branch {} (ID: {}) under headquarter {} (ID: {}) with inherited xentralCustomerId: {}",
         branch.companyName(),
         branch.id(),
         headquarter.getCompanyName(),
-        headquarterId);
+        headquarterId,
+        branch.xentralCustomerId());
 
     return branch;
   }
@@ -111,6 +127,7 @@ public class BranchService {
    * @return List of branch customer responses
    * @throws CustomerNotFoundException if headquarter not found
    */
+  @Transactional
   public List<CustomerResponse> getBranchesByHeadquarter(UUID headquarterId) {
     log.debug("Fetching branches for headquarter ID: {}", headquarterId);
 
@@ -231,6 +248,7 @@ public class BranchService {
    * @throws CustomerNotFoundException if customer not found
    * @throws InvalidHierarchyException if hierarchy validation fails
    */
+  @Transactional
   public boolean validateHierarchy(UUID customerId) {
     log.debug("Validating hierarchy for customer ID: {}", customerId);
 
