@@ -35,17 +35,6 @@ import org.junit.jupiter.api.AfterEach;
  */
 @QuarkusTest
 @Tag("integration")
-  @AfterEach
-  @Transactional
-  void cleanup() {
-    // Delete test data using pattern matching
-    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
-  }
-
   @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -59,6 +48,18 @@ public class OpportunityServiceCreateForCustomerTest {
   @Inject OpportunityRepository opportunityRepository;
 
   @Inject CustomerRepository customerRepository;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data using pattern matching
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+  }
+
 
   private Customer activeCustomer;
 

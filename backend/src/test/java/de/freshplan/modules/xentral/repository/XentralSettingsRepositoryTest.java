@@ -29,6 +29,13 @@ import org.junit.jupiter.api.AfterEach;
  * @since Sprint 2.1.7.2
  */
 @QuarkusTest
+  @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+class XentralSettingsRepositoryTest {
+
+  @Inject XentralSettingsRepository repository;
+
+  @Inject jakarta.persistence.EntityManager em;
+
   @AfterEach
   @Transactional
   void cleanup() {
@@ -36,12 +43,6 @@ import org.junit.jupiter.api.AfterEach;
     em.createNativeQuery("DELETE FROM xentral_settings WHERE test_marker LIKE 'TEST-%'").executeUpdate();
   }
 
-  @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-class XentralSettingsRepositoryTest {
-
-  @Inject XentralSettingsRepository repository;
-
-  @Inject jakarta.persistence.EntityManager em;
 
   private static final String TEST_URL = "https://test.xentral.biz";
   private static final String TEST_TOKEN = "test-token-12345";

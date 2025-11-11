@@ -48,18 +48,6 @@ import org.junit.jupiter.api.AfterEach;
  * @since 2.0.0
  */
 @QuarkusTest
-  @AfterEach
-  @Transactional
-  void cleanup() {
-    // Delete test data using pattern matching
-    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
-    em.createNativeQuery("DELETE FROM users WHERE username LIKE 'testuser_%'").executeUpdate();
-  }
-
   @TestTransaction // Sprint 2.1.4 Fix: Add transaction context
 @Tag("integration")
 @TestSecurity(
@@ -80,6 +68,19 @@ public class OpportunityServiceStageTransitionTest {
   @Inject EntityManager entityManager;
 
   @Inject UserTransaction userTransaction;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data using pattern matching
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM users WHERE username LIKE 'testuser_%'").executeUpdate();
+  }
+
 
   private Customer testCustomer;
   private User testUser;
