@@ -38,8 +38,10 @@ import {
   useTheme,
   useMediaQuery,
   Typography,
+  CircularProgress,
 } from '@mui/material';
 import { useCreateBranch } from '../../../customer/api/customerQueries';
+import { useEnumOptions } from '../../../../hooks/useEnumOptions';
 
 interface CreateBranchDialogProps {
   /** Dialog open state */
@@ -74,17 +76,33 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+  // ========== ENUM OPTIONS (SERVER-DRIVEN) ==========
+  const { data: customerTypeOptions, isLoading: customerTypeLoading } = useEnumOptions(
+    '/api/enums/customer-types'
+  );
+  const { data: statusOptions, isLoading: statusLoading } = useEnumOptions(
+    '/api/enums/customer-status'
+  );
+
   // ========== FORM STATE ==========
   const [formData, setFormData] = useState({
     companyName: '',
     status: 'PROSPECT',
     customerType: 'UNTERNEHMEN',
+    // Address fields (required by spec)
+    street: '',
+    zipCode: '',
+    city: '',
+    country: 'Deutschland', // Default value per spec
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // ========== REACT QUERY MUTATION ==========
   const createBranchMutation = useCreateBranch();
+
+  // ========== LOADING STATE ==========
+  const isLoadingOptions = customerTypeLoading || statusLoading;
 
   // ========== EFFECTS ==========
 
@@ -97,6 +115,10 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
         companyName: '',
         status: 'PROSPECT',
         customerType: 'UNTERNEHMEN',
+        street: '',
+        zipCode: '',
+        city: '',
+        country: 'Deutschland',
       });
       setErrors({});
     }
@@ -109,6 +131,9 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
    *
    * Rules:
    * - companyName: required, min 2 chars
+   * - street: required
+   * - zipCode: required, 5 digits
+   * - city: required
    */
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -118,6 +143,23 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
       newErrors.companyName = 'Firmenname ist erforderlich';
     } else if (formData.companyName.trim().length < 2) {
       newErrors.companyName = 'Firmenname muss mindestens 2 Zeichen lang sein';
+    }
+
+    // Street validation
+    if (!formData.street?.trim()) {
+      newErrors.street = 'Straße ist erforderlich';
+    }
+
+    // ZIP code validation (5 digits)
+    if (!formData.zipCode?.trim()) {
+      newErrors.zipCode = 'PLZ ist erforderlich';
+    } else if (!/^\d{5}$/.test(formData.zipCode.trim())) {
+      newErrors.zipCode = 'PLZ muss 5-stellig sein';
+    }
+
+    // City validation
+    if (!formData.city?.trim()) {
+      newErrors.city = 'Stadt ist erforderlich';
     }
 
     setErrors(newErrors);
@@ -141,6 +183,11 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
           companyName: formData.companyName.trim(),
           status: formData.status,
           customerType: formData.customerType,
+          // Address fields (spec requirement)
+          street: formData.street.trim(),
+          zipCode: formData.zipCode.trim(),
+          city: formData.city.trim(),
+          country: formData.country.trim() || 'Deutschland', // Default to Deutschland
         },
       });
 
@@ -214,7 +261,7 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
         <Box sx={{ mt: 1 }}>
           <Grid container spacing={2}>
             {/* ========== FIRMENNAME (PFLICHTFELD) ========== */}
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <TextField
                 label="Firmenname"
                 value={formData.companyName}
@@ -232,38 +279,117 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
             </Grid>
 
             {/* ========== KUNDENTYP ========== */}
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 select
                 label="Kundentyp"
                 value={formData.customerType}
                 onChange={e => handleFieldChange('customerType', e.target.value)}
                 fullWidth
-                disabled={createBranchMutation.isPending}
+                disabled={createBranchMutation.isPending || isLoadingOptions}
                 helperText="Rechtsform des Kunden"
               >
-                <MenuItem value="UNTERNEHMEN">Unternehmen</MenuItem>
-                <MenuItem value="EINZELPERSON">Einzelperson</MenuItem>
+                {isLoadingOptions ? (
+                  <MenuItem value="">
+                    <CircularProgress size={20} />
+                  </MenuItem>
+                ) : (
+                  customerTypeOptions?.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))
+                )}
               </TextField>
             </Grid>
 
             {/* ========== STATUS ========== */}
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <TextField
                 select
                 label="Status"
                 value={formData.status}
                 onChange={e => handleFieldChange('status', e.target.value)}
                 fullWidth
-                disabled={createBranchMutation.isPending}
+                disabled={createBranchMutation.isPending || isLoadingOptions}
                 helperText="Aktueller Status der Filiale"
               >
-                <MenuItem value="PROSPECT">Prospect</MenuItem>
-                <MenuItem value="AKTIV">Aktiv</MenuItem>
-                <MenuItem value="INAKTIV">Inaktiv</MenuItem>
-                <MenuItem value="RISIKO">Risiko</MenuItem>
-                <MenuItem value="GEKUENDIGT">Gekündigt</MenuItem>
+                {isLoadingOptions ? (
+                  <MenuItem value="">
+                    <CircularProgress size={20} />
+                  </MenuItem>
+                ) : (
+                  statusOptions?.map(option => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))
+                )}
               </TextField>
+            </Grid>
+
+            {/* ========== ADDRESS SECTION ========== */}
+            <Grid size={{ xs: 12 }}>
+              <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, fontWeight: 600 }}>
+                Adresse
+              </Typography>
+            </Grid>
+
+            {/* ========== STRASSE & HAUSNUMMER ========== */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Straße & Hausnummer"
+                value={formData.street}
+                onChange={e => handleFieldChange('street', e.target.value)}
+                fullWidth
+                required
+                error={!!errors.street}
+                helperText={errors.street || 'z.B. "Hauptstraße 123"'}
+                placeholder="Straße und Hausnummer eingeben"
+                disabled={createBranchMutation.isPending}
+              />
+            </Grid>
+
+            {/* ========== PLZ & STADT ========== */}
+            <Grid size={{ xs: 12, sm: 4 }}>
+              <TextField
+                label="PLZ"
+                value={formData.zipCode}
+                onChange={e => handleFieldChange('zipCode', e.target.value)}
+                fullWidth
+                required
+                error={!!errors.zipCode}
+                helperText={errors.zipCode || '5-stellig'}
+                placeholder="z.B. 80331"
+                disabled={createBranchMutation.isPending}
+              />
+            </Grid>
+
+            <Grid size={{ xs: 12, sm: 8 }}>
+              <TextField
+                label="Stadt"
+                value={formData.city}
+                onChange={e => handleFieldChange('city', e.target.value)}
+                fullWidth
+                required
+                error={!!errors.city}
+                helperText={errors.city || 'Stadt der Filiale'}
+                placeholder="z.B. München"
+                disabled={createBranchMutation.isPending}
+              />
+            </Grid>
+
+            {/* ========== LAND ========== */}
+            <Grid size={{ xs: 12 }}>
+              <TextField
+                label="Land"
+                value={formData.country}
+                onChange={e => handleFieldChange('country', e.target.value)}
+                fullWidth
+                helperText="Optional (Standard: Deutschland)"
+                placeholder="z.B. Deutschland"
+                disabled={createBranchMutation.isPending}
+              />
             </Grid>
           </Grid>
 
