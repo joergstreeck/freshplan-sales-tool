@@ -60,12 +60,8 @@ public class OpportunityServiceFindByCustomerIdTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete test data using pattern matching
-    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+    // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
+    // No test_marker column exists in opportunities/customers tables
   }
 
 

@@ -39,8 +39,8 @@ class XentralSettingsRepositoryTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete test data using pattern matching
-    em.createNativeQuery("DELETE FROM xentral_settings WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    // Delete all settings - @BeforeEach cleanDatabase() already handles this
+    // No test_marker column exists in xentral_settings table
   }
 
 
