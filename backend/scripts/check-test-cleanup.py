@@ -48,10 +48,6 @@ class TestAnalysis:
         if not self.is_quarkus_test:
             return False
 
-        # Nur Mocks → kein cleanup nötig
-        if self.has_inject_mock_only:
-            return False
-
         # @QuarkusTest + Repository oder EntityManager → cleanup nötig
         if self.has_inject_repository or self.has_inject_entity_manager:
             return True

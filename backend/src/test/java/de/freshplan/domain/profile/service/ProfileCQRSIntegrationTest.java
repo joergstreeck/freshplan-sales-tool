@@ -10,6 +10,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -62,10 +63,10 @@ class ProfileCQRSIntegrationTest {
   }
 
   @AfterEach
-  @TestTransaction
+  @Transactional
   void cleanup() {
     // Delete test data
-    repository.delete("testMarker LIKE 'TEST-%'");
+    profileRepository.delete("testMarker LIKE 'TEST-%'");
   }
 
   @Test

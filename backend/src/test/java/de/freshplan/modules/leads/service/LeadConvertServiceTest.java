@@ -18,6 +18,7 @@ import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Tests für Lead → Customer Conversion Service.
@@ -28,6 +29,8 @@ import org.junit.jupiter.api.Test;
 class LeadConvertServiceTest {
 
   @Inject LeadConvertService convertService;
+
+  @Inject jakarta.persistence.EntityManager em;
 
   @Inject CustomerRepository customerRepository;
 
@@ -69,6 +72,17 @@ class LeadConvertServiceTest {
             .minusSeconds(
                 1); // Fix: 1s buffer for DB check constraint (chk_leads_registered_at_not_future)
     testLead.persist();
+  }
+
+    @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data using pattern matching
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
   }
 
   @Test

@@ -20,6 +20,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Integration Tests für OpportunityService.createFromLead()
@@ -33,13 +34,23 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
-@TestSecurity(
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data using pattern matching
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+  }
+
+  @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService.createFromLead() Integration Tests")
 public class OpportunityServiceCreateFromLeadTest {
 
   @Inject OpportunityService opportunityService;
+
+  @Inject jakarta.persistence.EntityManager em;
 
   @Inject OpportunityRepository opportunityRepository;
 

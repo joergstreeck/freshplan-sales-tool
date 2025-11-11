@@ -84,7 +84,7 @@ class OpportunityServiceTest {
   }
 
   @AfterEach
-  @TestTransaction
+  @Transactional
   void cleanup() {
     // Delete in correct order
     em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();

@@ -22,6 +22,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.junit.mockito.InjectMock;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +48,8 @@ class ContactInteractionServiceCQRSIntegrationTest {
   @InjectMock ContactRepository contactRepository;
 
   @InjectMock ContactInteractionMapper mapper;
+
+  @Inject jakarta.persistence.EntityManager em;
 
   private UUID contactId;
   private CustomerContact testContact;
@@ -99,7 +102,7 @@ class ContactInteractionServiceCQRSIntegrationTest {
   }
 
   @AfterEach
-  @TestTransaction
+  @Transactional
   void cleanup() {
     // Delete in correct order to respect foreign key constraints
     em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();

@@ -15,6 +15,7 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -35,15 +36,6 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
-  @AfterEach
-  @TestTransaction
-  void cleanup() {
-    // Delete in correct order
-    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
-  }
-
-
 @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
@@ -53,6 +45,15 @@ public class OpportunityRepositoryBasicTest {
   @Inject OpportunityRepository opportunityRepository;
   @Inject CustomerRepository customerRepository;
   @Inject UserRepository userRepository;
+  @Inject jakarta.persistence.EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete in correct order
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+  }
 
   @Test
   @TestTransaction

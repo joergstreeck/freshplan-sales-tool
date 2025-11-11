@@ -18,6 +18,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,14 +37,6 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
-  @AfterEach
-  @TestTransaction
-  void cleanup() {
-    // Delete test data
-    repository.delete("testMarker LIKE 'TEST-%'");
-  }
-
-
 @TestProfile(HelpContentCQRSIntegrationTest.CQRSTestProfile.class)
 @DisplayName("Phase 12.2: HelpContentService Event-Driven CQRS Integration")
 class HelpContentCQRSIntegrationTest {
@@ -57,6 +50,13 @@ class HelpContentCQRSIntegrationTest {
   @Inject HelpContentRepository helpRepository;
 
   @Inject EventBus eventBus;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data
+    helpRepository.delete("testMarker LIKE 'TEST-%'");
+  }
 
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;

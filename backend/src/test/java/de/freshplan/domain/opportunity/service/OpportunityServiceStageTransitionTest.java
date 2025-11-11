@@ -35,6 +35,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Spezialisierte Tests für OpportunityService Stage Transition Rules
@@ -47,7 +48,19 @@ import org.junit.jupiter.params.provider.MethodSource;
  * @since 2.0.0
  */
 @QuarkusTest
-@TestTransaction // Sprint 2.1.4 Fix: Add transaction context
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data using pattern matching
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM users WHERE username LIKE 'testuser_%'").executeUpdate();
+  }
+
+  @TestTransaction // Sprint 2.1.4 Fix: Add transaction context
 @Tag("integration")
 @TestSecurity(
     user = "testuser",
@@ -55,6 +68,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
+
+  @Inject jakarta.persistence.EntityManager em;
 
   @Inject OpportunityRepository opportunityRepository;
 

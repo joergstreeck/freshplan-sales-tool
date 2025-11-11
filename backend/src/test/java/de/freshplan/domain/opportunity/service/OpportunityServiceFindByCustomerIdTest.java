@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Integration Tests für OpportunityService.findByCustomerId()
@@ -42,13 +43,26 @@ import org.junit.jupiter.api.Test;
  */
 @QuarkusTest
 @Tag("integration")
-@TestSecurity(
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data using pattern matching
+    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+  }
+
+  @TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService.findByCustomerId() Integration Tests")
 public class OpportunityServiceFindByCustomerIdTest {
 
   @Inject OpportunityService opportunityService;
+
+  @Inject jakarta.persistence.EntityManager em;
 
   @Inject OpportunityRepository opportunityRepository;
 

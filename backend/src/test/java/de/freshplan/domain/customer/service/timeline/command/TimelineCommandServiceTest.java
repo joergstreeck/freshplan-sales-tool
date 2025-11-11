@@ -10,9 +10,11 @@ import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +39,18 @@ class TimelineCommandServiceTest {
   @Inject TimelineCommandService commandService;
 
   @Inject CustomerTimelineRepository timelineRepository;
+
+  @Inject jakarta.persistence.EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete timeline events and test customers
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'KD-%'").executeUpdate();
+  }
 
   /**
    * Creates and persists a test customer within the test transaction. Must be called at the

@@ -14,6 +14,7 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -53,6 +54,8 @@ class CustomerCQRSIntegrationTest {
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   private CreateCustomerRequest validCreateRequest;
   private UUID createdCustomerId;
 
@@ -71,7 +74,7 @@ class CustomerCQRSIntegrationTest {
   }
 
   @AfterEach
-  @TestTransaction
+  @Transactional
   void cleanup() {
     // Delete in correct order to respect foreign key constraints
     em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();

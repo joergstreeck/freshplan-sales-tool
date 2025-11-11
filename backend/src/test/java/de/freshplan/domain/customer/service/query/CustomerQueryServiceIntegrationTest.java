@@ -16,10 +16,12 @@ import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +42,21 @@ class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   private UUID testCustomerId;
   private String testCustomerNumber;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test customers using pattern matching
+    // Pattern: KD-TEST-* or any customer with isTestData=true
+    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
+    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true").executeUpdate();
+  }
 
   private void setupTestData() {
     // Create a test customer directly in DB for read tests using CustomerBuilder
