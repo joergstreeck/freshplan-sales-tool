@@ -267,6 +267,35 @@ def is_render_function_config(line: str) -> bool:
     return False
 
 
+def is_jsx_prop_value(line: str, field_name: str) -> bool:
+    """
+    Check if field is used as JSX prop value (not rendering).
+
+    Examples:
+      ❌ <TextField value={formData.customerType} />
+      ❌ <Select defaultValue={lead.businessType} />
+      ❌ <Input initialValue={contact.salutation} />
+      ❌ onChange={e => handleFieldChange('customerType', e.target.value)}
+      ✅ {contact.decisionLevel} → rendering
+
+    Rationale:
+      Prop values like `value=` or `defaultValue=` are used for form control,
+      not for displaying enum values to users. The actual rendering happens
+      through the component's children (e.g., MenuItem with labels from useEnumOptions).
+    """
+    # Pattern 1: Common form control props with field value
+    # Matches: value={...field}, defaultValue={...field}, initialValue={...field}
+    if re.search(rf'(value|defaultValue|initialValue)\s*=\s*\{{[^}}]*{field_name}[^}}]*\}}', line):
+        return True
+
+    # Pattern 2: Event handler assignments (onChange, onSelect, etc.)
+    # Matches: onChange={e => handleFieldChange('field', e.target.value)}
+    if re.search(rf'(onChange|onSelect|onBlur|onFocus)\s*=\s*\{{[^}}]*{field_name}[^}}]*\}}', line):
+        return True
+
+    return False
+
+
 def is_in_comment_or_docstring(line: str) -> bool:
     """
     Check if line is comment or JSDoc documentation.
@@ -352,6 +381,10 @@ def find_enum_field_accesses(content: str) -> Dict[str, List[Tuple[int, str, str
 
             # FILTER 6: Not function parameter (NEW!)
             if is_function_parameter(line, field_name):
+                continue
+
+            # FILTER 7: Not JSX prop value (NEW!)
+            if is_jsx_prop_value(line, field_name):
                 continue
 
             # Valid enum field access found!
