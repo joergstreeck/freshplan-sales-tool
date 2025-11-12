@@ -161,6 +161,29 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-11-12 - Sprint 2.1.7.7 - Pre-Commit Hook PRÜFUNG 8 + Hook-Dokumentation
+
+**Kontext:** Integration von `check-test-cleanup.py` als PRÜFUNG 8 in Pre-Commit Hook + Bereinigung Hook-Location-Verwirrung.
+
+**Erledigt:**
+- ✅ **PRÜFUNG 8:** Test Cleanup Validation (Check-Only) in `.githooks/pre-commit` integriert
+  - Validiert `@QuarkusTest` mit Repository/EntityManager → `@AfterEach` cleanup required
+  - Blockiert Commits bei fehlender Cleanup-Methode
+  - Zeigt funktionierendes Beispiel aus `BranchServiceTest.java:80-94`
+  - Best Practices: Child entities first (Foreign Keys!), `@Transactional` required, Pattern-Matching (`TEST-%`, `KD-%`)
+- ✅ **Hook-Dokumentation:** 2 README-Dateien erstellt
+  - `.githooks/README.md`: Alle 8 Prüfungen dokumentiert, PRÜFUNG 8 Details mit Code-Beispiel
+  - `.git/hooks/README.md`: Erklärt warum `.githooks/` genutzt wird (Single Source of Truth)
+- ✅ **Hook-Cleanup:** `.git/hooks/pre-commit` gelöscht (inaktiv) - Single Source of Truth etabliert
+
+**Commit:** 236d746ef - docs(hooks): Add PRÜFUNG 8 - Test Cleanup Validation + README Dokumentation
+**Branch:** feature/sprint-2-1-7-7-multi-location-management
+**Files:** 2 changed (124 insertions, 14 deletions)
+**Pre-Commit:** Alle 8 Prüfungen PASSED ✅
+**Status:** ✅ COMPLETE
+
+---
+
 ### 2025-11-02 22:58 - Sprint 2.1.7.7 - Lead Contact UX Fixes + Migration V10043 (Enum CHECK Constraints)
 
 **Kontext:** User berichtete über mehrere UX-Probleme in Lead Contact Dashboard + Advisory Warnings zu fehlenden Enum-Constraints.
