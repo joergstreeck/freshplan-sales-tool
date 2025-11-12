@@ -13,6 +13,7 @@
 # PRÜFUNG 5: Backend Compilation Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 6: Frontend Code Formatting (Lint-Staged Auto-Format)
 # PRÜFUNG 7: Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
+# PRÜFUNG 8: Test Cleanup - @AfterEach Auto-Add (Auto-Apply) - Sprint 2.1.7.7
 #
 # ============================================================================
 
@@ -320,6 +321,45 @@ if [ -n "$BACKEND_FILES" ]; then
   echo ""
 else
   echo "⏭️  No backend Java files changed, skipping dependency cycles check"
+  echo ""
+fi
+
+# ============================================================================
+# PRÜFUNG 8: Test Cleanup - @AfterEach Auto-Add
+# ============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🧪 Test Cleanup - @AfterEach Auto-Add${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Check if any backend test files were changed
+BACKEND_TEST_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/src/test/.*\.java$" || true)
+
+if [ -n "$BACKEND_TEST_FILES" ]; then
+  echo "🧪 Backend test files changed, checking for @AfterEach cleanup..."
+  echo ""
+
+  # Run Test Cleanup script (Auto-Add like Spotless)
+  if ! python3 ./backend/scripts/add-test-cleanup.py; then
+    echo ""
+    echo -e "${RED}🚫 PRE-COMMIT HOOK: Test Cleanup failed!${NC}"
+    echo ""
+    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte prüfe die Test-Cleanup-Konfiguration.${NC}"
+    echo ""
+    exit 1
+  fi
+
+  # Add modified test files back to staging
+  echo "✨ Re-staging modified test files..."
+  git add backend/src/test/
+
+  echo ""
+  echo -e "${GREEN}✅ Test Cleanup: @AfterEach methods ensured${NC}"
+  echo ""
+else
+  echo "⏭️  No backend test files changed, skipping test cleanup check"
   echo ""
 fi
 
