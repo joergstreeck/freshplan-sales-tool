@@ -765,83 +765,115 @@ def main():
         print(f"{GREEN}✅ STUFE 5 PASSED: All scanned files follow schema-driven or whitelisted patterns{NC}")
         print()
 
-    # ========== STUFE 6: API REQUEST BODY → DTO PARITY ==========
+    # ========== STUFE 6: API REQUEST BODY → DTO PARITY (UNIVERSAL) ==========
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
-    print(f"{BLUE}PRÜFUNG 6: API Request Body → Backend DTO Parity{NC}")
+    print(f"{BLUE}PRÜFUNG 6: API Request Body → Backend DTO Parity (Universal){NC}")
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
     print()
-    print("Checking CreateBranchDialog → CreateCustomerRequest DTO parity...")
-    print()
 
-    # Configuration: Allowed fields per API call
-    ALLOWED_BRANCH_FIELDS = {'companyName', 'status', 'customerType'}
+    # ========== CONFIGURATION: Dialog → DTO Mappings ==========
+    # Add new dialogs here to automatically validate them
+    DIALOG_DTO_MAPPINGS = {
+        'CreateBranchDialog.tsx': {
+            'dto_name': 'CreateCustomerRequest',
+            'payload_pattern': r'branchData:\s*\{([^}]+)\}',
+            'allowed_fields': {'companyName', 'status', 'customerType'},
+            'path': 'frontend/src/features/customers/components/detail/CreateBranchDialog.tsx'
+        },
+        # Easy to extend with more dialogs:
+        # 'LeadCreateDialog.tsx': {
+        #     'dto_name': 'CreateLeadRequest',
+        #     'payload_pattern': r'createLead\s*\(\s*\{([^}]+)\}',
+        #     'allowed_fields': {'name', 'email', 'phone'},
+        #     'path': 'frontend/src/features/leads/LeadCreateDialog.tsx'
+        # },
+    }
 
-    # Read CreateBranchDialog.tsx
-    branch_dialog_path = PROJECT_ROOT / 'frontend/src/features/customers/components/detail/CreateBranchDialog.tsx'
+    # Validate all configured dialogs
+    has_errors = False
+    dialogs_checked = 0
 
-    if not branch_dialog_path.exists():
-        print(f"{YELLOW}⚠️  CreateBranchDialog.tsx not found - skipping STUFE 6{NC}")
-        print()
-    else:
-        branch_dialog_content = branch_dialog_path.read_text()
+    for dialog_name, config in DIALOG_DTO_MAPPINGS.items():
+        dialog_path = PROJECT_ROOT / config['path']
 
-        # Extract branchData fields from mutateAsync call
-        # Pattern: branchData: { field1: ..., field2: ..., ... }
-        branch_data_pattern = r'branchData:\s*\{([^}]+)\}'
-        match = re.search(branch_data_pattern, branch_dialog_content, re.DOTALL)
+        print(f"Checking {dialog_name} → {config['dto_name']} DTO parity...")
+
+        if not dialog_path.exists():
+            print(f"{YELLOW}⚠️  {dialog_name} not found - skipping{NC}")
+            print()
+            continue
+
+        dialogs_checked += 1
+        dialog_content = dialog_path.read_text()
+
+        # Extract payload fields from dialog
+        match = re.search(config['payload_pattern'], dialog_content, re.DOTALL)
 
         if not match:
-            print(f"{RED}❌ STUFE 6 FAILED: Could not find branchData object in CreateBranchDialog{NC}")
-            print(f"   Expected pattern: branchData: {{ ... }}")
+            print(f"{RED}❌ STUFE 6 FAILED: Could not find payload in {dialog_name}{NC}")
+            print(f"   Expected pattern: {config['payload_pattern']}")
             print()
-            return 1
+            has_errors = True
+            continue
 
-        branch_data_block = match.group(1)
+        payload_block = match.group(1)
 
         # Extract field names (e.g., "companyName:", "status:", etc.)
-        # Pattern: fieldName: formData.fieldName or similar
         field_pattern = r'(\w+):'
-        found_fields = set(re.findall(field_pattern, branch_data_block))
+        found_fields = set(re.findall(field_pattern, payload_block))
 
-        # Remove common non-field keys (like comments)
+        # Remove common non-field keys (like comments, method calls)
         found_fields = {f for f in found_fields if not f.startswith('//') and f not in {'trim'}}
 
         # Check for violations
-        invalid_fields = found_fields - ALLOWED_BRANCH_FIELDS
-        missing_fields = ALLOWED_BRANCH_FIELDS - found_fields
+        invalid_fields = found_fields - config['allowed_fields']
+        missing_fields = config['allowed_fields'] - found_fields
 
         if invalid_fields:
-            print(f"{RED}❌ STUFE 6 FAILED: CreateBranchDialog sends fields NOT in CreateCustomerRequest{NC}")
+            print(f"{RED}❌ STUFE 6 FAILED: {dialog_name} sends fields NOT in {config['dto_name']}{NC}")
             print()
-            print(f"  File: {branch_dialog_path}")
+            print(f"  File: {dialog_path}")
             print()
             print(f"  {RED}Invalid Fields (Backend rejects these):{NC}")
             for field in sorted(invalid_fields):
                 print(f"    ✗ {field}")
             print()
-            print(f"  {GREEN}Allowed Fields (CreateCustomerRequest):{NC}")
-            for field in sorted(ALLOWED_BRANCH_FIELDS):
+            print(f"  {GREEN}Allowed Fields ({config['dto_name']}):{NC}")
+            for field in sorted(config['allowed_fields']):
                 print(f"    ✓ {field}")
             print()
             print(f"{RED}🚫 RULE VIOLATION: Frontend Request Body MUST match Backend DTO (ZERO TOLERANCE){NC}")
             print()
             print("📖 Fix:")
-            print("   1. Remove invalid fields from CreateBranchDialog state")
-            print("   2. Remove invalid fields from branchData object")
+            print(f"   1. Remove invalid fields from {dialog_name} state")
+            print("   2. Remove invalid fields from payload object")
             print("   3. Remove corresponding UI components (TextField)")
             print("   4. Update validation logic")
             print()
-            print(f"{YELLOW}   Backend DTO: backend/src/main/java/.../dto/CreateCustomerRequest.java{NC}")
+            print(f"{YELLOW}   Backend DTO: backend/src/main/java/.../dto/{config['dto_name']}.java{NC}")
             print()
-            return 1
+            has_errors = True
         elif missing_fields:
             print(f"{YELLOW}⚠️  Warning: Some required fields might be missing{NC}")
             print(f"   Missing: {', '.join(sorted(missing_fields))}")
             print()
 
-        print(f"{GREEN}✅ STUFE 6 PASSED: CreateBranchDialog → CreateCustomerRequest parity OK{NC}")
-        print(f"   Found fields: {', '.join(sorted(found_fields))}")
-        print(f"   All fields are valid for CreateCustomerRequest DTO")
+        if not invalid_fields:
+            print(f"{GREEN}✅ {dialog_name} → {config['dto_name']} parity OK{NC}")
+            print(f"   Found fields: {', '.join(sorted(found_fields))}")
+            print(f"   All fields are valid for {config['dto_name']} DTO")
+            print()
+
+    # Summary
+    if dialogs_checked == 0:
+        print(f"{YELLOW}⚠️  No dialogs found to validate - STUFE 6 skipped{NC}")
+        print()
+    elif has_errors:
+        print(f"{RED}❌ STUFE 6 FAILED: {dialogs_checked} dialog(s) checked, errors found{NC}")
+        print()
+        return 1
+    else:
+        print(f"{GREEN}✅ STUFE 6 PASSED: All {dialogs_checked} dialog(s) validated successfully{NC}")
         print()
 
     # ========== SUMMARY ==========
