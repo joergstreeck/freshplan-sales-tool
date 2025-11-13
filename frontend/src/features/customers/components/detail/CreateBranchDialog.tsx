@@ -89,11 +89,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
     companyName: '',
     status: 'PROSPECT',
     customerType: 'UNTERNEHMEN',
-    // Address fields (required by spec)
-    street: '',
-    zipCode: '',
-    city: '',
-    country: 'Deutschland', // Default value per spec
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -115,10 +110,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
         companyName: '',
         status: 'PROSPECT',
         customerType: 'UNTERNEHMEN',
-        street: '',
-        zipCode: '',
-        city: '',
-        country: 'Deutschland',
       });
       setErrors({});
     }
@@ -131,9 +122,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
    *
    * Rules:
    * - companyName: required, min 2 chars
-   * - street: required
-   * - zipCode: required, 5 digits
-   * - city: required
    */
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -143,23 +131,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
       newErrors.companyName = 'Firmenname ist erforderlich';
     } else if (formData.companyName.trim().length < 2) {
       newErrors.companyName = 'Firmenname muss mindestens 2 Zeichen lang sein';
-    }
-
-    // Street validation
-    if (!formData.street?.trim()) {
-      newErrors.street = 'Straße ist erforderlich';
-    }
-
-    // ZIP code validation (5 digits)
-    if (!formData.zipCode?.trim()) {
-      newErrors.zipCode = 'PLZ ist erforderlich';
-    } else if (!/^\d{5}$/.test(formData.zipCode.trim())) {
-      newErrors.zipCode = 'PLZ muss 5-stellig sein';
-    }
-
-    // City validation
-    if (!formData.city?.trim()) {
-      newErrors.city = 'Stadt ist erforderlich';
     }
 
     setErrors(newErrors);
@@ -183,11 +154,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
           companyName: formData.companyName.trim(),
           status: formData.status,
           customerType: formData.customerType,
-          // Address fields (spec requirement)
-          street: formData.street.trim(),
-          zipCode: formData.zipCode.trim(),
-          city: formData.city.trim(),
-          country: formData.country.trim() || 'Deutschland', // Default to Deutschland
         },
       });
 
@@ -326,70 +292,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
                   ))
                 )}
               </TextField>
-            </Grid>
-
-            {/* ========== ADDRESS SECTION ========== */}
-            <Grid size={{ xs: 12 }}>
-              <Typography variant="subtitle2" sx={{ mt: 2, mb: 1, fontWeight: 600 }}>
-                Adresse
-              </Typography>
-            </Grid>
-
-            {/* ========== STRASSE & HAUSNUMMER ========== */}
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Straße & Hausnummer"
-                value={formData.street}
-                onChange={e => handleFieldChange('street', e.target.value)}
-                fullWidth
-                required
-                error={!!errors.street}
-                helperText={errors.street || 'z.B. "Hauptstraße 123"'}
-                placeholder="Straße und Hausnummer eingeben"
-                disabled={createBranchMutation.isPending}
-              />
-            </Grid>
-
-            {/* ========== PLZ & STADT ========== */}
-            <Grid size={{ xs: 12, sm: 4 }}>
-              <TextField
-                label="PLZ"
-                value={formData.zipCode}
-                onChange={e => handleFieldChange('zipCode', e.target.value)}
-                fullWidth
-                required
-                error={!!errors.zipCode}
-                helperText={errors.zipCode || '5-stellig'}
-                placeholder="z.B. 80331"
-                disabled={createBranchMutation.isPending}
-              />
-            </Grid>
-
-            <Grid size={{ xs: 12, sm: 8 }}>
-              <TextField
-                label="Stadt"
-                value={formData.city}
-                onChange={e => handleFieldChange('city', e.target.value)}
-                fullWidth
-                required
-                error={!!errors.city}
-                helperText={errors.city || 'Stadt der Filiale'}
-                placeholder="z.B. München"
-                disabled={createBranchMutation.isPending}
-              />
-            </Grid>
-
-            {/* ========== LAND ========== */}
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Land"
-                value={formData.country}
-                onChange={e => handleFieldChange('country', e.target.value)}
-                fullWidth
-                helperText="Optional (Standard: Deutschland)"
-                placeholder="z.B. Deutschland"
-                disabled={createBranchMutation.isPending}
-              />
             </Grid>
           </Grid>
 

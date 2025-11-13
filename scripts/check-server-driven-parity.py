@@ -765,6 +765,85 @@ def main():
         print(f"{GREEN}✅ STUFE 5 PASSED: All scanned files follow schema-driven or whitelisted patterns{NC}")
         print()
 
+    # ========== STUFE 6: API REQUEST BODY → DTO PARITY ==========
+    print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
+    print(f"{BLUE}PRÜFUNG 6: API Request Body → Backend DTO Parity{NC}")
+    print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
+    print()
+    print("Checking CreateBranchDialog → CreateCustomerRequest DTO parity...")
+    print()
+
+    # Configuration: Allowed fields per API call
+    ALLOWED_BRANCH_FIELDS = {'companyName', 'status', 'customerType'}
+
+    # Read CreateBranchDialog.tsx
+    branch_dialog_path = PROJECT_ROOT / 'frontend/src/features/customers/components/detail/CreateBranchDialog.tsx'
+
+    if not branch_dialog_path.exists():
+        print(f"{YELLOW}⚠️  CreateBranchDialog.tsx not found - skipping STUFE 6{NC}")
+        print()
+    else:
+        branch_dialog_content = branch_dialog_path.read_text()
+
+        # Extract branchData fields from mutateAsync call
+        # Pattern: branchData: { field1: ..., field2: ..., ... }
+        branch_data_pattern = r'branchData:\s*\{([^}]+)\}'
+        match = re.search(branch_data_pattern, branch_dialog_content, re.DOTALL)
+
+        if not match:
+            print(f"{RED}❌ STUFE 6 FAILED: Could not find branchData object in CreateBranchDialog{NC}")
+            print(f"   Expected pattern: branchData: {{ ... }}")
+            print()
+            return 1
+
+        branch_data_block = match.group(1)
+
+        # Extract field names (e.g., "companyName:", "status:", etc.)
+        # Pattern: fieldName: formData.fieldName or similar
+        field_pattern = r'(\w+):'
+        found_fields = set(re.findall(field_pattern, branch_data_block))
+
+        # Remove common non-field keys (like comments)
+        found_fields = {f for f in found_fields if not f.startswith('//') and f not in {'trim'}}
+
+        # Check for violations
+        invalid_fields = found_fields - ALLOWED_BRANCH_FIELDS
+        missing_fields = ALLOWED_BRANCH_FIELDS - found_fields
+
+        if invalid_fields:
+            print(f"{RED}❌ STUFE 6 FAILED: CreateBranchDialog sends fields NOT in CreateCustomerRequest{NC}")
+            print()
+            print(f"  File: {branch_dialog_path}")
+            print()
+            print(f"  {RED}Invalid Fields (Backend rejects these):{NC}")
+            for field in sorted(invalid_fields):
+                print(f"    ✗ {field}")
+            print()
+            print(f"  {GREEN}Allowed Fields (CreateCustomerRequest):{NC}")
+            for field in sorted(ALLOWED_BRANCH_FIELDS):
+                print(f"    ✓ {field}")
+            print()
+            print(f"{RED}🚫 RULE VIOLATION: Frontend Request Body MUST match Backend DTO (ZERO TOLERANCE){NC}")
+            print()
+            print("📖 Fix:")
+            print("   1. Remove invalid fields from CreateBranchDialog state")
+            print("   2. Remove invalid fields from branchData object")
+            print("   3. Remove corresponding UI components (TextField)")
+            print("   4. Update validation logic")
+            print()
+            print(f"{YELLOW}   Backend DTO: backend/src/main/java/.../dto/CreateCustomerRequest.java{NC}")
+            print()
+            return 1
+        elif missing_fields:
+            print(f"{YELLOW}⚠️  Warning: Some required fields might be missing{NC}")
+            print(f"   Missing: {', '.join(sorted(missing_fields))}")
+            print()
+
+        print(f"{GREEN}✅ STUFE 6 PASSED: CreateBranchDialog → CreateCustomerRequest parity OK{NC}")
+        print(f"   Found fields: {', '.join(sorted(found_fields))}")
+        print(f"   All fields are valid for CreateCustomerRequest DTO")
+        print()
+
     # ========== SUMMARY ==========
     print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
     print(f"{GREEN}✅ SUCCESS: Server-Driven Parity Check PASSED{NC}")
