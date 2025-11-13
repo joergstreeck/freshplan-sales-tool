@@ -87,8 +87,11 @@ class OpportunityServiceTest {
   @Transactional
   void cleanup() {
     // Delete in correct order
-    em.createNativeQuery("DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'")
+        .executeUpdate();
   }
 
   // ========== SPRINT 2.1.7.4: AUTO-CONVERSION TESTS ==========

@@ -46,11 +46,21 @@ class TimelineCommandServiceTest {
   @Transactional
   void cleanup() {
     // Delete timeline events and test customers (correct FK order: child → parent)
-    em.createNativeQuery("DELETE FROM customer_addresses WHERE location_id IN (SELECT id FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%'))").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')").executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN (SELECT id FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%'))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%')")
+        .executeUpdate();
     em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'KD-%'").executeUpdate();
   }
 

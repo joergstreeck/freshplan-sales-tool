@@ -38,7 +38,9 @@ class OpportunityTypeMigrationTest {
   @Transactional
   void cleanup() {
     // Clean up any test opportunities created during tests
-    entityManager.createNativeQuery("DELETE FROM opportunities WHERE name LIKE 'TEST-%'").executeUpdate();
+    entityManager
+        .createNativeQuery("DELETE FROM opportunities WHERE name LIKE 'TEST-%'")
+        .executeUpdate();
   }
 
   @Test

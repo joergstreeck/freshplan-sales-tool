@@ -18,11 +18,11 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 
 /**
  * Integration Tests für OpportunityService.findByCustomerId()
@@ -43,7 +43,7 @@ import org.junit.jupiter.api.AfterEach;
  */
 @QuarkusTest
 @Tag("integration")
-  @TestSecurity(
+@TestSecurity(
     user = "testuser",
     roles = {"admin", "manager", "sales"})
 @DisplayName("OpportunityService.findByCustomerId() Integration Tests")
@@ -63,7 +63,6 @@ public class OpportunityServiceFindByCustomerIdTest {
     // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
     // No test_marker column exists in opportunities/customers tables
   }
-
 
   private Customer testCustomer;
   private Customer otherCustomer;

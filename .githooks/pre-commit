@@ -14,6 +14,7 @@
 # PRÜFUNG 6: Frontend Code Formatting (Lint-Staged Auto-Format)
 # PRÜFUNG 7: Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 8: Test Cleanup - @AfterEach Validation (Check-Only) - Sprint 2.1.7.7
+# PRÜFUNG 9: OpenAPI Type Sync Check (INFO-ONLY) - Sprint 2.1.7.7 OpenAPI Contract-First
 #
 # ============================================================================
 
@@ -384,6 +385,42 @@ if [ -n "$BACKEND_TEST_FILES" ]; then
   echo ""
 else
   echo "⏭️  No backend test files changed, skipping test cleanup validation"
+  echo ""
+fi
+
+# ============================================================================
+# PRÜFUNG 9: OpenAPI Type Sync Check (INFO-ONLY)
+# ============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🔄 OpenAPI Type Sync Check${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Check if backend DTO files were changed (*Request.java, *Response.java)
+BACKEND_DTO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E "backend/src/main/java/.*(Request|Response)\.java$" || true)
+
+if [ -n "$BACKEND_DTO_FILES" ]; then
+  echo -e "${YELLOW}⚠️  Backend DTO files wurden geändert:${NC}"
+  echo "$BACKEND_DTO_FILES" | sed 's/^/   • /'
+  echo ""
+  echo -e "${YELLOW}📋 EMPFEHLUNG: TypeScript-Types neu generieren${NC}"
+  echo ""
+  echo -e "   ${BLUE}1. Backend starten:${NC}"
+  echo -e "      cd backend && ./mvnw quarkus:dev"
+  echo ""
+  echo -e "   ${BLUE}2. Frontend-Types generieren:${NC}"
+  echo -e "      cd frontend && npm run generate-api"
+  echo ""
+  echo -e "   ${BLUE}3. Generierte Types committen:${NC}"
+  echo -e "      git add frontend/src/api/generated/"
+  echo ""
+  echo -e "${GREEN}✅ Dies ist nur eine Info - Commit wird NICHT blockiert.${NC}"
+  echo -e "${GREEN}   Contract-First Development: Backend ist Single Source of Truth.${NC}"
+  echo ""
+else
+  echo "⏭️  No backend DTO files changed, OpenAPI types should be in sync"
   echo ""
 fi
 

@@ -29,7 +29,7 @@ import org.junit.jupiter.api.AfterEach;
  * @since Sprint 2.1.7.2
  */
 @QuarkusTest
-  @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class XentralSettingsRepositoryTest {
 
   @Inject XentralSettingsRepository repository;
@@ -42,7 +42,6 @@ class XentralSettingsRepositoryTest {
     // Delete all settings - @BeforeEach cleanDatabase() already handles this
     // No test_marker column exists in xentral_settings table
   }
-
 
   private static final String TEST_URL = "https://test.xentral.biz";
   private static final String TEST_TOKEN = "test-token-12345";

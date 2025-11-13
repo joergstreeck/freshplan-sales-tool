@@ -61,7 +61,9 @@ public class ContactPerformanceTest {
   @TestTransaction
   void cleanup() {
     // Delete contacts first (child entities)
-    entityManager.createQuery("DELETE FROM CustomerContact WHERE customer.customerNumber LIKE 'PERF-%'").executeUpdate();
+    entityManager
+        .createQuery("DELETE FROM CustomerContact WHERE customer.customerNumber LIKE 'PERF-%'")
+        .executeUpdate();
 
     // Delete test customers
     customerRepository.delete("customerNumber LIKE 'PERF-%'");

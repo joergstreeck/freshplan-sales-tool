@@ -52,12 +52,24 @@ class CustomerQueryServiceIntegrationTest {
   void cleanup() {
     // Delete test customers using pattern matching (correct FK order: child → parent)
     // Pattern: KD-TEST-* or any customer with isTestData=true
-    em.createNativeQuery("DELETE FROM customer_addresses WHERE location_id IN (SELECT id FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true))").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)").executeUpdate();
-    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true").executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN (SELECT id FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true")
+        .executeUpdate();
   }
 
   private void setupTestData() {

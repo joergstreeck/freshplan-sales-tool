@@ -67,7 +67,9 @@ public class LeadScoringServicePerformanceTest {
   void cleanup() {
     // Clean up test leads created during performance tests
     // Use native query for bulk delete performance
-    em.createNativeQuery("DELETE FROM leads WHERE company_name LIKE 'Perf Test%' OR company_name LIKE 'Test%'").executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM leads WHERE company_name LIKE 'Perf Test%' OR company_name LIKE 'Test%'")
+        .executeUpdate();
   }
 
   // ================================================================================

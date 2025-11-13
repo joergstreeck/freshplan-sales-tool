@@ -84,9 +84,10 @@ public class BranchServiceTest {
     // Pattern matches TEST-xxx and KD-xxx customer numbers from TestIds.uniqueCustomerNumber()
 
     // Step 1: Delete timeline events first (foreign key constraint)
-    entityManager.createNativeQuery(
-        "DELETE FROM customer_timeline_events WHERE customer_id IN " +
-        "(SELECT id FROM customers WHERE customer_number LIKE 'TEST-%' OR customer_number LIKE 'KD-%')")
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'TEST-%' OR customer_number LIKE 'KD-%')")
         .executeUpdate();
 
     // Step 2: Now delete customers
@@ -113,10 +114,8 @@ public class BranchServiceTest {
     assertNotNull(branch, "Branch should not be null");
     assertNotNull(branch.id(), "Branch ID should not be null");
     assertEquals("Test Branch A - Frankfurt", branch.companyName(), "Branch name should match");
-    assertEquals(
-        CustomerHierarchyType.FILIALE, branch.hierarchyType(), "Branch should be FILIALE");
-    assertEquals(
-        testHeadquarterId.toString(), branch.parentCustomerId(), "Parent ID should match");
+    assertEquals(CustomerHierarchyType.FILIALE, branch.hierarchyType(), "Branch should be FILIALE");
+    assertEquals(testHeadquarterId.toString(), branch.parentCustomerId(), "Parent ID should match");
     assertEquals(
         "XEN-12345", branch.xentralCustomerId(), "Branch should inherit parent xentralCustomerId");
     assertEquals(CustomerStatus.PROSPECT, branch.status(), "Branch status should be PROSPECT");
@@ -239,9 +238,7 @@ public class BranchServiceTest {
     // Verify all branches are FILIALE
     for (CustomerResponse branch : branches) {
       assertEquals(
-          CustomerHierarchyType.FILIALE,
-          branch.hierarchyType(),
-          "All branches should be FILIALE");
+          CustomerHierarchyType.FILIALE, branch.hierarchyType(), "All branches should be FILIALE");
       assertEquals(
           testHeadquarterId.toString(),
           branch.parentCustomerId(),

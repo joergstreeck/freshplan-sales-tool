@@ -70,8 +70,9 @@ public class LeadSecurityBasicTest {
   void cleanup() {
     // Clean up test leads created during tests
     // Use native query to delete by pattern matching on test data
-    entityManager.createNativeQuery(
-        "DELETE FROM leads WHERE company_name LIKE 'Test%' OR company_name LIKE '%Test%'")
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM leads WHERE company_name LIKE 'Test%' OR company_name LIKE '%Test%'")
         .executeUpdate();
 
     // Note: We do NOT delete territories DE/CH as they are system data

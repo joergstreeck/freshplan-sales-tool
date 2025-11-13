@@ -101,10 +101,21 @@ class CustomerServiceIntegrationTest {
   @Transactional
   void cleanup() {
     // Delete in correct order to respect foreign key constraints
-    entityManager.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    entityManager.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    entityManager
+        .createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'")
+        .executeUpdate();
   }
 
   @Test

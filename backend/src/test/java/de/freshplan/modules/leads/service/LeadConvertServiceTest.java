@@ -12,13 +12,12 @@ import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.AfterEach;
 
 /**
  * Tests für Lead → Customer Conversion Service.
@@ -44,7 +43,6 @@ class LeadConvertServiceTest {
     // Clean any customers created during tests (no test_marker column exists)
     // Note: Customer cleanup is handled by @BeforeEach delete queries in setup()
   }
-
 
   @BeforeEach
   @Transactional
@@ -81,7 +79,7 @@ class LeadConvertServiceTest {
     testLead.persist();
   }
 
-    @Test
+  @Test
   @Transactional
   void shouldConvertLeadToCustomerSuccessfully() {
     // Given

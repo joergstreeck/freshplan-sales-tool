@@ -77,10 +77,17 @@ class CustomerCQRSIntegrationTest {
   @Transactional
   void cleanup() {
     // Delete in correct order to respect foreign key constraints
-    em.createNativeQuery("DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')").executeUpdate();
-    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'").executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'")
+        .executeUpdate();
   }
 
   @Test

@@ -59,10 +59,13 @@ public class OpportunityMultiplierServiceTest {
     // Reset any modified multipliers back to factory defaults
     // Note: updateMultiplier() tests restore values in try-finally blocks
     // This is a safety net for test failures
-    OpportunityMultiplier.findAll().list().forEach(m -> {
-      // Factory defaults are restored by migration V10031 re-seeding
-      // No explicit cleanup needed - seed data is idempotent
-    });
+    OpportunityMultiplier.findAll()
+        .list()
+        .forEach(
+            m -> {
+              // Factory defaults are restored by migration V10031 re-seeding
+              // No explicit cleanup needed - seed data is idempotent
+            });
   }
 
   // ==========================================================================

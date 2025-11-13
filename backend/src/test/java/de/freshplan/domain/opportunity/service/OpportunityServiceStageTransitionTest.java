@@ -26,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -35,7 +36,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.api.AfterEach;
 
 /**
  * Spezialisierte Tests für OpportunityService Stage Transition Rules
@@ -48,7 +48,7 @@ import org.junit.jupiter.api.AfterEach;
  * @since 2.0.0
  */
 @QuarkusTest
-  @TestTransaction // Sprint 2.1.4 Fix: Add transaction context
+@TestTransaction // Sprint 2.1.4 Fix: Add transaction context
 @Tag("integration")
 @TestSecurity(
     user = "testuser",
@@ -75,7 +75,6 @@ public class OpportunityServiceStageTransitionTest {
     // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
     // No test_marker column exists in opportunities/customers/users tables
   }
-
 
   private Customer testCustomer;
   private User testUser;
