@@ -63,9 +63,12 @@ echo "$SCHEMA_FILES" | while read SCHEMA_FILE; do
     grep -A 20 'showInWizard(true)' "$SCHEMA_FILE" > "$TMP_FILE" 2>/dev/null || true
 
     # Zähle showInWizard(true) Vorkommen
-    WIZARD_FIELDS=$(grep -c 'showInWizard(true)' "$SCHEMA_FILE" || echo "0")
+    WIZARD_FIELDS=$(grep -c 'showInWizard(true)' "$SCHEMA_FILE" 2>/dev/null || echo "0")
+    # Remove any whitespace/newlines and ensure it's a number
+    WIZARD_FIELDS=$(echo "$WIZARD_FIELDS" | tr -d '\n' | tr -d ' ')
+    WIZARD_FIELDS=${WIZARD_FIELDS:-0}
 
-    if [ "$WIZARD_FIELDS" -gt 0 ]; then
+    if [ "$WIZARD_FIELDS" -gt 0 ] 2>/dev/null; then
         echo -e "${BLUE}  📋 $RESOURCE_NAME: $WIZARD_FIELDS Wizard-Fields${NC}"
 
         # Zähle wizardSectionId und wizardSectionTitle
