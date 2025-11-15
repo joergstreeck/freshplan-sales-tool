@@ -79,6 +79,10 @@ public class CustomerResource {
 
   @Inject de.freshplan.domain.customer.service.BranchService branchService; // Sprint 2.1.7.7
 
+  @Inject
+  de.freshplan.domain.customer.service.HierarchyMetricsService
+      hierarchyMetricsService; // Sprint 2.1.7.7 D3+D5
+
   @Inject Clock clock; // For audit timestamps (Sprint 2.1.7.2 D9.3)
 
   // ========== CRUD OPERATIONS ==========
@@ -346,6 +350,46 @@ public class CustomerResource {
       hierarchy = customerService.getCustomerHierarchy(id);
     }
     return Response.ok(hierarchy).build();
+  }
+
+  /**
+   * Gets hierarchy metrics for a HEADQUARTER customer.
+   *
+   * <p>Sprint 2.1.7.7 - D5: Multi-Location Management - Frontend Dashboard Integration
+   *
+   * <p>Returns aggregated metrics across all child branches (FILIALE customers): total revenue,
+   * average revenue, branch count, open opportunities, and detailed branch breakdown.
+   *
+   * @param id The parent customer ID (must be HEADQUARTER)
+   * @return 200 OK with hierarchy metrics
+   * @throws IllegalArgumentException if customer not found
+   * @throws InvalidHierarchyException if customer is not a HEADQUARTER
+   */
+  @GET
+  @Path("/{id}/hierarchy/metrics")
+  @APIResponses({
+    @APIResponse(
+        responseCode = "200",
+        description = "Hierarchy metrics retrieved successfully",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema =
+                    @Schema(
+                        implementation =
+                            de.freshplan.domain.customer.service.HierarchyMetricsService
+                                .HierarchyMetrics.class))),
+    @APIResponse(
+        responseCode = "400",
+        description = "Customer is not a HEADQUARTER (InvalidHierarchyException)"),
+    @APIResponse(responseCode = "404", description = "Customer not found"),
+    @APIResponse(responseCode = "401", description = "Unauthorized - authentication required")
+  })
+  public Response getHierarchyMetrics(@PathParam("id") UUID id) {
+    log.debug("Fetching hierarchy metrics for customer: {}", id);
+    de.freshplan.domain.customer.service.HierarchyMetricsService.HierarchyMetrics metrics =
+        hierarchyMetricsService.getHierarchyMetrics(id);
+    return Response.ok(metrics).build();
   }
 
   /**
