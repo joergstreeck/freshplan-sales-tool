@@ -39,9 +39,27 @@ class LeadConvertServiceTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete test data - @BeforeEach already cleans Opportunity/Lead data
-    // Clean any customers created during tests (no test_marker column exists)
-    // Note: Customer cleanup is handled by @BeforeEach delete queries in setup()
+    // Step 1: Delete any Opportunities created (FK to customers)
+    em.createQuery(
+            "DELETE FROM Opportunity WHERE customer.id IN "
+                + "(SELECT c.id FROM Customer c WHERE c.customerNumber LIKE 'CUSTOM-%')")
+        .executeUpdate();
+
+    // Step 2: Delete customer_addresses (FK to customer_locations - Sprint 2.1.7.7)
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN "
+                + "(SELECT id FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%'))")
+        .executeUpdate();
+
+    // Step 3: Delete customer_locations (FK to customers - Sprint 2.1.7.7)
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%')")
+        .executeUpdate();
+
+    // Step 4: Delete Customers created by tests (pattern: CUSTOM-*)
+    customerRepository.delete("customerNumber LIKE 'CUSTOM-%'");
   }
 
   @BeforeEach

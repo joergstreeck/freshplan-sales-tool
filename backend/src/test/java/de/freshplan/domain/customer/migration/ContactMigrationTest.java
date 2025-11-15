@@ -26,8 +26,15 @@ public class ContactMigrationTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Migration tests only verify database structure
-    // No test data cleanup needed - no entities created
+    // Step 1: Clean up test data inserted in integration tests
+    // Delete TEST_ROLE entries from contact_roles (if any)
+    entityManager
+        .createNativeQuery("DELETE FROM contact_roles WHERE role = 'TEST_ROLE'")
+        .executeUpdate();
+
+    // Step 2: Delete test location assignments (created in testLocationAssignmentsIntegration)
+    // Note: contact_location_assignments has ON DELETE CASCADE, so deletions cascade automatically
+    // No explicit cleanup needed for location assignments as they reference test data
   }
 
   @Test

@@ -49,8 +49,11 @@ public class OpportunityServiceCreateFromLeadTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
-    // No test_marker column exists in opportunities table
+    // Step 1: Delete opportunities first (FK constraint: opportunities.lead_id -> leads.id)
+    opportunityRepository.deleteAll();
+
+    // Step 2: Delete leads (pattern: [TEST-OPP]%)
+    Lead.delete("companyName LIKE ?1", "[TEST-OPP]%");
   }
 
   private Lead testLead;

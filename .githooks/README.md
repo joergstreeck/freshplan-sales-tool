@@ -8,7 +8,7 @@ Dieser Ordner enthält die **versionierten Git Hooks** für das Projekt.
 git config core.hooksPath .githooks
 ```
 
-## Pre-Commit Hook (PRÜFUNG 9 - Stand 2025-11-13)
+## Pre-Commit Hook (PRÜFUNG 9 - Stand 2025-11-15)
 
 Der `pre-commit` Hook führt **9 Prüfungen** aus (8 blockierend + 1 Info):
 
@@ -19,24 +19,29 @@ Der `pre-commit` Hook führt **9 Prüfungen** aus (8 blockierend + 1 Info):
 5. **Server-Driven Sections Architecture** - Wizard-Struktur vom Backend (BLOCKIEREND)
 6. **Backend Code Formatting** - Spotless Auto-Format (AUTO-FIX)
 7. **Backend Compilation Check** - Code muss kompilieren (BLOCKIEREND)
-8. **Test Cleanup Validation** - `@AfterEach` cleanup für DB-Tests (BLOCKIEREND)
-9. **OpenAPI Type Sync Check** - Erinnert an `npm run generate-api` (INFO-ONLY) ← **NEU!**
+8. **Test Cleanup Validation** - `@AfterEach` cleanup mit echtem Code (BLOCKIEREND) ← **VERBESSERT!**
+9. **OpenAPI Type Sync Check** - Erinnert an `npm run generate-api` (INFO-ONLY)
 
-### PRÜFUNG 8: Test Cleanup Validation (Neu)
+### PRÜFUNG 8: Test Cleanup Validation (Verbessert 2025-11-15)
 
 **Was wird geprüft:**
 - Alle `@QuarkusTest` mit Repository/EntityManager Inject müssen `@AfterEach` cleanup haben
 - Tests mit `@BeforeEach @Transactional` müssen `@AfterEach` cleanup haben
+- **NEU:** Cleanup-Methode darf NICHT leer sein (nur Kommentare/Whitespace) ← **Verhindert Test-Daten-Leaks!**
 - Script: `backend/scripts/check-test-cleanup.py`
 
 **Bei Fehler:**
 - ❌ Commit wird blockiert
+- ⚠️  **Neue Fehler-Kategorie:** "Leere Cleanup-Methode (nur Kommentare)"
+  - Erkennt `@AfterEach cleanup()` mit nur Kommentaren aber keinem echten Code
+  - Verhindert Silent Failures wie in `LeadConvertServiceTest.java` (CUSTOM-* Leak)
 - 📚 Zeigt **funktionierendes Beispiel** aus `BranchServiceTest.java`
 - ✅ Zeigt Best Practices:
   - Child-Entities ZUERST löschen (Foreign Keys!)
   - Pattern-Matching (`TEST-%`, `KD-%`) für Test-Daten
   - `@Transactional` ist Pflicht
   - EntityManager mit `@Inject` einbinden
+  - **Cleanup muss echten Code enthalten, nicht nur Kommentare!**
 
 **Beispiel:**
 ```java
@@ -102,4 +107,4 @@ git commit --no-verify
 - Verhindert manuelle Type-Definitionen und Schema-Drift
 
 ---
-**Last Update:** 2025-11-13 (PRÜFUNG 9 - OpenAPI Type Sync Check)
+**Last Update:** 2025-11-15 (PRÜFUNG 8 - Test Cleanup Validation verbessert: Erkennt leere Cleanup-Methoden)

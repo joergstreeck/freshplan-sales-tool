@@ -39,8 +39,15 @@ class XentralSettingsRepositoryTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete all settings - @BeforeEach cleanDatabase() already handles this
-    // No test_marker column exists in xentral_settings table
+    // Delete all test settings created during tests
+    // Note: xentral_settings is a singleton table (max 1 row)
+    repository.deleteAll();
+
+    // Verify cleanup succeeded (critical for next test isolation)
+    long count = repository.count();
+    if (count != 0) {
+      throw new IllegalStateException("Cleanup failed - xentral_settings table not empty!");
+    }
   }
 
   private static final String TEST_URL = "https://test.xentral.biz";

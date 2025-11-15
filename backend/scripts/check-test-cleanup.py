@@ -40,6 +40,7 @@ class TestAnalysis:
     has_before_each_transactional: bool
     injected_types: Set[str]
     cleanup_method: str = ""
+    cleanup_is_empty: bool = False  # NEU: Cleanup existiert aber ist leer
 
     @property
     def needs_cleanup(self) -> bool:
@@ -61,7 +62,60 @@ class TestAnalysis:
     @property
     def has_violation(self) -> bool:
         """Prüft, ob Test gegen Cleanup-Regeln verstößt"""
-        return self.needs_cleanup and not self.has_after_each_cleanup
+        # Violation wenn:
+        # 1. Cleanup benötigt, aber kein @AfterEach vorhanden
+        # 2. @AfterEach vorhanden, aber Methode ist leer
+        if self.needs_cleanup:
+            if not self.has_after_each_cleanup:
+                return True  # Kein @AfterEach
+            if self.cleanup_is_empty:
+                return True  # @AfterEach existiert, aber ist leer
+        return False
+
+
+def is_cleanup_method_empty(content: str, method_name: str) -> bool:
+    """
+    Prüft, ob eine cleanup-Methode nur Kommentare/Whitespace enthält.
+
+    Args:
+        content: Der Dateiinhalt
+        method_name: Name der cleanup-Methode (z.B. "cleanup")
+
+    Returns:
+        True wenn Methode leer ist (nur Kommentare/Whitespace), False sonst
+    """
+    # Finde die cleanup-Methode mit ihrem Body
+    # Pattern: @AfterEach ... void methodName() { ... }
+    # Matcht den gesamten Methodenrumpf zwischen { }
+    pattern = (
+        r'@AfterEach\s*'                         # @AfterEach Annotation
+        r'(?:@\w+\s*)*'                          # Optionale weitere Annotationen (z.B. @Transactional)
+        r'void\s+' + re.escape(method_name) +    # void cleanup
+        r'\s*\([^)]*\)\s*'                       # ()
+        r'\{'                                     # Opening {
+        r'([^}]*)'                               # Method body (capture group 1)
+        r'\}'                                     # Closing }
+    )
+
+    match = re.search(pattern, content, re.DOTALL | re.MULTILINE)
+
+    if not match:
+        return False  # Methode nicht gefunden - nicht leer
+
+    method_body = match.group(1)
+
+    # Entferne alle Kommentare (// und /* */)
+    # 1. Entferne // Kommentare
+    body_without_line_comments = re.sub(r'//.*?$', '', method_body, flags=re.MULTILINE)
+
+    # 2. Entferne /* */ Kommentare
+    body_without_all_comments = re.sub(r'/\*.*?\*/', '', body_without_line_comments, flags=re.DOTALL)
+
+    # 3. Entferne alle Whitespace (Spaces, Tabs, Newlines)
+    body_cleaned = body_without_all_comments.strip()
+
+    # Wenn nach Entfernung aller Kommentare und Whitespace nichts übrig ist → leer
+    return len(body_cleaned) == 0
 
 
 def analyze_test_file(file_path: Path) -> TestAnalysis:
@@ -101,6 +155,7 @@ def analyze_test_file(file_path: Path) -> TestAnalysis:
 
     # Finde cleanup-Methode
     cleanup_method = ""
+    cleanup_is_empty = False
     cleanup_match = re.search(
         r'@AfterEach[^}]*?void\s+(\w+)\s*\([^)]*\)\s*\{',
         content,
@@ -108,6 +163,8 @@ def analyze_test_file(file_path: Path) -> TestAnalysis:
     )
     if cleanup_match:
         cleanup_method = cleanup_match.group(1)
+        # Prüfe ob cleanup-Methode leer ist (nur Kommentare/Whitespace)
+        cleanup_is_empty = is_cleanup_method_empty(content, cleanup_method)
 
     return TestAnalysis(
         file_path=file_path,
@@ -118,7 +175,8 @@ def analyze_test_file(file_path: Path) -> TestAnalysis:
         has_after_each_cleanup=has_after_each,
         has_before_each_transactional=has_before_each_transactional,
         injected_types=injected_types,
-        cleanup_method=cleanup_method
+        cleanup_method=cleanup_method,
+        cleanup_is_empty=cleanup_is_empty
     )
 
 
@@ -185,7 +243,10 @@ def main():
         # Gruppiere nach Kategorie
         by_category = defaultdict(list)
         for v in violations:
-            if v.has_inject_repository:
+            # NEU: Leere Cleanup-Methode hat höchste Priorität
+            if v.cleanup_is_empty:
+                by_category["⚠️  Leere Cleanup-Methode (nur Kommentare)"].append(v)
+            elif v.has_inject_repository:
                 by_category["Repository Inject"].append(v)
             elif v.has_inject_entity_manager:
                 by_category["EntityManager Inject"].append(v)
@@ -205,6 +266,8 @@ def main():
 
                 print(f"     Grund: ", end="")
                 reasons = []
+                if test.cleanup_is_empty:
+                    reasons.append("@AfterEach cleanup() ist leer (nur Kommentare/Whitespace)")
                 if test.has_inject_repository:
                     reasons.append("Repository Inject")
                 if test.has_inject_entity_manager:

@@ -54,8 +54,14 @@ public class OpportunityServiceConvertToCustomerTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
-    // No test_marker column exists in opportunities/customers tables
+    // Step 1: Delete opportunities first (FK constraint: opportunities.customer_id -> customers.id)
+    opportunityRepository.deleteAll();
+
+    // Step 2: Delete customers (pattern: [TEST-OPP-CONV]%)
+    customerRepository.delete("companyName LIKE ?1", "[TEST-OPP-CONV]%");
+
+    // Step 3: Delete leads (pattern: [TEST-OPP-CONV]%)
+    Lead.delete("companyName LIKE ?1", "[TEST-OPP-CONV]%");
   }
 
   private Opportunity testOpportunity;

@@ -25,9 +25,12 @@ public class RlsRoleConsistencyTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Reset GUC variables to default state
-    // Note: GUCs are transaction-scoped and auto-reset after each test
-    // This is a safety net for test isolation
+    // Reset GUC variables to default state for test isolation
+    // GUCs are transaction-scoped and auto-reset after each test
+    // Explicitly reset to ensure clean state for next test
+    // Note: Quoted identifiers required for GUC variables with dot notation
+    em.createNativeQuery("RESET \"app.current_user\"").executeUpdate();
+    em.createNativeQuery("RESET \"app.current_role\"").executeUpdate();
   }
 
   @Test

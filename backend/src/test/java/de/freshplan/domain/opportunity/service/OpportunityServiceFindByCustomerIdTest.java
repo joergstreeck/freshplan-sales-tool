@@ -60,8 +60,12 @@ public class OpportunityServiceFindByCustomerIdTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
-    // No test_marker column exists in opportunities/customers tables
+    // Step 1: Delete opportunities first (FK constraint: opportunities.customer_id -> customers.id)
+    // Pattern: name LIKE '[TEST-CUST-OPP]%'
+    opportunityRepository.delete("name LIKE ?1", "[TEST-CUST-OPP]%");
+
+    // Step 2: Delete customers (pattern: [TEST-CUST-OPP]%)
+    customerRepository.delete("companyName LIKE ?1", "[TEST-CUST-OPP]%");
   }
 
   private Customer testCustomer;

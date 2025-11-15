@@ -72,8 +72,22 @@ public class OpportunityServiceStageTransitionTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Cleanup handled by @BeforeEach setUp() which calls repository.deleteAll()
-    // No test_marker column exists in opportunities/customers/users tables
+    // Step 1: Delete opportunities first (FK constraints to customers/users)
+    // Pattern: name LIKE 'Test Opportunity%' OR companyName LIKE 'Test Company %'
+    opportunityRepository.delete(
+        "name LIKE ?1 OR name LIKE ?2 OR name LIKE ?3 OR name LIKE ?4",
+        "Test Opportunity%",
+        "%Opportunity%",
+        "%Ping Pong%",
+        "%Skip Return%");
+
+    // Step 2: Delete customers (created via CustomerTestDataFactory)
+    // Pattern: companyName LIKE 'Test Company %' AND isTestData = true
+    customerRepository.delete("companyName LIKE ?1 AND isTestData = true", "Test Company %");
+
+    // Step 3: Delete users (created via UserTestDataFactory)
+    // Pattern: username LIKE 'stagetest-%'
+    userRepository.delete("username LIKE ?1", "stagetest-%");
   }
 
   private Customer testCustomer;
