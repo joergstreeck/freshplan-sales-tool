@@ -65,9 +65,26 @@ class LeadConvertServiceTest {
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
-    // Sprint 2.1.7.4: DELETE Opportunities FIRST (FK to leads + chk_opportunity_has_source)
+    // DEFENSIVE CLEANUP: Remove stale data from previous crashed/interrupted runs
+    // This ensures tests are robust even if @AfterEach wasn't executed
+    // Delete in correct order (FK constraints!)
+
+    // Step 1: Delete Opportunities (FK to customers + leads)
     em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
+    // Step 2: Delete customer_addresses → customer_locations → customers (CUSTOM-* pattern)
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN "
+                + "(SELECT id FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%'))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%')")
+        .executeUpdate();
+    customerRepository.delete("customerNumber LIKE 'CUSTOM-%'");
+
+    // Step 3: Delete Lead-related data
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
