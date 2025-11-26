@@ -25,6 +25,7 @@ import { TextAreaField } from './fieldTypes/TextAreaField';
 import { EnumField } from './fieldTypes/EnumField';
 import { GroupField } from './fieldTypes/GroupField';
 import { ArrayField } from './fieldTypes/ArrayField';
+import { BooleanField } from './fieldTypes/BooleanField';
 import { getVisibleFields } from '../../utils/conditionEvaluator';
 import { getFieldSize } from '../../utils/fieldSizeCalculator';
 import { useCustomerFieldTheme } from '../../theme';
@@ -56,6 +57,8 @@ interface DynamicFieldRendererProps {
   readOnly?: boolean;
   /** Current wizard step (for step-based filtering) */
   currentStep?: string;
+  /** Force adaptive layout override (true=adaptive, false=grid, undefined=theme) */
+  useAdaptiveLayout?: boolean;
 }
 
 /**
@@ -73,9 +76,11 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   loading = false,
   readOnly = false,
   currentStep,
+  useAdaptiveLayout: useAdaptiveLayoutProp,
 }) => {
   const { theme } = useCustomerFieldTheme();
-  const useAdaptiveLayout = theme.darstellung === 'anpassungsfähig';
+  // Prop überschreibt Theme-Einstellung (undefined = Theme-basiert)
+  const useAdaptiveLayout = useAdaptiveLayoutProp ?? theme.darstellung === 'anpassungsfähig';
 
   // Size mapping für deutsche CSS-Klassen
   const sizeMap: Record<string, string> = {
@@ -157,6 +162,10 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
       case 'ENUM':
         fieldComponent = <EnumField {...commonProps} />;
         break;
+
+      case 'BOOLEAN':
+        // BooleanField hat eigenes Label via FormControlLabel - kein FieldWrapper nötig!
+        return <BooleanField {...commonProps} />;
 
       case 'GROUP':
         fieldComponent = (

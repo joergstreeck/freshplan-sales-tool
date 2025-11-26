@@ -24,7 +24,6 @@ import {
   Snackbar,
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
-import CheckIcon from '@mui/icons-material/Check';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useLocationServicesStore } from '../../stores/locationServicesStore';
 import { LocationProgress } from '../location/LocationProgress';
@@ -216,34 +215,28 @@ export const Step4AngebotServices: React.FC = () => {
         </>
       )}
 
-      {/* Navigation Buttons */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-        <Button
-          onClick={() => handleNavigate(currentLocationIndex - 1)}
-          disabled={currentLocationIndex === 0}
-        >
-          Zurück
-        </Button>
+      {/* Internal Navigation für Multi-Location (zwischen Standorten) */}
+      {locations.length > 1 && (
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
+          <Button
+            onClick={() => handleNavigate(currentLocationIndex - 1)}
+            disabled={currentLocationIndex === 0}
+          >
+            ← Vorheriger Standort
+          </Button>
 
-        <Button onClick={handleSaveAndContinueLater} startIcon={<SaveIcon />} variant="outlined">
-          Speichern & später fortsetzen
-        </Button>
+          <Button onClick={handleSaveAndContinueLater} startIcon={<SaveIcon />} variant="outlined">
+            Speichern & später fortsetzen
+          </Button>
 
-        <Button
-          onClick={() => {
-            if (isLastLocation || canProceed) {
-              // Wizard completion will be handled by parent
-            } else {
-              handleNavigate(currentLocationIndex + 1);
-            }
-          }}
-          variant="contained"
-          disabled={!currentLocation}
-          endIcon={canProceed ? <CheckIcon /> : undefined}
-        >
-          {isLastLocation ? 'Wizard abschließen' : 'Weiter →'}
-        </Button>
-      </Box>
+          <Button
+            onClick={() => handleNavigate(currentLocationIndex + 1)}
+            disabled={isLastLocation}
+          >
+            Nächster Standort →
+          </Button>
+        </Box>
+      )}
 
       {/* Success Alert */}
       {canProceed && (

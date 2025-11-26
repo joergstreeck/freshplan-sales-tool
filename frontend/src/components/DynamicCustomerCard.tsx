@@ -119,7 +119,10 @@ export const DynamicCustomerCard: React.FC<DynamicCustomerCardProps> = ({ schema
   return (
     <Card
       sx={{
-        mb: 2,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         border: '1px solid',
         borderColor: 'divider',
       }}
@@ -147,7 +150,7 @@ export const DynamicCustomerCard: React.FC<DynamicCustomerCardProps> = ({ schema
       />
 
       {!isCardCollapsed && (
-        <CardContent>
+        <CardContent sx={{ flexGrow: 1 }}>
           {sections.map(section => {
             const {
               sectionId,

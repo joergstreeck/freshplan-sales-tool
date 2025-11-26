@@ -107,7 +107,10 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
     try {
       if (selectedContact?.id) {
         // Update existing contact (direct HTTP call - can't use hook conditionally!)
-        await httpClient.put(`/api/customers/${customerId}/contacts/${selectedContact.id}`, contactData);
+        await httpClient.put(
+          `/api/customers/${customerId}/contacts/${selectedContact.id}`,
+          contactData
+        );
         // Invalidate cache to trigger refetch
         queryClient.invalidateQueries({ queryKey: ['customers', customerId, 'contacts'] });
       } else {
@@ -163,13 +166,6 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
 
   return (
     <Box>
-      {/* Info Banner */}
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2">
-          <strong>Tab "Verlauf":</strong> Kontaktverwaltung und Kommunikationshistorie (Timeline).
-        </Typography>
-      </Alert>
-
       {/* Section 1: Ansprechpartner */}
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

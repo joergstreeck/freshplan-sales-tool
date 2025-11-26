@@ -69,10 +69,10 @@ export const CustomerDetailTabFirma: React.FC<CustomerDetailTabFirmaProps> = ({ 
 
   return (
     <Box>
-      {/* 2-Column Grid Layout */}
-      <Grid container spacing={2}>
+      {/* 2-Column Grid Layout with equal height cards */}
+      <Grid container spacing={2} sx={{ alignItems: 'stretch' }}>
         {sortedCards.map(schema => (
-          <Grid key={schema.cardId} size={{ xs: 12, md: 6 }}>
+          <Grid key={schema.cardId} size={{ xs: 12, md: 6 }} sx={{ display: 'flex' }}>
             <DynamicCustomerCard schema={schema} customerId={customerId} />
           </Grid>
         ))}

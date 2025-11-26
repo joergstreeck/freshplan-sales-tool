@@ -223,14 +223,14 @@ export const Step2HerausforderungenPotenzialV3: React.FC = () => {
               </Typography>
             )}
 
-            {/* Fields in this section */}
+            {/* Fields in this section - Grid Layout für Backend-gridCols */}
             <DynamicFieldRenderer
               fields={section.fields}
               values={customerData}
               errors={validationErrors}
               onChange={handleFieldChange}
               onBlur={handleFieldBlur}
-              useAdaptiveLayout={true}
+              useAdaptiveLayout={false}
             />
           </Box>
 

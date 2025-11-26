@@ -198,7 +198,7 @@ export const GroupField: React.FC<GroupFieldProps> = ({
           const gridCols = nestedField.gridCols || 12;
 
           return (
-            <Grid key={getFieldKey(nestedField)} size={{ xs: 12, sm: gridCols }}>
+            <Grid key={getFieldKey(nestedField)} size={{ xs: 12, md: gridCols }}>
               {renderNestedField(nestedField)}
             </Grid>
           );

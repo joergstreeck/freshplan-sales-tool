@@ -162,14 +162,14 @@ export const Step1BasisFilialstruktur: React.FC = () => {
               </Typography>
             )}
 
-            {/* Fields in this section */}
+            {/* Fields in this section - Grid Layout für Backend-gridCols */}
             <DynamicFieldRenderer
               fields={section.fields}
               values={customerData}
               errors={validationErrors}
               onChange={handleFieldChange}
               onBlur={handleFieldBlur}
-              useAdaptiveLayout={true}
+              useAdaptiveLayout={false}
             />
 
             {/* Business Logic: Chain Potential Indicator */}
