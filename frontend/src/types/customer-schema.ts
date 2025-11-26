@@ -161,6 +161,34 @@ export interface FieldDefinition {
    * Only relevant if showInWizard = true
    */
   showDividerAfter?: boolean;
+
+  // ========== CONDITIONAL VISIBILITY (Sprint 2.1.7.7) ==========
+
+  /**
+   * Conditional visibility: Field key to check
+   *
+   * Sprint 2.1.7.7: Server-Driven Conditional Fields
+   *
+   * This field is only visible when another field has a specific value.
+   *
+   * Example: branchCount is only visible when isChain = true
+   *
+   * Usage: visibleWhenField = "isChain", visibleWhenValue = "true"
+   */
+  visibleWhenField?: string;
+
+  /**
+   * Conditional visibility: Expected value
+   *
+   * Sprint 2.1.7.7: Server-Driven Conditional Fields
+   *
+   * The value that visibleWhenField must have for this field to be visible.
+   *
+   * For BOOLEAN fields: "true" or "false"
+   * For ENUM fields: the enum value (e.g. "ja", "nein")
+   * For TEXT fields: exact string match
+   */
+  visibleWhenValue?: string;
 }
 
 /**

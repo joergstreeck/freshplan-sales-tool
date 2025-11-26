@@ -11,11 +11,11 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (99% complete)
-- **Current Sprint:** 🚧 Sprint 2.1.7.x - fieldCatalog.json Migration COMPLETE ✅ (26.11.2025) - **Bereit für User-Testing**
-- **Next Sprint:** 📋 Sprint 2.1.7.7 - Multi-Location Management (30h, 3-4 Tage) ⏳ **FORTSETZEN nach User-Testing**
-- **Active Branch:** feature/sprint-2-1-7-7-multi-location-management (fieldCatalog.json Migration COMPLETE)
+- **Current Sprint:** ✅ Sprint 2.1.7.7 - **Multi-Location UI Integration COMPLETE** (2025-11-26)
+- **Status:** ✅ UI Integration erledigt - Bereit für User-Testing!
+- **Active Branch:** feature/sprint-2-1-7-7-multi-location-management
 - **Progress:** 28/36 PRs completed - 78% done
-- **Blockers:** ❌ Keine - **User-Testing Multi-Location-Management ausstehend**
+- **Blockers:** ❌ Keine - Ready for testing
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Sprint 2.1.7.2 - Customer-Management + Xentral-Integration MERGED (31.10.2025)** - PR #144 + 946/946 Tests GREEN
@@ -35,7 +35,12 @@
   - ✅ **CI STATUS:** 20/20 Workflows GREEN ✅
   - ✅ **DESIGN SYSTEM:** 100% FreshFoodz CI V2 Compliance
   - ✅ **MERGE:** 2025-10-31 21:50:20 UTC (squash merge, commit 9dfe8b93c)
-- **Next Action:** 🎯 **SPRINT 2.1.7.7 STARTEN** - Multi-Location Management (nutzt hierarchyType aus Sprint 2.1.7.2)
+- **Next Action:** 🎯 **USER-TESTING:**
+  1. ✅ CustomerDetailPage: Tab "Filialen" für HEADQUARTER hinzugefügt
+  2. ✅ HierarchyDashboard in Tab eingebunden
+  3. ✅ CreateBranchDialog eingebunden (Button "Neue Filiale")
+  4. ✅ CreateOpportunityForCustomerDialog: Branch-Dropdown für HEADQUARTER
+  5. 🧪 **Jetzt: User-Testing des Multi-Location Flows**
 
   **WICHTIG:** Sprint-Reihenfolge geändert! Sprint 2.1.7.4 MUSS VOR Sprint 2.1.7.2 implementiert werden!
 

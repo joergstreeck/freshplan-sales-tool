@@ -160,14 +160,64 @@ public class ContactRepository implements PanacheRepositoryBase<CustomerContact,
   // ========== EXISTING METHODS ==========
 
   /**
-   * Find contacts assigned to a specific location
+   * Find contacts assigned to a specific location (legacy single-location)
    *
    * @param locationId the location ID
    * @return list of contacts assigned to the location
+   * @deprecated Use findByLocationIdMulti for multi-location support
    */
+  @Deprecated
   public List<CustomerContact> findByLocationId(UUID locationId) {
     return find(
             "assignedLocation.id = ?1 and isActive = true order by lastName, firstName", locationId)
+        .list();
+  }
+
+  // ========== SPRINT 2.1.7.7: MULTI-LOCATION QUERIES ==========
+
+  /**
+   * Find contacts assigned to a specific location (Multi-Location aware). Includes: - Contacts with
+   * responsibilityScope = 'ALL' - Contacts with responsibilityScope = 'SPECIFIC' AND location in
+   * assignedLocations
+   *
+   * @param locationId the location ID
+   * @return list of contacts responsible for this location
+   */
+  public List<CustomerContact> findByLocationIdMulti(UUID locationId) {
+    return getEntityManager()
+        .createQuery(
+            """
+            SELECT DISTINCT c FROM CustomerContact c
+            LEFT JOIN c.assignedLocations al
+            WHERE c.isActive = true
+            AND c.customer.id = (SELECT loc.customer.id FROM CustomerLocation loc WHERE loc.id = :locationId)
+            AND (
+                c.responsibilityScope = 'ALL'
+                OR (c.responsibilityScope = 'SPECIFIC' AND al.id = :locationId)
+            )
+            ORDER BY c.lastName, c.firstName
+            """,
+            CustomerContact.class)
+        .setParameter("locationId", locationId)
+        .getResultList();
+  }
+
+  /**
+   * Find contacts by customer that have specific location assignments.
+   *
+   * @param customerId the customer ID
+   * @param responsibilityScope filter by scope ('ALL' or 'SPECIFIC'), null for all
+   * @return list of contacts
+   */
+  public List<CustomerContact> findByCustomerIdAndScope(
+      UUID customerId, String responsibilityScope) {
+    if (responsibilityScope == null) {
+      return findByCustomerId(customerId);
+    }
+    return find(
+            "customer.id = ?1 and isActive = true and responsibilityScope = ?2 order by isPrimary desc, lastName, firstName",
+            customerId,
+            responsibilityScope)
         .list();
   }
 

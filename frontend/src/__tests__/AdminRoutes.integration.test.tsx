@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/auth/ProtectedRoute';
@@ -35,7 +35,7 @@ const AuditDashboardMock = () => <div data-testid="audit-dashboard">Audit Dashbo
 const UnauthorizedPage = () => <div data-testid="unauthorized">Keine Berechtigung</div>;
 
 // Helper function to render routes with QueryClient
-const renderWithRoutes = (initialRoute: string, userConfig: any) => {
+const renderWithRoutes = (initialRoute: string, userConfig: ReturnType<typeof useAuth>) => {
   mockUseAuth.mockReturnValue(userConfig);
   vi.mocked(featureFlags.isFeatureEnabled).mockReturnValue(false); // Disable authBypass
 

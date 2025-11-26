@@ -60,9 +60,7 @@ const renderWithProviders = (component: React.ReactElement) => {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        {component}
-      </MemoryRouter>
+      <MemoryRouter>{component}</MemoryRouter>
     </QueryClientProvider>
   );
 };
@@ -123,7 +121,7 @@ describe('LeadsPage - RBAC Stop-the-Clock Button', () => {
       user: { id: '1', name: 'Sales User', roles: ['sales'] },
       isAuthenticated: true,
       isLoading: false,
-      hasRole: (role: string) => false, // Sales has no ADMIN/MANAGER role
+      hasRole: (_role: string) => false, // Sales has no ADMIN/MANAGER role
       token: 'mock-token',
       login: vi.fn(),
       logout: vi.fn(),
@@ -146,7 +144,7 @@ describe('LeadsPage - RBAC Stop-the-Clock Button', () => {
       user: { id: '1', name: 'No Role User', roles: [] },
       isAuthenticated: true,
       isLoading: false,
-      hasRole: (role: string) => false,
+      hasRole: (_role: string) => false,
       token: 'mock-token',
       login: vi.fn(),
       logout: vi.fn(),

@@ -80,10 +80,13 @@ export default function CustomersPage({
   // Create fast lookup map (O(1) statt O(n) mit .find())
   const businessTypeLabels = useMemo(() => {
     if (!businessTypeOptions) return {};
-    return businessTypeOptions.reduce((acc, item) => {
-      acc[item.value] = item.label;
-      return acc;
-    }, {} as Record<string, string>);
+    return businessTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }, [businessTypeOptions]);
 
   // Column Configuration mit Server-Driven Labels
@@ -91,15 +94,16 @@ export default function CustomersPage({
     const columns = getCustomerTableColumns();
 
     // Apply user column preferences if available
-    const columnsWithPreferences = activeColumns.length > 0
-      ? columns.map(col => {
-          const userCol = activeColumns.find(uc => uc.id === col.id);
-          if (userCol) {
-            return { ...col, visible: userCol.visible };
-          }
-          return col;
-        })
-      : columns;
+    const columnsWithPreferences =
+      activeColumns.length > 0
+        ? columns.map(col => {
+            const userCol = activeColumns.find(uc => uc.id === col.id);
+            if (userCol) {
+              return { ...col, visible: userCol.visible };
+            }
+            return col;
+          })
+        : columns;
 
     // Override industry column with Server-Driven labels
     // Note: customer.industry is DEPRECATED, should migrate to customer.businessType
@@ -108,7 +112,7 @@ export default function CustomersPage({
         return {
           ...col,
           render: (customer: CustomerResponse) =>
-            businessTypeLabels[customer.industry || ''] || customer.industry || '-'
+            businessTypeLabels[customer.industry || ''] || customer.industry || '-',
         };
       }
       return col;
@@ -214,14 +218,16 @@ export default function CustomersPage({
   }, [filterConfig, sortConfig]);
 
   // Determine if structured filters are active
-  const hasStructuredFilters =
+  // WICHTIG: Boolean() um sicherzustellen, dass enabled ein Boolean ist (React Query Requirement)
+  const hasStructuredFilters = Boolean(
     filterConfig.status?.length ||
-    filterConfig.industry?.length ||
-    filterConfig.riskLevel?.length ||
-    filterConfig.hasContacts !== null ||
-    filterConfig.lastContactDays !== null ||
-    filterConfig.revenueRange !== null ||
-    filterConfig.createdDays !== null;
+      filterConfig.industry?.length ||
+      filterConfig.riskLevel?.length ||
+      filterConfig.hasContacts !== null ||
+      filterConfig.lastContactDays !== null ||
+      filterConfig.revenueRange !== null ||
+      filterConfig.createdDays !== null
+  );
 
   // Data loading: Server-side if structured filters, otherwise client-side
   const pageSize = 50;
@@ -305,8 +311,7 @@ export default function CustomersPage({
 
       if (filterConfig.revenueRange) {
         filtered = filtered.filter(c => {
-          if (c.expectedAnnualVolume === null || c.expectedAnnualVolume === undefined)
-            return false;
+          if (c.expectedAnnualVolume === null || c.expectedAnnualVolume === undefined) return false;
           const { min, max } = filterConfig.revenueRange || {};
           if (min !== null && min !== undefined && c.expectedAnnualVolume < min) return false;
           if (max !== null && max !== undefined && c.expectedAnnualVolume > max) return false;

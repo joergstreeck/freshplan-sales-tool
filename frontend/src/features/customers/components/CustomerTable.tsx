@@ -12,7 +12,6 @@ import {
   Typography,
   TablePagination,
   IconButton,
-  Collapse,
   useTheme,
 } from '@mui/material';
 import { format } from 'date-fns';
@@ -25,10 +24,7 @@ import {
   getCustomerStatusColor,
 } from '../../customer/types/customer.types';
 import type { ColumnConfig } from '../types/filter.types';
-import {
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 interface CustomerTableProps {
   customers: CustomerResponse[];
@@ -215,7 +211,10 @@ export function CustomerTable({
                         case 'industry':
                           return customer.industry ? industryLabels[customer.industry] : '-';
                         case 'businessType':
-                          return (customer as any).businessType || '-';
+                          return (
+                            (customer as CustomerResponse & { businessType?: string })
+                              .businessType || '-'
+                          );
                         case 'status': {
                           const statusValue = customer.status as keyof typeof customerStatusLabels;
                           const statusColor = getCustomerStatusColor(statusValue, theme);

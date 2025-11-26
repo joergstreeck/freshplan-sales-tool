@@ -1,7 +1,7 @@
 // Sprint 2.1.5 Frontend Phase 2 - LeadWizard Integration Tests (MSW-based)
 // Test Coverage: Progressive Flow, DSGVO Consent Validation, Stage-Transition Rules
 
-import { describe, it, expect, vi, beforeEach, afterEach, beforeAll, afterAll } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach, beforeAll } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import userEvent from '@testing-library/user-event';
@@ -235,7 +235,8 @@ beforeAll(() => {
                   label: 'Kettenbetrieb',
                   type: 'BOOLEAN',
                   gridCols: 6,
-                  helpText: 'Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)',
+                  helpText:
+                    'Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)',
                 },
               ],
             },
@@ -575,7 +576,9 @@ describe('LeadWizard - Progressive Profiling Integration Tests', () => {
       });
 
       // Final submit button should be visible (Karte 2: Qualifizierung speichern)
-      expect(screen.getByRole('button', { name: /qualifizierung abschließen/i })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /qualifizierung abschließen/i })
+      ).toBeInTheDocument();
     }, 10000); // Increase timeout to 10s for slow enum loading
 
     it('should allow navigating back from Stage 2 → 1 → 0 without losing data', async () => {

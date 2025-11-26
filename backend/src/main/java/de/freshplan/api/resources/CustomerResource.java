@@ -871,12 +871,13 @@ public class CustomerResource {
    *   <li>New branch will have hierarchyType = FILIALE
    *   <li>Branch inherits xentral_customer_id from parent
    *   <li>Branch starts with status = PROSPECT (unless specified otherwise)
+   *   <li>Creates primary Location with Address if address data provided
    * </ul>
    *
    * <p><strong>Authorization:</strong> Roles {@code admin}, {@code manager} are authorized.
    *
    * @param headquarterId UUID of the parent HEADQUARTER customer
-   * @param request CreateCustomerRequest with branch details (companyName, address, etc.)
+   * @param request CreateBranchRequest with branch details (companyName, address, contact)
    * @return 201 Created with branch CustomerResponse
    * @throws InvalidHierarchyException if parent is not a HEADQUARTER
    * @throws CustomerNotFoundException if parent customer not found
@@ -897,7 +898,8 @@ public class CustomerResource {
     @APIResponse(responseCode = "403", description = "Forbidden - admin or manager role required")
   })
   public Response createBranch(
-      @PathParam("id") UUID headquarterId, @Valid CreateCustomerRequest request) {
+      @PathParam("id") UUID headquarterId,
+      @Valid de.freshplan.domain.customer.service.dto.CreateBranchRequest request) {
 
     log.info(
         "Creating branch for headquarter {} (user: {})", headquarterId, currentUser.getUsername());

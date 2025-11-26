@@ -31,7 +31,7 @@ describe('NavigationItem - RBAC SubItems Filtering', () => {
   });
 
   // Helper function to render NavigationItem with Router context
-  const renderNavigationItem = (props: any) => {
+  const renderNavigationItem = (props: Parameters<typeof NavigationItem>[0]) => {
     return render(
       <MemoryRouter>
         <NavigationItem {...props} />

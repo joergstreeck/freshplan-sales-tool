@@ -1,6 +1,7 @@
 /**
  * CreateOpportunityForCustomerDialog Component
  * Sprint 2.1.7.3 - Customer → Opportunity Conversion (Bestandskunden-Workflow)
+ * Sprint 2.1.7.7 - Multi-Location: Branch-Dropdown für HEADQUARTER-Kunden
  *
  * @description MUI Dialog für Opportunity-Erstellung aus aktiven Kunden
  * @features
@@ -8,6 +9,7 @@
  * - 3-Tier Fallback: actualAnnualVolume > expectedAnnualVolume > 0
  * - Automatische Berechnung: baseVolume × multiplier
  * - Default: SORTIMENTSERWEITERUNG (Bestandskunden-Workflow)
+ * - Branch-Dropdown für HEADQUARTER-Kunden (Sprint 2.1.7.7)
  *
  * @since 2025-10-19
  */
@@ -44,8 +46,11 @@ import CalculateIcon from '@mui/icons-material/Calculate';
 import { httpClient } from '../../../lib/apiClient';
 import { OpportunityType } from '../types/opportunity.types';
 import type { CustomerResponse } from '../../customer/types/customer.types';
+import { CustomerHierarchyType } from '../../customer/types/customer.types';
 import { useEnumOptions } from '../../../hooks/useEnumOptions';
+import { useGetBranches } from '../../customer/api/customerQueries';
 import { useMemo } from 'react';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 
 interface CreateOpportunityForCustomerDialogProps {
   open: boolean;
@@ -115,10 +120,7 @@ function getBaseVolume(customer: CustomerResponse): number {
  * Generate default description for Opportunity
  * (Server-Driven: typeLabel kommt vom Backend)
  */
-function generateDefaultDescription(
-  customer: CustomerResponse,
-  typeLabel: string
-): string {
+function generateDefaultDescription(customer: CustomerResponse, typeLabel: string): string {
   const baseVolume = getBaseVolume(customer);
   return `${typeLabel}-Opportunity für Bestandskunde ${customer.companyName}.${
     baseVolume > 0 ? ` Aktuelles Jahresvolumen: ${baseVolume.toLocaleString('de-DE')}€` : ''
@@ -134,6 +136,15 @@ export default function CreateOpportunityForCustomerDialog({
   // Server-Driven Enums (Sprint 2.1.7.7 - Schema-Driven Forms Migration)
   const { data: opportunityTypeOptions } = useEnumOptions('/api/enums/opportunity-types');
 
+  // Sprint 2.1.7.7: Check if customer is HEADQUARTER (can have branches)
+  const isHeadquarter = customer.hierarchyType === CustomerHierarchyType.HEADQUARTER;
+
+  // Sprint 2.1.7.7: Fetch branches for HEADQUARTER customers
+  const { data: branches, isLoading: branchesLoading } = useGetBranches(
+    isHeadquarter ? customer.id : null,
+    isHeadquarter && open
+  );
+
   // Create label lookup map for O(1) lookups
   const opportunityTypeLabels = useMemo(() => {
     if (!opportunityTypeOptions) return {};
@@ -142,7 +153,7 @@ export default function CreateOpportunityForCustomerDialog({
         acc[item.value] = item.label;
         return acc;
       },
-      {} as Record<string, string>,
+      {} as Record<string, string>
     );
   }, [opportunityTypeOptions]);
 
@@ -154,6 +165,10 @@ export default function CreateOpportunityForCustomerDialog({
   const [expectedValue, setExpectedValue] = useState<number | undefined>(undefined);
   const [expectedCloseDate, setExpectedCloseDate] = useState<Date | null>(addDays(new Date(), 60)); // +60 Tage (Bestandskunden-Deals)
   const [description, setDescription] = useState('');
+
+  // Sprint 2.1.7.7: Selected branch for HEADQUARTER customers
+  // "" = Zentrale (Hauptbetrieb), UUID = Specific branch
+  const [selectedBranchId, setSelectedBranchId] = useState<string>('');
 
   // Business-Type-Matrix State
   const [multipliers, setMultipliers] = useState<OpportunityMultiplierResponse[]>([]);
@@ -272,7 +287,9 @@ export default function CreateOpportunityForCustomerDialog({
         description: description.trim() || undefined,
       };
 
-      await httpClient.post(`/api/opportunities/for-customer/${customer.id}`, request);
+      // Sprint 2.1.7.7: Use selected branch ID or customer ID (Zentrale)
+      const targetCustomerId = selectedBranchId || customer.id;
+      await httpClient.post(`/api/opportunities/for-customer/${targetCustomerId}`, request);
 
       // Success!
       onSuccess();
@@ -325,6 +342,7 @@ export default function CreateOpportunityForCustomerDialog({
       setValidationErrors({});
       setMultipliers([]);
       setMultipliersError(null);
+      setSelectedBranchId(''); // Sprint 2.1.7.7: Reset branch selection
       onClose();
     }
   };
@@ -418,6 +436,58 @@ export default function CreateOpportunityForCustomerDialog({
                 ),
               }}
             />
+
+            {/* Sprint 2.1.7.7: Branch Dropdown für HEADQUARTER-Kunden */}
+            {isHeadquarter && (
+              <FormControl fullWidth disabled={isSubmitting || branchesLoading}>
+                <InputLabel>Standort</InputLabel>
+                <Select
+                  value={selectedBranchId}
+                  onChange={e => setSelectedBranchId(e.target.value)}
+                  label="Standort"
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <AccountTreeIcon />
+                    </InputAdornment>
+                  }
+                >
+                  <MenuItem value="">
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <BusinessIcon fontSize="small" color="primary" />
+                      <Typography fontWeight="bold">{customer.companyName} (Zentrale)</Typography>
+                    </Stack>
+                  </MenuItem>
+                  {branchesLoading && (
+                    <MenuItem disabled>
+                      <CircularProgress size={16} sx={{ mr: 1 }} />
+                      <Typography>Lade Filialen...</Typography>
+                    </MenuItem>
+                  )}
+                  {branches?.map(branch => (
+                    <MenuItem key={branch.id} value={branch.id}>
+                      <Stack>
+                        <Typography>{branch.companyName}</Typography>
+                        {branch.city && (
+                          <Typography variant="caption" color="text.secondary">
+                            {branch.city}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </MenuItem>
+                  ))}
+                  {!branchesLoading && branches?.length === 0 && (
+                    <MenuItem disabled>
+                      <Typography variant="body2" color="text.secondary">
+                        Keine Filialen vorhanden
+                      </Typography>
+                    </MenuItem>
+                  )}
+                </Select>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.5 }}>
+                  Wählen Sie den Standort für diese Opportunity
+                </Typography>
+              </FormControl>
+            )}
 
             {/* Opportunity Type Select (Sprint 2.1.7.7 - Server-Driven Enums) */}
             <FormControl fullWidth disabled={isSubmitting}>

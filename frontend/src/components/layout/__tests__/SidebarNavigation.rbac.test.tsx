@@ -234,7 +234,7 @@ describe('SidebarNavigation - RBAC Tests', () => {
       );
 
       // Should only render items that match sales permissions
-      const allMenuItems = screen.queryAllByRole('button');
+      const _allMenuItems = screen.queryAllByRole('button');
 
       // Sales should NOT see admin-only items
       const adminMenu = screen.queryByText('Administration');

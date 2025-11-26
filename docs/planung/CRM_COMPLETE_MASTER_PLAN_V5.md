@@ -161,6 +161,29 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-11-26 19:30 - Sprint 2.1.7.7 - Multi-Location UI Integration COMPLETE
+
+**Kontext:** Backend-Services + Frontend-Komponenten existierten, waren aber nicht in der App eingebunden ("toter Code"). User fragte: "Wo soll das sein?" - Analyse ergab: HierarchyDashboard + CreateBranchDialog wurden nur in Tests importiert.
+
+**Erledigt:**
+- ✅ **CustomerDetailPage.tsx:** Tab "Filialen" mit AccountTreeIcon (nur für HEADQUARTER)
+- ✅ **HierarchyDashboard:** Im Tab 2 eingebunden mit onCreateBranch Callback
+- ✅ **CreateBranchDialog:** State + Dialog am Ende der Seite
+- ✅ **CreateOpportunityForCustomerDialog.tsx:** Branch-Dropdown mit useGetBranches Hook
+  - Zeigt "Zentrale (Hauptbetrieb)" + alle Filialen
+  - Opportunity wird an ausgewählten Branch gesendet
+
+**Architektur:**
+- `isHeadquarter = customer.hierarchyType === CustomerHierarchyType.HEADQUARTER`
+- Tab-Index dynamisch: Filialen=2, Verlauf=3 (wenn HEADQUARTER)
+- `selectedBranchId`: "" = Zentrale, UUID = Branch
+
+**Tests:** TypeScript ✅, Lint ✅
+**Branch:** feature/sprint-2-1-7-7-multi-location-management
+**Status:** ✅ COMPLETE - Bereit für User-Testing
+
+---
+
 ### 2025-11-26 13:21 - Sprint 2.1.7.x - fieldCatalog.json Migration COMPLETE
 
 **Kontext:** fieldCatalog.json → Server-Driven UI Migration vollständig abgeschlossen. User forderte explizit "wir machen es gleich richtig" (Option 2: Full Migration statt Quick-Fix). Blocker war: "ich kann sonst das aktuelle Multi-Location-Management nicht prüfen".
@@ -1938,10 +1961,21 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-**Aktueller Fokus (2025-11-26):**
-1. **User-Testing: Multi-Location-Management** - Service Fields für Hotel/Krankenhaus/Betriebsrestaurant testen (Dynamic field loading from backend). Branch: feature/sprint-2-1-7-7-multi-location-management. Aufwand: ~30min Testing.
-2. **Integration Testing: E2E-Tests aktualisieren** - ServiceFieldsContainer Tests für neue Server-Driven Architecture. Aufwand: ~1-2h.
-3. **Dokumentation: API-Docs** - OpenAPI Spec für /api/locations/service-schema erstellen. Aufwand: ~30min.
+**Aktueller Fokus (2025-11-26): Sprint 2.1.7.7 COMPLETE ✅**
+
+**✅ Multi-Location UI Integration ERLEDIGT:**
+1. ✅ **CustomerDetailPage - Filialen-Tab** - Tab "Filialen" nur für HEADQUARTER
+2. ✅ **CustomerDetailPage - HierarchyDashboard** - Dashboard mit Filial-Übersicht
+3. ✅ **CustomerDetailPage - CreateBranchDialog** - "Neue Filiale anlegen" Dialog
+4. ✅ **CreateOpportunityForCustomerDialog - Branch-Dropdown** - Filiale auswählen bei Opportunities
+
+**Nächste Schritte:**
+1. **User-Testing** - Multi-Location Flow testen (HEADQUARTER anlegen → Filialen → Opportunities)
+2. **Optional: HierarchyTreeView** - Tree-Struktur für große Ketten (>5 Filialen)
+3. **E2E Tests** - Filial-Anlage → Opportunity → Xentral-Sync
+
+**Branch:** feature/sprint-2-1-7-7-multi-location-management
+**Status:** ✅ Bereit für User-Testing
 
 ---
 

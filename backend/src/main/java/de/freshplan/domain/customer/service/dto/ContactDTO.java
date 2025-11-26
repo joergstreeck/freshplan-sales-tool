@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /** Data Transfer Object for Contact entity. Used for API communication with validation rules. */
@@ -49,9 +51,24 @@ public class ContactDTO {
   private boolean isPrimary;
   private boolean isActive = true;
 
-  // Location
+  // Location (Single - DEPRECATED, use assignedLocationIds instead)
   private UUID assignedLocationId;
   private String assignedLocationName; // For display
+
+  // Sprint 2.1.7.7: Multi-Location Assignment
+  /**
+   * Zuständigkeitsbereich des Kontakts. - ALL: Kontakt ist für alle Standorte zuständig (z.B.
+   * Geschäftsführer) - SPECIFIC: Kontakt ist nur für bestimmte Standorte zuständig
+   */
+  private String responsibilityScope = "ALL";
+
+  /** Liste der zugewiesenen Standort-IDs. Nur relevant wenn responsibilityScope = 'SPECIFIC'. */
+  private List<UUID> assignedLocationIds = new ArrayList<>();
+
+  /**
+   * Liste der zugewiesenen Standort-Namen (für Anzeige). Korrespondiert mit assignedLocationIds.
+   */
+  private List<String> assignedLocationNames = new ArrayList<>();
 
   // Relationship Data
   private LocalDate birthday;
@@ -214,6 +231,33 @@ public class ContactDTO {
 
   public void setAssignedLocationName(String assignedLocationName) {
     this.assignedLocationName = assignedLocationName;
+  }
+
+  // Sprint 2.1.7.7: Multi-Location Getters/Setters
+  public String getResponsibilityScope() {
+    return responsibilityScope;
+  }
+
+  public void setResponsibilityScope(String responsibilityScope) {
+    this.responsibilityScope = responsibilityScope;
+  }
+
+  public List<UUID> getAssignedLocationIds() {
+    return assignedLocationIds;
+  }
+
+  public void setAssignedLocationIds(List<UUID> assignedLocationIds) {
+    this.assignedLocationIds =
+        assignedLocationIds != null ? assignedLocationIds : new ArrayList<>();
+  }
+
+  public List<String> getAssignedLocationNames() {
+    return assignedLocationNames;
+  }
+
+  public void setAssignedLocationNames(List<String> assignedLocationNames) {
+    this.assignedLocationNames =
+        assignedLocationNames != null ? assignedLocationNames : new ArrayList<>();
   }
 
   public LocalDate getBirthday() {

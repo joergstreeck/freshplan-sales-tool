@@ -108,12 +108,16 @@ export interface FieldValidation {
 export interface FieldDefinition {
   /** Unique field identifier */
   key: string;
+  /** Server-driven field key (fieldKey) - used in Contact/Location schemas */
+  fieldKey?: string;
   /** Display label (German) */
   label: string;
   /** Entity type this field belongs to */
-  entityType: EntityType | string;
-  /** Field input type */
-  fieldType: FieldType;
+  entityType?: EntityType | string;
+  /** Field input type (legacy format: lowercase) */
+  fieldType?: FieldType;
+  /** Field type (Server-Driven format: UPPERCASE) */
+  type?: string;
   /** Field is required */
   required?: boolean;
   /** Options for select fields */
@@ -134,6 +138,10 @@ export interface FieldDefinition {
   helpText?: string;
   /** Responsive grid sizing */
   gridSize?: GridSize;
+  /** Grid column span (1-12) from Server-Driven schema */
+  gridCols?: number;
+  /** Number of rows for TEXTAREA fields */
+  rows?: number;
   /** Conditional wizard trigger */
   triggerWizardStep?: TriggerCondition;
   /** Generic visibility condition */
@@ -144,6 +152,18 @@ export interface FieldDefinition {
   readonly?: boolean;
   /** Field is disabled */
   disabled?: boolean;
+  /** Enum source endpoint for Server-Driven enums */
+  enumSource?: string;
+  /**
+   * Conditional visibility: Field key to check (Sprint 2.1.7.7)
+   * This field is only visible when another field has a specific value.
+   */
+  visibleWhenField?: string;
+  /**
+   * Conditional visibility: Expected value (Sprint 2.1.7.7)
+   * The value that visibleWhenField must have for this field to be visible.
+   */
+  visibleWhenValue?: string;
 }
 
 /**

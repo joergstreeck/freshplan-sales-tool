@@ -126,15 +126,12 @@ export default function ConvertToCustomerDialog({
     if (open) {
       loadHeadquarterCustomers();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const loadHeadquarterCustomers = async () => {
     setLoadingHeadquarters(true);
     try {
-      const response = await httpClient.get<Customer[]>(
-        '/api/customers?hierarchyType=HEADQUARTER'
-      );
+      const response = await httpClient.get<Customer[]>('/api/customers?hierarchyType=HEADQUARTER');
       setHeadquarterCustomers(response.data || []);
     } catch (error) {
       console.error('Failed to load headquarter customers:', error);
@@ -311,7 +308,9 @@ export default function ConvertToCustomerDialog({
                     ...params.InputProps,
                     endAdornment: (
                       <>
-                        {loadingHeadquarters ? <CircularProgress color="inherit" size={20} /> : null}
+                        {loadingHeadquarters ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
                         {params.InputProps.endAdornment}
                       </>
                     ),
@@ -330,9 +329,7 @@ export default function ConvertToCustomerDialog({
                 </Box>
               )}
               noOptionsText={
-                loadingHeadquarters
-                  ? 'Lade Hauptbetriebe...'
-                  : 'Keine Hauptbetriebe gefunden'
+                loadingHeadquarters ? 'Lade Hauptbetriebe...' : 'Keine Hauptbetriebe gefunden'
               }
               isOptionEqualToValue={(option, value) => option.id === value.id}
             />
@@ -449,9 +446,7 @@ export default function ConvertToCustomerDialog({
           color="primary"
           onClick={handleConvert}
           disabled={
-            loading ||
-            !companyName.trim() ||
-            (hierarchyType === 'FILIALE' && !parentCustomer)
+            loading || !companyName.trim() || (hierarchyType === 'FILIALE' && !parentCustomer)
           }
           startIcon={loading ? <CircularProgress size={20} /> : <CheckCircleIcon />}
         >

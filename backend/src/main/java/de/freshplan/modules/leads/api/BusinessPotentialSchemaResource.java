@@ -157,21 +157,24 @@ public class BusinessPotentialSchemaResource {
                     .placeholder("z.B. 100000")
                     .helpText("Geschätztes jährliches Einkaufsvolumen Lebensmittel/Getränke")
                     .build(),
-                FieldDefinition.builder()
-                    .fieldKey("branchCount")
-                    .label("Anzahl Filialen/Standorte")
-                    .type(FieldType.NUMBER)
-                    .gridCols(6)
-                    .placeholder("z.B. 1")
-                    .helpText("Anzahl Filialen/Standorte (1 = Einzelstandort)")
-                    .build(),
+                // Sprint 2.1.7.7: isChain ZUERST fragen, dann conditional branchCount
                 FieldDefinition.builder()
                     .fieldKey("isChain")
-                    .label("Kettenbetrieb")
+                    .label("Kettenbetrieb / Filialunternehmen?")
                     .type(FieldType.BOOLEAN)
+                    .gridCols(12)
+                    .helpText("Hat das Unternehmen mehrere Standorte mit zentraler Verwaltung?")
+                    .build(),
+                // branchCount NUR sichtbar wenn isChain = true
+                FieldDefinition.builder()
+                    .fieldKey("branchCount")
+                    .label("Anzahl Standorte gesamt")
+                    .type(FieldType.NUMBER)
                     .gridCols(6)
-                    .helpText(
-                        "Ist dies ein Kettenbetrieb? (mehrere Standorte mit zentraler Verwaltung)")
+                    .placeholder("z.B. 5")
+                    .helpText("Gesamtanzahl aller Filialen/Standorte")
+                    .visibleWhenField("isChain")
+                    .visibleWhenValue("true")
                     .build()))
         .collapsible(false)
         .defaultCollapsed(false)

@@ -26,6 +26,7 @@ import { EnumField } from './fieldTypes/EnumField';
 import { GroupField } from './fieldTypes/GroupField';
 import { ArrayField } from './fieldTypes/ArrayField';
 import { BooleanField } from './fieldTypes/BooleanField';
+import { DateField } from './fieldTypes/DateField';
 import { getVisibleFields } from '../../utils/conditionEvaluator';
 import { getFieldSize } from '../../utils/fieldSizeCalculator';
 import { useCustomerFieldTheme } from '../../theme';
@@ -161,6 +162,10 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
 
       case 'ENUM':
         fieldComponent = <EnumField {...commonProps} />;
+        break;
+
+      case 'DATE':
+        fieldComponent = <DateField {...commonProps} />;
         break;
 
       case 'BOOLEAN':

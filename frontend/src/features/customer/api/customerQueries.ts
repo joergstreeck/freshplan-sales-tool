@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { customerApi } from './customerApi';
-import type { CustomerStatus, CustomerResponse } from '../types/customer.types';
+import type { CustomerStatus } from '../types/customer.types';
 
 // Query Keys
 export const customerKeys = {
@@ -96,6 +96,8 @@ export const useGetBranches = (headquarterId: string | null, enabled = true) => 
 /**
  * Hook to create a new branch under a HEADQUARTER
  *
+ * Sprint 2.1.7.7: Vollständiger Wizard mit allen relevanten Feldern
+ *
  * @returns React Query mutation for creating branches
  */
 export const useCreateBranch = () => {
@@ -108,9 +110,25 @@ export const useCreateBranch = () => {
     }: {
       headquarterId: string;
       branchData: {
+        // Basisdaten
         companyName: string;
-        status?: string;
+        tradingName?: string;
+        businessType?: string;
         customerType?: string;
+        status?: string;
+        expectedAnnualVolume?: number;
+        // Adressdaten
+        address?: {
+          street?: string;
+          postalCode?: string;
+          city?: string;
+          country?: string;
+        };
+        // Kontaktdaten
+        contact?: {
+          phone?: string;
+          email?: string;
+        };
       };
     }) => customerApi.createBranch(headquarterId, branchData),
     onSuccess: (newBranch, variables) => {

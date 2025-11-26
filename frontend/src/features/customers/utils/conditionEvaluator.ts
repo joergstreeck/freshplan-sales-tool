@@ -111,9 +111,47 @@ export const shouldShowWizardStep = (
 };
 
 /**
+ * Evaluate Server-Driven visibleWhen condition
+ *
+ * Sprint 2.1.7.7: Server-Driven Conditional Fields
+ *
+ * Checks if visibleWhenField has the expected visibleWhenValue.
+ * Supports BOOLEAN (true/false as string), ENUM, and TEXT fields.
+ *
+ * @param visibleWhenField - The field key to check
+ * @param visibleWhenValue - The expected value (as string)
+ * @param values - Current form values
+ * @returns True if field should be visible
+ */
+export const evaluateVisibleWhen = (
+  visibleWhenField: string,
+  visibleWhenValue: string,
+  values: Record<string, unknown>
+): boolean => {
+  const currentValue = values[visibleWhenField];
+
+  // Handle BOOLEAN fields: Backend sends "true"/"false" as string
+  if (visibleWhenValue === 'true') {
+    return currentValue === true || currentValue === 'true' || currentValue === 'ja';
+  }
+  if (visibleWhenValue === 'false') {
+    return (
+      currentValue === false || currentValue === 'false' || currentValue === 'nein' || !currentValue
+    );
+  }
+
+  // Handle ENUM/TEXT fields: Direct string comparison
+  return String(currentValue) === visibleWhenValue;
+};
+
+/**
  * Get visible fields based on conditions
  *
- * Supports both generic field conditions and wizard step filtering.
+ * Supports:
+ * - Generic field conditions (condition property)
+ * - Wizard step filtering (currentStep parameter)
+ * - Server-driven visibleWhen conditions (Sprint 2.1.7.7)
+ *
  * This is the main function used by DynamicFieldRenderer.
  */
 export const getVisibleFields = (
@@ -127,7 +165,19 @@ export const getVisibleFields = (
       return false;
     }
 
-    // Check generic field visibility conditions
+    // Sprint 2.1.7.7: Server-Driven Conditional Visibility
+    // Check visibleWhenField/visibleWhenValue from backend schema
+    const fieldWithVisibility = field as Record<string, unknown>;
+    const visibleWhenField = fieldWithVisibility.visibleWhenField as string | undefined;
+    const visibleWhenValue = fieldWithVisibility.visibleWhenValue as string | undefined;
+
+    if (visibleWhenField && visibleWhenValue !== undefined) {
+      if (!evaluateVisibleWhen(visibleWhenField, visibleWhenValue, values)) {
+        return false;
+      }
+    }
+
+    // Check generic field visibility conditions (legacy support)
     if (field.condition) {
       return evaluateFieldCondition(field.condition, values);
     }

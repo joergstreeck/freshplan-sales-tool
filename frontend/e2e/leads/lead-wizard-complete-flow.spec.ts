@@ -298,7 +298,10 @@ test.describe('LeadWizard E2E - Complete Flows', () => {
 
     // Wait for successful API response
     const responsePromise = page.waitForResponse(
-      response => response.url().includes('/api/leads') && response.request().method() === 'POST' && response.status() === 201
+      response =>
+        response.url().includes('/api/leads') &&
+        response.request().method() === 'POST' &&
+        response.status() === 201
     );
 
     // Submit
@@ -310,7 +313,7 @@ test.describe('LeadWizard E2E - Complete Flows', () => {
   });
 
   test('should include stage number in API payload', async ({ page }) => {
-    let capturedPayload: any = null;
+    let capturedPayload: unknown = null;
 
     // Override handler to capture payload
     await page.route('**/api/leads', async (route: Route) => {

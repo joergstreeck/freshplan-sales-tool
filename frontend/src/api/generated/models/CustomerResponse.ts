@@ -1,0 +1,62 @@
+/* generated using openapi-typescript-codegen -- do not edit */
+/* istanbul ignore file */
+/* tslint:disable */
+
+import type { BusinessType } from './BusinessType';
+import type { Classification } from './Classification';
+import type { CustomerHierarchyType } from './CustomerHierarchyType';
+import type { CustomerLifecycleStage } from './CustomerLifecycleStage';
+import type { CustomerStatus } from './CustomerStatus';
+import type { CustomerType } from './CustomerType';
+import type { DeliveryCondition } from './DeliveryCondition';
+import type { FinancingType } from './FinancingType';
+import type { LocalDateTime } from './LocalDateTime';
+import type { PartnerStatus } from './PartnerStatus';
+import type { PaymentTerms } from './PaymentTerms';
+export type CustomerResponse = {
+  id?: string;
+  customerNumber?: string;
+  xentralCustomerId?: string;
+  companyName?: string;
+  tradingName?: string;
+  legalForm?: string;
+  customerType?: CustomerType;
+  businessType?: BusinessType;
+  classification?: Classification;
+  parentCustomerId?: string;
+  hierarchyType?: CustomerHierarchyType;
+  childCustomerIds?: Array<string>;
+  hasChildren?: boolean;
+  status?: CustomerStatus;
+  lifecycleStage?: CustomerLifecycleStage;
+  partnerStatus?: PartnerStatus;
+  expectedAnnualVolume?: number;
+  actualAnnualVolume?: number;
+  paymentTerms?: PaymentTerms;
+  creditLimit?: number;
+  deliveryCondition?: DeliveryCondition;
+  riskScore?: number;
+  atRisk?: boolean;
+  lastContactDate?: LocalDateTime;
+  nextFollowUpDate?: LocalDateTime;
+  churnThresholdDays?: number;
+  totalLocationsEU?: number;
+  locationsGermany?: number;
+  locationsAustria?: number;
+  locationsSwitzerland?: number;
+  locationsRestEU?: number;
+  expansionPlanned?: string;
+  primaryFinancing?: FinancingType;
+  painPoints?: Array<string>;
+  isSeasonalBusiness?: boolean;
+  seasonalMonths?: Array<number>;
+  seasonalPattern?: string;
+  contactsCount?: number;
+  createdAt?: LocalDateTime;
+  createdBy?: string;
+  updatedAt?: LocalDateTime;
+  updatedBy?: string;
+  isDeleted?: boolean;
+  deletedAt?: LocalDateTime;
+  deletedBy?: string;
+};

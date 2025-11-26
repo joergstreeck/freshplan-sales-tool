@@ -1,29 +1,24 @@
 /**
- * Create Branch Dialog Component
+ * Create Branch Dialog Component - Server-Driven UI
  *
  * Sprint 2.1.7.7 D4: CreateBranchDialog - Multi-Location Management
  *
- * Dialog zum Anlegen neuer Filialen (FILIALE) unter einem HEADQUARTER-Kunden.
+ * Server-Driven Dialog zum Anlegen neuer Filialen (FILIALE) unter einem HEADQUARTER-Kunden.
+ * Backend ist Single Source of Truth für Field Definitions.
  *
  * Features:
- * - Formular mit companyName (Pflichtfeld), status, customerType
- * - Validierung: companyName erforderlich
+ * - Server-Driven Schema (useBranchSchema)
+ * - Stepper mit 2 Schritten: Basisdaten + Adresse & Kontakt
+ * - DynamicFieldRenderer für dynamisches Rendering
+ * - Vollständige Validierung
  * - POST /api/customers/{headquarterId}/branches
- * - Automatische Verknüpfung mit Headquarter
- * - Automatische Vererbung der xentralCustomerId
- * - Design System konform (MUI Theme, keine hardcoded colors)
- * - Vollständig auf Deutsch
- *
- * Backend Endpoint:
- * - POST /api/customers/{headquarterId}/branches
- * - Body: { companyName, status?, customerType? }
- * - Returns: CustomerResponse mit hierarchyType=FILIALE
+ * - Design System konform (MUI Theme)
  *
  * @author FreshPlan Team
  * @since 2.1.7.7
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box,
   Dialog,
@@ -31,17 +26,18 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
-  MenuItem,
-  Grid,
   Alert,
   useTheme,
   useMediaQuery,
   Typography,
   CircularProgress,
+  Stepper,
+  Step,
+  StepLabel,
 } from '@mui/material';
 import { useCreateBranch } from '../../../customer/api/customerQueries';
-import { useEnumOptions } from '../../../../hooks/useEnumOptions';
+import { useBranchSchema } from '../../../../hooks/useBranchSchema';
+import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 
 interface CreateBranchDialogProps {
   /** Dialog open state */
@@ -50,54 +46,65 @@ interface CreateBranchDialogProps {
   onClose: () => void;
   /** UUID of the parent HEADQUARTER customer */
   headquarterId: string;
+  /** Optional: Name des Headquarters für Anzeige */
+  headquarterName?: string;
   /** Optional success callback */
   onSuccess?: () => void;
 }
 
 /**
- * CreateBranchDialog - Dialog für Filialanlage unter einem Headquarter
+ * Step configuration - maps to backend sections
+ */
+const STEP_CONFIG = [
+  { sectionId: 'basic_info', label: 'Basisdaten' },
+  { sectionId: 'address_contact', label: 'Adresse & Kontakt' },
+] as const;
+
+/**
+ * CreateBranchDialog - Server-Driven Wizard für Filialanlage
  *
- * Validierung:
- * - companyName: Pflichtfeld, min. 2 Zeichen
- * - status: Optional (default: PROSPECT)
- * - customerType: Optional (default: UNTERNEHMEN)
- *
- * Hierarchie:
- * - hierarchyType wird automatisch auf FILIALE gesetzt (Backend)
- * - parentCustomerId wird automatisch gesetzt (Backend)
- * - xentralCustomerId wird vom Parent vererbt (Backend)
+ * Zwei Schritte (from backend schema):
+ * 1. Basisdaten: Firmenname, BusinessType, Status, Umsatz
+ * 2. Adresse & Kontakt: Straße, PLZ, Stadt, Land, Telefon, E-Mail
  */
 export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
   open,
   onClose,
   headquarterId,
+  headquarterName,
   onSuccess,
 }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // ========== ENUM OPTIONS (SERVER-DRIVEN) ==========
-  const { data: customerTypeOptions, isLoading: customerTypeLoading } = useEnumOptions(
-    '/api/enums/customer-types'
-  );
-  const { data: statusOptions, isLoading: statusLoading } = useEnumOptions(
-    '/api/enums/customer-status'
-  );
+  // ========== SERVER-DRIVEN SCHEMA ==========
+  const { data: schemas, isLoading: schemaLoading, isError: schemaError } = useBranchSchema();
+
+  // Get sections from schema
+  const sections = useMemo(() => {
+    if (!schemas || schemas.length === 0) return [];
+    return schemas[0]?.sections || [];
+  }, [schemas]);
+
+  // Get fields for a specific section
+  const getFieldsForSection = (sectionId: string) => {
+    const section = sections.find(s => s.sectionId === sectionId);
+    return section?.fields || [];
+  };
+
+  // ========== STEPPER STATE ==========
+  const [activeStep, setActiveStep] = useState(0);
 
   // ========== FORM STATE ==========
-  const [formData, setFormData] = useState({
-    companyName: '',
-    status: 'PROSPECT',
+  const [formData, setFormData] = useState<Record<string, unknown>>({
     customerType: 'UNTERNEHMEN',
+    status: 'PROSPECT',
+    country: 'DE',
   });
-
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // ========== REACT QUERY MUTATION ==========
   const createBranchMutation = useCreateBranch();
-
-  // ========== LOADING STATE ==========
-  const isLoadingOptions = customerTypeLoading || statusLoading;
 
   // ========== EFFECTS ==========
 
@@ -107,53 +114,166 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
   useEffect(() => {
     if (open) {
       setFormData({
-        companyName: '',
-        status: 'PROSPECT',
         customerType: 'UNTERNEHMEN',
+        status: 'PROSPECT',
+        country: 'DE',
       });
       setErrors({});
+      setActiveStep(0);
     }
   }, [open]);
 
-  // ========== VALIDATION ==========
+  // ========== EVENT HANDLERS ==========
 
   /**
-   * Validate form fields
-   *
-   * Rules:
-   * - companyName: required, min 2 chars
+   * Handle field change from DynamicFieldRenderer
    */
-  const validateForm = (): boolean => {
+  const handleFieldChange = (fieldKey: string, value: unknown) => {
+    setFormData(prev => ({
+      ...prev,
+      [fieldKey]: value,
+    }));
+
+    // Clear error for this field
+    if (errors[fieldKey]) {
+      setErrors(prev => {
+        const next = { ...prev };
+        delete next[fieldKey];
+        return next;
+      });
+    }
+  };
+
+  // ========== STEP VALIDATION ==========
+
+  /**
+   * Validate Step 1: Basisdaten
+   */
+  const validateStep1 = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Company name validation
-    if (!formData.companyName?.trim()) {
+    const companyName = formData.companyName as string;
+    if (!companyName?.trim()) {
       newErrors.companyName = 'Firmenname ist erforderlich';
-    } else if (formData.companyName.trim().length < 2) {
+    } else if (companyName.trim().length < 2) {
       newErrors.companyName = 'Firmenname muss mindestens 2 Zeichen lang sein';
     }
 
-    setErrors(newErrors);
+    if (!formData.businessType) {
+      newErrors.businessType = 'Bitte Geschäftsart auswählen';
+    }
+
+    // Validate expected annual volume if provided
+    const volume = formData.expectedAnnualVolume as string;
+    if (volume) {
+      const numVolume = parseFloat(
+        String(volume)
+          .replace(/[^\d.,]/g, '')
+          .replace(',', '.')
+      );
+      if (isNaN(numVolume) || numVolume < 0) {
+        newErrors.expectedAnnualVolume = 'Bitte gültigen Betrag eingeben';
+      }
+    }
+
+    setErrors(prev => ({ ...prev, ...newErrors }));
     return Object.keys(newErrors).length === 0;
   };
 
-  // ========== EVENT HANDLERS ==========
+  /**
+   * Validate Step 2: Adresse & Kontakt
+   */
+  const validateStep2 = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    const city = formData.city as string;
+    if (!city?.trim()) {
+      newErrors.city = 'Stadt ist erforderlich';
+    }
+
+    if (!formData.country) {
+      newErrors.country = 'Land ist erforderlich';
+    }
+
+    // Validate email if provided
+    const email = formData.email as string;
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      newErrors.email = 'Bitte gültige E-Mail-Adresse eingeben';
+    }
+
+    // Validate postal code for Germany
+    const postalCode = formData.postalCode as string;
+    if (formData.country === 'DE' && postalCode) {
+      if (!/^\d{5}$/.test(postalCode)) {
+        newErrors.postalCode = 'Deutsche PLZ muss 5 Ziffern haben';
+      }
+    }
+
+    setErrors(prev => ({ ...prev, ...newErrors }));
+    return Object.keys(newErrors).length === 0;
+  };
+
+  /**
+   * Validate current step
+   */
+  const validateCurrentStep = (): boolean => {
+    if (activeStep === 0) {
+      return validateStep1();
+    }
+    return validateStep2();
+  };
+
+  // ========== NAVIGATION ==========
+
+  const handleNext = () => {
+    if (validateCurrentStep()) {
+      setActiveStep(prev => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setActiveStep(prev => prev - 1);
+  };
 
   /**
    * Handle form submit
    */
   const handleSubmit = async () => {
-    if (!validateForm()) {
+    if (!validateStep1() || !validateStep2()) {
       return;
     }
 
     try {
+      // Parse expected annual volume
+      let expectedAnnualVolume: number | undefined;
+      const volume = formData.expectedAnnualVolume as string;
+      if (volume) {
+        expectedAnnualVolume = parseFloat(
+          String(volume)
+            .replace(/[^\d.,]/g, '')
+            .replace(',', '.')
+        );
+      }
+
       await createBranchMutation.mutateAsync({
         headquarterId,
         branchData: {
-          companyName: formData.companyName.trim(),
-          status: formData.status,
-          customerType: formData.customerType,
+          companyName: (formData.companyName as string)?.trim(),
+          tradingName: (formData.tradingName as string)?.trim() || undefined,
+          businessType: (formData.businessType as string) || undefined,
+          customerType: formData.customerType as string,
+          status: formData.status as string,
+          expectedAnnualVolume,
+          address: {
+            street: (formData.street as string)?.trim() || undefined,
+            postalCode: (formData.postalCode as string)?.trim() || undefined,
+            city: (formData.city as string)?.trim() || undefined,
+            country: (formData.country as string) || undefined,
+          },
+          contact: {
+            phone: (formData.phone as string)?.trim() || undefined,
+            email: (formData.email as string)?.trim() || undefined,
+          },
         },
       });
 
@@ -163,7 +283,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
     } catch (error) {
       console.error('Error creating branch:', error);
 
-      // Check for specific error messages
       const errorMessage =
         error instanceof Error
           ? error.message
@@ -171,25 +290,6 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
 
       setErrors({
         submit: errorMessage,
-      });
-    }
-  };
-
-  /**
-   * Handle field value change
-   */
-  const handleFieldChange = (field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-
-    // Clear error for this field when user types
-    if (errors[field]) {
-      setErrors(prev => {
-        const next = { ...prev };
-        delete next[field];
-        return next;
       });
     }
   };
@@ -203,16 +303,62 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
     }
   };
 
+  // ========== COMPUTED ==========
+
+  const isLastStep = activeStep === STEP_CONFIG.length - 1;
+  const isFirstStep = activeStep === 0;
+  const companyName = formData.companyName as string;
+  const city = formData.city as string;
+  const canProceed =
+    activeStep === 0
+      ? companyName?.trim()?.length >= 2 && formData.businessType
+      : city?.trim()?.length > 0 && formData.country;
+
   // ========== RENDER ==========
 
+  // Loading state
+  if (schemaLoading) {
+    return (
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogContent>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+            <CircularProgress />
+            <Typography sx={{ ml: 2 }}>Schema wird geladen...</Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Error state
+  if (schemaError) {
+    return (
+      <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+        <DialogContent>
+          <Alert severity="error">
+            Fehler beim Laden des Branch-Schemas. Bitte versuchen Sie es später erneut.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Schließen</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  const currentStep = STEP_CONFIG[activeStep];
+  const fields = getFieldsForSection(currentStep.sectionId);
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth fullScreen={isMobile}>
+    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth fullScreen={isMobile}>
       <DialogTitle>
         <Typography variant="h6" component="div">
           Neue Filiale anlegen
         </Typography>
         <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-          Filiale wird automatisch mit dem Headquarter verknüpft
+          {headquarterName
+            ? `Filiale für "${headquarterName}"`
+            : 'Filiale wird automatisch mit dem Headquarter verknüpft'}
         </Typography>
       </DialogTitle>
 
@@ -224,78 +370,32 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
           </Alert>
         )}
 
-        <Box sx={{ mt: 1 }}>
-          <Grid container spacing={2}>
-            {/* ========== FIRMENNAME (PFLICHTFELD) ========== */}
-            <Grid size={{ xs: 12 }}>
-              <TextField
-                label="Firmenname"
-                value={formData.companyName}
-                onChange={e => handleFieldChange('companyName', e.target.value)}
-                fullWidth
-                required
-                error={!!errors.companyName}
-                helperText={
-                  errors.companyName || 'z.B. "NH Hotel München" oder "Filiale Frankfurt"'
-                }
-                placeholder="Filialname eingeben"
-                autoFocus
-                disabled={createBranchMutation.isPending}
-              />
-            </Grid>
+        {/* Stepper Navigation */}
+        <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
+          {STEP_CONFIG.map(step => {
+            const section = sections.find(s => s.sectionId === step.sectionId);
+            return (
+              <Step key={step.sectionId}>
+                <StepLabel>{section?.title || step.label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
 
-            {/* ========== KUNDENTYP ========== */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                select
-                label="Kundentyp"
-                value={formData.customerType}
-                onChange={e => handleFieldChange('customerType', e.target.value)}
-                fullWidth
-                disabled={createBranchMutation.isPending || isLoadingOptions}
-                helperText="Rechtsform des Kunden"
-              >
-                {isLoadingOptions ? (
-                  <MenuItem value="">
-                    <CircularProgress size={20} />
-                  </MenuItem>
-                ) : (
-                  customerTypeOptions?.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))
-                )}
-              </TextField>
-            </Grid>
+        {/* Step Content - Server-Driven Field Rendering */}
+        <Box sx={{ mt: 2, minHeight: 300 }}>
+          <DynamicFieldRenderer
+            fields={fields}
+            values={formData}
+            errors={errors}
+            onChange={handleFieldChange}
+            onBlur={() => {}}
+            loading={createBranchMutation.isPending}
+          />
+        </Box>
 
-            {/* ========== STATUS ========== */}
-            <Grid size={{ xs: 12, sm: 6 }}>
-              <TextField
-                select
-                label="Status"
-                value={formData.status}
-                onChange={e => handleFieldChange('status', e.target.value)}
-                fullWidth
-                disabled={createBranchMutation.isPending || isLoadingOptions}
-                helperText="Aktueller Status der Filiale"
-              >
-                {isLoadingOptions ? (
-                  <MenuItem value="">
-                    <CircularProgress size={20} />
-                  </MenuItem>
-                ) : (
-                  statusOptions?.map(option => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))
-                )}
-              </TextField>
-            </Grid>
-          </Grid>
-
-          {/* ========== INFO BOX ========== */}
+        {/* Info Box */}
+        {isLastStep && (
           <Alert severity="info" sx={{ mt: 3 }}>
             <Typography variant="body2">
               <strong>Hinweis:</strong> Die Filiale wird automatisch angelegt mit:
@@ -316,20 +416,35 @@ export const CreateBranchDialog: React.FC<CreateBranchDialogProps> = ({
               </li>
             </Box>
           </Alert>
-        </Box>
+        )}
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={handleClose} disabled={createBranchMutation.isPending}>
           Abbrechen
         </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={createBranchMutation.isPending || !formData.companyName.trim()}
-        >
-          {createBranchMutation.isPending ? 'Speichert...' : 'Filiale anlegen'}
-        </Button>
+
+        <Box sx={{ flex: 1 }} />
+
+        {!isFirstStep && (
+          <Button onClick={handleBack} disabled={createBranchMutation.isPending} sx={{ mr: 1 }}>
+            Zurück
+          </Button>
+        )}
+
+        {isLastStep ? (
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={createBranchMutation.isPending || !canProceed}
+          >
+            {createBranchMutation.isPending ? 'Speichert...' : 'Filiale anlegen'}
+          </Button>
+        ) : (
+          <Button onClick={handleNext} variant="contained" disabled={!canProceed}>
+            Weiter
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

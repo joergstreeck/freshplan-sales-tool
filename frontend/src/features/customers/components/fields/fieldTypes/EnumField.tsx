@@ -3,17 +3,13 @@
  *
  * Renders a select field populated from backend enum endpoints.
  * Sprint 2.1.6: Single Source of Truth for enum values.
+ * Sprint 2.1.7.7: Extended for Contact enums (salutations, titles, decision-levels)
  */
 
 import React from 'react';
 import { FormControl, Select, MenuItem, FormHelperText, CircularProgress } from '@mui/material';
 import type { FieldDefinition } from '../../../types/field.types';
-import { useBusinessTypes } from '../../../../../hooks/useBusinessTypes';
-import { useLegalForms } from '../../../../../hooks/useLegalForms';
-import { useCountryCodes } from '../../../../../hooks/useCountryCodes';
-import { useExpansionPlan } from '../../../../../hooks/useExpansionPlan';
-import { useLeadSources } from '../../../../leads/hooks/useLeadSources';
-import { useKitchenSizes } from '../../../../leads/hooks/useKitchenSizes';
+import { useEnumOptions } from '../../../../../hooks/useEnumOptions';
 
 interface EnumFieldProps {
   field: FieldDefinition;
@@ -28,19 +24,19 @@ interface EnumFieldProps {
 }
 
 /**
- * Enum Field
+ * Enum Field - Generic Server-Driven Implementation
  *
- * Maps enumSource to corresponding backend endpoint:
- * - "business-types" → GET /api/enums/business-types
- * - "legal-forms" → GET /api/enums/legal-forms
- * - "country-codes" → GET /api/enums/country-codes
- * - "expansion-plan" → GET /api/enums/expansion-plan
- * - "lead-sources" → GET /api/enums/lead-sources
- * - "kitchen-sizes" → GET /api/enums/kitchen-sizes
+ * Sprint 2.1.7.7: Refactored to use generic useEnumOptions hook.
  *
- * NOTE: React Hooks Rules require ALL hooks to be called unconditionally.
- * We call all 6 hooks, but only use the data for the active enumSource.
- * React Query handles caching, so duplicate requests across components are minimal.
+ * Supports ALL backend enum endpoints dynamically:
+ * - "/api/enums/business-types" → Business Types
+ * - "/api/enums/legal-forms" → Legal Forms
+ * - "/api/enums/salutations" → Contact Salutations
+ * - "/api/enums/titles" → Contact Titles
+ * - "/api/enums/decision-levels" → Contact Decision Levels
+ * - ... and any future enum endpoints
+ *
+ * No need to add new hooks for each enum type!
  */
 export const EnumField: React.FC<EnumFieldProps> = ({
   field,
@@ -53,53 +49,19 @@ export const EnumField: React.FC<EnumFieldProps> = ({
   readOnly,
   required,
 }) => {
-  // Determine which enumSource is active
-  // Parse enumSource: kann "/api/enums/legal-forms" oder "legal-forms" sein
-  const enumSourceRaw = (field as { enumSource?: string }).enumSource || 'business-types';
-  const enumSource = enumSourceRaw.includes('/')
-    ? enumSourceRaw.split('/').pop() || 'business-types'
-    : enumSourceRaw;
+  // Get enumSource from field definition
+  // Format: "/api/enums/salutations" or "salutations"
+  const enumSourceRaw = (field as { enumSource?: string }).enumSource || '';
 
-  // Call ALL hooks unconditionally (React Hooks Rules requirement)
-  const businessTypes = useBusinessTypes();
-  const legalForms = useLegalForms();
-  const countryCodes = useCountryCodes();
-  const expansionPlan = useExpansionPlan();
-  const leadSources = useLeadSources();
-  const kitchenSizes = useKitchenSizes();
+  // Build full API path if not already a path
+  const apiPath = enumSourceRaw.startsWith('/api/')
+    ? enumSourceRaw
+    : enumSourceRaw
+      ? `/api/enums/${enumSourceRaw}`
+      : '';
 
-  // Select the appropriate data based on enumSource
-  let options: Array<{ value: string; label: string }> = [];
-  let isLoading = false;
-
-  switch (enumSource) {
-    case 'business-types':
-      options = businessTypes.data || [];
-      isLoading = businessTypes.isLoading;
-      break;
-    case 'legal-forms':
-      options = legalForms.data || [];
-      isLoading = legalForms.isLoading;
-      break;
-    case 'country-codes':
-      options = countryCodes.data || [];
-      isLoading = countryCodes.isLoading;
-      break;
-    case 'expansion-plan':
-      options = expansionPlan.data || [];
-      isLoading = expansionPlan.isLoading;
-      break;
-    case 'lead-sources':
-      options = leadSources.data || [];
-      isLoading = leadSources.isLoading;
-      break;
-    case 'kitchen-sizes':
-      options = kitchenSizes.data || [];
-      isLoading = kitchenSizes.isLoading;
-      break;
-    default:
-      console.warn(`Unknown enumSource: ${enumSource}`);
-  }
+  // Use generic enum options hook - works with any endpoint
+  const { data: options = [], isLoading } = useEnumOptions(apiPath);
 
   // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
   // Only use value if options are loaded AND value exists in options

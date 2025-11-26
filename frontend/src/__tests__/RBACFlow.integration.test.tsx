@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import App from '../App';
@@ -25,7 +25,9 @@ vi.mock('@/contexts/AuthContext', () => ({
 }));
 vi.mock('@/config/featureFlags');
 vi.mock('@/components/layout/MainLayoutV2', () => ({
-  MainLayoutV2: ({ children }: { children: React.ReactNode }) => <div data-testid="main-layout">{children}</div>,
+  MainLayoutV2: ({ children }: { children: React.ReactNode }) => (
+    <div data-testid="main-layout">{children}</div>
+  ),
 }));
 vi.mock('@/features/leads/hooks/useLeads', () => ({
   useLeads: () => ({
@@ -69,7 +71,10 @@ const mockUseAuthContext = vi.mocked(useAuthContext);
 const AdminDashboardMock = () => <div data-testid="admin-dashboard">Admin Dashboard</div>;
 
 // Helper function to render with all providers
-const renderWithProviders = (component: React.ReactElement, userConfig: any) => {
+const renderWithProviders = (
+  component: React.ReactElement,
+  userConfig: ReturnType<typeof useAuthHook>
+) => {
   // Mock both useAuth paths (hook and context)
   mockUseAuthHook.mockReturnValue(userConfig);
   mockUseAuthContext.mockReturnValue(userConfig);
@@ -83,9 +88,7 @@ const renderWithProviders = (component: React.ReactElement, userConfig: any) => 
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter>
-        {component}
-      </MemoryRouter>
+      <MemoryRouter>{component}</MemoryRouter>
     </QueryClientProvider>
   );
 };
@@ -224,7 +227,7 @@ describe('Full RBAC Flow - Integration Tests', () => {
       user: { id: '3', name: 'Sales User', roles: ['sales'] },
       isAuthenticated: true,
       isLoading: false,
-      hasRole: (role: string) => false, // Sales has no elevated roles
+      hasRole: (_role: string) => false, // Sales has no elevated roles
       token: 'mock-token',
       login: vi.fn(),
       logout: vi.fn(),
@@ -411,7 +414,7 @@ describe('Full RBAC Flow - Integration Tests', () => {
         user: { id: '3', name: 'Sales User', roles: ['sales'] },
         isAuthenticated: true,
         isLoading: false,
-        hasRole: (role: string) => false,
+        hasRole: (_role: string) => false,
         token: 'mock-token',
         login: vi.fn(),
         logout: vi.fn(),
@@ -463,7 +466,7 @@ describe('Full RBAC Flow - Integration Tests', () => {
       maliciousUser.hasRole = vi.fn((role: string) => role.toLowerCase() === 'admin');
 
       // Re-render should still not show button (permission check happens at render time)
-      const { rerender } = renderWithProviders(<LeadsPage />, maliciousUser);
+      const { rerender: _rerender } = renderWithProviders(<LeadsPage />, maliciousUser);
 
       // Note: In real app, user roles are validated server-side and cannot be changed client-side
       // This test ensures UI re-renders correctly when auth state changes

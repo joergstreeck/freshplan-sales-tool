@@ -228,7 +228,9 @@ afterEach(() => {
 });
 
 // Helper: Render LeadWizard with QueryClient
-function renderLeadWizard(props: { onClose?: () => void; onCreated?: (lead: any) => void } = {}) {
+function renderLeadWizard(
+  props: { onClose?: () => void; onCreated?: (lead: unknown) => void } = {}
+) {
   const onClose = props.onClose || vi.fn();
   const onCreated = props.onCreated || vi.fn();
 
@@ -281,7 +283,7 @@ describe('LeadWizard - Server-Driven UI (Sprint 2.1.7.2)', () => {
     }, 10000);
 
     test('should validate required field: Firmenname', async () => {
-      const user = userEvent.setup();
+      const _user = userEvent.setup();
       renderLeadWizard();
 
       await screen.findByLabelText(/firmenname/i);
@@ -326,9 +328,7 @@ describe('LeadWizard - Server-Driven UI (Sprint 2.1.7.2)', () => {
       await user.click(await screen.findByRole('option', { name: /messe/i }));
 
       // Erstkontakt block should appear
-      expect(
-        await screen.findByText(/erstkontakt dokumentieren.*pflicht/i)
-      ).toBeInTheDocument();
+      expect(await screen.findByText(/erstkontakt dokumentieren.*pflicht/i)).toBeInTheDocument();
     }, 10000);
 
     // ✅ MIGRATED TO E2E: e2e/leads/lead-wizard-complete-flow.spec.ts
@@ -428,8 +428,8 @@ describe('LeadWizard - Server-Driven UI (Sprint 2.1.7.2)', () => {
     // ✅ MIGRATED TO E2E: e2e/leads/lead-wizard-complete-flow.spec.ts
     // Test: "should include stage number in API payload"
     test.skip('should include stage number in API payload', async () => {
-      const user = userEvent.setup();
-      let capturedPayload: any = null;
+      const _user = userEvent.setup();
+      let capturedPayload: unknown = null;
 
       // Override handler to capture payload
       server.use(

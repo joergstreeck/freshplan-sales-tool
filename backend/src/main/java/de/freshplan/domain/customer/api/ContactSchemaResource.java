@@ -67,7 +67,7 @@ public class ContactSchemaResource {
       content = @Content(schema = @Schema(implementation = CustomerCardSchema.class)))
   public Response getContactSchema() {
 
-    // Single card with 3 sections (Contact details are shown in dialog, not as separate cards)
+    // Single card with 4 sections (Contact details are shown in dialog, not as separate cards)
     CustomerCardSchema contactSchema =
         CustomerCardSchema.builder()
             .cardId("contact_details")
@@ -78,8 +78,9 @@ public class ContactSchemaResource {
             .sections(
                 List.of(
                     buildBasicInfoSection(), // Section 1
-                    buildRelationshipSection(), // Section 2
-                    buildSocialBusinessSection() // Section 3
+                    buildLocationAssignmentSection(), // Section 2 (NEW: Sprint 2.1.7.7)
+                    buildRelationshipSection(), // Section 3
+                    buildSocialBusinessSection() // Section 4
                     ))
             .build();
 
@@ -107,15 +108,16 @@ public class ContactSchemaResource {
                     .fieldKey("salutation")
                     .label("Anrede")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/contact-salutations")
-                    .gridCols(6)
+                    .enumSource("/api/enums/salutations")
+                    .required(true)
+                    .gridCols(3)
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("title")
                     .label("Titel")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/contact-titles")
-                    .gridCols(6)
+                    .enumSource("/api/enums/titles")
+                    .gridCols(3)
                     .placeholder("z.B. Dr., Prof.")
                     .build(),
                 FieldDefinition.builder()
@@ -146,7 +148,7 @@ public class ContactSchemaResource {
                     .fieldKey("decisionLevel")
                     .label("Entscheidungsebene")
                     .type(FieldType.ENUM)
-                    .enumSource("/api/enums/contact-decision-levels")
+                    .enumSource("/api/enums/decision-levels")
                     .gridCols(6)
                     .helpText(
                         "Entscheidungskompetenz (Executive, Manager, Operational, Influencer)")
@@ -177,10 +179,54 @@ public class ContactSchemaResource {
         .build();
   }
 
-  // ========== SECTION 2: BEZIEHUNGSMANAGEMENT (RELATIONSHIP) ==========
+  // ========== SECTION 2: STANDORT-ZUORDNUNG (LOCATION ASSIGNMENT) ==========
 
   /**
-   * Section 2: 🤝 Beziehungsmanagement
+   * Section 2: 📍 Standort-Zuordnung (Sprint 2.1.7.7)
+   *
+   * <p>Multi-Location Contact Assignment: - responsibilityScope: ALL (alle Standorte) oder SPECIFIC
+   * (ausgewählte Standorte) - assignedLocationIds: Liste der zugewiesenen Standort-IDs (nur bei
+   * SPECIFIC)
+   *
+   * <p>Use Cases: - Geschäftsführer: Alle Standorte (responsibility_scope = 'ALL') -
+   * Einkaufsleiter: Region Nord (3 Filialen) - Küchenchef: Nur ein Standort
+   */
+  private CardSection buildLocationAssignmentSection() {
+    return CardSection.builder()
+        .sectionId("location_assignment")
+        .title("Standort-Zuordnung")
+        .subtitle("Für welche Standorte ist dieser Kontakt zuständig?")
+        .fields(
+            List.of(
+                FieldDefinition.builder()
+                    .fieldKey("responsibilityScope")
+                    .label("Zuständigkeitsbereich")
+                    .type(FieldType.ENUM)
+                    .enumSource("/api/enums/responsibility-scopes")
+                    .required(true)
+                    .gridCols(12)
+                    .helpText(
+                        "ALL = Kontakt ist für alle Standorte zuständig (z.B. Geschäftsführer), "
+                            + "SPECIFIC = Nur für bestimmte Standorte")
+                    .build(),
+                FieldDefinition.builder()
+                    .fieldKey("assignedLocationIds")
+                    .label("Zugewiesene Standorte")
+                    .type(FieldType.MULTISELECT)
+                    .gridCols(12)
+                    .helpText("Wählen Sie die Standorte aus, für die dieser Kontakt zuständig ist")
+                    .visibleWhenField("responsibilityScope")
+                    .visibleWhenValue("SPECIFIC")
+                    .build()))
+        .collapsible(true)
+        .defaultCollapsed(false)
+        .build();
+  }
+
+  // ========== SECTION 3: BEZIEHUNGSMANAGEMENT (RELATIONSHIP) ==========
+
+  /**
+   * Section 3: 🤝 Beziehungsmanagement
    *
    * <p>Relationship data for sales excellence: Birthday, Hobbies, Family Status, Children, Personal
    * Notes
@@ -225,22 +271,22 @@ public class ContactSchemaResource {
                     .label("Persönliche Notizen")
                     .type(FieldType.TEXTAREA)
                     .gridCols(12)
+                    .rows(3)
                     .placeholder(
                         "z.B. Liebt italienisches Essen, spricht fließend Englisch, Fußball-Fan...")
                     .helpText(
                         "Beziehungsrelevante Details für persönliche Ansprache (NICHT"
                             + " geschäftliche Notizen - siehe 'Business Notizen')")
-                    .showDividerAfter(true)
                     .build()))
         .collapsible(true)
         .defaultCollapsed(false)
         .build();
   }
 
-  // ========== SECTION 3: PROFESSIONELLE LINKS & BUSINESS NOTIZEN ==========
+  // ========== SECTION 4: PROFESSIONELLE LINKS & BUSINESS NOTIZEN ==========
 
   /**
-   * Section 3: 💼 Professionelle Links & Business Notizen
+   * Section 4: 💼 Professionelle Links & Business Notizen
    *
    * <p>Sprint 2.1.7.2 D11.1: V2 Fields - LinkedIn, XING, Business Notes
    *
@@ -274,6 +320,7 @@ public class ContactSchemaResource {
                     .label("Business Notizen")
                     .type(FieldType.TEXTAREA)
                     .gridCols(12)
+                    .rows(3)
                     .placeholder(
                         "z.B. Entscheidungsträger für Bio-Produkte, bevorzugt kurze"
                             + " Meetings...")
