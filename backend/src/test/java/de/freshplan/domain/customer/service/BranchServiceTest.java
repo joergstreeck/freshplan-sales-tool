@@ -7,7 +7,7 @@ import de.freshplan.domain.customer.entity.CustomerHierarchyType;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.entity.CustomerType;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.customer.service.dto.CreateCustomerRequest;
+import de.freshplan.domain.customer.service.dto.CreateBranchRequest;
 import de.freshplan.domain.customer.service.dto.CustomerResponse;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.exception.InvalidHierarchyException;
@@ -99,9 +99,9 @@ public class BranchServiceTest {
   @Test
   @DisplayName("Should create branch under HEADQUARTER successfully")
   void testCreateBranch_Success() {
-    // Given: Valid CreateCustomerRequest for branch
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    // Given: Valid CreateBranchRequest for branch
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Branch A - Frankfurt")
             .customerType(CustomerType.UNTERNEHMEN)
             .status(CustomerStatus.PROSPECT)
@@ -126,8 +126,8 @@ public class BranchServiceTest {
   void testCreateBranch_ParentNotFound() {
     // Given: Non-existent parent ID
     UUID nonExistentId = UUID.randomUUID();
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Branch B - Köln")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
@@ -153,8 +153,8 @@ public class BranchServiceTest {
     standalone.setUpdatedBy(TEST_USER);
     customerRepository.persist(standalone);
 
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Branch C - Stuttgart")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
@@ -186,8 +186,8 @@ public class BranchServiceTest {
     filiale.setUpdatedBy(TEST_USER);
     customerRepository.persist(filiale);
 
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Sub-Branch")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
@@ -208,18 +208,18 @@ public class BranchServiceTest {
   @DisplayName("Should get all branches for a HEADQUARTER")
   void testGetBranchesByHeadquarter() {
     // Given: 3 branches under HEADQUARTER
-    CreateCustomerRequest branch1 =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest branch1 =
+        CreateBranchRequest.builder()
             .companyName("Test NH Hotel München")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
-    CreateCustomerRequest branch2 =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest branch2 =
+        CreateBranchRequest.builder()
             .companyName("Test NH Hotel Hamburg")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
-    CreateCustomerRequest branch3 =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest branch3 =
+        CreateBranchRequest.builder()
             .companyName("Test NH Hotel Berlin")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
@@ -330,8 +330,8 @@ public class BranchServiceTest {
   @DisplayName("Should validate hierarchy: Valid FILIALE")
   void testValidateHierarchy_ValidFiliale() {
     // Given: Valid FILIALE (with HEADQUARTER parent)
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Valid Branch")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
@@ -355,8 +355,8 @@ public class BranchServiceTest {
     headquarter.setXentralCustomerId("XEN-99999");
     entityManager.flush(); // Flush to DB before BranchService loads parent
 
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Branch D - Düsseldorf")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();
@@ -378,8 +378,8 @@ public class BranchServiceTest {
     // Given: Soft-deleted HEADQUARTER
     testHeadquarter.setIsDeleted(true);
 
-    CreateCustomerRequest request =
-        CreateCustomerRequest.builder()
+    CreateBranchRequest request =
+        CreateBranchRequest.builder()
             .companyName("Test Branch E - Dortmund")
             .customerType(CustomerType.UNTERNEHMEN)
             .build();

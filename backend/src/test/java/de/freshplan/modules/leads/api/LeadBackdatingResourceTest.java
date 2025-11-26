@@ -39,12 +39,23 @@ class LeadBackdatingResourceTest {
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
 
-    Territory territory = Territory.findByCode("DE");
+    // Clear persistence context to avoid stale references
+    em.flush();
+    em.clear();
+
+    // Get or create Territory - always use em.find/em.merge to ensure managed state
+    Territory territory = em.find(Territory.class, "DE");
     if (territory == null) {
-      territory = Territory.getDefault();
-      if (territory.id == null) {
-        territory.persist();
-      }
+      territory = new Territory();
+      territory.id = "DE";
+      territory.name = "Deutschland";
+      territory.countryCode = "DE";
+      territory.currencyCode = "EUR";
+      territory.languageCode = "de-DE";
+      territory.taxRate = new java.math.BigDecimal("19.00");
+      territory.active = true;
+      em.persist(territory);
+      em.flush();
     }
 
     testLead = new Lead();

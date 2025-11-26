@@ -86,11 +86,18 @@ class OpportunityServiceTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete in correct order
+    // Tests use @TestTransaction which auto-rollback, but we still need to clean up
+    // Delete opportunities and activities created by this test (using testUser as marker)
+    // Note: User table is "app_user" not "users"
     em.createNativeQuery(
-            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')")
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE assigned_to = (SELECT id FROM app_user WHERE username = '"
+                + TEST_USER
+                + "'))")
         .executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'")
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE assigned_to = (SELECT id FROM app_user WHERE username = '"
+                + TEST_USER
+                + "')")
         .executeUpdate();
   }
 

@@ -399,9 +399,9 @@ class LeadProtectionServiceTest {
       // When
       int remainingDays = protectionService.getRemainingProtectionDays(lead);
 
-      // Then - ~180 days remaining (6 months = 180-200 days depending on month lengths and leap
-      // years)
-      assertThat(remainingDays).isGreaterThan(165).isLessThan(200);
+      // Then - ~180 days remaining (6 months = 180-212 days depending on month lengths and leap
+      // years, e.g. Nov-May spans 212 days in 2025-2026)
+      assertThat(remainingDays).isGreaterThan(165).isLessThan(215);
     }
 
     @Test

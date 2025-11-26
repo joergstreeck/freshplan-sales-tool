@@ -54,8 +54,8 @@ class HelpContentCQRSIntegrationTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete test data
-    helpRepository.delete("testMarker LIKE 'TEST-%'");
+    // Delete test data - using feature field which exists in HelpContent entity
+    helpRepository.delete("feature LIKE ?1", "test-feature-%");
   }
 
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")

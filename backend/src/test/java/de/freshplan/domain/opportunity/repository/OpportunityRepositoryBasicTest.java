@@ -50,11 +50,13 @@ public class OpportunityRepositoryBasicTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete in correct order
+    // Delete in correct order - use customer.isTestData flag or customer.companyName with [TEST]
+    // prefix
     em.createNativeQuery(
-            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE test_marker LIKE 'TEST-%')")
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT o.id FROM opportunities o JOIN customers c ON o.customer_id = c.id WHERE c.is_test_data = true OR c.company_name LIKE '[TEST]%')")
         .executeUpdate();
-    em.createNativeQuery("DELETE FROM opportunities WHERE test_marker LIKE 'TEST-%'")
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')")
         .executeUpdate();
   }
 

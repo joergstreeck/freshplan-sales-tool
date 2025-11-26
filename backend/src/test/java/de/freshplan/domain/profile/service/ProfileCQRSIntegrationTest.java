@@ -65,8 +65,9 @@ class ProfileCQRSIntegrationTest {
   @AfterEach
   @Transactional
   void cleanup() {
-    // Delete test data
-    profileRepository.delete("testMarker LIKE 'TEST-%'");
+    // Delete test data - Profile entity uses customerId as test marker
+    // Tests use pattern CUST-<uniqueSuffix> for customerId
+    profileRepository.delete("customerId LIKE ?1", "CUST-%");
   }
 
   @Test
