@@ -193,6 +193,7 @@ export const DynamicCustomerCard: React.FC<DynamicCustomerCardProps> = ({ schema
                           value={getFieldValue(field.fieldKey)}
                           onChange={handleFieldChange}
                           customerId={customerId}
+                          displayMode="readonly"
                         />
                       ))}
                     </Grid>
@@ -225,6 +226,7 @@ export const DynamicCustomerCard: React.FC<DynamicCustomerCardProps> = ({ schema
                       value={getFieldValue(field.fieldKey)}
                       onChange={handleFieldChange}
                       customerId={customerId}
+                      displayMode="readonly"
                     />
                   ))}
                 </Grid>

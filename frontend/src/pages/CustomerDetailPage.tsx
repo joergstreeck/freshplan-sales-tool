@@ -233,7 +233,8 @@ export function CustomerDetailPage() {
         </Paper>
 
         {/* Action Buttons (Cockpit-Pattern - Sprint 2.1.7.2 D11) */}
-        <CustomerActionButtons customer={customer} onEdit={() => setShowEditWizard(true)} />
+        {/* HINWEIS: Bearbeiten-Button ist im Header (Single Point of Action) */}
+        <CustomerActionButtons customer={customer} />
 
         {/* Tabs */}
         <Paper>

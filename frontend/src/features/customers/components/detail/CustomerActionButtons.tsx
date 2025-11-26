@@ -3,13 +3,15 @@
  *
  * Sprint 2.1.7.2 D11 - Cockpit Pattern
  *
- * 6 Schnellaktionen für Customer Detail Page (analog zu FreshPlan Cockpit):
+ * 5 Schnellaktionen für Customer Detail Page (analog zu FreshPlan Cockpit):
  * - E-Mail schreiben
  * - Anrufen
  * - Angebot erstellen
  * - Notiz hinzufügen
  * - Meeting planen
- * - Kunde bearbeiten
+ *
+ * HINWEIS: Der "Bearbeiten"-Button ist im Header der CustomerDetailPage
+ * (Single Point of Action - Best Practice)
  *
  * Design System:
  * - MUI Theme V2 (FreshFoodz Colors)
@@ -27,16 +29,16 @@ import {
   Receipt as ReceiptIcon,
   Note as NoteIcon,
   Event as EventIcon,
-  Edit as EditIcon,
 } from '@mui/icons-material';
 import type { Customer } from '../../../../types/customer.types';
 
 interface CustomerActionButtonsProps {
   customer: Customer;
+  /** @deprecated - Bearbeiten-Button ist jetzt im Header */
   onEdit?: () => void;
 }
 
-export const CustomerActionButtons = ({ customer, onEdit }: CustomerActionButtonsProps) => {
+export const CustomerActionButtons = ({ customer }: CustomerActionButtonsProps) => {
   // Handler Functions (Platzhalter für Sprint 2.2+)
   const handleEmail = () => {
     // TODO Sprint 2.2: E-Mail Dialog öffnen
@@ -65,12 +67,6 @@ export const CustomerActionButtons = ({ customer, onEdit }: CustomerActionButton
   const handleScheduleMeeting = () => {
     // TODO Sprint 2.2: Meeting-Planer öffnen
     console.log('Meeting planen mit:', customer.companyName);
-  };
-
-  const handleEdit = () => {
-    if (onEdit) {
-      onEdit();
-    }
   };
 
   return (
@@ -113,11 +109,6 @@ export const CustomerActionButtons = ({ customer, onEdit }: CustomerActionButton
       {/* Meeting */}
       <Button variant="outlined" startIcon={<EventIcon />} onClick={handleScheduleMeeting}>
         Meeting
-      </Button>
-
-      {/* Bearbeiten */}
-      <Button variant="contained" startIcon={<EditIcon />} onClick={handleEdit} sx={{ ml: 'auto' }}>
-        Bearbeiten
       </Button>
     </Box>
   );
