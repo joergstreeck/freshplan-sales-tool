@@ -90,7 +90,7 @@ export function calculateFieldWidth(field: FieldDefinition, measuredTextWidth: n
   width = Math.max(width, minWidth);
 
   // 3. Maximum aus Field-Key oder Typ
-  const maxWidth = FIELD_MAX_WIDTHS[field.key] || getMaxWidthForType(field.fieldType);
+  const maxWidth = FIELD_MAX_WIDTHS[field.key] || getMaxWidthForType(field.type);
   width = Math.min(width, maxWidth);
 
   return width;
@@ -107,7 +107,7 @@ function getMinWidthForField(field: FieldDefinition): number {
   }
 
   // Fallback auf Typ-basierte Mindestbreite
-  return getMinWidthForType(field.fieldType);
+  return getMinWidthForType(field.type);
 }
 
 /**
@@ -115,20 +115,20 @@ function getMinWidthForField(field: FieldDefinition): number {
  */
 function getMinWidthForType(fieldType: string): number {
   switch (fieldType) {
-    case 'number':
+    case 'NUMBER':
       return 80;
-    case 'email':
+    case 'EMAIL':
       return 200;
-    case 'select':
-    case 'dropdown':
+    case 'SELECT':
+    case 'DROPDOWN':
       return 150;
-    case 'date':
-    case 'datetime':
+    case 'DATE':
+    case 'DATETIME':
       return 140;
-    case 'checkbox':
+    case 'CHECKBOX':
       return 120;
-    case 'textarea':
-    case 'multiline':
+    case 'TEXTAREA':
+    case 'MULTILINE':
       return 300;
     default:
       return 120;
@@ -140,22 +140,22 @@ function getMinWidthForType(fieldType: string): number {
  */
 function getMaxWidthForType(fieldType: string): number {
   switch (fieldType) {
-    case 'number':
+    case 'NUMBER':
       return 120;
-    case 'email':
+    case 'EMAIL':
       return 400;
-    case 'select':
-    case 'dropdown':
+    case 'SELECT':
+    case 'DROPDOWN':
       return 300;
-    case 'date':
-    case 'datetime':
+    case 'DATE':
+    case 'DATETIME':
       return 180;
-    case 'checkbox':
+    case 'CHECKBOX':
       return 200;
-    case 'textarea':
-    case 'multiline':
+    case 'TEXTAREA':
+    case 'MULTILINE':
       return 9999; // Volle Breite
-    case 'text':
+    case 'TEXT':
     default:
       return 300;
   }
@@ -165,7 +165,7 @@ function getMaxWidthForType(fieldType: string): number {
  * Gibt die CSS-Klasse für die Grid-Größe zurück
  */
 export function getFieldSizeClass(field: FieldDefinition): string {
-  const maxWidth = FIELD_MAX_WIDTHS[field.key] || getMaxWidthForType(field.fieldType);
+  const maxWidth = FIELD_MAX_WIDTHS[field.key] || getMaxWidthForType(field.type);
 
   if (maxWidth <= 120) return 'compact';
   if (maxWidth <= 200) return 'small';

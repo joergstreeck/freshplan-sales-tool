@@ -11,11 +11,11 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (99% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.2 - MERGED TO MAIN (31.10.2025) - **Customer-Management + Xentral-Integration COMPLETE**
-- **Next Sprint:** 📋 Sprint 2.1.7.7 - Multi-Location Management (30h, 3-4 Tage) ⏳ **JETZT READY!**
-- **Active Branch:** main (Sprint 2.1.7.2 gemerged)
+- **Current Sprint:** 🚧 Sprint 2.1.7.x - fieldCatalog.json Migration COMPLETE ✅ (26.11.2025) - **Bereit für User-Testing**
+- **Next Sprint:** 📋 Sprint 2.1.7.7 - Multi-Location Management (30h, 3-4 Tage) ⏳ **FORTSETZEN nach User-Testing**
+- **Active Branch:** feature/sprint-2-1-7-7-multi-location-management (fieldCatalog.json Migration COMPLETE)
 - **Progress:** 28/36 PRs completed - 78% done
-- **Blockers:** ❌ Keine - **Sprint 2.1.7.7 READY TO START**
+- **Blockers:** ❌ Keine - **User-Testing Multi-Location-Management ausstehend**
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Sprint 2.1.7.2 - Customer-Management + Xentral-Integration MERGED (31.10.2025)** - PR #144 + 946/946 Tests GREEN

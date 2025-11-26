@@ -8,6 +8,7 @@
 # PRÜFUNG 2: Server-Driven Architecture Parity (BLOCKIEREND)
 # PRÜFUNG 2.3: Enum Seed Data Case Validation (BLOCKIEREND) - NEW Sprint 2.1.7.7
 # PRÜFUNG 2.5: Enum-Rendering-Parity (BLOCKIEREND) - Sprint 2.1.7.7
+# PRÜFUNG 2.6: Field Type Architecture (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 3: Server-Driven Sections Architecture (BLOCKIEREND)
 # PRÜFUNG 4: Backend Code Formatting (Spotless Auto-Format)
 # PRÜFUNG 5: Backend Compilation Check (BLOCKIEREND) - Sprint 2.1.7.7
@@ -15,6 +16,7 @@
 # PRÜFUNG 7: Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 8: Test Cleanup - @AfterEach Validation (Check-Only) - Sprint 2.1.7.7
 # PRÜFUNG 9: OpenAPI Type Sync Check (INFO-ONLY) - Sprint 2.1.7.7 OpenAPI Contract-First
+# PRÜFUNG 10: fieldCatalog.json Removal Guard (BLOCKIEREND) - Sprint 2.1.7.x
 #
 # ============================================================================
 
@@ -139,6 +141,36 @@ fi
 
 echo ""
 echo -e "${GREEN}✅ Enum-Rendering-Parity: PASSED${NC}"
+echo ""
+
+# ============================================================================
+# PRÜFUNG 2.6: Field Type Architecture Check
+# ============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🔧 Field Type Architecture Check${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Run Field Type Architecture Check (Python script)
+if ! python3 ./scripts/check-field-type-architecture.py; then
+  echo ""
+  echo -e "${RED}🚫 PRE-COMMIT HOOK: Field Type Architecture Violations detected!${NC}"
+  echo ""
+  echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
+  echo ""
+  echo -e "   ${YELLOW}• Verwende field.type statt field.fieldType (Server-Driven Property)${NC}"
+  echo -e "   ${YELLOW}• Field Types MÜSSEN UPPERCASE sein: 'TEXT', 'ENUM', 'NUMBER' (nicht 'text', 'enum')${NC}"
+  echo -e "   ${YELLOW}• Referenz: frontend/src/types/customer-schema.ts → FieldType enum${NC}"
+  echo ""
+  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✅ Field Type Architecture: PASSED${NC}"
 echo ""
 
 # ============================================================================
@@ -465,6 +497,39 @@ else
   echo "⏭️  No backend DTO files changed, OpenAPI types should be in sync"
   echo ""
 fi
+
+# ============================================================================
+# PRÜFUNG 10: fieldCatalog.json Removal Guard
+# ============================================================================
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}🗑️  fieldCatalog.json Removal Guard${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Run fieldCatalog.json Removal Guard (Python script)
+if ! python3 ./scripts/check-fieldcatalog-removed.py; then
+  echo ""
+  echo -e "${RED}🚫 PRE-COMMIT HOOK: fieldCatalog.json Migration Regression detected!${NC}"
+  echo ""
+  echo -e "${YELLOW}   Commit BLOCKIERT. Server-Driven UI Migration wurde rückgängig gemacht!${NC}"
+  echo ""
+  echo -e "   ${YELLOW}• fieldCatalog.json wurde in Sprint 2.1.7.x gelöscht${NC}"
+  echo -e "   ${YELLOW}• Backend ist Single Source of Truth für Field Definitions${NC}"
+  echo -e "   ${YELLOW}• Use useCustomerSchema or useLocationServiceSchema instead${NC}"
+  echo ""
+  echo -e "${YELLOW}   Migration Guide:${NC}"
+  echo -e "   ${YELLOW}   /docs/planung/claude-work/MIGRATION_PLAN_fieldCatalog_removal.md${NC}"
+  echo ""
+  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo -e "${GREEN}✅ fieldCatalog.json Removal Guard: PASSED${NC}"
+echo ""
 
 # ============================================================================
 # SUCCESS

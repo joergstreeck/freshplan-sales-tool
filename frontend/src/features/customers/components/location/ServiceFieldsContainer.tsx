@@ -1,19 +1,24 @@
+/**
+ * Service Fields Container
+ *
+ * Sprint 2.1.7.x: fieldCatalog.json Migration - Server-Driven UI
+ *
+ * Renders industry-specific service fields based on backend schema.
+ *
+ * BEFORE (Legacy): Hardcoded field definitions in component (lines 38-173)
+ * AFTER (Current): Field definitions loaded from backend API
+ *
+ * @see LocationServiceSchemaResource.java (backend endpoint)
+ * @see useLocationServiceSchema.ts (frontend hook)
+ */
+
 import React from 'react';
-import { Box, Typography, Paper } from '@mui/material';
+import { Box, Typography, Paper, CircularProgress } from '@mui/material';
 import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import type { CustomerLocation } from '../../types/customer.types';
 import type { LocationServiceData } from '../../stores/locationServicesStore';
-import type { FieldDefinition } from '../../types/field.types';
-import { isFieldDefinition } from '../../types/field.types';
-import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
-
-interface ServiceFieldGroup {
-  id: string;
-  title: string;
-  icon: string;
-  fields: FieldDefinition[];
-}
+import { useLocationServiceSchema } from '../../../../hooks/useLocationServiceSchema';
 
 interface ServiceFieldsContainerProps {
   location: CustomerLocation;
@@ -32,149 +37,23 @@ export const ServiceFieldsContainer: React.FC<ServiceFieldsContainerProps> = ({
   industry,
   errors = {},
 }) => {
-  const { getFieldByKey } = useFieldDefinitions();
+  // Sprint 2.1.7.x: Load service field groups from backend (Server-Driven UI)
+  const { data: serviceGroups, isLoading } = useLocationServiceSchema(industry);
 
-  // Get service groups based on industry
-  const getServiceGroups = (): ServiceFieldGroup[] => {
-    switch (industry) {
-      case 'hotel':
-        return [
-          {
-            id: 'breakfast',
-            title: 'Frühstücksgeschäft',
-            icon: '☕',
-            fields: ['offersBreakfast', 'breakfastWarm', 'breakfastGuestsPerDay']
-              .map(key => getFieldByKey(key))
-              .filter(isFieldDefinition),
-          },
-          {
-            id: 'meals',
-            title: 'Mittag- und Abendessen',
-            icon: '🍽️',
-            fields: ['offersLunch', 'offersDinner']
-              .map(key => getFieldByKey(key))
-              .filter(isFieldDefinition),
-          },
-          {
-            id: 'additional',
-            title: 'Zusatzservices',
-            icon: '🛎️',
-            fields: ['offersRoomService', 'offersEvents', 'eventCapacity']
-              .map(key => getFieldByKey(key))
-              .filter(isFieldDefinition),
-          },
-          {
-            id: 'capacity',
-            title: 'Kapazität',
-            icon: '🏨',
-            fields: ['roomCount', 'averageOccupancy']
-              .map(key => getFieldByKey(key))
-              .filter(isFieldDefinition),
-          },
-        ];
+  // Loading state
+  if (isLoading) {
+    return (
+      <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
+        <CircularProgress size={24} />
+        <Typography color="text.secondary" sx={{ mt: 2 }}>
+          Service-Felder werden geladen...
+        </Typography>
+      </Paper>
+    );
+  }
 
-      case 'krankenhaus':
-        return [
-          {
-            id: 'patientMeals',
-            title: 'Patientenverpflegung',
-            icon: '🏥',
-            fields: [
-              {
-                key: 'mealSystem',
-                label: 'Verpflegungssystem',
-                fieldType: 'select',
-                options: [
-                  { value: 'COOK_AND_SERVE', label: 'Cook & Serve' },
-                  { value: 'COOK_AND_CHILL', label: 'Cook & Chill' },
-                  { value: 'FROZEN', label: 'Tiefkühl' },
-                ],
-              },
-              { key: 'bedsCount', label: 'Anzahl Betten', fieldType: 'number' },
-              { key: 'mealsPerDay', label: 'Mahlzeiten/Tag', fieldType: 'number' },
-            ] as FieldDefinition[],
-          },
-          {
-            id: 'diets',
-            title: 'Diätformen',
-            icon: '🥗',
-            fields: [
-              {
-                key: 'offersVegetarian',
-                label: 'Vegetarisch',
-                fieldType: 'select',
-                options: [
-                  { value: false, label: 'Nein' },
-                  { value: true, label: 'Ja' },
-                ],
-              },
-              {
-                key: 'offersVegan',
-                label: 'Vegan',
-                fieldType: 'select',
-                options: [
-                  { value: false, label: 'Nein' },
-                  { value: true, label: 'Ja' },
-                ],
-              },
-              {
-                key: 'offersHalal',
-                label: 'Halal',
-                fieldType: 'select',
-                options: [
-                  { value: false, label: 'Nein' },
-                  { value: true, label: 'Ja' },
-                ],
-              },
-              {
-                key: 'offersKosher',
-                label: 'Koscher',
-                fieldType: 'select',
-                options: [
-                  { value: false, label: 'Nein' },
-                  { value: true, label: 'Ja' },
-                ],
-              },
-            ] as FieldDefinition[],
-          },
-        ];
-
-      case 'betriebsrestaurant':
-        return [
-          {
-            id: 'operation',
-            title: 'Betriebszeiten',
-            icon: '🏢',
-            fields: [
-              {
-                key: 'operatingDays',
-                label: 'Betriebstage/Woche',
-                fieldType: 'number',
-                min: 1,
-                max: 7,
-              },
-              { key: 'lunchGuests', label: 'Mittagsgäste/Tag', fieldType: 'number' },
-              {
-                key: 'subsidized',
-                label: 'Subventioniert',
-                fieldType: 'select',
-                options: [
-                  { value: false, label: 'Nein' },
-                  { value: true, label: 'Ja' },
-                ],
-              },
-            ] as FieldDefinition[],
-          },
-        ];
-
-      default:
-        return [];
-    }
-  };
-
-  const serviceGroups = getServiceGroups();
-
-  if (serviceGroups.length === 0) {
+  // Empty state - no service groups defined for this industry
+  if (!serviceGroups || serviceGroups.length === 0) {
     return (
       <Paper variant="outlined" sx={{ p: 3, textAlign: 'center' }}>
         <Typography color="text.secondary">

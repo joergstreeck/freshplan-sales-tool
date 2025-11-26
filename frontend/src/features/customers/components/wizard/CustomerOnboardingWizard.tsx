@@ -12,7 +12,6 @@ import React, { useEffect, useState } from 'react';
 import { Box, Paper, Stepper, Step, StepLabel, Typography, Alert } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
-import { useFieldDefinitions } from '../../hooks/useFieldDefinitions';
 import { useAutoSave } from '../../hooks/useAutoSave';
 import { SaveIndicator } from '../shared/SaveIndicator';
 import { LoadingScreen } from '../shared/LoadingScreen';
@@ -101,7 +100,6 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     setInitialData,
   } = useCustomerOnboardingStore();
 
-  const { isLoading: loadingFields, error: fieldError } = useFieldDefinitions();
   const { save: manualSave } = useAutoSave({ enabled: true, delay: 2000 });
 
   // DEBUG: Log field theme on mount
@@ -201,18 +199,9 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
     }
   };
 
-  // Loading state
-  if (isLoading || loadingFields) {
+  // Loading state - handled by Step components using useCustomerSchema
+  if (isLoading) {
     return <LoadingScreen message="Formular wird geladen..." />;
-  }
-
-  // Error state
-  if (fieldError) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <Alert severity="error">Fehler beim Laden der Felddefinitionen: {fieldError.message}</Alert>
-      </Box>
-    );
   }
 
   const content = (

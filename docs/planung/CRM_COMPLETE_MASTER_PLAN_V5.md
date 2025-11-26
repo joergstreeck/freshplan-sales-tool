@@ -161,6 +161,37 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-11-26 13:21 - Sprint 2.1.7.x - fieldCatalog.json Migration COMPLETE
+
+**Kontext:** fieldCatalog.json → Server-Driven UI Migration vollständig abgeschlossen. User forderte explizit "wir machen es gleich richtig" (Option 2: Full Migration statt Quick-Fix). Blocker war: "ich kann sonst das aktuelle Multi-Location-Management nicht prüfen".
+
+**Erledigt:**
+- ✅ **Legacy-Dateien gelöscht:** fieldCatalog.json + 2 deprecated Hooks (useFieldDefinitions, useFieldDefinitionsApi)
+- ✅ **Backend:** LocationServiceSchemaResource.java (298 Zeilen) - `GET /api/locations/service-schema?industry={industry}`
+  - Industry-spezifisch: Hotel (4 Gruppen), Krankenhaus (2 Gruppen), Betriebsrestaurant (1 Gruppe)
+  - Returns: ServiceFieldGroup[] mit FieldDefinitions
+- ✅ **Frontend:** useLocationServiceSchema Hook (71 Zeilen) - React Query Hook mit 5min stale time
+- ✅ **ServiceFieldsContainer:** 57% Code-Reduktion (214 → 93 Zeilen)
+  - Entfernt: 135+ Zeilen hardcoded field definitions
+  - Neu: Server-Driven UI - Backend kontrolliert field schema
+- ✅ **Pre-Commit Hook PRÜFUNG 10:** fieldCatalog.json Removal Guard
+  - Script: `scripts/check-fieldcatalog-removed.py` (105 Zeilen)
+  - Blockiert Re-Introduktion von fieldCatalog.json + deprecated Hooks
+- ✅ **CustomerOnboardingWizard:** Deprecated useFieldDefinitions Import entfernt
+
+**Architecture Win:**
+- Single Source of Truth: Backend definiert ALL field schemas
+- UPPERCASE Enum Convention: Alle enum values vom Backend (GMBH, COOK_AND_SERVE, etc.)
+- Keine Parity Violations mehr: "Expected 'gmbh' received 'GMBH'" errors eliminiert
+- Dynamic & Flexible: Field definitions können ohne Frontend-Deploy geändert werden
+
+**Migration:** n/a (keine DB-Arbeit - nur API + Frontend)
+**Branch:** feature/sprint-2-1-7-7-multi-location-management
+**Tests:** Backend Compilation OK ✅, Frontend TS 0 Errors ✅, Pre-Commit Hook PASSED ✅
+**Status:** ✅ COMPLETE - Bereit für User-Testing
+
+---
+
 ### 2025-11-12 - Sprint 2.1.7.7 - Pre-Commit Hook PRÜFUNG 8 + Hook-Dokumentation
 
 **Kontext:** Integration von `check-test-cleanup.py` als PRÜFUNG 8 in Pre-Commit Hook + Bereinigung Hook-Location-Verwirrung.
@@ -1907,6 +1938,15 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
+**Aktueller Fokus (2025-11-26):**
+1. **User-Testing: Multi-Location-Management** - Service Fields für Hotel/Krankenhaus/Betriebsrestaurant testen (Dynamic field loading from backend). Branch: feature/sprint-2-1-7-7-multi-location-management. Aufwand: ~30min Testing.
+2. **Integration Testing: E2E-Tests aktualisieren** - ServiceFieldsContainer Tests für neue Server-Driven Architecture. Aufwand: ~1-2h.
+3. **Dokumentation: API-Docs** - OpenAPI Spec für /api/locations/service-schema erstellen. Aufwand: ~30min.
+
+---
+
+**Abgeschlossene Sprints:**
+
 - **✅ SPRINT 2.1.7.1 - LEAD → OPPORTUNITY UI INTEGRATION (MERGED - 18.10.2025):**
   - **Status:** ✅ 100% COMPLETE - MERGED to main (Commit 9ac9dfd16)
   - **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141 (Merged 18.10.2025 19:02:28Z)
@@ -2109,6 +2149,34 @@
 
 ## Decisions
 <!-- MP5:DECISIONS:START -->
+### 2025-11-26 - ADR: fieldCatalog.json Migration - Server-Driven UI Standard
+
+**Entscheidung:** fieldCatalog.json vollständig entfernt - Server-Driven UI ist jetzt Standard für alle Field Definitions.
+
+**Kontext:**
+- Legacy: fieldCatalog.json mit hardcoded lowercase enum values (z.B. `"gmbh"`)
+- Modern: Backend API `/api/enums/*` mit UPPERCASE values (z.B. `"GMBH"`)
+- Problem: Validation errors "Expected 'gmbh' received 'GMBH'"
+
+**Implementierung:**
+- Backend = Single Source of Truth für ALL field schemas
+- LocationServiceSchemaResource.java: `GET /api/locations/service-schema?industry={industry}`
+- Frontend: useLocationServiceSchema Hook (React Query, 5min stale time)
+- ServiceFieldsContainer: 57% Code-Reduktion (214 → 93 Zeilen)
+
+**Vorteile:**
+- Eliminiert Parity-Violations (Frontend/Backend enum mismatches)
+- Ermöglicht Dynamic Field Updates ohne Frontend-Deploy
+- UPPERCASE Enum Convention: Alle Werte vom Backend (GMBH, COOK_AND_SERVE, etc.)
+- Reduziert Frontend-Code signifikant (135+ Zeilen hardcoded definitions entfernt)
+- Regression Prevention: Pre-Commit Hook PRÜFUNG 10 blockiert Legacy-Re-Introduktion
+
+**Artefakte:**
+- Migration Plan: `/docs/planung/claude-work/MIGRATION_PLAN_fieldCatalog_removal.md` (Status: COMPLETED)
+- Pre-Commit Guard: `scripts/check-fieldcatalog-removed.py` (105 Zeilen)
+
+---
+
 ### 2025-10-08 - Pre-Claim Variante B (DB Best Practice)
 
 **⚠️ BREAKING CHANGE:**

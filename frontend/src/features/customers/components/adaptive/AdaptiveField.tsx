@@ -115,9 +115,7 @@ export const AdaptiveField: React.FC<AdaptiveFieldProps> = ({
       <StyledTextField
         id={field.key}
         name={field.key}
-        type={
-          field.fieldType === 'email' ? 'email' : field.fieldType === 'number' ? 'number' : 'text'
-        }
+        type={field.type === 'EMAIL' ? 'email' : field.type === 'NUMBER' ? 'number' : 'text'}
         value={value}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         onBlur={onBlur}
@@ -130,9 +128,9 @@ export const AdaptiveField: React.FC<AdaptiveFieldProps> = ({
         inputProps={{
           readOnly,
           maxLength: field.maxLength,
-          min: field.fieldType === 'number' ? field.min : undefined,
-          max: field.fieldType === 'number' ? field.max : undefined,
-          step: field.fieldType === 'number' ? field.step : undefined,
+          min: field.type === 'NUMBER' ? field.min : undefined,
+          max: field.type === 'NUMBER' ? field.max : undefined,
+          step: field.type === 'NUMBER' ? field.step : undefined,
           'aria-label': field.label,
           'aria-required': field.required,
           'aria-invalid': !!error,
