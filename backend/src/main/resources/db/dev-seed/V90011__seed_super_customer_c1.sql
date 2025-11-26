@@ -130,7 +130,7 @@ INSERT INTO customers (
     0, -- locations_austria
     0, -- locations_switzerland
     0, -- locations_rest_eu
-    'YES', -- expansion_planned (CHECK constraint: 'YES', 'NO', 'UNKNOWN')
+    'JA', -- expansion_planned (ExpansionPlan Enum: JA, NEIN, GEPLANT, UNKLAR)
 
     -- Pain Points (realistisch für Großhandel)
     TRUE, -- pain_staff_shortage (Fachkräftemangel)

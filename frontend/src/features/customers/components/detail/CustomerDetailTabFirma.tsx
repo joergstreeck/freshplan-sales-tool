@@ -16,6 +16,7 @@
 
 import React from 'react';
 import { Box, CircularProgress, Alert, Typography, Grid } from '@mui/material';
+// Alert wird für Error/Warning States benötigt
 import { DynamicCustomerCard } from '../../../../components/DynamicCustomerCard';
 import { useCustomerSchema } from '../../../../hooks/useCustomerSchema';
 
@@ -68,16 +69,6 @@ export const CustomerDetailTabFirma: React.FC<CustomerDetailTabFirmaProps> = ({ 
 
   return (
     <Box>
-      {/* Info Banner */}
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2">
-          <strong>Tab "Firma":</strong> Unternehmensprofil, Standorte und Klassifikation.
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {sortedCards.length} Karten · Server-Driven Schema
-        </Typography>
-      </Alert>
-
       {/* 2-Column Grid Layout */}
       <Grid container spacing={2}>
         {sortedCards.map(schema => (

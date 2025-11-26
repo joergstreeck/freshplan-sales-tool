@@ -138,7 +138,7 @@ INSERT INTO customers (
     0,
     0,
     0,
-    'YES',
+    'JA', -- expansion_planned (ExpansionPlan Enum: JA, NEIN, GEPLANT, UNKLAR)
 
     -- Pain Points
     TRUE,
