@@ -22,9 +22,6 @@ import { Step3MultiContactManagement } from '../steps/Step3MultiContactManagemen
 import { Step4AngebotServices } from '../steps/Step4AngebotServices';
 import { CustomerFieldThemeProvider } from '../../theme';
 
-// DEBUG: Field Theme System
-import { debugCustomerFieldTheme } from '../../utils/debugFieldTheme';
-
 /**
  * Wizard step configuration - Verkaufsfokussierte Struktur
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/WIZARD_STRUCTURE_V2.md
@@ -101,13 +98,6 @@ export const CustomerOnboardingWizard: React.FC<CustomerOnboardingWizardProps> =
   } = useCustomerOnboardingStore();
 
   const { save: manualSave } = useAutoSave({ enabled: true, delay: 2000 });
-
-  // DEBUG: Log field theme on mount
-  useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      debugCustomerFieldTheme();
-    }
-  }, []);
 
   // Load initial data in edit mode
   useEffect(() => {
