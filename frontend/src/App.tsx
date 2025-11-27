@@ -18,7 +18,7 @@ import './styles/app.css';
 function App() {
   const [count, setCount] = useState(0);
   const [pingResult, setPingResult] = useState<string>('');
-  const { token } = useAuth();
+  const { token, hasRole } = useAuth();
 
   const handlePing = async () => {
     if (!token) {
@@ -81,22 +81,27 @@ function App() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Benutzerverwaltung</CardTitle>
-                <CardDescription>Verwalten Sie Benutzer und Zugriffsrechte</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="card-actions">
-                  <p className="card-text">Moderne Benutzerverwaltung mit Rollen und Rechten</p>
-                  <div className="card-button-wrapper">
-                    <Button asChild>
-                      <Link to="/admin/users">Benutzerverwaltung öffnen</Link>
-                    </Button>
+            {/* Admin-only: Benutzerverwaltung */}
+            {hasRole('ADMIN') && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Benutzerverwaltung</CardTitle>
+                  <CardDescription>Verwalten Sie Benutzer und Zugriffsrechte</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="card-actions">
+                    <p className="card-text">
+                      Moderne Benutzerverwaltung mit Rollen und Rechten
+                    </p>
+                    <div className="card-button-wrapper">
+                      <Button asChild>
+                        <Link to="/admin/users">Benutzerverwaltung öffnen</Link>
+                      </Button>
+                    </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            )}
 
             <Card>
               <CardHeader>

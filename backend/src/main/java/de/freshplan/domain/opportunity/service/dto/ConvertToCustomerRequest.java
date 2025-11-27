@@ -1,10 +1,14 @@
 package de.freshplan.domain.opportunity.service.dto;
 
+import java.util.UUID;
+
 /**
  * DTO for converting a won Opportunity to a Customer.
  *
  * <p>Used in Opportunity → Customer conversion workflow. All fields are optional - company name
  * defaults to opportunity name if not provided.
+ *
+ * <p>Sprint 2.1.7.7: Added hierarchyType and parentCustomerId for Multi-Location Management.
  *
  * @author FreshPlan Team
  * @since Sprint 2.1.6.2 Phase 2
@@ -28,6 +32,18 @@ public class ConvertToCustomerRequest {
 
   /** Whether to auto-create contact from lead data (defaults to true) */
   private Boolean createContactFromLead = true;
+
+  /**
+   * Hierarchy type for Multi-Location Management (Sprint 2.1.7.7). Valid values: STANDALONE,
+   * HEADQUARTER, FILIALE Defaults to STANDALONE if not provided.
+   */
+  private String hierarchyType;
+
+  /**
+   * Parent Customer ID for FILIALE hierarchy type (Sprint 2.1.7.7). Required when hierarchyType =
+   * FILIALE, ignored otherwise.
+   */
+  private UUID parentCustomerId;
 
   // Constructors
 
@@ -81,6 +97,22 @@ public class ConvertToCustomerRequest {
 
   public void setCreateContactFromLead(Boolean createContactFromLead) {
     this.createContactFromLead = createContactFromLead;
+  }
+
+  public String getHierarchyType() {
+    return hierarchyType;
+  }
+
+  public void setHierarchyType(String hierarchyType) {
+    this.hierarchyType = hierarchyType;
+  }
+
+  public UUID getParentCustomerId() {
+    return parentCustomerId;
+  }
+
+  public void setParentCustomerId(UUID parentCustomerId) {
+    this.parentCustomerId = parentCustomerId;
   }
 
   // Helper Methods
@@ -139,6 +171,16 @@ public class ConvertToCustomerRequest {
 
     public Builder createContactFromLead(Boolean createContactFromLead) {
       request.createContactFromLead = createContactFromLead;
+      return this;
+    }
+
+    public Builder hierarchyType(String hierarchyType) {
+      request.hierarchyType = hierarchyType;
+      return this;
+    }
+
+    public Builder parentCustomerId(UUID parentCustomerId) {
+      request.parentCustomerId = parentCustomerId;
       return this;
     }
 

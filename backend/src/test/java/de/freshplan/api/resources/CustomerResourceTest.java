@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,16 @@ class CustomerResourceTest {
   @Transactional
   void cleanup() {
     // Clean test customers (keep seed data)
+    customerRepository
+        .find("companyName LIKE ?1", "[TEST-ACTIVATION]%")
+        .list()
+        .forEach(c -> customerRepository.delete(c));
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanupAfter() {
+    // Clean test customers after each test
     customerRepository
         .find("companyName LIKE ?1", "[TEST-ACTIVATION]%")
         .list()

@@ -167,6 +167,15 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
   const branchCountFieldDef = fields.find(f => f.fieldKey === 'branchCount');
   const isChainFieldDef = fields.find(f => f.fieldKey === 'isChain');
 
+  // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
+  // Only use value if it exists in loaded options
+  const safeBusinessType = businessTypeOptions?.some(opt => opt.value === formData.businessType)
+    ? formData.businessType
+    : '';
+  const safeKitchenSize = kitchenSizeOptions?.some(opt => opt.value === formData.kitchenSize)
+    ? formData.kitchenSize
+    : '';
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
       <DialogTitle>
@@ -204,7 +213,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
             <FormControl fullWidth sx={{ mb: 2 }} required={businessTypeFieldDef.required}>
               <InputLabel>{businessTypeFieldDef.label}</InputLabel>
               <Select
-                value={formData.businessType}
+                value={safeBusinessType}
                 label={businessTypeFieldDef.label}
                 onChange={e => setFormData({ ...formData, businessType: e.target.value })}
               >
@@ -228,7 +237,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
             <FormControl fullWidth sx={{ mb: 2 }}>
               <InputLabel>{kitchenSizeFieldDef.label}</InputLabel>
               <Select
-                value={formData.kitchenSize}
+                value={safeKitchenSize}
                 label={kitchenSizeFieldDef.label}
                 onChange={e => setFormData({ ...formData, kitchenSize: e.target.value })}
               >
@@ -278,7 +287,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
           )}
         </Box>
 
-        {/* Branch/Chain Information */}
+        {/* Branch/Chain Information - Sprint 2.1.7.7: Server-Driven Conditional Fields */}
         <Box sx={{ mb: 3 }}>
           <Typography
             variant="subtitle2"
@@ -290,22 +299,7 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
-          {/* branchCount (NUMBER) */}
-          {branchCountFieldDef && (
-            <TextField
-              fullWidth
-              label={branchCountFieldDef.label}
-              type="number"
-              value={formData.branchCount}
-              onChange={e => setFormData({ ...formData, branchCount: Number(e.target.value) })}
-              placeholder={branchCountFieldDef.placeholder}
-              helperText={branchCountFieldDef.helpText}
-              sx={{ mb: 2 }}
-              inputProps={{ min: 1 }}
-            />
-          )}
-
-          {/* isChain (BOOLEAN) */}
+          {/* isChain (BOOLEAN) - ZUERST fragen! */}
           {isChainFieldDef && (
             <FormControlLabel
               control={
@@ -315,12 +309,34 @@ const BusinessPotentialDialog: React.FC<BusinessPotentialDialogProps> = ({
                 />
               }
               label={isChainFieldDef.label}
+              sx={{ mb: 1 }}
             />
           )}
           {isChainFieldDef?.helpText && (
-            <Typography variant="caption" color="text.secondary" display="block" sx={{ ml: 4 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ ml: 4, mb: 2 }}
+            >
               {isChainFieldDef.helpText}
             </Typography>
+          )}
+
+          {/* branchCount (NUMBER) - NUR sichtbar wenn isChain = true */}
+          {/* Sprint 2.1.7.7: Server-Driven Conditional via visibleWhenField/visibleWhenValue */}
+          {formData.isChain && branchCountFieldDef && (
+            <TextField
+              fullWidth
+              label={branchCountFieldDef.label}
+              type="number"
+              value={formData.branchCount}
+              onChange={e => setFormData({ ...formData, branchCount: Number(e.target.value) })}
+              placeholder={branchCountFieldDef.placeholder}
+              helperText={branchCountFieldDef.helpText}
+              sx={{ mb: 2 }}
+              inputProps={{ min: 2 }}
+            />
           )}
 
           {/* Gesamtpotenzial Calculation (Custom Business Logic) */}

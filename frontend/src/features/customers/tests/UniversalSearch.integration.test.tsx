@@ -17,7 +17,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import { IntelligentFilterBar } from '../components/filter/IntelligentFilterBar';
+import { IntelligentFilterBar } from '../../shared/components/IntelligentFilterBar';
 import { CustomerDetailPage } from '../../../pages/CustomerDetailPage';
 import { AuthProvider } from '../../../contexts/AuthContext';
 

@@ -16,6 +16,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -41,7 +42,19 @@ public class OpportunityServiceCreateFromLeadTest {
 
   @Inject OpportunityService opportunityService;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   @Inject OpportunityRepository opportunityRepository;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Step 1: Delete opportunities first (FK constraint: opportunities.lead_id -> leads.id)
+    opportunityRepository.deleteAll();
+
+    // Step 2: Delete leads (pattern: [TEST-OPP]%)
+    Lead.delete("companyName LIKE ?1", "[TEST-OPP]%");
+  }
 
   private Lead testLead;
 

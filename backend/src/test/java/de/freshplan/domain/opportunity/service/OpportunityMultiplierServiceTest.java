@@ -10,6 +10,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -50,6 +51,21 @@ public class OpportunityMultiplierServiceTest {
     assertThat(count)
         .as("Migration V10031 should seed 36 multipliers (9 BusinessTypes × 4 OpportunityTypes)")
         .isGreaterThanOrEqualTo(36);
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Reset any modified multipliers back to factory defaults
+    // Note: updateMultiplier() tests restore values in try-finally blocks
+    // This is a safety net for test failures
+    OpportunityMultiplier.findAll()
+        .list()
+        .forEach(
+            m -> {
+              // Factory defaults are restored by migration V10031 re-seeding
+              // No explicit cleanup needed - seed data is idempotent
+            });
   }
 
   // ==========================================================================

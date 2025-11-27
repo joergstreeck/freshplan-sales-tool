@@ -119,6 +119,9 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
     [formData, onUpdate]
   );
 
+  // Track last changed field to determine if debouncing should be used
+  const lastChangedFieldRef = useRef<{ fieldKey: string; fieldType: FieldType } | null>(null);
+
   // Auto-save on formData changes
   useEffect(() => {
     if (isFirstRenderRef.current) {
@@ -141,7 +144,10 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
     });
 
     if (hasChanges) {
-      autoSave(true); // Always immediate
+      // Use immediate save for ENUM fields (dropdowns), debounced for TEXT fields
+      const lastChanged = lastChangedFieldRef.current;
+      const shouldDebounce = lastChanged?.fieldType === 'TEXT' || lastChanged?.fieldType === 'TEXTAREA';
+      autoSave(!shouldDebounce); // immediate for ENUM, debounced for TEXT
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
@@ -166,7 +172,10 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
             <EnumSelect
               field={field}
               value={String(value || '')}
-              onChange={newValue => setFormData({ ...formData, [field.fieldKey]: newValue })}
+              onChange={newValue => {
+                lastChangedFieldRef.current = { fieldKey: field.fieldKey, fieldType: 'ENUM' };
+                setFormData({ ...formData, [field.fieldKey]: newValue });
+              }}
             />
           </Grid>
         );
@@ -177,7 +186,10 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
             <TextField
               label={field.label}
               value={String(value || '')}
-              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              onChange={e => {
+                lastChangedFieldRef.current = { fieldKey: field.fieldKey, fieldType: 'TEXT' };
+                setFormData({ ...formData, [field.fieldKey]: e.target.value });
+              }}
               fullWidth
               placeholder={field.placeholder}
               helperText={field.helpText}
@@ -193,7 +205,10 @@ export function EngagementScoreForm({ lead, onUpdate }: EngagementScoreFormProps
               multiline
               rows={4}
               value={String(value || '')}
-              onChange={e => setFormData({ ...formData, [field.fieldKey]: e.target.value })}
+              onChange={e => {
+                lastChangedFieldRef.current = { fieldKey: field.fieldKey, fieldType: 'TEXTAREA' };
+                setFormData({ ...formData, [field.fieldKey]: e.target.value });
+              }}
               fullWidth
               placeholder={field.placeholder}
               helperText={field.helpText}
@@ -282,11 +297,15 @@ interface EnumSelectProps {
 function EnumSelect({ field, value, onChange }: EnumSelectProps) {
   const { data: options, isLoading } = useEnumOptions(field.enumSource || '');
 
+  // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
+  // Only use value if it exists in loaded options
+  const safeValue = options?.some(opt => opt.value === value) ? value : '';
+
   return (
     <FormControl fullWidth>
       <InputLabel>{field.label}</InputLabel>
       <Select
-        value={value}
+        value={safeValue}
         onChange={e => onChange(e.target.value)}
         label={field.label}
         disabled={isLoading}

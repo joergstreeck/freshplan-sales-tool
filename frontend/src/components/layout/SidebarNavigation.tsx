@@ -1,11 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Box, Drawer, List, IconButton, Tooltip, Typography } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import { useNavigationStore } from '@/store/navigationStore';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 import { NavigationItem } from './NavigationItem';
 import { navigationConfig } from '../../config/navigation.config';
 import { useKeyboardNavigation } from '@/hooks/useKeyboardNavigation';
@@ -36,7 +36,7 @@ const StyledDrawer = styled(Drawer, {
 export const SidebarNavigation: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { userPermissions } = useAuthStore();
+  const { user } = useAuth();
   const {
     activeMenuId,
     expandedMenuId,
@@ -48,6 +48,48 @@ export const SidebarNavigation: React.FC = () => {
     toggleSidebar,
     addToRecentlyVisited,
   } = useNavigationStore();
+
+  // Derive permissions from user roles
+  const userPermissions = useMemo(() => {
+    if (!user?.roles) return [];
+
+    const permissions: string[] = [];
+
+    // Map roles to permissions
+    const roleToPermissions: Record<string, string[]> = {
+      admin: [
+        'cockpit.view',
+        'customers.create',
+        'customers.view',
+        'reports.view',
+        'settings.view',
+        'admin.view',
+        'auditor.view',
+        'manager.view',
+      ],
+      manager: [
+        'cockpit.view',
+        'customers.create',
+        'customers.view',
+        'reports.view',
+        'settings.view',
+        'manager.view',
+      ],
+      sales: ['cockpit.view', 'customers.create', 'customers.view', 'settings.view'],
+      auditor: ['cockpit.view', 'reports.view', 'auditor.view'],
+    };
+
+    // Collect all permissions for user's roles
+    user.roles.forEach(role => {
+      const rolePermissions = roleToPermissions[role.toLowerCase()];
+      if (rolePermissions) {
+        permissions.push(...rolePermissions);
+      }
+    });
+
+    // Return unique permissions
+    return [...new Set(permissions)];
+  }, [user?.roles]);
 
   // Keyboard shortcuts
   useKeyboardNavigation();
@@ -178,6 +220,7 @@ export const SidebarNavigation: React.FC = () => {
             isActive={activeMenuId === item.id}
             isExpanded={expandedMenuId === item.id}
             isCollapsed={isCollapsed}
+            userPermissions={userPermissions}
             onItemClick={() => {
               if (!item.subItems || item.subItems.length === 0) {
                 // No submenu - navigate directly

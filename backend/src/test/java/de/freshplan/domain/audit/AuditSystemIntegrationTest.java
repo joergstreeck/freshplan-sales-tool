@@ -19,6 +19,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,12 @@ class AuditSystemIntegrationTest {
     testEntityId = UUID.randomUUID();
   }
 
-  // Remove unused cleanup method - now done inline in each test
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Audit logs are test-safe to delete
+    auditRepository.deleteAll();
+  }
 
   @Test
   @TestTransaction

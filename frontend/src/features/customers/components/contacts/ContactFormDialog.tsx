@@ -1,10 +1,23 @@
 /**
- * ContactFormDialog Component
+ * ContactFormDialog Component - Server-Driven UI with Stepper Navigation
+ *
+ * Sprint 2.1.7.7: Vollständig Server-Driven Contact Form
  *
  * Modal dialog for creating and editing contacts.
- * Uses Theme Architecture components for consistency.
+ * Uses backend schema from GET /api/contacts/schema for dynamic field rendering.
  *
- * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/step3/FRONTEND_FOUNDATION.md
+ * Architecture:
+ * - Backend: ContactSchemaResource.java (Single Source of Truth)
+ * - Frontend: DynamicFieldRenderer (renders what backend defines)
+ * - Enums: Loaded from /api/enums/* endpoints
+ *
+ * Steps (3):
+ * 1. Stammdaten (basic_info): Anrede, Name, Position, Kontaktdaten
+ * 2. Beziehung (relationship): Geburtstag, Hobbies, Familie
+ * 3. Professionell (social_business): LinkedIn, XING, Business Notizen
+ *
+ * @author FreshPlan Team
+ * @since 2.1.7.7
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
@@ -20,23 +33,20 @@ import {
   Alert,
   FormControlLabel,
   Switch,
-  Tabs,
-  Tab,
+  Stepper,
+  Step,
+  StepLabel,
   useTheme,
   useMediaQuery,
+  CircularProgress,
 } from '@mui/material';
 
-import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
 import { LocationCheckboxList } from '../shared/LocationCheckboxList';
+import { useContactSchema } from '../../../../hooks/useContactSchema';
 
-import type { Contact, CreateContactDTO as _CreateContactDTO } from '../../types/contact.types';
+import type { Contact } from '../../types/contact.types';
 import type { Location } from '../../types/location.types';
-import type { FieldDefinition as _FieldDefinition } from '../../types/field.types';
-import {
-  contactFieldExtensions as _contactFieldExtensions,
-  getContactFieldsForGroup,
-} from '../../data/fieldCatalogContactExtensions';
 
 interface ContactFormDialogProps {
   open: boolean;
@@ -46,31 +56,19 @@ interface ContactFormDialogProps {
   locations?: Location[];
 }
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`contact-tabpanel-${index}`}
-      aria-labelledby={`contact-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 2 }}>{children}</Box>}
-    </div>
-  );
-}
+/**
+ * Step configuration - maps to backend sections
+ */
+const STEP_CONFIG = [
+  { sectionId: 'basic_info', label: 'Stammdaten' },
+  { sectionId: 'relationship', label: 'Beziehung' },
+  { sectionId: 'social_business', label: 'Professionell' },
+] as const;
 
 /**
- * Contact Form Dialog
+ * Contact Form Dialog - Server-Driven with Stepper Navigation
  *
- * Multi-tab form for comprehensive contact data entry.
+ * Multi-step wizard form using backend schema for field definitions.
  */
 export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   open,
@@ -83,10 +81,25 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const isEdit = !!contact;
 
-  // Form state
+  // ========== SERVER-DRIVEN SCHEMA ==========
+  const { data: schemas, isLoading: schemaLoading, isError: schemaError } = useContactSchema();
+
+  // Get sections from schema
+  const sections = useMemo(() => {
+    if (!schemas || schemas.length === 0) return [];
+    return schemas[0]?.sections || [];
+  }, [schemas]);
+
+  // Get fields for a specific section
+  const getFieldsForSection = (sectionId: string) => {
+    const section = sections.find(s => s.sectionId === sectionId);
+    return section?.fields || [];
+  };
+
+  // ========== FORM STATE ==========
   const [formData, setFormData] = useState<Partial<Contact>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [activeTab, setActiveTab] = useState(0);
+  const [activeStep, setActiveStep] = useState(0);
 
   // Initialize form data
   useEffect(() => {
@@ -104,38 +117,16 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
       });
     }
     setErrors({});
-    setActiveTab(0);
+    setActiveStep(0);
   }, [contact, open]);
 
-  // Field groups for tabs
-  const fieldGroups = useMemo(
-    () => [
-      {
-        label: 'Basis',
-        fields: getContactFieldsForGroup('basicInfo').concat(
-          getContactFieldsForGroup('professionalInfo')
-        ),
-      },
-      {
-        label: 'Kontakt',
-        fields: getContactFieldsForGroup('contactDetails').concat(
-          getContactFieldsForGroup('responsibility')
-        ),
-      },
-      {
-        label: 'Beziehung',
-        fields: getContactFieldsForGroup('relationshipData'),
-      },
-    ],
-    []
-  );
+  // ========== EVENT HANDLERS ==========
 
-  // Handle field change
-  const handleFieldChange = (fieldKey: string, value: string | number | boolean | null) => {
+  // Handle field change from DynamicFieldRenderer
+  const handleFieldChange = (fieldKey: string, value: unknown) => {
     setFormData(prev => ({
       ...prev,
-      [fieldKey.replace('contact', '').charAt(0).toLowerCase() +
-      fieldKey.replace('contact', '').slice(1)]: value,
+      [fieldKey]: value,
     }));
 
     // Clear error for this field
@@ -165,32 +156,79 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
     }));
   };
 
-  // Validate form
+  // ========== STEP VALIDATION ==========
+
+  /**
+   * Validate current step fields
+   */
+  const validateCurrentStep = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (activeStep === 0) {
+      // Step 1: Stammdaten - Required fields
+      if (!formData.salutation) {
+        newErrors.salutation = 'Anrede ist erforderlich';
+      }
+      if (!formData.firstName?.trim()) {
+        newErrors.firstName = 'Vorname ist erforderlich';
+      }
+      if (!formData.lastName?.trim()) {
+        newErrors.lastName = 'Nachname ist erforderlich';
+      }
+      // At least one contact method
+      if (!formData.email && !formData.phone && !formData.mobile) {
+        newErrors.email = 'Mindestens eine Kontaktmöglichkeit erforderlich';
+      }
+      // Email validation if provided
+      if (formData.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+          newErrors.email = 'Ungültige E-Mail-Adresse';
+        }
+      }
+      // Location assignment validation
+      if (
+        formData.responsibilityScope === 'specific' &&
+        (!formData.assignedLocationIds || formData.assignedLocationIds.length === 0)
+      ) {
+        newErrors.assignedLocationIds = 'Bitte wählen Sie mindestens einen Standort';
+      }
+    }
+
+    // Steps 2 & 3: No required fields, all optional
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  /**
+   * Validate all steps for final submission
+   */
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    // Required fields
+    // Required fields (Step 1)
+    if (!formData.salutation) {
+      newErrors.salutation = 'Anrede ist erforderlich';
+    }
     if (!formData.firstName?.trim()) {
-      newErrors.contactFirstName = 'Vorname ist erforderlich';
+      newErrors.firstName = 'Vorname ist erforderlich';
     }
     if (!formData.lastName?.trim()) {
-      newErrors.contactLastName = 'Nachname ist erforderlich';
+      newErrors.lastName = 'Nachname ist erforderlich';
     }
-    if (!formData.salutation) {
-      newErrors.contactSalutation = 'Anrede ist erforderlich';
+
+    // At least one contact method
+    if (!formData.email && !formData.phone && !formData.mobile) {
+      newErrors.email = 'Mindestens eine Kontaktmöglichkeit erforderlich';
     }
 
     // Email validation
     if (formData.email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
-        newErrors.contactEmail = 'Ungültige E-Mail-Adresse';
+        newErrors.email = 'Ungültige E-Mail-Adresse';
       }
-    }
-
-    // At least one contact method
-    if (!formData.email && !formData.phone && !formData.mobile) {
-      newErrors.contactEmail = 'Mindestens eine Kontaktmöglichkeit erforderlich';
     }
 
     // Location assignment validation
@@ -202,140 +240,182 @@ export const ContactFormDialog: React.FC<ContactFormDialogProps> = ({
     }
 
     setErrors(newErrors);
+
+    // Navigate to step with first error
+    if (Object.keys(newErrors).length > 0) {
+      setActiveStep(0); // Errors are all in Step 1
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle submit
+  // ========== NAVIGATION ==========
+
+  const handleNext = () => {
+    if (validateCurrentStep()) {
+      setActiveStep(prev => prev + 1);
+    }
+  };
+
+  const handleBack = () => {
+    setActiveStep(prev => prev - 1);
+  };
+
   const handleSubmit = () => {
     if (validateForm()) {
       onSubmit(formData);
       onClose();
-    } else {
-      // Switch to tab with first error
-      const firstErrorField = Object.keys(errors)[0];
-      const errorTabIndex = fieldGroups.findIndex(group =>
-        group.fields.some(field => field.key === firstErrorField)
-      );
-      if (errorTabIndex >= 0) {
-        setActiveTab(errorTabIndex);
-      }
     }
   };
 
-  // Get field value
-  const getFieldValue = (fieldKey: string): string | number | boolean | null | undefined => {
-    const key =
-      fieldKey.replace('contact', '').charAt(0).toLowerCase() +
-      fieldKey.replace('contact', '').slice(1);
-    return formData[key as keyof Contact];
-  };
+  // ========== RENDER ==========
+
+  // Loading state
+  if (schemaLoading) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogContent>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', py: 4 }}>
+            <CircularProgress />
+            <Typography sx={{ ml: 2 }}>Schema wird geladen...</Typography>
+          </Box>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
+  // Error state
+  if (schemaError) {
+    return (
+      <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+        <DialogContent>
+          <Alert severity="error">
+            Fehler beim Laden des Kontakt-Schemas. Bitte versuchen Sie es später erneut.
+          </Alert>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={onClose}>Schließen</Button>
+        </DialogActions>
+      </Dialog>
+    );
+  }
+
+  const currentStep = STEP_CONFIG[activeStep];
+  const fields = getFieldsForSection(currentStep.sectionId);
+  const isLastStep = activeStep === STEP_CONFIG.length - 1;
+  const isFirstStep = activeStep === 0;
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth fullScreen={isMobile}>
       <DialogTitle>{isEdit ? 'Kontakt bearbeiten' : 'Neuen Kontakt anlegen'}</DialogTitle>
 
       <DialogContent dividers>
-        {/* Tabs */}
-        <Tabs
-          value={activeTab}
-          onChange={(_, newValue) => setActiveTab(newValue)}
-          variant={isMobile ? 'fullWidth' : 'standard'}
-          sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}
-        >
-          {fieldGroups.map((group, index) => (
-            <Tab
-              key={index}
-              label={group.label}
-              id={`contact-tab-${index}`}
-              aria-controls={`contact-tabpanel-${index}`}
-            />
-          ))}
-        </Tabs>
+        {/* Stepper Navigation */}
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 3 }}>
+          {STEP_CONFIG.map(step => {
+            const section = sections.find(s => s.sectionId === step.sectionId);
+            return (
+              <Step key={step.sectionId}>
+                <StepLabel>{section?.title || step.label}</StepLabel>
+              </Step>
+            );
+          })}
+        </Stepper>
 
-        {/* Tab Panels */}
-        {fieldGroups.map((group, index) => (
-          <TabPanel key={index} value={activeTab} index={index}>
-            <AdaptiveFormContainer>
-              <DynamicFieldRenderer
-                fields={group.fields}
-                values={Object.fromEntries(
-                  group.fields.map(field => [field.key, getFieldValue(field.key)])
-                )}
-                errors={errors}
-                onChange={handleFieldChange}
-                onBlur={() => {}}
-              />
-            </AdaptiveFormContainer>
-
-            {/* Special handling for responsibility on Contact tab */}
-            {index === 1 && locations.length > 1 && (
-              <Box sx={{ mt: 3 }}>
-                <Divider sx={{ mb: 2 }} />
-                <Typography variant="subtitle2" gutterBottom>
-                  Zuständigkeitsbereich
-                </Typography>
-
-                <Box sx={{ mb: 2 }}>
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={formData.responsibilityScope === 'specific'}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                          handleResponsibilityScopeChange(e.target.checked ? 'specific' : 'all')
-                        }
-                      />
-                    }
-                    label="Nur für bestimmte Standorte zuständig"
-                  />
-                </Box>
-
-                {formData.responsibilityScope === 'specific' && (
-                  <>
-                    <LocationCheckboxList
-                      locations={locations}
-                      selectedLocationIds={formData.assignedLocationIds || []}
-                      onChange={handleLocationChange}
-                    />
-                    {errors.assignedLocationIds && (
-                      <Alert severity="error" sx={{ mt: 1 }}>
-                        {errors.assignedLocationIds}
-                      </Alert>
-                    )}
-                  </>
-                )}
-              </Box>
-            )}
-          </TabPanel>
-        ))}
-
-        {/* Primary Contact Option */}
-        <Box sx={{ mt: 3 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formData.isPrimary || false}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setFormData(prev => ({
-                    ...prev,
-                    isPrimary: e.target.checked,
-                  }))
-                }
-              />
-            }
-            label="Als Hauptansprechpartner festlegen"
+        {/* Step Content */}
+        <Box sx={{ minHeight: 300 }}>
+          {/* Server-Driven Field Rendering */}
+          <DynamicFieldRenderer
+            fields={fields}
+            values={formData as Record<string, unknown>}
+            errors={errors}
+            onChange={handleFieldChange}
+            onBlur={() => {}}
           />
+
+          {/* Special handling for responsibility on Stammdaten step */}
+          {currentStep.sectionId === 'basic_info' && locations.length > 1 && (
+            <Box sx={{ mt: 3 }}>
+              <Divider sx={{ mb: 2 }} />
+              <Typography variant="subtitle2" gutterBottom>
+                Zuständigkeitsbereich
+              </Typography>
+
+              <Box sx={{ mb: 2 }}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={formData.responsibilityScope === 'specific'}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                        handleResponsibilityScopeChange(e.target.checked ? 'specific' : 'all')
+                      }
+                    />
+                  }
+                  label="Nur für bestimmte Standorte zuständig"
+                />
+              </Box>
+
+              {formData.responsibilityScope === 'specific' && (
+                <>
+                  <LocationCheckboxList
+                    locations={locations}
+                    selectedLocationIds={formData.assignedLocationIds || []}
+                    onChange={handleLocationChange}
+                  />
+                  {errors.assignedLocationIds && (
+                    <Alert severity="error" sx={{ mt: 1 }}>
+                      {errors.assignedLocationIds}
+                    </Alert>
+                  )}
+                </>
+              )}
+            </Box>
+          )}
+
+          {/* Primary Contact Option - Show on last step */}
+          {isLastStep && (
+            <Box sx={{ mt: 3 }}>
+              <Divider sx={{ mb: 2 }} />
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={formData.isPrimary || false}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setFormData(prev => ({
+                        ...prev,
+                        isPrimary: e.target.checked,
+                      }))
+                    }
+                  />
+                }
+                label="Als Hauptansprechpartner festlegen"
+              />
+            </Box>
+          )}
         </Box>
       </DialogContent>
 
-      <DialogActions>
+      <DialogActions sx={{ px: 3, py: 2 }}>
         <Button onClick={onClose}>Abbrechen</Button>
-        <Button
-          onClick={handleSubmit}
-          variant="contained"
-          disabled={!formData.firstName || !formData.lastName}
-        >
-          {isEdit ? 'Speichern' : 'Kontakt anlegen'}
-        </Button>
+        <Box sx={{ flex: 1 }} />
+        {!isFirstStep && (
+          <Button onClick={handleBack} sx={{ mr: 1 }}>
+            Zurück
+          </Button>
+        )}
+        {isLastStep ? (
+          <Button
+            onClick={handleSubmit}
+            variant="contained"
+            disabled={!formData.firstName || !formData.lastName}
+          >
+            {isEdit ? 'Speichern' : 'Kontakt anlegen'}
+          </Button>
+        ) : (
+          <Button onClick={handleNext} variant="contained">
+            Weiter
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );

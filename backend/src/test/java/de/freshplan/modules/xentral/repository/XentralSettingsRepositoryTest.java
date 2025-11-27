@@ -8,6 +8,7 @@ import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Integration Tests for XentralSettingsRepository.
@@ -32,6 +33,22 @@ import org.junit.jupiter.api.*;
 class XentralSettingsRepositoryTest {
 
   @Inject XentralSettingsRepository repository;
+
+  @Inject jakarta.persistence.EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete all test settings created during tests
+    // Note: xentral_settings is a singleton table (max 1 row)
+    repository.deleteAll();
+
+    // Verify cleanup succeeded (critical for next test isolation)
+    long count = repository.count();
+    if (count != 0) {
+      throw new IllegalStateException("Cleanup failed - xentral_settings table not empty!");
+    }
+  }
 
   private static final String TEST_URL = "https://test.xentral.biz";
   private static final String TEST_TOKEN = "test-token-12345";

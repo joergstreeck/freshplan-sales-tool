@@ -1,6 +1,7 @@
 /**
  * CreateOpportunityForCustomerDialog Component
  * Sprint 2.1.7.3 - Customer → Opportunity Conversion (Bestandskunden-Workflow)
+ * Sprint 2.1.7.7 - Multi-Location: Branch-Dropdown für HEADQUARTER-Kunden
  *
  * @description MUI Dialog für Opportunity-Erstellung aus aktiven Kunden
  * @features
@@ -8,11 +9,12 @@
  * - 3-Tier Fallback: actualAnnualVolume > expectedAnnualVolume > 0
  * - Automatische Berechnung: baseVolume × multiplier
  * - Default: SORTIMENTSERWEITERUNG (Bestandskunden-Workflow)
+ * - Branch-Dropdown für HEADQUARTER-Kunden (Sprint 2.1.7.7)
  *
  * @since 2025-10-19
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -44,6 +46,11 @@ import CalculateIcon from '@mui/icons-material/Calculate';
 import { httpClient } from '../../../lib/apiClient';
 import { OpportunityType } from '../types/opportunity.types';
 import type { CustomerResponse } from '../../customer/types/customer.types';
+import { CustomerHierarchyType } from '../../customer/types/customer.types';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
+import { useGetBranches } from '../../customer/api/customerQueries';
+import { useMemo } from 'react';
+import AccountTreeIcon from '@mui/icons-material/AccountTree';
 
 interface CreateOpportunityForCustomerDialogProps {
   open: boolean;
@@ -82,18 +89,8 @@ interface ValidationErrors {
 }
 
 /**
- * OpportunityType Labels (German)
- * @see OpportunityCard.tsx getOpportunityTypeLabel()
- */
-const OPPORTUNITY_TYPE_LABELS: Record<OpportunityType, string> = {
-  [OpportunityType.NEUGESCHAEFT]: 'Neugeschäft',
-  [OpportunityType.SORTIMENTSERWEITERUNG]: 'Sortimentserweiterung',
-  [OpportunityType.NEUER_STANDORT]: 'Neuer Standort',
-  [OpportunityType.VERLAENGERUNG]: 'Vertragsverlängerung',
-};
-
-/**
- * OpportunityType Icons (Emojis)
+ * OpportunityType Icons (Emojis) - UI-Concern, bleibt im Frontend
+ * Labels kommen vom Backend via useEnumOptions (Sprint 2.1.7.7 Schema-Driven Forms)
  * @see OpportunityCard.tsx getOpportunityTypeIcon()
  */
 const OPPORTUNITY_TYPE_ICONS: Record<OpportunityType, string> = {
@@ -121,12 +118,9 @@ function getBaseVolume(customer: CustomerResponse): number {
 
 /**
  * Generate default description for Opportunity
+ * (Server-Driven: typeLabel kommt vom Backend)
  */
-function generateDefaultDescription(
-  customer: CustomerResponse,
-  opportunityType: OpportunityType
-): string {
-  const typeLabel = OPPORTUNITY_TYPE_LABELS[opportunityType];
+function generateDefaultDescription(customer: CustomerResponse, typeLabel: string): string {
   const baseVolume = getBaseVolume(customer);
   return `${typeLabel}-Opportunity für Bestandskunde ${customer.companyName}.${
     baseVolume > 0 ? ` Aktuelles Jahresvolumen: ${baseVolume.toLocaleString('de-DE')}€` : ''
@@ -139,6 +133,30 @@ export default function CreateOpportunityForCustomerDialog({
   onClose,
   onSuccess,
 }: CreateOpportunityForCustomerDialogProps) {
+  // Server-Driven Enums (Sprint 2.1.7.7 - Schema-Driven Forms Migration)
+  const { data: opportunityTypeOptions } = useEnumOptions('/api/enums/opportunity-types');
+
+  // Sprint 2.1.7.7: Check if customer is HEADQUARTER (can have branches)
+  const isHeadquarter = customer.hierarchyType === CustomerHierarchyType.HEADQUARTER;
+
+  // Sprint 2.1.7.7: Fetch branches for HEADQUARTER customers
+  const { data: branches, isLoading: branchesLoading } = useGetBranches(
+    isHeadquarter ? customer.id : null,
+    isHeadquarter && open
+  );
+
+  // Create label lookup map for O(1) lookups
+  const opportunityTypeLabels = useMemo(() => {
+    if (!opportunityTypeOptions) return {};
+    return opportunityTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+  }, [opportunityTypeOptions]);
+
   // Form State
   const [name, setName] = useState(customer.companyName); // Pre-filled (OHNE Type-Präfix!)
   const [opportunityType, setOpportunityType] = useState<OpportunityType>(
@@ -148,19 +166,73 @@ export default function CreateOpportunityForCustomerDialog({
   const [expectedCloseDate, setExpectedCloseDate] = useState<Date | null>(addDays(new Date(), 60)); // +60 Tage (Bestandskunden-Deals)
   const [description, setDescription] = useState('');
 
+  // Sprint 2.1.7.7: Selected branch for HEADQUARTER customers
+  // "" = Zentrale (Hauptbetrieb), UUID = Specific branch
+  const [selectedBranchId, setSelectedBranchId] = useState<string>('');
+
   // Business-Type-Matrix State
   const [multipliers, setMultipliers] = useState<OpportunityMultiplierResponse[]>([]);
-  // TODO: Business-Type-Matrix Loading nicht implementiert - isLoadingMultipliers hardcoded auf false
-  const isLoadingMultipliers = false;
+  const [isLoadingMultipliers, setIsLoadingMultipliers] = useState(false);
   const [multipliersError, setMultipliersError] = useState<string | null>(null);
+
+  // Load Business-Type-Matrix Multipliers on Dialog Open
+  useEffect(() => {
+    if (!open) return;
+
+    const loadMultipliers = async () => {
+      setIsLoadingMultipliers(true);
+      setMultipliersError(null);
+      try {
+        const response = await httpClient.get<OpportunityMultiplierResponse[]>(
+          '/api/settings/opportunity-multipliers'
+        );
+        setMultipliers(response.data);
+      } catch (error) {
+        console.error('Failed to load opportunity multipliers:', error);
+        setMultipliersError('Multipliers konnten nicht geladen werden');
+        setMultipliers([]); // Fallback: Empty array
+      } finally {
+        setIsLoadingMultipliers(false);
+      }
+    };
+
+    loadMultipliers();
+  }, [open]);
 
   // UI State
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
+  const [manualValueOverride, setManualValueOverride] = useState(false);
 
-  // TODO: Business-Type-Matrix Auto-Calculation nicht implementiert
-  // Die calculateExpectedValue Funktion wurde entfernt, da sie nie aufgerufen wurde
+  // Auto-Calculate Expected Value (baseVolume × multiplier)
+  useEffect(() => {
+    // Skip if user has manually overridden the value
+    if (manualValueOverride) return;
+
+    // Skip if multipliers haven't loaded yet
+    if (multipliers.length === 0) return;
+
+    const baseVolume = getBaseVolume(customer);
+    if (baseVolume === 0) return; // No volume available
+
+    // Find multiplier for current opportunityType and customer.industry
+    let multiplierValue = 1.0; // Default fallback: 1.0 (wenn keine Industry vorhanden)
+
+    if (customer.industry) {
+      const multiplier = multipliers.find(
+        m => m.businessType === customer.industry && m.opportunityType === opportunityType
+      );
+
+      if (multiplier) {
+        multiplierValue = multiplier.multiplier;
+      }
+    }
+
+    // Calculate with found multiplier or fallback (1.0)
+    const calculatedValue = Math.round(baseVolume * multiplierValue);
+    setExpectedValue(calculatedValue);
+  }, [multipliers, opportunityType, customer, manualValueOverride]);
 
   /**
    * Get current multiplier for display
@@ -215,7 +287,9 @@ export default function CreateOpportunityForCustomerDialog({
         description: description.trim() || undefined,
       };
 
-      await httpClient.post(`/api/opportunities/for-customer/${customer.id}`, request);
+      // Sprint 2.1.7.7: Use selected branch ID or customer ID (Zentrale)
+      const targetCustomerId = selectedBranchId || customer.id;
+      await httpClient.post(`/api/opportunities/for-customer/${targetCustomerId}`, request);
 
       // Success!
       onSuccess();
@@ -261,11 +335,14 @@ export default function CreateOpportunityForCustomerDialog({
       setOpportunityType(OpportunityType.SORTIMENTSERWEITERUNG);
       setExpectedValue(undefined);
       setExpectedCloseDate(addDays(new Date(), 60));
-      setDescription(generateDefaultDescription(customer, OpportunityType.SORTIMENTSERWEITERUNG));
+      const label =
+        opportunityTypeLabels[OpportunityType.SORTIMENTSERWEITERUNG] || 'Sortimentserweiterung';
+      setDescription(generateDefaultDescription(customer, label));
       setApiError(null);
       setValidationErrors({});
       setMultipliers([]);
       setMultipliersError(null);
+      setSelectedBranchId(''); // Sprint 2.1.7.7: Reset branch selection
       onClose();
     }
   };
@@ -333,7 +410,7 @@ export default function CreateOpportunityForCustomerDialog({
                   {customer.actualAnnualVolume ? 'Xentral' : 'Lead-Schätzung'})
                   <br />
                   Multiplier: {currentMultiplier} ({customer.industry || 'UNKNOWN'} ×{' '}
-                  {OPPORTUNITY_TYPE_LABELS[opportunityType]})
+                  {opportunityTypeLabels[opportunityType] || opportunityType})
                   <br />
                   <strong>Erwarteter Wert: {expectedValue?.toLocaleString('de-DE')}€</strong>
                 </Typography>
@@ -360,7 +437,59 @@ export default function CreateOpportunityForCustomerDialog({
               }}
             />
 
-            {/* Opportunity Type Select */}
+            {/* Sprint 2.1.7.7: Branch Dropdown für HEADQUARTER-Kunden */}
+            {isHeadquarter && (
+              <FormControl fullWidth disabled={isSubmitting || branchesLoading}>
+                <InputLabel>Standort</InputLabel>
+                <Select
+                  value={selectedBranchId}
+                  onChange={e => setSelectedBranchId(e.target.value)}
+                  label="Standort"
+                  startAdornment={
+                    <InputAdornment position="start">
+                      <AccountTreeIcon />
+                    </InputAdornment>
+                  }
+                >
+                  <MenuItem value="">
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <BusinessIcon fontSize="small" color="primary" />
+                      <Typography fontWeight="bold">{customer.companyName} (Zentrale)</Typography>
+                    </Stack>
+                  </MenuItem>
+                  {branchesLoading && (
+                    <MenuItem disabled>
+                      <CircularProgress size={16} sx={{ mr: 1 }} />
+                      <Typography>Lade Filialen...</Typography>
+                    </MenuItem>
+                  )}
+                  {branches?.map(branch => (
+                    <MenuItem key={branch.id} value={branch.id}>
+                      <Stack>
+                        <Typography>{branch.companyName}</Typography>
+                        {branch.city && (
+                          <Typography variant="caption" color="text.secondary">
+                            {branch.city}
+                          </Typography>
+                        )}
+                      </Stack>
+                    </MenuItem>
+                  ))}
+                  {!branchesLoading && branches?.length === 0 && (
+                    <MenuItem disabled>
+                      <Typography variant="body2" color="text.secondary">
+                        Keine Filialen vorhanden
+                      </Typography>
+                    </MenuItem>
+                  )}
+                </Select>
+                <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.5 }}>
+                  Wählen Sie den Standort für diese Opportunity
+                </Typography>
+              </FormControl>
+            )}
+
+            {/* Opportunity Type Select (Sprint 2.1.7.7 - Server-Driven Enums) */}
             <FormControl fullWidth disabled={isSubmitting}>
               <InputLabel>Opportunity-Typ</InputLabel>
               <Select
@@ -368,11 +497,13 @@ export default function CreateOpportunityForCustomerDialog({
                 onChange={e => setOpportunityType(e.target.value as OpportunityType)}
                 label="Opportunity-Typ"
               >
-                {Object.values(OpportunityType).map(type => (
-                  <MenuItem key={type} value={type}>
+                {opportunityTypeOptions?.map(option => (
+                  <MenuItem key={option.value} value={option.value}>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography>{OPPORTUNITY_TYPE_ICONS[type]}</Typography>
-                      <Typography>{OPPORTUNITY_TYPE_LABELS[type]}</Typography>
+                      <Typography>
+                        {OPPORTUNITY_TYPE_ICONS[option.value as OpportunityType]}
+                      </Typography>
+                      <Typography>{option.label}</Typography>
                     </Stack>
                   </MenuItem>
                 ))}
@@ -387,7 +518,10 @@ export default function CreateOpportunityForCustomerDialog({
               label="Erwarteter Wert"
               type="number"
               value={expectedValue || ''}
-              onChange={e => setExpectedValue(parseFloat(e.target.value) || undefined)}
+              onChange={e => {
+                setExpectedValue(parseFloat(e.target.value) || undefined);
+                setManualValueOverride(true); // User manually changed value
+              }}
               fullWidth
               required
               disabled={isSubmitting}

@@ -1,0 +1,175 @@
+name: Frontend Pipeline
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-pipeline.yml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'frontend/**'
+  workflow_dispatch:  # Manual trigger for coverage reports
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  # ============================================================================
+  # 1. Lint + Type Check (Fast Feedback)
+  # ============================================================================
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check TypeScript
+        run: npm run type-check
+
+      - name: Check Prettier formatting
+        run: npm run format:check || echo "format:check script not found, skipping"
+
+  # ============================================================================
+  # 2. Unit Tests + Coverage
+  # ============================================================================
+  test:
+    name: Unit Tests + Coverage
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Archive coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-report
+          path: frontend/coverage/
+          retention-days: 30
+
+      - name: Upload coverage summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-summary
+          path: frontend/coverage/coverage-summary.json
+          retention-days: 7
+
+      - name: Test Summary
+        if: success()
+        run: |
+          echo "✅ All frontend tests passed!" >> $GITHUB_STEP_SUMMARY
+          echo "**Coverage Report:** Available in artifacts" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 3. Production Build
+  # ============================================================================
+  build:
+    name: Production Build
+    needs: [lint, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for production
+        run: npm run build
+
+      - name: Check build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "❌ Build failed - dist/ directory not found"
+            exit 1
+          fi
+
+          echo "✅ Production build successful"
+          echo "📦 Build size:" >> $GITHUB_STEP_SUMMARY
+          du -sh dist/ >> $GITHUB_STEP_SUMMARY
+
+      - name: Archive production build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-production-build
+          path: frontend/dist/
+          retention-days: 7
+
+  # ============================================================================
+  # Final Pipeline Gate
+  # ============================================================================
+  pipeline-gate:
+    name: Frontend Pipeline Complete
+    needs: [lint, test, build]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.test.result }}" == "failure" ]] || \
+             [[ "${{ needs.build.result }}" == "failure" ]]; then
+            echo "❌ Frontend Pipeline FAILED"
+            exit 1
+          fi
+
+          echo "✅ Frontend Pipeline PASSED!"

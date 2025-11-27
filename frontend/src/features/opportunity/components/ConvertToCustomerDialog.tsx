@@ -54,13 +54,24 @@ interface XentralCustomerDTO {
 /**
  * Request DTO für Opportunity → Customer Konvertierung
  * Backend: ConvertToCustomerRequest.java (Sprint 2.1.7.1)
- * Sprint 2.1.7.2: hierarchyType für Multi-Location Vorbereitung
+ * Sprint 2.1.7.7: hierarchyType + parentCustomerId für Multi-Location Management
  */
 interface ConvertToCustomerRequest {
   companyName: string;
   xentralCustomerId?: string;
   hierarchyType?: 'STANDALONE' | 'HEADQUARTER' | 'FILIALE';
+  parentCustomerId?: string;
   notes?: string;
+}
+
+/**
+ * Customer DTO for Parent-Selection (Sprint 2.1.7.7 D0)
+ */
+interface Customer {
+  id: string;
+  companyName: string;
+  city?: string;
+  businessType?: string;
 }
 
 /**
@@ -95,12 +106,41 @@ export default function ConvertToCustomerDialog({
   );
   const [loading, setLoading] = useState(false);
 
+  // Parent-Selection (Sprint 2.1.7.7 D0)
+  const [parentCustomer, setParentCustomer] = useState<Customer | null>(null);
+  const [headquarterCustomers, setHeadquarterCustomers] = useState<Customer[]>([]);
+  const [loadingHeadquarters, setLoadingHeadquarters] = useState(false);
+
   // Xentral Customers
   const [xentralCustomers, setXentralCustomers] = useState<XentralCustomerDTO[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(false);
 
   // Error State (statt Toast)
   const [apiError, setApiError] = useState<string | null>(null);
+
+  /**
+   * Load Headquarter Customers for Parent-Selection (Sprint 2.1.7.7 D0)
+   * Backend: GET /api/customers?hierarchyType=HEADQUARTER
+   */
+  useEffect(() => {
+    if (open) {
+      loadHeadquarterCustomers();
+    }
+  }, [open]);
+
+  const loadHeadquarterCustomers = async () => {
+    setLoadingHeadquarters(true);
+    try {
+      const response = await httpClient.get<Customer[]>('/api/customers?hierarchyType=HEADQUARTER');
+      setHeadquarterCustomers(response.data || []);
+    } catch (error) {
+      console.error('Failed to load headquarter customers:', error);
+      setApiError('Fehler beim Laden der Zentral-Kunden');
+      setHeadquarterCustomers([]);
+    } finally {
+      setLoadingHeadquarters(false);
+    }
+  };
 
   /**
    * Load Xentral Customers (verkäufer-gefiltert)
@@ -153,6 +193,7 @@ export default function ConvertToCustomerDialog({
         companyName: companyName.trim(),
         xentralCustomerId: selectedXentralCustomer?.xentralId,
         hierarchyType: hierarchyType,
+        parentCustomerId: hierarchyType === 'FILIALE' ? parentCustomer?.id : undefined,
         notes: notes.trim() || undefined,
       };
 
@@ -169,7 +210,7 @@ export default function ConvertToCustomerDialog({
       }
 
       onClose();
-      navigate(`/customers/${customer.id}`);
+      navigate(`/customer-management/customers/${customer.id}`);
     } catch (error: unknown) {
       console.error('Failed to convert opportunity:', error);
       const errorMessage =
@@ -190,6 +231,7 @@ export default function ConvertToCustomerDialog({
         opportunity.customerName || opportunity.leadCompanyName || opportunity.name || ''
       );
       setSelectedXentralCustomer(null);
+      setParentCustomer(null);
       setNotes('');
       setHierarchyType('STANDALONE');
       setApiError(null);
@@ -241,15 +283,65 @@ export default function ConvertToCustomerDialog({
             >
               <MenuItem value="STANDALONE">Einzelbetrieb</MenuItem>
               <MenuItem value="HEADQUARTER">Zentrale/Hauptbetrieb (mit Filialen)</MenuItem>
-              <MenuItem value="FILIALE" disabled>
-                Filiale (gehört zu Zentrale) - Bald verfügbar
-              </MenuItem>
+              <MenuItem value="FILIALE">Filiale (gehört zu Zentrale)</MenuItem>
             </Select>
             <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, ml: 1.75 }}>
-              Einzelbetriebe und Zentralen können sofort angelegt werden. Filialen-Zuordnung folgt
-              in Sprint 2.1.7.7.
+              Wählen Sie den Unternehmenstyp basierend auf der Organisationsstruktur.
             </Typography>
           </FormControl>
+
+          {/* Parent-Selection Autocomplete (Sprint 2.1.7.7 D0) */}
+          {hierarchyType === 'FILIALE' && (
+            <Autocomplete
+              options={headquarterCustomers}
+              loading={loadingHeadquarters}
+              value={parentCustomer}
+              onChange={(event, value) => setParentCustomer(value)}
+              getOptionLabel={option => option.companyName}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  label="Gehört zu (Hauptbetrieb)"
+                  required
+                  helperText="Wählen Sie den Hauptbetrieb aus, zu dem diese Filiale gehört"
+                  InputProps={{
+                    ...params.InputProps,
+                    endAdornment: (
+                      <>
+                        {loadingHeadquarters ? (
+                          <CircularProgress color="inherit" size={20} />
+                        ) : null}
+                        {params.InputProps.endAdornment}
+                      </>
+                    ),
+                  }}
+                />
+              )}
+              renderOption={(props, option) => (
+                <Box component="li" {...props}>
+                  <Stack>
+                    <Typography variant="body1">{option.companyName}</Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {option.city && `${option.city}`}
+                      {option.businessType && ` • ${option.businessType}`}
+                    </Typography>
+                  </Stack>
+                </Box>
+              )}
+              noOptionsText={
+                loadingHeadquarters ? 'Lade Hauptbetriebe...' : 'Keine Hauptbetriebe gefunden'
+              }
+              isOptionEqualToValue={(option, value) => option.id === value.id}
+            />
+          )}
+
+          {/* Warning Alert: FILIALE ohne Parent */}
+          {hierarchyType === 'FILIALE' && !parentCustomer && (
+            <Alert severity="warning">
+              <AlertTitle>Hauptbetrieb erforderlich</AlertTitle>
+              Bitte wählen Sie den Hauptbetrieb aus, zu dem diese Filiale gehört.
+            </Alert>
+          )}
 
           {/* Xentral-Kunden-Dropdown */}
           <Autocomplete
@@ -353,7 +445,9 @@ export default function ConvertToCustomerDialog({
           variant="contained"
           color="primary"
           onClick={handleConvert}
-          disabled={loading || !companyName.trim()}
+          disabled={
+            loading || !companyName.trim() || (hierarchyType === 'FILIALE' && !parentCustomer)
+          }
           startIcon={loading ? <CircularProgress size={20} /> : <CheckCircleIcon />}
         >
           {loading ? 'Wird angelegt...' : 'Customer anlegen'}

@@ -3,7 +3,7 @@ package de.freshplan.modules.xentral.service;
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerStatus;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.customer.service.CustomerService;
+import de.freshplan.domain.customer.service.CustomerActivation;
 import de.freshplan.infrastructure.security.RlsContext;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -43,7 +43,7 @@ public class XentralOrderEventHandlerImpl implements XentralOrderEventHandler {
 
   @Inject CustomerRepository customerRepository;
 
-  @Inject CustomerService customerService;
+  @Inject CustomerActivation customerActivation;
 
   /**
    * Handle "Order Delivered" event from Xentral
@@ -101,8 +101,9 @@ public class XentralOrderEventHandlerImpl implements XentralOrderEventHandler {
           customer.getCompanyName(),
           xentralCustomerId);
 
-      // Sprint 2.1.7.4: Use CustomerService.activateCustomer()
-      customerService.activateCustomer(customer.getId(), orderNumber);
+      // Sprint 2.1.7.4: Use CustomerActivation.activateCustomer() (Cycle 2 fix: Interface
+      // abstraction)
+      customerActivation.activateCustomer(customer.getId(), orderNumber);
 
       logger.info(
           "Customer activated successfully: {} → AKTIV (order: {})",

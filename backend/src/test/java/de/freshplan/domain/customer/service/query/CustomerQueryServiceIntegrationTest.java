@@ -16,10 +16,12 @@ import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -40,8 +42,35 @@ class CustomerQueryServiceIntegrationTest {
 
   @Inject CustomerRepository customerRepository;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   private UUID testCustomerId;
   private String testCustomerNumber;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test customers using pattern matching (correct FK order: child → parent)
+    // Pattern: KD-TEST-* or any customer with isTestData=true
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN (SELECT id FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true)")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customers WHERE customer_number LIKE 'KD-%' OR is_test_data = true")
+        .executeUpdate();
+  }
 
   private void setupTestData() {
     // Create a test customer directly in DB for read tests using CustomerBuilder
@@ -57,7 +86,7 @@ class CustomerQueryServiceIntegrationTest {
     // Use unique customer number to avoid constraint violations
     testCustomer.setCustomerNumber("KD-TEST-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Test Company GmbH");
-    testCustomer.setLegalForm("GmbH");
+    testCustomer.setLegalForm("GMBH");
     testCustomer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     testCustomer.setRiskScore(50);
     testCustomer.setActualAnnualVolume(new BigDecimal("80000.00"));
@@ -364,7 +393,7 @@ class CustomerQueryServiceIntegrationTest {
       // Override specific fields to maintain test requirements
       customer.setCustomerNumber(de.freshplan.testsupport.UniqueData.customerNumber("KD", i + 1));
       customer.setCompanyName("Test Company " + i);
-      customer.setLegalForm("GmbH");
+      customer.setLegalForm("GMBH");
       customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
       customer.setRiskScore(40 + i);
       customer.setCreatedBy("test-user");
@@ -388,7 +417,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -411,7 +440,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -434,7 +463,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(riskScore);
     customer.setCreatedBy("test-user");
@@ -457,7 +486,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setLastContactDate(lastContact);
@@ -482,7 +511,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(CustomerLifecycleStage.GROWTH);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");
@@ -505,7 +534,7 @@ class CustomerQueryServiceIntegrationTest {
     customer.setCustomerNumber(
         de.freshplan.testsupport.UniqueData.customerNumber("KD", (int) (Math.random() * 10000)));
     customer.setCompanyName(name);
-    customer.setLegalForm("GmbH");
+    customer.setLegalForm("GMBH");
     customer.setLifecycleStage(stage);
     customer.setRiskScore(50);
     customer.setCreatedBy("test-user");

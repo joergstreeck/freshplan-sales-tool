@@ -13,6 +13,9 @@ import de.freshplan.test.builders.CustomerTestDataFactory;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -32,6 +35,25 @@ public class ContactsCountConsistencyTest {
   @Inject CustomerService customerService; // Legacy
 
   @Inject CustomerQueryService queryService; // CQRS
+
+  @Inject EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete in correct order using native SQL (FK constraints!)
+    // 1. Delete contact_location_assignments for test contacts
+    em.createNativeQuery(
+            "DELETE FROM contact_location_assignments WHERE contact_id IN "
+                + "(SELECT cc.id FROM customer_contacts cc JOIN customers c ON cc.customer_id = c.id WHERE c.customer_number LIKE 'TC%')")
+        .executeUpdate();
+    // 2. Delete contacts for test customers
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TC%')")
+        .executeUpdate();
+    // 3. Delete test customers
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TC%'").executeUpdate();
+  }
 
   @Test
   @TestTransaction

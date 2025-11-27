@@ -1,8 +1,6 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, screen, fireEvent } from '../test/test-utils';
 import { LoginBypassPage } from './LoginBypassPage';
-import { useAuth } from '../contexts/AuthContext';
 
 // Mock dependencies
 vi.mock('react-router-dom', async () => {
@@ -13,11 +11,10 @@ vi.mock('react-router-dom', async () => {
   };
 });
 
-vi.mock('../contexts/AuthContext');
+// Mock keycloak to prevent auth initialization
+vi.mock('../lib/keycloak');
 
 const mockNavigate = vi.fn();
-const mockLogin = vi.fn();
-const mockUseAuth = useAuth as ReturnType<typeof vi.fn>;
 
 // Mock localStorage
 const localStorageMock = {
@@ -26,7 +23,7 @@ const localStorageMock = {
   removeItem: vi.fn(),
   clear: vi.fn(),
 };
-Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+Object.defineProperty(window, 'localStorage', { value: localStorageMock, writable: true });
 
 // Mock window.location
 delete (window as Record<string, unknown>).location;
@@ -35,21 +32,19 @@ window.location = { href: '' } as Location;
 describe('LoginBypassPage', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockUseAuth.mockReturnValue({
-      login: mockLogin,
-      logout: vi.fn(),
-      user: null,
-      token: null,
-    });
+    // Disable auth bypass to prevent test-utils providers from interfering
+    vi.stubEnv('VITE_AUTH_BYPASS', 'false');
+    vi.stubEnv('DEV', 'false');
     window.location.href = '';
+    localStorageMock.getItem.mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
   });
 
   it('renders development login bypass UI', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     expect(screen.getByText('Development Login Bypass')).toBeInTheDocument();
     expect(
@@ -60,11 +55,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('displays all role buttons', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     expect(screen.getByRole('button', { name: /login as admin/i })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /login as manager/i })).toBeInTheDocument();
@@ -72,11 +63,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('displays role descriptions', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     // Check for role descriptions in the list - German text
     expect(
@@ -87,11 +74,7 @@ describe('LoginBypassPage', () => {
   });
 
   it('sets localStorage and redirects when admin button is clicked', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     const adminButton = screen.getByRole('button', { name: /login as admin/i });
     fireEvent.click(adminButton);
@@ -104,15 +87,11 @@ describe('LoginBypassPage', () => {
       'auth-user',
       expect.stringContaining('admin@freshplan.de')
     );
-    expect(window.location.href).toBe('/');
+    expect(window.location.href).toBe('/cockpit');
   });
 
   it('navigates back to home when back button is clicked', () => {
-    render(
-      <BrowserRouter>
-        <LoginBypassPage />
-      </BrowserRouter>
-    );
+    render(<LoginBypassPage />);
 
     const backButton = screen.getByRole('button', { name: /back to home/i });
     fireEvent.click(backButton);

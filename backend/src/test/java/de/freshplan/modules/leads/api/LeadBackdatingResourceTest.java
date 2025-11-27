@@ -13,6 +13,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -38,12 +39,23 @@ class LeadBackdatingResourceTest {
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
 
-    Territory territory = Territory.findByCode("DE");
+    // Clear persistence context to avoid stale references
+    em.flush();
+    em.clear();
+
+    // Get or create Territory - always use em.find/em.merge to ensure managed state
+    Territory territory = em.find(Territory.class, "DE");
     if (territory == null) {
-      territory = Territory.getDefault();
-      if (territory.id == null) {
-        territory.persist();
-      }
+      territory = new Territory();
+      territory.id = "DE";
+      territory.name = "Deutschland";
+      territory.countryCode = "DE";
+      territory.currencyCode = "EUR";
+      territory.languageCode = "de-DE";
+      territory.taxRate = new java.math.BigDecimal("19.00");
+      territory.active = true;
+      em.persist(territory);
+      em.flush();
     }
 
     testLead = new Lead();
@@ -57,6 +69,16 @@ class LeadBackdatingResourceTest {
     testLead.protectionStartAt = testLead.registeredAt;
     testLead.progressDeadline = testLead.registeredAt.plusDays(60);
     testLead.persist();
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test data after each test (FK constraint order!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
   }
 
   @Test

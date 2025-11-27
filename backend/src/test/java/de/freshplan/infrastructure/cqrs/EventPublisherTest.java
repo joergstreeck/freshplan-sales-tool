@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.UUID;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,19 @@ public class EventPublisherTest {
   @Transactional
   void cleanup() {
     // Clean up test events before each test
+    try (Connection conn = dataSource.getConnection();
+        PreparedStatement stmt =
+            conn.prepareStatement("DELETE FROM domain_events WHERE user_id = 'test-user'")) {
+      stmt.executeUpdate();
+    } catch (Exception e) {
+      // Ignore cleanup errors
+    }
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanupAfter() {
+    // Clean up test events after each test
     try (Connection conn = dataSource.getConnection();
         PreparedStatement stmt =
             conn.prepareStatement("DELETE FROM domain_events WHERE user_id = 'test-user'")) {

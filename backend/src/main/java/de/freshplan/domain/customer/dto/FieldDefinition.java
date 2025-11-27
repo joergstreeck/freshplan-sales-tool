@@ -174,7 +174,43 @@ public record FieldDefinition(
      *
      * <p>Only relevant if showInWizard = true
      */
-    Boolean showDividerAfter) {
+    Boolean showDividerAfter,
+
+    /**
+     * Number of rows for TEXTAREA fields
+     *
+     * <p>Sprint 2.1.7.7: Compact textarea layout
+     *
+     * <p>Controls the height of textarea fields (default: 4)
+     */
+    Integer rows,
+
+    // ========== CONDITIONAL VISIBILITY (Sprint 2.1.7.7) ==========
+
+    /**
+     * Conditional visibility: Field key to check
+     *
+     * <p>Sprint 2.1.7.7: Server-Driven Conditional Fields
+     *
+     * <p>This field is only visible when another field has a specific value.
+     *
+     * <p>Example: branchCount is only visible when isChain = true
+     *
+     * <p>Usage: visibleWhenField = "isChain", visibleWhenValue = "true"
+     */
+    String visibleWhenField,
+
+    /**
+     * Conditional visibility: Expected value
+     *
+     * <p>Sprint 2.1.7.7: Server-Driven Conditional Fields
+     *
+     * <p>The value that visibleWhenField must have for this field to be visible.
+     *
+     * <p>For BOOLEAN fields: "true" or "false" For ENUM fields: the enum value (e.g. "ja", "nein")
+     * For TEXT fields: exact string match
+     */
+    String visibleWhenValue) {
 
   /** Builder for convenient FieldDefinition creation */
   public static Builder builder() {
@@ -202,6 +238,10 @@ public record FieldDefinition(
     private String wizardSectionId;
     private String wizardSectionTitle;
     private Boolean showDividerAfter = false;
+    private Integer rows; // Sprint 2.1.7.7: Textarea rows
+    // Conditional visibility (Sprint 2.1.7.7)
+    private String visibleWhenField;
+    private String visibleWhenValue;
 
     public Builder fieldKey(String fieldKey) {
       this.fieldKey = fieldKey;
@@ -341,6 +381,45 @@ public record FieldDefinition(
       return this;
     }
 
+    /**
+     * Set number of rows for TEXTAREA fields
+     *
+     * <p>Sprint 2.1.7.7: Compact textarea layout
+     *
+     * @param rows number of rows (default: 4)
+     * @return this builder
+     */
+    public Builder rows(Integer rows) {
+      this.rows = rows;
+      return this;
+    }
+
+    /**
+     * Set conditional visibility field
+     *
+     * <p>Sprint 2.1.7.7: Server-Driven Conditional Fields
+     *
+     * @param visibleWhenField the field key to check for visibility
+     * @return this builder
+     */
+    public Builder visibleWhenField(String visibleWhenField) {
+      this.visibleWhenField = visibleWhenField;
+      return this;
+    }
+
+    /**
+     * Set conditional visibility value
+     *
+     * <p>Sprint 2.1.7.7: Server-Driven Conditional Fields
+     *
+     * @param visibleWhenValue the expected value for the field to be visible
+     * @return this builder
+     */
+    public Builder visibleWhenValue(String visibleWhenValue) {
+      this.visibleWhenValue = visibleWhenValue;
+      return this;
+    }
+
     public FieldDefinition build() {
       return new FieldDefinition(
           fieldKey,
@@ -360,7 +439,10 @@ public record FieldDefinition(
           wizardOrder,
           wizardSectionId,
           wizardSectionTitle,
-          showDividerAfter);
+          showDividerAfter,
+          rows,
+          visibleWhenField,
+          visibleWhenValue);
     }
   }
 }

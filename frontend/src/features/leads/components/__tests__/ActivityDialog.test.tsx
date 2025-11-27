@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, beforeAll, afterEach, afterAll } from 'vitest';
+import { render, screen, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom';
 import { ActivityDialog } from '../ActivityDialog';
@@ -24,21 +24,93 @@ import { setupServer } from 'msw/node';
  * Testing Pattern: Vitest + React Testing Library + MSW
  */
 
-// Mock useActivityOutcomes hook
-vi.mock('../../../../hooks/useActivityOutcomes', () => ({
-  useActivityOutcomes: vi.fn(() => ({
+// Mock useActivitySchema hook (Component uses schema-driven UI!)
+vi.mock('../../../../hooks/useActivitySchema', () => ({
+  useActivitySchema: vi.fn(() => ({
     data: [
-      { value: 'SUCCESSFUL', label: 'Erfolgreich' },
-      { value: 'UNSUCCESSFUL', label: 'Nicht erfolgreich' },
-      { value: 'NO_ANSWER', label: 'Keine Antwort' },
-      { value: 'CALLBACK_REQUESTED', label: 'Rückruf gewünscht' },
-      { value: 'INFO_SENT', label: 'Info versendet' },
-      { value: 'QUALIFIED', label: 'Qualifiziert' },
-      { value: 'DISQUALIFIED', label: 'Disqualifiziert' },
+      {
+        cardId: 'activity',
+        title: 'Neue Aktivität erfassen',
+        sections: [
+          {
+            sectionId: 'activity_details',
+            title: 'Activity Details',
+            fields: [
+              {
+                fieldKey: 'activityType',
+                label: 'Aktivitätstyp',
+                type: 'ENUM',
+                required: true,
+                enumSource: '/api/enums/activity-types',
+                helpText: 'Select activity type',
+              },
+              {
+                fieldKey: 'description',
+                label: 'Beschreibung',
+                type: 'TEXTAREA',
+                required: true,
+                placeholder: 'Enter description...',
+                helpText: 'Describe the activity',
+              },
+              {
+                fieldKey: 'outcome',
+                label: 'Ergebnis (optional)',
+                type: 'ENUM',
+                required: false,
+                enumSource: '/api/enums/activity-outcomes',
+                helpText: 'Hilft beim Tracking von Erfolg',
+              },
+            ],
+          },
+        ],
+      },
     ],
     isLoading: false,
     error: null,
   })),
+}));
+
+// Mock useEnumOptions hook (Returns different options based on enumSource)
+vi.mock('../../../../hooks/useEnumOptions', () => ({
+  useEnumOptions: vi.fn((enumSource: string) => {
+    // Return activity type options
+    if (enumSource === '/api/enums/activity-types') {
+      return {
+        data: [
+          { value: 'CALL', label: 'Anruf' },
+          { value: 'EMAIL', label: 'E-Mail' },
+          { value: 'MEETING', label: 'Meeting' },
+          { value: 'NOTE', label: 'Notiz' },
+        ],
+        isLoading: false,
+        error: null,
+      };
+    }
+
+    // Return activity outcome options
+    if (enumSource === '/api/enums/activity-outcomes') {
+      return {
+        data: [
+          { value: 'SUCCESSFUL', label: 'Erfolgreich' },
+          { value: 'UNSUCCESSFUL', label: 'Nicht erfolgreich' },
+          { value: 'NO_ANSWER', label: 'Keine Antwort' },
+          { value: 'CALLBACK_REQUESTED', label: 'Rückruf gewünscht' },
+          { value: 'INFO_SENT', label: 'Info versendet' },
+          { value: 'QUALIFIED', label: 'Qualifiziert' },
+          { value: 'DISQUALIFIED', label: 'Disqualifiziert' },
+        ],
+        isLoading: false,
+        error: null,
+      };
+    }
+
+    // Default: empty options
+    return {
+      data: [],
+      isLoading: false,
+      error: null,
+    };
+  }),
 }));
 
 // MSW Server for API mocking

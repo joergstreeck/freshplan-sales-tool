@@ -18,10 +18,12 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -48,6 +50,13 @@ class HelpContentCQRSIntegrationTest {
   @Inject HelpContentRepository helpRepository;
 
   @Inject EventBus eventBus;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data - using feature field which exists in HelpContent entity
+    helpRepository.delete("feature LIKE ?1", "test-feature-%");
+  }
 
   @ConfigProperty(name = "features.cqrs.enabled", defaultValue = "false")
   boolean cqrsEnabled;

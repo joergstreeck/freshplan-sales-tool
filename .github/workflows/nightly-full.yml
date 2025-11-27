@@ -1,0 +1,439 @@
+name: Nightly Pipeline (Full)
+
+on:
+  schedule:
+    # Run at 2 AM UTC every day
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      debug_enabled:
+        type: boolean
+        description: 'Enable debug logging'
+        required: false
+        default: false
+
+jobs:
+  # ============================================================================
+  # 1. Full Test Suite (Backend + Frontend)
+  # ============================================================================
+  full-test-suite:
+    name: Complete Test Suite
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+          POSTGRES_DB: freshplan
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      # Backend Full Tests
+      - name: Backend Unit Tests (Full)
+        env:
+          QUARKUS_PROFILE: ci
+          PGPASSWORD: freshplan
+        run: |
+          cd backend
+          ./mvnw -B clean test \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false
+
+      - name: Backend Integration Tests
+        env:
+          QUARKUS_PROFILE: ci
+          PGPASSWORD: freshplan
+        run: |
+          cd backend
+          ./mvnw -B verify \
+            -DskipUnitTests \
+            -Dgroups="integration" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false
+
+      - name: Backend Coverage Report
+        run: |
+          cd backend
+          ./mvnw jacoco:report
+          echo "📊 Coverage report generated at backend/target/site/jacoco/index.html"
+
+      # Frontend Full Tests
+      - name: Frontend Tests (Full)
+        run: |
+          cd frontend
+          npm ci
+          npm run test:coverage
+
+      - name: Upload Backend Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-nightly
+          path: backend/target/site/jacoco/
+          retention-days: 30
+
+      - name: Upload Frontend Coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage-nightly
+          path: frontend/coverage/
+          retention-days: 30
+
+  # ============================================================================
+  # 2. SOLID Principles Check (MONITORING MODE - Non-Blocking!)
+  # ============================================================================
+  # Note: Dependency Cycles and Code Complexity are now in PR workflow (quality-gates.yml)
+  # This job focuses on subjective SOLID Principles monitoring only
+  architecture-checks:
+    name: SOLID Principles Check (Monitoring)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true  # ⚠️ CRITICAL: Does not block nightly pipeline!
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      # SOLID Principles Check (Monitoring only - subjective checks)
+      - name: SOLID Principles Check
+        continue-on-error: true
+        run: |
+          echo "🏗️ Checking SOLID principles..."
+          echo ""
+          echo "📋 SOLID Principles:"
+          echo "  • Single Responsibility Principle (SRP)"
+          echo "  • Open/Closed Principle (OCP)"
+          echo "  • Liskov Substitution Principle (LSP)"
+          echo "  • Interface Segregation Principle (ISP)"
+          echo "  • Dependency Inversion Principle (DIP)"
+          echo ""
+          # TODO: Implement SOLID check using ArchUnit or similar
+          # For now, just a placeholder
+          echo "✅ SOLID principles check skipped (not yet implemented)"
+          echo ""
+          echo "💡 Note: SOLID checks are subjective and run in monitoring mode only."
+          echo "   Objective checks (Dependency Cycles, Code Complexity) are in PR workflow."
+
+      - name: Architecture Report
+        if: always()
+        run: |
+          echo "## 🏗️ SOLID Principles Check Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Status:** Monitoring Mode (Non-Blocking)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**SOLID Principles:** Skipped (not implemented)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "💡 **Note:**" >> $GITHUB_STEP_SUMMARY
+          echo "- SOLID checks are subjective and run in monitoring mode only" >> $GITHUB_STEP_SUMMARY
+          echo "- Objective checks (Dependency Cycles, Code Complexity) run in PR workflow" >> $GITHUB_STEP_SUMMARY
+          echo "- This check does not fail the nightly pipeline" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 3. Database Growth Check
+  # ============================================================================
+  database-growth:
+    name: Database Growth Monitoring
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    continue-on-error: true
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+          POSTGRES_DB: freshplan
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Run Flyway Migrations
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          cd backend
+          ./mvnw flyway:migrate \
+            -Dquarkus.flyway.enabled=true \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+
+      - name: Check Database Size
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "📊 Database Size Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Database size
+          DB_SIZE=$(psql -h localhost -U freshplan -d freshplan -t -c \
+            "SELECT pg_size_pretty(pg_database_size('freshplan'));")
+          echo "- Database Size: $DB_SIZE" >> $GITHUB_STEP_SUMMARY
+
+          # Table sizes
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Top 10 Largest Tables:**" >> $GITHUB_STEP_SUMMARY
+          psql -h localhost -U freshplan -d freshplan -c \
+            "SELECT schemaname || '.' || tablename AS table_name,
+                    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size
+             FROM pg_tables
+             WHERE schemaname = 'public'
+             ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
+             LIMIT 10;" | tail -n +3 | head -n 10 >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 4. Performance Testing
+  # ============================================================================
+  performance-testing:
+    name: Full Performance Testing
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [full-test-suite]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+
+      - name: Start Backend
+        run: |
+          cd backend
+          ./mvnw quarkus:dev -Dquarkus.http.port=8082 &
+          sleep 45
+
+      - name: k6 Full Load Testing (MONITORING MODE)
+        continue-on-error: true
+        run: |
+          # Install k6
+          sudo gpg -k
+          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+
+          # Create k6 test with thresholds
+          cat > k6-full-load.js << 'EOF'
+          import http from 'k6/http';
+          import { check, group } from 'k6';
+          import { Rate } from 'k6/metrics';
+
+          const failureRate = new Rate('failed_requests');
+
+          export const options = {
+            stages: [
+              { duration: '2m', target: 10 },
+              { duration: '5m', target: 20 },
+              { duration: '2m', target: 30 },
+              { duration: '5m', target: 30 },
+              { duration: '2m', target: 0 },
+            ],
+            thresholds: {
+              http_req_duration: ['p(95)<200', 'p(99)<500'],
+              failed_requests: ['rate<0.05'],
+            },
+          };
+
+          export default function () {
+            group('API Health', () => {
+              const res = http.get('http://localhost:8082/api/health');
+              check(res, {
+                'health check status 200': (r) => r.status === 200,
+                'health check fast': (r) => r.timings.duration < 100,
+              });
+              failureRate.add(res.status !== 200);
+            });
+          }
+          EOF
+
+          echo "⚡ Running k6 full load test (16 min)..."
+          k6 run k6-full-load.js || {
+            echo ""
+            echo "⚠️ Performance thresholds not met in nightly full load test"
+            echo "   This is informational only (nightly is non-blocking)"
+            echo ""
+          }
+          pkill -f quarkus || true
+
+  # ============================================================================
+  # 5. Security Scanning
+  # ============================================================================
+  security-scanning:
+    name: Security Scanning (Full)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    needs: [full-test-suite]
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: OWASP ZAP Full Scan
+        continue-on-error: true
+        run: |
+          docker run -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py \
+            -t http://localhost:8080 \
+            -r zap-report.html \
+            -l PASS || echo "⚠️ ZAP scan had warnings"
+
+      - name: Upload ZAP Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: zap-report
+          path: zap-report.html
+          retention-days: 30
+
+  # ============================================================================
+  # 6. Lighthouse Performance
+  # ============================================================================
+  lighthouse-performance:
+    name: Lighthouse Performance (Full)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [full-test-suite]
+    continue-on-error: true
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm ci
+          npm run build
+
+      - name: Lighthouse CI
+        continue-on-error: true
+        run: |
+          npm install -g @lhci/cli
+          cd frontend
+
+          # Create Lighthouse config
+          cat > lighthouserc.js << 'EOF'
+          module.exports = {
+            ci: {
+              collect: {
+                staticDistDir: './dist',
+                numberOfRuns: 3,
+              },
+              assert: {
+                assertions: {
+                  'categories:performance': ['error', {minScore: 0.9}],
+                  'categories:accessibility': ['warn', {minScore: 0.9}],
+                  'categories:best-practices': ['warn', {minScore: 0.9}],
+                  'categories:seo': ['warn', {minScore: 0.9}],
+                  'first-contentful-paint': ['error', {maxNumericValue: 2000}],
+                  'largest-contentful-paint': ['error', {maxNumericValue: 2500}],
+                  'cumulative-layout-shift': ['error', {maxNumericValue: 0.1}],
+                  'total-blocking-time': ['error', {maxNumericValue: 300}],
+                },
+              },
+              upload: {
+                target: 'temporary-public-storage',
+              },
+            },
+          };
+          EOF
+
+          lhci autorun || echo "⚠️ Lighthouse had warnings"
+
+  # ============================================================================
+  # Final: Nightly Report
+  # ============================================================================
+  nightly-report:
+    name: Nightly Report
+    needs: [full-test-suite, architecture-checks, database-growth, performance-testing, security-scanning, lighthouse-performance]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Generate Summary Report
+        run: |
+          echo "# 🌙 Nightly Pipeline Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Date:** $(date)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Full Test Suite: ${{ needs.full-test-suite.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🏗️ Architecture Checks: ${{ needs.architecture-checks.result }} (Monitoring)" >> $GITHUB_STEP_SUMMARY
+          echo "- 📊 Database Growth: ${{ needs.database-growth.result }} (Monitoring)" >> $GITHUB_STEP_SUMMARY
+          echo "- ⚡ Performance Testing: ${{ needs.performance-testing.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🔒 Security Scanning: ${{ needs.security-scanning.result }}" >> $GITHUB_STEP_SUMMARY
+          echo "- 🚀 Lighthouse Performance: ${{ needs.lighthouse-performance.result }}" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Key Metrics" >> $GITHUB_STEP_SUMMARY
+          echo "- API Response Time: P95 < 200ms (Target)" >> $GITHUB_STEP_SUMMARY
+          echo "- Bundle Size: < 200KB (Target)" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Coverage: Target ≥ 80%" >> $GITHUB_STEP_SUMMARY
+          echo "- Security Issues: 0 Critical (Target)" >> $GITHUB_STEP_SUMMARY
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 💡 Notes" >> $GITHUB_STEP_SUMMARY
+          echo "- Architecture checks run in **monitoring mode** (non-blocking)" >> $GITHUB_STEP_SUMMARY
+          echo "- Database growth is tracked for capacity planning" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance and security scans may have warnings without failing the build" >> $GITHUB_STEP_SUMMARY

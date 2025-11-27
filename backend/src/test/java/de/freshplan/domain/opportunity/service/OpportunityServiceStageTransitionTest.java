@@ -26,6 +26,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -56,6 +57,8 @@ public class OpportunityServiceStageTransitionTest {
 
   @Inject OpportunityService opportunityService;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   @Inject OpportunityRepository opportunityRepository;
 
   @Inject CustomerRepository customerRepository;
@@ -65,6 +68,27 @@ public class OpportunityServiceStageTransitionTest {
   @Inject EntityManager entityManager;
 
   @Inject UserTransaction userTransaction;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Step 1: Delete opportunities first (FK constraints to customers/users)
+    // Pattern: name LIKE 'Test Opportunity%' OR companyName LIKE 'Test Company %'
+    opportunityRepository.delete(
+        "name LIKE ?1 OR name LIKE ?2 OR name LIKE ?3 OR name LIKE ?4",
+        "Test Opportunity%",
+        "%Opportunity%",
+        "%Ping Pong%",
+        "%Skip Return%");
+
+    // Step 2: Delete customers (created via CustomerTestDataFactory)
+    // Pattern: companyName LIKE 'Test Company %' AND isTestData = true
+    customerRepository.delete("companyName LIKE ?1 AND isTestData = true", "Test Company %");
+
+    // Step 3: Delete users (created via UserTestDataFactory)
+    // Pattern: username LIKE 'stagetest-%'
+    userRepository.delete("username LIKE ?1", "stagetest-%");
+  }
 
   private Customer testCustomer;
   private User testUser;

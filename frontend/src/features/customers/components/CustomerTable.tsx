@@ -12,7 +12,6 @@ import {
   Typography,
   TablePagination,
   IconButton,
-  Collapse,
   useTheme,
 } from '@mui/material';
 import { format } from 'date-fns';
@@ -25,28 +24,16 @@ import {
   getCustomerStatusColor,
 } from '../../customer/types/customer.types';
 import type { ColumnConfig } from '../types/filter.types';
-import type { Lead } from '../../leads/types';
-import { leadStatusLabels, leadStatusColors } from '../../leads/types';
-import LeadScoreIndicator from '../../leads/LeadScoreIndicator';
-import StopTheClockDialog from '../../leads/StopTheClockDialog';
-import LeadActivityTimeline from '../../leads/LeadActivityTimeline';
-import {
-  Pause,
-  PlayArrow,
-  Timeline as TimelineIcon,
-  Edit as EditIcon,
-  Delete as DeleteIcon,
-} from '@mui/icons-material';
+import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 
 interface CustomerTableProps {
   customers: CustomerResponse[];
   onRowClick?: (customer: CustomerResponse) => void;
   highlightNew?: boolean;
   columns?: ColumnConfig[];
-  context?: 'customers' | 'leads'; // Sprint 2.1.6 Phase 4: Context for status labels
-  onEdit?: (customer: CustomerResponse) => void; // Sprint 2.1.6 Phase 5: Edit action
-  onDelete?: (customer: CustomerResponse) => void; // Sprint 2.1.6 Phase 5: Delete action
-  showActions?: boolean; // Sprint 2.1.6 Phase 5: Show action buttons column
+  onEdit?: (customer: CustomerResponse) => void;
+  onDelete?: (customer: CustomerResponse) => void;
+  showActions?: boolean;
 }
 
 export function CustomerTable({
@@ -54,7 +41,6 @@ export function CustomerTable({
   onRowClick,
   highlightNew,
   columns,
-  context = 'customers',
   onEdit,
   onDelete,
   showActions = false,
@@ -62,9 +48,6 @@ export function CustomerTable({
   const theme = useTheme();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(25);
-  const [stopClockDialogOpen, setStopClockDialogOpen] = React.useState(false);
-  const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null);
-  const [timelineLeadId, setTimelineLeadId] = React.useState<number | null>(null);
 
   // Default columns if none provided
   const defaultColumns: ColumnConfig[] = [
@@ -228,53 +211,16 @@ export function CustomerTable({
                         case 'industry':
                           return customer.industry ? industryLabels[customer.industry] : '-';
                         case 'businessType':
-                          // Sprint 2.1.6: Harmonized businessType field (replaces industry for leads)
-                          return (customer as Lead).businessType || '-';
-                        case 'leadScore':
-                          // Sprint 2.1.6 Phase 4: Lead scoring visualization
                           return (
-                            <LeadScoreIndicator
-                              score={(customer as Lead).leadScore}
-                              size="small"
-                              showLabel={false}
-                            />
+                            (customer as CustomerResponse & { businessType?: string })
+                              .businessType || '-'
                           );
-                        case 'stage': {
-                          // Sprint 2.1.6 Phase 4: Lead stage with German labels (DESIGN_SYSTEM.md)
-                          const stageLabels: Record<number, string> = {
-                            0: 'Vormerkung',
-                            1: 'Registrierung',
-                            2: 'Qualifizierung',
-                          };
-                          const stageColors: Record<number, string> = {
-                            0: theme.palette.info.main, // Blue
-                            1: theme.palette.warning.main, // Orange
-                            2: theme.palette.success.main, // Green
-                          };
-                          const stageValue = (customer as Lead).stage;
-                          return (
-                            <Chip
-                              label={stageLabels[stageValue] || stageValue?.toString()}
-                              size="small"
-                              sx={{
-                                bgcolor: stageColors[stageValue] || 'grey.500',
-                                color: 'white',
-                              }}
-                            />
-                          );
-                        }
                         case 'status': {
-                          // Sprint 2.1.6 Phase 4: Context-aware status labels
-                          const statusLabels =
-                            context === 'leads' ? leadStatusLabels : customerStatusLabels;
-                          const statusValue = customer.status as keyof typeof statusLabels;
-                          const statusColor =
-                            context === 'leads'
-                              ? leadStatusColors[statusValue] || theme.palette.grey[500]
-                              : getCustomerStatusColor(statusValue, theme);
+                          const statusValue = customer.status as keyof typeof customerStatusLabels;
+                          const statusColor = getCustomerStatusColor(statusValue, theme);
                           return (
                             <Chip
-                              label={statusLabels[statusValue] || customer.status}
+                              label={customerStatusLabels[statusValue] || customer.status}
                               size="small"
                               sx={{
                                 bgcolor: statusColor,
@@ -350,45 +296,6 @@ export function CustomerTable({
                               </Typography>
                             </Box>
                           );
-                        case 'actions':
-                          // Sprint 2.1.6 Phase 4: Lead actions (Stop-the-Clock, Timeline)
-                          if (context === 'leads') {
-                            const lead = customer as Lead;
-                            return (
-                              <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
-                                <IconButton
-                                  size="small"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    setSelectedLead(lead);
-                                    setStopClockDialogOpen(true);
-                                  }}
-                                  color={lead.clockStoppedAt ? 'success' : 'warning'}
-                                  title={
-                                    lead.clockStoppedAt
-                                      ? 'Schutzfrist fortsetzen'
-                                      : 'Schutzfrist pausieren'
-                                  }
-                                >
-                                  {lead.clockStoppedAt ? <PlayArrow /> : <Pause />}
-                                </IconButton>
-                                <IconButton
-                                  size="small"
-                                  onClick={e => {
-                                    e.stopPropagation();
-                                    setTimelineLeadId(
-                                      timelineLeadId === Number(lead.id) ? null : Number(lead.id)
-                                    );
-                                  }}
-                                  color={timelineLeadId === Number(lead.id) ? 'primary' : 'default'}
-                                  title="Aktivitäten anzeigen"
-                                >
-                                  <TimelineIcon />
-                                </IconButton>
-                              </Box>
-                            );
-                          }
-                          return '-';
                         default:
                           return '-';
                       }
@@ -436,23 +343,6 @@ export function CustomerTable({
                     </TableCell>
                   )}
                 </TableRow>
-
-                {/* Sprint 2.1.6 Phase 4: Lead Activity Timeline Expansion Row */}
-                {context === 'leads' && timelineLeadId === Number(customer.id) && (
-                  <TableRow>
-                    <TableCell colSpan={visibleColumns.length} sx={{ py: 0, bgcolor: 'grey.50' }}>
-                      <Collapse
-                        in={timelineLeadId === Number(customer.id)}
-                        timeout="auto"
-                        unmountOnExit
-                      >
-                        <Box sx={{ py: 2, px: 3 }}>
-                          <LeadActivityTimeline leadId={Number(customer.id)} />
-                        </Box>
-                      </Collapse>
-                    </TableCell>
-                  </TableRow>
-                )}
               </React.Fragment>
             ))}
           </TableBody>
@@ -471,20 +361,6 @@ export function CustomerTable({
           `${from}–${to} von ${count !== -1 ? count : `mehr als ${to}`}`
         }
       />
-
-      {/* Sprint 2.1.6 Phase 4: Stop-the-Clock Dialog (Leads only) */}
-      {context === 'leads' && (
-        <StopTheClockDialog
-          open={stopClockDialogOpen}
-          lead={selectedLead}
-          onClose={() => setStopClockDialogOpen(false)}
-          onSuccess={() => {
-            setStopClockDialogOpen(false);
-            setSelectedLead(null);
-            // Trigger parent refresh would go here
-          }}
-        />
-      )}
     </Paper>
   );
 }

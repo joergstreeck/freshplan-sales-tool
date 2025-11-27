@@ -11,8 +11,16 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP1_BASIS_FILIALSTRUKTUR.md
  */
 
-import React, { useCallback, useMemo } from 'react';
-import { Box, Typography, Alert, AlertTitle, Divider, CircularProgress } from '@mui/material';
+import React, { useCallback, useMemo, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Alert,
+  AlertTitle,
+  Divider,
+  CircularProgress,
+  Paper,
+} from '@mui/material';
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { useCustomerSchema } from '../../../../hooks/useCustomerSchema';
 import { DynamicFieldRenderer } from '../fields/DynamicFieldRenderer';
@@ -91,18 +99,45 @@ export const Step1BasisFilialstruktur: React.FC = () => {
   }, [step1Fields]);
 
   /**
+   * Sprint 2.1.7.7: Auto-Summe für branchCount
+   *
+   * Berechnet die Gesamtzahl der Standorte aus den Länder-Feldern.
+   * Diese Summe wird automatisch in branchCount gespeichert.
+   */
+  const totalLocations = useMemo(() => {
+    const germany = Number(customerData.locationsGermany) || 0;
+    const austria = Number(customerData.locationsAustria) || 0;
+    const switzerland = Number(customerData.locationsSwitzerland) || 0;
+    return germany + austria + switzerland;
+  }, [
+    customerData.locationsGermany,
+    customerData.locationsAustria,
+    customerData.locationsSwitzerland,
+  ]);
+
+  // Auto-Update branchCount when location sum changes
+  useEffect(() => {
+    if (customerData.isChain && totalLocations > 0) {
+      // Nur updaten wenn sich der Wert tatsächlich geändert hat
+      if (customerData.branchCount !== totalLocations) {
+        setCustomerField('branchCount', totalLocations);
+      }
+    }
+  }, [totalLocations, customerData.isChain, customerData.branchCount, setCustomerField]);
+
+  /**
    * Business Logic: Chain Potential Indicator
    *
    * Note: This is NOT part of server-driven schema!
    * This is business logic that calculates potential based on data.
    */
   const chainPotential = useMemo(() => {
-    const total = Number(customerData.totalLocationsEU) || 0;
+    const total = totalLocations || Number(customerData.totalLocationsEU) || 0;
     if (total >= 50) return { level: 'high', text: '🔥 Großkunden-Potenzial!' };
     if (total >= 20) return { level: 'medium', text: '💎 Rahmenvertrag möglich' };
     if (total >= 5) return { level: 'low', text: '✨ Interessante Größe' };
     return null;
-  }, [customerData.totalLocationsEU]);
+  }, [totalLocations, customerData.totalLocationsEU]);
 
   // Field event handlers
   const handleFieldChange = useCallback(
@@ -162,15 +197,40 @@ export const Step1BasisFilialstruktur: React.FC = () => {
               </Typography>
             )}
 
-            {/* Fields in this section */}
+            {/* Fields in this section - Grid Layout für Backend-gridCols */}
             <DynamicFieldRenderer
               fields={section.fields}
               values={customerData}
               errors={validationErrors}
               onChange={handleFieldChange}
               onBlur={handleFieldBlur}
-              useAdaptiveLayout={true}
+              useAdaptiveLayout={false}
             />
+
+            {/* Sprint 2.1.7.7: Auto-Summe Anzeige für Filialstruktur */}
+            {section.sectionId === 'chain_structure' &&
+              customerData.isChain &&
+              totalLocations > 0 && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    mt: 2,
+                    p: 2,
+                    bgcolor: 'primary.light',
+                    borderRadius: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                  }}
+                >
+                  <Typography variant="body1" fontWeight="medium">
+                    Standorte gesamt:
+                  </Typography>
+                  <Typography variant="h5" fontWeight="bold" color="primary.dark">
+                    {totalLocations}
+                  </Typography>
+                </Paper>
+              )}
 
             {/* Business Logic: Chain Potential Indicator */}
             {/* Show only for chain_structure section when data indicates potential */}

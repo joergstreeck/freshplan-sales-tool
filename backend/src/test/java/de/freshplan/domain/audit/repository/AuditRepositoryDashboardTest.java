@@ -12,6 +12,7 @@ import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.Map;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,13 @@ class AuditRepositoryDashboardTest {
     // Store initial count instead of deleting all
     // This makes tests more robust when other tests create data
     initialCount = auditRepository.count();
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Audit logs are test-safe to delete
+    auditRepository.deleteAll();
   }
 
   @Test

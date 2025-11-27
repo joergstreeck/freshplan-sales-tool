@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * Enterprise-Level Performance and Concurrency Tests for Lead Scoring Service
@@ -59,6 +60,16 @@ public class LeadScoringServicePerformanceTest {
       territory.active = true;
       territory.persist();
     }
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test leads created during performance tests
+    // Use native query for bulk delete performance
+    em.createNativeQuery(
+            "DELETE FROM leads WHERE company_name LIKE 'Perf Test%' OR company_name LIKE 'Test%'")
+        .executeUpdate();
   }
 
   // ================================================================================

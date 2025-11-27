@@ -10,9 +10,11 @@ import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -58,6 +60,14 @@ class ProfileCQRSIntegrationTest {
     // Clean up any existing test data
     profileRepository.deleteAll();
     profileRepository.flush();
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete test data - Profile entity uses customerId as test marker
+    // Tests use pattern CUST-<uniqueSuffix> for customerId
+    profileRepository.delete("customerId LIKE ?1", "CUST-%");
   }
 
   @Test

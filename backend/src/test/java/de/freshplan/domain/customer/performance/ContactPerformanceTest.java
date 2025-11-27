@@ -20,6 +20,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -54,6 +55,18 @@ public class ContactPerformanceTest {
     testCustomer.setCustomerNumber("PERF-" + UUID.randomUUID().toString().substring(0, 8));
     testCustomer.setCompanyName("Performance Test Company"); // Remove [TEST-xxx] prefix
     customerRepository.persist(testCustomer);
+  }
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete contacts first (child entities)
+    entityManager
+        .createQuery("DELETE FROM CustomerContact WHERE customer.customerNumber LIKE 'PERF-%'")
+        .executeUpdate();
+
+    // Delete test customers
+    customerRepository.delete("customerNumber LIKE 'PERF-%'");
   }
 
   @Test

@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.freshplan.domain.audit.entity.AuditEntry;
 import de.freshplan.domain.audit.entity.AuditEventType;
 import de.freshplan.domain.audit.entity.AuditSource;
+import de.freshplan.domain.audit.events.AuditableApplicationEvent;
 import de.freshplan.domain.audit.repository.AuditRepository;
-import de.freshplan.domain.audit.service.AuditService;
-import de.freshplan.domain.audit.service.AuditableApplicationEvent;
 import de.freshplan.domain.audit.service.dto.AuditContext;
+import de.freshplan.domain.audit.service.provider.AuditConfiguration;
+import de.freshplan.domain.audit.service.provider.AuditEvent;
+import de.freshplan.domain.audit.service.provider.AuditException;
 import de.freshplan.shared.util.SecurityUtils;
 import io.vertx.core.http.HttpServerRequest;
 import jakarta.annotation.PostConstruct;
@@ -54,9 +56,9 @@ public class AuditCommandService {
 
   @Inject SecurityUtils securityUtils;
 
-  @Inject Event<AuditService.AuditEvent> auditEventBus;
+  @Inject Event<AuditEvent> auditEventBus;
 
-  @Inject AuditService.AuditConfiguration configuration;
+  @Inject AuditConfiguration configuration;
 
   @Inject Instance<HttpServerRequest> httpRequestInstance;
 
@@ -140,7 +142,7 @@ public class AuditCommandService {
           } catch (Exception e) {
             log.errorf(e, "Failed to log audit event: %s", context.getEventType());
             // Re-throw to propagate through CompletableFuture
-            throw new AuditService.AuditException("Failed to log audit event", e);
+            throw new AuditException("Failed to log audit event", e);
           }
         },
         auditExecutor);
@@ -165,7 +167,7 @@ public class AuditCommandService {
 
       // Fire event for real-time monitoring
       if (configuration.isEventBusEnabled()) {
-        auditEventBus.fireAsync(new AuditService.AuditEvent(entry));
+        auditEventBus.fireAsync(new AuditEvent(entry));
       }
 
       // Check if notification required
@@ -183,7 +185,7 @@ public class AuditCommandService {
       log.error("Critical: Failed to log audit event", e);
       // Log to fallback mechanism (file, external service)
       logToFallback(context, e);
-      throw new AuditService.AuditException("Failed to log audit event", e);
+      throw new AuditException("Failed to log audit event", e);
     }
   }
 

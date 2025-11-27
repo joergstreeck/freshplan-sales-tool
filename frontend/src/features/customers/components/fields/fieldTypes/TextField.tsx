@@ -31,6 +31,17 @@ interface TextFieldProps {
 }
 
 /**
+ * Helper: Get field key (supports both legacy and Server-Driven formats)
+ * - Legacy: field.key
+ * - Server-Driven: field.fieldKey
+ */
+const getFieldKey = (field: FieldDefinition): string => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const f = field as any;
+  return f.fieldKey || f.key || '';
+};
+
+/**
  * Text Field
  *
  * Standard text input with German locale support.
@@ -47,10 +58,12 @@ export const TextField: React.FC<TextFieldProps> = ({
   readOnly,
   required,
 }) => {
+  const fieldKey = getFieldKey(field);
+
   return (
     <MuiTextField
-      id={field.key}
-      name={field.key}
+      id={fieldKey}
+      name={fieldKey}
       value={value}
       onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
       onBlur={onBlur}
@@ -75,11 +88,11 @@ export const TextField: React.FC<TextFieldProps> = ({
         },
         // Für lange Texte: Kleinere Schrift bei Bedarf
         '& .MuiInputBase-input': {
-          ...(field.key === 'companyName' &&
+          ...(fieldKey === 'companyName' &&
             value.length > 30 && {
               fontSize: '0.875rem',
             }),
-          ...(field.key === 'companyName' &&
+          ...(fieldKey === 'companyName' &&
             value.length > 50 && {
               fontSize: '0.8rem',
             }),

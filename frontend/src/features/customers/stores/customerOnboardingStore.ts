@@ -16,7 +16,8 @@ import { immer } from 'zustand/middleware/immer';
 import type { FieldDefinition } from '../types/field.types';
 import type { Location, DetailedLocation } from '../types/location.types';
 import type { Contact, ContactValidationError, CreateContactDTO } from '../types/contact.types';
-import { validateField, validateFields } from '../validation';
+// Import directly from schemaBuilder to avoid circular dependency via validation/index.ts
+import { validateField, validateFields } from '../validation/schemaBuilder';
 import { getVisibleFields } from '../utils/conditionEvaluator';
 import type { LocationServiceData } from './customerOnboardingStore.extensions';
 import { customerApi } from '../services/customerApi';
@@ -467,10 +468,10 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         }
 
         // Step 1: Herausforderungen & Potenzial
-        // Hier ist das expectedAnnualRevenue ein Pflichtfeld
+        // Hier ist das expectedAnnualVolume ein Pflichtfeld (Backend: expectedAnnualVolume)
         if (state.currentStep === 1) {
-          const revenueValue = state.customerData.expectedAnnualRevenue;
-          return revenueValue !== undefined && revenueValue !== null && revenueValue > 0;
+          const volumeValue = state.customerData.expectedAnnualVolume;
+          return volumeValue !== undefined && volumeValue !== null && Number(volumeValue) > 0;
         }
 
         // Step 2: Ansprechpartner - keine Pflichtfelder in Step 3
@@ -758,12 +759,13 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
         const state = get();
         let isValid = true;
 
-        // Must have at least one contact
+        // Step 3 is OPTIONAL - no contacts required
+        // But if contacts exist, they must be valid
         if (state.contacts.length === 0) {
-          return false;
+          return true; // No contacts = valid (optional step)
         }
 
-        // Must have exactly one primary contact
+        // If contacts exist, must have exactly one primary contact
         const primaryContacts = state.contacts.filter(c => c.isPrimary);
         if (primaryContacts.length !== 1) {
           isValid = false;
@@ -771,7 +773,7 @@ export const useCustomerOnboardingStore = create<CustomerOnboardingState>()(
 
         // Validate each contact
         for (const contact of state.contacts) {
-          // Required fields
+          // Required fields for existing contacts
           if (!contact.firstName || !contact.lastName) {
             isValid = false;
             await get().validateContactField(contact.id, 'firstName', contact.firstName);

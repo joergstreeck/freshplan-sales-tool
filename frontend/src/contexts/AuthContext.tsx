@@ -2,7 +2,7 @@
  * Legacy AuthContext - Wrapper around KeycloakContext
  * This maintains backward compatibility while using Keycloak for authentication
  */
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useKeycloak } from './KeycloakContext';
 
@@ -11,6 +11,8 @@ interface User {
   name: string;
   email: string;
   username?: string;
+  firstName?: string; // For display name (e.g., "John Doe")
+  lastName?: string; // For display name (e.g., "John Doe")
   roles?: string[];
   xentralSalesRepId?: string; // Sprint 2.1.7.2 D1 - Sales Rep ID from backend
 }
@@ -35,30 +37,97 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Hook must be called unconditionally before any conditional returns
   const keycloak = useKeycloak();
 
-  // Check for auth bypass mode first
-  if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
-    // Provide mock auth context for development
-    // NOTE: All roles are lowercase for consistency with frontend role checks
-    const mockContext: AuthContextType = {
-      user: {
+  // State for auth bypass mode (reactive to localStorage changes)
+  // Use lazy initializer to read localStorage IMMEDIATELY on first render (fixes "Gast" issue)
+  const [bypassUser, setBypassUser] = useState<User | null>(() => {
+    if (import.meta.env.VITE_AUTH_BYPASS !== 'true') return null;
+
+    const storedUserJson = localStorage.getItem('auth-user');
+    const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
+
+    // Return stored user OR fallback to default mock
+    return (
+      storedUser || {
         id: 'dev-user',
         name: 'Dev User',
         email: 'dev@freshplan.de',
         username: 'devuser',
         roles: ['admin', 'manager', 'sales', 'auditor'],
-      },
+      }
+    );
+  });
+
+  const [bypassToken, setBypassToken] = useState<string | null>(() => {
+    if (import.meta.env.VITE_AUTH_BYPASS !== 'true') return null;
+    return localStorage.getItem('auth-token') || 'mock-dev-token';
+  });
+
+  // Load user/token from localStorage on mount and changes (for auth bypass mode)
+  useEffect(() => {
+    // Only run in auth bypass mode
+    if (import.meta.env.VITE_AUTH_BYPASS !== 'true') return;
+
+    const loadAuthFromStorage = () => {
+      const storedToken = localStorage.getItem('auth-token');
+      const storedUserJson = localStorage.getItem('auth-user');
+      const storedUser = storedUserJson ? JSON.parse(storedUserJson) : null;
+
+      // Use stored user if available, otherwise fallback to default mock
+      const user = storedUser || {
+        id: 'dev-user',
+        name: 'Dev User',
+        email: 'dev@freshplan.de',
+        username: 'devuser',
+        roles: ['admin', 'manager', 'sales', 'auditor'],
+      };
+
+      const token = storedToken || 'mock-dev-token';
+
+      setBypassUser(user);
+      setBypassToken(token);
+    };
+
+    // Load on mount
+    loadAuthFromStorage();
+
+    // Listen for storage events (from other tabs/windows)
+    window.addEventListener('storage', loadAuthFromStorage);
+
+    return () => {
+      window.removeEventListener('storage', loadAuthFromStorage);
+    };
+  }, []);
+
+  // Check for auth bypass mode first
+  if (import.meta.env.VITE_AUTH_BYPASS === 'true') {
+    // Provide mock auth context for development
+    // NOTE: All roles are lowercase for consistency with frontend role checks
+    const mockContext: AuthContextType = {
+      user: bypassUser,
       isAuthenticated: true,
       isLoading: false,
       login: async () => {},
-      logout: () => {},
-      token: 'mock-dev-token',
-      hasRole: (role: string) =>
-        ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase()),
+      logout: () => {
+        // Clear localStorage on logout
+        localStorage.removeItem('auth-token');
+        localStorage.removeItem('auth-user');
+        // Trigger re-load
+        setBypassUser({
+          id: 'dev-user',
+          name: 'Dev User',
+          email: 'dev@freshplan.de',
+          username: 'devuser',
+          roles: ['admin', 'manager', 'sales', 'auditor'],
+        });
+        setBypassToken('mock-dev-token');
+      },
+      token: bypassToken,
+      hasRole: (role: string) => bypassUser?.roles?.includes(role.toLowerCase()) ?? false,
       hasAnyRole: (roles: string[]) =>
-        roles.some(role => ['admin', 'manager', 'sales', 'auditor'].includes(role.toLowerCase())),
-      getValidToken: async () => 'mock-dev-token',
+        roles.some(role => bypassUser?.roles?.includes(role.toLowerCase()) ?? false),
+      getValidToken: async () => bypassToken,
       refreshToken: async () => true,
-      authInfo: () => ({ mockAuth: true }),
+      authInfo: () => ({ mockAuth: true, user: bypassUser }),
     };
 
     return <AuthContext.Provider value={mockContext}>{children}</AuthContext.Provider>;

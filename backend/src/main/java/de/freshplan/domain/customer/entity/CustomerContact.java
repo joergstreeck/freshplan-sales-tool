@@ -113,10 +113,32 @@ public class CustomerContact extends PanacheEntityBase {
   @Column(name = "language_preference", length = 10)
   private String languagePreference = "DE";
 
-  // Location Assignment
+  // Location Assignment (Single - DEPRECATED, use assignedLocations instead)
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "assigned_location_id")
   private CustomerLocation assignedLocation;
+
+  // Sprint 2.1.7.7: Multi-Location Assignment
+  /**
+   * Zuständigkeitsbereich des Kontakts. - ALL: Kontakt ist für alle Standorte zuständig (z.B.
+   * Geschäftsführer) - SPECIFIC: Kontakt ist nur für bestimmte Standorte zuständig (siehe
+   * assignedLocations)
+   */
+  @Column(name = "responsibility_scope", length = 20)
+  private String responsibilityScope = "ALL";
+
+  /**
+   * ManyToMany Beziehung zu Standorten (Sprint 2.1.7.7). Join-Table: contact_location_assignments
+   *
+   * <p>Nur relevant wenn responsibilityScope = 'SPECIFIC'. Bei responsibilityScope = 'ALL' wird
+   * diese Collection ignoriert.
+   */
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JoinTable(
+      name = "contact_location_assignments",
+      joinColumns = @JoinColumn(name = "contact_id"),
+      inverseJoinColumns = @JoinColumn(name = "location_id"))
+  private Set<CustomerLocation> assignedLocations = new HashSet<>();
 
   // Personal Information (for relationship building)
   @Column(name = "birthday")
@@ -585,6 +607,54 @@ public class CustomerContact extends PanacheEntityBase {
 
   public void setAssignedLocation(CustomerLocation assignedLocation) {
     this.assignedLocation = assignedLocation;
+  }
+
+  // Sprint 2.1.7.7: Multi-Location Getters/Setters
+  public String getResponsibilityScope() {
+    return responsibilityScope;
+  }
+
+  public void setResponsibilityScope(String responsibilityScope) {
+    this.responsibilityScope = responsibilityScope;
+  }
+
+  public Set<CustomerLocation> getAssignedLocations() {
+    return assignedLocations;
+  }
+
+  public void setAssignedLocations(Set<CustomerLocation> assignedLocations) {
+    this.assignedLocations = assignedLocations;
+  }
+
+  /**
+   * Fügt einen Standort zur Zuständigkeit hinzu. Setzt automatisch responsibilityScope auf SPECIFIC
+   * wenn mindestens ein Standort zugewiesen ist.
+   */
+  public void addAssignedLocation(CustomerLocation location) {
+    if (location != null) {
+      this.assignedLocations.add(location);
+      if (!"ALL".equals(this.responsibilityScope)) {
+        this.responsibilityScope = "SPECIFIC";
+      }
+    }
+  }
+
+  /** Entfernt einen Standort aus der Zuständigkeit. */
+  public void removeAssignedLocation(CustomerLocation location) {
+    if (location != null) {
+      this.assignedLocations.remove(location);
+    }
+  }
+
+  /**
+   * Prüft ob der Kontakt für einen bestimmten Standort zuständig ist. Bei responsibilityScope=ALL
+   * ist der Kontakt für alle Standorte zuständig.
+   */
+  public boolean isResponsibleForLocation(CustomerLocation location) {
+    if ("ALL".equals(responsibilityScope)) {
+      return true;
+    }
+    return assignedLocations.contains(location);
   }
 
   public java.time.LocalDate getBirthday() {

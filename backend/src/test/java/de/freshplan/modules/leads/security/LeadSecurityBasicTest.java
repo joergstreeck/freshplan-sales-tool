@@ -7,6 +7,7 @@ import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -27,6 +28,8 @@ import org.junit.jupiter.api.Tag;
 public class LeadSecurityBasicTest {
 
   @Inject DataSource dataSource;
+
+  @Inject EntityManager entityManager;
 
   private Territory territoryDE;
   private Territory territoryCH;
@@ -60,6 +63,20 @@ public class LeadSecurityBasicTest {
       territoryCH.active = true;
       territoryCH.persist();
     }
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test leads created during tests
+    // Use native query to delete by pattern matching on test data
+    entityManager
+        .createNativeQuery(
+            "DELETE FROM leads WHERE company_name LIKE 'Test%' OR company_name LIKE '%Test%'")
+        .executeUpdate();
+
+    // Note: We do NOT delete territories DE/CH as they are system data
+    // created by migrations and shared across all tests
   }
 
   @Test

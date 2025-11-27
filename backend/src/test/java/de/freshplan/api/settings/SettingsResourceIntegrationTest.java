@@ -13,6 +13,7 @@ import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -39,6 +40,17 @@ class SettingsResourceIntegrationTest {
   @BeforeEach
   @Transactional
   void cleanup() {
+    Setting.delete("key", TEST_KEY);
+    Setting.delete("key", "hierarchical.test");
+    Setting.delete("key", "list.test1");
+    Setting.delete("key", "list.test2");
+    Setting.delete("key", "list.test3");
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanupAfter() {
+    // Clean all test settings created during test execution
     Setting.delete("key", TEST_KEY);
     Setting.delete("key", "hierarchical.test");
     Setting.delete("key", "list.test1");

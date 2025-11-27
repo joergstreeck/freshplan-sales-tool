@@ -32,13 +32,17 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: process.env.CI 
+    command: process.env.CI
       ? 'npx serve dist -l 5173 --no-request-logging -s' // -s flag for SPA routing
-      : 'npm run preview',
+      : 'npm run dev',
     port: 5173,
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000, // 2 minutes timeout for CI
     stdout: 'ignore',
     stderr: 'pipe',
+    env: {
+      VITE_E2E_MODE: 'true', // E2E test mode - disable Keycloak
+      VITE_AUTH_BYPASS: 'true', // Bypass authentication
+    },
   },
 });

@@ -44,7 +44,13 @@ import {
   Note as NoteIcon,
 } from '@mui/icons-material';
 import { ContactEditDialog, type Contact } from './ContactEditDialog';
-import { useCustomerContacts } from '../../../customer/hooks/useCustomerContacts';
+import {
+  useCustomerContacts,
+  useCreateCustomerContact,
+  useDeleteCustomerContact,
+} from '../../hooks/useCustomerContacts';
+import { httpClient } from '../../../../lib/apiClient';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface CustomerDetailTabVerlaufProps {
   customerId: string;
@@ -58,12 +64,17 @@ interface CustomerDetailTabVerlaufProps {
 export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> = ({
   customerId,
 }) => {
+  // Dialog state (must be before hooks that depend on it!)
+  const [contactDialogOpen, setContactDialogOpen] = useState(false);
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+
   // Fetch contacts from API (Sprint 2.1.7.2 D11.1 - Hotfix)
   const { data: contacts = [], isLoading } = useCustomerContacts(customerId);
 
-  // Dialog state
-  const [contactDialogOpen, setContactDialogOpen] = useState(false);
-  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  // Contact CRUD mutations (Sprint 2.1.7.7 - Phase 4 Gap Fix)
+  const queryClient = useQueryClient();
+  const createContact = useCreateCustomerContact(customerId);
+  const deleteContact = useDeleteCustomerContact(customerId);
 
   // Handle create contact
   const handleCreateContact = () => {
@@ -84,10 +95,7 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
     }
 
     try {
-      // TODO: Implement API call in Phase 4
-      // await deleteContact(customerId, contactId);
-      console.log('Delete contact:', contactId);
-      // refetch();
+      await deleteContact.mutateAsync(contactId);
     } catch (error) {
       console.error('Error deleting contact:', error);
       alert('Fehler beim Löschen des Kontakts. Bitte versuchen Sie es erneut.');
@@ -97,18 +105,18 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
   // Handle submit contact
   const handleSubmitContact = async (contactData: Partial<Contact>) => {
     try {
-      if (selectedContact) {
-        // Update existing
-        // TODO: Implement API call in Phase 4
-        // await updateContact(customerId, selectedContact.id!, contactData);
-        console.log('Update contact:', selectedContact.id, contactData);
+      if (selectedContact?.id) {
+        // Update existing contact (direct HTTP call - can't use hook conditionally!)
+        await httpClient.put(
+          `/api/customers/${customerId}/contacts/${selectedContact.id}`,
+          contactData
+        );
+        // Invalidate cache to trigger refetch
+        queryClient.invalidateQueries({ queryKey: ['customers', customerId, 'contacts'] });
       } else {
-        // Create new
-        // TODO: Implement API call in Phase 4
-        // await createContact(customerId, contactData);
-        console.log('Create contact:', contactData);
+        // Create new contact
+        await createContact.mutateAsync(contactData);
       }
-      // refetch();
       setContactDialogOpen(false);
     } catch (error) {
       console.error('Error saving contact:', error);
@@ -158,13 +166,6 @@ export const CustomerDetailTabVerlauf: React.FC<CustomerDetailTabVerlaufProps> =
 
   return (
     <Box>
-      {/* Info Banner */}
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2">
-          <strong>Tab "Verlauf":</strong> Kontaktverwaltung und Kommunikationshistorie (Timeline).
-        </Typography>
-      </Alert>
-
       {/* Section 1: Ansprechpartner */}
       <Paper sx={{ p: 3, mb: 3 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>

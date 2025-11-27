@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.UUID;
 import org.hibernate.Session;
 import org.hibernate.stat.Statistics;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +38,16 @@ class CustomerTimelineRepositoryPerformanceTest extends BaseIntegrationTest {
 
   private UUID testCustomerId;
   private Statistics hibernateStats;
+
+  @AfterEach
+  @TestTransaction
+  void cleanup() {
+    // Delete timeline events first
+    timelineRepository.deleteAll();
+
+    // Delete test customers
+    customerRepository.delete("customerNumber LIKE 'PERF-TEST-%'");
+  }
 
   private void setupTestData() {
     // Clean only test-specific data to preserve CustomerDataInitializer test customers

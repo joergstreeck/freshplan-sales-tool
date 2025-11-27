@@ -61,8 +61,12 @@ export const SelectField: React.FC<SelectFieldProps> = ({
   readOnly,
   required,
 }) => {
-  const displayValue = value || '';
   const theme = useTheme();
+
+  // DESIGN_SYSTEM.md: Prevent MUI warnings for out-of-range values
+  // Only use value if it exists in options
+  const valueExists = field.options?.some(opt => opt.value === value);
+  const displayValue = valueExists ? (value || '') : '';
 
   // Nutze den neuen Hook für automatische Breiten-Berechnung
   const dropdownWidth = useDropdownWidth({

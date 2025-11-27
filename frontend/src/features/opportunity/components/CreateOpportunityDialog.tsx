@@ -35,6 +35,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import { httpClient } from '../../../lib/apiClient';
 import { OpportunityType } from '../types/opportunity.types';
 import type { Lead } from '../../leads/types';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
 interface CreateOpportunityDialogProps {
   open: boolean;
@@ -64,18 +65,8 @@ interface ValidationErrors {
 }
 
 /**
- * OpportunityType Labels (German)
- * @see OpportunityCard.tsx getOpportunityTypeLabel()
- */
-const OPPORTUNITY_TYPE_LABELS: Record<OpportunityType, string> = {
-  [OpportunityType.NEUGESCHAEFT]: 'Neugeschäft',
-  [OpportunityType.SORTIMENTSERWEITERUNG]: 'Sortimentserweiterung',
-  [OpportunityType.NEUER_STANDORT]: 'Neuer Standort',
-  [OpportunityType.VERLAENGERUNG]: 'Vertragsverlängerung',
-};
-
-/**
- * OpportunityType Icons (Emojis)
+ * OpportunityType Icons (Emojis) - UI-Concern, bleibt im Frontend
+ * Labels kommen vom Backend via useEnumOptions (Sprint 2.1.7.7 Schema-Driven Forms)
  * @see OpportunityCard.tsx getOpportunityTypeIcon()
  */
 const OPPORTUNITY_TYPE_ICONS: Record<OpportunityType, string> = {
@@ -99,6 +90,9 @@ export default function CreateOpportunityDialog({
   onClose,
   onSuccess,
 }: CreateOpportunityDialogProps) {
+  // Server-Driven Enums (Sprint 2.1.7.7 - Schema-Driven Forms Migration)
+  const { data: opportunityTypeOptions } = useEnumOptions('/api/enums/opportunity-types');
+
   // Form State
   const [name, setName] = useState(lead.companyName); // Pre-filled (OHNE Type-Präfix!)
   const [opportunityType, setOpportunityType] = useState<OpportunityType>(
@@ -257,7 +251,7 @@ export default function CreateOpportunityDialog({
               }}
             />
 
-            {/* Opportunity Type Select (Sprint 2.1.7.1 - Freshfoodz Business Types) */}
+            {/* Opportunity Type Select (Sprint 2.1.7.7 - Server-Driven Enums) */}
             <FormControl fullWidth disabled={isSubmitting}>
               <InputLabel>Opportunity-Typ</InputLabel>
               <Select
@@ -265,11 +259,13 @@ export default function CreateOpportunityDialog({
                 onChange={e => setOpportunityType(e.target.value as OpportunityType)}
                 label="Opportunity-Typ"
               >
-                {Object.values(OpportunityType).map(type => (
-                  <MenuItem key={type} value={type}>
+                {opportunityTypeOptions?.map(option => (
+                  <MenuItem key={option.value} value={option.value}>
                     <Stack direction="row" spacing={1} alignItems="center">
-                      <Typography>{OPPORTUNITY_TYPE_ICONS[type]}</Typography>
-                      <Typography>{OPPORTUNITY_TYPE_LABELS[type]}</Typography>
+                      <Typography>
+                        {OPPORTUNITY_TYPE_ICONS[option.value as OpportunityType]}
+                      </Typography>
+                      <Typography>{option.label}</Typography>
                     </Stack>
                   </MenuItem>
                 ))}

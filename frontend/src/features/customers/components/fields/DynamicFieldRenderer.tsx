@@ -4,6 +4,8 @@
  * Core rendering engine for the Field-Based Architecture.
  * Renders fields dynamically based on their type and configuration.
  *
+ * COMPATIBILITY: Supports both legacy (field.key) and new (field.fieldKey) formats
+ *
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/03-FRONTEND/03-field-rendering.md
  * @see /Users/joergstreeck/freshplan-sales-tool/frontend/src/features/customers/data/fieldCatalog.json
  */
@@ -21,9 +23,23 @@ import { MultiSelectField } from './fieldTypes/MultiSelectField';
 import { EmailField } from './fieldTypes/EmailField';
 import { TextAreaField } from './fieldTypes/TextAreaField';
 import { EnumField } from './fieldTypes/EnumField';
+import { GroupField } from './fieldTypes/GroupField';
+import { ArrayField } from './fieldTypes/ArrayField';
+import { BooleanField } from './fieldTypes/BooleanField';
+import { DateField } from './fieldTypes/DateField';
 import { getVisibleFields } from '../../utils/conditionEvaluator';
 import { getFieldSize } from '../../utils/fieldSizeCalculator';
 import { useCustomerFieldTheme } from '../../theme';
+
+/**
+ * Helper: Get field key (supports both legacy and new formats)
+ * - Legacy: field.key
+ * - New (Server-Driven): field.fieldKey
+ */
+const getFieldKey = (field: FieldDefinition | Record<string, unknown>): string => {
+  const f = field as Record<string, unknown>;
+  return (f.fieldKey as string) || (f.key as string) || '';
+};
 
 interface DynamicFieldRendererProps {
   /** Field definitions to render */
@@ -42,6 +58,8 @@ interface DynamicFieldRendererProps {
   readOnly?: boolean;
   /** Current wizard step (for step-based filtering) */
   currentStep?: string;
+  /** Force adaptive layout override (true=adaptive, false=grid, undefined=theme) */
+  useAdaptiveLayout?: boolean;
 }
 
 /**
@@ -59,9 +77,11 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   loading = false,
   readOnly = false,
   currentStep,
+  useAdaptiveLayout: useAdaptiveLayoutProp,
 }) => {
   const { theme } = useCustomerFieldTheme();
-  const useAdaptiveLayout = theme.darstellung === 'anpassungsfähig';
+  // Prop überschreibt Theme-Einstellung (undefined = Theme-basiert)
+  const useAdaptiveLayout = useAdaptiveLayoutProp ?? theme.darstellung === 'anpassungsfähig';
 
   // Size mapping für deutsche CSS-Klassen
   const sizeMap: Record<string, string> = {
@@ -76,18 +96,19 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
    * Render a single field based on its type
    */
   const renderField = (field: FieldDefinition): React.ReactElement | null => {
-    const value = values[field.key] ?? field.defaultValue ?? '';
-    const error = errors[field.key];
+    const fieldKey = getFieldKey(field);
+    const value = values[fieldKey] ?? field.defaultValue ?? '';
+    const error = errors[fieldKey];
 
     // Für adaptive Felder (alle Text-basierten Typen)
-    if (useAdaptiveLayout && ['text', 'email', 'number'].includes(field.fieldType)) {
+    if (useAdaptiveLayout && ['TEXT', 'EMAIL', 'NUMBER'].includes(field.type)) {
       return (
         <FieldWrapper field={field} error={error}>
           <AdaptiveField
             field={field}
             value={value}
-            onChange={newValue => onChange(field.key, newValue)}
-            onBlur={() => onBlur(field.key)}
+            onChange={newValue => onChange(fieldKey, newValue)}
+            onBlur={() => onBlur(fieldKey)}
             error={error}
             disabled={loading || field.disabled}
             readOnly={readOnly || field.readonly}
@@ -100,8 +121,8 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     const commonProps = {
       field,
       value,
-      onChange: (newValue: unknown) => onChange(field.key, newValue),
-      onBlur: () => onBlur(field.key),
+      onChange: (newValue: unknown) => onChange(fieldKey, newValue),
+      onBlur: () => onBlur(fieldKey),
       error: !!error,
       helperText: error || undefined,
       disabled: loading || field.disabled,
@@ -112,33 +133,71 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
     // Render field component based on type
     let fieldComponent: React.ReactElement;
 
-    switch (field.fieldType) {
-      case 'text':
+    switch (field.type) {
+      case 'TEXT':
         fieldComponent = <TextField {...commonProps} />;
         break;
 
-      case 'email':
+      case 'EMAIL':
         fieldComponent = <EmailField {...commonProps} />;
         break;
 
-      case 'number':
+      case 'NUMBER':
+      case 'DECIMAL':
+      case 'CURRENCY':
         fieldComponent = <NumberFieldV2 {...commonProps} />;
         break;
 
-      case 'select':
+      case 'SELECT':
         fieldComponent = <SelectField {...commonProps} />;
         break;
 
-      case 'multiselect':
+      case 'MULTISELECT':
         fieldComponent = <MultiSelectField {...commonProps} />;
         break;
 
-      case 'textarea':
+      case 'TEXTAREA':
         fieldComponent = <TextAreaField {...commonProps} />;
         break;
 
-      case 'enum':
+      case 'ENUM':
         fieldComponent = <EnumField {...commonProps} />;
+        break;
+
+      case 'DATE':
+        fieldComponent = <DateField {...commonProps} />;
+        break;
+
+      case 'BOOLEAN':
+        // BooleanField hat eigenes Label via FormControlLabel - kein FieldWrapper nötig!
+        return <BooleanField {...commonProps} />;
+
+      case 'GROUP':
+        fieldComponent = (
+          <GroupField
+            field={field}
+            values={values}
+            errors={errors}
+            onChange={onChange}
+            onBlur={onBlur}
+            readOnly={readOnly || field.readonly}
+            disabled={loading || field.disabled}
+          />
+        );
+        break;
+
+      case 'ARRAY':
+        fieldComponent = (
+          <ArrayField
+            field={field}
+            values={values}
+            errors={errors}
+            onChange={onChange}
+            onBlur={onBlur}
+            readOnly={readOnly || field.readonly}
+            disabled={loading || field.disabled}
+          />
+        );
         break;
 
       default:
@@ -178,10 +237,10 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   if (useAdaptiveLayout) {
     return (
       <AdaptiveFormContainer variant="flexbox">
-        {visibleFields.map(field => {
+        {visibleFields.map((field, index) => {
           // Spezielle CSS-Klasse für Dropdowns zur automatischen Breitenberechnung
           const sizeClass =
-            field.fieldType === 'select' || field.fieldType === 'dropdown'
+            field.type === 'SELECT' || field.type === 'DROPDOWN'
               ? 'field-dropdown-auto'
               : (() => {
                   const sizeInfo = getFieldSize(field);
@@ -192,7 +251,11 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
           const style: React.CSSProperties = {};
 
           return (
-            <Box key={field.key} className={sizeClass} sx={style}>
+            <Box
+              key={getFieldKey(field) || `field-adaptive-${index}`}
+              className={sizeClass}
+              sx={style}
+            >
               {renderField(field)}
             </Box>
           );
@@ -204,12 +267,15 @@ export const DynamicFieldRenderer: React.FC<DynamicFieldRendererProps> = ({
   // Traditionelles Grid Layout
   return (
     <Grid container spacing={3}>
-      {visibleFields.map(field => {
+      {visibleFields.map((field, index) => {
         const themeSize = getFieldSize(field);
         const gridSize = themeSize;
 
         return (
-          <Grid key={field.key} size={{ xs: gridSize.xs, sm: gridSize.sm, md: gridSize.md }}>
+          <Grid
+            key={getFieldKey(field) || `field-grid-${index}`}
+            size={{ xs: gridSize.xs, sm: gridSize.sm, md: gridSize.md }}
+          >
             {renderField(field)}
           </Grid>
         );

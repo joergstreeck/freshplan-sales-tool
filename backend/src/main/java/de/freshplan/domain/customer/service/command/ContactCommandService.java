@@ -2,8 +2,10 @@ package de.freshplan.domain.customer.service.command;
 
 import de.freshplan.domain.customer.entity.Customer;
 import de.freshplan.domain.customer.entity.CustomerContact;
+import de.freshplan.domain.customer.entity.CustomerLocation;
 import de.freshplan.domain.customer.repository.ContactRepository;
 import de.freshplan.domain.customer.repository.CustomerRepository;
+import de.freshplan.domain.customer.repository.LocationRepository;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import de.freshplan.domain.customer.service.mapper.ContactMapper;
 import io.quarkus.security.identity.SecurityIdentity;
@@ -11,7 +13,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -29,6 +33,7 @@ public class ContactCommandService {
 
   @Inject ContactRepository contactRepository;
   @Inject CustomerRepository customerRepository;
+  @Inject LocationRepository locationRepository;
   @Inject ContactMapper contactMapper;
   @Inject SecurityIdentity securityIdentity;
 
@@ -226,9 +231,95 @@ public class ContactCommandService {
    * @param contactIds list of contact IDs
    * @param locationId the location ID (null to unassign)
    * @return number of updated contacts
+   * @deprecated Use updateContactLocationAssignments for multi-location support
    */
+  @Deprecated
   @Transactional
   public int assignContactsToLocation(List<UUID> contactIds, UUID locationId) {
     return contactRepository.updateLocationAssignment(contactIds, locationId);
+  }
+
+  // ========== SPRINT 2.1.7.7: MULTI-LOCATION METHODS ==========
+
+  /**
+   * Update the location assignments for a contact. Sets responsibilityScope based on
+   * assignedLocationIds: - Empty list → responsibilityScope = 'ALL' - Non-empty list →
+   * responsibilityScope = 'SPECIFIC'
+   *
+   * @param contactId the contact ID
+   * @param assignedLocationIds list of location IDs to assign
+   * @return updated contact DTO
+   */
+  @Transactional
+  public ContactDTO updateContactLocationAssignments(
+      UUID contactId, List<UUID> assignedLocationIds) {
+    CustomerContact contact =
+        contactRepository
+            .findByIdOptional(contactId)
+            .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+
+    // Clear existing assignments
+    contact.getAssignedLocations().clear();
+
+    if (assignedLocationIds == null || assignedLocationIds.isEmpty()) {
+      // ALL locations - no specific assignments
+      contact.setResponsibilityScope("ALL");
+    } else {
+      // SPECIFIC locations - fetch and assign
+      contact.setResponsibilityScope("SPECIFIC");
+      Set<CustomerLocation> locations = new HashSet<>();
+      for (UUID locationId : assignedLocationIds) {
+        CustomerLocation location =
+            locationRepository
+                .findByIdOptional(locationId)
+                .orElseThrow(() -> new NotFoundException("Location not found: " + locationId));
+        locations.add(location);
+      }
+      contact.setAssignedLocations(locations);
+    }
+
+    contact.setUpdatedBy(getCurrentUser());
+    return contactMapper.toDTO(contact);
+  }
+
+  /**
+   * Update contact with both data and location assignments. Combines updateContact and
+   * updateContactLocationAssignments.
+   *
+   * @param contactId the contact ID
+   * @param contactDTO the contact data (includes assignedLocationIds)
+   * @return updated contact DTO
+   */
+  @Transactional
+  public ContactDTO updateContactWithLocations(UUID contactId, ContactDTO contactDTO) {
+    CustomerContact contact =
+        contactRepository
+            .findByIdOptional(contactId)
+            .orElseThrow(() -> new NotFoundException("Contact not found: " + contactId));
+
+    // Update basic fields
+    contactMapper.updateEntityFromDTO(contactDTO, contact);
+
+    // Update location assignments from DTO
+    List<UUID> locationIds = contactDTO.getAssignedLocationIds();
+    contact.getAssignedLocations().clear();
+
+    if (locationIds == null || locationIds.isEmpty()) {
+      contact.setResponsibilityScope("ALL");
+    } else {
+      contact.setResponsibilityScope("SPECIFIC");
+      Set<CustomerLocation> locations = new HashSet<>();
+      for (UUID locationId : locationIds) {
+        CustomerLocation location =
+            locationRepository
+                .findByIdOptional(locationId)
+                .orElseThrow(() -> new NotFoundException("Location not found: " + locationId));
+        locations.add(location);
+      }
+      contact.setAssignedLocations(locations);
+    }
+
+    contact.setUpdatedBy(getCurrentUser());
+    return contactMapper.toDTO(contact);
   }
 }

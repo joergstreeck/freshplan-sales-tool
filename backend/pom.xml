@@ -100,6 +100,12 @@
       <artifactId>opencsv</artifactId>
       <version>5.9</version>
     </dependency>
+    <!-- Apache Commons Text for Levenshtein Distance (Sprint 2.1.7.7 - Fuzzy Address Matching) -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>1.11.0</version>
+    </dependency>
     <!-- Excel Generation -->
     <dependency>
       <groupId>org.apache.poi</groupId>
@@ -273,7 +279,7 @@
                   </limits>
                 </rule>
               </rules>
-              <skip>true</skip> <!-- Vorerst deaktiviert, bis wir 80% erreichen -->
+              <skip>false</skip> <!-- ✅ ACTIVATED: CI/CD Coverage Enforcement -->
             </configuration>
           </execution>
         </executions>
@@ -294,6 +300,22 @@
             <endWithNewline />
             <formatAnnotations />
           </java>
+        </configuration>
+      </plugin>
+      <!-- PMD Plugin für Code Complexity Check -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.28.0</version>
+        <configuration>
+          <!-- WICHTIG: Nur unser Custom-Ruleset, keine Default-Regeln -->
+          <rulesets>
+            <ruleset>${project.basedir}/../.github/pmd-complexity-rules.xml</ruleset>
+          </rulesets>
+          <printFailingErrors>true</printFailingErrors>
+          <failOnViolation>true</failOnViolation>
+          <includeTests>false</includeTests>
+          <linkXRef>false</linkXRef>
         </configuration>
       </plugin>
       <!-- Flyway Maven Plugin für manuelle Migrationen in CI -->

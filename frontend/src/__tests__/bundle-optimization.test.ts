@@ -47,7 +47,7 @@ describe('Bundle Optimization Configuration', () => {
     // Check that lazy loading is used
     expect(providers).toContain('lazy(');
     expect(providers).toContain('UsersPage = lazy(');
-    expect(providers).toContain('CustomersPageV2 = lazy(');
+    expect(providers).toContain('CustomersPage = lazy('); // M6: CustomersPageV2 removed
     expect(providers).toContain('CockpitPage = lazy(');
   });
 });

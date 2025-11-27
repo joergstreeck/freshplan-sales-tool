@@ -19,20 +19,22 @@
  * Maps to backend FieldType.java enum
  *
  * Determines which UI component to render:
- * - TEXT → TextField
- * - TEXTAREA → TextField multiline
- * - CURRENCY → TextField with € formatting
- * - NUMBER → TextField type="number"
- * - DECIMAL → TextField with decimal formatting
- * - ENUM → Autocomplete (options from enumSource endpoint)
- * - BOOLEAN → Checkbox
- * - DATE → DatePicker
- * - DATETIME → DateTimePicker
- * - EMAIL → TextField type="email"
- * - PHONE → TextField with phone formatting
- * - URL → TextField type="url"
- * - LABEL → Typography (read-only display)
+ * - TEXT → TextField / Typography (read-only)
+ * - TEXTAREA → TextField multiline / Typography (read-only)
+ * - CURRENCY → TextField with € formatting / Typography (read-only)
+ * - NUMBER → TextField type="number" / Typography (read-only)
+ * - DECIMAL → TextField with decimal formatting / Typography (read-only)
+ * - ENUM → Autocomplete / Typography with label (read-only)
+ * - BOOLEAN → Checkbox / Typography Ja/Nein (read-only)
+ * - DATE → DatePicker / Typography formatted (read-only)
+ * - DATETIME → DateTimePicker / Typography formatted (read-only)
+ * - EMAIL → TextField type="email" / Typography (read-only)
+ * - PHONE → TextField with phone formatting / Typography (read-only)
+ * - URL → TextField type="url" / Link (read-only)
+ * - LABEL → Typography (always read-only)
  * - CHIP → Chip component (status badges, tags)
+ * - GROUP → Nested field group (Sprint 2.1.7.2 D11)
+ * - ARRAY → Repeatable items (Sprint 2.1.7.2 D11)
  */
 export type FieldType =
   | 'TEXT'
@@ -48,7 +50,9 @@ export type FieldType =
   | 'PHONE'
   | 'URL'
   | 'LABEL'
-  | 'CHIP';
+  | 'CHIP'
+  | 'GROUP'
+  | 'ARRAY';
 
 /**
  * Field Definition
@@ -66,6 +70,25 @@ export interface FieldDefinition {
   helpText: string | null;
   gridCols: number | null;
   validationRules: string[];
+
+  // ========== GROUP/ARRAY SUPPORT (Sprint 2.1.7.2 D11) ==========
+  /**
+   * Nested fields (for GROUP type)
+   *
+   * Example: mainAddress (GROUP) with fields: street, postalCode, city, countryCode
+   *
+   * Only used when type = GROUP, null otherwise
+   */
+  fields?: FieldDefinition[];
+
+  /**
+   * Item schema (for ARRAY type)
+   *
+   * Example: deliveryAddresses (ARRAY) with itemSchema defining address structure
+   *
+   * Only used when type = ARRAY, null otherwise
+   */
+  itemSchema?: FieldDefinition;
 
   // ========== WIZARD METADATA (Sprint 2.1.7.2 D11) ==========
   /**
@@ -138,6 +161,34 @@ export interface FieldDefinition {
    * Only relevant if showInWizard = true
    */
   showDividerAfter?: boolean;
+
+  // ========== CONDITIONAL VISIBILITY (Sprint 2.1.7.7) ==========
+
+  /**
+   * Conditional visibility: Field key to check
+   *
+   * Sprint 2.1.7.7: Server-Driven Conditional Fields
+   *
+   * This field is only visible when another field has a specific value.
+   *
+   * Example: branchCount is only visible when isChain = true
+   *
+   * Usage: visibleWhenField = "isChain", visibleWhenValue = "true"
+   */
+  visibleWhenField?: string;
+
+  /**
+   * Conditional visibility: Expected value
+   *
+   * Sprint 2.1.7.7: Server-Driven Conditional Fields
+   *
+   * The value that visibleWhenField must have for this field to be visible.
+   *
+   * For BOOLEAN fields: "true" or "false"
+   * For ENUM fields: the enum value (e.g. "ja", "nein")
+   * For TEXT fields: exact string match
+   */
+  visibleWhenValue?: string;
 }
 
 /**

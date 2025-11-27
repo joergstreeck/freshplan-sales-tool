@@ -1,26 +1,16 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { render, screen, fireEvent } from '../../../test/test-utils';
 import { describe, it, expect, vi } from 'vitest';
 import { SidebarNavigation } from '../SidebarNavigation';
 import { useNavigationStore } from '@/store/navigationStore';
-import { useAuthStore } from '@/store/authStore';
+import { useAuth } from '@/hooks/useAuth';
 
-// Mock stores
+// Mock stores and hooks
 vi.mock('@/store/navigationStore');
-vi.mock('@/store/authStore');
+vi.mock('@/hooks/useAuth');
 
 const mockUseNavigationStore = vi.mocked(useNavigationStore);
-const mockUseAuthStore = vi.mocked(useAuthStore);
-
-const theme = createTheme();
-
-const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <BrowserRouter>
-    <ThemeProvider theme={theme}>{children}</ThemeProvider>
-  </BrowserRouter>
-);
+const mockUseAuth = vi.mocked(useAuth);
 
 const mockNavigationState = {
   activeMenuId: 'cockpit',
@@ -36,15 +26,23 @@ const mockNavigationState = {
   toggleFavorite: vi.fn(),
 };
 
-const mockAuthState = {
-  userPermissions: ['cockpit.view', 'customers.view'],
-  setPermissions: vi.fn(),
+const mockUser = {
+  id: 'test-user',
+  name: 'Test User',
+  email: 'test@freshplan.de',
+  username: 'testuser',
+  roles: ['admin', 'sales'], // Default: both permissions
 };
 
 describe('SidebarNavigation', () => {
   beforeEach(() => {
     mockUseNavigationStore.mockReturnValue(mockNavigationState);
-    mockUseAuthStore.mockReturnValue(mockAuthState);
+    mockUseAuth.mockReturnValue({
+      user: mockUser,
+      isAuthenticated: true,
+      login: vi.fn(),
+      logout: vi.fn(),
+    });
   });
 
   afterEach(() => {
@@ -52,11 +50,7 @@ describe('SidebarNavigation', () => {
   });
 
   it('sollte alle erlaubten Menüpunkte anzeigen', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     // Prüfe ob die erlaubten Menüpunkte angezeigt werden
     expect(screen.getByText('Mein Cockpit')).toBeInTheDocument();
@@ -64,22 +58,14 @@ describe('SidebarNavigation', () => {
   });
 
   it('sollte Toggle-Button zum Einklappen anzeigen', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     const toggleButton = screen.getByRole('button', { name: /navigation einklappen/i });
     expect(toggleButton).toBeInTheDocument();
   });
 
   it('sollte toggleSidebar aufrufen beim Klick auf Toggle-Button', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     const toggleButton = screen.getByRole('button', { name: /navigation einklappen/i });
     fireEvent.click(toggleButton);
@@ -88,11 +74,7 @@ describe('SidebarNavigation', () => {
   });
 
   it('sollte aktiven Menüpunkt hervorheben', () => {
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     const activeItem = screen.getByText('Mein Cockpit').closest('div');
     expect(activeItem?.parentElement).toHaveClass('Mui-selected');
@@ -105,28 +87,26 @@ describe('SidebarNavigation', () => {
     };
     mockUseNavigationStore.mockReturnValue(collapsedState);
 
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     // In eingeklapptem Zustand sollten die Texte nicht sichtbar sein
     expect(screen.queryByText('Mein Cockpit')).not.toBeInTheDocument();
   });
 
   it('sollte nur Menüpunkte mit entsprechenden Permissions anzeigen', () => {
-    const limitedAuthState = {
-      ...mockAuthState,
-      userPermissions: ['cockpit.view'], // Nur Cockpit Permission
+    // Override user with limited permissions (only 'auditor' role = only cockpit.view)
+    const limitedUser = {
+      ...mockUser,
+      roles: ['auditor'], // Only auditor role = cockpit.view + reports.view
     };
-    mockUseAuthStore.mockReturnValue(limitedAuthState);
+    mockUseAuth.mockReturnValue({
+      user: limitedUser,
+      isAuthenticated: true,
+      login: vi.fn(),
+      logout: vi.fn(),
+    });
 
-    render(
-      <TestWrapper>
-        <SidebarNavigation />
-      </TestWrapper>
-    );
+    render(<SidebarNavigation />);
 
     expect(screen.getByText('Mein Cockpit')).toBeInTheDocument();
     expect(screen.queryByText('Kundenmanagement')).not.toBeInTheDocument();

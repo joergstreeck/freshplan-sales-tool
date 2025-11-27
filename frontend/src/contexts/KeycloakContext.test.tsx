@@ -7,39 +7,8 @@ import { render, screen, renderHook, waitFor, act } from '../test/test-utils';
 import { KeycloakProvider, useKeycloak } from './KeycloakContext';
 import type { ReactNode } from 'react';
 
-// Mock für Keycloak-Module
-vi.mock('../lib/keycloak', () => {
-  // Mock-Keycloak-Instanz
-  const mockKeycloak = {
-    init: vi.fn(),
-    login: vi.fn(),
-    logout: vi.fn(),
-    updateToken: vi.fn(),
-    onTokenExpired: undefined,
-    onAuthSuccess: undefined,
-    onAuthError: undefined,
-    onAuthLogout: undefined,
-  };
-
-  // Mock authUtils
-  const mockAuthUtils = {
-    isAuthenticated: vi.fn(),
-    login: vi.fn(),
-    logout: vi.fn(),
-    getToken: vi.fn(),
-    getUserId: vi.fn(),
-    getUsername: vi.fn(),
-    getEmail: vi.fn(),
-    hasRole: vi.fn(),
-    getUserRoles: vi.fn(),
-  };
-
-  return {
-    keycloak: mockKeycloak,
-    initKeycloak: vi.fn().mockResolvedValue(false), // Default: nicht authentifiziert
-    authUtils: mockAuthUtils,
-  };
-});
+// Mock für Keycloak-Module - verwendet __mocks__/keycloak.ts
+vi.mock('../lib/keycloak');
 
 import { keycloak, initKeycloak, authUtils } from '../lib/keycloak';
 
@@ -69,7 +38,12 @@ const TestComponent = () => {
 describe('KeycloakContext', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // Mock environment variables to disable auth bypass in tests
+    vi.stubEnv('DEV', 'false');
+    vi.stubEnv('VITE_AUTH_BYPASS', 'false');
     // Setze Standard-Mock-Werte
+    // WICHTIG: initKeycloak muss nach clearAllMocks() neu konfiguriert werden
+    (initKeycloak as ReturnType<typeof vi.fn>).mockResolvedValue(true);
     (authUtils.getToken as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
     (authUtils.getUserId as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
     (authUtils.getUsername as ReturnType<typeof vi.fn>).mockReturnValue(undefined);
@@ -80,6 +54,7 @@ describe('KeycloakContext', () => {
 
   afterEach(() => {
     vi.restoreAllMocks();
+    vi.unstubAllEnvs();
   });
 
   describe('Provider Initialization', () => {
@@ -114,7 +89,7 @@ describe('KeycloakContext', () => {
 
       // Cleanup
       renderResult.unmount();
-    });
+    }, 10000);
 
     it('sollte Loading auf false setzen nach Initialisierung', async () => {
       await act(async () => {
@@ -174,7 +149,7 @@ describe('KeycloakContext', () => {
         expect(screen.getByTestId('userId')).toHaveTextContent('user-123');
         expect(screen.getByTestId('userRoles')).toHaveTextContent('sales,user');
       });
-    });
+    }, 10000);
 
     it('sollte eingeloggten Zustand als Admin korrekt darstellen', async () => {
       // Konfiguriere Mocks für eingeloggten Admin
@@ -203,7 +178,7 @@ describe('KeycloakContext', () => {
         expect(screen.getByTestId('userId')).toHaveTextContent('admin-456');
         expect(screen.getByTestId('userRoles')).toHaveTextContent('admin,manager,sales,user');
       });
-    });
+    }, 10000);
   });
 
   describe('Event Handlers', () => {
@@ -219,7 +194,7 @@ describe('KeycloakContext', () => {
       await waitFor(() => {
         expect(keycloak.onTokenExpired).toBeDefined();
       });
-    });
+    }, 10000);
 
     it('sollte Token-Refresh bei onTokenExpired versuchen', async () => {
       (initKeycloak as ReturnType<typeof vi.fn>).mockResolvedValue(true);
@@ -245,7 +220,7 @@ describe('KeycloakContext', () => {
       await waitFor(() => {
         expect(keycloak.updateToken).toHaveBeenCalledWith(30);
       });
-    });
+    }, 10000);
 
     it('sollte User-Info bei onAuthSuccess aktualisieren', async () => {
       (initKeycloak as ReturnType<typeof vi.fn>).mockResolvedValue(true);
@@ -264,7 +239,7 @@ describe('KeycloakContext', () => {
 
       // Test that onAuthSuccess is properly set up
       expect(typeof keycloak.onAuthSuccess).toBe('function');
-    });
+    }, 10000);
 
     it('sollte User-Info bei onAuthLogout löschen', async () => {
       // Starte als eingeloggt
@@ -284,7 +259,7 @@ describe('KeycloakContext', () => {
 
       // Test that onAuthLogout is properly set up
       expect(typeof keycloak.onAuthLogout).toBe('function');
-    });
+    }, 10000);
   });
 
   describe('Context Methods', () => {

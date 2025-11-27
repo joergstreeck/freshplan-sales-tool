@@ -8,7 +8,8 @@ import static org.mockito.Mockito.*;
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
-import de.freshplan.domain.testdata.service.TestDataService;
+import de.freshplan.domain.testdata.service.provider.CleanupResult;
+import de.freshplan.domain.testdata.service.provider.SeedResult;
 import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -61,7 +62,7 @@ class TestDataCommandServiceMockTest {
     doNothing().when(timelineRepository).persist((CustomerTimelineEvent) any());
 
     // When
-    TestDataService.SeedResult result = commandService.seedTestData();
+    SeedResult result = commandService.seedTestData();
 
     // Then
     assertThat(result.customersCreated()).isEqualTo(5);
@@ -134,7 +135,7 @@ class TestDataCommandServiceMockTest {
     when(customerRepository.delete("isTestData", true)).thenReturn(5L);
 
     // When
-    TestDataService.CleanupResult result = commandService.cleanTestData();
+    CleanupResult result = commandService.cleanTestData();
 
     // Then
     assertThat(result.customersDeleted()).isEqualTo(5L);
@@ -173,7 +174,7 @@ class TestDataCommandServiceMockTest {
     when(customerRepository.delete(expectedCustomersQuery)).thenReturn(8L);
 
     // When
-    TestDataService.CleanupResult result = commandService.cleanOldTestData();
+    CleanupResult result = commandService.cleanOldTestData();
 
     // Then
     assertThat(result.customersDeleted()).isEqualTo(8L);
@@ -196,7 +197,7 @@ class TestDataCommandServiceMockTest {
         .persist((Customer) any());
 
     // When
-    TestDataService.SeedResult result = commandService.seedAdditionalTestData();
+    SeedResult result = commandService.seedAdditionalTestData();
 
     // Then
     assertThat(result.customersCreated()).isEqualTo(14);
@@ -257,7 +258,7 @@ class TestDataCommandServiceMockTest {
         .persist((Customer) any());
 
     // When
-    TestDataService.SeedResult result = commandService.seedComprehensiveTestData();
+    SeedResult result = commandService.seedComprehensiveTestData();
 
     // Then
     assertThat(result.customersCreated()).isGreaterThan(30);

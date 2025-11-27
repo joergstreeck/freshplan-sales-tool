@@ -14,6 +14,7 @@ import de.freshplan.domain.customer.service.exception.CustomerAlreadyExistsExcep
 import de.freshplan.domain.customer.service.exception.CustomerHasChildrenException;
 import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import de.freshplan.domain.customer.service.mapper.CustomerMapper;
+import de.freshplan.domain.customer.service.util.CustomerNumberGeneratorService;
 import io.quarkus.panache.common.Page;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -37,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @since 2.0.0
  */
 @ApplicationScoped
-public class CustomerService {
+public class CustomerService implements CustomerActivation {
 
   private static final Logger log = LoggerFactory.getLogger(CustomerService.class);
 

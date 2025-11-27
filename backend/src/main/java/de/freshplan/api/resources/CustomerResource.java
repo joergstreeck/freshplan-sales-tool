@@ -26,6 +26,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,7 +75,13 @@ public class CustomerResource {
   de.freshplan.domain.opportunity.service.OpportunityService
       opportunityService; // For customer opportunities
 
-  @Inject de.freshplan.domain.customer.service.RevenueMetricsService revenueMetricsService;
+  @Inject de.freshplan.modules.xentral.service.RevenueMetricsService revenueMetricsService;
+
+  @Inject de.freshplan.domain.customer.service.BranchService branchService; // Sprint 2.1.7.7
+
+  @Inject
+  de.freshplan.domain.customer.service.HierarchyMetricsService
+      hierarchyMetricsService; // Sprint 2.1.7.7 D3+D5
 
   @Inject Clock clock; // For audit timestamps (Sprint 2.1.7.2 D9.3)
 
@@ -85,6 +95,18 @@ public class CustomerResource {
    */
   @POST
   @RolesAllowed({"admin", "manager"})
+  @APIResponses({
+    @APIResponse(
+        responseCode = "201",
+        description = "Customer created successfully",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = CustomerResponse.class))),
+    @APIResponse(responseCode = "400", description = "Invalid request data"),
+    @APIResponse(responseCode = "401", description = "Unauthorized - authentication required"),
+    @APIResponse(responseCode = "403", description = "Forbidden - admin or manager role required")
+  })
   public Response createCustomer(@Valid CreateCustomerRequest request) {
     // Additional security: verify role programmatically for audit
     securityContext.requireAnyRole("admin", "manager");
@@ -201,6 +223,16 @@ public class CustomerResource {
    * @return 200 OK with paginated customer list
    */
   @GET
+  @APIResponses({
+    @APIResponse(
+        responseCode = "200",
+        description = "Paginated list of customers",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = CustomerListResponse.class))),
+    @APIResponse(responseCode = "401", description = "Unauthorized - authentication required")
+  })
   public Response getAllCustomers(
       @QueryParam("page") @DefaultValue(PaginationConstants.DEFAULT_PAGE_NUMBER_STRING) int page,
       @QueryParam("size") @DefaultValue(PaginationConstants.DEFAULT_PAGE_SIZE_STRING) int size,
@@ -318,6 +350,46 @@ public class CustomerResource {
       hierarchy = customerService.getCustomerHierarchy(id);
     }
     return Response.ok(hierarchy).build();
+  }
+
+  /**
+   * Gets hierarchy metrics for a HEADQUARTER customer.
+   *
+   * <p>Sprint 2.1.7.7 - D5: Multi-Location Management - Frontend Dashboard Integration
+   *
+   * <p>Returns aggregated metrics across all child branches (FILIALE customers): total revenue,
+   * average revenue, branch count, open opportunities, and detailed branch breakdown.
+   *
+   * @param id The parent customer ID (must be HEADQUARTER)
+   * @return 200 OK with hierarchy metrics
+   * @throws IllegalArgumentException if customer not found
+   * @throws InvalidHierarchyException if customer is not a HEADQUARTER
+   */
+  @GET
+  @Path("/{id}/hierarchy/metrics")
+  @APIResponses({
+    @APIResponse(
+        responseCode = "200",
+        description = "Hierarchy metrics retrieved successfully",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema =
+                    @Schema(
+                        implementation =
+                            de.freshplan.domain.customer.service.HierarchyMetricsService
+                                .HierarchyMetrics.class))),
+    @APIResponse(
+        responseCode = "400",
+        description = "Customer is not a HEADQUARTER (InvalidHierarchyException)"),
+    @APIResponse(responseCode = "404", description = "Customer not found"),
+    @APIResponse(responseCode = "401", description = "Unauthorized - authentication required")
+  })
+  public Response getHierarchyMetrics(@PathParam("id") UUID id) {
+    log.debug("Fetching hierarchy metrics for customer: {}", id);
+    de.freshplan.domain.customer.service.HierarchyMetricsService.HierarchyMetrics metrics =
+        hierarchyMetricsService.getHierarchyMetrics(id);
+    return Response.ok(metrics).build();
   }
 
   /**
@@ -783,6 +855,116 @@ public class CustomerResource {
     log.info("Found {} locations for customer {}", locations.size(), customerId);
 
     return Response.ok(locations).build();
+  }
+
+  // ========== BRANCH MANAGEMENT (Sprint 2.1.7.7) ==========
+
+  /**
+   * Creates a new branch (FILIALE) under a HEADQUARTER customer.
+   *
+   * <p>Sprint 2.1.7.7 D4: CreateBranchDialog - Branch Creation Endpoint
+   *
+   * <p><strong>Business Rules:</strong>
+   *
+   * <ul>
+   *   <li>Parent customer must be a HEADQUARTER (hierarchyType = HEADQUARTER)
+   *   <li>New branch will have hierarchyType = FILIALE
+   *   <li>Branch inherits xentral_customer_id from parent
+   *   <li>Branch starts with status = PROSPECT (unless specified otherwise)
+   *   <li>Creates primary Location with Address if address data provided
+   * </ul>
+   *
+   * <p><strong>Authorization:</strong> Roles {@code admin}, {@code manager} are authorized.
+   *
+   * @param headquarterId UUID of the parent HEADQUARTER customer
+   * @param request CreateBranchRequest with branch details (companyName, address, contact)
+   * @return 201 Created with branch CustomerResponse
+   * @throws InvalidHierarchyException if parent is not a HEADQUARTER
+   * @throws CustomerNotFoundException if parent customer not found
+   */
+  @POST
+  @Path("/{headquarterId}/branches")
+  @RolesAllowed({"admin", "manager"})
+  @APIResponses({
+    @APIResponse(
+        responseCode = "201",
+        description = "Branch created successfully",
+        content =
+            @Content(
+                mediaType = MediaType.APPLICATION_JSON,
+                schema = @Schema(implementation = CustomerResponse.class))),
+    @APIResponse(responseCode = "400", description = "Invalid request - parent is not HEADQUARTER"),
+    @APIResponse(responseCode = "404", description = "Parent customer not found"),
+    @APIResponse(responseCode = "403", description = "Forbidden - admin or manager role required")
+  })
+  public Response createBranch(
+      @PathParam("headquarterId") UUID headquarterId,
+      @Valid de.freshplan.domain.customer.service.dto.CreateBranchRequest request) {
+
+    log.info(
+        "Creating branch for headquarter {} (user: {})", headquarterId, currentUser.getUsername());
+
+    // Security check
+    securityContext.requireAnyRole("admin", "manager");
+
+    try {
+      // Delegate to BranchService
+      CustomerResponse branch =
+          branchService.createBranch(headquarterId, request, currentUser.getUsername());
+
+      log.info(
+          "Branch created successfully: {} (ID: {}) under headquarter {}",
+          branch.companyName(),
+          branch.id(),
+          headquarterId);
+
+      return Response.status(Response.Status.CREATED).entity(branch).build();
+
+    } catch (de.freshplan.domain.customer.service.exception.InvalidHierarchyException e) {
+      log.warn("Invalid hierarchy: {}", e.getMessage());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse(e.getMessage(), "INVALID_HIERARCHY"))
+          .build();
+    } catch (de.freshplan.domain.customer.service.exception.CustomerNotFoundException e) {
+      log.warn("Customer not found: {}", e.getMessage());
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse(e.getMessage(), "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
+  }
+
+  /**
+   * Lists all branches (FILIALE) for a HEADQUARTER customer.
+   *
+   * <p>Sprint 2.1.7.7 D4: CreateBranchDialog - Get Branches Endpoint
+   *
+   * @param headquarterId UUID of the parent HEADQUARTER customer
+   * @return 200 OK with list of branches
+   */
+  @GET
+  @Path("/{headquarterId}/branches")
+  @RolesAllowed({"admin", "manager", "sales"})
+  public Response getBranches(@PathParam("headquarterId") UUID headquarterId) {
+    log.debug("Fetching branches for headquarter: {}", headquarterId);
+
+    try {
+      List<CustomerResponse> branches = branchService.getBranchesByHeadquarter(headquarterId);
+
+      log.info("Found {} branches for headquarter {}", branches.size(), headquarterId);
+
+      return Response.ok(branches).build();
+
+    } catch (de.freshplan.domain.customer.service.exception.InvalidHierarchyException e) {
+      log.warn("Invalid hierarchy: {}", e.getMessage());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse(e.getMessage(), "INVALID_HIERARCHY"))
+          .build();
+    } catch (de.freshplan.domain.customer.service.exception.CustomerNotFoundException e) {
+      log.warn("Customer not found: {}", e.getMessage());
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse(e.getMessage(), "CUSTOMER_NOT_FOUND"))
+          .build();
+    }
   }
 
   /** Contact request DTO for create/update operations. */

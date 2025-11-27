@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,20 @@ import org.junit.jupiter.api.Test;
 public class ContactMigrationTest {
 
   @Inject EntityManager entityManager;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Step 1: Clean up test data inserted in integration tests
+    // Delete TEST_ROLE entries from contact_roles (if any)
+    entityManager
+        .createNativeQuery("DELETE FROM contact_roles WHERE role = 'TEST_ROLE'")
+        .executeUpdate();
+
+    // Step 2: Delete test location assignments (created in testLocationAssignmentsIntegration)
+    // Note: contact_location_assignments has ON DELETE CASCADE, so deletions cascade automatically
+    // No explicit cleanup needed for location assignments as they reference test data
+  }
 
   @Test
   @DisplayName("V209: contact_roles table should exist with correct structure")

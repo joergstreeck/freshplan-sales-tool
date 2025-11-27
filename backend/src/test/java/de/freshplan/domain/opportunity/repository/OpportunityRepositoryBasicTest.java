@@ -15,10 +15,12 @@ import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -43,6 +45,20 @@ public class OpportunityRepositoryBasicTest {
   @Inject OpportunityRepository opportunityRepository;
   @Inject CustomerRepository customerRepository;
   @Inject UserRepository userRepository;
+  @Inject jakarta.persistence.EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete in correct order - use customer.isTestData flag or customer.companyName with [TEST]
+    // prefix
+    em.createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT o.id FROM opportunities o JOIN customers c ON o.customer_id = c.id WHERE c.is_test_data = true OR c.company_name LIKE '[TEST]%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true OR company_name LIKE '[TEST]%')")
+        .executeUpdate();
+  }
 
   @Test
   @TestTransaction

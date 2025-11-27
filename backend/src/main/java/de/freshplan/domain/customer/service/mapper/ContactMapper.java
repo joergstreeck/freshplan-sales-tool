@@ -1,8 +1,12 @@
 package de.freshplan.domain.customer.service.mapper;
 
 import de.freshplan.domain.customer.entity.CustomerContact;
+import de.freshplan.domain.customer.entity.CustomerLocation;
 import de.freshplan.domain.customer.service.dto.ContactDTO;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Mapper for converting between Contact entity and ContactDTO. Handles all transformations with
@@ -43,10 +47,23 @@ public class ContactMapper {
     dto.setPrimary(contact.getIsPrimary());
     dto.setActive(contact.getIsActive());
 
-    // Location
+    // Location (Single - DEPRECATED)
     if (contact.getAssignedLocation() != null) {
       dto.setAssignedLocationId(contact.getAssignedLocation().getId());
       dto.setAssignedLocationName(contact.getAssignedLocation().getLocationName());
+    }
+
+    // Sprint 2.1.7.7: Multi-Location Assignment
+    dto.setResponsibilityScope(contact.getResponsibilityScope());
+    if (contact.getAssignedLocations() != null && !contact.getAssignedLocations().isEmpty()) {
+      List<UUID> locationIds = new ArrayList<>();
+      List<String> locationNames = new ArrayList<>();
+      for (CustomerLocation location : contact.getAssignedLocations()) {
+        locationIds.add(location.getId());
+        locationNames.add(location.getLocationName());
+      }
+      dto.setAssignedLocationIds(locationIds);
+      dto.setAssignedLocationNames(locationNames);
     }
 
     // Relationship Data

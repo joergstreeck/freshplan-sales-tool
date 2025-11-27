@@ -52,6 +52,7 @@ import { ContactQuickActions } from '../contacts/ContactQuickActions';
 
 import type { Contact } from '../../types/contact.types';
 import { getContactFullName } from '../../types/contact.types';
+import { useEnumOptions } from '../../../../hooks/useEnumOptions';
 
 /**
  * Step 3: Multi-Contact Management
@@ -73,6 +74,21 @@ export const Step3MultiContactManagement: React.FC = () => {
     removeContact,
     setPrimaryContact,
   } = useCustomerOnboardingStore();
+
+  // Server-Driven Enum: DecisionLevel Labels (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: decisionLevelOptions } = useEnumOptions('/api/enums/decision-levels');
+
+  // Create fast lookup map (O(1))
+  const decisionLevelLabels = useMemo(() => {
+    if (!decisionLevelOptions) return {};
+    return decisionLevelOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [decisionLevelOptions]);
 
   // Dialog state
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -295,7 +311,9 @@ export const Step3MultiContactManagement: React.FC = () => {
                       <Typography variant="caption" color="text.secondary">
                         Entscheidungsebene
                       </Typography>
-                      <Typography variant="body2">{contact.decisionLevel}</Typography>
+                      <Typography variant="body2">
+                        {decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel}
+                      </Typography>
                     </Box>
                   )}
 

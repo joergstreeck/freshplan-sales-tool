@@ -29,6 +29,7 @@ import {
   Alert,
   Box,
 } from '@mui/material';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 import type { Activity } from './ActivityTimeline';
 
 // ============================================================================
@@ -51,38 +52,6 @@ export interface ActivityDialogProps {
 }
 
 // ============================================================================
-// ACTIVITY TYPE OPTIONS
-// ============================================================================
-
-const ACTIVITY_TYPE_OPTIONS = [
-  { value: 'QUALIFIED_CALL', label: 'Qualifizierter Anruf' },
-  { value: 'MEETING', label: 'Termin' },
-  { value: 'DEMO', label: 'Produktdemo' },
-  { value: 'ROI_PRESENTATION', label: 'ROI-Präsentation' },
-  { value: 'SAMPLE_SENT', label: 'Muster versendet' },
-  { value: 'NOTE', label: 'Notiz' },
-  { value: 'FOLLOW_UP', label: 'Follow-up' },
-  { value: 'EMAIL', label: 'E-Mail' },
-  { value: 'CALL', label: 'Anruf' },
-  { value: 'SAMPLE_FEEDBACK', label: 'Muster-Feedback' },
-];
-
-// ============================================================================
-// OUTCOME OPTIONS
-// ============================================================================
-
-const OUTCOME_OPTIONS = [
-  { value: '', label: 'Kein Ergebnis' },
-  { value: 'SUCCESSFUL', label: 'Erfolgreich' },
-  { value: 'UNSUCCESSFUL', label: 'Nicht erfolgreich' },
-  { value: 'NO_ANSWER', label: 'Nicht erreicht' },
-  { value: 'CALLBACK_REQUESTED', label: 'Rückruf gewünscht' },
-  { value: 'INFO_SENT', label: 'Informationen gesendet' },
-  { value: 'QUALIFIED', label: 'Qualifiziert' },
-  { value: 'DISQUALIFIED', label: 'Disqualifiziert' },
-];
-
-// ============================================================================
 // COMPONENT
 // ============================================================================
 
@@ -94,6 +63,14 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
   activity,
   onSaved,
 }) => {
+  // ============================================================================
+  // SERVER-DRIVEN ENUMS
+  // ============================================================================
+
+  // Sprint 2.1.7.7 - Schema-Driven Forms Migration
+  const { data: activityTypeOptions } = useEnumOptions('/api/enums/activity-types');
+  const { data: outcomeOptions } = useEnumOptions('/api/enums/activity-outcomes');
+
   // ============================================================================
   // STATE
   // ============================================================================
@@ -224,7 +201,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
               label="Typ"
               onChange={e => setActivityType(e.target.value)}
             >
-              {ACTIVITY_TYPE_OPTIONS.map(option => (
+              {activityTypeOptions?.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>
@@ -277,7 +254,7 @@ export const ActivityDialog: React.FC<ActivityDialogProps> = ({
               label="Ergebnis"
               onChange={e => setOutcome(e.target.value)}
             >
-              {OUTCOME_OPTIONS.map(option => (
+              {outcomeOptions?.map(option => (
                 <MenuItem key={option.value} value={option.value}>
                   {option.label}
                 </MenuItem>

@@ -18,12 +18,26 @@ export function useAuth() {
   const useKeycloak = !IS_DEV_MODE || USE_KEYCLOAK_IN_DEV;
 
   if (useKeycloak && keycloakContext) {
+    // Construct user object from Keycloak context
+    const user =
+      keycloakContext.isAuthenticated && keycloakContext.userId
+        ? {
+            id: keycloakContext.userId,
+            name: keycloakContext.username || keycloakContext.email || 'Unknown',
+            email: keycloakContext.email || '',
+            username: keycloakContext.username,
+            roles: keycloakContext.userRoles,
+            // Note: Keycloak may not provide firstName/lastName - they're optional in User interface
+          }
+        : null;
+
     return {
       isAuthenticated: keycloakContext.isAuthenticated,
       isLoading: keycloakContext.isLoading,
       login: keycloakContext.login,
       logout: keycloakContext.logout,
       token: keycloakContext.token,
+      user, // Full user object
       userId: keycloakContext.userId,
       username: keycloakContext.username,
       email: keycloakContext.email,
@@ -40,10 +54,11 @@ export function useAuth() {
       login: authContext.login,
       logout: authContext.logout,
       token: authContext.token,
+      user: authContext.user, // Full user object (includes firstName, lastName, name, etc.)
       userId: authContext.user?.id,
       username: authContext.user?.username,
       email: authContext.user?.email,
-      hasRole: (role: string) => authContext.user?.roles?.includes(role) || false,
+      hasRole: authContext.hasRole, // Use AuthContext's hasRole (includes .toLowerCase())
       userRoles: authContext.user?.roles || [],
     };
   }
@@ -59,6 +74,7 @@ export function useAuth() {
       // No auth provider available - handled silently
     },
     token: undefined,
+    user: null, // No user when not authenticated
     userId: undefined,
     username: undefined,
     email: undefined,

@@ -5,9 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import { server } from '@/mocks/server';
 
-// Configure Testing Library with shorter timeouts
+// Configure Testing Library with appropriate timeouts
 configure({
-  asyncUtilTimeout: 1000, // 1 second instead of default 3s
+  asyncUtilTimeout: 5000, // 5 seconds for async operations (MSW + React Query need time)
   computedStyleSupportsPseudoElements: false,
 });
 
@@ -60,7 +60,7 @@ Object.defineProperty(import.meta, 'env', {
     DEV: true,
     PROD: false,
     MODE: 'test',
-    VITE_API_URL: 'http://localhost:8080/api',
+    VITE_API_URL: 'http://localhost:8080',
     VITE_KEYCLOAK_URL: 'http://localhost:8180',
     VITE_KEYCLOAK_REALM: 'test-realm',
     VITE_KEYCLOAK_CLIENT: 'test-client',
@@ -156,7 +156,7 @@ const createTestQueryClient = () =>
     defaultOptions: {
       queries: {
         retry: false,
-        cacheTime: 0,
+        gcTime: 0, // Updated from cacheTime
         staleTime: 0,
       },
       mutations: {
@@ -166,6 +166,8 @@ const createTestQueryClient = () =>
   });
 
 // Test-Wrapper für Komponenten mit QueryClient
+// NOTE: Use test-utils.tsx render() instead of this wrapper for component tests
+// This is kept for backward compatibility with tests that explicitly use TestWrapper
 export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const queryClient = createTestQueryClient();
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

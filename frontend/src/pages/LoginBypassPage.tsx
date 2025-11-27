@@ -29,18 +29,27 @@ export function LoginBypassPage() {
     const mockUsers = {
       admin: {
         id: 'mock-admin-user',
+        name: 'Admin User',
+        firstName: 'Admin',
+        lastName: 'User',
         username: 'admin',
         email: 'admin@freshplan.de',
         roles: ['admin'],
       },
       manager: {
         id: 'mock-manager-user',
+        name: 'Manager User',
+        firstName: 'Manager',
+        lastName: 'User',
         username: 'manager',
         email: 'manager@freshplan.de',
         roles: ['manager'],
       },
       sales: {
         id: 'mock-sales-user',
+        name: 'Sales User',
+        firstName: 'Sales',
+        lastName: 'User',
         username: 'sales',
         email: 'sales@freshplan.de',
         roles: ['sales'],
@@ -51,8 +60,15 @@ export function LoginBypassPage() {
     localStorage.setItem('auth-token', mockTokens[role]);
     localStorage.setItem('auth-user', JSON.stringify(mockUsers[role]));
 
-    // Reload to apply auth context
-    window.location.href = '/';
+    // Debug: Log to console
+    console.log('🔒 Auth-Bypass Login:', {
+      role,
+      user: mockUsers[role],
+      storedInLocalStorage: localStorage.getItem('auth-user'),
+    });
+
+    // Reload to apply auth context - navigate directly to cockpit
+    window.location.href = '/cockpit';
   };
 
   return (

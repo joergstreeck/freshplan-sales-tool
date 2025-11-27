@@ -16,6 +16,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -55,6 +56,17 @@ class LeadImportServiceTest {
       territory.languageCode = "de-DE";
       territory.persist();
     }
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test data after each test (FK constraint order!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
+    em.createQuery("DELETE FROM ImportJob").executeUpdate();
   }
 
   @Test

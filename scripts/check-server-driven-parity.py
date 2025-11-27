@@ -52,11 +52,29 @@ SCHEMA_DRIVEN_WHITELIST = {
     'DeleteLeadDialog.tsx',           # Nur Bestätigung
     'StopTheClockDialog.tsx',         # Nur Bestätigung
     'ConvertToCustomerDialog.tsx',    # Nur Bestätigung + einfache Auswahl
+    'AddFirstContactDialog.tsx',      # Einfacher First-Contact-Dialog (4 TextFields, keine Enums)
     'AdvancedFilterDialog.tsx',       # Filter UI, keine Entity-Daten
     'CalculatorForm.tsx',             # Calculator-spezifisch, keine Server-Daten
     'EngagementScoreForm.tsx',        # Score-Formular, kein Entity
     'PainScoreForm.tsx',              # Score-Formular, kein Entity
     'RevenueScoreForm.tsx',           # Score-Formular, kein Entity
+}
+
+# CRITICAL: Dialoge die ZWINGEND vollständig schema-driven sein MÜSSEN
+# Diese werden mit strengeren Regeln geprüft (useSchema + DynamicFieldRenderer)
+MUST_BE_SCHEMA_DRIVEN = {
+    'ContactFormDialog.tsx',          # Contact CRUD - MUSS ContactSchema nutzen
+    'ContactEditDialog.tsx',          # Contact Edit - MUSS ContactSchema nutzen
+    'CustomerOnboardingWizard.tsx',   # Customer Wizard - MUSS CustomerSchema nutzen
+    'LocationServiceFieldsContainer.tsx',  # Location Services - MUSS LocationServiceSchema nutzen
+    'CreateBranchDialog.tsx',         # Branch erstellen - Server-Driven
+}
+
+# Field Alias Mapping: Frontend/DTO → Entity
+# JPA ManyToMany uses entity Set<Object> but DTO uses List<UUID>
+# Example: assignedLocationIds (DTO) maps to assignedLocations (Entity)
+FIELD_ALIAS_MAPPING = {
+    'assignedLocationIds': 'assignedLocations',  # Sprint 2.1.7.7: Multi-Location Contact
 }
 
 
@@ -238,21 +256,32 @@ def check_database_constraints(field_name: str, enum_source: str) -> Tuple[bool,
     """
     Check if VARCHAR field has CHECK constraint in migrations
 
+    Handles camelCase → snake_case conversion (e.g., legalForm → legal_form)
+    to match database column names in SQL migrations.
+
     Returns: (has_constraint: bool, constraint_line: str)
     """
     if not MIGRATIONS_DIR.exists():
         return False, ""
 
-    # Pattern: CHECK (field_name IN ('val1', 'val2'))
-    constraint_pattern = rf'CHECK\s*\(\s*{field_name}\s+IN\s*\('
+    # Convert camelCase to snake_case (e.g., legalForm → legal_form)
+    snake_case_name = re.sub(r'(?<!^)(?=[A-Z])', '_', field_name).lower()
+
+    # Try both camelCase and snake_case patterns
+    # (Schema uses camelCase, DB uses snake_case)
+    patterns = [
+        rf'CHECK\s*\(\s*{field_name}\s+IN\s*\(',       # camelCase (rare)
+        rf'CHECK\s*\(\s*{snake_case_name}\s+IN\s*\(',  # snake_case (common)
+    ]
 
     for migration in sorted(MIGRATIONS_DIR.glob("V*.sql")):
         content = migration.read_text()
-        if re.search(constraint_pattern, content, re.IGNORECASE):
-            # Extract constraint line
-            for line in content.split('\n'):
-                if re.search(constraint_pattern, line, re.IGNORECASE):
-                    return True, line.strip()
+        for pattern in patterns:
+            if re.search(pattern, content, re.IGNORECASE):
+                # Extract constraint line
+                for line in content.split('\n'):
+                    if re.search(pattern, line, re.IGNORECASE):
+                        return True, line.strip()
 
     return False, ""
 
@@ -359,12 +388,17 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
 
     Schema-driven indicators:
     - ✅ Uses use*Schema() hook (useContactSchema, useCustomerSchema, etc.)
-    - ✅ Has renderField() or similar dynamic rendering function
+    - ✅ Has DynamicFieldRenderer component
     - ✅ Maps over schema.sections or schema.fields
 
     Hardcoded indicators (violations):
     - ❌ Hardcoded <TextField label="..." /> without dynamic schema
     - ❌ Hardcoded field keys without schema mapping
+
+    STRICT MODE for MUST_BE_SCHEMA_DRIVEN files:
+    - Must use useSchema() hook
+    - Must use DynamicFieldRenderer component
+    - useEnumOptions() alone is NOT sufficient
 
     Returns: (is_schema_driven, violations, status_emoji)
     """
@@ -373,6 +407,10 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
 
     content = file_path.read_text()
     violations = []
+    file_name = file_path.name
+
+    # Check if this file MUST be fully schema-driven (stricter rules)
+    is_critical_file = file_name in MUST_BE_SCHEMA_DRIVEN
 
     # Check 1: Does it use any use*Schema() hook?
     schema_hooks = [
@@ -381,17 +419,26 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
         'useLeadSchema()',
         'useOpportunitySchema()',
         'useUserSchema()',
+        'useLocationServiceSchema()',
+        'useBranchSchema()',
     ]
     uses_schema_hook = any(hook in content for hook in schema_hooks)
 
-    # Check 2: Does it have dynamic rendering?
+    # Check 1b: Does it use useEnumOptions() for server-driven enums?
+    uses_enum_options = 'useEnumOptions(' in content
+
+    # Check 2: Does it use DynamicFieldRenderer? (Strong indicator of schema-driven)
+    uses_dynamic_field_renderer = 'DynamicFieldRenderer' in content
+
+    # Check 3: Does it have dynamic rendering via .map?
     has_dynamic_rendering = bool(
         re.search(r'\.map\(\s*\(?(?:section|field)', content) or
         re.search(r'renderField\s*\(', content) or
-        re.search(r'(contact|customer|lead)Schema.*\.sections', content)
+        re.search(r'(contact|customer|lead)Schema.*\.sections', content) or
+        uses_dynamic_field_renderer
     )
 
-    # Check 3: Look for hardcoded field labels (strong indicator of hardcoded UI)
+    # Check 4: Look for hardcoded field labels (strong indicator of hardcoded UI)
     # Skip comments to avoid false positives
     lines_without_comments = [
         line.split('//')[0] for line in content.split('\n')
@@ -409,15 +456,48 @@ def check_file_is_schema_driven(file_path: Path) -> Tuple[bool, List[str], str]:
         matches = re.findall(pattern, content_without_comments)
         hardcoded_count += len(matches)
 
-    # Determine if schema-driven
-    is_schema_driven = uses_schema_hook and has_dynamic_rendering
+    # ========== STRICT MODE for MUST_BE_SCHEMA_DRIVEN files ==========
+    if is_critical_file:
+        # Critical files MUST have:
+        # 1. useSchema() hook
+        # 2. DynamicFieldRenderer OR dynamic rendering
+        # useEnumOptions() alone is NOT sufficient!
+
+        if not uses_schema_hook:
+            violations.append(f"CRITICAL: {file_name} MUST use a use*Schema() hook (e.g., useContactSchema)")
+
+        if not uses_dynamic_field_renderer and not has_dynamic_rendering:
+            violations.append(f"CRITICAL: {file_name} MUST use DynamicFieldRenderer for schema-driven rendering")
+
+        if hardcoded_count > 3:
+            violations.append(f"CRITICAL: Found {hardcoded_count} hardcoded field labels - MUST use schema")
+
+        # Is schema-driven only if BOTH conditions are met
+        is_schema_driven = uses_schema_hook and (uses_dynamic_field_renderer or has_dynamic_rendering)
+
+        # Status for critical files
+        if is_schema_driven and hardcoded_count <= 3:
+            status_emoji = '✅'
+        else:
+            status_emoji = '❌'  # Critical file not compliant = BLOCKING
+
+        return is_schema_driven, violations, status_emoji
+
+    # ========== NORMAL MODE for other files ==========
+    # Schema-driven if EITHER pattern is present
+    uses_server_driven = uses_schema_hook or uses_enum_options
+
+    # Determine if schema-driven (normal mode - more lenient)
+    # Two valid patterns:
+    # 1. Full Schema-Driven: useSchema() + dynamic rendering
+    # 2. Enum-Only Schema-Driven: useEnumOptions() for server-driven enum selects
+    is_schema_driven = (uses_schema_hook and has_dynamic_rendering) or uses_enum_options
 
     # Build violation messages
-    if not uses_schema_hook and hardcoded_count > 3:
-        # Only complain if there are significant hardcoded fields (3+ fields)
-        violations.append(f"Missing use*Schema() hook, found {hardcoded_count} hardcoded fields")
+    if not uses_server_driven and hardcoded_count > 3:
+        violations.append(f"Missing use*Schema() or useEnumOptions() hook, found {hardcoded_count} hardcoded fields")
 
-    if uses_schema_hook and not has_dynamic_rendering:
+    if uses_schema_hook and not has_dynamic_rendering and not uses_enum_options:
         violations.append("Has schema hook but NO dynamic rendering (.map over sections/fields)")
 
     if hardcoded_count > 5 and not is_schema_driven:
@@ -638,14 +718,16 @@ def main():
             # Map common mismatches (camelCase vs snake_case)
             # Frontend uses isPrimary, backend might use is_primary or isPrimary
             if frontend_field not in contact_entity_fields:
-                # Try alternative names
+                # Try alternative names (including JPA ManyToMany alias mapping)
                 alt_names = [
                     frontend_field,
                     frontend_field.replace('is_', ''),
                     frontend_field.replace('_', ''),
                     'is' + frontend_field.replace('is_', '').title().replace('_', ''),
+                    # Check FIELD_ALIAS_MAPPING for DTO → Entity mappings
+                    FIELD_ALIAS_MAPPING.get(frontend_field, ''),
                 ]
-                found = any(alt in contact_entity_fields for alt in alt_names)
+                found = any(alt in contact_entity_fields for alt in alt_names if alt)
                 if not found:
                     contact_violations.append(frontend_field)
 
@@ -740,6 +822,168 @@ def main():
         return 1
     else:
         print(f"{GREEN}✅ STUFE 5 PASSED: All scanned files follow schema-driven or whitelisted patterns{NC}")
+        print()
+
+    # ========== STUFE 6: API REQUEST BODY → DTO PARITY (UNIVERSAL) ==========
+    print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
+    print(f"{BLUE}PRÜFUNG 6: API Request Body → Backend DTO Parity (Universal){NC}")
+    print(f"{BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{NC}")
+    print()
+
+    # ========== CONFIGURATION: Dialog → DTO Mappings ==========
+    # Add new dialogs here to automatically validate them
+    #
+    # NOTE: For Server-Driven dialogs (useBranchSchema, useContactSchema, etc.)
+    # the fields come from backend schema, so we validate against actual DTO fields.
+    #
+    # CreateBranchRequest.java (Sprint 2.1.7.7) supports:
+    # - companyName, tradingName
+    # - customerType, businessType
+    # - status
+    # - expectedAnnualVolume
+    # - address (nested AddressDto: street, postalCode, city, country)
+    # - contact (nested ContactDto: phone, email)
+    #
+    # Backend creates Location+Address from nested objects in BranchService
+    DIALOG_DTO_MAPPINGS = {
+        'CreateBranchDialog.tsx': {
+            'dto_name': 'CreateBranchRequest',
+            # Multi-line pattern to capture entire branchData block including nested objects
+            'payload_pattern': r'branchData:\s*\{([\s\S]*?)\},\s*\}\)',
+            # Fields from CreateBranchRequest.java (Sprint 2.1.7.7)
+            # This DTO supports nested AddressDto and ContactDto
+            'allowed_fields': {
+                # Basic fields
+                'companyName', 'tradingName',
+                # Classification
+                'customerType', 'businessType',
+                # Status
+                'status',
+                # Financial
+                'expectedAnnualVolume',
+                # Nested objects (sent as JSON objects, not flattened)
+                'address', 'contact',
+            },
+            'path': 'frontend/src/features/customers/components/detail/CreateBranchDialog.tsx'
+        },
+        # Easy to extend with more dialogs:
+        # 'LeadCreateDialog.tsx': {
+        #     'dto_name': 'CreateLeadRequest',
+        #     'payload_pattern': r'createLead\s*\(\s*\{([^}]+)\}',
+        #     'allowed_fields': {'name', 'email', 'phone'},
+        #     'path': 'frontend/src/features/leads/LeadCreateDialog.tsx'
+        # },
+    }
+
+    # Validate all configured dialogs
+    has_errors = False
+    dialogs_checked = 0
+
+    for dialog_name, config in DIALOG_DTO_MAPPINGS.items():
+        dialog_path = PROJECT_ROOT / config['path']
+
+        print(f"Checking {dialog_name} → {config['dto_name']} DTO parity...")
+
+        if not dialog_path.exists():
+            print(f"{YELLOW}⚠️  {dialog_name} not found - skipping{NC}")
+            print()
+            continue
+
+        dialogs_checked += 1
+        dialog_content = dialog_path.read_text()
+
+        # Extract payload fields from dialog
+        match = re.search(config['payload_pattern'], dialog_content, re.DOTALL)
+
+        if not match:
+            print(f"{RED}❌ STUFE 6 FAILED: Could not find payload in {dialog_name}{NC}")
+            print(f"   Expected pattern: {config['payload_pattern']}")
+            print()
+            has_errors = True
+            continue
+
+        payload_block = match.group(1)
+
+        # Extract TOP-LEVEL field names only
+        # Strategy: Fields at low indentation are top-level, deeply indented are nested
+        # E.g., "companyName:" is top-level, "street:" inside "address: {}" is nested
+        #
+        # We detect nested objects by finding patterns like "address: {"
+        # and exclude fields inside them from top-level validation
+        nested_object_names = set(re.findall(r'(\w+):\s*\{', payload_block))
+
+        # Extract ALL field names first
+        field_pattern = r'(\w+):'
+        all_fields = set(re.findall(field_pattern, payload_block))
+
+        # Remove common non-field keys (like comments, method calls)
+        all_fields = {f for f in all_fields if not f.startswith('//') and f not in {'trim'}}
+
+        # Fields inside nested objects (address, contact)
+        # These are validated separately - backend DTO has nested DTOs for them
+        nested_inner_fields = set()
+        for nested_name in nested_object_names:
+            # Find the content of nested object: "address: { street: ..., city: ... }"
+            nested_pattern = rf'{nested_name}:\s*\{{([^}}]+)\}}'
+            nested_match = re.search(nested_pattern, payload_block)
+            if nested_match:
+                inner_content = nested_match.group(1)
+                inner_fields = set(re.findall(r'(\w+):', inner_content))
+                inner_fields = {f for f in inner_fields if f not in {'trim'}}
+                nested_inner_fields.update(inner_fields)
+
+        # Top-level fields = all fields - inner fields of nested objects
+        found_fields = all_fields - nested_inner_fields
+
+        # Check for violations
+        invalid_fields = found_fields - config['allowed_fields']
+        missing_fields = config['allowed_fields'] - found_fields
+
+        if invalid_fields:
+            print(f"{RED}❌ STUFE 6 FAILED: {dialog_name} sends fields NOT in {config['dto_name']}{NC}")
+            print()
+            print(f"  File: {dialog_path}")
+            print()
+            print(f"  {RED}Invalid Fields (Backend rejects these):{NC}")
+            for field in sorted(invalid_fields):
+                print(f"    ✗ {field}")
+            print()
+            print(f"  {GREEN}Allowed Fields ({config['dto_name']}):{NC}")
+            for field in sorted(config['allowed_fields']):
+                print(f"    ✓ {field}")
+            print()
+            print(f"{RED}🚫 RULE VIOLATION: Frontend Request Body MUST match Backend DTO (ZERO TOLERANCE){NC}")
+            print()
+            print("📖 Fix:")
+            print(f"   1. Remove invalid fields from {dialog_name} state")
+            print("   2. Remove invalid fields from payload object")
+            print("   3. Remove corresponding UI components (TextField)")
+            print("   4. Update validation logic")
+            print()
+            print(f"{YELLOW}   Backend DTO: backend/src/main/java/.../dto/{config['dto_name']}.java{NC}")
+            print()
+            has_errors = True
+        elif missing_fields:
+            print(f"{YELLOW}⚠️  Warning: Some required fields might be missing{NC}")
+            print(f"   Missing: {', '.join(sorted(missing_fields))}")
+            print()
+
+        if not invalid_fields:
+            print(f"{GREEN}✅ {dialog_name} → {config['dto_name']} parity OK{NC}")
+            print(f"   Found fields: {', '.join(sorted(found_fields))}")
+            print(f"   All fields are valid for {config['dto_name']} DTO")
+            print()
+
+    # Summary
+    if dialogs_checked == 0:
+        print(f"{YELLOW}⚠️  No dialogs found to validate - STUFE 6 skipped{NC}")
+        print()
+    elif has_errors:
+        print(f"{RED}❌ STUFE 6 FAILED: {dialogs_checked} dialog(s) checked, errors found{NC}")
+        print()
+        return 1
+    else:
+        print(f"{GREEN}✅ STUFE 6 PASSED: All {dialogs_checked} dialog(s) validated successfully{NC}")
         print()
 
     # ========== SUMMARY ==========

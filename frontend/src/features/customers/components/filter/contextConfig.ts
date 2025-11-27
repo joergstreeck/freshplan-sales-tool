@@ -18,10 +18,11 @@ export interface SortOption {
 /**
  * Table columns for Leads context
  * Sprint 2.1.6 Phase 4: Added leadScore, changed industry→businessType
+ * Sprint 2.1.7.7: Corrected field names (stage, estimatedVolume, ownerUserId)
  */
 export const LEADS_TABLE_COLUMNS: TableColumn[] = [
   { id: 'companyName', label: 'Lead', field: 'companyName', visible: true, order: 0 },
-  { id: 'status', label: 'Status', field: 'status', visible: true, order: 1 },
+  { id: 'stage', label: 'Status', field: 'stage', visible: true, order: 1 },
   {
     id: 'businessType',
     label: 'Branche',
@@ -38,9 +39,9 @@ export const LEADS_TABLE_COLUMNS: TableColumn[] = [
     align: 'center',
   },
   {
-    id: 'expectedAnnualVolume',
+    id: 'estimatedVolume',
     label: 'Erwarteter Umsatz',
-    field: 'expectedAnnualVolume',
+    field: 'estimatedVolume',
     visible: true,
     order: 4,
     align: 'right',
@@ -52,7 +53,7 @@ export const LEADS_TABLE_COLUMNS: TableColumn[] = [
     visible: true,
     order: 5,
   },
-  { id: 'assignedTo', label: 'Zugewiesen an', field: 'assignedTo', visible: false, order: 6 },
+  { id: 'ownerUserId', label: 'Zugewiesen an', field: 'ownerUserId', visible: false, order: 6 },
   {
     id: 'actions',
     label: 'Aktionen',
@@ -106,13 +107,13 @@ export const CUSTOMERS_TABLE_COLUMNS: TableColumn[] = [
 
 /**
  * Sort options for Leads context
- * Sprint 2.1.6 Phase 4: Added leadScore sorting, removed redundant stage
+ * Sprint 2.1.7.7: Fixed field names (stage, estimatedVolume)
  */
 export const LEADS_SORT_OPTIONS: SortOption[] = [
   { field: 'companyName', label: 'Name', icon: '📋' },
   { field: 'leadScore', label: 'Lead-Score', icon: '⭐' },
-  { field: 'status', label: 'Status', icon: '🔄' },
-  { field: 'expectedAnnualVolume', label: 'Erwarteter Umsatz', icon: '💰' },
+  { field: 'stage', label: 'Stage', icon: '🔄' },
+  { field: 'estimatedVolume', label: 'Erwarteter Umsatz', icon: '💰' },
   { field: 'createdAt', label: 'Erstellt am', icon: '📅' },
 ];
 

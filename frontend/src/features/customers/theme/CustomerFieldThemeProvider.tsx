@@ -38,14 +38,28 @@ export const CustomerFieldThemeProvider: React.FC<CustomerFieldThemeProviderProp
 };
 
 /**
+ * Default theme value for components outside provider
+ * Falls back to standard mode (non-adaptive) for simple dialogs
+ */
+const defaultThemeValue: CustomerFieldThemeContextValue = {
+  theme: getTheme('standard'),
+  cssVariables: generateCSSVariables(getTheme('standard')),
+};
+
+/**
  * Hook zum Zugriff auf das Kunden-Theme
+ *
+ * Returns default values if used outside of CustomerFieldThemeProvider.
+ * This allows DynamicFieldRenderer to work in simple dialogs (CreateBranchDialog, ContactFormDialog)
+ * without requiring the full provider wrapper.
  */
 export const useCustomerFieldTheme = () => {
   const context = useContext(CustomerFieldThemeContext);
+
+  // Return default theme if no provider (graceful fallback)
   if (!context) {
-    throw new Error(
-      'useCustomerFieldTheme muss innerhalb eines CustomerFieldThemeProvider verwendet werden'
-    );
+    return defaultThemeValue;
   }
+
   return context;
 };

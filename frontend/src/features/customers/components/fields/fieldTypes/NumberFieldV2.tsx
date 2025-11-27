@@ -99,18 +99,21 @@ export const NumberFieldV2: React.FC<NumberFieldV2Props> = ({
   // Get appropriate suffix based on field key
   const getSuffix = () => {
     if (field.suffix) return field.suffix;
-    if (field.key.includes('Count') || field.key.includes('Anzahl')) return '';
-    if (field.key.includes('Capacity')) return 'pro Tag';
-    if (field.key.includes('percent') || field.key.includes('Anteil')) return '%';
+    const key = field.key || '';
+    if (key.includes('Count') || key.includes('Anzahl')) return '';
+    if (key.includes('Capacity')) return 'pro Tag';
+    if (key.includes('percent') || key.includes('Anteil')) return '%';
     return '';
   };
 
   const suffix = getSuffix();
 
+  const fieldKey = field.key || `number-field-${Date.now()}`;
+
   return (
     <MuiTextField
-      id={field.key}
-      name={field.key}
+      id={fieldKey}
+      name={fieldKey}
       type="number"
       value={value}
       onChange={handleChange}

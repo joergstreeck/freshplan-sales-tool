@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, vi } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@/test-utils';
 import userEvent from '@testing-library/user-event';
 import { EngagementScoreForm } from '../EngagementScoreForm';
 import type { Lead } from '../../types';
@@ -12,7 +12,40 @@ import type { Lead } from '../../types';
  * - Infinite re-render loop prevention
  * - Field validation
  * - Score calculation triggers
+ *
+ * NOTE: MUI Select aria-labelledby attributes are not rendered in JSDOM
+ * Solution: Use queryAllByRole('combobox') without name filter, access by index
  */
+
+/**
+ * Helper: Wait for schema to load and return form elements
+ */
+async function waitForSchemaAndGetElements(screen: typeof import('@testing-library/react').screen) {
+  // Wait for loading spinner to disappear
+  await waitFor(
+    () => {
+      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    },
+    { timeout: 10000 }
+  );
+
+  // Get all comboboxes (ENUM fields)
+  const comboboxes = screen.queryAllByRole('combobox');
+
+  // Get text fields by placeholder (more reliable than getByLabelText in JSDOM)
+  const championField = screen.getByPlaceholderText(/Name des Fürsprechers/i);
+  const competitorField = screen.getByPlaceholderText(/z\.B\. Metro, CHEFS CULINAR/i);
+
+  // Based on MSW handlers.ts line 329-343, combobox order is:
+  // 0: relationshipStatus
+  // 1: decisionMakerAccess
+  return {
+    relationshipDropdown: comboboxes[0],
+    decisionMakerDropdown: comboboxes[1],
+    championField,
+    competitorField,
+  };
+}
 
 describe('EngagementScoreForm', () => {
   const mockLead: Lead = {
@@ -43,8 +76,10 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    // Find and click relationship status dropdown
-    const relationshipDropdown = screen.getByRole('combobox', { name: /beziehungsstatus/i });
+    // Wait for schema to load and get form elements
+    const { relationshipDropdown } = await waitForSchemaAndGetElements(screen);
+
+    // Click relationship status dropdown
     await user.click(relationshipDropdown);
 
     // Select "ADVOCATE" option
@@ -66,8 +101,10 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    // Find and click decision maker access dropdown
-    const decisionMakerDropdown = screen.getByRole('combobox', { name: /entscheider-zugang/i });
+    // Wait for schema to load and get form elements
+    const { decisionMakerDropdown } = await waitForSchemaAndGetElements(screen);
+
+    // Click decision maker access dropdown
     await user.click(decisionMakerDropdown);
 
     // Select "IS_DECISION_MAKER" option
@@ -89,8 +126,8 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    // Find internal champion text field
-    const championField = screen.getByLabelText(/Interner Champion/i);
+    // Wait for schema to load and get form elements
+    const { championField } = await waitForSchemaAndGetElements(screen);
 
     // Type champion name
     await user.clear(championField);
@@ -133,8 +170,10 @@ describe('EngagementScoreForm', () => {
 
     render(<EngagementScoreForm lead={mockLead} onUpdate={mockUpdateWithScore} />);
 
+    // Wait for schema to load and get form elements
+    const { relationshipDropdown } = await waitForSchemaAndGetElements(screen);
+
     // Change relationship status
-    const relationshipDropdown = screen.getByRole('combobox', { name: /beziehungsstatus/i });
     await user.click(relationshipDropdown);
 
     const engagedOption = await screen.findByText(/Mehrere Touchpoints, positiv/i);
@@ -154,7 +193,8 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    const championField = screen.getByLabelText(/Interner Champion/i);
+    // Wait for schema to load and get form elements
+    const { championField } = await waitForSchemaAndGetElements(screen);
 
     // Rapid typing (should debounce)
     await user.clear(championField);
@@ -184,46 +224,69 @@ describe('EngagementScoreForm', () => {
   // FIELD VALIDATION TESTS
   // ================================================================================
 
-  test('shows all relationship status options', async () => {
-    const user = userEvent.setup();
-    render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
+  test(
+    'shows all relationship status options',
+    async () => {
+      const user = userEvent.setup();
+      render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    const relationshipDropdown = screen.getByRole('combobox', { name: /beziehungsstatus/i });
+    // Wait for schema to load and get form elements
+    const { relationshipDropdown } = await waitForSchemaAndGetElements(screen);
+
     await user.click(relationshipDropdown);
 
-    // Verify all options are present
-    await waitFor(() => {
-      expect(screen.getByText(/Kein Kontakt/i)).toBeInTheDocument();
-      expect(screen.getByText(/Erstkontakt hergestellt/i)).toBeInTheDocument();
-      expect(screen.getByText(/Mehrere Touchpoints, skeptisch/i)).toBeInTheDocument();
-      expect(screen.getByText(/Mehrere Touchpoints, positiv/i)).toBeInTheDocument();
-      expect(screen.getByText(/Vertrauensbasis vorhanden/i)).toBeInTheDocument();
-      expect(screen.getByText(/Kämpft aktiv für uns/i)).toBeInTheDocument();
-    });
-  });
+    // Verify all options are present (MUI Dropdown rendering can take time)
+    await waitFor(
+      () => {
+        const options = screen.getAllByRole('option');
+        expect(options).toHaveLength(6);
+        expect(screen.getByRole('option', { name: /Kein Kontakt/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Erstkontakt hergestellt/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Mehrere Touchpoints, skeptisch/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Mehrere Touchpoints, positiv/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Vertrauensbasis vorhanden/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Kämpft aktiv für uns/i })).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+    },
+    15000
+  );
 
-  test('shows all decision maker access options', async () => {
+  test(
+    'shows all decision maker access options',
+    async () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    const decisionMakerDropdown = screen.getByRole('combobox', { name: /entscheider-zugang/i });
+    // Wait for schema to load and get form elements
+    const { decisionMakerDropdown } = await waitForSchemaAndGetElements(screen);
+
     await user.click(decisionMakerDropdown);
 
-    // Verify all options are present
-    await waitFor(() => {
-      expect(screen.getByText(/Noch nicht identifiziert/i)).toBeInTheDocument();
-      expect(screen.getByText(/Entscheider bekannt, Zugang blockiert/i)).toBeInTheDocument();
-      expect(screen.getByText(/Zugang über Dritte/i)).toBeInTheDocument();
-      expect(screen.getByText(/Direkter Kontakt zum Entscheider/i)).toBeInTheDocument();
-      expect(screen.getByText(/Unser Kontakt IST der Entscheider/i)).toBeInTheDocument();
-    });
-  });
+    // Verify all options are present (MUI Dropdown rendering can take time)
+    await waitFor(
+      () => {
+        const options = screen.getAllByRole('option');
+        expect(options).toHaveLength(5);
+        expect(screen.getByRole('option', { name: /Noch nicht identifiziert/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Entscheider bekannt, aber Zugang blockiert/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Zugang über Dritte \(Assistent, Mitarbeiter, Partner\)/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Direkter Kontakt zum Entscheider/i })).toBeInTheDocument();
+        expect(screen.getByRole('option', { name: /Unser Kontakt IST der Entscheider/i })).toBeInTheDocument();
+      },
+      { timeout: 10000 }
+    );
+    },
+    15000
+  );
 
   test('internal champion field accepts text input', async () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    const championField = screen.getByLabelText(/Interner Champion/i);
+    // Wait for schema to load and get form elements
+    const { championField } = await waitForSchemaAndGetElements(screen);
 
     await user.clear(championField);
     await user.type(championField, 'Dr. Maria Schmidt');
@@ -235,7 +298,8 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    const competitorField = screen.getByLabelText(/Aktueller Wettbewerber/i);
+    // Wait for schema to load and get form elements
+    const { competitorField } = await waitForSchemaAndGetElements(screen);
 
     await user.clear(competitorField);
     await user.type(competitorField, 'Metro AG');
@@ -258,8 +322,10 @@ describe('EngagementScoreForm', () => {
 
     render(<EngagementScoreForm lead={leadWithScore} onUpdate={onUpdate} />);
 
+    // Wait for schema to load and get form elements
+    const { relationshipDropdown } = await waitForSchemaAndGetElements(screen);
+
     // Change to ADVOCATE (highest value)
-    const relationshipDropdown = screen.getByRole('combobox', { name: /beziehungsstatus/i });
     await user.click(relationshipDropdown);
 
     const advocateOption = await screen.findByText(/Kämpft aktiv für uns/i);
@@ -285,8 +351,10 @@ describe('EngagementScoreForm', () => {
 
     render(<EngagementScoreForm lead={leadWithScore} onUpdate={onUpdate} />);
 
+    // Wait for schema to load and get form elements
+    const { decisionMakerDropdown } = await waitForSchemaAndGetElements(screen);
+
     // Change to IS_DECISION_MAKER (highest value)
-    const decisionMakerDropdown = screen.getByRole('combobox', { name: /entscheider-zugang/i });
     await user.click(decisionMakerDropdown);
 
     const isDecisionMakerOption = await screen.findByText(/Unser Kontakt IST der Entscheider/i);
@@ -305,7 +373,8 @@ describe('EngagementScoreForm', () => {
     const user = userEvent.setup();
     render(<EngagementScoreForm lead={mockLead} onUpdate={onUpdate} />);
 
-    const championField = screen.getByLabelText(/Interner Champion/i);
+    // Wait for schema to load and get form elements
+    const { championField } = await waitForSchemaAndGetElements(screen);
 
     await user.clear(championField);
     await user.type(championField, 'Anna Schmidt');

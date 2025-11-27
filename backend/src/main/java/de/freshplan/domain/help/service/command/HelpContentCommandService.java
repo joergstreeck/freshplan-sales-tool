@@ -4,7 +4,7 @@ import de.freshplan.domain.help.entity.HelpContent;
 import de.freshplan.domain.help.entity.HelpType;
 import de.freshplan.domain.help.entity.UserLevel;
 import de.freshplan.domain.help.repository.HelpContentRepository;
-import de.freshplan.domain.help.service.HelpAnalyticsService;
+import de.freshplan.domain.help.service.provider.HelpAnalyticsProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -34,7 +34,7 @@ public class HelpContentCommandService {
 
   @Inject HelpContentRepository helpRepository;
 
-  @Inject HelpAnalyticsService analyticsService;
+  @Inject HelpAnalyticsProvider analyticsService;
 
   /**
    * Records user feedback for help content.

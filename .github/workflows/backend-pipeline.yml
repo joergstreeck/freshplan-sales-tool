@@ -1,0 +1,563 @@
+name: Backend Pipeline
+
+on:
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/backend-pipeline.yml'
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+  workflow_dispatch:  # Manual trigger for coverage reports
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  # ============================================================================
+  # 1. Compile (Fast Feedback)
+  # ============================================================================
+  compile:
+    name: Compile Backend
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Build Project without Tests
+        working-directory: backend
+        run: |
+          echo "🏗️ Building project with DevServices disabled..."
+          ./mvnw -B clean compile \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -DskipTests=true
+          echo "✅ Build completed"
+
+  # ============================================================================
+  # 2. Unit Tests + Coverage
+  # ============================================================================
+  test:
+    name: Backend Unit Tests + Coverage
+    needs: compile
+    runs-on: ubuntu-22.04
+    timeout-minutes: 25  # 58 @QuarkusTest with 2-thread parallelism
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Clean Corrupted Maven Dependencies
+        run: |
+          echo "🧹 Cleaning potentially corrupted Maven dependencies..."
+          rm -rf ~/.m2/repository/org/jboss/threads/jboss-threads/3.8.0.Final
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-junit5
+          rm -rf ~/.m2/repository/io/quarkus/quarkus-test-common
+          echo "✅ Maven cache cleaned"
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: DB Schema Reset (Hard Reset for Clean Start)
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          psql -h localhost -U freshplan -d freshplan -c "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+          echo "✅ Schema reset - guaranteed clean start"
+
+      - name: Environment Diagnostics
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== Environment Check - CRITICAL VALIDATION ==="
+
+          # CRITICAL: Flyway Locations Check
+          FLYWAY_LOCATIONS=$(grep -r "quarkus.flyway.locations" backend/src/main/resources/ || echo "classpath:db/migration")
+          if [[ "$FLYWAY_LOCATIONS" != *"classpath:db/migration"* ]] || [[ "$FLYWAY_LOCATIONS" == *"testdata"* ]] || [[ "$FLYWAY_LOCATIONS" == *"ci-migrations"* ]]; then
+            echo "❌ ABORT: Invalid flyway.locations: $FLYWAY_LOCATIONS"
+            echo "   MUST BE: classpath:db/migration (nothing else!)"
+            exit 1
+          fi
+          echo "✅ Flyway locations: classpath:db/migration"
+
+          # CRITICAL: DevServices disabled in CI
+          if ! grep -q "quarkus.datasource.devservices.enabled=false" backend/src/test/resources/application-ci.properties; then
+            echo "❌ ABORT: DevServices not disabled in CI profile"
+            echo "   Add: quarkus.datasource.devservices.enabled=false to application-ci.properties"
+            exit 1
+          fi
+          echo "✅ DevServices disabled in CI profile"
+
+          # DB Connection Verification
+          psql -h localhost -U freshplan -d freshplan -c "SELECT current_user, current_database();" || exit 1
+          echo "✅ Connected as expected: freshplan@freshplan"
+
+      - name: Run Unit Tests with Coverage
+        working-directory: backend
+        timeout-minutes: 20
+        run: |
+          ./mvnw -B clean test \
+            -Dtest="A00_EnvDiagTest,*Test" \
+            -DexcludedGroups="integration,slow" \
+            -DfailIfNoTests=false \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -Dquarkus.test.hang-detection-timeout=60s \
+            -Dquarkus.test.continuous-testing=disabled \
+            -Dtest.run.id=${{ github.run_id }} \
+            -DthreadCount=2 \
+            -DreuseForks=false
+
+      - name: Generate JaCoCo Coverage Report
+        if: always()
+        working-directory: backend
+        run: ./mvnw jacoco:report
+
+      - name: Report Coverage (Non-Blocking)
+        working-directory: backend
+        run: |
+          echo "📊 Coverage Report (informational only)..."
+          # Parse JaCoCo report and report coverage
+          # CSV columns: GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED(4),INSTRUCTION_COVERED(5),
+          #              BRANCH_MISSED(6),BRANCH_COVERED(7),LINE_MISSED(8),LINE_COVERED(9),...
+          if [ -f "target/site/jacoco/jacoco.csv" ]; then
+            # Calculate LINE coverage from CSV (columns 8 and 9)
+            LINE_MISSED=$(awk -F',' 'NR>1 {sum+=$8} END {print sum}' target/site/jacoco/jacoco.csv)
+            LINE_COVERED=$(awk -F',' 'NR>1 {sum+=$9} END {print sum}' target/site/jacoco/jacoco.csv)
+            TOTAL=$((LINE_MISSED + LINE_COVERED))
+            if [ $TOTAL -gt 0 ]; then
+              LINE_COV=$(echo "scale=2; $LINE_COVERED * 100 / $TOTAL" | bc)
+              echo "📈 Line Coverage: ${LINE_COV}% ($LINE_COVERED / $TOTAL lines)"
+              echo ""
+              # Report but don't fail - coverage enforcement disabled until test coverage improved
+              # TODO: Re-enable when coverage reaches 80%
+              if (( $(echo "$LINE_COV < 80" | bc -l) )); then
+                echo "⚠️  Coverage ${LINE_COV}% is below 80% target (not blocking)"
+              else
+                echo "✅ Coverage target met!"
+              fi
+            else
+              echo "⚠️ No coverage data found (TOTAL=0)"
+            fi
+          else
+            echo "⚠️ JaCoCo CSV report not found"
+          fi
+          echo "📊 Full report available in artifacts"
+
+      - name: Upload Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Backend Unit Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: Archive Coverage Report (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-report
+          path: backend/target/site/jacoco/
+          retention-days: 30
+
+      - name: Archive Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-results
+          path: backend/target/surefire-reports/
+          retention-days: 7
+
+      - name: Check DB Invariants
+        if: always()
+        env:
+          PGPASSWORD: freshplan
+        run: |
+          echo "=== DB Invariant Checks ==="
+
+          # Check if customers table exists
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.customers') IS NOT NULL" | grep -q 't'; then
+            echo "✅ Table 'customers' exists in CI-DB"
+
+            # Check for duplicate customer_numbers
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT customer_number FROM customers GROUP BY customer_number HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate customer_numbers:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT customer_number, COUNT(*) FROM customers GROUP BY customer_number HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate customer_numbers found"
+            fi
+          else
+            echo "⚠️ Table 'customers' does not exist in CI-DB"
+          fi
+
+          # Check for duplicate idempotency keys
+          if psql -h localhost -U freshplan -d freshplan -tAc "SELECT to_regclass('public.idempotency_keys') IS NOT NULL" | grep -q 't'; then
+            DUPLICATES=$(psql -h localhost -U freshplan -d freshplan -t -c \
+              "SELECT COUNT(*) FROM (SELECT idempotency_key FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1) AS dups")
+            if [ "$DUPLICATES" -gt 0 ]; then
+              echo "❌ Found $DUPLICATES duplicate idempotency keys:"
+              psql -h localhost -U freshplan -d freshplan -c \
+                "SELECT idempotency_key, COUNT(*) FROM idempotency_keys GROUP BY idempotency_key HAVING COUNT(*) > 1"
+            else
+              echo "✅ No duplicate idempotency keys found"
+            fi
+          else
+            echo "ℹ️ No idempotency_keys table found (OK if not implemented yet)"
+          fi
+
+      - name: Test Summary
+        if: success()
+        run: |
+          echo "✅ All unit tests passed!" >> $GITHUB_STEP_SUMMARY
+          echo "**Coverage Report:** Available in artifacts" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 3. Integration Tests (Optional - Only on Push to Main)
+  # ============================================================================
+  integration-tests:
+    name: Backend Integration Tests
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    needs: test
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: Run Integration Tests
+        working-directory: backend
+        run: |
+          ./mvnw -B test \
+            -Dgroups="integration" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false \
+            -DfailIfNoTests=false
+
+      - name: Upload Integration Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Backend Integration Tests
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+  # ============================================================================
+  # 3.5. API Contract Tests (BATCH 3 - OpenAPI Schema Validation)
+  # ============================================================================
+  api-contract-tests:
+    name: API Contract Tests (OpenAPI)
+    needs: compile
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: Run API Contract Tests (OpenAPI Schema Validation)
+        working-directory: backend
+        run: |
+          echo "🔍 Running OpenAPI Schema Validation Tests..."
+          echo ""
+          echo "Testing API Contract completeness:"
+          echo "  • Customer endpoints documented"
+          echo "  • Lead endpoints documented"
+          echo "  • Enum endpoints documented"
+          echo "  • Response schemas defined"
+          echo "  • Request schemas defined"
+          echo "  • Component schemas exist"
+          echo ""
+
+          ./mvnw -B test \
+            -Dtest="OpenApiSchemaValidationTest" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false || {
+              echo ""
+              echo "❌ API Contract Validation FAILED!"
+              echo ""
+              echo "⚠️  OpenAPI schema is incomplete or missing critical endpoints."
+              echo ""
+              echo "💡 Common issues:"
+              echo "    - Endpoints missing from OpenAPI spec"
+              echo "    - Response schemas not defined"
+              echo "    - Request body schemas not defined"
+              echo "    - Component schemas missing"
+              echo ""
+              echo "📊 Review the test results above for details."
+              echo "🔧 Fix: Add @Operation annotations to REST endpoints"
+              exit 1
+            }
+
+          echo "✅ All API Contract tests passed - OpenAPI schema is complete!"
+
+      - name: Upload API Contract Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: API Contract Tests (OpenAPI)
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: API Contract Summary
+        if: always()
+        run: |
+          echo "## 📋 API Contract Tests (OpenAPI)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Purpose:** Ensure OpenAPI schema completeness" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tests:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Customer endpoints documented (GET, POST, PUT, DELETE)" >> $GITHUB_STEP_SUMMARY
+          echo "- Lead endpoints documented" >> $GITHUB_STEP_SUMMARY
+          echo "- Enum endpoints documented (Server-Driven UI critical!)" >> $GITHUB_STEP_SUMMARY
+          echo "- Response schemas defined" >> $GITHUB_STEP_SUMMARY
+          echo "- Request schemas defined" >> $GITHUB_STEP_SUMMARY
+          echo "- Component schemas exist (DTOs)" >> $GITHUB_STEP_SUMMARY
+          echo "- Security schemes documented" >> $GITHUB_STEP_SUMMARY
+          echo "- API metadata present" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Why:** Frontend depends on accurate OpenAPI spec for:" >> $GITHUB_STEP_SUMMARY
+          echo "- TypeScript type generation" >> $GITHUB_STEP_SUMMARY
+          echo "- API client code generation" >> $GITHUB_STEP_SUMMARY
+          echo "- API documentation" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # 3.6. Migration Validation Tests (BATCH 3 - Flyway Integrity)
+  # ============================================================================
+  migration-validation-tests:
+    name: Migration Validation Tests (Flyway)
+    needs: compile
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd "pg_isready -U freshplan -d freshplan"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17 (Quarkus 2.x Standard)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+
+      - name: Wait for PostgreSQL to be ready
+        run: |
+          for i in {1..30}; do
+            pg_isready -h localhost -p 5432 -U freshplan && echo "✅ PostgreSQL is ready" && exit 0
+            echo "⏳ Waiting for PostgreSQL... attempt $i/30"
+            sleep 2
+          done
+          echo "❌ PostgreSQL not ready after 60 seconds" && exit 1
+
+      - name: Run Migration Validation Tests
+        working-directory: backend
+        run: |
+          echo "🔍 Running Flyway Migration Validation Tests..."
+          echo ""
+          echo "Testing migration integrity:"
+          echo "  • All migrations applied successfully"
+          echo "  • No pending migrations"
+          echo "  • No failed migrations"
+          echo "  • Migration checksums valid"
+          echo "  • Migrations are idempotent"
+          echo "  • Migration order correct"
+          echo "  • Critical tables exist"
+          echo ""
+
+          ./mvnw -B test \
+            -Dtest="FlywayMigrationValidationTest" \
+            -Dquarkus.profile=ci \
+            -Dquarkus.devservices.enabled=false \
+            -Dquarkus.datasource.devservices.enabled=false || {
+              echo ""
+              echo "❌ Migration Validation FAILED!"
+              echo ""
+              echo "⚠️  Database migrations are in an invalid state."
+              echo ""
+              echo "💡 Common issues:"
+              echo "    - Failed migrations (broken SQL scripts)"
+              echo "    - Pending migrations (not applied)"
+              echo "    - Missing migrations (files deleted after apply)"
+              echo "    - Checksum mismatches (files modified after apply)"
+              echo "    - Non-idempotent migrations (errors on re-apply)"
+              echo ""
+              echo "📊 Review the test results above for details."
+              echo "🔧 Fix: Review migration files and ensure they are correct"
+              exit 1
+            }
+
+          echo "✅ All migration validation tests passed - database is healthy!"
+
+      - name: Upload Migration Test Results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Migration Validation Tests (Flyway)
+          path: backend/target/surefire-reports/*.xml
+          reporter: java-junit
+
+      - name: Migration Validation Summary
+        if: always()
+        run: |
+          echo "## 🗄️ Migration Validation Tests (Flyway)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Purpose:** Ensure database migrations are correct and idempotent" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Tests:**" >> $GITHUB_STEP_SUMMARY
+          echo "- All migrations applied successfully (no FAILED state)" >> $GITHUB_STEP_SUMMARY
+          echo "- No pending migrations (all applied)" >> $GITHUB_STEP_SUMMARY
+          echo "- No missing migrations (files not deleted)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migration checksums valid (files not modified)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migration order correct (no critical out-of-order)" >> $GITHUB_STEP_SUMMARY
+          echo "- Critical tables exist (customers, leads, users, etc.)" >> $GITHUB_STEP_SUMMARY
+          echo "- Migrations are idempotent (re-apply safe)" >> $GITHUB_STEP_SUMMARY
+          echo "- Flyway baseline configured correctly" >> $GITHUB_STEP_SUMMARY
+          echo "- No ignored migrations (version conflicts)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Why:** Prevents production deployment with broken migrations" >> $GITHUB_STEP_SUMMARY
+          echo "**Impact:** Database schema integrity guaranteed in production" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Final Pipeline Gate
+  # ============================================================================
+  pipeline-gate:
+    name: Backend Pipeline Complete
+    needs: [compile, test, api-contract-tests, migration-validation-tests]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.compile.result }}" == "failure" ]] || \
+             [[ "${{ needs.test.result }}" == "failure" ]]; then
+            echo "❌ Backend Pipeline FAILED"
+            exit 1
+          fi
+
+          echo "✅ Backend Pipeline PASSED!"

@@ -93,10 +93,70 @@ export function useSalutations() {
 }
 
 /**
+ * Normalize decision level values (legacy lowercase → UPPERCASE)
+ *
+ * Sprint 2.1.7.7: Multi-Location Management - Bugfix
+ * Context: Old Contact data may have lowercase values (e.g. "manager")
+ * Backend now expects uppercase values (e.g. "MANAGER")
+ *
+ * This defensive mapping ensures MUI Select validation doesn't fail.
+ *
+ * @param value - Decision level value (may be lowercase or undefined)
+ * @returns Normalized uppercase value or undefined if input is undefined
+ *
+ * @example
+ * ```ts
+ * normalizeDecisionLevel("manager") // Returns: "MANAGER"
+ * normalizeDecisionLevel("Entscheider") // Returns: "EXECUTIVE"
+ * normalizeDecisionLevel(undefined) // Returns: undefined
+ * ```
+ */
+export function normalizeDecisionLevel(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+
+  const mapping: Record<string, string> = {
+    // German legacy values
+    entscheider: 'EXECUTIVE',
+    Entscheider: 'EXECUTIVE',
+    genehmiger: 'EXECUTIVE',
+    Genehmiger: 'EXECUTIVE',
+    mitentscheider: 'MANAGER',
+    Mitentscheider: 'MANAGER',
+    manager: 'MANAGER',
+    Manager: 'MANAGER',
+    beeinflusser: 'INFLUENCER',
+    Beeinflusser: 'INFLUENCER',
+    einflussnehmer: 'INFLUENCER',
+    Einflussnehmer: 'INFLUENCER',
+    champion: 'INFLUENCER',
+    Champion: 'INFLUENCER',
+    nutzer: 'OPERATIONAL',
+    Nutzer: 'OPERATIONAL',
+    operational: 'OPERATIONAL',
+    Operational: 'OPERATIONAL',
+    informant: 'OPERATIONAL',
+    Informant: 'OPERATIONAL',
+    gatekeeper: 'OPERATIONAL',
+    Gatekeeper: 'OPERATIONAL',
+    blocker: 'MANAGER',
+    Blocker: 'MANAGER',
+    // Already uppercase but lowercase variants
+    executive: 'EXECUTIVE',
+    Executive: 'EXECUTIVE',
+    influencer: 'INFLUENCER',
+    Influencer: 'INFLUENCER',
+  };
+
+  return mapping[value] || value.toUpperCase();
+}
+
+/**
  * Fetch decision levels from backend API
  *
  * GET /api/enums/decision-levels
  * Returns: [{ value: "EXECUTIVE", label: "Executive" }, ...]
+ *
+ * Note: Also normalizes legacy lowercase values for backward compatibility
  */
 async function fetchDecisionLevels(): Promise<EnumValue[]> {
   const response = await fetch(`${BASE_URL}/api/enums/decision-levels`, {

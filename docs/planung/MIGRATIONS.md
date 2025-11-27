@@ -225,11 +225,24 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V10022** | Make territory_id Nullable | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | Fixes Lead creation validation error, ermöglicht unassigned Leads |
 | **V10023** | Lead Contacts Constraints | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | Unique constraint für is_primary per lead_id |
 | **V10024** | Lead Scoring Complete | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟠 MEDIUM | None | 5 Score-Felder (pain_score, revenue_score, fit_score, engagement_score, lead_score) |
+| **V10025** | Fix Missing Lead Contacts Triggers | 2.1.6 Phase 5 | @joergstreeck | #137 | ✅ Yes | 🟢 Low | None | Zusätzliche Trigger-Fixes für lead_contacts Backward Compatibility |
 | **V10026** | Opportunity Lead/Customer FKs | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟠 MEDIUM | None | lead_id + customer_id FKs in opportunities, CHECK Constraint (lead_id OR customer_id OR stage='NEW_LEAD') |
 | **V10027** | Activity Outcome Enum | 2.1.7 | @joergstreeck | #139 | ✅ Yes | 🟢 Low | None | activity_outcome VARCHAR(30) mit CHECK Constraint (7 values: SUCCESSFUL, UNSUCCESSFUL, NO_ANSWER, CALLBACK_REQUESTED, INFO_SENT, QUALIFIED, DISQUALIFIED) |
 | **V10028** | Customer Number Sequence | 2.1.7 | @joergstreeck | #139 | ❌ No | 🔴 HIGH | None | **PRODUCTION-KRITISCH!** PostgreSQL Sequence für race-condition-safe customer_number Generation. Format: KD-00001, KD-00002... **NIEMALS löschen!** |
 | **V10029** | CustomerLocation JSON DEFAULT Fix | 2.1.7.0 | @joergstreeck | #140 | ✅ Yes | 🟢 Low | None | Schema-Fix: DEFAULT '[]' → '{}' für customer_locations JSON columns (address_details, contact_details, operational_details) |
 | **V10030** | OpportunityType Enum | 2.1.7.1 | @joergstreeck | #141 | ✅ Yes | 🟢 Low | None | opportunity_type VARCHAR(50) + CHECK Constraint (4 values: NEUGESCHAEFT, SORTIMENTSERWEITERUNG, NEUER_STANDORT, VERLAENGERUNG), DEFAULT 'NEUGESCHAEFT', JPA-kompatibel |
+| **V10031** | Opportunity Multipliers + Business Type Matrix | 2.1.7.3 | @joergstreeck | #142 | ✅ Yes | 🟢 Low | None | base_multiplier, business_type_multiplier für Opportunity Value Calculation |
+| **V10032** | Lead Parity Fields to Customers | 2.1.7.4 | @joergstreeck | #143 | ✅ Yes | 🟢 Low | None | Customer-Table Lead-Parity (kitchen_type, business_volume, employee_count, etc.) |
+| **V10033** | Customer Status Cleanup + Seasonal Business | 2.1.7.4 | @joergstreeck | #143 | ✅ Yes | 🟡 MEDIUM | None | **BREAKING:** Entfernt CustomerStatus.LEAD, fügt is_seasonal_business + seasonal_months + seasonal_pattern hinzu |
+| **V10034** | Fix seasonal_months to JSONB | 2.1.7.4 | @joergstreeck | #143 | ✅ Yes | 🟢 Low | None | seasonal_months: VARCHAR[] → JSONB (PostgreSQL Array → JSON Migration) |
+| **V10035** | Xentral Integration Fields | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | User.xentralSalesRepId + Customer.xentralCustomerId + lastRevenueSync + revenueSyncStatus |
+| **V10036** | Customer Churn Threshold Days | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | churn_threshold_days INT (CHECK 14-365), DEFAULT 90, pro Kunde konfigurierbar |
+| **V10037** | Xentral Settings Table | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | xentral_settings (apiUrl, token, mockMode, lastSync) - Tenant-basiert |
+| **V10038** | Add last_order_date to Customers | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | last_order_date TIMESTAMP für Churn Detection |
+| **V10039** | Unified Communication System | 2.1.7.2 | @joergstreeck | #144 | ⚠️ Manual | 🔴 HIGH | None | **Ersetzt 4 Legacy-Tabellen!** Activity Table (EMAIL, PHONE, SMS, VIDEO_CALL, MEETING, NOTE) |
+| **V10040** | Add Customer Addresses | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | customer_addresses (Multi-Location Prep) |
+| **V10041** | Refactor Customer Addresses Structured | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | Strukturierte Adressen (street, city, postalCode, country, addressType) |
+| **V10042** | Add Contact V2 Fields | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | Contact V2 Schema-Erweiterung für Multi-Location |
 
 **Rollback Scripts:**
 
@@ -283,7 +296,10 @@ UPDATE leads SET
 | **V10001** | Test Data Contract Guard | 2.1 | CI-only: CONSTRAINT CHECK für test_data |
 | **V10002** | Ensure Unique Constraints (opportunities/audit_trail.is_test_data) | 2.1.6 | ✅ Production-KRITISCH: TestDataService Infrastructure |
 | **V10003** | Test Data Dashboard | 2.1 | CI-only: Statistik-View für Tests |
+| **V10004** | *(SKIPPED - Number reserved but not used)* | - | ⏭️ Reserved | Migration number gap |
 | **V10005** | Seed Sample Customers | 2.1 | ❌ DELETED (2025-09-28, commit 753c9272c - caused CI failures) |
+| **V10006** | *(SKIPPED - Number reserved but not used)* | - | ⏭️ Reserved | Migration number gap |
+| **V10007** | *(SKIPPED - Number reserved but not used)* | - | ⏭️ Reserved | Migration number gap |
 | **V10008** | Remove Seed Protection | 2.1.6 | ✅ Production: Cleanup (Konsistenz) |
 | **V10009** | Add test_data Flag to Users | 2.1.6 | ✅ Production-KRITISCH: 33 Code-Referenzen! |
 | **V10010** | Fix Settings scope_type | 2.1.6 | ✅ Production: Enum Constraint Fix |
@@ -342,6 +358,13 @@ CREATE UNIQUE INDEX CONCURRENTLY ui_leads_company_city ON leads(company_name_nor
 | **V90003** | Seed DEV Opportunities Complete | 2.1.7 | 10 realistische Opportunities (IDs 90001-90010), Total Value €163,000, 4 from Leads + 6 from Customers, verschiedene Stages (LEAD, QUALIFIED, PROPOSAL, NEGOTIATION, WON) |
 | **V90004** | Seed DEV Users Complete | 2.1.7.0 | 5 realistische Test-User (IDs 90001-90005): Stefan Weber (Admin), Anna Schmidt (Manager), Markus Müller (Sales), Lisa Schneider (Sales), Thomas Wagner (Auditor) - mit Keycloak-Sync |
 | **V90005** | Fix CustomerLocation JSON Arrays | 2.1.7.0 | Data Migration: customer_locations.address_details/contact_details/operational_details von '[]' (Array) → '{}' (Object) für 38 affected records |
+| **V90006** | Cleanup Opportunity Names Remove Type Prefix | 2.1.7.1 | Cleanup: Entfernt Type-Prefix aus Opportunity-Namen (z.B. "[NEUGESCHAEFT] Deal" → "Deal") nach OpportunityType Enum Migration |
+| **V90007** | Fix Seed Customers Business Type | 2.1.7.3 | Data Fix: BusinessType Harmonisierung für DEV-SEED Customers |
+| **V90008** | Update Seed Customers Lead Parity Fields | 2.1.7.4 | Data Migration: Fügt Lead-Parity-Felder zu DEV-SEED Customers hinzu (kitchen_type, business_volume, etc.) |
+| **V90009** | Add Seasonal Business Seed Data | 2.1.7.4 | Seed Data: Fügt 3 Seasonal Business Customers hinzu (Eisdiele, Biergarten, Ski-Hütte) für ChurnDetection Testing |
+| **V90010** | Add Xentral IDs to Seed Customers | 2.1.7.2 | Seed Data: xentralCustomerId für DEV-SEED Customers (Mock-Integration Testing) |
+| **V90011** | Seed Super Customer C1 | 2.1.7.2 | Seed Data: "Super Customer C1" (kompletter Testfall: 3 Locations, 5 Contacts, Activities) |
+| **V90012** | Cleanup and Recreate Super Customer C1 | 2.1.7.2 | Seed Data Fix: Bereinigt und erstellt "Super Customer C1" neu (Schema-Updates) |
 
 **Details:**
 - **V90001:** 5 Customers mit vollständigen Daten (Adressen, Kontakte, Notes, BusinessTypes: GASTRONOMIE, CATERING, etc.)
@@ -616,9 +639,9 @@ DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVA
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-14 23:45 (V10029 + V90004-V90005 dokumentiert - Sprint 2.1.7.0 COMPLETE)
+**Letzte Aktualisierung:** 2025-10-31 23:30 (V10031-V10042 + V90006-V90012 dokumentiert - Sprint 2.1.7.2 + 2.1.7.4 COMPLETE)
 
-**Nächste Migration:** V272 oder V10030+ (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V10043+ (ermitteln via `./scripts/get-next-migration.sh`)
 
-**Aktuelle PR:** #139 - Sprint 2.1.7 ActivityOutcome + Code Review Fixes (READY FOR MERGE)
-**Branch:** main (PR #139)
+**Aktuelle Sprint:** Sprint 2.1.7.7 (Multi-Location Management - NEXT)
+**Letzter Merge:** PR #144 - Sprint 2.1.7.2 Customer-Management + Xentral-Integration (31.10.2025)

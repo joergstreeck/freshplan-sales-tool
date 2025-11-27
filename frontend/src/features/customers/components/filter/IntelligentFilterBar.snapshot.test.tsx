@@ -13,7 +13,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BrowserRouter } from 'react-router-dom';
 import React from 'react';
-import { IntelligentFilterBar } from './IntelligentFilterBar';
+import { IntelligentFilterBar } from '../../../shared/components/IntelligentFilterBar';
 import type {
   FilterConfig as _FilterConfig,
   SortConfig as _SortConfig,

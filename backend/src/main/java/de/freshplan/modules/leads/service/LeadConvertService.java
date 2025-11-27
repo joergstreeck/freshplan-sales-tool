@@ -2,7 +2,7 @@ package de.freshplan.modules.leads.service;
 
 import de.freshplan.domain.customer.entity.*;
 import de.freshplan.domain.customer.repository.CustomerRepository;
-import de.freshplan.domain.customer.service.CustomerNumberGeneratorService;
+import de.freshplan.domain.customer.service.util.CustomerNumberGeneratorService;
 import de.freshplan.modules.leads.api.admin.dto.LeadConvertRequest;
 import de.freshplan.modules.leads.api.admin.dto.LeadConvertResponse;
 import de.freshplan.modules.leads.domain.Lead;

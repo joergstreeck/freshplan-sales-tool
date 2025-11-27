@@ -6,6 +6,7 @@ import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -20,6 +21,17 @@ import org.junit.jupiter.params.provider.ValueSource;
 public class RlsRoleConsistencyTest {
 
   @Inject EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Reset GUC variables to default state for test isolation
+    // GUCs are transaction-scoped and auto-reset after each test
+    // Explicitly reset to ensure clean state for next test
+    // Note: Quoted identifiers required for GUC variables with dot notation
+    em.createNativeQuery("RESET \"app.current_user\"").executeUpdate();
+    em.createNativeQuery("RESET \"app.current_role\"").executeUpdate();
+  }
 
   @Test
   @Transactional

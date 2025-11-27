@@ -5,6 +5,7 @@ import de.freshplan.domain.help.repository.HelpContentRepository;
 import de.freshplan.domain.help.service.dto.HelpAnalytics;
 import de.freshplan.domain.help.service.dto.HelpRequest;
 import de.freshplan.domain.help.service.dto.UserStruggle;
+import de.freshplan.domain.help.service.provider.HelpAnalyticsProvider;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.LocalDateTime;
@@ -21,9 +22,12 @@ import org.slf4j.LoggerFactory;
  *
  * <p>Sammelt und analysiert: - Help Request Patterns - User Feedback - Struggle Detection Metrics -
  * Feature Adoption Correlation
+ *
+ * <p>Sprint 2.1.7.7 Cycle 3-6 fix: Implements HelpAnalyticsProvider interface to break circular
+ * dependency (Dependency Inversion Principle).
  */
 @ApplicationScoped
-public class HelpAnalyticsService {
+public class HelpAnalyticsService implements HelpAnalyticsProvider {
 
   private static final Logger LOG = LoggerFactory.getLogger(HelpAnalyticsService.class);
 

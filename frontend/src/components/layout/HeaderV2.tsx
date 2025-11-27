@@ -74,7 +74,10 @@ export const HeaderV2: React.FC<HeaderV2Props> = ({ onMenuClick, showMenuIcon = 
   const handleLogout = async () => {
     handleMenuClose();
     await logout();
-    navigate('/login');
+    // In Auth-Bypass-Modus zu /login-bypass navigieren (existiert)
+    // In Production/Keycloak-Modus zu /login navigieren (wird von Keycloak verwaltet)
+    const isAuthBypass = import.meta.env.VITE_AUTH_BYPASS === 'true';
+    navigate(isAuthBypass ? '/login-bypass' : '/login');
   };
 
   const handleProfileClick = () => {

@@ -72,20 +72,10 @@ export const CustomerDetailTabGeschaeft: React.FC<CustomerDetailTabGeschaeftProp
 
   return (
     <Box>
-      {/* Info Banner */}
-      <Alert severity="info" sx={{ mb: 3 }}>
-        <Typography variant="body2">
-          <strong>Tab "Geschäft":</strong> Umsatz, Verträge, Pain Points und Produktinteressen.
-        </Typography>
-        <Typography variant="caption" color="text.secondary">
-          {sortedCards.length} Karten · Server-Driven Schema
-        </Typography>
-      </Alert>
-
-      {/* 2-Column Grid Layout */}
-      <Grid container spacing={2}>
+      {/* 2-Column Grid Layout with equal height cards */}
+      <Grid container spacing={2} sx={{ alignItems: 'stretch' }}>
         {sortedCards.map(schema => (
-          <Grid key={schema.cardId} size={{ xs: 12, md: 6 }}>
+          <Grid key={schema.cardId} size={{ xs: 12, md: 6 }} sx={{ display: 'flex' }}>
             <DynamicCustomerCard schema={schema} customerId={customerId} />
           </Grid>
         ))}

@@ -10,7 +10,7 @@
  * - Pain factors as chips
  */
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   Accordion,
   AccordionSummary,
@@ -28,6 +28,7 @@ import {
   Group as GroupIcon,
   Restaurant as RestaurantIcon,
 } from '@mui/icons-material';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 import type { Lead } from '../types';
 
 interface BusinessPotentialCardProps {
@@ -43,9 +44,36 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({
   onChange,
   onEdit,
 }) => {
+  // Server-Driven Enums (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: businessTypeOptions } = useEnumOptions('/api/enums/business-types');
+  const { data: kitchenSizeOptions } = useEnumOptions('/api/enums/kitchen-sizes');
+
+  // Create fast lookup maps (O(1) statt O(n) mit .find())
+  const businessTypeLabels = useMemo(() => {
+    if (!businessTypeOptions) return {};
+    return businessTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [businessTypeOptions]);
+
+  const kitchenSizeLabels = useMemo(() => {
+    if (!kitchenSizeOptions) return {};
+    return kitchenSizeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [kitchenSizeOptions]);
+
   // Preview Info für Header
   const previewParts = [
-    lead.businessType || '—',
+    lead.businessType ? businessTypeLabels[lead.businessType] || lead.businessType : '—',
     lead.city || '—',
     `${lead.branchCount || 1} Standort${(lead.branchCount || 1) > 1 ? 'e' : ''}`,
   ].filter(part => part !== '—');
@@ -93,7 +121,9 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({
                 Geschäftstyp
               </Typography>
             </Box>
-            <Typography variant="body1">{lead.businessType || '—'}</Typography>
+            <Typography variant="body1">
+              {lead.businessType ? businessTypeLabels[lead.businessType] || lead.businessType : '—'}
+            </Typography>
           </Grid>
 
           {/* Kitchen Size */}
@@ -105,13 +135,7 @@ const BusinessPotentialCard: React.FC<BusinessPotentialCardProps> = ({
               </Typography>
             </Box>
             <Typography variant="body1">
-              {lead.kitchenSize
-                ? lead.kitchenSize === 'small'
-                  ? 'Klein'
-                  : lead.kitchenSize === 'medium'
-                    ? 'Mittel'
-                    : 'Groß'
-                : '—'}
+              {lead.kitchenSize ? kitchenSizeLabels[lead.kitchenSize] || lead.kitchenSize : '—'}
             </Typography>
           </Grid>
 

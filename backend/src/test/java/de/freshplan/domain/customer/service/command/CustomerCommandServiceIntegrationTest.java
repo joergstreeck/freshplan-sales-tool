@@ -16,10 +16,12 @@ import de.freshplan.domain.customer.service.exception.CustomerNotFoundException;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
@@ -38,6 +40,25 @@ class CustomerCommandServiceIntegrationTest {
   @Inject CustomerCommandService commandService;
 
   @Inject CustomerRepository customerRepository;
+
+  @Inject jakarta.persistence.EntityManager em;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'")
+        .executeUpdate();
+  }
 
   @Test
   @TestTransaction

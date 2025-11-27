@@ -330,55 +330,93 @@ public class CustomerSchemaResource {
         .build();
   }
 
+  /**
+   * Location Stats Section with Server-Driven Conditional Fields
+   *
+   * <p>Sprint 2.1.7.7: isChain ZUERST, dann conditional branchCount und Länder-Felder
+   *
+   * <p>UX Flow:
+   *
+   * <ol>
+   *   <li>isChain: "Filialunternehmen?" (Ja/Nein)
+   *   <li>IF isChain=true: branchCount + Länder-Aufschlüsselung + expansionPlanned
+   *   <li>IF isChain=false: Nur expansionPlanned (optional)
+   * </ol>
+   */
   private CardSection buildLocationStatsSection() {
     return CardSection.builder()
         .sectionId("location_stats")
         .title("Standort-Statistik")
-        .subtitle("Anzahl Standorte nach Region")
+        .subtitle("Filialstruktur und Expansion")
         .fields(
             List.of(
+                // Sprint 2.1.7.7: isChain ZUERST fragen (wie in Lead-Erfassung)
                 FieldDefinition.builder()
-                    .fieldKey("locationsDE")
+                    .fieldKey("isChain")
+                    .label("Filialunternehmen / Kettenbetrieb?")
+                    .type(FieldType.BOOLEAN)
+                    .gridCols(12)
+                    .helpText("Hat das Unternehmen mehrere Standorte mit zentraler Verwaltung?")
+                    .showInWizard(true)
+                    .wizardStep(1)
+                    .wizardOrder(10)
+                    .wizardSectionId("chain_structure")
+                    .wizardSectionTitle("🏢 Filialstruktur")
+                    .build(),
+                // Länder-Aufschlüsselung NUR sichtbar wenn isChain = true
+                // branchCount wird im Frontend automatisch aus der Summe berechnet
+                FieldDefinition.builder()
+                    .fieldKey("locationsGermany")
                     .label("Standorte Deutschland")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
+                    .placeholder("0")
                     .showInWizard(true)
                     .wizardStep(1)
                     .wizardOrder(11)
                     .wizardSectionId("chain_structure")
                     .wizardSectionTitle("🏢 Filialstruktur")
+                    .visibleWhenField("isChain")
+                    .visibleWhenValue("true")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("locationsCH")
-                    .label("Standorte Schweiz")
+                    .fieldKey("locationsAustria")
+                    .label("Standorte Österreich")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
+                    .placeholder("0")
                     .showInWizard(true)
                     .wizardStep(1)
                     .wizardOrder(12)
                     .wizardSectionId("chain_structure")
                     .wizardSectionTitle("🏢 Filialstruktur")
+                    .visibleWhenField("isChain")
+                    .visibleWhenValue("true")
                     .build(),
                 FieldDefinition.builder()
-                    .fieldKey("locationsAT")
-                    .label("Standorte Österreich")
+                    .fieldKey("locationsSwitzerland")
+                    .label("Standorte Schweiz")
                     .type(FieldType.NUMBER)
                     .gridCols(4)
+                    .placeholder("0")
                     .showInWizard(true)
                     .wizardStep(1)
                     .wizardOrder(13)
                     .wizardSectionId("chain_structure")
                     .wizardSectionTitle("🏢 Filialstruktur")
+                    .visibleWhenField("isChain")
+                    .visibleWhenValue("true")
                     .build(),
+                // expansionPlanned IMMER sichtbar (auch für Einzelstandorte relevant)
                 FieldDefinition.builder()
                     .fieldKey("expansionPlanned")
                     .label("Expansion geplant?")
                     .type(FieldType.ENUM)
                     .enumSource("/api/enums/expansion-plan")
-                    .gridCols(4)
+                    .gridCols(6)
                     .showInWizard(true)
                     .wizardStep(1)
-                    .wizardOrder(14)
+                    .wizardOrder(15)
                     .wizardSectionId("chain_structure")
                     .wizardSectionTitle("🏢 Filialstruktur")
                     .showDividerAfter(true)
@@ -436,19 +474,23 @@ public class CustomerSchemaResource {
                     .wizardSectionTitle("Unternehmensdaten")
                     .showDividerAfter(true)
                     .build(),
+                // Sprint 2.1.7.7: Diese Felder sind jetzt im Wizard (location_stats Section)
+                // Hier nur read-only Anzeige in Detail-Tab
                 FieldDefinition.builder()
                     .fieldKey("branchCount")
-                    .label("Anzahl Filialen")
+                    .label("Anzahl Standorte")
                     .type(FieldType.NUMBER)
                     .gridCols(6)
-                    .showInWizard(false) // Nur in Details
+                    .readonly(true) // Wird im Wizard bearbeitet
+                    .helpText("Bearbeitung im Wizard oder Filialstruktur-Tab")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("isChain")
                     .label("Filialunternehmen?")
                     .type(FieldType.BOOLEAN)
                     .gridCols(6)
-                    .showInWizard(false) // Nur in Details
+                    .readonly(true) // Wird im Wizard bearbeitet
+                    .helpText("Bearbeitung im Wizard oder Filialstruktur-Tab")
                     .build(),
                 FieldDefinition.builder()
                     .fieldKey("parentCustomer")

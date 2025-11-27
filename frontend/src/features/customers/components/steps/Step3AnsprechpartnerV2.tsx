@@ -7,7 +7,7 @@
  * @see /Users/joergstreeck/freshplan-sales-tool/docs/features/FC-005-CUSTOMER-MANAGEMENT/sprint2/wizard/STEP3_ANSPRECHPARTNER_V2.md
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   Box,
   Typography,
@@ -33,6 +33,7 @@ import { Add as AddIcon, Delete as DeleteIcon, Person as PersonIcon } from '@mui
 import { useCustomerOnboardingStore } from '../../stores/customerOnboardingStore';
 import { AdaptiveFormContainer } from '../adaptive/AdaptiveFormContainer';
 import type { Contact } from '../../types/contact.types';
+import { useEnumOptions } from '../../../../hooks/useEnumOptions';
 
 // Vordefinierte Titel-Optionen
 const TITLE_OPTIONS = ['Dr.', 'Prof.'];
@@ -74,6 +75,22 @@ interface ContactFormData extends Contact {
 
 export const Step3AnsprechpartnerV2: React.FC = () => {
   const { customerData, locations, setCustomerField } = useCustomerOnboardingStore();
+
+  // Server-Driven Enums (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: salutationOptions } = useEnumOptions('/api/enums/salutations');
+  const { data: decisionLevelOptions } = useEnumOptions('/api/enums/decision-levels');
+
+  // Create fast lookup maps (O(1))
+  const salutationLabels = useMemo(() => {
+    if (!salutationOptions) return {};
+    return salutationOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [salutationOptions]);
 
   // Initialisiere Kontakte aus customerData wenn vorhanden
   const [contacts, setContacts] = useState<ContactFormData[]>(() => {
@@ -182,7 +199,8 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
 
   const getContactDisplayName = (contact: ContactFormData) => {
     const parts = [];
-    if (contact.salutation) parts.push(contact.salutation);
+    // Sprint 2.1.7.7: Nutze Server-Driven Label für salutation
+    if (contact.salutation) parts.push(salutationLabels[contact.salutation] || contact.salutation);
     if (contact.title) parts.push(contact.title);
     if (contact.firstName) parts.push(contact.firstName);
     if (contact.lastName) parts.push(contact.lastName);
@@ -230,10 +248,13 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                       handleContactChange(index, 'salutation', e.target.value)
                     }
                     label="Anrede"
+                    disabled={!salutationOptions}
                   >
-                    <MenuItem value="Herr">Herr</MenuItem>
-                    <MenuItem value="Frau">Frau</MenuItem>
-                    <MenuItem value="Divers">Divers</MenuItem>
+                    {salutationOptions?.map(item => (
+                      <MenuItem key={item.value} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
 
@@ -301,11 +322,13 @@ export const Step3AnsprechpartnerV2: React.FC = () => {
                       handleContactChange(index, 'decisionLevel', e.target.value)
                     }
                     label="Entscheider-Ebene"
+                    disabled={!decisionLevelOptions}
                   >
-                    <MenuItem value="decision_maker">Entscheider</MenuItem>
-                    <MenuItem value="influencer">Beeinflusser</MenuItem>
-                    <MenuItem value="gatekeeper">Gatekeeper</MenuItem>
-                    <MenuItem value="user">Nutzer</MenuItem>
+                    {decisionLevelOptions?.map(item => (
+                      <MenuItem key={item.value} value={item.value}>
+                        {item.label}
+                      </MenuItem>
+                    ))}
                   </Select>
                 </FormControl>
               </Box>

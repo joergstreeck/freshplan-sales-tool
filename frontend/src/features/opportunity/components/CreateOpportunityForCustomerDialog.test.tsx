@@ -10,10 +10,11 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@mui/material/styles';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import freshfoodzTheme from '../../../theme/freshfoodz';
 import CreateOpportunityForCustomerDialog from './CreateOpportunityForCustomerDialog';
 import type { CustomerResponse } from '../../customer/types/customer.types';
-import { CustomerStatus, Industry } from '../../customer/types/customer.types';
+import { CustomerStatus, CustomerType, Industry } from '../../customer/types/customer.types';
 import { httpClient } from '../../../lib/apiClient';
 
 // Mock API Client
@@ -24,9 +25,35 @@ vi.mock('../../../lib/apiClient', () => ({
   },
 }));
 
-// Helper function to render with theme
+// Mock useEnumOptions Hook (Component uses Server-Driven UI for OpportunityType dropdown)
+vi.mock('../../../hooks/useEnumOptions', () => ({
+  useEnumOptions: vi.fn(() => ({
+    data: [
+      { value: 'NEUGESCHAEFT', label: 'Neugeschäft' },
+      { value: 'SORTIMENTSERWEITERUNG', label: 'Sortimentserweiterung' },
+      { value: 'NEUER_STANDORT', label: 'Neuer Standort' },
+      { value: 'VERLAENGERUNG', label: 'Verlängerung' },
+    ],
+    isLoading: false,
+    error: null,
+  })),
+}));
+
+// Helper function to render with theme and query client
 const renderWithTheme = (component: React.ReactElement) => {
-  return render(<ThemeProvider theme={freshfoodzTheme}>{component}</ThemeProvider>);
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  });
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider theme={freshfoodzTheme}>{component}</ThemeProvider>
+    </QueryClientProvider>
+  );
 };
 
 // Mock Customer Data

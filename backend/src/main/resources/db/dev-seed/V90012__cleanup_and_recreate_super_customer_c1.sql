@@ -108,7 +108,7 @@ INSERT INTO customers (
     -- Company Information (OHNE Rechtsform im Namen!)
     'Großhandel Frische Küche',
     'Fresh Kitchen Wholesale',
-    'GmbH',
+    'GMBH',
     'UNTERNEHMEN',
     'GROSSHANDEL', -- businessType (valid)
     -- industry omitted → NULL (DEPRECATED field)
@@ -138,7 +138,7 @@ INSERT INTO customers (
     0,
     0,
     0,
-    'YES',
+    'JA', -- expansion_planned (ExpansionPlan Enum: JA, NEIN, GEPLANT, UNKLAR)
 
     -- Pain Points
     TRUE,
@@ -228,13 +228,13 @@ INSERT INTO customer_contacts (
     is_deleted, created_at, created_by
 ) VALUES
     ('c3000000-0123-0001-0000-000000000001'::uuid, 'c0000000-0123-0000-0000-000000000001'::uuid,
-     'Herr', 'Thomas', 'Schneider', 'Einkaufsleiter', 'Einkauf & Beschaffung', 'manager',
+     'HERR', 'Thomas', 'Schneider', 'Einkaufsleiter', 'Einkauf & Beschaffung', 'manager',
      'thomas.schneider@frische-kueche-wholesale.de', '+49 89 123456-20', '+49 171 9876543',
      TRUE, TRUE, TRUE, 'EMAIL', 'DE', 'c1000000-0123-0001-0000-000000000001'::uuid,
      NOW() - INTERVAL '5 days', 12, 85, 'Sehr professionell, schätzt Zuverlässigkeit und Bio-Qualität. Entscheidungsfreudig.',
      FALSE, NOW() - INTERVAL '45 days', 'DEV-SEED-SYSTEM'),
     ('c3000000-0123-0002-0000-000000000001'::uuid, 'c0000000-0123-0000-0000-000000000001'::uuid,
-     'Frau', 'Sandra', 'Weber', 'Vertriebsleiterin Filiale', 'Vertrieb', 'operational',
+     'FRAU', 'Sandra', 'Weber', 'Vertriebsleiterin Filiale', 'Vertrieb', 'operational',
      'sandra.weber@frische-kueche-wholesale.de', '+49 69 987654-30', '+49 160 1234567',
      FALSE, FALSE, TRUE, 'PHONE', 'DE', 'c1000000-0123-0002-0000-000000000001'::uuid,
      NOW() - INTERVAL '8 days', 7, 70, 'Pragmatisch, kümmert sich um operative Abwicklung Frankfurt.',

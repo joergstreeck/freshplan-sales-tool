@@ -100,7 +100,7 @@ INSERT INTO customers (
     -- Company Information (OHNE Rechtsform im Namen!)
     'Großhandel Frische Küche',
     'Fresh Kitchen Wholesale',
-    'GmbH', -- Separate legal_form field!
+    'GMBH', -- Separate legal_form field!
     'UNTERNEHMEN',
     'GROSSHANDEL', -- businessType (new field)
     -- industry omitted (DEPRECATED, auto-set to NULL)
@@ -130,7 +130,7 @@ INSERT INTO customers (
     0, -- locations_austria
     0, -- locations_switzerland
     0, -- locations_rest_eu
-    'YES', -- expansion_planned (CHECK constraint: 'YES', 'NO', 'UNKNOWN')
+    'JA', -- expansion_planned (ExpansionPlan Enum: JA, NEIN, GEPLANT, UNKLAR)
 
     -- Pain Points (realistisch für Großhandel)
     TRUE, -- pain_staff_shortage (Fachkräftemangel)
@@ -366,7 +366,7 @@ INSERT INTO customer_contacts (
 ) VALUES (
     'c3000000-0123-0001-0000-000000000001'::uuid,
     'c0000000-0123-0000-0000-000000000001'::uuid,
-    'Herr',
+    'HERR',
     NULL,
     'Thomas',
     'Schneider',
@@ -420,7 +420,7 @@ INSERT INTO customer_contacts (
 ) VALUES (
     'c3000000-0123-0002-0000-000000000001'::uuid,
     'c0000000-0123-0000-0000-000000000001'::uuid,
-    'Frau',
+    'FRAU',
     'Sandra',
     'Weber',
     'Vertriebsleiterin Filiale',

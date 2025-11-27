@@ -18,6 +18,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -50,9 +51,22 @@ public class OpportunityServiceFindByCustomerIdTest {
 
   @Inject OpportunityService opportunityService;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   @Inject OpportunityRepository opportunityRepository;
 
   @Inject CustomerRepository customerRepository;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Step 1: Delete opportunities first (FK constraint: opportunities.customer_id -> customers.id)
+    // Pattern: name LIKE '[TEST-CUST-OPP]%'
+    opportunityRepository.delete("name LIKE ?1", "[TEST-CUST-OPP]%");
+
+    // Step 2: Delete customers (pattern: [TEST-CUST-OPP]%)
+    customerRepository.delete("companyName LIKE ?1", "[TEST-CUST-OPP]%");
+  }
 
   private Customer testCustomer;
   private Customer otherCustomer;

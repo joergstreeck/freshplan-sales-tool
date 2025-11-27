@@ -1,8 +1,115 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '../../../../test/test-utils';
 import userEvent from '@testing-library/user-event';
 import { vi, describe, it, expect, beforeEach } from 'vitest';
 import { PainScoreForm } from '../PainScoreForm';
 import type { Lead } from '../../types';
+
+// Mock useScoreSchema hook (Component uses Server-Driven UI!)
+vi.mock('@/hooks/useScoreSchema', () => ({
+  useScoreSchema: vi.fn(() => ({
+    data: [
+      {
+        cardId: 'pain_score',
+        title: 'Pain Score',
+        sections: [
+          {
+            sectionId: 'pain_assessment',
+            title: 'Schmerzpunkte-Bewertung',
+            fields: [
+              {
+                fieldKey: 'painStaffShortage',
+                label: 'Personalmangel',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painHighCosts',
+                label: 'Hohe Kosten',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painFoodWaste',
+                label: 'Lebensmittelverschwendung',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painQualityInconsistency',
+                label: 'Qualitätsschwankungen',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painUnreliableDelivery',
+                label: 'Unzuverlässige Lieferung',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painPoorService',
+                label: 'Schlechter Service',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painSupplierQuality',
+                label: 'Lieferantenqualität',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'painTimePressure',
+                label: 'Zeitdruck',
+                type: 'BOOLEAN',
+                required: false,
+              },
+              {
+                fieldKey: 'urgencyLevel',
+                label: 'Dringlichkeit',
+                type: 'ENUM',
+                required: false,
+                enumSource: '/api/enums/urgency-levels',
+              },
+              {
+                fieldKey: 'painNotes',
+                label: 'Notizen',
+                type: 'TEXTAREA',
+                required: false,
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    isLoading: false,
+    error: null,
+  })),
+}));
+
+// Mock useEnumOptions hook (Component uses Server-Driven urgency levels)
+vi.mock('@/hooks/useEnumOptions', () => ({
+  useEnumOptions: vi.fn((enumSource: string) => {
+    // Return urgency level options
+    if (enumSource === '/api/enums/urgency-levels') {
+      return {
+        data: [
+          { value: 'NORMAL', label: 'Normal (0 Punkte)' },
+          { value: 'HIGH', label: 'Hoch (22 Punkte)' },
+          { value: 'URGENT', label: 'Dringend (45 Punkte)' },
+        ],
+        isLoading: false,
+        error: null,
+      };
+    }
+    // Default: empty options
+    return {
+      data: [],
+      isLoading: false,
+      error: null,
+    };
+  }),
+}));
 
 // Mock Lead data
 const mockLead: Lead = {

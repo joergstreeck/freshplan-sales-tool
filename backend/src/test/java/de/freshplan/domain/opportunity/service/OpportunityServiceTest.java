@@ -23,6 +23,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -80,6 +81,24 @@ class OpportunityServiceTest {
                   userRepository.persist(user);
                   return user;
                 });
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Tests use @TestTransaction which auto-rollback, but we still need to clean up
+    // Delete opportunities and activities created by this test (using testUser as marker)
+    // Note: User table is "app_user" not "users"
+    em.createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE assigned_to = (SELECT id FROM app_user WHERE username = '"
+                + TEST_USER
+                + "'))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE assigned_to = (SELECT id FROM app_user WHERE username = '"
+                + TEST_USER
+                + "')")
+        .executeUpdate();
   }
 
   // ========== SPRINT 2.1.7.4: AUTO-CONVERSION TESTS ==========

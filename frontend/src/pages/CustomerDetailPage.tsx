@@ -2,6 +2,7 @@
  * Customer Detail Page
  *
  * Sprint 2.1.7.2 D11: Server-Driven Customer Cards
+ * Sprint 2.1.7.7: Multi-Location Management (Filialen-Tab für HEADQUARTER)
  *
  * Volle Seite mit MainLayoutV2 (Header + Sidebar + Theme V2)
  * Navigation: /customers → /customers/:customerId
@@ -9,6 +10,7 @@
  * Tabs:
  * - "Firma" (3 Cards: company_profile, locations, classification)
  * - "Geschäft" (4 Cards: business_data, contracts, pain_points, products)
+ * - "Filialen" (nur für HEADQUARTER - Sprint 2.1.7.7)
  * - "Verlauf" (disabled - Phase 4)
  *
  * @author FreshPlan Team
@@ -37,6 +39,7 @@ import {
   TrendingUp as TrendingUpIcon,
   Timeline as TimelineIcon,
   Edit as EditIcon,
+  AccountTree as AccountTreeIcon,
 } from '@mui/icons-material';
 import { MainLayoutV2 } from '../components/layout/MainLayoutV2';
 import { useCustomerDetails } from '../features/customer/hooks/useCustomerDetails';
@@ -45,6 +48,9 @@ import { CustomerDetailTabGeschaeft } from '../features/customers/components/det
 import { CustomerDetailTabVerlauf } from '../features/customers/components/detail/CustomerDetailTabVerlauf';
 import { CustomerOnboardingWizardModal } from '../features/customers/components/wizard/CustomerOnboardingWizardModal';
 import { CustomerActionButtons } from '../features/customers/components/detail/CustomerActionButtons';
+import { HierarchyDashboard } from '../features/customers/components/hierarchy/HierarchyDashboard';
+import { CreateBranchDialog } from '../features/customers/components/detail/CreateBranchDialog';
+import { CustomerHierarchyType } from '../features/customer/types/customer.types';
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -89,8 +95,14 @@ export function CustomerDetailPage() {
   // Edit Dialog State
   const [showEditWizard, setShowEditWizard] = useState(false);
 
+  // Sprint 2.1.7.7: CreateBranchDialog State
+  const [showCreateBranchDialog, setShowCreateBranchDialog] = useState(false);
+
   // Fetch customer data
   const { data: customer, isLoading, error } = useCustomerDetails(customerId);
+
+  // Sprint 2.1.7.7: Check if customer is HEADQUARTER (can have branches)
+  const isHeadquarter = customer?.hierarchyType === CustomerHierarchyType.HEADQUARTER;
 
   // Handle tab change
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -233,7 +245,8 @@ export function CustomerDetailPage() {
         </Paper>
 
         {/* Action Buttons (Cockpit-Pattern - Sprint 2.1.7.2 D11) */}
-        <CustomerActionButtons customer={customer} onEdit={() => setShowEditWizard(true)} />
+        {/* HINWEIS: Bearbeiten-Button ist im Header (Single Point of Action) */}
+        <CustomerActionButtons customer={customer} />
 
         {/* Tabs */}
         <Paper>
@@ -251,7 +264,21 @@ export function CustomerDetailPage() {
               iconPosition="start"
               {...a11yProps(1)}
             />
-            <Tab label="Verlauf" icon={<TimelineIcon />} iconPosition="start" {...a11yProps(2)} />
+            {/* Sprint 2.1.7.7: Filialen-Tab nur für HEADQUARTER */}
+            {isHeadquarter && (
+              <Tab
+                label="Filialen"
+                icon={<AccountTreeIcon />}
+                iconPosition="start"
+                {...a11yProps(2)}
+              />
+            )}
+            <Tab
+              label="Verlauf"
+              icon={<TimelineIcon />}
+              iconPosition="start"
+              {...a11yProps(isHeadquarter ? 3 : 2)}
+            />
           </Tabs>
 
           {/* Tab Panels */}
@@ -263,7 +290,17 @@ export function CustomerDetailPage() {
             <CustomerDetailTabGeschaeft customerId={customerId!} />
           </TabPanel>
 
-          <TabPanel value={activeTab} index={2}>
+          {/* Sprint 2.1.7.7: Filialen-Tab Content (nur für HEADQUARTER) */}
+          {isHeadquarter && (
+            <TabPanel value={activeTab} index={2}>
+              <HierarchyDashboard
+                parentCustomerId={customerId!}
+                onCreateBranch={() => setShowCreateBranchDialog(true)}
+              />
+            </TabPanel>
+          )}
+
+          <TabPanel value={activeTab} index={isHeadquarter ? 3 : 2}>
             <CustomerDetailTabVerlauf customerId={customerId!} />
           </TabPanel>
         </Paper>
@@ -281,6 +318,19 @@ export function CustomerDetailPage() {
           initialData={customer}
           editMode={true}
         />
+
+        {/* Sprint 2.1.7.7: CreateBranchDialog für Multi-Location Management */}
+        {isHeadquarter && (
+          <CreateBranchDialog
+            open={showCreateBranchDialog}
+            onClose={() => setShowCreateBranchDialog(false)}
+            headquarterId={customerId!}
+            onSuccess={() => {
+              // Refresh page to show new branch
+              window.location.reload();
+            }}
+          />
+        )}
       </Box>
     </MainLayoutV2>
   );

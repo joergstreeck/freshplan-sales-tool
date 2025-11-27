@@ -14,6 +14,7 @@ import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -39,6 +40,19 @@ class CustomerSearchServiceTest {
   @org.junit.jupiter.api.BeforeEach
   @jakarta.transaction.Transactional
   void cleanupBeforeEach() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery(
+            "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true)")
+        .executeUpdate();
+    customerRepository.deleteAllTestData();
+  }
+
+  @AfterEach
+  @jakarta.transaction.Transactional
+  void cleanup() {
     // Delete in correct order to respect foreign key constraints
     em.createNativeQuery(
             "DELETE FROM opportunity_activities WHERE opportunity_id IN (SELECT id FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE is_test_data = true))")

@@ -2,7 +2,7 @@ package de.freshplan.domain.testdata.service.query;
 
 import de.freshplan.domain.customer.repository.CustomerRepository;
 import de.freshplan.domain.customer.repository.CustomerTimelineRepository;
-import de.freshplan.domain.testdata.service.TestDataService;
+import de.freshplan.domain.testdata.service.provider.TestDataStats;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
@@ -30,7 +30,7 @@ public class TestDataQueryService {
    *
    * @return TestDataStats containing counts of test customers and events
    */
-  public TestDataService.TestDataStats getTestDataStats() {
+  public TestDataStats getTestDataStats() {
     LOG.debugf("Retrieving test data statistics...");
 
     long customerCount = customerRepository.count("isTestData", true);
@@ -38,6 +38,6 @@ public class TestDataQueryService {
 
     LOG.debugf("Test data stats: %d customers, %d events", customerCount, eventCount);
 
-    return new TestDataService.TestDataStats(customerCount, eventCount);
+    return new TestDataStats(customerCount, eventCount);
   }
 }

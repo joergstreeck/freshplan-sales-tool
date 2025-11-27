@@ -174,7 +174,7 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #139:** https://github.com/joergstreeck/freshplan-sales-tool/pull/139
    - Status: ✅ COMPLETE - PR #139 MERGED (14.10.2025)
 
-✅ TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (✅ COMPLETE - 15.10.2025)
+✅ TRIGGER_SPRINT_2_1_7_0.md - Design System Migration (✅ GEMERGED - 15.10.2025) - **PR #140**
    - **Kontext:** Komplette Frontend-Design-Migration zum FreshFoodz CI V2 Design System
    - **Design Compliance:** 97 Violations behoben (47 Font + 45 Color + 5 Language)
      - Font: Hardcoded fontFamily entfernt → MUI Theme (Antonio Bold h1-h6, Poppins body)
@@ -190,7 +190,7 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
    - Status: ✅ MERGED TO MAIN (15.10.2025)
 
-✅ TRIGGER_SPRINT_2_1_7_1.md - Lead → Opportunity UI Integration (✅ COMPLETE - 18.10.2025) - **PR #141**
+✅ TRIGGER_SPRINT_2_1_7_1.md - Lead → Opportunity UI Integration (✅ GEMERGED - 18.10.2025) - **PR #141**
    - **SCOPE:** NUR Lead → Opportunity Workflow (FOKUSSIERT!) ✅
    - **6 Deliverables:**
      - **D0:** OpportunityCard Verbesserungen (leadCompanyName, Lead-Origin Badge, Stage Color) ✅
@@ -249,39 +249,37 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
      - [SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_4_DESIGN_DECISIONS.md)
    - Status: ✅ COMPLETE - MERGED TO MAIN (22.10.2025 17:06:22 UTC, Commit ade7fc2fa)
 
-📋 TRIGGER_SPRINT_2_1_7_2.md - Customer-Management COMPLETE (21.10.2025) ⏳ **NACH 2.1.7.4!**
-   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Unified Communication + Multi-Location Prep (Option A)
-   - **10 Deliverables (erweitert von 8):**
-     - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
-     - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
-     - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
-     - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
-     - **D5:** Admin-UI für Xentral-Einstellungen
-     - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
-     - **D7:** Testing & Integration Tests (162 Tests)
-     - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren ⚡
-     - **D8:** Unified Communication System (Lead + Customer) ⭐ NEU!
-     - **D9:** Customer UX Polish (Wizard + Dashboard Review) ⭐ NEU!
-     - **D10:** Multi-Location Vorbereitung (UI disabled) ⭐ NEU!
-   - **Aufwand:** 36h = 4-5 Arbeitstage (erweitert von 25h - **Option A Vorbereitung!**)
-   - **Aufwands-Verteilung:**
-     - Original 8 Deliverables: 25h (Xentral Integration)
-     - **D8 Unified Communication:** +6h (Migration V10033 lead_activities → activities)
-     - **D9 Customer UX Polish:** +4h (Wizard/Dashboard Review + Fixes)
-     - **D10 Multi-Location Prep:** +1h (hierarchyType UI disabled vorbereiten)
-   - **KRITISCH:** Nutzt Sprint 2.1.7.4 XentralOrderEventHandler Interface!
-   - **ARCHITEKTUR-ENTSCHEIDUNG (Option A):** Sprint 2.1.7.7 danach = **-5h Gesamt-Einsparung**
-   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ⚡
-   - **Migrations:** V10033 (Unified Activity), V10034 (xentral_customer_id), V10035 (months_active)
-   - **Tests:** 162 Tests (90 Backend + 72 Frontend)
+✅ TRIGGER_SPRINT_2_1_7_2.md - Customer-Management + Xentral-Integration (31.10.2025) - **PR #144 MERGED**
+   - **SCOPE:** Opportunity → Customer + Xentral-Dashboard + Server-Driven Customer Cards
+   - **11 Deliverables (ALLE COMPLETE):**
+     - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info ✅
+     - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode) ✅
+     - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage) ✅
+     - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde) ✅
+     - **D5:** Admin-UI für Xentral-Einstellungen ✅
+     - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich) ✅
+     - **D7:** Testing & Integration Tests (946 Tests GREEN) ✅
+     - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren ✅
+     - **D11:** Server-Driven Customer Cards (5 Enum-Endpoints + Browser-Fixes) ✅
+     - **D11:** Design System Enforcement (Pre-Commit Hook + DESIGN_SYSTEM.md) ✅
+     - **MOVED:** D9 (Customer UX Polish) → Sprint 2.1.7.7
+     - **MOVED:** D10 (Multi-Location Prep) → Sprint 2.1.7.7
+   - **Aufwand:** ~36h (erweitert durch D11 Server-Driven Cards Implementation)
+   - **KRITISCH:** Nutzt Sprint 2.1.7.4 XentralOrderEventHandler Interface ✅
+   - **Prerequisites:** Sprint 2.1.7.1 COMPLETE ✅ + Sprint 2.1.7.4 COMPLETE ✅
+   - **Tests:** 946 Tests GREEN (0 Failures) ✅
+   - **CI Status:** 20/20 Workflows GREEN ✅
    - **Integration mit Sprint 2.1.7.4:**
-     - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementieren)
-     - customerService.activateCustomer() (Sprint 2.1.7.4 Methode nutzen)
-     - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4)
+     - XentralOrderEventHandlerImpl (Sprint 2.1.7.4 Interface implementiert) ✅
+     - customerService.activateCustomer() (Sprint 2.1.7.4 Methode genutzt) ✅
+     - ChurnDetectionService mit Seasonal Business Support (Sprint 2.1.7.4) ✅
+   - **PR #144:** https://github.com/joergstreeck/freshplan-sales-tool/pull/144
+   - **Merge Commit:** 9dfe8b93c
    - **Artefakte:**
-     - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/SPEC_SPRINT_2_1_7_2_TECHNICAL.md) (10 Kapitel, 2,966 Zeilen)
-     - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
-   - Status: 📋 READY TO START - Nach Sprint 2.1.7.4 COMPLETE ⏳
+     - [SPEC_SPRINT_2_1_7_2_TECHNICAL.md](artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_TECHNICAL.md)
+     - [SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md](artefakte/sprint-2.1.7.2/SPEC_SPRINT_2_1_7_2_DESIGN_DECISIONS.md)
+     - [sprint-2.1.7.2-COMMIT-SUMMARY.md](artefakte/sprint-2.1.7.2/sprint-2.1.7.2-COMMIT-SUMMARY.md)
+   - Status: ✅ COMPLETE - MERGED TO MAIN (31.10.2025 21:50:20 UTC, Commit 9dfe8b93c)
 
 📋 TRIGGER_SPRINT_2_1_7_7.md - Multi-Location Management (21.10.2025) ⚡ **NACH 2.1.7.2!**
    - **SCOPE:** Parent-Child Hierarchie für Filialisten (Option A - Aktivierung statt Neubau)

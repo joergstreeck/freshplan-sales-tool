@@ -13,6 +13,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import java.sql.SQLException;
 import javax.sql.DataSource;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,15 @@ class OpportunityTypeMigrationTest {
   @Inject EntityManager entityManager;
 
   @Inject DataSource dataSource;
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up any test opportunities created during tests
+    entityManager
+        .createNativeQuery("DELETE FROM opportunities WHERE name LIKE 'TEST-%'")
+        .executeUpdate();
+  }
 
   @Test
   @Transactional

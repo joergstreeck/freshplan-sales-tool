@@ -196,7 +196,7 @@ describe('CustomerOnboardingWizardModal', () => {
     });
   });
 
-  describe('Integration with CustomersPageV2', () => {
+  describe('Integration with CustomersPage', () => {
     it('responds to custom event', () => {
       const { rerender } = renderModal({ open: false });
 
@@ -206,7 +206,7 @@ describe('CustomerOnboardingWizardModal', () => {
       // Simulate event
       window.dispatchEvent(new CustomEvent('freshplan:new-customer'));
 
-      // Should open (this would be handled by CustomersPageV2 state)
+      // Should open (this would be handled by CustomersPage state)
       rerender(
         <QueryClientProvider client={queryClient}>
           <BrowserRouter>

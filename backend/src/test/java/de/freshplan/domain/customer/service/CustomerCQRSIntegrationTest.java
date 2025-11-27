@@ -14,10 +14,12 @@ import io.quarkus.test.junit.TestProfile;
 import io.quarkus.test.security.TestSecurity;
 import jakarta.enterprise.context.control.ActivateRequestContext;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -52,6 +54,8 @@ class CustomerCQRSIntegrationTest {
   @ConfigProperty(name = "features.cqrs.enabled")
   boolean cqrsEnabled;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   private CreateCustomerRequest validCreateRequest;
   private UUID createdCustomerId;
 
@@ -67,6 +71,23 @@ class CustomerCQRSIntegrationTest {
             .businessType(BusinessType.SONSTIGES)
             .expectedAnnualVolume(BigDecimal.valueOf(100000))
             .build();
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Delete in correct order to respect foreign key constraints
+    em.createNativeQuery(
+            "DELETE FROM customer_timeline_events WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_contacts WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM opportunities WHERE customer_id IN (SELECT id FROM customers WHERE customer_number LIKE 'TEST-%')")
+        .executeUpdate();
+    em.createNativeQuery("DELETE FROM customers WHERE customer_number LIKE 'TEST-%'")
+        .executeUpdate();
   }
 
   @Test

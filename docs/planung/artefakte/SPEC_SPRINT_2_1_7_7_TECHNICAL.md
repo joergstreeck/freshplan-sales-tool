@@ -194,6 +194,103 @@ if (request.hierarchyType() == CustomerHierarchyType.FILIALE) {
 
 ---
 
+## 📋 FIELD MAPPING REFERENCE (Xentral ↔ FreshPlan)
+
+**Stand:** 2025-11-03 (analysiert via Xentral API Docs + Customer.java)
+
+### **Xentral Order deliveryAddress Format**
+
+**Quelle:** https://developer.xentral.com/reference/customer-1
+
+Xentral verwendet **strukturierte Objekte** (NICHT einen einzelnen String):
+
+```json
+{
+  "street": "Friedrichstr. 96",
+  "zip": "10117",
+  "city": "Berlin",
+  "country": "DE",
+  "name": "Max Mustermann",          // optional
+  "company": "NH Hotel Berlin",      // optional
+  "addressSupplement": "Etage 3"     // optional
+}
+```
+
+**WICHTIG:** Alle Adresskomponenten liegen als **eigene Felder** vor.
+
+---
+
+### **Customer.java Address Fields**
+
+**Quelle:** `backend/src/main/java/de/freshplan/domain/customer/entity/Customer.java` Lines 260-329
+
+```java
+// Main Address (Sprint 2.1.7.2 D11 Phase 1)
+@Column(name = "street")
+private String street;                    // "Friedrichstr. 96"
+
+@Column(name = "postal_code", length = 20)
+private String postalCode;                // "10117"
+
+@Column(name = "city", length = 100)
+private String city;                      // "Berlin"
+
+@Column(name = "country_code", length = 2)
+private String countryCode;               // "DE"
+
+// Multi-Location Support (JSONB)
+@JdbcTypeCode(SqlTypes.JSON)
+@Column(name = "delivery_addresses", columnDefinition = "jsonb")
+private List<String> deliveryAddresses;   // Array of address JSON strings
+```
+
+---
+
+### **Field Name Mapping (KRITISCH für Fuzzy-Matching!)**
+
+| Xentral Field | Customer.java Field | Note |
+|---------------|---------------------|------|
+| `zip` | `postalCode` | ⚠️ Field-Name unterschiedlich! |
+| `country` | `countryCode` | ⚠️ Field-Name unterschiedlich! |
+| `street` | `street` | ✅ Identisch |
+| `city` | `city` | ✅ Identisch |
+| `company` | `companyName` | ⚠️ Optional in Xentral, Pflicht in Customer |
+| `name` | - | ℹ️ Wird nicht gemapped (Person, nicht Company) |
+
+**Impact für XentralAddressMatcher:**
+- Fuzzy-Matching MUSS Field-Namen normalisieren!
+- Matching auf **Feld-Ebene** (nicht concatenated String!)
+- `zip` vs `postalCode` = exakt match (PLZ ist PLZ)
+- `country` vs `countryCode` = exakt match (ISO-2 Code)
+
+**Algorithmus-Ansatz:**
+```java
+// Schritt 1: Normalisiere Xentral → Customer Field-Namen
+XentralAddress xentral = order.getDeliveryAddress();
+String xentralStreet = xentral.getStreet();
+String xentralZip = xentral.getZip();      // ← "zip"
+String xentralCity = xentral.getCity();
+String xentralCountry = xentral.getCountry(); // ← "country"
+
+// Schritt 2: Customer Fields
+String customerStreet = customer.getStreet();
+String customerZip = customer.getPostalCode(); // ← "postalCode"!
+String customerCity = customer.getCity();
+String customerCountry = customer.getCountryCode(); // ← "countryCode"!
+
+// Schritt 3: Fuzzy-Match pro Feld
+int streetSimilarity = levenshtein(xentralStreet, customerStreet);
+int citySimilarity = levenshtein(xentralCity, customerCity);
+boolean zipMatch = xentralZip.equals(customerZip);  // Exact match (PLZ!)
+boolean countryMatch = xentralCountry.equals(customerCountry); // Exact match!
+
+// Schritt 4: Weighted Score
+int totalScore = (streetSimilarity * 0.4) + (citySimilarity * 0.2) + (zipMatch ? 30 : 0) + (countryMatch ? 10 : 0);
+return totalScore >= 80; // 80% Threshold
+```
+
+---
+
 ## 1️⃣ Backend: Branch Service
 
 ### **BranchService.java**

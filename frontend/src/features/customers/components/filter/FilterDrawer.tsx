@@ -38,7 +38,7 @@ interface FilterDrawerProps {
   onClose: () => void;
   filters: FilterConfig;
   onFiltersChange: (filters: FilterConfig) => void;
-  onApply: () => void;
+  onApply: (filters?: FilterConfig) => void;
   onClear: () => void;
   context?: 'customers' | 'leads'; // Lifecycle Context for filtering
 }
@@ -87,46 +87,44 @@ export function FilterDrawer({
 
         <Divider />
 
-        {/* Status Filter - Lifecycle-Context-basiert */}
-        <FormControl fullWidth>
-          <FormLabel>Status</FormLabel>
-          <FormGroup>
-            {Object.values(CustomerStatus)
-              .filter(status => {
-                if (context === 'leads') {
-                  // Lead Lifecycle Phase: Zeige nur Baby-Status
-                  return status === CustomerStatus.LEAD || status === CustomerStatus.PROSPECT;
-                }
-                // Customer Lifecycle Phase: Zeige nur Erwachsenen-Status (ohne LEAD, PROSPECT, RISIKO)
-                return (
-                  status !== CustomerStatus.LEAD &&
-                  status !== CustomerStatus.PROSPECT &&
-                  status !== CustomerStatus.RISIKO
-                );
-              })
-              .map(status => (
-                <FormControlLabel
-                  key={status}
-                  control={
-                    <Checkbox
-                      checked={localFilters.status?.includes(status) || false}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        const newStatus = e.target.checked
-                          ? [...(localFilters.status || []), status]
-                          : localFilters.status?.filter(s => s !== status) || [];
-                        setLocalFilters({ ...localFilters, status: newStatus });
-                      }}
-                    />
-                  }
-                  label={STATUS_LABELS[status] || status}
-                />
-              ))}
-          </FormGroup>
-        </FormControl>
+        {/* Status Filter - NUR für Customers (Leads haben Stage-Filter als Schnellfilter!) */}
+        {context === 'customers' && (
+          <FormControl fullWidth>
+            <FormLabel>Status</FormLabel>
+            <FormGroup>
+              {Object.values(CustomerStatus)
+                .filter(status => {
+                  // Customer Lifecycle Phase: Zeige nur Erwachsenen-Status (ohne LEAD, PROSPECT, RISIKO)
+                  return (
+                    status !== CustomerStatus.LEAD &&
+                    status !== CustomerStatus.PROSPECT &&
+                    status !== CustomerStatus.RISIKO
+                  );
+                })
+                .map(status => (
+                  <FormControlLabel
+                    key={status}
+                    control={
+                      <Checkbox
+                        checked={localFilters.status?.includes(status) || false}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                          const newStatus = e.target.checked
+                            ? [...(localFilters.status || []), status]
+                            : localFilters.status?.filter(s => s !== status) || [];
+                          setLocalFilters({ ...localFilters, status: newStatus });
+                        }}
+                      />
+                    }
+                    label={STATUS_LABELS[status] || status}
+                  />
+                ))}
+            </FormGroup>
+          </FormControl>
+        )}
 
-        {/* Risk Level Filter mit kompakter Anzeige */}
+        {/* Risk Level / Lead Score Filter */}
         <FormControl fullWidth>
-          <FormLabel>Risiko-Level</FormLabel>
+          <FormLabel>{context === 'leads' ? 'Lead-Score' : 'Risiko-Level'}</FormLabel>
           <FormGroup>
             <FormControlLabel
               control={
@@ -303,10 +301,10 @@ export function FilterDrawer({
             variant="contained"
             fullWidth
             onClick={() => {
-              // Commit local changes to parent
+              // Commit local changes to parent AND pass directly to apply
               onFiltersChange(localFilters);
-              // Then trigger apply handler
-              onApply();
+              // Pass localFilters directly to avoid React state timing issues
+              onApply(localFilters);
             }}
             sx={{
               bgcolor: theme.palette.primary.main,

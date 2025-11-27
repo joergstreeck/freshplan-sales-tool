@@ -1,0 +1,765 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop, 'feat/**', 'fix/**', 'feature/**', 'bugfix/**']
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  # ============================================================================
+  # 1. Design System Compliance Check
+  # ============================================================================
+  design-system:
+    name: Design System Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Design System Compliance Check
+        run: |
+          echo "🎨 Validating Design System Compliance..."
+          echo ""
+          echo "Checking for:"
+          echo "  • Hardcoded colors (use theme.palette) - STRICT for normal files"
+          echo "  • Hardcoded fonts (use theme.typography)"
+          echo "  • English UI text (use German)"
+          echo ""
+          echo "NOTE: Chart files use RELAXED rules (Recharts colors allowed)"
+          echo ""
+          python3 scripts/check-design-system.py
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Design System Compliance Check Failed\n\n' +
+                    'Design System violations detected!\n\n' +
+                    '**Action required:**\n' +
+                    '1. Use theme.palette instead of hardcoded colors\n' +
+                    '2. Use theme.typography instead of hardcoded fonts\n' +
+                    '3. Use German UI text instead of English\n\n' +
+                    'See workflow logs for details.\n\n' +
+                    '📖 Reference: `docs/planung/grundlagen/DESIGN_SYSTEM.md`'
+            })
+
+  # ============================================================================
+  # 2. Backend/Frontend Field Parity Check
+  # ============================================================================
+  field-parity:
+    name: Field Parity Validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Field Parity Check
+        run: |
+          echo "🔍 Validating Backend/Frontend Field Parity..."
+          python3 scripts/check-field-parity.py
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Backend/Frontend Field Parity Check Failed\n\n' +
+                    'Ghost fields detected in `fieldCatalog.json`!\n\n' +
+                    '**Action required:**\n' +
+                    '1. Remove ghost fields from `fieldCatalog.json`, OR\n' +
+                    '2. Add missing fields to backend entities (+ migration)\n\n' +
+                    'See workflow logs for details.\n\n' +
+                    '📖 Reference: `CLAUDE.md` → BACKEND/FRONTEND PARITY'
+            })
+
+  # ============================================================================
+  # 3. Test Data Coverage Check
+  # ============================================================================
+  test-data-coverage:
+    name: Test Data Coverage Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Check Test Data Coverage
+        run: |
+          echo "🔍 Checking Test Data Coverage..."
+          python3 scripts/check-test-data-coverage.py
+
+      - name: Upload Coverage Report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-data-coverage-report
+          path: |
+            docs/testing/TEST_DATA_SCENARIOS.md
+            docs/testing/TEST_DATA_GUIDE.md
+          retention-days: 30
+
+  # ============================================================================
+  # 4. Mock Guard - Business Logic Protection
+  # ============================================================================
+  mock-guard:
+    name: Mock Guard - Business Logic Protection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed business files
+        id: changed
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            frontend/src/app/**/*
+            frontend/src/features/**/*
+            frontend/src/lib/**/*
+            frontend/src/hooks/**/*
+            frontend/src/store/**/*
+            backend/src/main/java/de/freshplan/modules/**/domain/**/*
+            backend/src/main/java/de/freshplan/modules/**/application/**/*
+
+      - name: Check for mock data in changed files
+        if: steps.changed.outputs.any_changed == 'true'
+        run: |
+          set -euo pipefail
+
+          echo "🔍 Checking for mock data in business logic files..."
+          files="${{ steps.changed.outputs.all_changed_files }}"
+
+          if [ -z "$files" ]; then
+            echo "✅ No business logic files changed"
+            exit 0
+          fi
+
+          # Check for mock patterns
+          violations=""
+          for file in $files; do
+            # Skip test files (by filename pattern)
+            if [[ "$file" == *".test."* ]] || [[ "$file" == *".spec."* ]] || [[ "$file" == *".stories."* ]]; then
+              continue
+            fi
+
+            # Skip test directories (by path pattern)
+            if [[ "$file" == *"/__tests__/"* ]] || [[ "$file" == *"/tests/"* ]] || [[ "$file" == *"/__mocks__/"* ]] || [[ "$file" == *"/fixtures/"* ]] || [[ "$file" == *"/.storybook/"* ]] || [[ "$file" == *"/storybook/"* ]]; then
+              continue
+            fi
+
+            # Search for mock patterns
+            if grep -E "(import|from).*mock|mockData|__mocks__|/mocks?/|TestDataBuilder" "$file" 2>/dev/null; then
+              violations="$violations\n❌ $file contains mock data"
+            fi
+          done
+
+          if [ -n "$violations" ]; then
+            echo -e "❌ Mock data found in business logic:\n$violations"
+            echo ""
+            echo "📚 Mock-Governance Policy:"
+            echo "- Business logic must be mock-free"
+            echo "- Use dev-seeds for development data"
+            echo "- Mocks are only allowed in test files"
+            echo ""
+            echo "🔗 See: docs/planung/features-neu/00_infrastruktur/standards/03_MOCK_GOVERNANCE.md"
+            exit 1
+          fi
+
+          echo "✅ No mock data found in business logic files"
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Mock Guard Failed\n\n' +
+                    'Mock data was detected in business logic files.\n\n' +
+                    '**Mock-Governance Policy:**\n' +
+                    '- Business logic paths must be mock-free\n' +
+                    '- Use `db/dev-migration` for development data\n' +
+                    '- Mocks are only allowed in test files\n\n' +
+                    'Please remove mock imports from business logic and use proper dev-seeds instead.\n\n' +
+                    '📚 [Mock Governance Documentation](docs/planung/features-neu/00_infrastruktur/standards/03_MOCK_GOVERNANCE.md)'
+            })
+
+  # ============================================================================
+  # 5. Structure Guard (Modules)
+  # ============================================================================
+  structure-guard:
+    name: Structure Guard - Module Compliance
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Enforce module root rule
+        run: |
+          set +e  # wir steuern den Exit-Code selbst über fail
+          fail=0
+          echo "DEBUG: Starting Structure Guard check"
+
+          for ROOT in docs/planung/features-neu/*_*; do
+            echo "DEBUG: Checking ROOT: $ROOT"
+            [ -d "$ROOT" ] || continue
+            module_name="$(basename "$ROOT")"
+
+            # 1) Non-Stub-Verzeichnisse zählen (nur echte Ordner, keine Dateien/Hidden)
+            count=0
+            for d in "$ROOT"/*/; do
+              [ -d "$d" ] || continue
+              base="$(basename "$d")"
+              case "$base" in
+                .* ) continue ;;  # versteckte Ordner ignorieren
+              esac
+              # Stub-Verzeichnisse überspringen
+              if [ -f "$d/_index.md" ] && grep -Eq '^doc_type:\s*"stub"' "$d/_index.md"; then
+                continue
+              fi
+              count=$((count+1))
+            done
+
+            # 2) legacy-planning Zusatzslot
+            legacy=0
+            [ -d "$ROOT/legacy-planning" ] && legacy=1
+
+            # 3) Modul-spezifische Limits
+            case "$module_name" in
+              02_neukundengewinnung|03_kundenmanagement)
+                limit=$((5 + legacy)) ;;  # backend, frontend, shared, analyse, artefakte (+ legacy)
+              00_infrastruktur|01_mein-cockpit)
+                limit=15 ;;               # weiche Toleranz (noch nicht restrukturiert)
+              *)
+                limit=10 ;;               # generische Legacy-Toleranz
+            esac
+
+            echo "DEBUG: $module_name -> count=$count, legacy=$legacy, limit=$limit"
+
+            if [ "$count" -gt "$limit" ]; then
+              echo "::error file=$ROOT::Root enthält $count Verzeichnisse (Stub-Ordner ausgenommen). Erlaubt: $limit für $module_name"
+              fail=1
+            fi
+          done
+
+          echo "DEBUG: Structure Guard completed with fail=$fail"
+          exit "$fail"
+
+  # ============================================================================
+  # 6. RLS Guard
+  # ============================================================================
+  rls-guard:
+    name: RLS Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run RLS Guard
+        working-directory: backend
+        run: |
+          bash tools/rls-guard.sh || {
+            echo "::error::Found transactional DB methods without @RlsContext annotation"
+            exit 1
+          }
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '❌ **RLS Guard Failed**\n\n' +
+                    'Found services with `@Transactional` + DB access but missing `@RlsContext`.\n\n' +
+                    'Please add `@RlsContext` annotation to transactional methods with DB operations.\n\n' +
+                    'See: [ADR-0007](docs/planung/adr/ADR-0007-rls-connection-affinity.md)'
+            })
+
+  # ============================================================================
+  # 7. Migration Safety Check
+  # ============================================================================
+  migration-safety:
+    name: Migration Safety Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Volle History für Vergleiche
+
+      - name: Check Migration Folders
+        run: |
+          echo "🔍 Prüfe Migration-Ordner (3-Ordner-Struktur)..."
+
+          # Sammle alle Migrations-Dateien (ALLE 3 Ordner!)
+          MIGRATION_FILES=$(find backend/src/main/resources/db/migration -name "V*.sql" 2>/dev/null || echo "")
+          DEV_FILES=$(find backend/src/main/resources/db/dev-migration -name "V*.sql" 2>/dev/null || echo "")
+          SEED_FILES=$(find backend/src/main/resources/db/dev-seed -name "V*.sql" 2>/dev/null || echo "")
+
+          ERROR=0
+
+          # Prüfe migration/ (Production)
+          if [ ! -z "$MIGRATION_FILES" ]; then
+            echo "📁 Prüfe migration/ (Production)..."
+            for FILE in $MIGRATION_FILES; do
+              FILENAME=$(basename "$FILE")
+
+              # Exception: V19 ist bereits deployed (seit 2025-08-08)
+              if [ "$FILENAME" = "V19__add_test_data_flag.sql" ]; then
+                echo "   ⚠️  $FILENAME (Exception: bereits deployed)"
+                continue
+              fi
+
+              # Exception: V10009 enthält test_data im Namen, aber ist strukturell notwendig
+              if [ "$FILENAME" = "V10009__add_test_data_flag_to_users.sql" ]; then
+                echo "   ⚠️  $FILENAME (Exception: strukturelle Spalte für Hibernate)"
+                continue
+              fi
+
+              # Prüfe auf Test-Keywords
+              if echo "$FILENAME" | grep -qiE "(test|demo|seed|sample|debug)"; then
+                echo "❌ FEHLER: $FILENAME enthält Test-Keywords!"
+                echo "   Test-Migrationen gehören in dev-migration/!"
+                ERROR=1
+              fi
+            done
+          fi
+
+          # Prüfe dev-migration/ (Test/Dev)
+          if [ ! -z "$DEV_FILES" ]; then
+            echo "📁 Prüfe dev-migration/ (Test-Migrations)..."
+            for FILE in $DEV_FILES; do
+              FILENAME=$(basename "$FILE")
+              echo "   ✓ $FILENAME (Test-Migration)"
+            done
+          fi
+
+          # Prüfe dev-seed/ (DEV-SEED)
+          if [ ! -z "$SEED_FILES" ]; then
+            echo "📁 Prüfe dev-seed/ (DEV-SEED)..."
+            for FILE in $SEED_FILES; do
+              FILENAME=$(basename "$FILE")
+              VERSION=$(echo "$FILENAME" | sed 's/.*V\([0-9]*\)__.*/\1/')
+
+              # CHECK 1: V90001+ Range
+              if [ "$VERSION" -lt 90001 ]; then
+                echo "❌ FEHLER: $FILENAME ist < V90001!"
+                echo "   DEV-SEED muss >= V90001 sein (Range V90001+)"
+                ERROR=1
+              else
+                echo "   ✓ $FILENAME (V${VERSION} >= V90001)"
+              fi
+
+              # CHECK 2: 'seed_' Prefix empfohlen
+              DESCRIPTION=$(echo "$FILENAME" | sed 's/^V[0-9]*__//' | sed 's/\.sql$//')
+              if ! echo "$DESCRIPTION" | grep -q "^seed_"; then
+                echo "   ⚠️  WARNUNG: $FILENAME sollte mit 'seed_' beginnen"
+              fi
+            done
+          fi
+
+          if [ $ERROR -eq 1 ]; then
+            echo ""
+            echo "❌ Migration Safety Check FEHLGESCHLAGEN!"
+            exit 1
+          fi
+
+          echo "✅ Alle Ordner-Prüfungen bestanden!"
+
+      - name: Check Migration Numbers (2-Sequenzen-Modell)
+        run: |
+          echo "🔢 Prüfe Migration-Nummern (2-Sequenzen-Modell)..."
+
+          # Sequenz 1: Sequential (Prod+Test V1-V89999 GEMEINSAM)
+          SEQUENTIAL_VERSIONS=$(find backend/src/main/resources/db/migration \
+            backend/src/main/resources/db/dev-migration \
+            -name "V*.sql" 2>/dev/null | \
+            sed 's/.*V\([0-9]*\)__.*/\1/' | awk '$1 < 90000' | sort -n | uniq)
+
+          # Sequenz 2: SEED (V90001+)
+          SEED_VERSIONS=$(find backend/src/main/resources/db/dev-seed \
+            -name "V*.sql" 2>/dev/null | \
+            sed 's/.*V\([0-9]*\)__.*/\1/' | sort -n | uniq)
+
+          ERROR=0
+
+          # Prüfe Sequential Sequenz
+          if [ ! -z "$SEQUENTIAL_VERSIONS" ]; then
+            echo "📊 Sequenz 1 (Production + Test): V1-V89999 GEMEINSAM"
+            PREV=0
+            for VERSION in $SEQUENTIAL_VERSIONS; do
+              if [ "$VERSION" -le "$PREV" ]; then
+                echo "❌ FEHLER: V$VERSION ist nicht aufsteigend!"
+                echo "   Vorherige: V$PREV"
+                ERROR=1
+              fi
+              PREV=$VERSION
+            done
+            if [ $ERROR -eq 0 ]; then
+              echo "✅ Sequential aufsteigend! (V1 bis V$PREV)"
+            fi
+          else
+            echo "ℹ️  Keine Sequential Migrationen gefunden"
+          fi
+
+          # Prüfe SEED Sequenz
+          if [ ! -z "$SEED_VERSIONS" ]; then
+            echo ""
+            echo "📊 Sequenz 2 (SEED): V90001+"
+            PREV=90000
+            for VERSION in $SEED_VERSIONS; do
+              if [ "$VERSION" -le "$PREV" ]; then
+                echo "❌ FEHLER: V$VERSION ist nicht aufsteigend!"
+                echo "   Vorherige: V$PREV"
+                ERROR=1
+              fi
+              if [ "$VERSION" -lt 90001 ]; then
+                echo "❌ FEHLER: V$VERSION ist < V90001 (SEED muss >= V90001 sein)!"
+                ERROR=1
+              fi
+              PREV=$VERSION
+            done
+            if [ $ERROR -eq 0 ]; then
+              echo "✅ SEED aufsteigend! (V90001 bis V$PREV)"
+            fi
+          else
+            echo "ℹ️  Keine SEED Migrationen gefunden"
+          fi
+
+          if [ $ERROR -eq 1 ]; then
+            echo ""
+            echo "❌ Nummern-Prüfung FEHLGESCHLAGEN!"
+            exit 1
+          fi
+
+          echo ""
+          echo "✅ Beide Sequenzen korrekt!"
+
+  # ============================================================================
+  # 8. Lint Frontend
+  # ============================================================================
+  lint-frontend:
+    name: Lint Frontend (React)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Check TypeScript
+        run: npm run type-check
+
+      - name: Check Prettier formatting
+        run: npm run format:check || echo "format:check script not found, skipping"
+
+  # ============================================================================
+  # 9. Lint Backend
+  # ============================================================================
+  lint-backend:
+    name: Lint Backend (Quarkus)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('backend/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run Spotless Check
+        run: |
+          echo "=== Running Spotless Format Check ==="
+          mvn -B spotless:check
+
+          if [ $? -ne 0 ]; then
+            echo "❌ Spotless check failed. Run 'mvn spotless:apply' to fix formatting issues."
+            exit 1
+          fi
+
+          echo "✅ Spotless check passed"
+
+  # ============================================================================
+  # 10. Frontmatter Lint
+  # ============================================================================
+  frontmatter-lint:
+    name: Frontmatter Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Run frontmatter lint
+        run: python .github/scripts/frontmatter_lint.py
+
+  # ============================================================================
+  # 11. Dependency Cycle Check (NEU!)
+  # ============================================================================
+  dependency-cycles:
+    name: Dependency Cycle Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Dependency Cycle Check
+        run: |
+          echo "🔍 Checking for circular dependencies in Java packages..."
+          python3 scripts/check-dependency-cycles.py
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Dependency Cycle Check Failed\n\n' +
+                    'Circular dependencies detected in Java packages!\n\n' +
+                    '**Action required:**\n' +
+                    '1. Identify the cycle from workflow logs\n' +
+                    '2. Break the cycle by:\n' +
+                    '   • Introducing an interface/abstraction\n' +
+                    '   • Moving shared code to a common package\n' +
+                    '   • Inverting the dependency direction\n\n' +
+                    'See workflow logs for details.\n\n' +
+                    '📖 Reference: Architecture Best Practices'
+            })
+
+  # ============================================================================
+  # 12. Code Complexity Check
+  # ============================================================================
+  code-complexity:
+    name: Code Complexity Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run PMD Code Complexity Check
+        continue-on-error: true  # Non-blocking - warnings only
+        run: |
+          cd backend
+
+          echo "📊 Running Code Complexity Check (PMD 7)..."
+          echo ""
+          echo "Checking for (warnings, non-blocking):"
+          echo "  • Cyclomatic Complexity > 15 per method"
+          echo "  • NPath Complexity > 200 paths per method"
+          echo "  • Method Size > 100 NCSS"
+          echo "  • Class Size > 500 NCSS"
+          echo "  • Cognitive Complexity > 20"
+          echo ""
+
+          # Run PMD via Maven plugin (configured in pom.xml)
+          set +e
+          PMD_OUTPUT=$(./mvnw pmd:pmd -q 2>&1)
+          PMD_EXIT=$?
+          set -e
+
+          # Show violations summary
+          if [ -f target/pmd.xml ]; then
+            VIOLATION_COUNT=$(grep -c "<violation" target/pmd.xml 2>/dev/null || echo "0")
+
+            if [ "$VIOLATION_COUNT" -gt 0 ]; then
+              echo "⚠️  Found $VIOLATION_COUNT complexity violations"
+              echo ""
+              echo "📋 Violation Summary by Rule:"
+              grep -E "rule=" target/pmd.xml | sed 's/.*rule="\([^"]*\)".*/\1/' | sort | uniq -c | sort -rn
+              echo ""
+
+              echo "📄 Top 10 Violations:"
+              echo "====================="
+              # Extract file:line and rule from violations
+              grep -oP '(?<=beginline=")[^"]+|(?<=rule=")[^"]+|(?<=<file>)[^<]+' target/pmd.xml | \
+                paste - - - | head -10 || true
+              echo ""
+              echo "📄 Full report available in artifacts: pmd-complexity-report"
+            else
+              echo "✅ No complexity violations found!"
+            fi
+          fi
+
+          echo ""
+          echo "ℹ️  Note: Complexity check is informational and non-blocking"
+
+      - name: Upload PMD Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pmd-complexity-report
+          path: |
+            backend/target/pmd-complexity.txt
+            backend/target/pmd.xml
+          retention-days: 7
+          if-no-files-found: ignore
+
+      - name: Comment on PR failure
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ❌ Code Complexity Check Failed\n\n' +
+                    'Code complexity violations detected!\n\n' +
+                    '**Thresholds:**\n' +
+                    '• Cyclomatic Complexity: Max 15\n' +
+                    '• Method Length: Max 100 lines\n' +
+                    '• Class Size: Max 500 lines\n' +
+                    '• NPath Complexity: Max 200\n\n' +
+                    '**Action required:**\n' +
+                    '1. Check the PMD report artifact for details\n' +
+                    '2. Refactor complex methods:\n' +
+                    '   • Extract helper methods\n' +
+                    '   • Simplify conditional logic\n' +
+                    '   • Use early returns to reduce nesting\n\n' +
+                    '📖 Reference: Clean Code Principles'
+            })
+
+  # ============================================================================
+  # Final Quality Gate
+  # ============================================================================
+  quality-gate:
+    name: All Quality Gates Passed
+    needs:
+      - design-system
+      - field-parity
+      - test-data-coverage
+      - mock-guard
+      - structure-guard
+      - rls-guard
+      - migration-safety
+      - lint-frontend
+      - lint-backend
+      - frontmatter-lint
+      - dependency-cycles
+      - code-complexity  # Included for visibility, but non-blocking
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          # Check if any BLOCKING job failed
+          # Note: code-complexity is non-blocking (informational only)
+          if [[ "${{ needs.design-system.result }}" == "failure" ]] || \
+             [[ "${{ needs.field-parity.result }}" == "failure" ]] || \
+             [[ "${{ needs.test-data-coverage.result }}" == "failure" ]] || \
+             [[ "${{ needs.mock-guard.result }}" == "failure" ]] || \
+             [[ "${{ needs.structure-guard.result }}" == "failure" ]] || \
+             [[ "${{ needs.rls-guard.result }}" == "failure" ]] || \
+             [[ "${{ needs.migration-safety.result }}" == "failure" ]] || \
+             [[ "${{ needs.lint-frontend.result }}" == "failure" ]] || \
+             [[ "${{ needs.lint-backend.result }}" == "failure" ]] || \
+             [[ "${{ needs.frontmatter-lint.result }}" == "failure" ]] || \
+             [[ "${{ needs.dependency-cycles.result }}" == "failure" ]]; then
+            echo "❌ Quality Gates FAILED - At least one check failed"
+            exit 1
+          fi
+
+          # Report code-complexity status (informational)
+          if [[ "${{ needs.code-complexity.result }}" == "failure" ]]; then
+            echo "⚠️  Code Complexity Check found violations (non-blocking)"
+          fi
+
+          echo "✅ All Quality Gates PASSED!"

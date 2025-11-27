@@ -1,6 +1,24 @@
 #!/usr/bin/env sh
 
-# Frontend lint-staged
-if [ -d "frontend" ]; then
-  cd frontend && npm run lint-staged
-fi
+# ============================================================================
+# DEPRECATED: Husky Pre-Commit Hook
+# ============================================================================
+#
+# HINWEIS: Dieser Hook ist DEPRECATED!
+#
+# Der aktive Pre-Commit Hook befindet sich in:
+#   .githooks/pre-commit
+#
+# Git ist so konfiguriert, dass .githooks verwendet wird:
+#   git config core.hooksPath .githooks
+#
+# Falls dieser Hook trotzdem ausgeführt wird, delegieren wir an .githooks:
+# ============================================================================
+
+echo ""
+echo "⚠️  HINWEIS: .husky/pre-commit ist DEPRECATED"
+echo "   Delegiere an .githooks/pre-commit..."
+echo ""
+
+# Delegiere an den aktiven Hook
+exec "$(git rev-parse --show-toplevel)/.githooks/pre-commit"

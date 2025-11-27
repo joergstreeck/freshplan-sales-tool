@@ -10,29 +10,37 @@
 ## 🎯 CLAUDE QUICK-START (für neue Claude-Instanzen)
 
 **🚨 AKTUELLER STATUS:**
-- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (97% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.4 - MERGED TO MAIN (22.10.2025) - **Customer Status Architecture COMPLETE**
-- **Next Sprint:** 📋 Sprint 2.1.7.2 - Xentral Integration (36h, 4-5 Tage) ⏳ **JETZT READY!**
-- **Active Branch:** main (Sprint 2.1.7.4 gemerged)
-- **Progress:** 27/36 PRs completed - 75% done
-- **Blockers:** ❌ Keine - **Sprint 2.1.7.4 READY TO START**
+- **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (99% complete)
+- **Current Sprint:** ✅ Sprint 2.1.7.7 - **Multi-Location UI Integration COMPLETE** (2025-11-26)
+- **Status:** ✅ UI Integration erledigt - Bereit für User-Testing!
+- **Active Branch:** feature/sprint-2-1-7-7-multi-location-management
+- **Progress:** 28/36 PRs completed - 78% done
+- **Blockers:** ❌ Keine - Ready for testing
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
-- **Latest:** 🎉🎉🎉 **Sprint 2.1.7.4 - Customer Status Architecture MERGED (22.10.2025)** - PR #143 + V10032, V10033, V90008 + 1617/1617 Tests GREEN
-  - ✅ **PR #143 - 8 DELIVERABLES (MERGED 22.10.2025 17:06:22 UTC, Commit ade7fc2fa):**
-    - **D1:** Migration V10032 (LEAD → PROSPECT, Seasonal Business Columns)
-    - **D2:** Migration V10033 (hierarchyType + Umsatzfelder)
-    - **D3:** LeadConvertService KOMPLETT-FIX (100% Datenübernahme)
-    - **D4:** Auto-Conversion bei Opportunity WON (Lead → Customer)
-    - **D5:** XentralOrderEventHandler Interface (für Webhook-Integration)
-    - **D6:** Manual Activation Button + customerService.activateCustomer()
-    - **D7:** ChurnDetectionService mit Seasonal Business Support
-    - **D8:** Dashboard KPIs + Frontend CustomerStatusBadge
-  - ✅ **MIGRATIONS:** V10032 (CustomerStatus Cleanup + Seasonal), V10033 (hierarchyType + Umsatz), V90008 (SEED Update)
-  - ✅ **TESTS:** 1617/1617 Tests GREEN - 100% Coverage ✅
+- **Latest:** 🎉🎉🎉 **Sprint 2.1.7.2 - Customer-Management + Xentral-Integration MERGED (31.10.2025)** - PR #144 + 946/946 Tests GREEN
+  - ✅ **PR #144 - 11 DELIVERABLES (MERGED 31.10.2025 21:50:20 UTC, Commit 9dfe8b93c):**
+    - **D1:** ConvertToCustomerDialog mit Xentral-Kunden-Dropdown + PROSPECT Status Info
+    - **D2:** XentralApiClient (4 Endpoints + Feature-Flag Mock-Mode)
+    - **D3:** Customer-Dashboard (Revenue Metrics 30/90/365 Tage)
+    - **D4:** Churn-Alarm Konfiguration (14-365 Tage, pro Kunde)
+    - **D5:** Admin-UI für Xentral-Einstellungen
+    - **D6:** Sales-Rep Mapping Auto-Sync (@Scheduled täglich)
+    - **D7:** Testing & Integration Tests (946 Tests GREEN)
+    - **D8:** Xentral Webhook → PROSPECT automatisch aktivieren
+    - **D11:** Server-Driven Customer Cards (5 Enum-Endpoints + Browser-Fixes)
+    - **D11:** Design System Enforcement (Pre-Commit Hook + DESIGN_SYSTEM.md)
+    - **MOVED:** D9 (Customer UX Polish) + D10 (Multi-Location Prep) → Sprint 2.1.7.7
+  - ✅ **TESTS:** 946/946 Tests GREEN - 0 Failures ✅
+  - ✅ **CI STATUS:** 20/20 Workflows GREEN ✅
   - ✅ **DESIGN SYSTEM:** 100% FreshFoodz CI V2 Compliance
-  - ✅ **MERGE:** 2025-10-22 17:06:22 UTC (squash merge, commit ade7fc2fa)
-- **Next Action:** 🎯 **SPRINT 2.1.7.2 STARTEN** - Xentral Integration (nutzt XentralOrderEventHandler aus Sprint 2.1.7.4)
+  - ✅ **MERGE:** 2025-10-31 21:50:20 UTC (squash merge, commit 9dfe8b93c)
+- **Next Action:** 🎯 **USER-TESTING:**
+  1. ✅ CustomerDetailPage: Tab "Filialen" für HEADQUARTER hinzugefügt
+  2. ✅ HierarchyDashboard in Tab eingebunden
+  3. ✅ CreateBranchDialog eingebunden (Button "Neue Filiale")
+  4. ✅ CreateOpportunityForCustomerDialog: Branch-Dropdown für HEADQUARTER
+  5. 🧪 **Jetzt: User-Testing des Multi-Location Flows**
 
   **WICHTIG:** Sprint-Reihenfolge geändert! Sprint 2.1.7.4 MUSS VOR Sprint 2.1.7.2 implementiert werden!
 
@@ -262,7 +270,7 @@ Sprint 2.1.7.0: Design System Migration ✅ MERGED TO MAIN (15.10.2025) - **Fres
                                       → **Dokumentation:** [SPRINT_2_1_7_0_COMPLETE_SUMMARY.md](claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md)
                                       → **PR #140:** https://github.com/joergstreeck/freshplan-sales-tool/pull/140 - MERGED (15.10.2025, Commit f6642321b)
 
-Sprint 2.1.7.1: Lead → Opportunity UI ✅ COMPLETE (18.10.2025) - **Lead Conversion Workflow** - **PR #141**
+Sprint 2.1.7.1: Lead → Opportunity UI ✅ MERGED TO MAIN (18.10.2025) - **Lead Conversion Workflow** - **PR #141**
                                       → **Kontext:** Complete Lead → Opportunity Conversion Workflow - 6 Deliverables, FOKUSSIERT!
                                       → **Deliverables:**
                                         - **D0:** OpportunityCard Verbesserungen (leadCompanyName, Lead-Origin Badge, Stage Color)
@@ -287,7 +295,7 @@ Sprint 2.1.7.1: Lead → Opportunity UI ✅ COMPLETE (18.10.2025) - **Lead Conve
                                       → **PR #141:** https://github.com/joergstreeck/freshplan-sales-tool/pull/141
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_1.md](TRIGGER_SPRINT_2_1_7_1.md)
 
-Sprint 2.1.7.3: RENEWAL-Workflow     ✅ COMPLETE (19.10.2025) - PR #142 - Aufwand: 36h (erweitert)
+Sprint 2.1.7.3: RENEWAL-Workflow     ✅ MERGED TO MAIN (19.10.2025) - PR #142 - Aufwand: 36h (erweitert)
                                       → **SCOPE:** Bestandskunden-Opportunities mit Business-Type-Matrix
                                       → **Phase 1:** "Neue Opportunity für Customer" Button (CustomerDetailPage) ✅
                                       → **Phase 2:** CreateOpportunityForCustomerDialog (intelligente Umsatzschätzung) ✅
@@ -301,7 +309,7 @@ Sprint 2.1.7.3: RENEWAL-Workflow     ✅ COMPLETE (19.10.2025) - PR #142 - Aufwa
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_3.md](TRIGGER_SPRINT_2_1_7_3.md)
                                       → **Status:** ✅ MERGED TO MAIN (19.10.2025, Commit 23f7b7ecd)
 
-Sprint 2.1.7.4: Customer Status Arch  ✅ COMPLETE (22.10.2025) - PR #143 - Aufwand: 15h (2 Tage)
+Sprint 2.1.7.4: Customer Status Arch  ✅ MERGED TO MAIN (22.10.2025) - PR #143 - Aufwand: 15h (2 Tage)
                                       → **SCOPE:** CustomerStatus.LEAD entfernen + PROSPECT/AKTIV Logik + Seasonal Business
                                       → **Deliverable 1:** Migration V10032 (LEAD → PROSPECT, Seasonal Business Columns) ✅
                                       → **Deliverable 2:** Migration V10033 (hierarchyType + Umsatzfelder) ✅

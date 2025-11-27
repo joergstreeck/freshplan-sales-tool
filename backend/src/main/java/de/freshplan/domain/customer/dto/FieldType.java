@@ -29,8 +29,15 @@ public enum FieldType {
   /** Decimal/Float number field */
   DECIMAL,
 
-  /** Enum dropdown (requires enumSource) */
+  /** Enum dropdown (requires enumSource) - single selection */
   ENUM,
+
+  /**
+   * Multi-select field for multiple selections (Sprint 2.1.7.7)
+   *
+   * <p>Example: assignedLocationIds for Contact-Location assignment
+   */
+  MULTISELECT,
 
   /** Boolean checkbox */
   BOOLEAN,

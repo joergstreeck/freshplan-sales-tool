@@ -12,10 +12,10 @@ import de.freshplan.modules.leads.domain.LeadStatus;
 import de.freshplan.modules.leads.domain.Territory;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -29,30 +29,79 @@ class LeadConvertServiceTest {
 
   @Inject LeadConvertService convertService;
 
+  @Inject jakarta.persistence.EntityManager em;
+
   @Inject CustomerRepository customerRepository;
 
   private static final String TEST_USER = "admin-test";
   private Lead testLead;
 
-  @Inject EntityManager em;
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Step 1: Delete any Opportunities created (FK to customers)
+    em.createQuery(
+            "DELETE FROM Opportunity WHERE customer.id IN "
+                + "(SELECT c.id FROM Customer c WHERE c.customerNumber LIKE 'CUSTOM-%')")
+        .executeUpdate();
+
+    // Step 2: Delete customer_addresses (FK to customer_locations - Sprint 2.1.7.7)
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN "
+                + "(SELECT id FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%'))")
+        .executeUpdate();
+
+    // Step 3: Delete customer_locations (FK to customers - Sprint 2.1.7.7)
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%')")
+        .executeUpdate();
+
+    // Step 4: Delete Customers created by tests (pattern: CUSTOM-*)
+    customerRepository.delete("customerNumber LIKE 'CUSTOM-%'");
+  }
 
   @BeforeEach
   @Transactional
   void setup() {
-    // Clean test data - IMPORTANT: Delete in correct order (FK constraints!)
-    // Sprint 2.1.7.4: DELETE Opportunities FIRST (FK to leads + chk_opportunity_has_source)
+    // DEFENSIVE CLEANUP: Remove stale data from previous crashed/interrupted runs
+    // This ensures tests are robust even if @AfterEach wasn't executed
+    // Delete in correct order (FK constraints!)
+
+    // Step 1: Delete Opportunities (FK to customers + leads)
     em.createQuery("DELETE FROM Opportunity").executeUpdate();
+
+    // Step 2: Delete customer_addresses → customer_locations → customers (CUSTOM-* pattern)
+    em.createNativeQuery(
+            "DELETE FROM customer_addresses WHERE location_id IN "
+                + "(SELECT id FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%'))")
+        .executeUpdate();
+    em.createNativeQuery(
+            "DELETE FROM customer_locations WHERE customer_id IN "
+                + "(SELECT id FROM customers WHERE customer_number LIKE 'CUSTOM-%')")
+        .executeUpdate();
+    customerRepository.delete("customerNumber LIKE 'CUSTOM-%'");
+
+    // Step 3: Delete Lead-related data
     em.createQuery("DELETE FROM LeadContact").executeUpdate();
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
 
-    // Ensure territory exists
+    // Ensure territory exists (must flush to avoid TransientObjectException in parallel tests)
     Territory territory = Territory.findByCode("DE");
     if (territory == null) {
-      territory = Territory.getDefault();
-      if (territory.id == null) {
-        territory.persist();
-      }
+      territory = new Territory();
+      territory.id = "DE";
+      territory.name = "Deutschland";
+      territory.countryCode = "DE";
+      territory.currencyCode = "EUR";
+      territory.taxRate = new java.math.BigDecimal("19.0");
+      territory.languageCode = "de";
+      territory.createdAt = java.time.LocalDateTime.now();
+      territory.updatedAt = java.time.LocalDateTime.now();
+      territory.persistAndFlush();
     }
 
     // Create test lead

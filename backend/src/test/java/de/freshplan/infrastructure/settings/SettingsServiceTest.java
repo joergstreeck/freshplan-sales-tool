@@ -11,6 +11,7 @@ import jakarta.ws.rs.WebApplicationException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -46,6 +47,19 @@ class SettingsServiceTest {
     Setting.delete("key", "setting3");
     Setting.delete("key", "tax.config");
     Setting.delete("key", "hierarchical.test");
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanupAfter() {
+    // Clean up all test data after each test
+    Setting.delete("key", TEST_KEY);
+    Setting.delete("key", "setting1");
+    Setting.delete("key", "setting2");
+    Setting.delete("key", "setting3");
+    Setting.delete("key", "tax.config");
+    Setting.delete("key", "hierarchical.test");
+    Setting.delete("key", "race.test");
   }
 
   @Test

@@ -121,4 +121,75 @@ export const customerApi = {
     );
     return response.data;
   },
+
+  // ========== BRANCH MANAGEMENT (Sprint 2.1.7.7 D4) ==========
+
+  /**
+   * Create a new branch (FILIALE) under a HEADQUARTER customer
+   * POST /api/customers/{headquarterId}/branches
+   *
+   * Sprint 2.1.7.7: Vollständiger Wizard mit allen relevanten Feldern
+   *
+   * @param headquarterId UUID of the parent HEADQUARTER
+   * @param branchData Branch creation data (alle Felder)
+   * @returns Created branch customer response
+   */
+  createBranch: async (
+    headquarterId: string,
+    branchData: {
+      // Basisdaten (Pflicht: companyName)
+      companyName: string;
+      tradingName?: string;
+      businessType?: string;
+      customerType?: string;
+      status?: string;
+      expectedAnnualVolume?: number;
+      // Adressdaten (für Location-Erstellung)
+      address?: {
+        street?: string;
+        postalCode?: string;
+        city?: string;
+        country?: string;
+      };
+      // Kontaktdaten
+      contact?: {
+        phone?: string;
+        email?: string;
+      };
+    }
+  ): Promise<CustomerResponse> => {
+    // Backend erwartet CreateCustomerRequest Format
+    const requestBody = {
+      companyName: branchData.companyName,
+      tradingName: branchData.tradingName,
+      businessType: branchData.businessType,
+      customerType: branchData.customerType,
+      status: branchData.status,
+      expectedAnnualVolume: branchData.expectedAnnualVolume,
+      // Adresse und Kontakt werden separat verarbeitet (TODO: Backend-Erweiterung)
+      // Für jetzt: Diese Felder werden vom Backend ignoriert, aber vorbereitet
+      ...(branchData.address && { address: branchData.address }),
+      ...(branchData.contact && { contact: branchData.contact }),
+    };
+
+    const response = await httpClient.post<CustomerResponse>(
+      `/api/customers/${headquarterId}/branches`,
+      requestBody
+    );
+    return response.data;
+  },
+
+  /**
+   * Get all branches (FILIALE) for a HEADQUARTER customer
+   * GET /api/customers/{headquarterId}/branches
+   *
+   * @param headquarterId UUID of the parent HEADQUARTER
+   * @returns List of branch customer responses
+   */
+  getBranches: async (headquarterId: string): Promise<CustomerResponse[]> => {
+    const response = await httpClient.get<CustomerResponse[]>(
+      `/api/customers/${headquarterId}/branches`
+    );
+    return response.data;
+  },
 };

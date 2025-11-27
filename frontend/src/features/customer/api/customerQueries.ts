@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { customerApi } from './customerApi';
 import type { CustomerStatus } from '../types/customer.types';
 
@@ -12,6 +12,8 @@ export const customerKeys = {
     [...customerKeys.lists(), 'status', status, { page, size }] as const,
   search: (query: string, page?: number, size?: number) =>
     [...customerKeys.all, 'search', query, { page, size }] as const,
+  // Sprint 2.1.7.7 D4: Branch Management
+  branches: (headquarterId: string) => [...customerKeys.all, 'branches', headquarterId] as const,
 };
 
 // Hooks
@@ -70,5 +72,74 @@ export const useCustomerSearchAdvanced = (
     enabled,
     staleTime: 1000 * 30, // 30 seconds
     gcTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+// ========== BRANCH MANAGEMENT HOOKS (Sprint 2.1.7.7 D4) ==========
+
+/**
+ * Hook to get all branches for a HEADQUARTER customer
+ *
+ * @param headquarterId UUID of the parent HEADQUARTER
+ * @param enabled Whether to enable the query (default: true)
+ * @returns React Query result with branches array
+ */
+export const useGetBranches = (headquarterId: string | null, enabled = true) => {
+  return useQuery({
+    queryKey: headquarterId ? customerKeys.branches(headquarterId) : ['customers', 'branches'],
+    queryFn: () => customerApi.getBranches(headquarterId!),
+    enabled: enabled && !!headquarterId,
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+/**
+ * Hook to create a new branch under a HEADQUARTER
+ *
+ * Sprint 2.1.7.7: Vollständiger Wizard mit allen relevanten Feldern
+ *
+ * @returns React Query mutation for creating branches
+ */
+export const useCreateBranch = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      headquarterId,
+      branchData,
+    }: {
+      headquarterId: string;
+      branchData: {
+        // Basisdaten
+        companyName: string;
+        tradingName?: string;
+        businessType?: string;
+        customerType?: string;
+        status?: string;
+        expectedAnnualVolume?: number;
+        // Adressdaten
+        address?: {
+          street?: string;
+          postalCode?: string;
+          city?: string;
+          country?: string;
+        };
+        // Kontaktdaten
+        contact?: {
+          phone?: string;
+          email?: string;
+        };
+      };
+    }) => customerApi.createBranch(headquarterId, branchData),
+    onSuccess: (newBranch, variables) => {
+      // Invalidate branches list for this headquarter
+      queryClient.invalidateQueries({
+        queryKey: customerKeys.branches(variables.headquarterId),
+      });
+      // Invalidate all customer lists
+      queryClient.invalidateQueries({
+        queryKey: customerKeys.lists(),
+      });
+    },
   });
 };

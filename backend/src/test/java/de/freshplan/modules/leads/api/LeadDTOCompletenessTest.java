@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
 
 /**
  * DTO Completeness Test for LeadDTO - Sprint 2.1.6 Phase 5+ (ADR-007).
@@ -63,6 +64,17 @@ class LeadDTOCompletenessTest {
     territory.active = true;
     territory.persist();
     return territory;
+  }
+
+  @AfterEach
+  @Transactional
+  void cleanup() {
+    // Clean up test data after each test (FK constraint order!)
+    em.createQuery("DELETE FROM Opportunity").executeUpdate();
+    em.createQuery("DELETE FROM LeadContact").executeUpdate();
+    em.createQuery("DELETE FROM LeadActivity").executeUpdate();
+    em.createQuery("DELETE FROM Lead").executeUpdate();
+    em.createQuery("DELETE FROM Territory").executeUpdate();
   }
 
   /** Creates test lead with contacts for DTO completeness validation. */

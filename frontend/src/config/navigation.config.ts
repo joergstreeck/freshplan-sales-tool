@@ -70,7 +70,7 @@ export const navigationConfig: NavigationItemType[] = [
     subItems: [
       {
         label: 'Alle Kunden',
-        path: '/customers', // Angepasst an tatsächliche Route
+        path: '/customer-management/customers', // M4: Neue CustomersPage
       },
       {
         label: 'Verkaufschancen',

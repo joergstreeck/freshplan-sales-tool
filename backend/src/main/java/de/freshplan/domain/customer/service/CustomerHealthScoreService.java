@@ -40,7 +40,7 @@ public class CustomerHealthScoreService {
 
   private static final Logger log = LoggerFactory.getLogger(CustomerHealthScoreService.class);
 
-  @Inject RevenueMetricsService revenueMetricsService;
+  @Inject RevenueMetricsProvider revenueMetricsProvider;
 
   /**
    * Calculate Health Score for a customer
@@ -60,7 +60,7 @@ public class CustomerHealthScoreService {
     log.debug("Calculating health score for customer: {}", customer.getId());
 
     // Get revenue metrics (includes Xentral data if available)
-    RevenueMetrics metrics = revenueMetricsService.getRevenueMetrics(customer.getId());
+    RevenueMetrics metrics = revenueMetricsProvider.getRevenueMetrics(customer.getId());
 
     // Calculate individual scores (0.0 - 1.0)
     double recencyScore = calculateOrderRecencyScore(metrics);

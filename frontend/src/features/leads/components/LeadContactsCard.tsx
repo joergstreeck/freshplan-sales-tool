@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   Card,
   CardHeader,
@@ -21,9 +22,14 @@ import {
   StarBorder as StarBorderIcon,
   Phone as PhoneIcon,
   Email as EmailIcon,
+  Smartphone as SmartphoneIcon,
+  Schedule as ScheduleIcon,
   Add as AddIcon,
 } from '@mui/icons-material';
+import { formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
 import type { LeadContactDTO } from '../types';
+import { useEnumOptions } from '../../../hooks/useEnumOptions';
 
 interface LeadContactsCardProps {
   contacts: LeadContactDTO[];
@@ -32,6 +38,7 @@ interface LeadContactsCardProps {
   onDelete?: (contactId: string) => void;
   onSetPrimary?: (contactId: string) => void;
   readonly?: boolean;
+  embedded?: boolean; // If true, renders without Card wrapper (for use in Accordions)
 }
 
 /**
@@ -53,8 +60,25 @@ export function LeadContactsCard({
   onDelete,
   onSetPrimary,
   readonly = false,
+  embedded = false,
 }: LeadContactsCardProps) {
   const theme = useTheme();
+
+  // Server-Driven Enum: DecisionLevel Labels (Sprint 2.1.7.7 - Enum-Rendering-Parity)
+  const { data: decisionLevelOptions } = useEnumOptions('/api/enums/decision-levels');
+
+  // Create fast lookup map (O(1) statt O(n) mit .find())
+  const decisionLevelLabels = useMemo(() => {
+    if (!decisionLevelOptions) return {};
+    return decisionLevelOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>,
+    );
+  }, [decisionLevelOptions]);
+
   const primaryContact = contacts.find(c => c.primary);
   const secondaryContacts = contacts.filter(c => !c.primary);
 
@@ -100,41 +124,63 @@ export function LeadContactsCard({
             )}
           </Box>
         }
+        secondary={
+          <Stack spacing={0.5} sx={{ mt: 0.5 }}>
+            {(contact.position || contact.decisionLevel) && (
+              <Typography variant="body2" color="text.secondary">
+                {contact.position || (decisionLevelLabels[contact.decisionLevel] || contact.decisionLevel)}
+              </Typography>
+            )}
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+              {contact.email && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.email}
+                  </Typography>
+                </Box>
+              )}
+              {contact.phone && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.phone}
+                  </Typography>
+                </Box>
+              )}
+              {contact.mobile && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <SmartphoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {contact.mobile}
+                  </Typography>
+                </Box>
+              )}
+              {contact.lastInteractionDate && (
+                <Chip
+                  icon={<ScheduleIcon sx={{ fontSize: 14 }} />}
+                  label={`Letzter Kontakt: ${formatDistanceToNow(new Date(contact.lastInteractionDate), { addSuffix: true, locale: de })}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{
+                    height: 24,
+                    fontSize: '0.75rem',
+                    borderColor: 'text.secondary',
+                    color: 'text.secondary',
+                  }}
+                />
+              )}
+            </Box>
+            {contact.dataQualityScore && contact.dataQualityScore < 70 && (
+              <Typography variant="caption" color="warning.main">
+                ⚠️ Datenqualität: {contact.dataQualityScore}%
+                {contact.dataQualityRecommendations && ` - ${contact.dataQualityRecommendations}`}
+              </Typography>
+            )}
+          </Stack>
+        }
+        secondaryTypographyProps={{ component: 'div' }}
       />
-      <Box sx={{ pl: 2, pr: 10, pb: 1 }}>
-        <Stack spacing={0.5}>
-          {contact.position && (
-            <Typography variant="body2" color="text.secondary">
-              {contact.position}
-              {contact.decisionLevel && ` • ${contact.decisionLevel}`}
-            </Typography>
-          )}
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            {contact.email && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">
-                  {contact.email}
-                </Typography>
-              </Box>
-            )}
-            {contact.phone && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <PhoneIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
-                <Typography variant="body2" color="text.secondary">
-                  {contact.phone}
-                </Typography>
-              </Box>
-            )}
-          </Box>
-          {contact.dataQualityScore && contact.dataQualityScore < 70 && (
-            <Typography variant="caption" color="warning.main">
-              ⚠️ Datenqualität: {contact.dataQualityScore}%
-              {contact.dataQualityRecommendations && ` - ${contact.dataQualityRecommendations}`}
-            </Typography>
-          )}
-        </Stack>
-      </Box>
       {!readonly && (
         <ListItemSecondaryAction>
           <Stack direction="row" spacing={0.5}>
@@ -169,6 +215,40 @@ export function LeadContactsCard({
     </ListItem>
   );
 
+  // Contact List Content (reused in both embedded and standalone modes)
+  const contactListContent = contacts.length === 0 ? (
+    <Box
+      sx={{
+        textAlign: 'center',
+        py: embedded ? 2 : 4,
+        color: 'text.secondary',
+      }}
+    >
+      <Typography variant="body2">Noch keine Kontakte erfasst</Typography>
+      {!readonly && onAdd && (
+        <Button startIcon={<AddIcon />} onClick={onAdd} sx={{ mt: 2 }}>
+          Ersten Kontakt hinzufügen
+        </Button>
+      )}
+    </Box>
+  ) : (
+    <List sx={{ py: 0 }}>
+      {primaryContact && (
+        <>
+          {renderContactItem(primaryContact, true)}
+          {secondaryContacts.length > 0 && <Divider sx={{ my: 2 }} />}
+        </>
+      )}
+      {secondaryContacts.map(contact => renderContactItem(contact, false))}
+    </List>
+  );
+
+  // Embedded Mode: Render without Card wrapper (for use in Accordions)
+  if (embedded) {
+    return <Box sx={{ width: '100%' }}>{contactListContent}</Box>;
+  }
+
+  // Standalone Mode: Render with Card wrapper
   return (
     <Card>
       <CardHeader
@@ -188,34 +268,7 @@ export function LeadContactsCard({
         }
       />
       <Divider />
-      <CardContent>
-        {contacts.length === 0 ? (
-          <Box
-            sx={{
-              textAlign: 'center',
-              py: 4,
-              color: 'text.secondary',
-            }}
-          >
-            <Typography variant="body2">Noch keine Kontakte erfasst</Typography>
-            {!readonly && onAdd && (
-              <Button startIcon={<AddIcon />} onClick={onAdd} sx={{ mt: 2 }}>
-                Ersten Kontakt hinzufügen
-              </Button>
-            )}
-          </Box>
-        ) : (
-          <List sx={{ py: 0 }}>
-            {primaryContact && (
-              <>
-                {renderContactItem(primaryContact, true)}
-                {secondaryContacts.length > 0 && <Divider sx={{ my: 2 }} />}
-              </>
-            )}
-            {secondaryContacts.map(contact => renderContactItem(contact, false))}
-          </List>
-        )}
-      </CardContent>
+      <CardContent>{contactListContent}</CardContent>
     </Card>
   );
 }

@@ -26,7 +26,10 @@ updated: "2025-10-15 23:00"
 **Priorität:** MEDIUM (Technische Schuld beseitigen + KI-Onboarding optimieren)
 **Zeithorizont:** 12 Stunden (tatsächlich - inkl. CRM_AI_CONTEXT Phase 3+4)
 **Abhängigkeiten:** Sprint 2.1.7 COMPLETE ✅
-**Status:** 🔄 IN PROGRESS - Design System Migration COMPLETE, CRM_AI_CONTEXT Restructure ACTIVE
+**Status:** ✅ GEMERGED (PR #140 - MERGED TO MAIN - 15.10.2025 22:54 CEST)
+**PR:** #140 - https://github.com/joergstreeck/freshplan-sales-tool/pull/140
+**Merge Commit:** f6642321b
+**CI Status:** ✅ 29/29 Workflows GREEN
 **Dokumentation:** [SPRINT_2_1_7_0_COMPLETE_SUMMARY.md](claude-work/daily-work/2025-10-14/SPRINT_2_1_7_0_COMPLETE_SUMMARY.md)
 
 ---

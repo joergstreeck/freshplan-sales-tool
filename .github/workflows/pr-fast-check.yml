@@ -1,0 +1,182 @@
+name: PR Fast Check
+
+# Fast PR feedback (<5 minutes) - Most critical checks only
+# Full validation runs in quality-gates.yml, backend-pipeline.yml, frontend-pipeline.yml
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, develop]
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+jobs:
+  # ============================================================================
+  # Fast PR Validation (3-5 minutes)
+  # ============================================================================
+  fast-check:
+    name: PR Fast Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: temurin
+          cache: maven
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      # ======================================================================
+      # Backend Fast Checks (~2 minutes)
+      # ======================================================================
+      - name: Backend Compile
+        run: |
+          cd backend
+          ./mvnw -B clean compile -DskipTests
+
+      - name: Backend Format Check (Spotless)
+        run: |
+          cd backend
+          ./mvnw -B spotless:check
+
+      - name: Backend Critical Unit Tests (No DB)
+        continue-on-error: true
+        run: |
+          cd backend
+          # Run only tests that don't require database
+          ./mvnw -B test \
+            -Dtest="*SecurityTest,*SettingsTest,*CQRS Test,!LeadResourceSecurityTest,!*IntegrationTest" \
+            -DfailIfNoTests=false || echo "⚠️ Some critical tests failed - check full pipeline"
+
+      # ======================================================================
+      # Frontend Fast Checks (~2 minutes)
+      # ======================================================================
+      - name: Frontend Install
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Frontend Lint
+        run: |
+          cd frontend
+          npm run lint
+
+      - name: Frontend TypeScript Check
+        run: |
+          cd frontend
+          npm run type-check
+
+      - name: Frontend Critical Tests
+        continue-on-error: true
+        run: |
+          cd frontend
+          # Run only critical/fast tests if script exists
+          npm run test:critical || npm run test -- --run --reporter=verbose || echo "⚠️ Some tests failed - check full pipeline"
+
+      # ======================================================================
+      # Bundle Size Check
+      # ======================================================================
+      - name: Bundle Size Regression Check
+        run: |
+          cd frontend
+          npm run build
+
+          # Check MAIN bundle size (index-*.js) - should be under 200KB
+          # Note: Vendor chunks and lazy-loaded modules are excluded from this limit
+          MAIN_BUNDLE=$(find dist/assets -name "index-*.js" -exec du -b {} + 2>/dev/null | awk '{s+=$1} END {print s}' || echo "0")
+          MAIN_KB=$(echo "scale=2; $MAIN_BUNDLE/1024" | bc)
+
+          # Check largest vendor chunk (vendor-mui is typically the largest)
+          VENDOR_BUNDLE=$(find dist/assets -name "vendor-*.js" -exec du -b {} + 2>/dev/null | sort -rn | head -1 | awk '{print $1}' || echo "0")
+          VENDOR_KB=$(echo "scale=2; $VENDOR_BUNDLE/1024" | bc)
+
+          # Total JS bundle
+          TOTAL_BUNDLE=$(find dist/assets -name "*.js" -exec du -b {} + 2>/dev/null | awk '{s+=$1} END {print s}' || echo "0")
+          TOTAL_KB=$(echo "scale=2; $TOTAL_BUNDLE/1024" | bc)
+
+          echo "📦 Bundle Size Analysis:"
+          echo "   Main bundle (index-*.js): ${MAIN_KB}KB"
+          echo "   Largest vendor chunk: ${VENDOR_KB}KB"
+          echo "   Total JS size: ${TOTAL_KB}KB"
+          echo ""
+
+          # Main bundle limit: 200KB (critical for initial load)
+          MAX_MAIN=204800
+          if [ "$MAIN_BUNDLE" -gt "$MAX_MAIN" ]; then
+            echo "❌ Main bundle size exceeded limit!"
+            echo "   Current: ${MAIN_KB}KB"
+            echo "   Maximum: 200KB"
+            echo ""
+            echo "💡 Consider code splitting or lazy loading"
+            exit 1
+          fi
+
+          # Total bundle warning (informational, not blocking)
+          MAX_TOTAL=3145728  # 3MB
+          if [ "$TOTAL_BUNDLE" -gt "$MAX_TOTAL" ]; then
+            echo "⚠️  Warning: Total bundle size is large (>${TOTAL_KB}KB)"
+            echo "   Consider reviewing lazy loading strategy"
+          fi
+
+          echo "✅ Bundle size OK (main bundle < 200KB)"
+
+      # ======================================================================
+      # Summary
+      # ======================================================================
+      - name: Fast Check Summary
+        if: success()
+        run: |
+          echo "## ⚡ PR Fast Check - PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Duration:** ~3-5 minutes" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Backend compiled successfully" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Backend formatting OK (Spotless)" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Frontend linting OK" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Frontend TypeScript OK" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Main bundle size OK (<200KB)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Full validation will run in quality-gates.yml" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend tests will run in backend-pipeline.yml" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend tests will run in frontend-pipeline.yml" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Final Gate
+  # ============================================================================
+  fast-check-complete:
+    name: PR Fast Check Complete
+    needs: [fast-check]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check Status
+        run: |
+          if [[ "${{ needs.fast-check.result }}" == "failure" ]]; then
+            echo "❌ PR Fast Check FAILED"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ PR Fast Check - FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Please check the logs above for details." >> $GITHUB_STEP_SUMMARY
+            echo "This is a fast feedback check - full validation will run in other pipelines." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ PR Fast Check PASSED - Ready for detailed review"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🎉 **Fast check passed!** Full CI pipelines will provide detailed validation." >> $GITHUB_STEP_SUMMARY

@@ -1,0 +1,615 @@
+name: Security Pipeline
+
+# Consolidated Security & Performance Workflow
+# Sprint 2.1.7.7 - CI/CD Konsolidierung
+#
+# Extends security-gates.yml with:
+# - OWASP Dependency Check (NEW)
+# - Secrets Scanning (NEW)
+# - Existing: Security Contracts, PR Template, Performance Smoke
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+  schedule:
+    # Run dependency check weekly (Monday 3 AM UTC)
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+  security-events: write
+
+concurrency:
+  group: security-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # 1. Security Contract Tests
+  # ============================================================================
+  security-contracts:
+    name: Security Contract Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+          POSTGRES_DB: freshplan
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run Security Contract Tests
+        working-directory: backend
+        run: |
+          ./mvnw test -Dtest=*SecurityContractTest* \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan
+
+      - name: Fail-closed Verification
+        working-directory: backend
+        run: |
+          ./scripts/verify-fail-closed-security.sh
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: security-test-results
+          path: backend/target/surefire-reports/
+          retention-days: 7
+
+  # ============================================================================
+  # 2. PR Template Compliance
+  # ============================================================================
+  pr-template-check:
+    name: PR Template Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check PR Description
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body || '';
+
+            // Check for required sections
+            const requiredSections = [
+              '## 🎯 Ziel',
+              '## ⚠️ Risiko',
+              '## 🔄 Migrations-Schritte + Rollback',
+              '## ⚡ Performance-Nachweis',
+              '## 🔒 Security-Checks',
+              '## 📚 SoT-Referenzen'
+            ];
+
+            const missingSections = [];
+            for (const section of requiredSections) {
+              if (!prBody.includes(section)) {
+                missingSections.push(section);
+              }
+            }
+
+            if (missingSections.length > 0) {
+              core.setFailed(`PR Template incomplete. Missing sections: ${missingSections.join(', ')}`);
+
+              // Add comment to PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `❌ **PR Template Validation Failed**\n\nThe following required sections are missing:\n${missingSections.map(s => `- ${s}`).join('\n')}\n\nPlease update your PR description to include all required sections.`
+              });
+            } else {
+              console.log('✅ All required PR template sections present');
+            }
+
+  # ============================================================================
+  # 3. OWASP Dependency Check (NEW)
+  # ============================================================================
+  owasp-dependency-check:
+    name: OWASP Dependency Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Run OWASP Dependency Check (Backend)
+        working-directory: backend
+        run: |
+          # Download OWASP Dependency-Check CLI
+          wget -q https://github.com/jeremylong/DependencyCheck/releases/download/v9.0.9/dependency-check-9.0.9-release.zip
+          unzip -q dependency-check-9.0.9-release.zip
+
+          # Run scan
+          ./dependency-check/bin/dependency-check.sh \
+            --project "FreshPlan Backend" \
+            --scan target/quarkus-app/lib \
+            --format HTML \
+            --format JSON \
+            --out reports \
+            --suppression suppression.xml || true
+
+          echo "📊 OWASP Dependency Check completed"
+        continue-on-error: true
+
+      - name: Check for Critical Vulnerabilities
+        working-directory: backend
+        run: |
+          if [ -f reports/dependency-check-report.json ]; then
+            CRITICAL=$(jq '.dependencies[].vulnerabilities[] | select(.severity == "CRITICAL")' reports/dependency-check-report.json | wc -l)
+            HIGH=$(jq '.dependencies[].vulnerabilities[] | select(.severity == "HIGH")' reports/dependency-check-report.json | wc -l)
+
+            echo "🔍 Security Scan Results:"
+            echo "- CRITICAL vulnerabilities: $CRITICAL"
+            echo "- HIGH vulnerabilities: $HIGH"
+
+            if [ "$CRITICAL" -gt 0 ]; then
+              echo "❌ CRITICAL vulnerabilities detected!"
+              echo "Review the OWASP report artifact for details."
+              exit 1
+            fi
+
+            if [ "$HIGH" -gt 5 ]; then
+              echo "⚠️ More than 5 HIGH vulnerabilities detected!"
+              echo "Review the OWASP report artifact for details."
+            fi
+          else
+            echo "⚠️ No OWASP report generated"
+          fi
+        continue-on-error: true
+
+      - name: Upload OWASP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: owasp-dependency-check-report
+          path: backend/reports/
+          retention-days: 30
+
+  # ============================================================================
+  # 3.5. Trivy Container Scanning (NEW - BATCH 2)
+  # ============================================================================
+  trivy-container-scan:
+    name: Trivy Container Security Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install Trivy
+        run: |
+          # Install Trivy (latest version)
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo "deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main" | sudo tee -a /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install trivy
+          echo "✅ Trivy installed: $(trivy --version)"
+
+      - name: Build Backend Docker Image
+        working-directory: backend
+        run: |
+          echo "🐳 Building backend Docker image..."
+          ./mvnw -B package -DskipTests
+          cd ..
+          docker build -f docker/Dockerfile.backend -t freshplan-backend:latest .
+          echo "✅ Backend image built"
+
+      - name: Build Frontend Docker Image
+        working-directory: frontend
+        run: |
+          echo "🐳 Building frontend Docker image..."
+          npm ci
+          npm run build
+          cd ..
+          docker build -f docker/Dockerfile.frontend -t freshplan-frontend:latest .
+          echo "✅ Frontend image built"
+
+      - name: Scan Backend Image with Trivy
+        run: |
+          echo "🔍 Scanning backend image for vulnerabilities..."
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format json \
+            --output trivy-backend-report.json \
+            freshplan-backend:latest
+
+          # Also generate HTML report
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format template \
+            --template "@contrib/html.tpl" \
+            --output trivy-backend-report.html \
+            freshplan-backend:latest
+
+          echo "✅ Backend scan completed"
+
+      - name: Scan Frontend Image with Trivy
+        run: |
+          echo "🔍 Scanning frontend image for vulnerabilities..."
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format json \
+            --output trivy-frontend-report.json \
+            freshplan-frontend:latest
+
+          # Also generate HTML report
+          trivy image \
+            --severity CRITICAL,HIGH,MEDIUM \
+            --format template \
+            --template "@contrib/html.tpl" \
+            --output trivy-frontend-report.html \
+            freshplan-frontend:latest
+
+          echo "✅ Frontend scan completed"
+
+      - name: Check for Critical Vulnerabilities (Backend)
+        run: |
+          echo "🔍 Analyzing backend vulnerabilities..."
+
+          if [ -f trivy-backend-report.json ]; then
+            CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-backend-report.json)
+            HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-backend-report.json)
+            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-backend-report.json)
+
+            echo "📊 Backend Image Vulnerabilities:"
+            echo "  - CRITICAL: $CRITICAL"
+            echo "  - HIGH: $HIGH"
+            echo "  - MEDIUM: $MEDIUM"
+
+            if [ "$CRITICAL" -gt 0 ]; then
+              echo ""
+              echo "❌ CRITICAL vulnerabilities detected in backend image!"
+              echo "🔒 This is a security blocker. Review trivy-backend-report.html artifact."
+              exit 1
+            fi
+
+            if [ "$HIGH" -gt 10 ]; then
+              echo ""
+              echo "⚠️ More than 10 HIGH vulnerabilities detected in backend!"
+              echo "📊 Consider updating base image or dependencies."
+            fi
+          else
+            echo "⚠️ No backend Trivy report generated"
+          fi
+
+      - name: Check for Critical Vulnerabilities (Frontend)
+        run: |
+          echo "🔍 Analyzing frontend vulnerabilities..."
+
+          if [ -f trivy-frontend-report.json ]; then
+            CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-frontend-report.json)
+            HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-frontend-report.json)
+            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-frontend-report.json)
+
+            echo "📊 Frontend Image Vulnerabilities:"
+            echo "  - CRITICAL: $CRITICAL"
+            echo "  - HIGH: $HIGH"
+            echo "  - MEDIUM: $MEDIUM"
+
+            if [ "$CRITICAL" -gt 0 ]; then
+              echo ""
+              echo "❌ CRITICAL vulnerabilities detected in frontend image!"
+              echo "🔒 This is a security blocker. Review trivy-frontend-report.html artifact."
+              exit 1
+            fi
+
+            if [ "$HIGH" -gt 10 ]; then
+              echo ""
+              echo "⚠️ More than 10 HIGH vulnerabilities detected in frontend!"
+              echo "📊 Consider updating nginx or node base images."
+            fi
+          else
+            echo "⚠️ No frontend Trivy report generated"
+          fi
+
+      - name: Upload Trivy Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-container-scan-reports
+          path: |
+            trivy-backend-report.json
+            trivy-backend-report.html
+            trivy-frontend-report.json
+            trivy-frontend-report.html
+          retention-days: 30
+
+      - name: Trivy Scan Summary
+        if: always()
+        run: |
+          echo "## 🔒 Trivy Container Security Scan" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Images Scanned:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: eclipse-temurin:17-jre-jammy" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: nginx:1.27-alpine" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f trivy-backend-report.json ] && [ -f trivy-frontend-report.json ]; then
+            BACKEND_CRIT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-backend-report.json)
+            BACKEND_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-backend-report.json)
+            FRONTEND_CRIT=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-frontend-report.json)
+            FRONTEND_HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-frontend-report.json)
+
+            echo "**Backend Vulnerabilities:**" >> $GITHUB_STEP_SUMMARY
+            echo "- CRITICAL: $BACKEND_CRIT" >> $GITHUB_STEP_SUMMARY
+            echo "- HIGH: $BACKEND_HIGH" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            echo "**Frontend Vulnerabilities:**" >> $GITHUB_STEP_SUMMARY
+            echo "- CRITICAL: $FRONTEND_CRIT" >> $GITHUB_STEP_SUMMARY
+            echo "- HIGH: $FRONTEND_HIGH" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+
+            echo "📊 Detailed HTML reports available in artifacts" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ Trivy reports not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # ============================================================================
+  # 4. Secrets Scanning (NEW)
+  # ============================================================================
+  secrets-scan:
+    name: Secrets & Credentials Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better scanning
+
+      - name: Run Trufflehog Secrets Scan
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: ./
+          base: ${{ github.event.repository.default_branch }}
+          head: HEAD
+          extra_args: --debug --only-verified
+
+      - name: Check for hardcoded credentials
+        run: |
+          echo "🔍 Checking for hardcoded credentials..."
+
+          # Check for common secret patterns
+          FINDINGS=$(grep -r -E "(password|secret|api_key|apikey|token|access_key|private_key)\s*=\s*['\"](?!(test|mock|fake|dummy|example))[a-zA-Z0-9]{8,}" \
+            --include="*.java" \
+            --include="*.ts" \
+            --include="*.tsx" \
+            --include="*.js" \
+            --include="*.jsx" \
+            --exclude-dir=node_modules \
+            --exclude-dir=target \
+            --exclude-dir=dist \
+            backend/ frontend/ || echo "")
+
+          if [ -n "$FINDINGS" ]; then
+            echo "❌ Potential hardcoded credentials found:"
+            echo "$FINDINGS"
+            echo ""
+            echo "⚠️ WARNING: Review these findings and use environment variables or secrets management instead."
+            exit 1
+          else
+            echo "✅ No obvious hardcoded credentials found"
+          fi
+
+      - name: Check .env files in repository
+        run: |
+          echo "🔍 Checking for committed .env files..."
+
+          # Find .env files but exclude:
+          # - node_modules
+          # - .example/.template files (safe)
+          # - .development files (allowed - no real secrets, only config)
+          ENV_FILES=$(find . -name ".env" -o -name ".env.*" | \
+            grep -v "node_modules" | \
+            grep -v ".example" | \
+            grep -v ".template" | \
+            grep -v ".development" | \
+            grep -v ".test" | \
+            grep -v ".ci" || echo "")
+
+          if [ -n "$ENV_FILES" ]; then
+            echo "❌ Production .env files should not be committed to the repository:"
+            echo "$ENV_FILES"
+            echo ""
+            echo "⚠️ These files may contain secrets. Add them to .gitignore!"
+            exit 1
+          else
+            echo "✅ No production .env files found in repository"
+            echo "   (.env.development and .env.test are allowed - they contain only config, no secrets)"
+          fi
+
+  # ============================================================================
+  # 5. Performance Smoke Test
+  # ============================================================================
+  performance-smoke-test:
+    name: Performance Smoke Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+          POSTGRES_DB: freshplan
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Build Backend
+        working-directory: backend
+        run: ./mvnw package -DskipTests
+
+      - name: Start Backend
+        working-directory: backend
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/freshplan
+          DB_USER: freshplan
+          DB_PASSWORD: freshplan
+          QUARKUS_PROFILE: ci
+        run: |
+          java -Xms256m -Xmx512m \
+            -Dquarkus.profile=ci \
+            -jar target/quarkus-app/quarkus-run.jar &
+
+          # Wait for startup
+          for i in {1..30}; do
+            sleep 2
+            if curl -f http://localhost:8080/q/health 2>/dev/null; then
+              echo "Application started successfully"
+              break
+            fi
+          done
+
+          # Verify startup
+          if ! curl -f http://localhost:8080/q/health; then
+            echo "Application failed to start after 60 seconds"
+            exit 1
+          fi
+
+      - name: Run k6 Performance Smoke Test (BLOCKING)
+        run: |
+          echo "⚡ Running k6 performance smoke test..."
+
+          # Check if k6 test file exists
+          if [ -f backend/src/test/k6/smoke-test.js ]; then
+            docker run --rm -i \
+              --network host \
+              grafana/k6 run - < backend/src/test/k6/smoke-test.js || {
+                echo ""
+                echo "❌ Performance Threshold Violation!"
+                echo ""
+                echo "⚠️  Your changes do not meet the performance requirements:"
+                echo "    • P95 response time: <200ms"
+                echo "    • Error rate: <10%"
+                echo ""
+                echo "💡 Review the k6 test output above for details."
+                exit 1
+              }
+            echo "✅ Performance thresholds met (P95 <200ms, errors <10%)"
+          else
+            echo "⚠️ k6 smoke test file not found at backend/src/test/k6/smoke-test.js"
+            echo "📝 Create this file to enable performance testing"
+            echo "Target: P95 < 200ms"
+          fi
+
+      - name: Performance Check Summary
+        run: |
+          echo "📊 Performance Check Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Target: P95 < 200ms" >> $GITHUB_STEP_SUMMARY
+          echo "Status: Smoke test completed (see logs for details)" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Final Security Pipeline Gate
+  # ============================================================================
+  security-pipeline-complete:
+    name: Security Pipeline Complete
+    needs: [security-contracts, secrets-scan]
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Check all jobs status
+        run: |
+          if [[ "${{ needs.security-contracts.result }}" == "failure" ]] || \
+             [[ "${{ needs.secrets-scan.result }}" == "failure" ]]; then
+            echo "❌ Security Pipeline FAILED"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## ❌ Security Pipeline - FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- Security Contracts: ${{ needs.security-contracts.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "- Secrets Scan: ${{ needs.secrets-scan.result }}" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "⚠️ OWASP and Performance checks run separately (may have warnings)" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "✅ Security Pipeline PASSED!"
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Security Pipeline - PASSED" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Security Checks:**" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Security Contracts Verified" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ No Secrets Found in Code" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Additional Checks (informational):**" >> $GITHUB_STEP_SUMMARY
+          echo "- OWASP Dependency Check: Runs weekly + on push" >> $GITHUB_STEP_SUMMARY
+          echo "- Performance Smoke Test: Runs on push" >> $GITHUB_STEP_SUMMARY
