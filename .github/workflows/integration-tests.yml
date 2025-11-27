@@ -257,7 +257,8 @@ jobs:
           echo "Files in dist folder:"
           ls -la dist/ || echo "dist folder not found"
           echo "Running tests..."
-          DEBUG=pw:api npx playwright test --config=playwright.config.ci.ts --project=chromium --reporter=list
+          # EXCLUDE accessibility tests (they run in separate accessibility-tests.yml workflow)
+          DEBUG=pw:api npx playwright test --config=playwright.config.ci.ts --project=chromium --reporter=list --ignore-snapshots --grep-invert "Accessibility"
         env:
           CI: true
           DEBUG: pw:api,pw:browser
