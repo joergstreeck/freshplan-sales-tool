@@ -169,10 +169,17 @@ async function openLeadWizard(page: Page) {
   await page.goto('/lead-generation/leads');
   await page.waitForLoadState('networkidle');
 
+  // Wait for page to be fully loaded and button to be clickable
+  const leadButton = page.locator('button:has-text("Lead erfassen")');
+  await leadButton.waitFor({ state: 'visible', timeout: 10000 });
+
   // Click "Lead erfassen" button to open wizard
-  await page.click('button:has-text("Lead erfassen")');
+  await leadButton.click();
 
   // Wait for wizard dialog to appear
+  await page.waitForSelector('[role="dialog"], .MuiDialog-root', { timeout: 10000 });
+
+  // Additionally wait for dialog content to load
   await page.waitForSelector('text=/Lead erfassen/i', { timeout: 5000 });
 }
 
@@ -180,10 +187,7 @@ async function openLeadWizard(page: Page) {
 // Tests
 // ============================================================================
 
-// TEMPORARILY SKIPPED: These tests require full backend + frontend integration
-// that is not yet stable in CI environment. Enable after Sprint 2.1.7.8.
-// See: https://github.com/joergstreeck/freshplan-sales-tool/issues/146
-test.describe.skip('LeadWizard E2E - Complete Flows', () => {
+test.describe('LeadWizard E2E - Complete Flows', () => {
   test.beforeEach(async ({ page }) => {
     await mockAuth(page);
     await mockLeadAPIs(page);
