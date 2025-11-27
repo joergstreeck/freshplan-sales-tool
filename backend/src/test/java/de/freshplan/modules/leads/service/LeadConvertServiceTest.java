@@ -89,13 +89,14 @@ class LeadConvertServiceTest {
     em.createQuery("DELETE FROM LeadActivity").executeUpdate();
     em.createQuery("DELETE FROM Lead").executeUpdate();
 
-    // Ensure territory exists
+    // Ensure territory exists (must flush to avoid TransientObjectException in parallel tests)
     Territory territory = Territory.findByCode("DE");
     if (territory == null) {
-      territory = Territory.getDefault();
-      if (territory.id == null) {
-        territory.persist();
-      }
+      territory = new Territory();
+      territory.id = "DE";
+      territory.name = "Deutschland";
+      territory.countryCode = "DE";
+      territory.persistAndFlush();
     }
 
     // Create test lead

@@ -148,8 +148,8 @@ jobs:
       - name: Build frontend
         run: |
           cd frontend
-          echo "🔨 Building frontend application..."
-          VITE_API_URL=http://localhost:8080 npm run build
+          echo "🔨 Building frontend application for E2E tests..."
+          VITE_API_URL=http://localhost:8080 VITE_E2E_MODE=true VITE_AUTH_BYPASS=true npm run build
           echo "✅ Build completed. Checking build output:"
           ls -la dist/ | head -10
           echo "Index.html content preview:"
