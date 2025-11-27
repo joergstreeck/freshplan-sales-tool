@@ -9,7 +9,7 @@
 
 import type { Contact } from '../../types/contact.types';
 import type { QuickAction, ActionResult } from '../../types/mobileActions.types';
-import { offlineQueueService } from './OfflineQueueService';
+// OfflineQueueService is imported dynamically to avoid circular dependency
 import { actionSuggestionService } from '../../components/mobile/ActionSuggestionService';
 
 export class ActionExecutionService {
@@ -61,6 +61,8 @@ export class ActionExecutionService {
       void _error;
       // Queue for retry if offline
       if (!navigator.onLine) {
+        // Dynamic import to avoid circular dependency
+        const { offlineQueueService } = await import('./OfflineQueueService');
         await offlineQueueService.queueAction(action, contact);
         return {
           success: false,

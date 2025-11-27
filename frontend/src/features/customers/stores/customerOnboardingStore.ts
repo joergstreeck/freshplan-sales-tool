@@ -16,7 +16,8 @@ import { immer } from 'zustand/middleware/immer';
 import type { FieldDefinition } from '../types/field.types';
 import type { Location, DetailedLocation } from '../types/location.types';
 import type { Contact, ContactValidationError, CreateContactDTO } from '../types/contact.types';
-import { validateField, validateFields } from '../validation';
+// Import directly from schemaBuilder to avoid circular dependency via validation/index.ts
+import { validateField, validateFields } from '../validation/schemaBuilder';
 import { getVisibleFields } from '../utils/conditionEvaluator';
 import type { LocationServiceData } from './customerOnboardingStore.extensions';
 import { customerApi } from '../services/customerApi';
