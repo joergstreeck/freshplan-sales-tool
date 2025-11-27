@@ -17,10 +17,12 @@ public class ClockProvider {
   /**
    * Produces a Clock instance using UTC timezone.
    *
+   * <p>Note: Uses default @Dependent scope instead of @ApplicationScoped because Clock is a final
+   * class and cannot be proxied by CDI. This prevents ArcUndeclaredThrowable errors.
+   *
    * @return Clock instance set to UTC
    */
   @Produces
-  @ApplicationScoped
   public Clock clock() {
     return Clock.system(ZoneOffset.UTC);
   }
