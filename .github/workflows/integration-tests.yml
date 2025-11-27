@@ -257,8 +257,11 @@ jobs:
           echo "Files in dist folder:"
           ls -la dist/ || echo "dist folder not found"
           echo "Running tests..."
-          # EXCLUDE accessibility tests (they run in separate accessibility-tests.yml workflow)
-          DEBUG=pw:api npx playwright test --config=playwright.config.ci.ts --project=chromium --reporter=list --ignore-snapshots --grep-invert "Accessibility"
+          # EXCLUDE:
+          # - Accessibility tests (run in separate accessibility-tests.yml workflow)
+          # - LeadWizard E2E tests (require mocked APIs, run in frontend-only pipeline)
+          # - HEADQUARTER tests (require mocked schema API)
+          DEBUG=pw:api npx playwright test --config=playwright.config.ci.ts --project=chromium --reporter=list --ignore-snapshots --grep-invert "Accessibility|LeadWizard E2E|HEADQUARTER"
         env:
           CI: true
           DEBUG: pw:api,pw:browser
