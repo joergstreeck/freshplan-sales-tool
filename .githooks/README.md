@@ -8,19 +8,25 @@ Dieser Ordner enthält die **versionierten Git Hooks** für das Projekt.
 git config core.hooksPath .githooks
 ```
 
-## Pre-Commit Hook (PRÜFUNG 9 - Stand 2025-11-15)
+## Pre-Commit Hook (Stand 2025-11-27 - Sprint 2.1.7.7)
 
-Der `pre-commit` Hook führt **9 Prüfungen** aus (8 blockierend + 1 Info):
+Der `pre-commit` Hook führt **10 Prüfungen** aus (9 blockierend + 1 Info):
 
-1. **Design System Compliance** - Keine hardcoded colors/fonts (BLOCKIEREND)
-2. **Server-Driven Architecture Parity** - Backend/Frontend Schema-Parity (BLOCKIEREND)
-3. **Enum Seed Data Case Validation** - Enum-Werte korrekt (BLOCKIEREND)
-4. **Enum-Rendering-Parity** - Frontend nutzt Backend-Enums (BLOCKIEREND)
-5. **Server-Driven Sections Architecture** - Wizard-Struktur vom Backend (BLOCKIEREND)
-6. **Backend Code Formatting** - Spotless Auto-Format (AUTO-FIX)
-7. **Backend Compilation Check** - Code muss kompilieren (BLOCKIEREND)
-8. **Test Cleanup Validation** - `@AfterEach` cleanup mit echtem Code (BLOCKIEREND) ← **VERBESSERT!**
-9. **OpenAPI Type Sync Check** - Erinnert an `npm run generate-api` (INFO-ONLY)
+| # | Prüfung | Beschreibung | Status |
+|---|---------|--------------|--------|
+| 1 | **Design System Compliance** | Keine hardcoded colors/fonts | BLOCKIEREND |
+| 2 | **Server-Driven Parity** | Backend/Frontend Schema-Parity | BLOCKIEREND |
+| 2.3 | **Enum Seed Data Case** | Enum-Werte UPPERCASE | BLOCKIEREND |
+| 2.5 | **Enum-Rendering-Parity** | Frontend nutzt Backend-Enums | BLOCKIEREND |
+| 2.6 | **Field Type Architecture** | field.type statt field.fieldType | BLOCKIEREND |
+| 3 | **Server-Driven Sections** | Wizard-Struktur vom Backend | BLOCKIEREND |
+| 4 | **Backend Formatting** | Spotless Auto-Format | AUTO-FIX |
+| 5 | **Backend Compilation** | Code muss kompilieren | BLOCKIEREND |
+| 6 | **Frontend Formatting** | Lint-Staged Auto-Format | AUTO-FIX |
+| 7 | **Dependency Cycles** | Keine zirkulären Abhängigkeiten | BLOCKIEREND |
+| 8 | **Test Cleanup Validation** | `@AfterEach` mit echtem Code | BLOCKIEREND |
+| 9 | **OpenAPI Type Sync** | TypeScript-Types aktuell | BLOCKIEREND |
+| 10 | **fieldCatalog.json Guard** | Migration zu Server-Driven UI | BLOCKIEREND |
 
 ### PRÜFUNG 8: Test Cleanup Validation (Verbessert 2025-11-15)
 
@@ -107,4 +113,4 @@ git commit --no-verify
 - Verhindert manuelle Type-Definitionen und Schema-Drift
 
 ---
-**Last Update:** 2025-11-15 (PRÜFUNG 8 - Test Cleanup Validation verbessert: Erkennt leere Cleanup-Methoden)
+**Last Update:** 2025-11-27 (Sprint 2.1.7.7 - 10 Prüfungen inkl. Dependency Cycles, OpenAPI Type Sync, fieldCatalog.json Guard)

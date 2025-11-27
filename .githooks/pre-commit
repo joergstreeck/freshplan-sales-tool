@@ -30,6 +30,47 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # ============================================================================
+# HELPER FUNCTIONS
+# ============================================================================
+
+# Helper-Funktion für konsistentes Error-Reporting
+# Usage: print_error_and_exit "Header" "Hint1" "Hint2" ...
+print_error_and_exit() {
+  local header="$1"
+  shift
+  echo ""
+  echo -e "${RED}🚫 PRE-COMMIT HOOK: $header${NC}"
+  echo ""
+  echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
+  echo ""
+  for hint in "$@"; do
+    echo -e "   ${YELLOW}$hint${NC}"
+  done
+  echo ""
+  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo ""
+  exit 1
+}
+
+# Helper-Funktion für Section Header
+print_section_header() {
+  local title="$1"
+  echo ""
+  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${BLUE}$title${NC}"
+  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo ""
+}
+
+# Helper-Funktion für Success Message
+print_success() {
+  local message="$1"
+  echo ""
+  echo -e "${GREEN}✅ $message${NC}"
+  echo ""
+}
+
+# ============================================================================
 # PRÜFUNG 1: Design System Compliance Check
 # ============================================================================
 

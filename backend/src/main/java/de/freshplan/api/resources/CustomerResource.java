@@ -883,7 +883,7 @@ public class CustomerResource {
    * @throws CustomerNotFoundException if parent customer not found
    */
   @POST
-  @Path("/{id}/branches")
+  @Path("/{headquarterId}/branches")
   @RolesAllowed({"admin", "manager"})
   @APIResponses({
     @APIResponse(
@@ -898,7 +898,7 @@ public class CustomerResource {
     @APIResponse(responseCode = "403", description = "Forbidden - admin or manager role required")
   })
   public Response createBranch(
-      @PathParam("id") UUID headquarterId,
+      @PathParam("headquarterId") UUID headquarterId,
       @Valid de.freshplan.domain.customer.service.dto.CreateBranchRequest request) {
 
     log.info(
@@ -942,9 +942,9 @@ public class CustomerResource {
    * @return 200 OK with list of branches
    */
   @GET
-  @Path("/{id}/branches")
+  @Path("/{headquarterId}/branches")
   @RolesAllowed({"admin", "manager", "sales"})
-  public Response getBranches(@PathParam("id") UUID headquarterId) {
+  public Response getBranches(@PathParam("headquarterId") UUID headquarterId) {
     log.debug("Fetching branches for headquarter: {}", headquarterId);
 
     try {
