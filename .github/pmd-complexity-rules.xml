@@ -4,35 +4,45 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0
                              https://pmd.sourceforge.io/ruleset_2_0_0.xsd">
-  <description>Code Complexity Checks for Quality Gates</description>
+  <description>
+    Code Complexity Checks for Quality Gates (PMD 7 compatible)
 
-  <!-- Cyclomatic Complexity -->
+    Thresholds:
+    - Cyclomatic Complexity: 15 per method
+    - NPath Complexity: 200 per method
+    - Method Size: 100 NCSS (Non-Commenting Source Statements)
+    - Class Size: 500 NCSS
+  </description>
+
+  <!-- Cyclomatic Complexity: Max 15 per method -->
   <rule ref="category/java/design.xml/CyclomaticComplexity">
     <properties>
       <property name="classReportLevel" value="80" />
       <property name="methodReportLevel" value="15" />
-      <property name="cycloComplexity" value="15" />
     </properties>
   </rule>
 
-  <!-- Method Length -->
-  <rule ref="category/java/design.xml/ExcessiveMethodLength">
-    <properties>
-      <property name="minimum" value="100" />
-    </properties>
-  </rule>
-
-  <!-- Class Size -->
-  <rule ref="category/java/design.xml/ExcessiveClassLength">
-    <properties>
-      <property name="minimum" value="500" />
-    </properties>
-  </rule>
-
-  <!-- NPath Complexity -->
+  <!-- NPath Complexity: Max 200 paths per method -->
   <rule ref="category/java/design.xml/NPathComplexity">
     <properties>
       <property name="reportLevel" value="200" />
+    </properties>
+  </rule>
+
+  <!-- Method/Class Size using NCSS (PMD 7 replacement for ExcessiveMethodLength/ExcessiveClassLength) -->
+  <rule ref="category/java/design.xml/NcssCount">
+    <properties>
+      <!-- Method: max 100 non-commenting source statements -->
+      <property name="methodReportLevel" value="100" />
+      <!-- Class: max 500 non-commenting source statements -->
+      <property name="classReportLevel" value="500" />
+    </properties>
+  </rule>
+
+  <!-- Cognitive Complexity: Alternative metric for readability -->
+  <rule ref="category/java/design.xml/CognitiveComplexity">
+    <properties>
+      <property name="reportLevel" value="20" />
     </properties>
   </rule>
 </ruleset>

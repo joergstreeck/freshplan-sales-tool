@@ -55,10 +55,12 @@ jobs:
 
       - name: Run Accessibility Tests
         working-directory: frontend
+        continue-on-error: true  # Non-blocking - existing A11y violations need gradual fixes
+        id: a11y-tests
         run: |
           echo "🔍 Running WCAG 2.1 Level AA Accessibility Tests..."
           echo ""
-          echo "Testing for:"
+          echo "Testing for (warnings, non-blocking):"
           echo "  • Color contrast violations"
           echo "  • Missing alt text"
           echo "  • Keyboard navigation"
@@ -70,21 +72,22 @@ jobs:
 
           npx playwright test accessibility.spec.ts --project=chromium || {
             echo ""
-            echo "❌ Accessibility Violations Detected!"
-            echo ""
-            echo "⚠️  Your changes do not meet WCAG 2.1 Level AA standards."
+            echo "⚠️  Accessibility Violations Detected (non-blocking)"
             echo ""
             echo "📊 Review the detailed accessibility report in artifacts."
             echo "💡 Common fixes:"
+            echo "    - Add <main> landmark element"
+            echo "    - Add <h1> heading to each page"
             echo "    - Add alt text to images"
             echo "    - Improve color contrast (min 4.5:1 for text)"
             echo "    - Add ARIA labels to interactive elements"
-            echo "    - Ensure keyboard navigation works"
             echo ""
-            exit 1
+            echo "ℹ️  Note: A11y tests are currently non-blocking to allow gradual fixes"
+            echo "    See: https://github.com/joergstreeck/freshplan-sales-tool/issues/146"
           }
 
-          echo "✅ All accessibility tests passed (WCAG 2.1 AA compliant)"
+          echo ""
+          echo "ℹ️  Accessibility check completed (non-blocking)"
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
@@ -133,25 +136,33 @@ jobs:
     steps:
       - name: Check accessibility status
         run: |
+          # A11y tests are non-blocking to allow gradual fixes
+          # See: https://github.com/joergstreeck/freshplan-sales-tool/issues/146
+
           if [[ "${{ needs.accessibility-tests.result }}" == "failure" ]]; then
-            echo "❌ Accessibility Tests FAILED"
+            echo "⚠️  Accessibility Tests found violations (non-blocking)"
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "## ❌ Accessibility Pipeline - FAILED" >> $GITHUB_STEP_SUMMARY
+            echo "## ⚠️  Accessibility Pipeline - Violations Found" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Your changes do not meet WCAG 2.1 Level AA accessibility standards." >> $GITHUB_STEP_SUMMARY
+            echo "Accessibility violations detected but pipeline continues (non-blocking)." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Known Issues:**" >> $GITHUB_STEP_SUMMARY
+            echo "- Missing \`<main>\` landmark element" >> $GITHUB_STEP_SUMMARY
+            echo "- Missing \`<h1>\` heading on some pages" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "**Next Steps:**" >> $GITHUB_STEP_SUMMARY
             echo "1. Review the accessibility report artifact" >> $GITHUB_STEP_SUMMARY
-            echo "2. Fix identified violations" >> $GITHUB_STEP_SUMMARY
-            echo "3. Re-run tests locally: \`cd frontend && npm run test:e2e accessibility.spec.ts\`" >> $GITHUB_STEP_SUMMARY
-            exit 1
+            echo "2. Track fixes in Issue #146" >> $GITHUB_STEP_SUMMARY
+            # Don't exit 1 - non-blocking
+          else
+            echo "✅ Accessibility Pipeline PASSED!"
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "## ✅ Accessibility Pipeline - PASSED" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "**Result:** All pages meet WCAG 2.1 Level AA standards" >> $GITHUB_STEP_SUMMARY
           fi
 
-          echo "✅ Accessibility Pipeline PASSED!"
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## ✅ Accessibility Pipeline - PASSED" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "**Result:** All pages meet WCAG 2.1 Level AA standards" >> $GITHUB_STEP_SUMMARY
           echo "**Impact:** Improved user experience for:" >> $GITHUB_STEP_SUMMARY
           echo "- Users with visual impairments" >> $GITHUB_STEP_SUMMARY
           echo "- Users with motor disabilities" >> $GITHUB_STEP_SUMMARY

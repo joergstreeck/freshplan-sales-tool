@@ -302,6 +302,22 @@
           </java>
         </configuration>
       </plugin>
+      <!-- PMD Plugin für Code Complexity Check -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-pmd-plugin</artifactId>
+        <version>3.28.0</version>
+        <configuration>
+          <!-- WICHTIG: Nur unser Custom-Ruleset, keine Default-Regeln -->
+          <rulesets>
+            <ruleset>${project.basedir}/../.github/pmd-complexity-rules.xml</ruleset>
+          </rulesets>
+          <printFailingErrors>true</printFailingErrors>
+          <failOnViolation>true</failOnViolation>
+          <includeTests>false</includeTests>
+          <linkXRef>false</linkXRef>
+        </configuration>
+      </plugin>
       <!-- Flyway Maven Plugin für manuelle Migrationen in CI -->
       <plugin>
         <groupId>org.flywaydb</groupId>

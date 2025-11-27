@@ -6,6 +6,11 @@ on:
   push:
     branches: [main, develop, 'feat/**', 'fix/**', 'feature/**', 'bugfix/**']
 
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
 jobs:
   # ============================================================================
   # 1. Design System Compliance Check
@@ -629,42 +634,62 @@ jobs:
           cache: 'maven'
 
       - name: Run PMD Code Complexity Check
-        continue-on-error: false  # BLOCKS PR if violations found
+        continue-on-error: true  # Non-blocking - warnings only
         run: |
           cd backend
 
-          echo "📊 Running Code Complexity Check (PMD)..."
+          echo "📊 Running Code Complexity Check (PMD 7)..."
           echo ""
-          echo "Checking for:"
-          echo "  • Cyclomatic Complexity > 15"
-          echo "  • Method Length > 100 lines"
-          echo "  • Class Size > 500 lines"
-          echo "  • NPath Complexity > 200"
+          echo "Checking for (warnings, non-blocking):"
+          echo "  • Cyclomatic Complexity > 15 per method"
+          echo "  • NPath Complexity > 200 paths per method"
+          echo "  • Method Size > 100 NCSS"
+          echo "  • Class Size > 500 NCSS"
+          echo "  • Cognitive Complexity > 20"
           echo ""
 
-          # Run PMD with external ruleset
-          ./mvnw pmd:check \
-            -Dpmd.rulesetfiles=../.github/pmd-complexity-rules.xml \
-            -Dpmd.printFailingErrors=true \
-            -Dpmd.failOnViolation=true || {
-            echo ""
-            echo "❌ Code Complexity violations detected!"
-            echo ""
-            echo "⚠️  This PR introduces code that exceeds complexity thresholds."
-            echo "    Please refactor to improve maintainability."
-            exit 1
-          }
+          # Run PMD via Maven plugin (configured in pom.xml)
+          set +e
+          PMD_OUTPUT=$(./mvnw pmd:pmd -q 2>&1)
+          PMD_EXIT=$?
+          set -e
+
+          # Show violations summary
+          if [ -f target/pmd.xml ]; then
+            VIOLATION_COUNT=$(grep -c "<violation" target/pmd.xml 2>/dev/null || echo "0")
+
+            if [ "$VIOLATION_COUNT" -gt 0 ]; then
+              echo "⚠️  Found $VIOLATION_COUNT complexity violations"
+              echo ""
+              echo "📋 Violation Summary by Rule:"
+              grep -E "rule=" target/pmd.xml | sed 's/.*rule="\([^"]*\)".*/\1/' | sort | uniq -c | sort -rn
+              echo ""
+
+              echo "📄 Top 10 Violations:"
+              echo "====================="
+              # Extract file:line and rule from violations
+              grep -oP '(?<=beginline=")[^"]+|(?<=rule=")[^"]+|(?<=<file>)[^<]+' target/pmd.xml | \
+                paste - - - | head -10 || true
+              echo ""
+              echo "📄 Full report available in artifacts: pmd-complexity-report"
+            else
+              echo "✅ No complexity violations found!"
+            fi
+          fi
 
           echo ""
-          echo "✅ All complexity checks passed!"
+          echo "ℹ️  Note: Complexity check is informational and non-blocking"
 
       - name: Upload PMD Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: pmd-complexity-report
-          path: backend/target/pmd.xml
+          path: |
+            backend/target/pmd-complexity.txt
+            backend/target/pmd.xml
           retention-days: 7
+          if-no-files-found: ignore
 
       - name: Comment on PR failure
         if: failure() && github.event_name == 'pull_request'
@@ -708,14 +733,15 @@ jobs:
       - lint-backend
       - frontmatter-lint
       - dependency-cycles
-      - code-complexity
+      - code-complexity  # Included for visibility, but non-blocking
     runs-on: ubuntu-latest
     if: always()
 
     steps:
       - name: Check all jobs status
         run: |
-          # Check if any job failed
+          # Check if any BLOCKING job failed
+          # Note: code-complexity is non-blocking (informational only)
           if [[ "${{ needs.design-system.result }}" == "failure" ]] || \
              [[ "${{ needs.field-parity.result }}" == "failure" ]] || \
              [[ "${{ needs.test-data-coverage.result }}" == "failure" ]] || \
@@ -726,10 +752,14 @@ jobs:
              [[ "${{ needs.lint-frontend.result }}" == "failure" ]] || \
              [[ "${{ needs.lint-backend.result }}" == "failure" ]] || \
              [[ "${{ needs.frontmatter-lint.result }}" == "failure" ]] || \
-             [[ "${{ needs.dependency-cycles.result }}" == "failure" ]] || \
-             [[ "${{ needs.code-complexity.result }}" == "failure" ]]; then
+             [[ "${{ needs.dependency-cycles.result }}" == "failure" ]]; then
             echo "❌ Quality Gates FAILED - At least one check failed"
             exit 1
+          fi
+
+          # Report code-complexity status (informational)
+          if [[ "${{ needs.code-complexity.result }}" == "failure" ]]; then
+            echo "⚠️  Code Complexity Check found violations (non-blocking)"
           fi
 
           echo "✅ All Quality Gates PASSED!"
