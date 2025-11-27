@@ -96,6 +96,11 @@ class LeadConvertServiceTest {
       territory.id = "DE";
       territory.name = "Deutschland";
       territory.countryCode = "DE";
+      territory.currencyCode = "EUR";
+      territory.taxRate = new java.math.BigDecimal("19.0");
+      territory.languageCode = "de";
+      territory.createdAt = java.time.LocalDateTime.now();
+      territory.updatedAt = java.time.LocalDateTime.now();
       territory.persistAndFlush();
     }
 
