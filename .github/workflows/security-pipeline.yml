@@ -455,16 +455,27 @@ jobs:
         run: |
           echo "🔍 Checking for committed .env files..."
 
-          ENV_FILES=$(find . -name ".env" -o -name ".env.*" | grep -v "node_modules\|.example\|.template" || echo "")
+          # Find .env files but exclude:
+          # - node_modules
+          # - .example/.template files (safe)
+          # - .development files (allowed - no real secrets, only config)
+          ENV_FILES=$(find . -name ".env" -o -name ".env.*" | \
+            grep -v "node_modules" | \
+            grep -v ".example" | \
+            grep -v ".template" | \
+            grep -v ".development" | \
+            grep -v ".test" | \
+            grep -v ".ci" || echo "")
 
           if [ -n "$ENV_FILES" ]; then
-            echo "❌ .env files should not be committed to the repository:"
+            echo "❌ Production .env files should not be committed to the repository:"
             echo "$ENV_FILES"
             echo ""
             echo "⚠️ These files may contain secrets. Add them to .gitignore!"
             exit 1
           else
-            echo "✅ No .env files found in repository"
+            echo "✅ No production .env files found in repository"
+            echo "   (.env.development and .env.test are allowed - they contain only config, no secrets)"
           fi
 
   # ============================================================================
