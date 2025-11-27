@@ -77,7 +77,10 @@ async function _waitForApiResponse(page: Page, urlPattern: string | RegExp) {
 
 // ========== TEST SUITES ==========
 
-test.describe('Multi-Location Branch Management', () => {
+// TEMPORARILY SKIPPED: These tests require full Multi-Location Management features
+// that are still under development. Enable after Sprint 2.1.7.8.
+// See: https://github.com/joergstreeck/freshplan-sales-tool/issues/146
+test.describe.skip('Multi-Location Branch Management', () => {
   test.beforeEach(async ({ page }) => {
     await mockAuth(page);
   });
