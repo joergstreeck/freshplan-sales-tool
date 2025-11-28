@@ -24,15 +24,24 @@ import { mockAuth } from '../fixtures/auth-helper';
 import { setupTestData, cleanupTestData } from '../fixtures/test-data-helper';
 
 // Skip these tests in CI as they require a running backend
+// Primary protection: testIgnore in playwright.config.ts excludes this file in CI
+// Secondary protection: test.skip() and guards in beforeAll/afterAll
+
 test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
-  // Skip all tests in this suite when running in CI (no backend available)
-  test.beforeEach(() => {
-    test.skip(!!process.env.CI, 'Skipping real-backend tests in CI environment (no backend available)');
-  });
+  // Skip entire test suite in CI (backup protection if testIgnore is bypassed)
+  test.skip(
+    !!process.env.CI,
+    'Skipping real-backend tests in CI environment (no backend available)'
+  );
 
   // Setup: Create test customers with timeline/contacts data
   // eslint-disable-next-line no-empty-pattern
-  test.beforeAll(async ({ }, testInfo) => {
+  test.beforeAll(async ({}, testInfo) => {
+    // Double-check: don't run setup in CI
+    if (process.env.CI) {
+      console.log('⏭️ Skipping test data setup in CI environment');
+      return;
+    }
     const baseURL = testInfo.project.use.baseURL || 'http://localhost:8080';
     await setupTestData(baseURL);
     console.log('✅ Test data setup complete');
@@ -40,6 +49,11 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
 
   // Teardown: Clean up all test data
   test.afterAll(async () => {
+    // Double-check: don't run cleanup in CI
+    if (process.env.CI) {
+      console.log('⏭️ Skipping test data cleanup in CI environment');
+      return;
+    }
     await cleanupTestData();
     console.log('✅ Test data cleanup complete');
   });
@@ -66,7 +80,9 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await expect(page.locator('text=[E2E-TEST] Restaurant Silbertanne München')).toBeVisible();
 
     // Check for Timeline icons for our test customers
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const timelineIcon = freshEventsRow.locator('button[title="Aktivitäten anzeigen"]');
     await expect(timelineIcon).toBeVisible();
 
@@ -82,7 +98,9 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await page.waitForSelector('table', { timeout: 10000 });
 
     // Find Timeline icon for FreshEvents test customer (has timeline data)
-    const testCustomerRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const testCustomerRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const timelineIcon = testCustomerRow.locator('button[title="Aktivitäten anzeigen"]');
     await expect(timelineIcon).toBeVisible();
 
@@ -90,8 +108,8 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await timelineIcon.click();
 
     // Wait for timeline API call and content
-    await page.waitForResponse(response =>
-      response.url().includes('/timeline') && response.status() === 200,
+    await page.waitForResponse(
+      response => response.url().includes('/timeline') && response.status() === 200,
       { timeout: 5000 }
     );
 
@@ -111,13 +129,15 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await page.waitForSelector('table', { timeout: 10000 });
 
     // Click Timeline icon for FreshEvents (has timeline data)
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const timelineIcon = freshEventsRow.locator('button[title="Aktivitäten anzeigen"]');
     await timelineIcon.click();
 
     // Wait for timeline to load
-    await page.waitForResponse(response =>
-      response.url().includes('/timeline') && response.status() === 200,
+    await page.waitForResponse(
+      response => response.url().includes('/timeline') && response.status() === 200,
       { timeout: 5000 }
     );
 
@@ -142,7 +162,8 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await expect(firstItem.locator('.MuiTimelineContent-root')).toBeVisible();
 
     // Verify we can see activity descriptions from our test data
-    const hasExpectedActivity = await page.locator('text=/Angebot versendet|Telefonat geführt|Besuch vor Ort/').count() > 0;
+    const hasExpectedActivity =
+      (await page.locator('text=/Angebot versendet|Telefonat geführt|Besuch vor Ort/').count()) > 0;
     expect(hasExpectedActivity).toBe(true);
   });
 
@@ -151,7 +172,9 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await page.waitForSelector('table', { timeout: 10000 });
 
     // Find Contacts icon for FreshEvents (has contact data)
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const contactsIcon = freshEventsRow.locator('button[title="Kontakte anzeigen"]');
     await expect(contactsIcon).toBeVisible();
 
@@ -159,14 +182,14 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await contactsIcon.click();
 
     // Wait for contacts API call
-    await page.waitForResponse(response =>
-      response.url().includes('/contacts') && response.status() === 200,
+    await page.waitForResponse(
+      response => response.url().includes('/contacts') && response.status() === 200,
       { timeout: 5000 }
     );
 
     // Contacts should be visible with our test data
-    const hasMaxMustermann = await page.locator('text=Max Mustermann').count() > 0;
-    const hasAnnaSchmidt = await page.locator('text=Anna Schmidt').count() > 0;
+    const hasMaxMustermann = (await page.locator('text=Max Mustermann').count()) > 0;
+    const hasAnnaSchmidt = (await page.locator('text=Anna Schmidt').count()) > 0;
     expect(hasMaxMustermann || hasAnnaSchmidt).toBe(true);
 
     // Click again to close
@@ -185,13 +208,15 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await page.waitForSelector('table', { timeout: 10000 });
 
     // Click Contacts icon for FreshEvents (has contact data)
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const contactsIcon = freshEventsRow.locator('button[title="Kontakte anzeigen"]');
     await contactsIcon.click();
 
     // Wait for contacts to load
-    await page.waitForResponse(response =>
-      response.url().includes('/contacts') && response.status() === 200,
+    await page.waitForResponse(
+      response => response.url().includes('/contacts') && response.status() === 200,
       { timeout: 5000 }
     );
 
@@ -200,18 +225,18 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await expect(contactNames).toBeVisible({ timeout: 5000 });
 
     // Check for primary contact badge (Max is primary)
-    const hasPrimaryBadge = await page.locator('text=Haupt').count() > 0;
+    const hasPrimaryBadge = (await page.locator('text=Haupt').count()) > 0;
 
     // Check for decision level badges (we set entscheider and mitentscheider)
-    const hasDecisionBadge = await page.locator('text=/Entscheider|Mitentscheider/i').count() > 0;
+    const hasDecisionBadge = (await page.locator('text=/Entscheider|Mitentscheider/i').count()) > 0;
 
     // Check for warmth scores (we set 85% and 70%)
-    const hasWarmthScore = await page.locator('text=/85%|70%/').count() > 0;
+    const hasWarmthScore = (await page.locator('text=/85%|70%/').count()) > 0;
 
     console.log('✅ Contact UI elements:', {
       primaryBadge: hasPrimaryBadge,
       decisionBadge: hasDecisionBadge,
-      warmthScore: hasWarmthScore
+      warmthScore: hasWarmthScore,
     });
 
     // All should be present for our test contacts
@@ -225,22 +250,31 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await page.waitForSelector('table', { timeout: 10000 });
 
     // Get FreshEvents customer's icons (has both timeline and contact data)
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const timelineIcon = freshEventsRow.locator('button[title="Aktivitäten anzeigen"]');
     const contactsIcon = freshEventsRow.locator('button[title="Kontakte anzeigen"]');
 
     // Open timeline
     await timelineIcon.click();
-    await page.waitForResponse(response => response.url().includes('/timeline') && response.status() === 200, { timeout: 5000 });
+    await page.waitForResponse(
+      response => response.url().includes('/timeline') && response.status() === 200,
+      { timeout: 5000 }
+    );
 
     // Open contacts
     await contactsIcon.click();
-    await page.waitForResponse(response => response.url().includes('/contacts') && response.status() === 200, { timeout: 5000 });
+    await page.waitForResponse(
+      response => response.url().includes('/contacts') && response.status() === 200,
+      { timeout: 5000 }
+    );
 
     // Both should be visible with our test data
-    const hasTimeline = await page.locator('.MuiTimeline-root').count() > 0;
-    const hasTimelineActivity = await page.locator('text=/Angebot versendet|Telefonat geführt/').count() > 0;
-    const hasContacts = await page.locator('text=/Max Mustermann|Anna Schmidt/').count() > 0;
+    const hasTimeline = (await page.locator('.MuiTimeline-root').count()) > 0;
+    const hasTimelineActivity =
+      (await page.locator('text=/Angebot versendet|Telefonat geführt/').count()) > 0;
+    const hasContacts = (await page.locator('text=/Max Mustermann|Anna Schmidt/').count()) > 0;
 
     expect(hasTimeline).toBe(true);
     expect(hasTimelineActivity).toBe(true);
@@ -254,26 +288,28 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     await page.waitForSelector('table', { timeout: 10000 });
 
     // Try to open timeline for FreshEvents customer
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const timelineIcon = freshEventsRow.locator('button[title="Aktivitäten anzeigen"]');
     await timelineIcon.click();
 
     // Wait for response (should succeed for our test customer)
-    const response = await page.waitForResponse(
-      response => response.url().includes('/timeline'),
-      { timeout: 5000 }
-    );
+    const response = await page.waitForResponse(response => response.url().includes('/timeline'), {
+      timeout: 5000,
+    });
 
     // For our test customer, should be successful
     if (response.status() !== 200) {
       // If error occurs, UI should handle it gracefully
-      const hasErrorMessage = await page.locator('text=/Fehler|Error/i').count() > 0;
+      const hasErrorMessage = (await page.locator('text=/Fehler|Error/i').count()) > 0;
       expect(hasErrorMessage).toBe(true);
       console.log('⚠️ API error occurred but was handled gracefully');
     } else {
       // Success - should show timeline with our test data
-      const hasContent = await page.locator('.MuiTimeline-root').count() > 0 ||
-                         await page.locator('text=/Angebot versendet|Telefonat geführt/').count() > 0;
+      const hasContent =
+        (await page.locator('.MuiTimeline-root').count()) > 0 ||
+        (await page.locator('text=/Angebot versendet|Telefonat geführt/').count()) > 0;
       expect(hasContent).toBe(true);
       console.log('✅ API request successful, timeline displayed');
     }
@@ -288,7 +324,9 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
     const scrollBefore = await page.evaluate(() => window.scrollY);
 
     // Open and close timeline for FreshEvents
-    const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+    const freshEventsRow = page
+      .locator('text=[E2E-TEST] FreshEvents Catering AG')
+      .locator('xpath=ancestor::tr');
     const timelineIcon = freshEventsRow.locator('button[title="Aktivitäten anzeigen"]');
 
     await timelineIcon.click();
@@ -309,12 +347,17 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
       await page.waitForSelector('table', { timeout: 10000 });
 
       // Use FreshEvents test customer for performance test
-      const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+      const freshEventsRow = page
+        .locator('text=[E2E-TEST] FreshEvents Catering AG')
+        .locator('xpath=ancestor::tr');
       const timelineIcon = freshEventsRow.locator('button[title="Aktivitäten anzeigen"]');
 
       const startTime = Date.now();
       await timelineIcon.click();
-      await page.waitForResponse(response => response.url().includes('/timeline') && response.status() === 200, { timeout: 5000 });
+      await page.waitForResponse(
+        response => response.url().includes('/timeline') && response.status() === 200,
+        { timeout: 5000 }
+      );
       const endTime = Date.now();
 
       const loadTime = endTime - startTime;
@@ -328,12 +371,17 @@ test.describe('Customer Timeline & Contacts E2E (Real Backend)', () => {
       await page.waitForSelector('table', { timeout: 10000 });
 
       // Use FreshEvents test customer for performance test
-      const freshEventsRow = page.locator('text=[E2E-TEST] FreshEvents Catering AG').locator('xpath=ancestor::tr');
+      const freshEventsRow = page
+        .locator('text=[E2E-TEST] FreshEvents Catering AG')
+        .locator('xpath=ancestor::tr');
       const contactsIcon = freshEventsRow.locator('button[title="Kontakte anzeigen"]');
 
       const startTime = Date.now();
       await contactsIcon.click();
-      await page.waitForResponse(response => response.url().includes('/contacts') && response.status() === 200, { timeout: 5000 });
+      await page.waitForResponse(
+        response => response.url().includes('/contacts') && response.status() === 200,
+        { timeout: 5000 }
+      );
       const endTime = Date.now();
 
       const loadTime = endTime - startTime;
