@@ -379,12 +379,29 @@ public class LeadResource {
 
   /** Apply basic field updates with XSS sanitization. Returns error response if email conflict. */
   private Response applyBasicFieldUpdates(Lead lead, LeadUpdateRequest req) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    applyCompanyAndContactFields(lead, req);
+    Response emailConflict = applyEmailField(lead, req);
+    if (emailConflict != null) return emailConflict;
+    applyAddressFields(lead, req);
+    applyBusinessFields(lead, req);
+    return null;
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for applyBasicFieldUpdates()
+  // ============================================================================
+
+  private void applyCompanyAndContactFields(Lead lead, LeadUpdateRequest req) {
     if (req.companyName != null) {
       lead.companyName = xssSanitizer.sanitizeStrict(req.companyName);
     }
     if (req.contactPerson != null) {
       lead.contactPerson = xssSanitizer.sanitizeStrict(req.contactPerson);
     }
+  }
+
+  private Response applyEmailField(Lead lead, LeadUpdateRequest req) {
     if (req.email != null) {
       String newNormalizedEmail = Lead.normalizeEmail(req.email);
       if (newNormalizedEmail != null && !newNormalizedEmail.equals(lead.emailNormalized)) {
@@ -403,11 +420,18 @@ public class LeadResource {
       lead.email = req.email;
       lead.emailNormalized = newNormalizedEmail;
     }
+    return null;
+  }
+
+  private void applyAddressFields(Lead lead, LeadUpdateRequest req) {
     if (req.phone != null) lead.phone = xssSanitizer.sanitizeStrict(req.phone);
     if (req.website != null) lead.website = xssSanitizer.sanitizeStrict(req.website);
     if (req.street != null) lead.street = xssSanitizer.sanitizeStrict(req.street);
     if (req.postalCode != null) lead.postalCode = xssSanitizer.sanitizeStrict(req.postalCode);
     if (req.city != null) lead.city = xssSanitizer.sanitizeStrict(req.city);
+  }
+
+  private void applyBusinessFields(Lead lead, LeadUpdateRequest req) {
     if (req.businessType != null) lead.businessType = BusinessType.fromString(req.businessType);
     if (req.kitchenSize != null) lead.kitchenSize = KitchenSize.fromString(req.kitchenSize);
     if (req.employeeCount != null) lead.employeeCount = req.employeeCount;
@@ -416,7 +440,6 @@ public class LeadResource {
     if (req.dealSize != null) {
       lead.dealSize = de.freshplan.domain.shared.DealSize.valueOf(req.dealSize);
     }
-    return null;
   }
 
   /** Apply status transition with state machine validation. Returns error response if invalid. */
@@ -515,17 +538,34 @@ public class LeadResource {
 
   /** Apply pain dimension field updates. */
   private void applyPainDimensionFields(Lead lead, LeadUpdateRequest req) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    applyPrimaryPainPoints(lead, req);
+    applySecondaryPainPoints(lead, req);
+    applyPainMetadata(lead, req);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for applyPainDimensionFields()
+  // ============================================================================
+
+  private void applyPrimaryPainPoints(Lead lead, LeadUpdateRequest req) {
     if (req.painStaffShortage != null) lead.painStaffShortage = req.painStaffShortage;
     if (req.painHighCosts != null) lead.painHighCosts = req.painHighCosts;
     if (req.painFoodWaste != null) lead.painFoodWaste = req.painFoodWaste;
     if (req.painQualityInconsistency != null) {
       lead.painQualityInconsistency = req.painQualityInconsistency;
     }
+  }
+
+  private void applySecondaryPainPoints(Lead lead, LeadUpdateRequest req) {
     if (req.painUnreliableDelivery != null)
       lead.painUnreliableDelivery = req.painUnreliableDelivery;
     if (req.painPoorService != null) lead.painPoorService = req.painPoorService;
     if (req.painSupplierQuality != null) lead.painSupplierQuality = req.painSupplierQuality;
     if (req.painTimePressure != null) lead.painTimePressure = req.painTimePressure;
+  }
+
+  private void applyPainMetadata(Lead lead, LeadUpdateRequest req) {
     if (req.urgencyLevel != null) {
       lead.urgencyLevel = de.freshplan.modules.leads.domain.UrgencyLevel.valueOf(req.urgencyLevel);
     }
@@ -1469,22 +1509,39 @@ public class LeadResource {
 
   /** Apply PATCH-style field updates to a LeadContact (only non-null fields are updated). */
   private void applyContactFieldUpdates(LeadContact contact, LeadContactDTO dto, String userId) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    applyContactBasicInfo(contact, dto);
+    applyContactDetails(contact, dto);
+    applyContactRelationshipData(contact, dto);
+    contact.setUpdatedBy(userId);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for applyContactFieldUpdates()
+  // ============================================================================
+
+  private void applyContactBasicInfo(LeadContact contact, LeadContactDTO dto) {
     if (dto.getFirstName() != null) contact.setFirstName(dto.getFirstName());
     if (dto.getLastName() != null) contact.setLastName(dto.getLastName());
     if (dto.getSalutation() != null) contact.setSalutation(dto.getSalutation());
     if (dto.getTitle() != null) contact.setTitle(dto.getTitle());
     if (dto.getPosition() != null) contact.setPosition(dto.getPosition());
     if (dto.getDecisionLevel() != null) contact.setDecisionLevel(dto.getDecisionLevel());
+  }
+
+  private void applyContactDetails(LeadContact contact, LeadContactDTO dto) {
     if (dto.getEmail() != null) contact.setEmail(dto.getEmail());
     if (dto.getPhone() != null) contact.setPhone(dto.getPhone());
     if (dto.getMobile() != null) contact.setMobile(dto.getMobile());
+  }
+
+  private void applyContactRelationshipData(LeadContact contact, LeadContactDTO dto) {
     // Relationship Data - CRM Intelligence
     if (dto.getBirthday() != null) contact.setBirthday(dto.getBirthday());
     if (dto.getHobbies() != null) contact.setHobbies(dto.getHobbies());
     if (dto.getFamilyStatus() != null) contact.setFamilyStatus(dto.getFamilyStatus());
     if (dto.getChildrenCount() != null) contact.setChildrenCount(dto.getChildrenCount());
     if (dto.getPersonalNotes() != null) contact.setPersonalNotes(dto.getPersonalNotes());
-    contact.setUpdatedBy(userId);
   }
 
   /** Process activities array during lead creation. */

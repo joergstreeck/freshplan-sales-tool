@@ -543,16 +543,37 @@ public class CustomerMapper {
    * @param request the update request
    */
   private void updateStatusAndBusinessFields(Customer customer, UpdateCustomerRequest request) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    updateStatusFields(customer, request);
+    updateVolumeFields(customer, request);
+    updateFinanceFields(customer, request);
+    updateDateFields(customer, request);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for updateStatusAndBusinessFields()
+  // ============================================================================
+
+  private void updateStatusFields(Customer customer, UpdateCustomerRequest request) {
     if (request.status() != null) customer.setStatus(request.status());
     if (request.lifecycleStage() != null) customer.setLifecycleStage(request.lifecycleStage());
+  }
+
+  private void updateVolumeFields(Customer customer, UpdateCustomerRequest request) {
     if (request.expectedAnnualVolume() != null)
       customer.setExpectedAnnualVolume(request.expectedAnnualVolume());
     if (request.actualAnnualVolume() != null)
       customer.setActualAnnualVolume(request.actualAnnualVolume());
+  }
+
+  private void updateFinanceFields(Customer customer, UpdateCustomerRequest request) {
     if (request.paymentTerms() != null) customer.setPaymentTerms(request.paymentTerms());
     if (request.creditLimit() != null) customer.setCreditLimit(request.creditLimit());
     if (request.deliveryCondition() != null)
       customer.setDeliveryCondition(request.deliveryCondition());
+  }
+
+  private void updateDateFields(Customer customer, UpdateCustomerRequest request) {
     if (request.lastContactDate() != null) customer.setLastContactDate(request.lastContactDate());
     if (request.nextFollowUpDate() != null)
       customer.setNextFollowUpDate(request.nextFollowUpDate());

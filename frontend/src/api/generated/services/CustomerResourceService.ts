@@ -157,6 +157,56 @@ export class CustomerResourceService {
     });
   }
   /**
+   * Get Branches
+   * @returns any OK
+   * @throws ApiError
+   */
+  public static getApiCustomersBranches({
+    headquarterId,
+  }: {
+    headquarterId: UUID;
+  }): CancelablePromise<any> {
+    return __request(OpenAPI, {
+      method: 'GET',
+      url: '/api/customers/{headquarterId}/branches',
+      path: {
+        headquarterId: headquarterId,
+      },
+      errors: {
+        401: `Not Authorized`,
+        403: `Not Allowed`,
+      },
+    });
+  }
+  /**
+   * Create Branch
+   * @returns CustomerResponse Branch created successfully
+   * @throws ApiError
+   */
+  public static postApiCustomersBranches({
+    headquarterId,
+    requestBody,
+  }: {
+    headquarterId: UUID;
+    requestBody: CreateBranchRequest;
+  }): CancelablePromise<CustomerResponse> {
+    return __request(OpenAPI, {
+      method: 'POST',
+      url: '/api/customers/{headquarterId}/branches',
+      path: {
+        headquarterId: headquarterId,
+      },
+      body: requestBody,
+      mediaType: 'application/json',
+      errors: {
+        400: `Invalid request - parent is not HEADQUARTER`,
+        401: `Not Authorized`,
+        403: `Forbidden - admin or manager role required`,
+        404: `Parent customer not found`,
+      },
+    });
+  }
+  /**
    * Update Customer
    * @returns any OK
    * @throws ApiError
@@ -250,52 +300,6 @@ export class CustomerResourceService {
       errors: {
         401: `Not Authorized`,
         403: `Not Allowed`,
-      },
-    });
-  }
-  /**
-   * Get Branches
-   * @returns any OK
-   * @throws ApiError
-   */
-  public static getApiCustomersBranches({ id }: { id: UUID }): CancelablePromise<any> {
-    return __request(OpenAPI, {
-      method: 'GET',
-      url: '/api/customers/{id}/branches',
-      path: {
-        id: id,
-      },
-      errors: {
-        401: `Not Authorized`,
-        403: `Not Allowed`,
-      },
-    });
-  }
-  /**
-   * Create Branch
-   * @returns CustomerResponse Branch created successfully
-   * @throws ApiError
-   */
-  public static postApiCustomersBranches({
-    id,
-    requestBody,
-  }: {
-    id: UUID;
-    requestBody: CreateBranchRequest;
-  }): CancelablePromise<CustomerResponse> {
-    return __request(OpenAPI, {
-      method: 'POST',
-      url: '/api/customers/{id}/branches',
-      path: {
-        id: id,
-      },
-      body: requestBody,
-      mediaType: 'application/json',
-      errors: {
-        400: `Invalid request - parent is not HEADQUARTER`,
-        401: `Not Authorized`,
-        403: `Forbidden - admin or manager role required`,
-        404: `Parent customer not found`,
       },
     });
   }

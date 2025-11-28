@@ -137,6 +137,27 @@ public class LeadDTO {
 
   public static LeadDTO from(Lead lead) {
     LeadDTO dto = new LeadDTO();
+
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    mapBasicFields(dto, lead);
+    mapTerritoryInfo(dto, lead);
+    mapBusinessFields(dto, lead);
+    mapOwnershipFields(dto, lead);
+    mapProtectionFields(dto, lead);
+    mapScoringFields(dto, lead);
+    mapPainFields(dto, lead);
+    mapRelationshipFields(dto, lead);
+    mapMetadataFields(dto, lead);
+    mapContacts(dto, lead);
+
+    return dto;
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for from()
+  // ============================================================================
+
+  private static void mapBasicFields(LeadDTO dto, Lead lead) {
     dto.id = lead.id;
     dto.version = lead.version;
     dto.companyName = lead.companyName;
@@ -148,7 +169,9 @@ public class LeadDTO {
     dto.postalCode = lead.postalCode;
     dto.city = lead.city;
     dto.countryCode = lead.countryCode;
+  }
 
+  private static void mapTerritoryInfo(LeadDTO dto, Lead lead) {
     // Safely access territory fields (now safe within @Transactional)
     if (lead.territory != null) {
       dto.territory = new TerritoryInfo();
@@ -157,26 +180,31 @@ public class LeadDTO {
       dto.territory.countryCode = lead.territory.countryCode;
       dto.territory.currencyCode = lead.territory.currencyCode;
     }
+  }
 
+  private static void mapBusinessFields(LeadDTO dto, Lead lead) {
     dto.businessType = lead.businessType != null ? lead.businessType.name() : null;
     dto.kitchenSize = lead.kitchenSize != null ? lead.kitchenSize.name() : null;
     dto.employeeCount = lead.employeeCount;
     dto.estimatedVolume = lead.estimatedVolume;
     dto.industry = lead.industry;
     dto.status = lead.status;
+    dto.source = lead.source != null ? lead.source.name() : null;
+    dto.sourceCampaign = lead.sourceCampaign;
+    dto.stage = lead.stage;
+    dto.branchCount = lead.branchCount;
+    dto.isChain = lead.isChain;
+  }
 
+  private static void mapOwnershipFields(LeadDTO dto, Lead lead) {
     dto.ownerUserId = lead.ownerUserId;
     // Copy the Set to avoid lazy loading issues
     if (lead.collaboratorUserIds != null) {
       dto.collaboratorUserIds = new java.util.HashSet<>(lead.collaboratorUserIds);
     }
+  }
 
-    dto.source = lead.source != null ? lead.source.name() : null;
-    dto.sourceCampaign = lead.sourceCampaign;
-
-    // Progressive Profiling (Sprint 2.1.5)
-    dto.stage = lead.stage;
-
+  private static void mapProtectionFields(LeadDTO dto, Lead lead) {
     // Variante B: Pre-Claim Status Detection (firstContactDocumentedAt === null → Pre-Claim)
     dto.registeredAt = lead.registeredAt;
     dto.firstContactDocumentedAt = lead.firstContactDocumentedAt;
@@ -196,7 +224,9 @@ public class LeadDTO {
     dto.stopReason = lead.stopReason;
     dto.stopApprovedBy = lead.stopApprovedBy;
     dto.progressPauseTotalSeconds = lead.progressPauseTotalSeconds;
+  }
 
+  private static void mapScoringFields(LeadDTO dto, Lead lead) {
     // Lead Scoring (Sprint 2.1.6 Phase 4)
     dto.leadScore = lead.leadScore;
     dto.painScore = lead.painScore;
@@ -207,11 +237,9 @@ public class LeadDTO {
     // Revenue Scoring Input Fields
     dto.budgetConfirmed = lead.budgetConfirmed;
     dto.dealSize = lead.dealSize != null ? lead.dealSize.name() : null;
+  }
 
-    // Branch/Chain information (Sprint 2.1.6 Phase 5+)
-    dto.branchCount = lead.branchCount;
-    dto.isChain = lead.isChain;
-
+  private static void mapPainFields(LeadDTO dto, Lead lead) {
     // Pain Scoring System V3 (Sprint 2.1.6 Phase 5+ - V278)
     dto.painStaffShortage = lead.painStaffShortage;
     dto.painHighCosts = lead.painHighCosts;
@@ -224,7 +252,9 @@ public class LeadDTO {
     dto.painNotes = lead.painNotes;
     dto.urgencyLevel = lead.urgencyLevel;
     dto.multiPainBonus = lead.multiPainBonus;
+  }
 
+  private static void mapRelationshipFields(LeadDTO dto, Lead lead) {
     // Relationship Dimension (Sprint 2.1.6 Phase 5+ - V280)
     dto.relationshipStatus =
         lead.relationshipStatus != null ? lead.relationshipStatus.name() : null;
@@ -232,12 +262,16 @@ public class LeadDTO {
         lead.decisionMakerAccess != null ? lead.decisionMakerAccess.name() : null;
     dto.competitorInUse = lead.competitorInUse;
     dto.internalChampionName = lead.internalChampionName;
+  }
 
+  private static void mapMetadataFields(LeadDTO dto, Lead lead) {
     dto.createdAt = lead.createdAt;
     dto.createdBy = lead.createdBy;
     dto.updatedAt = lead.updatedAt;
     dto.updatedBy = lead.updatedBy;
+  }
 
+  private static void mapContacts(LeadDTO dto, Lead lead) {
     // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
     // IMPORTANT: Always map contacts (even if empty) to avoid null in DTO
     // IMPORTANT: Sort contacts so PRIMARY contact comes FIRST (test expectations)
@@ -264,8 +298,6 @@ public class LeadDTO {
               ? primaryContact.getPhone()
               : primaryContact.getMobile();
     }
-
-    return dto;
   }
 
   /**

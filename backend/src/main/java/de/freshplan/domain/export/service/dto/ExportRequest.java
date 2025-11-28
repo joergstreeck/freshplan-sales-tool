@@ -241,6 +241,19 @@ public class ExportRequest {
 
   public Map<String, Object> toMap() {
     Map<String, Object> map = new HashMap<>();
+
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    addOptionalFields(map);
+    addRequiredFields(map);
+
+    return map;
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for toMap()
+  // ============================================================================
+
+  private void addOptionalFields(Map<String, Object> map) {
     if (entityType != null) map.put("entityType", entityType);
     if (entityId != null) map.put("entityId", entityId);
     if (dateFrom != null) map.put("dateFrom", dateFrom);
@@ -251,11 +264,13 @@ public class ExportRequest {
     if (status != null) map.put("status", status);
     if (format != null) map.put("format", format);
     if (groupBy != null) map.put("groupBy", groupBy);
+  }
+
+  private void addRequiredFields(Map<String, Object> map) {
     map.put("includeDetails", includeDetails);
     map.put("includeStats", includeStats);
     map.put("includeContacts", includeContacts);
     map.put("page", page);
     map.put("size", size);
-    return map;
   }
 }
