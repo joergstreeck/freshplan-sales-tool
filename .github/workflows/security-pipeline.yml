@@ -270,13 +270,17 @@ jobs:
       - name: Scan Backend Image with Trivy
         run: |
           echo "🔍 Scanning backend image for vulnerabilities..."
+
+          # Scan with --ignore-unfixed: Only report CVEs that have fixes available
+          # This is best practice - we can't fix what upstream hasn't patched
           trivy image \
-            --severity CRITICAL,HIGH,MEDIUM \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
             --format json \
             --output trivy-backend-report.json \
             freshplan-backend:latest
 
-          # Also generate table report for easy reading
+          # Also generate table report for easy reading (all CVEs for visibility)
           trivy image \
             --severity CRITICAL,HIGH,MEDIUM \
             --format table \
@@ -288,13 +292,16 @@ jobs:
       - name: Scan Frontend Image with Trivy
         run: |
           echo "🔍 Scanning frontend image for vulnerabilities..."
+
+          # Scan with --ignore-unfixed: Only report CVEs that have fixes available
           trivy image \
-            --severity CRITICAL,HIGH,MEDIUM \
+            --severity CRITICAL,HIGH \
+            --ignore-unfixed \
             --format json \
             --output trivy-frontend-report.json \
             freshplan-frontend:latest
 
-          # Also generate table report for easy reading
+          # Also generate table report for easy reading (all CVEs for visibility)
           trivy image \
             --severity CRITICAL,HIGH,MEDIUM \
             --format table \
@@ -304,67 +311,63 @@ jobs:
           echo "✅ Frontend scan completed"
 
       - name: Check for Critical Vulnerabilities (Backend)
-        # Note: Base image CVEs are often not immediately fixable
-        # We report but don't block on base image vulnerabilities
-        continue-on-error: true
         run: |
-          echo "🔍 Analyzing backend vulnerabilities..."
+          echo "🔍 Analyzing backend vulnerabilities (fixable only)..."
 
           if [ -f trivy-backend-report.json ]; then
             CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-backend-report.json)
             HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-backend-report.json)
-            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-backend-report.json)
 
-            echo "📊 Backend Image Vulnerabilities:"
+            echo "📊 Backend Image Vulnerabilities (fixable):"
             echo "  - CRITICAL: $CRITICAL"
             echo "  - HIGH: $HIGH"
-            echo "  - MEDIUM: $MEDIUM"
 
             if [ "$CRITICAL" -gt 0 ]; then
               echo ""
-              echo "⚠️ CRITICAL vulnerabilities detected in backend image!"
+              echo "❌ CRITICAL fixable vulnerabilities detected in backend image!"
               echo "📊 Review trivy-backend-report.txt artifact for details."
-              echo "💡 Note: Base image CVEs require upstream fixes."
+              echo "💡 These CVEs have patches available - please update dependencies."
+              exit 1
             fi
 
-            if [ "$HIGH" -gt 10 ]; then
+            if [ "$HIGH" -gt 5 ]; then
               echo ""
-              echo "⚠️ More than 10 HIGH vulnerabilities detected in backend!"
+              echo "⚠️ More than 5 HIGH fixable vulnerabilities detected!"
               echo "📊 Consider updating base image or dependencies."
             fi
+
+            echo "✅ No critical fixable vulnerabilities in backend"
           else
             echo "⚠️ No backend Trivy report generated"
           fi
 
       - name: Check for Critical Vulnerabilities (Frontend)
-        # Note: Base image CVEs (alpine/nginx) are often not immediately fixable
-        # We report but don't block on base image vulnerabilities
-        continue-on-error: true
         run: |
-          echo "🔍 Analyzing frontend vulnerabilities..."
+          echo "🔍 Analyzing frontend vulnerabilities (fixable only)..."
 
           if [ -f trivy-frontend-report.json ]; then
             CRITICAL=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "CRITICAL")] | length' trivy-frontend-report.json)
             HIGH=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "HIGH")] | length' trivy-frontend-report.json)
-            MEDIUM=$(jq '[.Results[]?.Vulnerabilities[]? | select(.Severity == "MEDIUM")] | length' trivy-frontend-report.json)
 
-            echo "📊 Frontend Image Vulnerabilities:"
+            echo "📊 Frontend Image Vulnerabilities (fixable):"
             echo "  - CRITICAL: $CRITICAL"
             echo "  - HIGH: $HIGH"
-            echo "  - MEDIUM: $MEDIUM"
 
             if [ "$CRITICAL" -gt 0 ]; then
               echo ""
-              echo "⚠️ CRITICAL vulnerabilities detected in frontend image!"
+              echo "❌ CRITICAL fixable vulnerabilities detected in frontend image!"
               echo "📊 Review trivy-frontend-report.txt artifact for details."
-              echo "💡 Note: Base image CVEs (nginx/alpine) require upstream fixes."
+              echo "💡 These CVEs have patches available - please update dependencies."
+              exit 1
             fi
 
-            if [ "$HIGH" -gt 10 ]; then
+            if [ "$HIGH" -gt 5 ]; then
               echo ""
-              echo "⚠️ More than 10 HIGH vulnerabilities detected in frontend!"
+              echo "⚠️ More than 5 HIGH fixable vulnerabilities detected!"
               echo "📊 Consider updating nginx or node base images."
             fi
+
+            echo "✅ No critical fixable vulnerabilities in frontend"
           else
             echo "⚠️ No frontend Trivy report generated"
           fi
