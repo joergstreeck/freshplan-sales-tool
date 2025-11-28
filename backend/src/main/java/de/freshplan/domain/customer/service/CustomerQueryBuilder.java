@@ -168,90 +168,111 @@ public class CustomerQueryBuilder {
     }
   }
 
+  // PMD Complexity Refactoring (Issue #146) - Operator to SQL template mapping
+  private static final Map<FilterOperator, String> COMPARISON_OPERATORS =
+      Map.of(
+          FilterOperator.EQUALS, " = :",
+          FilterOperator.NOT_EQUALS, " != :",
+          FilterOperator.GREATER_THAN, " > :",
+          FilterOperator.GREATER_THAN_OR_EQUALS, " >= :",
+          FilterOperator.LESS_THAN, " < :",
+          FilterOperator.LESS_THAN_OR_EQUALS, " <= :");
+
+  private static final Map<FilterOperator, String> LIKE_PATTERNS =
+      Map.of(
+          FilterOperator.CONTAINS, "%%%s%%",
+          FilterOperator.STARTS_WITH, "%s%%",
+          FilterOperator.ENDS_WITH, "%%%s");
+
   private String buildCondition(FilterCriteria filter, int index, Map<String, Object> params) {
     String field = mapFieldName(filter.getField());
     String paramName = "param" + index;
     FilterOperator operator = filter.getOperator();
 
-    // Validate BETWEEN operator early
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    validateBetweenOperator(operator, filter.getValue());
+
+    Object value = convertValue(field, filter.getValue());
+
+    // Handle comparison operators (=, !=, >, >=, <, <=)
+    if (COMPARISON_OPERATORS.containsKey(operator)) {
+      return buildComparisonCondition(field, paramName, operator, value, params);
+    }
+
+    // Handle LIKE operators (CONTAINS, STARTS_WITH, ENDS_WITH)
+    if (LIKE_PATTERNS.containsKey(operator)) {
+      return buildLikeCondition(field, paramName, operator, filter.getValue(), params);
+    }
+
+    // Handle remaining operators
+    return buildSpecialCondition(field, paramName, operator, filter, params);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for buildCondition()
+  // ============================================================================
+
+  private void validateBetweenOperator(FilterOperator operator, Object value) {
     if (operator == FilterOperator.BETWEEN) {
-      if (!(filter.getValue() instanceof List)) {
+      if (!(value instanceof List)) {
         throw new IllegalArgumentException("BETWEEN operator requires a list value");
       }
-      List<?> values = (List<?>) filter.getValue();
+      List<?> values = (List<?>) value;
       if (values.size() != 2) {
         throw new IllegalArgumentException("BETWEEN operator requires exactly two values");
       }
     }
+  }
 
-    Object value = convertValue(field, filter.getValue());
+  private String buildComparisonCondition(
+      String field,
+      String paramName,
+      FilterOperator operator,
+      Object value,
+      Map<String, Object> params) {
+    params.put(paramName, value);
+    return field + COMPARISON_OPERATORS.get(operator) + paramName;
+  }
 
-    switch (operator) {
-      case EQUALS:
-        params.put(paramName, value);
-        return field + " = :" + paramName;
+  private String buildLikeCondition(
+      String field,
+      String paramName,
+      FilterOperator operator,
+      Object rawValue,
+      Map<String, Object> params) {
+    String pattern = LIKE_PATTERNS.get(operator);
+    params.put(paramName, String.format(pattern, rawValue.toString().toLowerCase()));
+    return "LOWER(" + field + ") LIKE :" + paramName;
+  }
 
-      case NOT_EQUALS:
-        params.put(paramName, value);
-        return field + " != :" + paramName;
-
-      case GREATER_THAN:
-        params.put(paramName, value);
-        return field + " > :" + paramName;
-
-      case GREATER_THAN_OR_EQUALS:
-        params.put(paramName, value);
-        return field + " >= :" + paramName;
-
-      case LESS_THAN:
-        params.put(paramName, value);
-        return field + " < :" + paramName;
-
-      case LESS_THAN_OR_EQUALS:
-        params.put(paramName, value);
-        return field + " <= :" + paramName;
-
-      case CONTAINS:
-        params.put(paramName, "%" + filter.getValue().toString().toLowerCase() + "%");
-        return "LOWER(" + field + ") LIKE :" + paramName;
-
-      case STARTS_WITH:
-        params.put(paramName, filter.getValue().toString().toLowerCase() + "%");
-        return "LOWER(" + field + ") LIKE :" + paramName;
-
-      case ENDS_WITH:
-        params.put(paramName, "%" + filter.getValue().toString().toLowerCase());
-        return "LOWER(" + field + ") LIKE :" + paramName;
-
-      case IN:
+  private String buildSpecialCondition(
+      String field,
+      String paramName,
+      FilterOperator operator,
+      FilterCriteria filter,
+      Map<String, Object> params) {
+    return switch (operator) {
+      case IN -> {
         params.put(paramName, convertListValues(field, filter.getValue()));
-        return field + " IN :" + paramName;
-
-      case NOT_IN:
+        yield field + " IN :" + paramName;
+      }
+      case NOT_IN -> {
         params.put(paramName, convertListValues(field, filter.getValue()));
-        return field + " NOT IN :" + paramName;
+        yield field + " NOT IN :" + paramName;
+      }
+      case IS_NULL -> field + " IS NULL";
+      case IS_NOT_NULL -> field + " IS NOT NULL";
+      case BETWEEN -> buildBetweenCondition(field, paramName, filter.getValue(), params);
+      default -> throw new UnsupportedOperationException("Operator not implemented: " + operator);
+    };
+  }
 
-      case IS_NULL:
-        return field + " IS NULL";
-
-      case IS_NOT_NULL:
-        return field + " IS NOT NULL";
-
-      case BETWEEN:
-        // Expecting a list with two values [min, max]
-        if (filter.getValue() instanceof List) {
-          List<?> values = (List<?>) filter.getValue();
-          if (values.size() == 2) {
-            params.put(paramName + "Min", convertValue(field, values.get(0)));
-            params.put(paramName + "Max", convertValue(field, values.get(1)));
-            return field + " BETWEEN :" + paramName + "Min AND :" + paramName + "Max";
-          }
-        }
-        throw new IllegalArgumentException("BETWEEN operator requires a list with two values");
-
-      default:
-        throw new UnsupportedOperationException("Operator not implemented: " + operator);
-    }
+  private String buildBetweenCondition(
+      String field, String paramName, Object value, Map<String, Object> params) {
+    List<?> values = (List<?>) value;
+    params.put(paramName + "Min", convertValue(field, values.get(0)));
+    params.put(paramName + "Max", convertValue(field, values.get(1)));
+    return field + " BETWEEN :" + paramName + "Min AND :" + paramName + "Max";
   }
 
   /**

@@ -104,29 +104,51 @@ public class AuditEntry extends PanacheEntityBase {
   /** Pre-persist validation to ensure data integrity */
   @PrePersist
   protected void onCreate() {
+    // PMD Complexity Refactoring (Issue #146) - Extracted helper methods
+    initializeTimestamp();
+    validateRequiredFields();
+    initializeUserDefaults();
+    initializeSource();
+    initializeDataHash();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for onCreate()
+  // ============================================================================
+
+  private void initializeTimestamp() {
     if (timestamp == null) {
       timestamp = Instant.now();
     }
+  }
 
-    // Validate required fields
+  private void validateRequiredFields() {
     if (eventType == null || entityType == null || entityId == null) {
       throw new IllegalStateException("Audit entry missing required fields");
     }
+  }
 
+  private void initializeUserDefaults() {
     // In CI-Umgebung kann User-Information fehlen - defensive Behandlung
-    if (userId == null || userName == null || userRole == null) {
-      // Fallback für fehlende User-Information (besonders in CI/Test-Umgebung)
-      if (userId == null) userId = UUID.fromString("00000000-0000-0000-0000-000000000000");
-      if (userName == null) userName = "system";
-      if (userRole == null) userRole = "SYSTEM";
+    if (userId == null) {
+      userId = UUID.fromString("00000000-0000-0000-0000-000000000000");
     }
+    if (userName == null) {
+      userName = "system";
+    }
+    if (userRole == null) {
+      userRole = "SYSTEM";
+    }
+  }
 
+  private void initializeSource() {
     if (source == null) {
       source = AuditSource.SYSTEM;
     }
+  }
 
+  private void initializeDataHash() {
     if (dataHash == null) {
-      // In test environment, generate a simple hash if missing
       if (isTestEnvironment()) {
         dataHash = generateTestHash();
       } else {
