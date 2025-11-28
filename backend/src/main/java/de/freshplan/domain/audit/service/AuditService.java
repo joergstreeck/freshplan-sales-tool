@@ -261,45 +261,17 @@ public class AuditService {
             .eventType(context.getEventType())
             .entityType(context.getEntityType())
             .entityId(context.getEntityId())
-            .userId(
-                context.getUserId() != null
-                    ? context.getUserId()
-                    : securityUtils.getCurrentUserId())
-            .userName(
-                context.getUserName() != null
-                    ? context.getUserName()
-                    : securityUtils.getCurrentUserName())
-            .userRole(
-                context.getUserRole() != null
-                    ? context.getUserRole()
-                    : securityUtils.getCurrentUserRole())
             .changeReason(context.getChangeReason())
             .userComment(context.getUserComment())
-            .source(context.getSource() != null ? context.getSource() : determineSource())
             .apiEndpoint(context.getApiEndpoint())
             .requestId(context.getRequestId())
-            .sessionId(
-                context.getSessionId() != null
-                    ? context.getSessionId()
-                    : securityUtils.getCurrentSessionId())
             .previousHash(previousHash);
 
-    // Serialize values to JSON
-    if (context.getOldValue() != null) {
-      builder.oldValue(toJson(context.getOldValue()));
-    }
-    if (context.getNewValue() != null) {
-      builder.newValue(toJson(context.getNewValue()));
-    }
-
-    // Add request context if available
-    if (context.getIpAddress() == null) {
-      builder.ipAddress(getClientIpAddress());
-      builder.userAgent(getUserAgent());
-    } else {
-      builder.ipAddress(context.getIpAddress());
-      builder.userAgent(context.getUserAgent());
-    }
+    // PMD Complexity Refactoring (Issue #146) - Extracted helper methods
+    applyUserContext(builder, context);
+    applySourceAndSession(builder, context);
+    applyValues(builder, context);
+    applyRequestContext(builder, context);
 
     // Build entry without hash
     AuditEntry entry = builder.build();
@@ -307,6 +279,46 @@ public class AuditService {
     // Calculate and set hash
     String dataHash = calculateHash(entry, previousHash);
     return entry.toBuilder().dataHash(dataHash).build();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for buildAuditEntry()
+  // ============================================================================
+
+  private void applyUserContext(AuditEntry.Builder builder, AuditContext context) {
+    builder.userId(
+        context.getUserId() != null ? context.getUserId() : securityUtils.getCurrentUserId());
+    builder.userName(
+        context.getUserName() != null ? context.getUserName() : securityUtils.getCurrentUserName());
+    builder.userRole(
+        context.getUserRole() != null ? context.getUserRole() : securityUtils.getCurrentUserRole());
+  }
+
+  private void applySourceAndSession(AuditEntry.Builder builder, AuditContext context) {
+    builder.source(context.getSource() != null ? context.getSource() : determineSource());
+    builder.sessionId(
+        context.getSessionId() != null
+            ? context.getSessionId()
+            : securityUtils.getCurrentSessionId());
+  }
+
+  private void applyValues(AuditEntry.Builder builder, AuditContext context) {
+    if (context.getOldValue() != null) {
+      builder.oldValue(toJson(context.getOldValue()));
+    }
+    if (context.getNewValue() != null) {
+      builder.newValue(toJson(context.getNewValue()));
+    }
+  }
+
+  private void applyRequestContext(AuditEntry.Builder builder, AuditContext context) {
+    if (context.getIpAddress() == null) {
+      builder.ipAddress(getClientIpAddress());
+      builder.userAgent(getUserAgent());
+    } else {
+      builder.ipAddress(context.getIpAddress());
+      builder.userAgent(context.getUserAgent());
+    }
   }
 
   /** Capture current request/security context */

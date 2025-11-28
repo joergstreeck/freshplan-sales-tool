@@ -160,39 +160,58 @@ public class CustomerAddress extends PanacheEntityBase {
   public String getFormattedAddress() {
     StringBuilder sb = new StringBuilder();
 
-    if (street != null && !street.isBlank()) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted helper methods
+    appendStreetLine(sb);
+    appendLine(sb, additionalLine, "\n");
+    appendPoBox(sb);
+    appendPostalAndCity(sb);
+    appendCountry(sb);
+
+    return sb.toString().trim();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for getFormattedAddress()
+  // ============================================================================
+
+  private void appendStreetLine(StringBuilder sb) {
+    if (hasValue(street)) {
       sb.append(street);
-      if (streetNumber != null && !streetNumber.isBlank()) {
+      if (hasValue(streetNumber)) {
         sb.append(" ").append(streetNumber);
       }
       sb.append("\n");
     }
+  }
 
-    if (additionalLine != null && !additionalLine.isBlank()) {
-      sb.append(additionalLine).append("\n");
-    }
-
-    if (poBox != null && !poBox.isBlank()) {
+  private void appendPoBox(StringBuilder sb) {
+    if (hasValue(poBox)) {
       sb.append("Postfach ").append(poBox).append("\n");
     }
+  }
 
-    if (postalCode != null && !postalCode.isBlank()) {
-      sb.append(postalCode).append(" ");
-    }
-
-    if (city != null && !city.isBlank()) {
-      sb.append(city);
-    }
-
-    if (stateProvince != null && !stateProvince.isBlank()) {
+  private void appendPostalAndCity(StringBuilder sb) {
+    appendLine(sb, postalCode, " ");
+    appendLine(sb, city, "");
+    if (hasValue(stateProvince)) {
       sb.append(", ").append(stateProvince);
     }
+  }
 
+  private void appendCountry(StringBuilder sb) {
     if (country != null && !country.equals("DEU")) {
       sb.append("\n").append(country);
     }
+  }
 
-    return sb.toString().trim();
+  private void appendLine(StringBuilder sb, String value, String suffix) {
+    if (hasValue(value)) {
+      sb.append(value).append(suffix);
+    }
+  }
+
+  private boolean hasValue(String value) {
+    return value != null && !value.isBlank();
   }
 
   /** Gets a single-line formatted address. */

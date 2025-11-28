@@ -486,29 +486,49 @@ public class ExportResource {
 
   private String formatCustomerContactCsvLine(Customer customer, Object contactObj) {
     // Cast to CustomerContact
-    if (contactObj instanceof CustomerContact) {
-      CustomerContact contact = (CustomerContact) contactObj;
-      String fullName =
-          (contact.getFirstName() != null ? contact.getFirstName() : "")
-              + " "
-              + (contact.getLastName() != null ? contact.getLastName() : "");
+    if (contactObj instanceof CustomerContact contact) {
+      String fullName = buildContactFullName(contact);
       return String.format(
           "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"",
-          customer.getCustomerNumber() != null ? customer.getCustomerNumber() : "",
-          customer.getCompanyName() != null ? customer.getCompanyName() : "",
+          nullSafe(customer.getCustomerNumber()),
+          nullSafe(customer.getCompanyName()),
           customer.getStatus(),
-          customer.getIndustry() != null ? customer.getIndustry() : "",
+          nullSafe(customer.getIndustry()),
           "", // City field not available yet
           fullName.trim(),
-          contact.getEmail() != null ? contact.getEmail() : "",
-          contact.getPhone() != null ? contact.getPhone() : "",
-          contact.getPosition() != null ? contact.getPosition() : "",
-          contact.getDepartment() != null ? contact.getDepartment() : "",
+          nullSafe(contact.getEmail()),
+          nullSafe(contact.getPhone()),
+          nullSafe(contact.getPosition()),
+          nullSafe(contact.getDepartment()),
           contact.getIsPrimary() != null ? contact.getIsPrimary().toString() : "false",
-          customer.getLastContactDate() != null ? customer.getLastContactDate() : "");
+          nullSafe(customer.getLastContactDate()));
     } else {
       // Fallback for unexpected types
       return formatCustomerCsvLine(customer);
     }
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods
+  // ============================================================================
+
+  /**
+   * Build full name from contact first and last name.
+   *
+   * @param contact the customer contact
+   * @return formatted full name
+   */
+  private String buildContactFullName(CustomerContact contact) {
+    return nullSafe(contact.getFirstName()) + " " + nullSafe(contact.getLastName());
+  }
+
+  /**
+   * Return empty string if value is null.
+   *
+   * @param value the value to check
+   * @return value or empty string
+   */
+  private String nullSafe(Object value) {
+    return value != null ? value.toString() : "";
   }
 }
