@@ -9,6 +9,8 @@ COPY frontend/ .
 RUN npm run build
 
 FROM nginx:1.28-alpine
+# Update Alpine packages to fix any known CVEs
+RUN apk upgrade --no-cache
 # Vite produces dist/, not build/
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY docker/nginx.conf /etc/nginx/conf.d/default.conf
