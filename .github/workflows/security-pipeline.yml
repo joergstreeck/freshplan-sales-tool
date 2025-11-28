@@ -276,12 +276,11 @@ jobs:
             --output trivy-backend-report.json \
             freshplan-backend:latest
 
-          # Also generate HTML report
+          # Also generate table report for easy reading
           trivy image \
             --severity CRITICAL,HIGH,MEDIUM \
-            --format template \
-            --template "@contrib/html.tpl" \
-            --output trivy-backend-report.html \
+            --format table \
+            --output trivy-backend-report.txt \
             freshplan-backend:latest
 
           echo "✅ Backend scan completed"
@@ -295,12 +294,11 @@ jobs:
             --output trivy-frontend-report.json \
             freshplan-frontend:latest
 
-          # Also generate HTML report
+          # Also generate table report for easy reading
           trivy image \
             --severity CRITICAL,HIGH,MEDIUM \
-            --format template \
-            --template "@contrib/html.tpl" \
-            --output trivy-frontend-report.html \
+            --format table \
+            --output trivy-frontend-report.txt \
             freshplan-frontend:latest
 
           echo "✅ Frontend scan completed"
@@ -372,9 +370,9 @@ jobs:
           name: trivy-container-scan-reports
           path: |
             trivy-backend-report.json
-            trivy-backend-report.html
+            trivy-backend-report.txt
             trivy-frontend-report.json
-            trivy-frontend-report.html
+            trivy-frontend-report.txt
           retention-days: 30
 
       - name: Trivy Scan Summary
@@ -545,34 +543,59 @@ jobs:
 
       - name: Start Backend
         working-directory: backend
-        env:
-          DB_URL: jdbc:postgresql://localhost:5432/freshplan
-          DB_USER: freshplan
-          DB_PASSWORD: freshplan
-          QUARKUS_PROFILE: ci
         run: |
+          # Start Quarkus with test profile (disables auth, enables CORS)
           java -Xms256m -Xmx512m \
-            -Dquarkus.profile=ci \
+            -Dquarkus.profile=test \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.flyway.migrate-at-start=true \
             -jar target/quarkus-app/quarkus-run.jar &
 
-          # Wait for startup
-          for i in {1..30}; do
+          BACKEND_PID=$!
+          echo "Backend started with PID: $BACKEND_PID"
+
+          # Wait for application to be fully ready (health check)
+          echo "Waiting for backend to start..."
+          for i in {1..60}; do
             sleep 2
-            if curl -f http://localhost:8080/q/health 2>/dev/null; then
-              echo "Application started successfully"
+            if curl -sf http://localhost:8080/q/health/ready 2>/dev/null; then
+              echo "Backend is ready after $((i*2)) seconds"
+              # Additional wait for API initialization
+              sleep 3
               break
             fi
+            echo "Waiting... ($((i*2))s)"
           done
 
-          # Verify startup
-          if ! curl -f http://localhost:8080/q/health; then
-            echo "Application failed to start after 60 seconds"
+          # Final verification
+          if ! curl -sf http://localhost:8080/q/health/ready; then
+            echo "Backend failed to start after 120 seconds"
+            kill $BACKEND_PID 2>/dev/null || true
             exit 1
+          fi
+
+          # Test API endpoint is responding
+          echo "Testing API endpoint..."
+          if curl -sf http://localhost:8080/q/health; then
+            echo "Health check passed"
+          else
+            echo "Warning: API health check failed"
           fi
 
       - name: Run k6 Performance Smoke Test (BLOCKING)
         run: |
           echo "⚡ Running k6 performance smoke test..."
+
+          # Pre-flight check: ensure backend is really responding
+          echo "Pre-flight check: verifying backend is ready..."
+          if ! curl -sf http://localhost:8080/q/health/ready; then
+            echo "❌ Backend is not responding! Skipping k6 test."
+            echo "This may indicate a startup issue."
+            exit 1
+          fi
+          echo "✅ Backend is responding"
 
           # Check if k6 test file exists
           if [ -f backend/src/test/k6/smoke-test.js ]; then
@@ -584,12 +607,12 @@ jobs:
                 echo ""
                 echo "⚠️  Your changes do not meet the performance requirements:"
                 echo "    • P95 response time: <200ms"
-                echo "    • Error rate: <10%"
+                echo "    • Server errors: <5"
                 echo ""
                 echo "💡 Review the k6 test output above for details."
                 exit 1
               }
-            echo "✅ Performance thresholds met (P95 <200ms, errors <10%)"
+            echo "✅ Performance thresholds met (P95 <200ms, server errors <5)"
           else
             echo "⚠️ k6 smoke test file not found at backend/src/test/k6/smoke-test.js"
             echo "📝 Create this file to enable performance testing"

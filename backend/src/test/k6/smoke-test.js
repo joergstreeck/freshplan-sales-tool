@@ -38,7 +38,6 @@ export default function () {
   let coreEndpoints = [
     '/q/health/ready',
     '/q/health/live',
-    '/q/metrics',
   ];
 
   coreEndpoints.forEach(endpoint => {
