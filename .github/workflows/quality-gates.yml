@@ -3,8 +3,18 @@ name: Quality Gates
 on:
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
   push:
     branches: [main, develop, 'feat/**', 'fix/**', 'feature/**', 'bugfix/**']
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
 
 permissions:
   contents: read

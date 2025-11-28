@@ -11,8 +11,18 @@ name: Integration Tests
 on:
   pull_request:
     branches: [main, develop]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
   push:
     branches: [main, develop, ci-minimal-working]
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - 'LICENSE'
+      - '.gitignore'
   workflow_dispatch:
 
 permissions:
