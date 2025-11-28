@@ -254,21 +254,16 @@ jobs:
           echo "✅ Trivy installed: $(trivy --version)"
 
       - name: Build Backend Docker Image
-        working-directory: backend
         run: |
           echo "🐳 Building backend Docker image..."
-          ./mvnw -B package -DskipTests
-          cd ..
+          # Build from repository root - Dockerfile expects backend/ subdirectory
           docker build -f docker/Dockerfile.backend -t freshplan-backend:latest .
           echo "✅ Backend image built"
 
       - name: Build Frontend Docker Image
-        working-directory: frontend
         run: |
           echo "🐳 Building frontend Docker image..."
-          npm ci
-          npm run build
-          cd ..
+          # Build from repository root - Dockerfile expects frontend/ subdirectory
           docker build -f docker/Dockerfile.frontend -t freshplan-frontend:latest .
           echo "✅ Frontend image built"
 
