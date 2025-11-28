@@ -37,7 +37,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="app-container">
+      <main className="app-container">
         <div className="content-wrapper">
           <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
             <h1 className="main-title">FreshPlan 2.0</h1>
@@ -158,7 +158,7 @@ function App() {
             </Card>
           </div>
         </div>
-      </div>
+      </main>
     </ErrorBoundary>
   );
 }
