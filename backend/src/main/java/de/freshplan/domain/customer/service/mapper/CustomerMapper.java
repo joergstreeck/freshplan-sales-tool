@@ -210,17 +210,7 @@ public class CustomerMapper {
    * @throws CustomerMapperException if mapping fails
    */
   public Customer toEntity(CreateCustomerRequest request, String customerNumber, String createdBy) {
-    if (request == null) {
-      throw new CustomerMapperException("CreateCustomerRequest cannot be null");
-    }
-
-    if (customerNumber == null || customerNumber.isBlank()) {
-      throw new CustomerMapperException("Customer number cannot be null or blank");
-    }
-
-    if (createdBy == null || createdBy.isBlank()) {
-      throw new CustomerMapperException("CreatedBy cannot be null or blank");
-    }
+    validateToEntityInputs(request, customerNumber, createdBy);
 
     Customer customer = new Customer();
 
@@ -235,33 +225,11 @@ public class CustomerMapper {
     customer.setBusinessType(request.businessType());
     customer.setClassification(request.classification());
 
-    // Hierarchy
-    if (request.parentCustomerId() != null && !request.parentCustomerId().isBlank()) {
-      try {
-        UUID parentId = UUID.fromString(request.parentCustomerId());
-        Optional<Customer> parent = customerRepository.findByIdActive(parentId);
-        if (parent.isPresent()) {
-          customer.setParentCustomer(parent.get());
-          customer.setHierarchyType(request.hierarchyType());
-        } else {
-          throw new CustomerMapperException("Parent customer not found: " + parentId);
-        }
-      } catch (IllegalArgumentException e) {
-        throw new CustomerMapperException(
-            "Invalid parent customer ID format: " + request.parentCustomerId());
-      }
-    }
+    // Hierarchy (PMD Complexity Refactoring - Issue #146)
+    applyHierarchy(customer, request);
 
-    // Status & Lifecycle with defaults
-    // Sprint 2.1.7.4: Default changed from LEAD to PROSPECT (LEAD removed from lifecycle)
-    customer.setStatus(
-        request.status() != null
-            ? request.status()
-            : de.freshplan.domain.customer.entity.CustomerStatus.PROSPECT);
-    customer.setLifecycleStage(
-        request.lifecycleStage() != null
-            ? request.lifecycleStage()
-            : de.freshplan.domain.customer.entity.CustomerLifecycleStage.ACQUISITION);
+    // Status & Lifecycle with defaults (PMD Complexity Refactoring - Issue #146)
+    applyStatusAndLifecycle(customer, request);
 
     // Financial information
     customer.setExpectedAnnualVolume(request.expectedAnnualVolume());
@@ -278,15 +246,7 @@ public class CustomerMapper {
     customer.setCreatedBy(createdBy);
 
     // Sprint 2 Fields - Set defaults
-    customer.setLocationsGermany(1); // Default: at least one location in Germany
-    customer.setLocationsAustria(0);
-    customer.setLocationsSwitzerland(0);
-    customer.setLocationsRestEU(0);
-    customer.setTotalLocationsEU(1); // Total should match sum
-    customer.setPainPoints(new java.util.ArrayList<>()); // Empty list as default
-    customer.setPrimaryFinancing(
-        de.freshplan.domain.customer.entity.FinancingType.PRIVATE); // Default financing
-    customer.setExpansionPlanned(null); // Default: no expansion planned (nullable field)
+    applyDefaultLocations(customer);
 
     // Calculate initial risk score
     customer.updateRiskScore();
@@ -304,96 +264,16 @@ public class CustomerMapper {
    * @throws CustomerMapperException if mapping fails
    */
   public void updateEntity(Customer customer, UpdateCustomerRequest request, String updatedBy) {
-    if (customer == null) {
-      throw new CustomerMapperException("Customer entity cannot be null");
-    }
+    validateUpdateEntityInputs(customer, request, updatedBy);
 
-    if (request == null) {
-      throw new CustomerMapperException("UpdateCustomerRequest cannot be null");
-    }
+    // Update basic fields (PMD Complexity Refactoring - Issue #146)
+    updateBasicFields(customer, request);
 
-    if (updatedBy == null || updatedBy.isBlank()) {
-      throw new CustomerMapperException("UpdatedBy cannot be null or blank");
-    }
+    // Handle parent customer update (PMD Complexity Refactoring - Issue #146)
+    updateParentCustomer(customer, request);
 
-    // Update only non-null fields (partial update)
-    if (request.companyName() != null) {
-      customer.setCompanyName(request.companyName());
-    }
-    if (request.tradingName() != null) {
-      customer.setTradingName(request.tradingName());
-    }
-    if (request.legalForm() != null) {
-      customer.setLegalForm(request.legalForm());
-    }
-    if (request.customerType() != null) {
-      customer.setCustomerType(request.customerType());
-    }
-    if (request.businessType() != null) {
-      customer.setBusinessType(request.businessType());
-    }
-    if (request.classification() != null) {
-      customer.setClassification(request.classification());
-    }
-
-    // Handle parent customer update
-    if (request.parentCustomerId() != null) {
-      if (request.parentCustomerId().isBlank()) {
-        // Remove parent (make standalone)
-        customer.setParentCustomer(null);
-        customer.setHierarchyType(
-            de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
-      } else {
-        try {
-          UUID parentId = UUID.fromString(request.parentCustomerId());
-          Optional<Customer> parent = customerRepository.findByIdActive(parentId);
-          if (parent.isPresent()) {
-            // Validate no circular reference
-            if (wouldCreateCircularReference(customer, parent.get())) {
-              throw new CustomerMapperException("Update would create circular hierarchy reference");
-            }
-            customer.setParentCustomer(parent.get());
-            customer.setHierarchyType(request.hierarchyType());
-          } else {
-            throw new CustomerMapperException("Parent customer not found: " + parentId);
-          }
-        } catch (IllegalArgumentException e) {
-          throw new CustomerMapperException(
-              "Invalid parent customer ID format: " + request.parentCustomerId());
-        }
-      }
-    }
-
-    if (request.status() != null) {
-      customer.setStatus(request.status());
-    }
-    if (request.lifecycleStage() != null) {
-      customer.setLifecycleStage(request.lifecycleStage());
-    }
-    if (request.expectedAnnualVolume() != null) {
-      customer.setExpectedAnnualVolume(request.expectedAnnualVolume());
-    }
-    if (request.actualAnnualVolume() != null) {
-      customer.setActualAnnualVolume(request.actualAnnualVolume());
-    }
-    if (request.paymentTerms() != null) {
-      customer.setPaymentTerms(request.paymentTerms());
-    }
-    if (request.creditLimit() != null) {
-      customer.setCreditLimit(request.creditLimit());
-    }
-    if (request.deliveryCondition() != null) {
-      customer.setDeliveryCondition(request.deliveryCondition());
-    }
-    if (request.lastContactDate() != null) {
-      customer.setLastContactDate(request.lastContactDate());
-    }
-    if (request.nextFollowUpDate() != null) {
-      customer.setNextFollowUpDate(request.nextFollowUpDate());
-    }
-    if (request.churnThresholdDays() != null) {
-      customer.setChurnThresholdDays(request.churnThresholdDays());
-    }
+    // Update status and business fields (PMD Complexity Refactoring - Issue #146)
+    updateStatusAndBusinessFields(customer, request);
 
     // Update audit fields
     customer.setUpdatedBy(updatedBy);
@@ -496,6 +376,188 @@ public class CustomerMapper {
     } catch (IllegalArgumentException e) {
       return false;
     }
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for toEntity()
+  // ============================================================================
+
+  /**
+   * Validate inputs for toEntity method.
+   *
+   * @throws CustomerMapperException if any input is invalid
+   */
+  private void validateToEntityInputs(
+      CreateCustomerRequest request, String customerNumber, String createdBy) {
+    if (request == null) {
+      throw new CustomerMapperException("CreateCustomerRequest cannot be null");
+    }
+    if (customerNumber == null || customerNumber.isBlank()) {
+      throw new CustomerMapperException("Customer number cannot be null or blank");
+    }
+    if (createdBy == null || createdBy.isBlank()) {
+      throw new CustomerMapperException("CreatedBy cannot be null or blank");
+    }
+  }
+
+  /**
+   * Apply hierarchy settings from request to customer.
+   *
+   * @param customer the customer to configure
+   * @param request the create request with hierarchy data
+   */
+  private void applyHierarchy(Customer customer, CreateCustomerRequest request) {
+    if (request.parentCustomerId() == null || request.parentCustomerId().isBlank()) {
+      return;
+    }
+
+    try {
+      UUID parentId = UUID.fromString(request.parentCustomerId());
+      Optional<Customer> parent = customerRepository.findByIdActive(parentId);
+      if (parent.isPresent()) {
+        customer.setParentCustomer(parent.get());
+        customer.setHierarchyType(request.hierarchyType());
+      } else {
+        throw new CustomerMapperException("Parent customer not found: " + parentId);
+      }
+    } catch (IllegalArgumentException e) {
+      throw new CustomerMapperException(
+          "Invalid parent customer ID format: " + request.parentCustomerId());
+    }
+  }
+
+  /**
+   * Apply status and lifecycle settings with defaults.
+   *
+   * @param customer the customer to configure
+   * @param request the create request
+   */
+  private void applyStatusAndLifecycle(Customer customer, CreateCustomerRequest request) {
+    // Sprint 2.1.7.4: Default changed from LEAD to PROSPECT (LEAD removed from lifecycle)
+    customer.setStatus(
+        request.status() != null
+            ? request.status()
+            : de.freshplan.domain.customer.entity.CustomerStatus.PROSPECT);
+    customer.setLifecycleStage(
+        request.lifecycleStage() != null
+            ? request.lifecycleStage()
+            : de.freshplan.domain.customer.entity.CustomerLifecycleStage.ACQUISITION);
+  }
+
+  /**
+   * Apply default location counts for Sprint 2 fields.
+   *
+   * @param customer the customer to configure
+   */
+  private void applyDefaultLocations(Customer customer) {
+    customer.setLocationsGermany(1); // Default: at least one location in Germany
+    customer.setLocationsAustria(0);
+    customer.setLocationsSwitzerland(0);
+    customer.setLocationsRestEU(0);
+    customer.setTotalLocationsEU(1); // Total should match sum
+    customer.setPainPoints(new java.util.ArrayList<>()); // Empty list as default
+    customer.setPrimaryFinancing(
+        de.freshplan.domain.customer.entity.FinancingType.PRIVATE); // Default financing
+    customer.setExpansionPlanned(null); // Default: no expansion planned (nullable field)
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for updateEntity()
+  // ============================================================================
+
+  /**
+   * Validate inputs for updateEntity method.
+   *
+   * @throws CustomerMapperException if any input is invalid
+   */
+  private void validateUpdateEntityInputs(
+      Customer customer, UpdateCustomerRequest request, String updatedBy) {
+    if (customer == null) {
+      throw new CustomerMapperException("Customer entity cannot be null");
+    }
+    if (request == null) {
+      throw new CustomerMapperException("UpdateCustomerRequest cannot be null");
+    }
+    if (updatedBy == null || updatedBy.isBlank()) {
+      throw new CustomerMapperException("UpdatedBy cannot be null or blank");
+    }
+  }
+
+  /**
+   * Update basic company fields from request.
+   *
+   * @param customer the customer to update
+   * @param request the update request
+   */
+  private void updateBasicFields(Customer customer, UpdateCustomerRequest request) {
+    if (request.companyName() != null) customer.setCompanyName(request.companyName());
+    if (request.tradingName() != null) customer.setTradingName(request.tradingName());
+    if (request.legalForm() != null) customer.setLegalForm(request.legalForm());
+    if (request.customerType() != null) customer.setCustomerType(request.customerType());
+    if (request.businessType() != null) customer.setBusinessType(request.businessType());
+    if (request.classification() != null) customer.setClassification(request.classification());
+  }
+
+  /**
+   * Update parent customer relationship from request.
+   *
+   * @param customer the customer to update
+   * @param request the update request
+   */
+  private void updateParentCustomer(Customer customer, UpdateCustomerRequest request) {
+    if (request.parentCustomerId() == null) {
+      return;
+    }
+
+    if (request.parentCustomerId().isBlank()) {
+      // Remove parent (make standalone)
+      customer.setParentCustomer(null);
+      customer.setHierarchyType(
+          de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
+      return;
+    }
+
+    try {
+      UUID parentId = UUID.fromString(request.parentCustomerId());
+      Optional<Customer> parent = customerRepository.findByIdActive(parentId);
+      if (parent.isPresent()) {
+        // Validate no circular reference
+        if (wouldCreateCircularReference(customer, parent.get())) {
+          throw new CustomerMapperException("Update would create circular hierarchy reference");
+        }
+        customer.setParentCustomer(parent.get());
+        customer.setHierarchyType(request.hierarchyType());
+      } else {
+        throw new CustomerMapperException("Parent customer not found: " + parentId);
+      }
+    } catch (IllegalArgumentException e) {
+      throw new CustomerMapperException(
+          "Invalid parent customer ID format: " + request.parentCustomerId());
+    }
+  }
+
+  /**
+   * Update status and business fields from request.
+   *
+   * @param customer the customer to update
+   * @param request the update request
+   */
+  private void updateStatusAndBusinessFields(Customer customer, UpdateCustomerRequest request) {
+    if (request.status() != null) customer.setStatus(request.status());
+    if (request.lifecycleStage() != null) customer.setLifecycleStage(request.lifecycleStage());
+    if (request.expectedAnnualVolume() != null)
+      customer.setExpectedAnnualVolume(request.expectedAnnualVolume());
+    if (request.actualAnnualVolume() != null)
+      customer.setActualAnnualVolume(request.actualAnnualVolume());
+    if (request.paymentTerms() != null) customer.setPaymentTerms(request.paymentTerms());
+    if (request.creditLimit() != null) customer.setCreditLimit(request.creditLimit());
+    if (request.deliveryCondition() != null)
+      customer.setDeliveryCondition(request.deliveryCondition());
+    if (request.lastContactDate() != null) customer.setLastContactDate(request.lastContactDate());
+    if (request.nextFollowUpDate() != null)
+      customer.setNextFollowUpDate(request.nextFollowUpDate());
+    if (request.churnThresholdDays() != null)
+      customer.setChurnThresholdDays(request.churnThresholdDays());
   }
 
   // ========== EXCEPTION CLASS ==========

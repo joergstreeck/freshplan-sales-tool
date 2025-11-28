@@ -17,7 +17,8 @@ const MainContainer = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
 }));
 
-const ContentContainer = styled(Box, {
+// A11y: Use 'main' element for landmark navigation (WCAG 2.4.1)
+const ContentContainer = styled('main', {
   shouldForwardProp: prop => prop !== 'collapsed',
 })<{ collapsed: boolean }>(({ theme, collapsed }) => ({
   flexGrow: 1,

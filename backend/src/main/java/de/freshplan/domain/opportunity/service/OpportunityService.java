@@ -483,118 +483,10 @@ public class OpportunityService {
         de.freshplan.domain.customer.entity.CustomerLifecycleStage.ONBOARDING);
 
     // 7.5. Set hierarchy type (Sprint 2.1.7.7 Multi-Location Management - D0)
-    if (request.getHierarchyType() != null && !request.getHierarchyType().isBlank()) {
-      try {
-        de.freshplan.domain.customer.entity.CustomerHierarchyType hierarchyType =
-            de.freshplan.domain.customer.entity.CustomerHierarchyType.valueOf(
-                request.getHierarchyType());
-        customer.setHierarchyType(hierarchyType);
-
-        // If FILIALE: validate parent and set relation
-        if (hierarchyType == de.freshplan.domain.customer.entity.CustomerHierarchyType.FILIALE) {
-          if (request.getParentCustomerId() == null) {
-            throw new IllegalArgumentException(
-                "Parent customer ID required for FILIALE hierarchy type");
-          }
-          Customer parent =
-              customerRepository
-                  .findByIdOptional(request.getParentCustomerId())
-                  .orElseThrow(
-                      () ->
-                          new IllegalArgumentException(
-                              "Parent customer not found: " + request.getParentCustomerId()));
-
-          if (parent.getHierarchyType()
-              != de.freshplan.domain.customer.entity.CustomerHierarchyType.HEADQUARTER) {
-            throw new IllegalArgumentException("Parent customer must be HEADQUARTER type");
-          }
-
-          customer.setParentCustomer(parent);
-          // Copy xentral_customer_id from parent (same customer ID in Xentral!)
-          if (parent.getXentralCustomerId() != null) {
-            customer.setXentralCustomerId(parent.getXentralCustomerId());
-            logger.info(
-                "Copied xentral_customer_id {} from parent {} to FILIALE {}",
-                parent.getXentralCustomerId(),
-                parent.getId(),
-                customer.getId());
-          }
-        }
-        logger.info("Set hierarchy type {} for customer", hierarchyType);
-      } catch (IllegalArgumentException e) {
-        logger.warn(
-            "Invalid hierarchy type: {}, defaulting to STANDALONE", request.getHierarchyType());
-        customer.setHierarchyType(
-            de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
-      }
-    } else {
-      customer.setHierarchyType(
-          de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
-    }
+    applyHierarchyType(customer, request);
 
     // 8. Copy data from Lead (if opportunity came from lead)
-    if (opportunity.getLead() != null) {
-      de.freshplan.modules.leads.domain.Lead lead = opportunity.getLead();
-
-      // Set originalLeadId (V261 field - enables Lead → Customer traceability)
-      customer.setOriginalLeadId(lead.id);
-      logger.debug("Linked customer to original lead ID: {}", lead.id);
-
-      // Copy business data
-      if (lead.businessType != null) {
-        customer.setBusinessType(
-            de.freshplan.domain.shared.BusinessType.valueOf(lead.businessType.name()));
-      }
-      if (lead.estimatedVolume != null) {
-        customer.setExpectedAnnualVolume(lead.estimatedVolume);
-      }
-
-      // Copy pain points (8 boolean flags + notes)
-      if (lead.painStaffShortage != null) {
-        customer.setPainStaffShortage(lead.painStaffShortage);
-      }
-      if (lead.painHighCosts != null) {
-        customer.setPainHighCosts(lead.painHighCosts);
-      }
-      if (lead.painFoodWaste != null) {
-        customer.setPainFoodWaste(lead.painFoodWaste);
-      }
-      if (lead.painQualityInconsistency != null) {
-        customer.setPainQualityInconsistency(lead.painQualityInconsistency);
-      }
-      if (lead.painTimePressure != null) {
-        customer.setPainTimePressure(lead.painTimePressure);
-      }
-      if (lead.painSupplierQuality != null) {
-        customer.setPainSupplierQuality(lead.painSupplierQuality);
-      }
-      if (lead.painUnreliableDelivery != null) {
-        customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
-      }
-      if (lead.painPoorService != null) {
-        customer.setPainPoorService(lead.painPoorService);
-      }
-      if (lead.painNotes != null) {
-        customer.setPainNotes(lead.painNotes);
-      }
-
-      // Copy structured address fields (Sprint 2.1.7.2 D11 Phase 1)
-      // WICHTIG: 1:1 Feldnamen-Mapping für einfache Konversion!
-      if (lead.street != null) {
-        customer.setStreet(lead.street);
-      }
-      if (lead.postalCode != null) {
-        customer.setPostalCode(lead.postalCode);
-      }
-      if (lead.city != null) {
-        customer.setCity(lead.city);
-      }
-      if (lead.countryCode != null) {
-        customer.setCountryCode(lead.countryCode);
-      }
-
-      logger.debug("Copied pain points, business data, and address from lead {}", lead.id);
-    }
+    copyLeadDataToCustomer(opportunity.getLead(), customer);
 
     // 9. Override expected volume from opportunity if set
     if (opportunity.getExpectedValue() != null) {
@@ -1330,6 +1222,149 @@ public class OpportunityService {
   // =====================================
   // PRIVATE HELPER METHODS
   // =====================================
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods
+  // ============================================================================
+
+  /**
+   * Apply hierarchy type from request to customer (STANDALONE, HEADQUARTER, FILIALE).
+   *
+   * <p>PMD Complexity Refactoring: Extracted from convertToCustomer() to reduce NPath complexity.
+   *
+   * @param customer the customer to configure
+   * @param request the conversion request with hierarchy settings
+   */
+  private void applyHierarchyType(Customer customer, ConvertToCustomerRequest request) {
+    if (request.getHierarchyType() != null && !request.getHierarchyType().isBlank()) {
+      try {
+        de.freshplan.domain.customer.entity.CustomerHierarchyType hierarchyType =
+            de.freshplan.domain.customer.entity.CustomerHierarchyType.valueOf(
+                request.getHierarchyType());
+        customer.setHierarchyType(hierarchyType);
+
+        // If FILIALE: validate parent and set relation
+        if (hierarchyType == de.freshplan.domain.customer.entity.CustomerHierarchyType.FILIALE) {
+          applyFilialeParentRelation(customer, request);
+        }
+        logger.info("Set hierarchy type {} for customer", hierarchyType);
+      } catch (IllegalArgumentException e) {
+        logger.warn(
+            "Invalid hierarchy type: {}, defaulting to STANDALONE", request.getHierarchyType());
+        customer.setHierarchyType(
+            de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
+      }
+    } else {
+      customer.setHierarchyType(
+          de.freshplan.domain.customer.entity.CustomerHierarchyType.STANDALONE);
+    }
+  }
+
+  /**
+   * Apply parent customer relation for FILIALE hierarchy type.
+   *
+   * @param customer the FILIALE customer
+   * @param request the conversion request with parent ID
+   */
+  private void applyFilialeParentRelation(Customer customer, ConvertToCustomerRequest request) {
+    if (request.getParentCustomerId() == null) {
+      throw new IllegalArgumentException("Parent customer ID required for FILIALE hierarchy type");
+    }
+    Customer parent =
+        customerRepository
+            .findByIdOptional(request.getParentCustomerId())
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Parent customer not found: " + request.getParentCustomerId()));
+
+    if (parent.getHierarchyType()
+        != de.freshplan.domain.customer.entity.CustomerHierarchyType.HEADQUARTER) {
+      throw new IllegalArgumentException("Parent customer must be HEADQUARTER type");
+    }
+
+    customer.setParentCustomer(parent);
+    // Copy xentral_customer_id from parent (same customer ID in Xentral!)
+    if (parent.getXentralCustomerId() != null) {
+      customer.setXentralCustomerId(parent.getXentralCustomerId());
+      logger.info(
+          "Copied xentral_customer_id {} from parent {} to FILIALE {}",
+          parent.getXentralCustomerId(),
+          parent.getId(),
+          customer.getId());
+    }
+  }
+
+  /**
+   * Copy Lead data to Customer (business type, pain points, address).
+   *
+   * <p>PMD Complexity Refactoring: Extracted from convertToCustomer() to reduce NPath complexity.
+   *
+   * @param lead the source Lead (may be null)
+   * @param customer the target Customer
+   */
+  private void copyLeadDataToCustomer(
+      de.freshplan.modules.leads.domain.Lead lead, Customer customer) {
+    if (lead == null) {
+      return;
+    }
+
+    // Set originalLeadId (V261 field - enables Lead → Customer traceability)
+    customer.setOriginalLeadId(lead.id);
+    logger.debug("Linked customer to original lead ID: {}", lead.id);
+
+    // Copy business data
+    if (lead.businessType != null) {
+      customer.setBusinessType(
+          de.freshplan.domain.shared.BusinessType.valueOf(lead.businessType.name()));
+    }
+    if (lead.estimatedVolume != null) {
+      customer.setExpectedAnnualVolume(lead.estimatedVolume);
+    }
+
+    // Copy pain points (8 boolean flags + notes)
+    copyPainPointsFromLead(lead, customer);
+
+    // Copy structured address fields
+    copyAddressFromLead(lead, customer);
+
+    logger.debug("Copied pain points, business data, and address from lead {}", lead.id);
+  }
+
+  /**
+   * Copy Pain Scoring System V3 fields from Lead to Customer (8 Boolean fields + notes).
+   *
+   * @param lead the source Lead
+   * @param customer the target Customer
+   */
+  private void copyPainPointsFromLead(
+      de.freshplan.modules.leads.domain.Lead lead, Customer customer) {
+    if (lead.painStaffShortage != null) customer.setPainStaffShortage(lead.painStaffShortage);
+    if (lead.painHighCosts != null) customer.setPainHighCosts(lead.painHighCosts);
+    if (lead.painFoodWaste != null) customer.setPainFoodWaste(lead.painFoodWaste);
+    if (lead.painQualityInconsistency != null)
+      customer.setPainQualityInconsistency(lead.painQualityInconsistency);
+    if (lead.painTimePressure != null) customer.setPainTimePressure(lead.painTimePressure);
+    if (lead.painSupplierQuality != null) customer.setPainSupplierQuality(lead.painSupplierQuality);
+    if (lead.painUnreliableDelivery != null)
+      customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
+    if (lead.painPoorService != null) customer.setPainPoorService(lead.painPoorService);
+    if (lead.painNotes != null) customer.setPainNotes(lead.painNotes);
+  }
+
+  /**
+   * Copy structured address fields from Lead to Customer.
+   *
+   * @param lead the source Lead
+   * @param customer the target Customer
+   */
+  private void copyAddressFromLead(de.freshplan.modules.leads.domain.Lead lead, Customer customer) {
+    // Sprint 2.1.7.2 D11 Phase 1 - 1:1 Feldnamen-Mapping für einfache Konversion!
+    if (lead.street != null) customer.setStreet(lead.street);
+    if (lead.postalCode != null) customer.setPostalCode(lead.postalCode);
+    if (lead.city != null) customer.setCity(lead.city);
+    if (lead.countryCode != null) customer.setCountryCode(lead.countryCode);
+  }
 
   private User getCurrentUser() {
     try {
