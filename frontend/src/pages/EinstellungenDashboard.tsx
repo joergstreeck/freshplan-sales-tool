@@ -70,7 +70,11 @@ export function EinstellungenDashboard() {
     <MainLayoutV2>
       <Box sx={{ py: 4 }}>
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
+          >
             Einstellungen
           </Typography>
           <Typography variant="body1" color="text.secondary">

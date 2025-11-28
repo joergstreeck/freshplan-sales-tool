@@ -38,7 +38,8 @@ test.describe('Accessibility (A11y) Tests', () => {
   });
 
   test('Dashboard should have no accessibility violations', async ({ page }) => {
-    await navigateAndInjectAxe(page, '/dashboard');
+    // Note: /dashboard route doesn't exist, use /customer-management instead
+    await navigateAndInjectAxe(page, '/customer-management');
 
     // Run axe accessibility check
     await checkA11y(page, undefined, {

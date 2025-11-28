@@ -112,6 +112,7 @@ export function KundenmanagementDashboard() {
           <Box>
             <Typography
               variant="h3"
+              component="h1"
               sx={{
                 mb: 1,
                 fontWeight: 'bold',
