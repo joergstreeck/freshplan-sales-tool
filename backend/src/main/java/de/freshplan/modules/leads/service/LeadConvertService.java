@@ -163,17 +163,30 @@ public class LeadConvertService {
 
   /** Copy Pain Scoring System V3 fields from Lead to Customer (8 Boolean fields + notes). */
   private void copyPainScoringFields(Lead lead, Customer customer) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    copyOperationalPainFields(lead, customer);
+    copySwitchingPainFields(lead, customer);
+    if (lead.painNotes != null) customer.setPainNotes(lead.painNotes);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for copyPainScoringFields()
+  // ============================================================================
+
+  private void copyOperationalPainFields(Lead lead, Customer customer) {
     if (lead.painStaffShortage != null) customer.setPainStaffShortage(lead.painStaffShortage);
     if (lead.painHighCosts != null) customer.setPainHighCosts(lead.painHighCosts);
     if (lead.painFoodWaste != null) customer.setPainFoodWaste(lead.painFoodWaste);
     if (lead.painQualityInconsistency != null)
       customer.setPainQualityInconsistency(lead.painQualityInconsistency);
     if (lead.painTimePressure != null) customer.setPainTimePressure(lead.painTimePressure);
+  }
+
+  private void copySwitchingPainFields(Lead lead, Customer customer) {
     if (lead.painSupplierQuality != null) customer.setPainSupplierQuality(lead.painSupplierQuality);
     if (lead.painUnreliableDelivery != null)
       customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
     if (lead.painPoorService != null) customer.setPainPoorService(lead.painPoorService);
-    if (lead.painNotes != null) customer.setPainNotes(lead.painNotes);
   }
 
   /** Create CustomerLocation and CustomerAddress from Lead data. */

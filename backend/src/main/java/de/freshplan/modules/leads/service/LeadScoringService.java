@@ -153,16 +153,8 @@ public class LeadScoringService {
   public int calculatePainScore(Lead lead) {
     int score = 0;
 
-    // 1. Count identified pain points (40 points max)
-    int painCount = 0;
-    if (Boolean.TRUE.equals(lead.painStaffShortage)) painCount++;
-    if (Boolean.TRUE.equals(lead.painHighCosts)) painCount++;
-    if (Boolean.TRUE.equals(lead.painFoodWaste)) painCount++;
-    if (Boolean.TRUE.equals(lead.painQualityInconsistency)) painCount++;
-    if (Boolean.TRUE.equals(lead.painUnreliableDelivery)) painCount++;
-    if (Boolean.TRUE.equals(lead.painPoorService)) painCount++;
-    if (Boolean.TRUE.equals(lead.painSupplierQuality)) painCount++;
-    if (Boolean.TRUE.equals(lead.painTimePressure)) painCount++;
+    // PMD Complexity Refactoring (Issue #146) - Extracted pain counting
+    int painCount = countIdentifiedPains(lead);
 
     score += Math.min(painCount * 5, 40); // Max 40 points (8 pains × 5)
 
@@ -173,17 +165,38 @@ public class LeadScoringService {
     }
 
     // 3. Urgency level (30 points max)
-    if (lead.urgencyLevel != null) {
-      score +=
-          switch (lead.urgencyLevel) {
-            case EMERGENCY -> 30;
-            case HIGH -> 22;
-            case MEDIUM -> 15;
-            case NORMAL -> 0; // Baseline: Keine Dringlichkeit = 0 Punkte
-          };
-    }
+    score += getUrgencyPoints(lead);
 
     return Math.min(score, 100);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for calculatePainScore()
+  // ============================================================================
+
+  private int countIdentifiedPains(Lead lead) {
+    int painCount = 0;
+    if (Boolean.TRUE.equals(lead.painStaffShortage)) painCount++;
+    if (Boolean.TRUE.equals(lead.painHighCosts)) painCount++;
+    if (Boolean.TRUE.equals(lead.painFoodWaste)) painCount++;
+    if (Boolean.TRUE.equals(lead.painQualityInconsistency)) painCount++;
+    if (Boolean.TRUE.equals(lead.painUnreliableDelivery)) painCount++;
+    if (Boolean.TRUE.equals(lead.painPoorService)) painCount++;
+    if (Boolean.TRUE.equals(lead.painSupplierQuality)) painCount++;
+    if (Boolean.TRUE.equals(lead.painTimePressure)) painCount++;
+    return painCount;
+  }
+
+  private int getUrgencyPoints(Lead lead) {
+    if (lead.urgencyLevel == null) {
+      return 0;
+    }
+    return switch (lead.urgencyLevel) {
+      case EMERGENCY -> 30;
+      case HIGH -> 22;
+      case MEDIUM -> 15;
+      case NORMAL -> 0; // Baseline: Keine Dringlichkeit = 0 Punkte
+    };
   }
 
   // ================================================================================
@@ -211,53 +224,63 @@ public class LeadScoringService {
   public int calculateRevenueScore(Lead lead) {
     int score = 0;
 
-    // 1. Estimated Volume (40 points max)
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    score += getVolumePoints(lead);
+    score += getBudgetPoints(lead);
+    score += getDealSizePoints(lead);
+
+    return Math.min(score, 100);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for calculateRevenueScore()
+  // ============================================================================
+
+  private int getVolumePoints(Lead lead) {
     // NOTE: estimatedVolume is ANNUAL revenue (changed from monthly in Sprint 2.1.7.2)
-    if (lead.estimatedVolume != null) {
-      BigDecimal annualVolume = lead.estimatedVolume; // Already annual!
-
-      if (annualVolume.compareTo(new BigDecimal("2000000")) >= 0) {
-        score += 40; // Enterprise: 2M+ €/year
-      } else if (annualVolume.compareTo(new BigDecimal("1000000")) >= 0) {
-        score += 30; // Large: 1M-2M €/year
-      } else if (annualVolume.compareTo(new BigDecimal("200000")) >= 0) {
-        score += 20; // Medium: 200k-1M €/year
-      } else {
-        score += 10; // Small: <200k €/year
-      }
+    if (lead.estimatedVolume == null) {
+      return 0;
     }
+    BigDecimal annualVolume = lead.estimatedVolume; // Already annual!
 
-    // 2. Budget Confirmed (30 points)
-    if (Boolean.TRUE.equals(lead.budgetConfirmed)) {
-      score += 30;
+    if (annualVolume.compareTo(new BigDecimal("2000000")) >= 0) {
+      return 40; // Enterprise: 2M+ €/year
+    } else if (annualVolume.compareTo(new BigDecimal("1000000")) >= 0) {
+      return 30; // Large: 1M-2M €/year
+    } else if (annualVolume.compareTo(new BigDecimal("200000")) >= 0) {
+      return 20; // Medium: 200k-1M €/year
+    } else {
+      return 10; // Small: <200k €/year
     }
+  }
 
-    // 3. Deal Size Category (30 points max) - Auto-calculated from estimatedVolume
+  private int getBudgetPoints(Lead lead) {
+    return Boolean.TRUE.equals(lead.budgetConfirmed) ? 30 : 0;
+  }
+
+  private int getDealSizePoints(Lead lead) {
+    // Deal Size Category (30 points max) - Auto-calculated from estimatedVolume
     if (lead.dealSize != null) {
-      score +=
-          switch (lead.dealSize) {
-            case ENTERPRISE -> 30;
-            case LARGE -> 22;
-            case MEDIUM -> 15;
-            case SMALL -> 8;
-          };
+      return getDealSizePointsForSize(lead.dealSize);
     } else if (lead.estimatedVolume != null) {
       // Auto-calculate deal size if not set (internal helper, not exposed in UI)
       BigDecimal annualVolume = lead.estimatedVolume; // Already annual!
       DealSize autoSize = DealSize.fromAnnualVolume(annualVolume);
       if (autoSize != null) {
         lead.dealSize = autoSize; // Set it for next time
-        score +=
-            switch (autoSize) {
-              case ENTERPRISE -> 30;
-              case LARGE -> 22;
-              case MEDIUM -> 15;
-              case SMALL -> 8;
-            };
+        return getDealSizePointsForSize(autoSize);
       }
     }
+    return 0;
+  }
 
-    return Math.min(score, 100);
+  private int getDealSizePointsForSize(DealSize size) {
+    return switch (size) {
+      case ENTERPRISE -> 30;
+      case LARGE -> 22;
+      case MEDIUM -> 15;
+      case SMALL -> 8;
+    };
   }
 
   // ================================================================================

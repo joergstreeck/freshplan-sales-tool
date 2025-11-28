@@ -254,12 +254,25 @@ public class ExportRequest {
   // ============================================================================
 
   private void addOptionalFields(Map<String, Object> map) {
+    // PMD Complexity Refactoring (Issue #146) - Split into smaller methods
+    addEntityFields(map);
+    addDateFields(map);
+    addFilterFields(map);
+  }
+
+  private void addEntityFields(Map<String, Object> map) {
     if (entityType != null) map.put("entityType", entityType);
     if (entityId != null) map.put("entityId", entityId);
-    if (dateFrom != null) map.put("dateFrom", dateFrom);
-    if (dateTo != null) map.put("dateTo", dateTo);
     if (userId != null) map.put("userId", userId);
     if (eventType != null) map.put("eventType", eventType);
+  }
+
+  private void addDateFields(Map<String, Object> map) {
+    if (dateFrom != null) map.put("dateFrom", dateFrom);
+    if (dateTo != null) map.put("dateTo", dateTo);
+  }
+
+  private void addFilterFields(Map<String, Object> map) {
     if (businessType != null) map.put("businessType", businessType);
     if (status != null) map.put("status", status);
     if (format != null) map.put("format", format);

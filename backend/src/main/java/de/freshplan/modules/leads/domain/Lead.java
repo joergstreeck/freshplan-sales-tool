@@ -461,59 +461,88 @@ public class Lead extends PanacheEntityBase {
    * @return Pain-Score (0-62)
    */
   public int calculatePainScore() {
-    int score = 0;
-    int activePains = 0;
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    PainScoreResult operationalResult = calculateOperationalPains();
+    PainScoreResult switchingResult = calculateSwitchingPains();
 
-    // Operational Pains
+    int score = operationalResult.score + switchingResult.score;
+    int activePains = operationalResult.count + switchingResult.count;
+
+    // ERST Cap anwenden (vor Multi-Pain-Bonus!)
+    score += applyStaffQualityCap();
+
+    // DANN Multi-Pain Bonus
+    score += applyMultiPainBonus(activePains);
+
+    return score;
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper record and methods
+  // ============================================================================
+
+  /** Helper record for pain calculation results. */
+  private record PainScoreResult(int score, int count) {}
+
+  private PainScoreResult calculateOperationalPains() {
+    int score = 0;
+    int count = 0;
     if (Boolean.TRUE.equals(painStaffShortage)) {
       score += 10;
-      activePains++;
+      count++;
     }
     if (Boolean.TRUE.equals(painHighCosts)) {
       score += 7;
-      activePains++;
+      count++;
     }
     if (Boolean.TRUE.equals(painFoodWaste)) {
       score += 7;
-      activePains++;
+      count++;
     }
     if (Boolean.TRUE.equals(painQualityInconsistency)) {
       score += 6;
-      activePains++;
+      count++;
     }
     if (Boolean.TRUE.equals(painTimePressure)) {
       score += 5;
-      activePains++;
+      count++;
     }
+    return new PainScoreResult(score, count);
+  }
 
-    // Switching Pains
+  private PainScoreResult calculateSwitchingPains() {
+    int score = 0;
+    int count = 0;
     if (Boolean.TRUE.equals(painSupplierQuality)) {
       score += 10;
-      activePains++;
+      count++;
     }
     if (Boolean.TRUE.equals(painUnreliableDelivery)) {
       score += 8;
-      activePains++;
+      count++;
     }
     if (Boolean.TRUE.equals(painPoorService)) {
       score += 3;
-      activePains++;
+      count++;
     }
+    return new PainScoreResult(score, count);
+  }
 
-    // ERST Cap anwenden (vor Multi-Pain-Bonus!)
+  private int applyStaffQualityCap() {
     if (Boolean.TRUE.equals(painStaffShortage) && Boolean.TRUE.equals(painQualityInconsistency)) {
-      score -= 4; // Von 16 auf 12 reduzieren (Doppel-Counting vermeiden)
+      return -4; // Von 16 auf 12 reduzieren (Doppel-Counting vermeiden)
     }
+    return 0;
+  }
 
-    // DANN Multi-Pain Bonus
+  private int applyMultiPainBonus(int activePains) {
     if (activePains >= 4) {
-      score += 10;
       multiPainBonus = 10;
+      return 10;
     } else {
       multiPainBonus = 0;
+      return 0;
     }
-
-    return score;
   }
 
   /**

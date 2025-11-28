@@ -1339,17 +1339,32 @@ public class OpportunityService {
    */
   private void copyPainPointsFromLead(
       de.freshplan.modules.leads.domain.Lead lead, Customer customer) {
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    copyOperationalPainsFromLead(lead, customer);
+    copySwitchingPainsFromLead(lead, customer);
+    if (lead.painNotes != null) customer.setPainNotes(lead.painNotes);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for copyPainPointsFromLead()
+  // ============================================================================
+
+  private void copyOperationalPainsFromLead(
+      de.freshplan.modules.leads.domain.Lead lead, Customer customer) {
     if (lead.painStaffShortage != null) customer.setPainStaffShortage(lead.painStaffShortage);
     if (lead.painHighCosts != null) customer.setPainHighCosts(lead.painHighCosts);
     if (lead.painFoodWaste != null) customer.setPainFoodWaste(lead.painFoodWaste);
     if (lead.painQualityInconsistency != null)
       customer.setPainQualityInconsistency(lead.painQualityInconsistency);
     if (lead.painTimePressure != null) customer.setPainTimePressure(lead.painTimePressure);
+  }
+
+  private void copySwitchingPainsFromLead(
+      de.freshplan.modules.leads.domain.Lead lead, Customer customer) {
     if (lead.painSupplierQuality != null) customer.setPainSupplierQuality(lead.painSupplierQuality);
     if (lead.painUnreliableDelivery != null)
       customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
     if (lead.painPoorService != null) customer.setPainPoorService(lead.painPoorService);
-    if (lead.painNotes != null) customer.setPainNotes(lead.painNotes);
   }
 
   /**
