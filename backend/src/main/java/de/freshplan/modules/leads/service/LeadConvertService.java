@@ -84,70 +84,9 @@ public class LeadConvertService {
 
     customer.setOriginalLeadId(leadId); // Track Lead → Customer conversion (V261)
 
-    // TODO: CODE QUALITY - Manual field mapping boilerplate (Gemini Code Review)
-    //  Current: ~57 lines of manual if-null-checks and setter calls (lines 87-143)
-    //  Better: Use MapStruct for declarative mapping: @Mapper(componentModel = "cdi")
-    //  Benefits: Type-safe, compile-time generated, reduces boilerplate by ~80%
-    //  Tradeoff: Adds dependency (org.mapstruct:mapstruct), requires annotation processor setup
-    //  Priority: LOW - current code is functional, MapStruct useful when >3 similar mappings exist
-    //  Example: See CustomerMapper.java in domain/customer/service/mapper/ (already uses MapStruct)
-    // Sprint 2.1.7.4: 100% Lead Parity - Copy ALL business fields
-    // Classification fields (V10032)
-    if (lead.businessType != null) {
-      customer.setBusinessType(lead.businessType);
-    }
-    if (lead.kitchenSize != null) {
-      customer.setKitchenSize(lead.kitchenSize);
-    }
-    if (lead.employeeCount != null) {
-      customer.setEmployeeCount(lead.employeeCount);
-    }
-
-    // Chain/Branch fields (V10032)
-    if (lead.branchCount != null) {
-      customer.setBranchCount(lead.branchCount);
-      // Sync to totalLocationsEU for consistency
-      customer.setTotalLocationsEU(lead.branchCount);
-    }
-    if (lead.isChain != null) {
-      customer.setIsChain(lead.isChain);
-    }
-
-    // Volume fields (V10032)
-    if (lead.estimatedVolume != null) {
-      customer.setEstimatedVolume(lead.estimatedVolume);
-      // Also set expectedAnnualVolume for consistency
-      customer.setExpectedAnnualVolume(lead.estimatedVolume);
-    }
-
-    // Pain Scoring System V3 - 8 Boolean fields (V279)
-    if (lead.painStaffShortage != null) {
-      customer.setPainStaffShortage(lead.painStaffShortage);
-    }
-    if (lead.painHighCosts != null) {
-      customer.setPainHighCosts(lead.painHighCosts);
-    }
-    if (lead.painFoodWaste != null) {
-      customer.setPainFoodWaste(lead.painFoodWaste);
-    }
-    if (lead.painQualityInconsistency != null) {
-      customer.setPainQualityInconsistency(lead.painQualityInconsistency);
-    }
-    if (lead.painTimePressure != null) {
-      customer.setPainTimePressure(lead.painTimePressure);
-    }
-    if (lead.painSupplierQuality != null) {
-      customer.setPainSupplierQuality(lead.painSupplierQuality);
-    }
-    if (lead.painUnreliableDelivery != null) {
-      customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
-    }
-    if (lead.painPoorService != null) {
-      customer.setPainPoorService(lead.painPoorService);
-    }
-    if (lead.painNotes != null) {
-      customer.setPainNotes(lead.painNotes);
-    }
+    // Copy business fields using helper methods (PMD Complexity Refactoring - Issue #146)
+    copyClassificationFields(lead, customer);
+    copyPainScoringFields(lead, customer);
 
     // Audit fields
     customer.setCreatedBy(currentUserId);
@@ -158,125 +97,14 @@ public class LeadConvertService {
     // 6. Persist Customer (required before creating related entities)
     customerRepository.persist(customer);
 
-    // 7. Create CustomerLocation (Main Location)
-    if (lead.city != null || lead.street != null) {
-      CustomerLocation mainLocation = new CustomerLocation();
-      mainLocation.setCustomer(customer);
-      mainLocation.setLocationName(lead.companyName + " - Hauptsitz");
-      mainLocation.setIsMainLocation(true);
-      mainLocation.setCategory(LocationCategory.HEADQUARTERS);
+    // 7. Create CustomerLocation and Address (helper method for complexity reduction)
+    createLocationAndAddress(lead, customer, currentUserId);
 
-      // Copy phone to location if available
-      if (lead.phone != null) {
-        mainLocation.setPhone(lead.phone);
-      }
-
-      mainLocation.setCreatedBy(currentUserId);
-      mainLocation.setCreatedAt(LocalDateTime.now(clock));
-      mainLocation.setUpdatedBy(currentUserId);
-      mainLocation.setUpdatedAt(LocalDateTime.now(clock));
-      mainLocation.persist();
-
-      // 8. Create CustomerAddress (from Lead address data)
-      if (lead.city != null) {
-        CustomerAddress address = new CustomerAddress();
-        address.setLocation(mainLocation);
-        address.setAddressType(AddressType.BILLING);
-        address.setStreet(lead.street != null ? lead.street : "");
-        address.setPostalCode(lead.postalCode);
-        address.setCity(lead.city);
-        address.setCountry(mapCountryCode(lead.countryCode)); // ISO-3166-1 alpha-3
-        address.setIsPrimaryForType(true);
-        address.setCreatedBy(currentUserId);
-        address.setCreatedAt(LocalDateTime.now(clock));
-        address.setUpdatedBy(currentUserId);
-        address.setUpdatedAt(LocalDateTime.now(clock));
-        address.persist();
-      }
-    }
-
-    // 9. Copy ALL contacts from Lead (Multi-Contact Migration - Sprint 2.1.7.2 D9.2)
+    // 8. Copy contacts (Multi-Contact Migration or Legacy Fallback)
     if (lead.contacts != null && !lead.contacts.isEmpty()) {
-      // Multi-Contact Migration: Copy all contacts from Lead
-      for (de.freshplan.modules.leads.domain.LeadContact leadContact : lead.contacts) {
-        CustomerContact customerContact = new CustomerContact();
-        customerContact.setCustomer(customer);
-
-        // Copy all fields from LeadContact
-        customerContact.setSalutation(leadContact.getSalutation());
-        customerContact.setTitle(leadContact.getTitle());
-        customerContact.setFirstName(leadContact.getFirstName());
-        customerContact.setLastName(leadContact.getLastName());
-        customerContact.setPosition(leadContact.getPosition());
-        customerContact.setDecisionLevel(leadContact.getDecisionLevel());
-        customerContact.setEmail(leadContact.getEmail());
-        customerContact.setPhone(leadContact.getPhone());
-        customerContact.setMobile(leadContact.getMobile());
-        customerContact.setIsPrimary(leadContact.isPrimary());
-        customerContact.setIsActive(leadContact.isActive());
-        customerContact.setIsDecisionMaker(leadContact.getIsDecisionMaker());
-
-        // Personal information
-        customerContact.setBirthday(leadContact.getBirthday());
-        customerContact.setHobbies(leadContact.getHobbies());
-        customerContact.setFamilyStatus(leadContact.getFamilyStatus());
-        customerContact.setChildrenCount(leadContact.getChildrenCount());
-        customerContact.setPersonalNotes(leadContact.getPersonalNotes());
-
-        // Warmth & Quality scores
-        customerContact.setWarmthScore(leadContact.getWarmthScore());
-        customerContact.setWarmthConfidence(leadContact.getWarmthConfidence());
-        customerContact.setDataQualityScore(leadContact.getDataQualityScore());
-        customerContact.setDataQualityRecommendations(leadContact.getDataQualityRecommendations());
-
-        // Interaction tracking
-        customerContact.setLastInteractionDate(leadContact.getLastInteractionDate());
-
-        // Audit fields
-        customerContact.setCreatedBy(currentUserId);
-        customerContact.setCreatedAt(LocalDateTime.now(clock));
-        customerContact.setUpdatedBy(currentUserId);
-        customerContact.setUpdatedAt(LocalDateTime.now(clock));
-
-        customerContact.persist();
-      }
-      Log.infof(
-          "Copied %d contacts from Lead %d to Customer %s",
-          lead.contacts.size(), leadId, customer.getId());
+      copyLeadContacts(lead, customer, currentUserId);
     } else {
-      // FALLBACK: Legacy Lead with Single-Field contact (no LeadContact collection)
-      // Parse lead.contactPerson into firstName/lastName
-      if (lead.contactPerson != null || lead.email != null) {
-        CustomerContact contact = new CustomerContact();
-        contact.setCustomer(customer);
-
-        // Parse contact person name (simple split: "Max Mustermann" → firstName/lastName)
-        if (lead.contactPerson != null && !lead.contactPerson.isBlank()) {
-          String[] nameParts = lead.contactPerson.trim().split("\\s+", 2);
-          contact.setFirstName(nameParts[0]);
-          if (nameParts.length > 1) {
-            contact.setLastName(nameParts[1]);
-          } else {
-            contact.setLastName(""); // Required field
-          }
-        } else {
-          contact.setFirstName("Ansprechpartner");
-          contact.setLastName("Nicht angegeben");
-        }
-
-        contact.setEmail(lead.email);
-        contact.setPhone(lead.phone);
-        contact.setIsPrimary(true);
-        contact.setCreatedBy(currentUserId);
-        contact.setCreatedAt(LocalDateTime.now(clock));
-        contact.setUpdatedBy(currentUserId);
-        contact.setUpdatedAt(LocalDateTime.now(clock));
-        contact.persist();
-
-        Log.infof(
-            "Created fallback contact from Lead single-fields (leadId=%d, customerId=%s)",
-            leadId, customer.getId());
-      }
+      createFallbackContact(lead, customer, currentUserId);
     }
 
     // 10. Archive Lead (ALWAYS keep for audit trail)
@@ -303,6 +131,156 @@ public class LeadConvertService {
     // 12. Return response
     return LeadConvertResponse.success(
         leadId, customer.getId(), customerNumber, LocalDateTime.now(clock));
+  }
+
+  // ============================================================================
+  // HELPER METHODS - PMD Complexity Refactoring (Issue #146)
+  // ============================================================================
+
+  /** Copy classification fields from Lead to Customer. */
+  private void copyClassificationFields(Lead lead, Customer customer) {
+    if (lead.businessType != null) {
+      customer.setBusinessType(lead.businessType);
+    }
+    if (lead.kitchenSize != null) {
+      customer.setKitchenSize(lead.kitchenSize);
+    }
+    if (lead.employeeCount != null) {
+      customer.setEmployeeCount(lead.employeeCount);
+    }
+    if (lead.branchCount != null) {
+      customer.setBranchCount(lead.branchCount);
+      customer.setTotalLocationsEU(lead.branchCount);
+    }
+    if (lead.isChain != null) {
+      customer.setIsChain(lead.isChain);
+    }
+    if (lead.estimatedVolume != null) {
+      customer.setEstimatedVolume(lead.estimatedVolume);
+      customer.setExpectedAnnualVolume(lead.estimatedVolume);
+    }
+  }
+
+  /** Copy Pain Scoring System V3 fields from Lead to Customer (8 Boolean fields + notes). */
+  private void copyPainScoringFields(Lead lead, Customer customer) {
+    if (lead.painStaffShortage != null) customer.setPainStaffShortage(lead.painStaffShortage);
+    if (lead.painHighCosts != null) customer.setPainHighCosts(lead.painHighCosts);
+    if (lead.painFoodWaste != null) customer.setPainFoodWaste(lead.painFoodWaste);
+    if (lead.painQualityInconsistency != null)
+      customer.setPainQualityInconsistency(lead.painQualityInconsistency);
+    if (lead.painTimePressure != null) customer.setPainTimePressure(lead.painTimePressure);
+    if (lead.painSupplierQuality != null) customer.setPainSupplierQuality(lead.painSupplierQuality);
+    if (lead.painUnreliableDelivery != null)
+      customer.setPainUnreliableDelivery(lead.painUnreliableDelivery);
+    if (lead.painPoorService != null) customer.setPainPoorService(lead.painPoorService);
+    if (lead.painNotes != null) customer.setPainNotes(lead.painNotes);
+  }
+
+  /** Create CustomerLocation and CustomerAddress from Lead data. */
+  private void createLocationAndAddress(Lead lead, Customer customer, String currentUserId) {
+    if (lead.city == null && lead.street == null) {
+      return;
+    }
+
+    CustomerLocation mainLocation = new CustomerLocation();
+    mainLocation.setCustomer(customer);
+    mainLocation.setLocationName(lead.companyName + " - Hauptsitz");
+    mainLocation.setIsMainLocation(true);
+    mainLocation.setCategory(LocationCategory.HEADQUARTERS);
+    if (lead.phone != null) {
+      mainLocation.setPhone(lead.phone);
+    }
+    mainLocation.setCreatedBy(currentUserId);
+    mainLocation.setCreatedAt(LocalDateTime.now(clock));
+    mainLocation.setUpdatedBy(currentUserId);
+    mainLocation.setUpdatedAt(LocalDateTime.now(clock));
+    mainLocation.persist();
+
+    if (lead.city != null) {
+      CustomerAddress address = new CustomerAddress();
+      address.setLocation(mainLocation);
+      address.setAddressType(AddressType.BILLING);
+      address.setStreet(lead.street != null ? lead.street : "");
+      address.setPostalCode(lead.postalCode);
+      address.setCity(lead.city);
+      address.setCountry(mapCountryCode(lead.countryCode));
+      address.setIsPrimaryForType(true);
+      address.setCreatedBy(currentUserId);
+      address.setCreatedAt(LocalDateTime.now(clock));
+      address.setUpdatedBy(currentUserId);
+      address.setUpdatedAt(LocalDateTime.now(clock));
+      address.persist();
+    }
+  }
+
+  /** Copy all LeadContacts to CustomerContacts (Multi-Contact Migration). */
+  private void copyLeadContacts(Lead lead, Customer customer, String currentUserId) {
+    for (de.freshplan.modules.leads.domain.LeadContact leadContact : lead.contacts) {
+      CustomerContact customerContact = new CustomerContact();
+      customerContact.setCustomer(customer);
+      customerContact.setSalutation(leadContact.getSalutation());
+      customerContact.setTitle(leadContact.getTitle());
+      customerContact.setFirstName(leadContact.getFirstName());
+      customerContact.setLastName(leadContact.getLastName());
+      customerContact.setPosition(leadContact.getPosition());
+      customerContact.setDecisionLevel(leadContact.getDecisionLevel());
+      customerContact.setEmail(leadContact.getEmail());
+      customerContact.setPhone(leadContact.getPhone());
+      customerContact.setMobile(leadContact.getMobile());
+      customerContact.setIsPrimary(leadContact.isPrimary());
+      customerContact.setIsActive(leadContact.isActive());
+      customerContact.setIsDecisionMaker(leadContact.getIsDecisionMaker());
+      customerContact.setBirthday(leadContact.getBirthday());
+      customerContact.setHobbies(leadContact.getHobbies());
+      customerContact.setFamilyStatus(leadContact.getFamilyStatus());
+      customerContact.setChildrenCount(leadContact.getChildrenCount());
+      customerContact.setPersonalNotes(leadContact.getPersonalNotes());
+      customerContact.setWarmthScore(leadContact.getWarmthScore());
+      customerContact.setWarmthConfidence(leadContact.getWarmthConfidence());
+      customerContact.setDataQualityScore(leadContact.getDataQualityScore());
+      customerContact.setDataQualityRecommendations(leadContact.getDataQualityRecommendations());
+      customerContact.setLastInteractionDate(leadContact.getLastInteractionDate());
+      customerContact.setCreatedBy(currentUserId);
+      customerContact.setCreatedAt(LocalDateTime.now(clock));
+      customerContact.setUpdatedBy(currentUserId);
+      customerContact.setUpdatedAt(LocalDateTime.now(clock));
+      customerContact.persist();
+    }
+    Log.infof(
+        "Copied %d contacts from Lead %d to Customer %s",
+        lead.contacts.size(), lead.id, customer.getId());
+  }
+
+  /** Create fallback contact from legacy Lead fields (single-field contact). */
+  private void createFallbackContact(Lead lead, Customer customer, String currentUserId) {
+    if (lead.contactPerson == null && lead.email == null) {
+      return;
+    }
+
+    CustomerContact contact = new CustomerContact();
+    contact.setCustomer(customer);
+
+    if (lead.contactPerson != null && !lead.contactPerson.isBlank()) {
+      String[] nameParts = lead.contactPerson.trim().split("\\s+", 2);
+      contact.setFirstName(nameParts[0]);
+      contact.setLastName(nameParts.length > 1 ? nameParts[1] : "");
+    } else {
+      contact.setFirstName("Ansprechpartner");
+      contact.setLastName("Nicht angegeben");
+    }
+
+    contact.setEmail(lead.email);
+    contact.setPhone(lead.phone);
+    contact.setIsPrimary(true);
+    contact.setCreatedBy(currentUserId);
+    contact.setCreatedAt(LocalDateTime.now(clock));
+    contact.setUpdatedBy(currentUserId);
+    contact.setUpdatedAt(LocalDateTime.now(clock));
+    contact.persist();
+
+    Log.infof(
+        "Created fallback contact from Lead single-fields (leadId=%d, customerId=%s)",
+        lead.id, customer.getId());
   }
 
   /**
