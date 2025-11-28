@@ -59,7 +59,24 @@ public class TimelineCommandService {
             .findByIdOptional(customerId)
             .orElseThrow(() -> new CustomerNotFoundException(customerId.toString()));
 
-    // Create event entity
+    // PMD Complexity Refactoring (Issue #146) - Extracted helper methods
+    CustomerTimelineEvent event = createBaseEvent(customer, request);
+    applyOptionalFields(event, request);
+
+    // Persist event
+    timelineRepository.persist(event);
+
+    LOG.infof("Created timeline event %s for customer %s", event.getId(), customerId);
+
+    return timelineMapper.toResponse(event);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for createEvent()
+  // ============================================================================
+
+  private CustomerTimelineEvent createBaseEvent(
+      Customer customer, CreateTimelineEventRequest request) {
     CustomerTimelineEvent event = new CustomerTimelineEvent();
     event.setCustomer(customer);
     event.setEventType(request.getEventType());
@@ -70,43 +87,58 @@ public class TimelineCommandService {
         request.getImportance() != null ? request.getImportance() : ImportanceLevel.MEDIUM);
     event.setPerformedBy(request.getPerformedBy());
     event.setPerformedByRole(request.getPerformedByRole());
+    return event;
+  }
 
-    // Set optional fields
+  private void applyOptionalFields(
+      CustomerTimelineEvent event, CreateTimelineEventRequest request) {
+    applyEventDate(event, request);
+    applyCommunicationFields(event, request);
+    applyFollowUpFields(event, request);
+    applyTagsAndContact(event, request);
+    applyBusinessImpact(event, request);
+  }
+
+  private void applyEventDate(CustomerTimelineEvent event, CreateTimelineEventRequest request) {
     if (request.getEventDate() != null) {
       event.setEventDate(request.getEventDate());
     }
+  }
 
+  private void applyCommunicationFields(
+      CustomerTimelineEvent event, CreateTimelineEventRequest request) {
     if (request.getCommunicationChannel() != null) {
       event.setCommunicationChannel(request.getCommunicationChannel());
       event.setCommunicationDirection(request.getCommunicationDirection());
       event.setCommunicationDuration(request.getCommunicationDuration());
     }
+  }
 
+  private void applyFollowUpFields(
+      CustomerTimelineEvent event, CreateTimelineEventRequest request) {
     if (request.getRequiresFollowUp() != null && request.getRequiresFollowUp()) {
       event.setRequiresFollowUp(true);
       event.setFollowUpDate(request.getFollowUpDate());
       event.setFollowUpNotes(request.getFollowUpNotes());
     }
+  }
 
+  private void applyTagsAndContact(
+      CustomerTimelineEvent event, CreateTimelineEventRequest request) {
     if (request.getTags() != null && !request.getTags().isEmpty()) {
       event.setTags(String.join(",", request.getTags()));
     }
-
     if (request.getRelatedContactId() != null) {
       event.setRelatedContactId(request.getRelatedContactId());
     }
+  }
 
+  private void applyBusinessImpact(
+      CustomerTimelineEvent event, CreateTimelineEventRequest request) {
     if (request.getBusinessImpact() != null) {
       event.setBusinessImpact(request.getBusinessImpact());
       event.setRevenueImpact(request.getRevenueImpact());
     }
-
-    // Persist event
-    timelineRepository.persist(event);
-
-    LOG.infof("Created timeline event %s for customer %s", event.getId(), customerId);
-
-    return timelineMapper.toResponse(event);
   }
 
   /** Creates a quick note event. EXACT COPY from CustomerTimelineService lines 110-132 */

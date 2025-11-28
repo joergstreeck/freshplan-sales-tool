@@ -153,68 +153,16 @@ public class DataHygieneService {
 
   /** Berechnet einen umfassenden Data Quality Score (0-100). */
   public DataQualityScore calculateDataQualityScore(CustomerContact contact) {
-    int score = 100;
     List<String> recommendations = new ArrayList<>();
-
-    // Freshness Bewertung
     DataFreshnessLevel freshnessLevel = getDataFreshnessLevel(contact);
-    switch (freshnessLevel) {
-      case CRITICAL:
-        score -= 40;
-        recommendations.add("Kontakt ist über 1 Jahr alt - dringend aktualisieren");
-        break;
-      case STALE:
-        score -= 20;
-        recommendations.add("Kontakt ist über 6 Monate alt - Update empfohlen");
-        break;
-      case AGING:
-        score -= 10;
-        recommendations.add("Kontakt sollte bald aktualisiert werden");
-        break;
-    }
 
-    // Vollständigkeit der Basisdaten
-    if (contact.getEmail() == null || contact.getEmail().trim().isEmpty()) {
-      score -= 15;
-      recommendations.add("E-Mail-Adresse fehlt");
-    }
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    int score = 100;
+    score -= evaluateFreshness(freshnessLevel, recommendations);
+    score -= evaluateBasicData(contact, recommendations);
+    score -= evaluateInteractionData(contact, recommendations);
+    score -= evaluateWarmthScore(contact, recommendations);
 
-    if ((contact.getPhone() == null || contact.getPhone().trim().isEmpty())
-        && (contact.getMobile() == null || contact.getMobile().trim().isEmpty())) {
-      score -= 10;
-      recommendations.add("Telefonnummer fehlt");
-    }
-
-    if (contact.getPosition() == null || contact.getPosition().trim().isEmpty()) {
-      score -= 5;
-      recommendations.add("Position/Funktion fehlt");
-    }
-
-    // Department field doesn't exist in Contact entity yet
-    // TODO: Add department field or use existing fields
-    // if (contact.getDepartment() == null || contact.getDepartment().trim().isEmpty()) {
-    //     score -= 5;
-    //     recommendations.add("Abteilung fehlt");
-    // }
-
-    // Interaktionsdaten
-    if (contact.getInteractionCount() == null || contact.getInteractionCount() == 0) {
-      score -= 15;
-      recommendations.add("Keine Interaktionen erfasst");
-    } else if (contact.getInteractionCount() < 3) {
-      score -= 5;
-      recommendations.add("Wenige Interaktionen - mehr Kontaktpunkte dokumentieren");
-    }
-
-    // Warmth Score Verfügbarkeit
-    if (contact.getWarmthScore() == null
-        || contact.getWarmthConfidence() == null
-        || contact.getWarmthConfidence() < 50) {
-      score -= 10;
-      recommendations.add("Warmth Score benötigt mehr Daten für höhere Genauigkeit");
-    }
-
-    // Stelle sicher, dass Score nicht negativ wird
     score = Math.max(0, score);
 
     if (recommendations.isEmpty()) {
@@ -227,6 +175,74 @@ public class DataHygieneService {
         .freshnessLevel(freshnessLevel)
         .lastCalculated(LocalDateTime.now())
         .build();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for calculateDataQualityScore()
+  // ============================================================================
+
+  private int evaluateFreshness(DataFreshnessLevel level, List<String> recommendations) {
+    return switch (level) {
+      case CRITICAL -> {
+        recommendations.add("Kontakt ist über 1 Jahr alt - dringend aktualisieren");
+        yield 40;
+      }
+      case STALE -> {
+        recommendations.add("Kontakt ist über 6 Monate alt - Update empfohlen");
+        yield 20;
+      }
+      case AGING -> {
+        recommendations.add("Kontakt sollte bald aktualisiert werden");
+        yield 10;
+      }
+      default -> 0;
+    };
+  }
+
+  private int evaluateBasicData(CustomerContact contact, List<String> recommendations) {
+    int penalty = 0;
+
+    if (isBlank(contact.getEmail())) {
+      penalty += 15;
+      recommendations.add("E-Mail-Adresse fehlt");
+    }
+
+    if (isBlank(contact.getPhone()) && isBlank(contact.getMobile())) {
+      penalty += 10;
+      recommendations.add("Telefonnummer fehlt");
+    }
+
+    if (isBlank(contact.getPosition())) {
+      penalty += 5;
+      recommendations.add("Position/Funktion fehlt");
+    }
+
+    return penalty;
+  }
+
+  private int evaluateInteractionData(CustomerContact contact, List<String> recommendations) {
+    if (contact.getInteractionCount() == null || contact.getInteractionCount() == 0) {
+      recommendations.add("Keine Interaktionen erfasst");
+      return 15;
+    } else if (contact.getInteractionCount() < 3) {
+      recommendations.add("Wenige Interaktionen - mehr Kontaktpunkte dokumentieren");
+      return 5;
+    }
+    return 0;
+  }
+
+  private int evaluateWarmthScore(CustomerContact contact, List<String> recommendations) {
+    if (contact.getWarmthScore() == null
+        || contact.getWarmthConfidence() == null
+        || contact.getWarmthConfidence() < 50) {
+      recommendations.add("Warmth Score benötigt mehr Daten für höhere Genauigkeit");
+      return 10;
+    }
+    return 0;
+  }
+
+  private boolean isBlank(String value) {
+    return value == null || value.trim().isEmpty();
   }
 
   /** Verarbeitung von veralteten Kontakten (6+ Monate). */

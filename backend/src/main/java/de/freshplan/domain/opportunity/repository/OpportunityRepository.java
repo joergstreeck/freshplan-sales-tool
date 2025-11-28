@@ -11,6 +11,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -205,6 +206,9 @@ public class OpportunityRepository implements PanacheRepositoryBase<Opportunity,
   // SEARCH AND FILTER
   // =====================================
 
+  // PMD Complexity Refactoring (Issue #146) - Helper record for filter parameters
+  private record FilterParam(String clause, Object value) {}
+
   /** Erweiterte Suche mit mehreren Filtern */
   public List<Opportunity> findWithFilters(
       String searchTerm,
@@ -213,49 +217,81 @@ public class OpportunityRepository implements PanacheRepositoryBase<Opportunity,
       LocalDate fromDate,
       LocalDate toDate,
       Page page) {
-    StringBuilder query = new StringBuilder("SELECT o FROM Opportunity o WHERE 1=1");
 
-    if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-      query.append(" AND (LOWER(o.name) LIKE LOWER(?1) OR LOWER(o.description) LIKE LOWER(?1))");
-    }
-    if (stage != null) {
-      query.append(" AND o.stage = ?2");
-    }
-    if (assignedTo != null) {
-      query.append(" AND o.assignedTo = ?3");
-    }
-    if (fromDate != null) {
-      query.append(" AND o.createdAt >= ?4");
-    }
-    if (toDate != null) {
-      query.append(" AND o.createdAt <= ?5");
-    }
-
-    query.append(" ORDER BY o.stageChangedAt DESC");
-
-    var typedQuery = getEntityManager().createQuery(query.toString(), Opportunity.class);
-
-    int paramIndex = 1;
-    if (searchTerm != null && !searchTerm.trim().isEmpty()) {
-      typedQuery.setParameter(paramIndex++, "%" + searchTerm.trim() + "%");
-    }
-    if (stage != null) {
-      typedQuery.setParameter(paramIndex++, stage);
-    }
-    if (assignedTo != null) {
-      typedQuery.setParameter(paramIndex++, assignedTo);
-    }
-    if (fromDate != null) {
-      typedQuery.setParameter(paramIndex++, fromDate.atStartOfDay());
-    }
-    if (toDate != null) {
-      typedQuery.setParameter(paramIndex++, toDate.plusDays(1).atStartOfDay());
-    }
+    // PMD Complexity Refactoring (Issue #146) - Extracted filter building
+    List<FilterParam> filters = buildFilterParams(searchTerm, stage, assignedTo, fromDate, toDate);
+    String query = buildFilterQuery(filters);
+    var typedQuery = createTypedQuery(query, filters);
 
     return typedQuery
         .setFirstResult(page.index * page.size)
         .setMaxResults(page.size)
         .getResultList();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for findWithFilters()
+  // ============================================================================
+
+  private List<FilterParam> buildFilterParams(
+      String searchTerm,
+      OpportunityStage stage,
+      User assignedTo,
+      LocalDate fromDate,
+      LocalDate toDate) {
+    List<FilterParam> filters = new ArrayList<>();
+
+    if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+      filters.add(
+          new FilterParam(
+              "(LOWER(o.name) LIKE LOWER(?%d) OR LOWER(o.description) LIKE LOWER(?%d))",
+              "%" + searchTerm.trim() + "%"));
+    }
+    if (stage != null) {
+      filters.add(new FilterParam("o.stage = ?%d", stage));
+    }
+    if (assignedTo != null) {
+      filters.add(new FilterParam("o.assignedTo = ?%d", assignedTo));
+    }
+    if (fromDate != null) {
+      filters.add(new FilterParam("o.createdAt >= ?%d", fromDate.atStartOfDay()));
+    }
+    if (toDate != null) {
+      filters.add(new FilterParam("o.createdAt <= ?%d", toDate.plusDays(1).atStartOfDay()));
+    }
+
+    return filters;
+  }
+
+  private String buildFilterQuery(List<FilterParam> filters) {
+    StringBuilder query = new StringBuilder("SELECT o FROM Opportunity o WHERE 1=1");
+    int paramIndex = 1;
+
+    for (FilterParam filter : filters) {
+      String clause = filter.clause();
+      // Handle search term with duplicate parameter reference
+      if (clause.contains("?%d) OR")) {
+        query.append(" AND ").append(String.format(clause, paramIndex, paramIndex));
+      } else {
+        query.append(" AND ").append(String.format(clause, paramIndex));
+      }
+      paramIndex++;
+    }
+
+    query.append(" ORDER BY o.stageChangedAt DESC");
+    return query.toString();
+  }
+
+  private jakarta.persistence.TypedQuery<Opportunity> createTypedQuery(
+      String query, List<FilterParam> filters) {
+    var typedQuery = getEntityManager().createQuery(query, Opportunity.class);
+    int paramIndex = 1;
+
+    for (FilterParam filter : filters) {
+      typedQuery.setParameter(paramIndex++, filter.value());
+    }
+
+    return typedQuery;
   }
 
   /** Get performance metrics for a specific user */
