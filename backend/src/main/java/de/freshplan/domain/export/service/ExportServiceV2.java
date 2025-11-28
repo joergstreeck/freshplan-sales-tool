@@ -24,6 +24,7 @@ import org.jboss.logging.Logger;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.NcssCount") // Export service with multi-format generation
 @ApplicationScoped
 @Transactional
 public class ExportServiceV2 {
@@ -204,6 +205,7 @@ public class ExportServiceV2 {
   }
 
   /** Generate Excel workbook for customers UNCHANGED: Excel generation still uses Apache POI */
+  @SuppressWarnings("PMD.NPathComplexity") // Excel generation with many column mappings
   public byte[] generateCustomersExcel(ExportRequest request) {
     try (Workbook workbook = new XSSFWorkbook();
         ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

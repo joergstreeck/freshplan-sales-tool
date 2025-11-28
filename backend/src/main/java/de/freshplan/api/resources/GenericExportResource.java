@@ -207,42 +207,50 @@ public class GenericExportResource {
 
   private List<AuditEntry> fetchAuditData(
       String entityType, UUID entityId, String from, String to, String userId, String eventType) {
-    // Build query with filters
+    // PMD Complexity Refactoring (Issue #146) - Extracted filter methods
     var query = new StringBuilder("1=1");
     var params = new HashMap<String, Object>();
 
-    if (entityType != null && !entityType.isEmpty()) {
-      query.append(" AND entityType = :entityType");
-      params.put("entityType", entityType);
-    }
+    addStringFilter(query, params, "entityType", entityType);
+    addUuidFilter(query, params, "entityId", entityId);
+    addStringFilter(query, params, "userId", userId);
+    addStringFilter(query, params, "eventType", eventType);
+    addDateTimeFilter(query, params, "from", "timestamp >=", from);
+    addDateTimeFilter(query, params, "to", "timestamp <=", to);
 
-    if (entityId != null) {
-      query.append(" AND entityId = :entityId");
-      params.put("entityId", entityId);
-    }
-
-    if (userId != null && !userId.isEmpty()) {
-      query.append(" AND userId = :userId");
-      params.put("userId", userId);
-    }
-
-    if (eventType != null && !eventType.isEmpty()) {
-      query.append(" AND eventType = :eventType");
-      params.put("eventType", eventType);
-    }
-
-    if (from != null && !from.isEmpty()) {
-      query.append(" AND timestamp >= :from");
-      params.put("from", LocalDateTime.parse(from));
-    }
-
-    if (to != null && !to.isEmpty()) {
-      query.append(" AND timestamp <= :to");
-      params.put("to", LocalDateTime.parse(to));
-    }
-
-    // Execute query with parameters
     return auditRepository.find(query.toString(), params).list();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for fetchAuditData()
+  // ============================================================================
+
+  private void addStringFilter(
+      StringBuilder query, Map<String, Object> params, String paramName, String value) {
+    if (value != null && !value.isEmpty()) {
+      query.append(" AND ").append(paramName).append(" = :").append(paramName);
+      params.put(paramName, value);
+    }
+  }
+
+  private void addUuidFilter(
+      StringBuilder query, Map<String, Object> params, String paramName, UUID value) {
+    if (value != null) {
+      query.append(" AND ").append(paramName).append(" = :").append(paramName);
+      params.put(paramName, value);
+    }
+  }
+
+  private void addDateTimeFilter(
+      StringBuilder query,
+      Map<String, Object> params,
+      String paramName,
+      String condition,
+      String value) {
+    if (value != null && !value.isEmpty()) {
+      query.append(" AND ").append(condition).append(" :").append(paramName);
+      params.put(paramName, LocalDateTime.parse(value));
+    }
   }
 
   private ExportConfig buildCustomerConfig(boolean includeContacts) {

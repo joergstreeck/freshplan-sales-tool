@@ -88,50 +88,9 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
 
   /** Advanced search with multiple filters */
   public List<AuditEntry> search(AuditSearchCriteria criteria) {
-    Map<String, Object> params = new HashMap<>();
-    StringBuilder query = new StringBuilder("1=1");
+    QueryAndParams queryAndParams = buildFilterQuery(criteria);
 
-    if (criteria.getEntityType() != null) {
-      query.append(" and entityType = :entityType");
-      params.put("entityType", criteria.getEntityType());
-    }
-
-    if (criteria.getEntityId() != null) {
-      query.append(" and entityId = :entityId");
-      params.put("entityId", criteria.getEntityId());
-    }
-
-    if (criteria.getUserId() != null) {
-      query.append(" and userId = :userId");
-      params.put("userId", criteria.getUserId());
-    }
-
-    if (criteria.getEventTypes() != null && !criteria.getEventTypes().isEmpty()) {
-      query.append(" and eventType in :eventTypes");
-      params.put("eventTypes", criteria.getEventTypes());
-    }
-
-    if (criteria.getSources() != null && !criteria.getSources().isEmpty()) {
-      query.append(" and source in :sources");
-      params.put("sources", criteria.getSources());
-    }
-
-    if (criteria.getFrom() != null) {
-      query.append(" and timestamp >= :from");
-      params.put("from", criteria.getFrom());
-    }
-
-    if (criteria.getTo() != null) {
-      query.append(" and timestamp <= :to");
-      params.put("to", criteria.getTo());
-    }
-
-    if (criteria.getSearchText() != null && !criteria.getSearchText().isBlank()) {
-      query.append(" and (userComment like :searchText or changeReason like :searchText)");
-      params.put("searchText", "%" + criteria.getSearchText() + "%");
-    }
-
-    return find(query.toString(), Sort.descending("timestamp"), params)
+    return find(queryAndParams.query(), Sort.descending("timestamp"), queryAndParams.params())
         .page(Page.of(criteria.getPage(), Math.min(criteria.getSize(), MAX_PAGE_SIZE)))
         .list();
   }
@@ -175,58 +134,17 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
 
   /** Stream audit entries for export (memory-efficient) */
   public Stream<AuditEntry> streamForExport(AuditSearchCriteria criteria) {
-    // Build query similar to search() but return stream
-    Map<String, Object> params = new HashMap<>();
-    StringBuilder queryStr = new StringBuilder("1=1");
-
-    // Apply same filters as search method
-    if (criteria.getEntityType() != null) {
-      queryStr.append(" and entityType = :entityType");
-      params.put("entityType", criteria.getEntityType());
-    }
-
-    if (criteria.getEntityId() != null) {
-      queryStr.append(" and entityId = :entityId");
-      params.put("entityId", criteria.getEntityId());
-    }
-
-    if (criteria.getUserId() != null) {
-      queryStr.append(" and userId = :userId");
-      params.put("userId", criteria.getUserId());
-    }
-
-    if (criteria.getEventTypes() != null && !criteria.getEventTypes().isEmpty()) {
-      queryStr.append(" and eventType in :eventTypes");
-      params.put("eventTypes", criteria.getEventTypes());
-    }
-
-    if (criteria.getSources() != null && !criteria.getSources().isEmpty()) {
-      queryStr.append(" and source in :sources");
-      params.put("sources", criteria.getSources());
-    }
-
-    if (criteria.getFrom() != null) {
-      queryStr.append(" and timestamp >= :from");
-      params.put("from", criteria.getFrom());
-    }
-
-    if (criteria.getTo() != null) {
-      queryStr.append(" and timestamp <= :to");
-      params.put("to", criteria.getTo());
-    }
-
-    if (criteria.getSearchText() != null && !criteria.getSearchText().isBlank()) {
-      queryStr.append(" and (userComment like :searchText or changeReason like :searchText)");
-      params.put("searchText", "%" + criteria.getSearchText() + "%");
-    }
+    QueryAndParams queryAndParams = buildFilterQuery(criteria);
 
     TypedQuery<AuditEntry> query =
         getEntityManager()
             .createQuery(
-                "SELECT a FROM AuditEntry a WHERE " + queryStr + " ORDER BY a.timestamp DESC",
+                "SELECT a FROM AuditEntry a WHERE "
+                    + queryAndParams.query()
+                    + " ORDER BY a.timestamp DESC",
                 AuditEntry.class);
 
-    params.forEach(query::setParameter);
+    queryAndParams.params().forEach(query::setParameter);
 
     return query.getResultStream();
   }
@@ -574,6 +492,98 @@ public class AuditRepository implements PanacheRepositoryBase<AuditEntry, UUID> 
     return Arrays.stream(AuditEventType.values())
         .filter(AuditEventType::isSecurityRelevant)
         .toList();
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Shared query builder
+  // ============================================================================
+
+  /**
+   * Record to hold query string and parameters together.
+   *
+   * @param query the WHERE clause string
+   * @param params the named parameters map
+   */
+  private record QueryAndParams(String query, Map<String, Object> params) {}
+
+  /**
+   * Builds filter query and parameters from search criteria. Extracted to reduce NPath complexity
+   * in search() and streamForExport() methods.
+   *
+   * @param criteria the search criteria
+   * @return QueryAndParams containing the WHERE clause and parameters
+   */
+  private QueryAndParams buildFilterQuery(AuditSearchCriteria criteria) {
+    Map<String, Object> params = new HashMap<>();
+    StringBuilder query = new StringBuilder("1=1");
+
+    addEntityTypeFilter(query, params, criteria.getEntityType());
+    addEntityIdFilter(query, params, criteria.getEntityId());
+    addUserIdFilter(query, params, criteria.getUserId());
+    addEventTypesFilter(query, params, criteria.getEventTypes());
+    addSourcesFilter(query, params, criteria.getSources());
+    addTimestampFilters(query, params, criteria.getFrom(), criteria.getTo());
+    addSearchTextFilter(query, params, criteria.getSearchText());
+
+    return new QueryAndParams(query.toString(), params);
+  }
+
+  private void addEntityTypeFilter(
+      StringBuilder query, Map<String, Object> params, String entityType) {
+    if (entityType != null) {
+      query.append(" and entityType = :entityType");
+      params.put("entityType", entityType);
+    }
+  }
+
+  private void addEntityIdFilter(StringBuilder query, Map<String, Object> params, UUID entityId) {
+    if (entityId != null) {
+      query.append(" and entityId = :entityId");
+      params.put("entityId", entityId);
+    }
+  }
+
+  private void addUserIdFilter(StringBuilder query, Map<String, Object> params, UUID userId) {
+    if (userId != null) {
+      query.append(" and userId = :userId");
+      params.put("userId", userId);
+    }
+  }
+
+  private void addEventTypesFilter(
+      StringBuilder query, Map<String, Object> params, List<AuditEventType> eventTypes) {
+    if (eventTypes != null && !eventTypes.isEmpty()) {
+      query.append(" and eventType in :eventTypes");
+      params.put("eventTypes", eventTypes);
+    }
+  }
+
+  private void addSourcesFilter(
+      StringBuilder query, Map<String, Object> params, List<AuditSource> sources) {
+    if (sources != null && !sources.isEmpty()) {
+      query.append(" and source in :sources");
+      params.put("sources", sources);
+    }
+  }
+
+  private void addTimestampFilters(
+      StringBuilder query, Map<String, Object> params, Instant from, Instant to) {
+    if (from != null) {
+      query.append(" and timestamp >= :from");
+      params.put("from", from);
+    }
+    if (to != null) {
+      query.append(" and timestamp <= :to");
+      params.put("to", to);
+    }
+  }
+
+  private void addSearchTextFilter(
+      StringBuilder query, Map<String, Object> params, String searchText) {
+    if (searchText != null && !searchText.isBlank()) {
+      query.append(" and (userComment like :searchText or changeReason like :searchText)");
+      params.put("searchText", "%" + searchText + "%");
+    }
   }
 
   /** Search criteria for advanced audit queries */

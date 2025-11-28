@@ -25,6 +25,7 @@ import org.jboss.logging.Logger;
  * state. All Command operations are transactional and handle complex business logic for test data
  * management.
  */
+@SuppressWarnings("PMD.NcssCount") // TestData command service with comprehensive scenarios
 @ApplicationScoped
 public class TestDataCommandService {
 
@@ -261,6 +262,8 @@ public class TestDataCommandService {
    * Seeds additional test customers to reach exactly 58 total customers. Call this after
    * seedTestData() and seedComprehensiveTestData() to get the missing 14 customers.
    */
+  @SuppressWarnings(
+      "PMD.CognitiveComplexity") // TestData generation with diverse customer scenarios
   @Transactional
   public SeedResult seedAdditionalTestData() {
     LOG.info("Seeding additional 14 test customers to reach 58 total...");

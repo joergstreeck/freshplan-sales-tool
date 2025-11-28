@@ -57,6 +57,7 @@ import org.jboss.logging.Logger;
  *
  * <p>For detailed test data scenarios, see: docs/testing/TEST_DATA_SCENARIOS.md
  */
+@SuppressWarnings("PMD.NcssCount") // TestData service with comprehensive scenario coverage
 @ApplicationScoped
 public class TestDataService {
 
@@ -664,6 +665,7 @@ public class TestDataService {
    * Seeds additional test customers to reach exactly 58 total customers. Call this after
    * seedTestData() and seedComprehensiveTestData() to get the missing 14 customers.
    */
+  @SuppressWarnings("PMD.CognitiveComplexity") // TestData generation with diverse scenarios
   @Transactional
   public SeedResult seedAdditionalTestData() {
     if (cqrsEnabled) {

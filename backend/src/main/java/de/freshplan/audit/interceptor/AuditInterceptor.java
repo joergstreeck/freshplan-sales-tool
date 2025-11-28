@@ -11,6 +11,7 @@ import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -36,6 +37,24 @@ public class AuditInterceptor {
 
   // Cache für Entity-Type Mapping
   private static final Map<Class<?>, EntityType> ENTITY_TYPE_CACHE = new HashMap<>();
+
+  // PMD Complexity Refactoring (Issue #146) - Prefix-to-Action mapping
+  private static final List<PrefixAction> ACTION_PREFIXES =
+      List.of(
+          new PrefixAction("create", AuditAction.CREATE),
+          new PrefixAction("persist", AuditAction.CREATE),
+          new PrefixAction("save", AuditAction.CREATE),
+          new PrefixAction("insert", AuditAction.CREATE),
+          new PrefixAction("update", AuditAction.UPDATE),
+          new PrefixAction("merge", AuditAction.UPDATE),
+          new PrefixAction("modify", AuditAction.UPDATE),
+          new PrefixAction("change", AuditAction.UPDATE),
+          new PrefixAction("delete", AuditAction.DELETE),
+          new PrefixAction("remove", AuditAction.DELETE));
+
+  private static final List<String> READ_PREFIXES = List.of("find", "get", "load", "read");
+
+  private record PrefixAction(String prefix, AuditAction action) {}
 
   static {
     // Vorkonfigurierte Mappings
@@ -97,26 +116,19 @@ public class AuditInterceptor {
     return result;
   }
 
+  // PMD Complexity Refactoring (Issue #146) - Replaced if-else chain with list lookup
   private AuditAction determineAction(String methodName) {
     String lowerMethod = methodName.toLowerCase();
 
-    if (lowerMethod.startsWith("create")
-        || lowerMethod.startsWith("persist")
-        || lowerMethod.startsWith("save")
-        || lowerMethod.startsWith("insert")) {
-      return AuditAction.CREATE;
-    } else if (lowerMethod.startsWith("update")
-        || lowerMethod.startsWith("merge")
-        || lowerMethod.startsWith("modify")
-        || lowerMethod.startsWith("change")) {
-      return AuditAction.UPDATE;
-    } else if (lowerMethod.startsWith("delete") || lowerMethod.startsWith("remove")) {
-      return AuditAction.DELETE;
-    } else if (lowerMethod.startsWith("find")
-        || lowerMethod.startsWith("get")
-        || lowerMethod.startsWith("load")
-        || lowerMethod.startsWith("read")) {
-      // Optional: Auch Lesezugriffe tracken (für DSGVO)
+    // Check write actions via prefix list
+    for (PrefixAction pa : ACTION_PREFIXES) {
+      if (lowerMethod.startsWith(pa.prefix())) {
+        return pa.action();
+      }
+    }
+
+    // Check read actions
+    if (READ_PREFIXES.stream().anyMatch(lowerMethod::startsWith)) {
       return shouldAuditReads() ? AuditAction.VIEW : null;
     }
 

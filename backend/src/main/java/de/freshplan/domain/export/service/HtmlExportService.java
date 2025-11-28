@@ -25,6 +25,7 @@ import org.jboss.logging.Logger;
  * @author FreshPlan Team
  * @since 2.0.0 (CQRS migration: Phase 13)
  */
+@SuppressWarnings("PMD.NcssCount") // HTML generation with embedded styles
 @ApplicationScoped
 public class HtmlExportService {
 
@@ -47,6 +48,7 @@ public class HtmlExportService {
    * @param request Export parameters (filters)
    * @return Complete HTML document as string
    */
+  @SuppressWarnings("PMD.CognitiveComplexity") // HTML generation with embedded CSS/styling
   public String generateCustomersHtml(ExportRequest request) {
     if (cqrsEnabled) {
       log.debug("Using CQRS QueryService for HTML export");

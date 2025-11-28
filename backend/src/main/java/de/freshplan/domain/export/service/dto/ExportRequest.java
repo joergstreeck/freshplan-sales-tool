@@ -241,21 +241,49 @@ public class ExportRequest {
 
   public Map<String, Object> toMap() {
     Map<String, Object> map = new HashMap<>();
+
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    addOptionalFields(map);
+    addRequiredFields(map);
+
+    return map;
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for toMap()
+  // ============================================================================
+
+  private void addOptionalFields(Map<String, Object> map) {
+    // PMD Complexity Refactoring (Issue #146) - Split into smaller methods
+    addEntityFields(map);
+    addDateFields(map);
+    addFilterFields(map);
+  }
+
+  private void addEntityFields(Map<String, Object> map) {
     if (entityType != null) map.put("entityType", entityType);
     if (entityId != null) map.put("entityId", entityId);
-    if (dateFrom != null) map.put("dateFrom", dateFrom);
-    if (dateTo != null) map.put("dateTo", dateTo);
     if (userId != null) map.put("userId", userId);
     if (eventType != null) map.put("eventType", eventType);
+  }
+
+  private void addDateFields(Map<String, Object> map) {
+    if (dateFrom != null) map.put("dateFrom", dateFrom);
+    if (dateTo != null) map.put("dateTo", dateTo);
+  }
+
+  private void addFilterFields(Map<String, Object> map) {
     if (businessType != null) map.put("businessType", businessType);
     if (status != null) map.put("status", status);
     if (format != null) map.put("format", format);
     if (groupBy != null) map.put("groupBy", groupBy);
+  }
+
+  private void addRequiredFields(Map<String, Object> map) {
     map.put("includeDetails", includeDetails);
     map.put("includeStats", includeStats);
     map.put("includeContacts", includeContacts);
     map.put("page", page);
     map.put("size", size);
-    return map;
   }
 }

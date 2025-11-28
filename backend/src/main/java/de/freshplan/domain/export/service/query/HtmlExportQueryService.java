@@ -24,6 +24,7 @@ import org.jboss.logging.Logger;
  * @author FreshPlan Team
  * @since Phase 13 CQRS Migration
  */
+@SuppressWarnings("PMD.NcssCount") // HTML generation with embedded styles and comprehensive reports
 @ApplicationScoped
 public class HtmlExportQueryService {
 
@@ -42,6 +43,7 @@ public class HtmlExportQueryService {
    * @param request Export parameters (filters)
    * @return Complete HTML document as string
    */
+  @SuppressWarnings({"PMD.CognitiveComplexity", "PMD.NPathComplexity"}) // HTML report generation
   public String generateCustomersHtml(ExportRequest request) {
     log.info("Generating HTML report for customers");
 

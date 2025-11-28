@@ -144,7 +144,18 @@ public class ContactMapper {
       return;
     }
 
-    // Update only non-null fields (partial update)
+    // PMD Complexity Refactoring (Issue #146) - Extracted to helper methods
+    updateBasicInfo(dto, contact);
+    updateContactInfo(dto, contact);
+    updateRelationshipData(dto, contact);
+    updateSocialProfiles(dto, contact);
+  }
+
+  // ============================================================================
+  // PMD Complexity Refactoring (Issue #146) - Helper methods for updateEntityFromDTO()
+  // ============================================================================
+
+  private void updateBasicInfo(ContactDTO dto, CustomerContact contact) {
     if (dto.getSalutation() != null) {
       contact.setSalutation(dto.getSalutation());
     }
@@ -163,8 +174,9 @@ public class ContactMapper {
     if (dto.getDecisionLevel() != null) {
       contact.setDecisionLevel(dto.getDecisionLevel());
     }
+  }
 
-    // Contact Info
+  private void updateContactInfo(ContactDTO dto, CustomerContact contact) {
     if (dto.getEmail() != null) {
       contact.setEmail(dto.getEmail());
     }
@@ -174,8 +186,9 @@ public class ContactMapper {
     if (dto.getMobile() != null) {
       contact.setMobile(dto.getMobile());
     }
+  }
 
-    // Relationship Data
+  private void updateRelationshipData(ContactDTO dto, CustomerContact contact) {
     if (dto.getBirthday() != null) {
       contact.setBirthday(dto.getBirthday());
     }
@@ -191,8 +204,9 @@ public class ContactMapper {
     if (dto.getPersonalNotes() != null) {
       contact.setPersonalNotes(dto.getPersonalNotes());
     }
+  }
 
-    // V2 Fields (Sprint 2.1.7.2 D11.1)
+  private void updateSocialProfiles(ContactDTO dto, CustomerContact contact) {
     if (dto.getLinkedin() != null) {
       contact.setLinkedin(dto.getLinkedin());
     }
@@ -202,10 +216,5 @@ public class ContactMapper {
     if (dto.getNotes() != null) {
       contact.setNotes(dto.getNotes());
     }
-
-    // Note: Location assignment is handled in service layer
-
-    // Note: isPrimary is updated via separate method
-    // Note: Customer and audit fields are not updated here
   }
 }

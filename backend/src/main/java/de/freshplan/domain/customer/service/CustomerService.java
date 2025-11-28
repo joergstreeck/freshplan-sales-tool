@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Business service with comprehensive CRUD operations
 @ApplicationScoped
 public class CustomerService implements CustomerActivation {
 

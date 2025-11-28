@@ -66,6 +66,7 @@ export function HilfeDashboard() {
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
+            component="h1"
             sx={{ mb: 1, fontWeight: 'bold', color: theme.palette.secondary.main }}
           >
             Hilfe & Support

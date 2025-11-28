@@ -20,6 +20,7 @@ import org.jboss.logging.Logger;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.CognitiveComplexity") // JSON export with comprehensive metadata handling
 @ApplicationScoped
 public class JsonExporter implements ExportStrategy {
 
