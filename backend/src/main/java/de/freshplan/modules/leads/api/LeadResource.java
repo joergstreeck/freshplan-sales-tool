@@ -1355,7 +1355,7 @@ public class LeadResource {
   private Response checkEmailDuplicate(String email) {
     String normalizedEmail = Lead.normalizeEmail(email);
     if (normalizedEmail != null) {
-      Long duplicateCount =
+      long duplicateCount =
           Lead.count("emailNormalized = ?1 and status != ?2", normalizedEmail, LeadStatus.DELETED);
       if (duplicateCount > 0) {
         return Response.status(Response.Status.CONFLICT)

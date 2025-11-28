@@ -17,7 +17,7 @@
 # PRÜFUNG 7.1: Frontend Circular Dependency Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 8: Test Cleanup - @AfterEach Validation (Check-Only) - Sprint 2.1.7.7
 # PRÜFUNG 9: OpenAPI Type Sync Check (BLOCKIEREND) - Sprint 2.1.7.7 OpenAPI Contract-First
-# PRÜFUNG 10: PMD Code Complexity Check (INFO-ONLY) - Issue #146 Technical Debt
+# PRÜFUNG 10: PMD Code Complexity Check (BLOCKIEREND) - Issue #146 Technical Debt
 # PRÜFUNG 11: fieldCatalog.json Removal Guard (BLOCKIEREND) - Sprint 2.1.7.x
 #
 # ============================================================================

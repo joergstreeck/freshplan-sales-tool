@@ -11,6 +11,7 @@ import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -38,8 +39,8 @@ public class AuditInterceptor {
   private static final Map<Class<?>, EntityType> ENTITY_TYPE_CACHE = new HashMap<>();
 
   // PMD Complexity Refactoring (Issue #146) - Prefix-to-Action mapping
-  private static final java.util.List<PrefixAction> ACTION_PREFIXES =
-      java.util.List.of(
+  private static final List<PrefixAction> ACTION_PREFIXES =
+      List.of(
           new PrefixAction("create", AuditAction.CREATE),
           new PrefixAction("persist", AuditAction.CREATE),
           new PrefixAction("save", AuditAction.CREATE),
@@ -51,8 +52,7 @@ public class AuditInterceptor {
           new PrefixAction("delete", AuditAction.DELETE),
           new PrefixAction("remove", AuditAction.DELETE));
 
-  private static final java.util.List<String> READ_PREFIXES =
-      java.util.List.of("find", "get", "load", "read");
+  private static final List<String> READ_PREFIXES = List.of("find", "get", "load", "read");
 
   private record PrefixAction(String prefix, AuditAction action) {}
 
