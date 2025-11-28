@@ -1,12 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button-transition';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '../components/ui/card-transition';
+import { Card, CardContent, CardDescription, CardHeader } from '../components/ui/card-transition';
 
 /**
  * Test-only login bypass page for development.
@@ -72,11 +66,13 @@ export function LoginBypassPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <main className="min-h-screen bg-background p-8">
       <div className="mx-auto max-w-2xl">
         <Card>
           <CardHeader>
-            <CardTitle>Development Login Bypass</CardTitle>
+            <h1 className="text-2xl font-semibold leading-none tracking-tight">
+              Development Login Bypass
+            </h1>
             <CardDescription>
               Choose a role to login with mock credentials. This is only available in development
               mode.
@@ -114,6 +110,6 @@ export function LoginBypassPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </main>
   );
 }
