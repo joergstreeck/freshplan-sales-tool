@@ -3,7 +3,7 @@
 **Sprint-ID:** 2.1.7.7
 **Created:** 2025-10-21
 **Updated:** 2025-10-21 (Option A: UI bereits in Sprint 2.1.7.2 vorbereitet)
-**Status:** 📋 PLANNING
+**Status:** ✅ MERGED TO MAIN (28.11.2025 - PR #145)
 **Owner:** TBD
 **Estimated Effort:** 30h (reduziert von 36h durch Sprint 2.1.7.2 Vorbereitung)
 **Dependencies:** Sprint 2.1.7.2 COMPLETE (UI-Vorbereitung!)

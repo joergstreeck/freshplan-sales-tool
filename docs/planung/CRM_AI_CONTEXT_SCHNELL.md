@@ -1,18 +1,40 @@
-# 🤖 CRM AI Context Schnell - KI-optimiertes System-Verständnis
+# CRM AI Context - FreshPlan Sales Tool
 
-**📅 Letzte Aktualisierung:** 2025-10-31
-**🎯 Zweck:** Schnelle KI-Einarbeitung in FreshFoodz B2B-Food-CRM System
-**📊 Ansatz:** Kompakt - 80% Vision + 20% Reality (Living Document)
-**🤖 Zielgruppe:** Externe KIs + neue Claude-Instanzen + AI-Consultants
+```
+KONTEXT-TYP: System-Dokumentation für KI-Agenten
+PROJEKT: FreshFoodz B2B-Food-CRM (internes Vertriebstool)
+STAND: 2025-11-28
+TOKENS: ~12.000 (komplett) | ~3.000 (Quick Start bis COMMON PITFALLS)
+```
 
-**⚠️ Codebase-Validierung Disclaimer:**
-Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf letzten Commits (Stand: 19.10.2025).
-**Single Source of Truth für Migrations:** `/docs/planung/MIGRATIONS.md` (wird aktiv gepflegt!)
-**Immer gegen Codebase validieren** wenn konkrete LOC-Zahlen oder Feature-Status kritisch sind!
+## KI-ANWEISUNGEN
+
+**Lesepriorität:**
+- PFLICHT: Abschnitte "QUICK FACTS" bis "COMMON PITFALLS" (~200 Zeilen)
+- OPTIONAL: Rest des Dokuments nur bei spezifischen Deep-Dive-Fragen
+
+**Validierungsregel:**
+- Konkrete Zahlen (Test-Counts, Migration-Nummern, LOC) immer gegen Codebase prüfen
+- Codebase ist Single Source of Truth, nicht dieses Dokument
+
+**Status-Konvention:**
+- ✅ = Implementiert und produktiv
+- ⏳ = In Entwicklung
+- ❌ = Geplant/Fehlt
+
+**Referenz-Dateien bei Unklarheiten:**
+- Migrations: `/docs/planung/MIGRATIONS.md`
+- Master Plan: `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
+- Arbeitsregeln: `/CLAUDE.md`
 
 ---
 
-## ⚡ QUICK FACTS (30 Sekunden KI-Onboarding)
+## QUICK FACTS
+
+### Projekt-Identität
+- **FreshFoodz** = Markenname (B2B-Food-Großhandel)
+- **FreshPlan** = Technischer Projektname (CRM-System)
+- **freshplan-sales-tool** = Repository-Name
 
 ### Was ist dieses Projekt?
 **B2B-Food-CRM für Gastronomiebetriebe** (Restaurants, Hotels, Catering).
@@ -20,16 +42,16 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **Team-Größe:** 5-50 Nutzer (internes Tool, keine Microservices!)
 
 ### Tech-Stack (Kern)
-- **Backend:** Quarkus 3.x (Java 21), PostgreSQL 15+
+- **Backend:** Quarkus 3.x (Java 17), PostgreSQL 15+
 - **Frontend:** React 18, TypeScript, MUI v7
 - **Events:** PostgreSQL LISTEN/NOTIFY (kein Kafka!)
 - **Security:** Keycloak OIDC + RLS + ABAC
 
-### Besonderheiten (wichtig für neue KIs!)
-- ❌ **KEIN Gebietsschutz!** (Territory = Datenraum, nicht Verkaufsgebiet)
-- ✅ **Multi-Contact-B2B** (CHEF + BUYER parallel)
-- ✅ **Seasonal-Autoscaling** (Spargel 2x, Oktoberfest 4x, Weihnachten 5x)
-- ✅ **Cost-Efficiency** (5-50 Nutzer, keine Over-Engineering!)
+### Architektur-Constraints (bei Code-Generierung beachten!)
+- ❌ **KEIN Gebietsschutz** - Territory = RLS-Datenraum, nicht Verkaufsgebiet
+- ✅ **Multi-Contact-B2B** - CHEF + BUYER parallel pro Lead/Customer
+- ✅ **Modular-Monolith** - KEINE Microservices (5-50 Nutzer)
+- ✅ **Cost-Efficiency** - Keine Over-Engineering-Patterns
 
 ### Migrations-Hygiene (KRITISCH!)
 - **V10xxx** = Production-Relevant
@@ -40,82 +62,171 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 ### Next Steps
 - **COMPLETE:** Sprint 2.1.7.2 (Customer-Management + Xentral-Integration) ✅
 - **COMPLETE:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle) ✅
-- **JETZT:** Sprint 2.1.7.7 (Multi-Location Management - Filialen + Hierarchie)
+- **COMPLETE:** Sprint 2.1.7.7 (Multi-Location Management + Server-Driven Architecture) ✅ PR #145 MERGED
+- **NÄCHSTER:** Sprint 2.1.7.5 (Advanced Filters & Analytics) oder Sprint 2.1.8 (Team Management)
 
 ---
 
-## 🚨 COMMON PITFALLS (Was neue KIs oft falsch machen)
+## QUICK START
 
-### ❌ Pitfall 1: "Territory = Gebietsschutz"
-**Falsch:** "User in Bayern darf nur Bayern-Leads sehen"
-**Richtig:** "Territory = Datenraum für RLS, aber Lead-Management deutschland-weit!"
+### Code-Struktur (wichtigste Pfade)
 
-### ❌ Pitfall 2: "Microservices verwenden"
-**Falsch:** "Lass uns Lead-Service, Customer-Service, Opportunity-Service machen"
-**Richtig:** "Modular-Monolith! 5-50 Nutzer brauchen KEINE Microservices!"
+**Backend:** `backend/src/main/java/de/freshplan/`
+```
+domain/           # Core-Entities (Customer, Opportunity) - STABIL, selten geändert
+  ├── customer/   # Customer, Contact, Location Entities + Services
+  ├── opportunity/# Opportunity Entity + Services
+  └── shared/     # Shared Enums (BusinessType, LeadSource, etc.)
+modules/          # Feature-Module (Leads, Xentral) - AKTIV entwickelt
+  ├── leads/      # Lead-Management (CRUD, Scoring, Protection)
+  └── xentral/    # ERP-Integration (Umsatz, Zahlungsverhalten)
+api/resources/    # REST-Endpoints (@Path Annotationen)
+infrastructure/   # Querschnittsfunktionen (Security, Events, Settings)
+  ├── security/   # RLS, ABAC, Keycloak
+  ├── cqrs/       # Event-Publisher, DomainEvent
+  └── settings/   # 5-Level Settings-Hierarchie
+```
+**Faustregel:** `domain/` = etablierte Core-Entitäten, `modules/` = aktiv entwickelte Features
 
-### ❌ Pitfall 3: "Migrations-Nummern selbst vergeben"
-**Falsch:** `V10029__my_new_migration.sql`
-**Richtig:** `MIGRATION=$(./scripts/get-next-migration.sh | tail -1)`
+**Frontend:** `frontend/src/`
+```
+features/         # Feature-Module (Domain-driven)
+  ├── customers/  # Kunden-UI + Wizard + Multi-Location
+  ├── leads/      # Lead-UI + Scoring + Protection
+  └── opportunity/# Kanban-Board + Pipeline
+components/       # Shared UI-Components
+theme/            # FreshFoodz Design System (freshfoodz.ts)
+hooks/            # Shared React Hooks
+api/generated/    # OpenAPI-generierte Types
+```
 
-### ❌ Pitfall 4: "PostgreSQL ENUM Type nutzen"
-**Falsch:** `CREATE TYPE business_type AS ENUM (...)`
-**Richtig:** `VARCHAR(30) + CHECK CONSTRAINT` (JPA-Standard, einfache Schema-Evolution)
+### Befehle
 
-### ❌ Pitfall 5: "localStorage in Artifacts verwenden"
-**Falsch:** `localStorage.setItem('key', value)` in React Artifacts
-**Richtig:** `useState()` - localStorage funktioniert NICHT in Claude.ai Artifacts!
+```bash
+# Backend starten (Port 8080)
+cd backend && ./mvnw quarkus:dev
+
+# Frontend starten (Port 5173)
+cd frontend && npm install && npm run dev
+
+# Tests
+cd backend && ./mvnw test           # Backend
+cd frontend && npm run test         # Frontend
+cd frontend && npm run test:e2e     # E2E
+```
+
+### Haupt-API-Endpoints
+
+| Endpoint | Beschreibung |
+|----------|-------------|
+| `GET/POST /api/leads` | Lead-Management |
+| `GET/POST /api/customers` | Kunden-Management |
+| `GET/POST /api/opportunities` | Verkaufschancen |
+| `GET /api/enums/{type}` | Backend-Enums für UI-Dropdowns |
+| `GET /api/location-service-schema` | Server-Driven Field Definitions |
+
+### Domänen-Begriffe
+
+**CHEF** = Küchenchef (entscheidet Qualität/Menü)
+**BUYER** = Einkäufer (entscheidet Budget/Preise)
+**Multi-Contact** = Ein Lead/Customer hat CHEF + BUYER parallel (unabhängige Workflows)
+
+### Wichtige Enums (Backend definiert, Frontend konsumiert)
+
+| Enum | Werte | Verwendung |
+|------|-------|------------|
+| `BusinessType` | RESTAURANT, HOTEL, CATERING, KANTINE, KRANKENHAUS, ALTENHEIM, BETRIEBSRESTAURANT | Kundensegment |
+| `LeadStatus` | NEW, CONTACTED, QUALIFIED, CONVERTED, LOST | Lead-Lifecycle |
+| `CustomerStatus` | LEAD, PROSPECT, AKTIV, RISIKO, INAKTIV, ARCHIVIERT | Kunden-Lifecycle |
+| `OpportunityStage` | NEW_LEAD, QUALIFICATION, NEEDS_ANALYSIS, PROPOSAL, NEGOTIATION, CLOSED_WON, CLOSED_LOST | Sales-Pipeline |
+| `HierarchyType` | STANDALONE, HEADQUARTER, FILIALE, ABTEILUNG, FRANCHISE | Multi-Location |
+
+### Xentral-Integration (ERP-Verknüpfung)
+
+**Zwei Kundennummern-Konzepte:**
+- `customerNumber` = CRM-interne Nummer (FP-00001, auto-generiert bei Customer-Erstellung)
+- `xentralCustomerId` = Xentral ERP-Kundennummer (externe ID, manuell verknüpft)
+
+**Verknüpfung:** Customer kann 0 oder 1 Xentral-Verknüpfung haben. Bei Filialen wird `xentralCustomerId` vom HEADQUARTER geerbt.
+
+### RLS-Pattern (Row-Level-Security)
+
+```java
+// Service-Methode mit RLS-Schutz
+@RlsContext  // Setzt app.tenant_id + app.user_id in PostgreSQL Session
+public List<Lead> findByTerritory() {
+    return leadRepository.listAll();  // RLS-Policy filtert automatisch!
+}
+```
+
+RLS-Policy in PostgreSQL filtert automatisch nach `territory_id = current_setting('app.territory_id')`.
+
+### Troubleshooting
+
+| Problem | Befehl/Lösung |
+|---------|---------------|
+| Backend startet nicht | `docker ps` (PostgreSQL?) oder `brew services start postgresql@15` |
+| Port 8080 belegt | `lsof -i :8080` dann `kill -9 <PID>` |
+| CORS-Error Frontend | Backend auf Port 8080 starten, `.env` prüfen |
+| Tests rot | `./mvnw clean && ./mvnw test` |
+| Migration-Konflikt | `./scripts/get-next-migration.sh` |
 
 ---
 
-## 🚨 KNOWN GAPS (Stand: 2025-10-19)
+## COMMON PITFALLS
 
-**Wichtige fehlende Features, die neue KIs kennen sollten:**
+**NICHT TUN → STATTDESSEN:**
 
-### Frontend-UI Gaps
-- ✅ **Lead/Customer → Opportunity UI** - COMPLETE (Sprint 2.1.7.1 + 2.1.7.3) ✅
-- ❌ **Opportunity → Customer Conversion UI** - Backend ready (Sprint 2.1.7.4 geplant), UI fehlt
-- ❌ **Progressive Profiling UI** - Lead-Anreicherung über Zeit (geplant)
+| Falsch | Richtig | Grund |
+|--------|---------|-------|
+| Territory = Gebietsschutz | Territory = RLS-Datenraum | Leads sind deutschland-weit, keine regionale Beschränkung |
+| Microservices-Architektur | Modular-Monolith | 5-50 Nutzer, kein Overhead nötig |
+| Migration-Nummer selbst vergeben | `./scripts/get-next-migration.sh` | Race-Conditions vermeiden |
+| `CREATE TYPE ... AS ENUM` | `VARCHAR(30) + CHECK` | JPA-kompatibel, einfache Evolution |
+| `localStorage` in Artifacts | `useState()` | localStorage in Claude.ai Artifacts nicht verfügbar |
+| `useFieldDefinitions()` | `useLocationServiceSchema()` | fieldCatalog.json entfernt, Backend ist SoT |
+| Filiale als Location | Filiale als Customer mit `parent_customer_id` | CRM Best Practice (Salesforce-Pattern) |
 
-### Business Features
-- ✅ **Customer Status Lifecycle** - PROSPECT→AKTIV→RISIKO→INAKTIV (Sprint 2.1.7.4 COMPLETE, OPERATIONAL)
-- ✅ **Seasonal Business Support** - Food-Branche Seasonal Patterns (Sprint 2.1.7.4 COMPLETE, Eisdielen/Biergärten/Ski-Hütten)
-- ⏳ **Xentral-ERP-Integration** - Umsatz + Zahlungsverhalten (Sprint 2.1.7.2 geplant)
-- ⏳ **Team Management** - Kollaboratoren + Lead-Transfer (in Planung)
-
-### Infrastructure
-- ⏳ **KEDA Autoscaling** - Territory + Seasonal-aware (99% Planning, Deployment pending)
-- ⏳ **Production Monitoring** - Prometheus + Grafana Dashboards (Setup pending)
-
-**Hinweis:** Backend-First-Development ist unsere Strategie. Frontend-UIs folgen, wenn Backend stabil ist.
+**Migration erstellen:**
+```bash
+NEXT=$(./scripts/get-next-migration.sh | tail -1)
+touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
+```
 
 ---
 
-## 📑 INHALTSVERZEICHNIS
+## KNOWN GAPS
 
-### 🚀 QUICK START (für neue KI-Instanzen)
-- [⚡ System-Status auf einen Blick](#system-status)
-- [🎯 Strategischer Kontext](#strategischer-kontext)
-- [🏗️ Architektur-Überblick](#architektur-overview)
-- [💻 Codebase-Navigation](#codebase-navigation)
+| Feature | Status | Hinweis |
+|---------|--------|---------|
+| Progressive Profiling UI | ❌ | Lead-Anreicherung über Zeit - geplant |
+| Team Management | ⏳ | Kollaboratoren + Lead-Transfer - Sprint 2.1.8 |
+| KEDA Autoscaling | ⏳ | Territory + Seasonal-aware - Deployment pending |
+| Production Monitoring | ⏳ | Prometheus + Grafana - Setup pending |
 
-### 📚 HAUPT-SEKTIONEN
-1. [🎯 Strategischer Kontext](#sektion-1-strategischer-kontext) - Business-Mission, ROI, Competitive Advantage
-2. [🏗️ System-Architektur](#sektion-2-system-architektur) - Module, Infrastructure, Security
-3. [💻 Technical Implementation](#sektion-3-technical-implementation) - Tech-Stack (Backend + Frontend), Patterns, Database
-4. [🔧 Development-Standards](#sektion-5-development-standards) - Code-Standards, Testing, CI/CD
-5. [📦 Codebase-Reality](#sektion-6-codebase-reality) - Latest Implementation, Modul-Status, Tests
+**Entwicklungsstrategie:** Backend-First (Frontend folgt wenn Backend stabil)
 
-### 🎯 THEMEN-INDEX
-- [🗄️ Database Migrations (Consolidated)](#database-migrations) - Alle Migrations thematisch gruppiert
-- [🧪 Testing Strategy](#testing-strategy) - Coverage, Patterns, CI Performance
-- [🔒 Security Architecture](#security-architecture) - RLS, ABAC, Territory-Scoping
-- [🚀 Performance Targets](#performance-targets) - SLOs, Optimization, Monitoring
+---
+
+## INHALTSVERZEICHNIS (Deep-Dive Sektionen)
+
+**Nur bei Bedarf lesen - oben ist für 90% der Tasks ausreichend.**
+
+| Sektion | Inhalt |
+|---------|--------|
+| SYSTEM-STATUS | Architecture Flags, Module-Status |
+| STRATEGISCHER KONTEXT | Business-Mission, ROI |
+| SYSTEM-ARCHITEKTUR | Module 01-08, Infrastructure Layer |
+| TECHNICAL IMPLEMENTATION | Tech-Stack Details, Event-Backbone, Patterns |
+| DEVELOPMENT-STANDARDS | Code-Standards, Testing, CI/CD |
+| CODEBASE-REALITY | Aktuelle LOC, Test-Coverage |
+| DATABASE MIGRATIONS | Thematisch gruppierte Migrations |
+| SECURITY ARCHITECTURE | RLS, ABAC Details |
 
 ---
 
 <a id="system-status"></a>
-## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-10-19)
+## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-11-28)
 
 ### 🏗️ Architecture Flags (Production-Ready Features)
 
@@ -136,6 +247,10 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - ✅ **Opportunity Backend** - V10026 (lead_id/customer_id FKs), Lead→Opportunity→Customer workflows ready
 - ✅ **Customer Number Sequence** - V10028 (race-condition-safe, PostgreSQL Sequence)
 - ✅ **Bestandsleads-Migration** - Batch-Import mit Idempotency, Backdating, Lead→Customer Conversion
+- ✅ **Multi-Location/Filialen Management** (Sprint 2.1.7.7) - Parent-Child Customer Hierarchie → Details in MODUL 03
+
+**SERVER-DRIVEN UI ARCHITECTURE (Sprint 2.1.7.7):**
+- ✅ **fieldCatalog.json ENTFERNT** - Backend ist Single Source of Truth → Details in MODUL 03
 
 **SECURITY & QUALITY:**
 - ✅ **Enterprise Security 5-Layer** - Rate Limiting, Audit Logs, XSS Sanitizer, Error Disclosure Prevention, HTTP Headers
@@ -153,11 +268,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - ✅ **Design-First Development** - 100% Deutsch, keine hardcoded Styles
 
 **CURRENT STATUS:**
-- 📊 **Tests:** Backend Tests GREEN (100% Coverage), Frontend Tests GREEN
-- 📦 **Migrations:** Production Migrations deployed → **Details:** `/docs/planung/MIGRATIONS.md`
-- 🚀 **Backend:** Xentral-ERP-Integration operational ✅, Server-Driven UI Framework deployed ✅
-- 🚀 **Frontend:** Dynamic Forms ohne Code-Changes, Customer Detail Cockpit operational
-- 📋 **Latest:** Sprint 2.1.7.2 MERGED (31.10.2025) - PR #144 - Customer-Management + Xentral-Integration
+- 📊 **Tests:** Backend 2400+ Tests GREEN, Frontend Tests GREEN
+- 📦 **Migrations:** Production V10047 (Latest: contact_multi_location_assignment), ~47 Migrations V10xxx → **Details:** `/docs/planung/MIGRATIONS.md`
+- 🚀 **Backend:** Multi-Location BranchService + HierarchyMetrics operational ✅, Server-Driven UI ✅
+- 🚀 **Frontend:** HierarchyDashboard + CreateBranchDialog operational ✅
+- 📋 **Latest:** Sprint 2.1.7.7 MERGED (28.11.2025) - PR #145 - Multi-Location Management + Server-Driven Architecture
 
 ---
 
@@ -231,7 +346,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **Customer Status Lifecycle (Sprint 2.1.7.4 Architecture):**
 - **PROSPECT:** Opportunity gewonnen (CLOSED_WON), wartet auf erste gelieferte Bestellung
   - Lead → Opportunity → Customer Conversion setzt Status: PROSPECT (NICHT AKTIV!)
-  - ⚠️ **WICHTIG:** CustomerStatus.LEAD wird entfernt (konzeptionell falsch - Leads gehören in leads Tabelle!)
+  - ⚠️ **HINWEIS:** CustomerStatus enthält aktuell: LEAD, PROSPECT, AKTIV, RISIKO, INAKTIV, ARCHIVIERT
 - **AKTIV:** Hat mindestens 1 gelieferte Bestellung (echter Kunde!)
   - Automatisch: Xentral-Webhook "Order Delivered" (Sprint 2.1.7.2)
   - Manuell: "Als AKTIV markieren" Button (Fallback für manuelle Aktivierung)
@@ -243,16 +358,11 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
   - Seasonal-Aware: Keine falschen Alarme bei Saisonbetrieben
 
 **Customer-Relationship-Management:**
-- Multi-Location-Kunden mit verschiedenen Standorten
+- Multi-Location-Kunden mit Parent-Child Hierarchie (Sprint 2.1.7.7)
 - CHEF/BUYER parallele Kommunikation + Workflow-Management
 - Seasonal Campaign-Management (Spargel/Oktoberfest/Weihnachten)
 - Sample-Management + Feedback-Integration
-- **Customer Status Lifecycle (Sprint 2.1.7.4 Architecture):**
-  - PROSPECT: Wartet auf erste Bestellung (nach Opportunity CLOSED_WON)
-  - AKTIV: Hat gelieferte Bestellung (via Xentral-Webhook oder Manual Activation)
-  - Seasonal Business Support: Keine falschen Churn-Alarme bei Saisonbetrieben
-  - ⚠️ CustomerStatus.LEAD entfernt (Leads gehören in leads Tabelle, NICHT customers!)
-- **Xentral-ERP-Integration** (Sprint 2.1.7.2 Planning):
+- **Xentral-ERP-Integration** (Sprint 2.1.7.2 COMPLETE):
   - Polling-Ansatz: Nightly Job 1x täglich (02:00 Uhr) - Webhooks in Beta
   - Umsatz-Dashboard (30/90/365 Tage Rechnungsdaten)
   - Zahlungsverhalten-Monitoring (Ampel-System: 🟢🟡🟠🔴)
@@ -325,14 +435,33 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **Key-Features:** KEIN Gebietsschutz + T+3/T+7 Automation + Multi-Contact-B2B + Lead Scoring + Enterprise Security
 
 #### 👥 MODUL 03 - KUNDENMANAGEMENT (Customer-Relations)
-**Purpose:** Customer-Lifecycle + Multi-Location + Relationship-Management
-**Status:** ✅ PRODUCTION-READY - Server-Driven UI + Xentral-Integration + Activity Timeline
-**Key-Features:**
-- ✅ **Server-Driven UI** - Backend definiert Forms dynamisch, Frontend rendert automatisch (keine Code-Änderung bei neuen Feldern!)
+**Purpose:** Customer-Lifecycle + Multi-Location/Filialen + Relationship-Management
+**Status:** ✅ PRODUCTION-READY - Server-Driven UI + Multi-Location Hierarchie + Xentral-Integration
+
+**Multi-Location/Filialen Management (Sprint 2.1.7.7 COMPLETE):**
+- ✅ **Option A: CRM Best Practice** - Filialen sind separate Customers mit `parent_customer_id` FK
+  - Wie Salesforce, Dynamics 365, HubSpot - NICHT als Locations unter einem Customer!
+  - Jede Filiale hat eigene Opportunities, Contacts, Activities
+- ✅ **HierarchyType Enum:** STANDALONE | HEADQUARTER | FILIALE | ABTEILUNG | FRANCHISE (5 Werte)
+- ✅ **BranchService:** createBranch(), getBranchesByHeadquarter(), updateBranch(), deleteBranch(), validateHierarchy()
+- ✅ **HierarchyMetricsService:** Roll-up Umsätze für HEADQUARTER (alle Filialen aggregiert)
+- ✅ **XentralAddressMatcher:** Fuzzy Address-Matching mit Levenshtein Distance (80% Threshold)
+
+**Server-Driven UI Architecture (Sprint 2.1.7.7 COMPLETE):**
+- ✅ **fieldCatalog.json ENTFERNT** - Pre-Commit Hook blockiert Re-Einführung!
+- ✅ **LocationServiceSchemaResource:** Backend `/api/location-service-schema` als Single Source of Truth
+- ✅ **useLocationServiceSchema():** Frontend Hook für dynamische Field Definitions
+- **Benefit:** Forms ändern sich ohne Frontend-Deployment!
+
+**Frontend Components (Sprint 2.1.7.7):**
+- ✅ **HierarchyDashboard:** Branch-Übersicht mit Metriken + Parent-Selection (mit Tests)
+- ✅ **CreateBranchDialog:** Formular für neue Filialen (mit Tests)
+- ✅ **FILIALE Option enabled:** UI zeigt Parent-Selection bei HierarchyType=FILIALE
+
+**Weitere Key-Features:**
 - ✅ **Xentral ERP Live-Daten** - Umsatz 30/90/365 Tage, Zahlungsverhalten-Ampel 🟢🟡🟠🔴
 - ✅ **Churn-Alarm** - Pro Kunde konfigurierbar (14-365 Tage), Seasonal-Aware (Eisdiele ≠ Restaurant)
 - ✅ **Unified Activity Timeline** - Alle Kontakte (Email/Phone/Meeting/Notes) in einer Timeline
-- ✅ **Multi-Location** - Strukturierte Adressen, Multiple Locations pro Customer
 - Dynamic Customer-Schema (JSONB base_fields + custom_fields)
 - Multi-Contact-Support (CHEF/BUYER Roles)
 - Territory-RLS (Row-Level-Security)
@@ -534,7 +663,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 **Xentral-ERP-Integration (FC-005 + FC-009):**
 - **Umsatz-Dashboard:** 30/90/365 Tage Rechnungsdaten (Live-Sync)
 - **Zahlungsverhalten:** Ampel-System (EXCELLENT / GOOD / ACCEPTABLE / PROBLEMATIC)
-- **Churn-Alarm:** Tage seit letzter Bestellung (variable Threshold: 7-90 Tage pro Kunde)
+- **Churn-Alarm:** Tage seit letzter Bestellung (variable Threshold pro Kunde, Default: 90 Tage)
 - **Umsatz-Trend:** GROWING / STABLE / DECLINING (automatische Analyse)
 
 **Ongoing Business:**
@@ -608,7 +737,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 ### 🛠️ Tech-Stack (Production-Ready)
 
 **Backend:**
-- Framework: Quarkus 3.x (Java 21 + GraalVM Native-ready)
+- Framework: Quarkus 3.x (Java 17 + GraalVM Native-ready)
 - Database: PostgreSQL 15+ mit Row-Level-Security (RLS) + JSONB + LISTEN/NOTIFY
 - Security: Keycloak OIDC + ABAC (Attribute-based Access Control)
 - Testing: JUnit 5 + Testcontainers + RestAssured + >80% Coverage-Target
@@ -683,40 +812,53 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - **Lead-Management:** V247 (Normalization), V263 (BusinessType), V10016-V10017 (Multi-Contact), V10018-V10024 (Lead Scoring), V10027 (ActivityOutcome)
 - **Customer-Management:** V264 (BusinessType), V10028 (Customer Number Sequence), V10032 (Lead Parity Fields), V10033 (Status Cleanup + Seasonal Business), V261 (original_lead_id), V90008 (DEV-SEED Seasonal Customers)
 - **Opportunity-Management:** V10026 (lead_id/customer_id FKs), V10030 (OpportunityType Enum)
+- **Multi-Location (Sprint 2.1.7.7):** hierarchy_type + parent_customer_id in V5 (Customer Tables)
+  - `parent_customer_id` FK auf customers (Self-Referencing)
+  - `hierarchy_type` VARCHAR(30): STANDALONE | HEADQUARTER | FILIALE | ABTEILUNG | FRANCHISE
+  - Index auf parent_customer_id für effiziente Child-Abfragen
+- **Supporting Migrations:** V10034 (fix seasonal_months to JSONB), V10035 (Xentral Integration Fields), V10036 (Customer Churn Threshold)
 
 **Enum Pattern (Architektur-Entscheidung):**
 - **Pattern:** `VARCHAR(30) + CHECK CONSTRAINT` (NIEMALS PostgreSQL ENUM Type!)
 - **Begründung:** JPA-Standard, einfache Schema-Evolution, nur ~5% langsamer
-- **Beispiel:** ActivityOutcome, BusinessType, OpportunityType
+- **Beispiel:** ActivityOutcome, BusinessType, OpportunityType, HierarchyType, CustomerStatus
 - **Java:** `@Enumerated(EnumType.STRING)` direkt nutzbar (kein Custom Converter)
+- **HierarchyType Values:** STANDALONE (default) | HEADQUARTER | FILIALE | ABTEILUNG | FRANCHISE
 
 ### 📁 Codebase-Structure (Modular-Monolith)
 
-**Backend:**
+**Backend:** `/backend/src/main/java/de/freshplan/`
 ```
-/backend
-  /modules              # Modular-Monolith-Architecture
-    /customer           # Module 03 - Customer-Management
-      /core             # Domain-Logic (Pure Business)
-      /api              # REST-Controllers + DTOs
-      /infrastructure   # Database + External-Services
-    /leads              # Module 02 - Lead-Management
-    /communication      # Module 05 - Email + Sample-Follow-up
-    /settings           # Module 06 - Settings-Core-Engine
-  /legacy               # Legacy-Code (Migration ongoing)
-  /shared               # Cross-Module Utilities + Security
+/api                    # REST-Controllers + DTOs (12+ Resources)
+/domain                 # Business-Logic by Feature
+  /customer             # Customer Entity + Services + Branch/Hierarchy
+  /opportunity          # Opportunity Pipeline + Services
+  /communication        # Email + Activity Timeline
+  /help                 # CAR-Strategy Help System
+  /audit                # Audit Trail + Events
+  /profile              # User Profiles
+  /shared               # Cross-Domain Services (Events, CQRS, Security)
+  /...                  # Weitere Domain-Module
+/modules                # External Integrations
+  /leads                # Lead-Management (expanded module)
+  /xentral              # ERP-Integration Services
+/infrastructure         # Database + External-Services + Events
+/shared                 # Cross-Module Utilities + Security
 ```
 
-**Frontend:**
+**Frontend:** `/frontend/src/`
 ```
-/frontend
-  /src
-    /components         # Reusable UI-Components
-    /features           # Feature-specific Components (leads, customers, opportunities)
-    /services           # API-Clients + Business-Logic
-    /types              # TypeScript Type-Definitions
-    /theme              # FreshFoodz Theme V2 (freshfoodz-theme.ts)
-  /legacy               # Legacy-Frontend (Migration ongoing)
+/components             # Reusable UI-Components
+/features               # Feature-specific Components
+  /customers            # Customer Management + Hierarchy + Wizard
+  /leads                # Lead Management
+  /opportunities        # Pipeline + Kanban
+  /settings             # Settings Management
+/pages                  # Page-Level Components
+/hooks                  # Custom React Hooks (26+)
+/services               # API-Clients + Business-Logic
+/types                  # TypeScript Type-Definitions
+/theme                  # FreshFoodz Theme V2 (freshfoodz-theme.ts)
 ```
 
 **Documentation:**
@@ -816,18 +958,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 - Contract-Testing: OpenAPI-Schema-Validation für API-Compatibility
 - Performance-Testing: k6-Load-Tests für P95-Targets + Scalability
 
-**Current Test Status:**
-- **Backend:** Tests GREEN (100% Coverage)
-  - LeadResourceTest GREEN
-  - Security Tests GREEN
-  - FollowUpAutomationServiceTest GREEN
-  - CustomerRepositoryTest GREEN
-- **Frontend:** Tests GREEN
-  - ActivityDialog Tests GREEN
-  - CI ESLint passed
-- **CI Performance:** Optimiert
-  - JUnit parallel execution
-  - ValidatorFactory optimization
+**Current Test Status:** → Siehe SEKTION 6: CODEBASE-REALITY für aktuelle Zahlen (2400+ Backend Tests)
 
 **Performance-Optimization:**
 - Database: Hot-Projections + GIN-Indexes + Partitioning + Query-Optimization
@@ -847,23 +978,29 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
 <a id="sektion-6-codebase-reality"></a>
 ## 📦 SEKTION 6: CODEBASE-REALITY
 
-### 📊 Latest Implementation (Stand: 2025-10-22)
+### 📊 Latest Implementation (Stand: 2025-11-28)
 
 **Completed Sprints:**
-- ✅ **Sprint 2.1.7.2** (31.10.2025): Customer-Management + Xentral-Integration (PR #144 MERGED)
-  - Server-Driven UI Framework, Xentral Live-Daten, Churn-Alarm, Unified Activity Timeline
+- ✅ **Sprint 2.1.7.7** (28.11.2025): Multi-Location Management + Server-Driven Architecture (PR #145 MERGED)
+  - Multi-Location/Filialen Management: Parent-Child Hierarchie mit HierarchyType Enum (5 Werte)
+  - Server-Driven UI: fieldCatalog.json ENTFERNT, Backend als Single Source of Truth
+  - BranchService, HierarchyMetricsService, XentralAddressMatcher implementiert
+  - Frontend: HierarchyDashboard, CreateBranchDialog (mit Tests)
+  - CI-Fixes: LeadConvertServiceTest, E2E Timeouts, JaCoCo Coverage
 - ✅ **Sprint 2.1.7.4** (22.10.2025): Customer Status Architecture - PROSPECT→AKTIV Lifecycle + Seasonal Business Support (PR #143 MERGED)
 - ✅ **Sprint 2.1.7.3** (19.10.2025): Customer → Opportunity UI - Business-Type-Matrix, OpportunitySettingsPage, Admin-UI
+- ✅ **Sprint 2.1.7.2** (31.10.2025): Customer-Management + Xentral-Integration (PR #144 MERGED)
 - ✅ **Sprint 2.1.7.1** (18.10.2025): Lead → Opportunity UI - Complete Workflow, Kanban Pipeline, Drag & Drop, Filter-UI
 - ✅ **Sprint 2.1.7.0** (15.10.2025): Design System - FreshFoodz CI V2 Migration (97 Violations behoben)
 - ✅ **Sprint 2.1.6.1** (14.10.2025): Opportunity Backend - Lead→Opportunity→Customer Workflows
 
-**Active Planning:**
-- 📋 **Sprint 2.1.7.7** (NEXT): Multi-Location Management - Filialen + Hierarchie
+**Next Planning:**
+- 📋 **Sprint 2.1.7.5**: Advanced Filters & Analytics
+- 📋 **Sprint 2.1.8**: Team Management + Kollaboratoren + Lead-Transfer
 
 **Test Status:**
-- Backend: 946 Tests GREEN ✅ - Xentral-Integration, Server-Driven UI, Activity Timeline operational
-- Frontend: Tests GREEN ✅ - Customer Detail Cockpit, Dynamic Forms, ESLint passed
+- Backend: 2400+ Tests GREEN ✅ - Multi-Location, Server-Driven UI, Xentral-Integration operational
+- Frontend: Tests GREEN ✅ - HierarchyDashboard, CreateBranchDialog Tests, ESLint passed
 - CI: Performance optimiert (JUnit parallel, ValidatorFactory optimization)
 
 ### 🎖️ Modul-Status-Matrix (Implementierungs-Stand)
@@ -875,7 +1012,7 @@ Dieses Dokument beschreibt **Planung + Implementation**. Zahlen basieren auf let
   - Frontend: List+Create, ActivityDialog, Progressive Profiling ✅
   - Qualität: Normalisierung + Idempotenz + Enterprise Security ✅
   - Tests: Backend GREEN (100% Coverage), Frontend GREEN
-- ✅ Modul 03 Kundenmanagement: Field-based Architecture + ABAC-Security
+- ✅ Modul 03 Kundenmanagement: Multi-Location Hierarchie + Server-Driven UI + ABAC-Security (Sprint 2.1.7.7 COMPLETE)
 - ✅ Modul 04 Auswertungen: Advanced Analytics + Territory-Insights
 - ✅ Modul 05 Kommunikation: Enterprise Email-Engine + SLA-Automation
 - ✅ Modul 06 Einstellungen: Weltklasse Technical-Concepts (Production-Ready)

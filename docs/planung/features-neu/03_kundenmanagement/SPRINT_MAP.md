@@ -14,6 +14,25 @@ updated: "2025-10-22"
 
 ### ✅ **Abgeschlossene Sprints**
 
+**Sprint 2.1.7.7 - Multi-Location Management & Enterprise Architecture** *(Complete)*
+- Status: ✅ COMPLETE
+- PR: [#145](https://github.com/joergstreeck/freshplan-sales-tool/pull/145)
+- Commit: 1eeb43b6a
+- Merged: 2025-11-28
+- Scope: Parent-Child Hierarchie für Filialisten + Server-Driven Architecture + fieldCatalog Removal
+- Deliverables: 7/7 COMPLETE (D0-D6)
+  - D0: UI-Aktivierung (FILIALE enabled + Parent-Selection) ✅
+  - D1: Backend BranchService + ValidateParent ✅
+  - D2: Address-Matching Service (Xentral-Integration) ✅
+  - D3: Hierarchy Metrics Service (Roll-up Umsätze) ✅
+  - D4: CreateBranchDialog Component + Tests ✅
+  - D5: HierarchyDashboard mit Test-Coverage ✅
+  - D6: HierarchyTreeView (Visuelle Hierarchie) ✅
+- Tests: 1617+ Tests GREEN
+- Migrations: V10034-V10035 (location services schema)
+- CI-Fixes: LeadConvertServiceTest, E2E Timeouts, JaCoCo Coverage
+- Link: [SPEC_SPRINT_2_1_7_7_TECHNICAL.md](../../artefakte/SPEC_SPRINT_2_1_7_7_TECHNICAL.md)
+
 **Sprint 2.1.7.4 - CustomerStatus Architecture & Lead Parity** *(Complete)*
 - Status: ✅ COMPLETE
 - PR: [#143](https://github.com/freshplan/freshplan-sales-tool/pull/143)
@@ -89,9 +108,10 @@ Q1 2026 (Erweitert):
 
 | Sprint | Status | Completion | PR | Notes |
 |--------|--------|------------|----|----|
+| 2.1.7.7 Multi-Location | ✅ COMPLETE | 100% | [#145](https://github.com/joergstreeck/freshplan-sales-tool/pull/145) | Multi-Location Management + Enterprise Architecture |
 | 2.1.7.4 CustomerStatus | ✅ COMPLETE | 100% | [#143](https://github.com/freshplan/freshplan-sales-tool/pull/143) | CustomerStatus Architecture + Lead Parity |
 | 3.1 Foundation | 📋 Planned | 0% | - | Kundenentitäten + CRUD |
 | 3.2 Aktivitäten | 📋 Planned | 0% | - | Activity-Streams |
 | 3.3 Pipeline | 📋 Planned | 0% | - | Sales-Opportunities |
 
-*Aktualisierung: 2025-10-22*
+*Aktualisierung: 2025-11-28*

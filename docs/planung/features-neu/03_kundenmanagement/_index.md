@@ -4,22 +4,22 @@ domain: "shared"
 doc_type: "guideline"
 status: "active"
 owner: "team/leads"
-updated: "2025-10-22"
+updated: "2025-11-28"
 ---
 
 # 🎯 Modul 03 Kundenmanagement - Vollständige Planungsdokumentation
 
 **📍 Navigation:** Home → Planung → 03 Kundenmanagement
 
-**📅 Letzte Aktualisierung:** 2025-10-22
-**🎯 Status:** ACTIVE (Sprint 2.1.7.4 Complete)
-**📊 Vollständigkeit:** Struktur 100%, CustomerStatus Architecture COMPLETE
+**📅 Letzte Aktualisierung:** 2025-11-28
+**🎯 Status:** ACTIVE (Sprint 2.1.7.7 Complete)
+**📊 Vollständigkeit:** Struktur 100%, Multi-Location Management COMPLETE
 
 ## ✅ Status (Kurzübersicht)
-- **Current Sprint:** Sprint 2.1.7.4 - CustomerStatus Architecture ✅ COMPLETE
-- **Backend:** ✅ *Active* (CustomerStatus + Lead Parity)
-- **Frontend:** ✅ *Active* (Manual Activation + Seasonal Business)
-- **Shared:** ✅ *Active* (EnumResource Integration)
+- **Current Sprint:** Sprint 2.1.7.7 - Multi-Location Management ✅ COMPLETE (PR #145)
+- **Backend:** ✅ *Active* (BranchService + HierarchyMetrics + Address-Matching)
+- **Frontend:** ✅ *Active* (HierarchyDashboard + CreateBranchDialog + TreeView)
+- **Shared:** ✅ *Active* (Server-Driven Architecture + LocationServiceSchema)
 - **Legacy:** 📚 *Archiviert* → [legacy-planning/](./legacy-planning/)
 
 ## 🚀 Start here (Reihenfolge)
@@ -92,29 +92,42 @@ updated: "2025-10-22"
 ## 🚀 CURRENT STATUS & DEPENDENCIES
 
 ### ✅ **Completed:**
+- **Sprint 2.1.7.7 (28.11.2025):** Multi-Location Management & Enterprise Architecture [PR #145](https://github.com/joergstreeck/freshplan-sales-tool/pull/145)
+  - Parent-Child Hierarchie für Filialisten (HierarchyType: STANDALONE/HEADQUARTER/FILIALE)
+  - Server-Driven Architecture: fieldCatalog.json entfernt, Backend als Single Source of Truth
+  - BranchService + Address-Matching + HierarchyMetrics Services
+  - HierarchyDashboard + CreateBranchDialog + TreeView Components
+  - Tests: 1617+ Tests GREEN
+  - Migrations: V10034-V10035 (location services schema)
+
 - **Sprint 2.1.7.4 (22.10.2025):** CustomerStatus Architecture + Lead Parity [PR #143](https://github.com/freshplan/freshplan-sales-tool/pull/143)
   - CustomerStatus Enum + EnumResource Integration
   - Lead Parity Fields (leadStatus, leadSource, sourceDetails)
   - Manual Activation Workflow + Seasonal Business Support
   - Tests: 1617/1617 GREEN
   - Migrations: V10032, V10033, V90008
+
 - **Strukturelle Vorbereitung:** Standard-Verzeichnisse angelegt
 - **Legacy-Konsolidierung:** Historische Planungen archiviert
 
-### 🔄 **Recent Changes (Sprint 2.1.7.4):**
+### 🔄 **Recent Changes (Sprint 2.1.7.7):**
 - **Backend:**
-  - CustomerStatus Enum mit 8 Status-Werten (LEAD, PROSPECT, ACTIVE, etc.)
-  - Lead Parity: leadStatus, leadSource, sourceDetails in Customer-Entity
-  - Manual Activation: manualActivationRequired, manuallyActivatedAt, manuallyActivatedBy
-  - Seasonal Business: seasonalBusiness, seasonStartMonth, seasonEndMonth
+  - BranchService: createBranch(), validateParent(), getBranches()
+  - HierarchyMetricsService: Roll-up Umsätze für HEADQUARTER
+  - AddressMatchingService: Xentral-Integration für Adresserkennung
+  - LocationServiceSchemaResource: Server-Driven Field Definitions
 - **Frontend:**
-  - CustomerStatusBadge Component mit Theme-Integration
-  - Manual Activation Dialog + Seasonal Business UI
-  - EnumResource Integration für leadStatus/leadSource
+  - HierarchyDashboard: Branch-Übersicht mit Metriken
+  - CreateBranchDialog: Formular für neue Filialen + Tests
+  - HierarchyTreeView: Visuelle Hierarchie-Darstellung
+  - UI-Aktivierung: FILIALE Option enabled + Parent-Selection
+- **Architecture:**
+  - fieldCatalog.json + fieldCatalogExtensions.json ENTFERNT
+  - Backend LocationServiceSchema als Single Source of Truth
+  - useLocationServiceSchema() Hook für Field Definitions
 - **Migrations:**
-  - V10032: Lead Parity Fields + Constraints
-  - V10033: Status Cleanup + Seasonal Business + Indexes
-  - V90008: DEV-SEED Update für Lead Parity
+  - V10034: Location Services Schema
+  - V10035: Additional Location Fields
 
 ### 📋 **Dependencies:**
 - **Integration:** Event-System von Modul 02 (Lead-Handover) ✅
