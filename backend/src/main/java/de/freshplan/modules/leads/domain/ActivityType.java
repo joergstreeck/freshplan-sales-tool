@@ -6,6 +6,7 @@ package de.freshplan.modules.leads.domain;
  *
  * @see V258 Migration - Database constraint for countsAsProgress
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Enum with many activity types - inherent complexity
 public enum ActivityType {
   // Progress Activities (countsAsProgress = true) - 5 Types
   QUALIFIED_CALL(true, true, true),

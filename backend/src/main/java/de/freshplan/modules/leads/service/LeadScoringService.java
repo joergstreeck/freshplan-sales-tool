@@ -174,6 +174,7 @@ public class LeadScoringService {
   // PMD Complexity Refactoring (Issue #146) - Helper methods for calculatePainScore()
   // ============================================================================
 
+  @SuppressWarnings("PMD.NPathComplexity") // Counting 8 independent boolean pain fields
   private int countIdentifiedPains(Lead lead) {
     int painCount = 0;
     if (Boolean.TRUE.equals(lead.painStaffShortage)) painCount++;

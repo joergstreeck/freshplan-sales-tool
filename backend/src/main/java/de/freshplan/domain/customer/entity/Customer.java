@@ -18,6 +18,7 @@ import org.hibernate.type.SqlTypes;
  * Customer entity representing a business customer with full CRM capabilities. Supports soft
  * delete, hierarchies, and comprehensive business data.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Entity with 75+ fields - inherent complexity
 @Entity
 @Table(
     name = "customers",

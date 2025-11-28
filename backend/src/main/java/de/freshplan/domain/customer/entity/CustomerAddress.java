@@ -13,6 +13,7 @@ import org.hibernate.annotations.UuidGenerator;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Entity with many fields - inherent complexity
 @Entity
 @Table(
     name = "customer_addresses",

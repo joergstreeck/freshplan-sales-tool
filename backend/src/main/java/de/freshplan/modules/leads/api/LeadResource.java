@@ -42,6 +42,10 @@ import org.jboss.logging.Logger;
  * <p>Uses @RlsContext to ensure PostgreSQL GUCs are set on the same connection as Hibernate
  * queries.
  */
+@SuppressWarnings({
+  "PMD.CyclomaticComplexity",
+  "PMD.NcssCount"
+}) // REST Resource with many endpoints
 @Path("/api/leads")
 @RolesAllowed({"USER", "MANAGER", "ADMIN"})
 @RlsContext // Ensures GUCs are set on correct connection

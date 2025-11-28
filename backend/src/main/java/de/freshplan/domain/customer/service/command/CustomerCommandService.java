@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
  * <p>IMPORTANT: This service maintains EXACT compatibility with CustomerService to ensure seamless
  * switching via feature flag.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // CQRS command service with many operations
 @ApplicationScoped
 public class CustomerCommandService {
 

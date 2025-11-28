@@ -25,6 +25,7 @@ import org.jboss.logging.Logger;
  * Service for building dynamic Panache queries from search requests. Handles complex filter
  * combinations and sorting.
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Query builder with many filter operations
 @ApplicationScoped
 public class CustomerQueryBuilder {
 

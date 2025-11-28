@@ -34,6 +34,7 @@ import org.jboss.logging.Logger;
  *
  * @since Phase 10 CQRS Migration
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Search service with multi-entity query handling
 @ApplicationScoped
 @Transactional
 public class SearchService {
@@ -620,6 +621,7 @@ public class SearchService {
   }
 
   /** Calculates relevance score for lead results. */
+  @SuppressWarnings("PMD.NPathComplexity") // Relevance scoring with multiple match criteria
   private int calculateLeadRelevanceScore(
       de.freshplan.modules.leads.domain.Lead lead, String query, QueryType queryType) {
     int score = 0;

@@ -51,6 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // CQRS Facade with comprehensive operations
 @ApplicationScoped
 @Transactional
 public class OpportunityService {
@@ -278,6 +279,8 @@ public class OpportunityService {
    * @throws IllegalArgumentException if lead not found or not qualified
    * @since Sprint 2.1.6.2 Phase 2 (V10026)
    */
+  @SuppressWarnings(
+      "PMD.NPathComplexity") // Lead-to-Opportunity conversion with many field mappings
   @Transactional
   public OpportunityResponse createFromLead(Long leadId, CreateOpportunityFromLeadRequest request) {
     logger.info("Creating opportunity from lead ID: {}", leadId);
@@ -599,6 +602,8 @@ public class OpportunityService {
    * @throws IllegalStateException if customer not AKTIV
    * @since Sprint 2.1.6.2 Phase 2 (V10026)
    */
+  @SuppressWarnings(
+      "PMD.NPathComplexity") // Customer-to-Opportunity creation with field initialization
   @Transactional
   public OpportunityResponse createForCustomer(
       UUID customerId, CreateOpportunityForCustomerRequest request) {

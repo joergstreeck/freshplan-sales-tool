@@ -51,6 +51,7 @@ import org.jboss.logging.Logger;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // CQRS Facade with async audit operations
 @ApplicationScoped
 @Startup
 public class AuditService {

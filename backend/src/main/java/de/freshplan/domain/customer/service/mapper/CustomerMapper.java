@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
  * @author FreshPlan Team
  * @since 2.0.0
  */
+@SuppressWarnings("PMD.CyclomaticComplexity") // Mapper with many field transformations
 @ApplicationScoped
 public class CustomerMapper {
 

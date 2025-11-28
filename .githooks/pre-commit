@@ -597,14 +597,14 @@ else
 fi
 
 # ============================================================================
-# PRÜFUNG 10: PMD Code Complexity Check (INFO-ONLY)
+# PRÜFUNG 10: PMD Code Complexity Check (BLOCKIEREND)
 # ============================================================================
-# TODO: Auf BLOCKIEREND umschalten sobald Issue #146 abgeschlossen ist
-# Änderung: `exit 1` auskommentieren entfernen
+# Issue #146 abgeschlossen - PMD Check ist jetzt BLOCKIEREND
+# Alle 80 ursprünglichen Violations wurden behoben (Refactoring + @SuppressWarnings)
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}📊 PMD Code Complexity Check (INFO-ONLY)${NC}"
+echo -e "${BLUE}📊 PMD Code Complexity Check (BLOCKIEREND)${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 
@@ -615,12 +615,12 @@ if [ -n "$BACKEND_JAVA_FILES" ]; then
   echo "📊 Backend Java files changed, running PMD complexity check..."
   echo ""
 
-  # Run PMD check (quiet mode) - INFO-ONLY, nicht blockierend
+  # Run PMD check (quiet mode) - BLOCKIEREND
   if ! (cd backend && ./mvnw pmd:check -q 2>&1); then
     echo ""
-    echo -e "${YELLOW}⚠️  PRE-COMMIT HOOK: PMD Code Complexity Violations detected!${NC}"
+    echo -e "${RED}🚫 PRE-COMMIT HOOK: PMD Code Complexity Violations detected!${NC}"
     echo ""
-    echo -e "${YELLOW}   INFO-ONLY - Commit wird NICHT blockiert (Issue #146 in Arbeit)${NC}"
+    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
     echo ""
     echo -e "   ${YELLOW}• NPathComplexity: Zu viele mögliche Ausführungspfade (max: 200)${NC}"
     echo -e "   ${YELLOW}• CyclomaticComplexity: Zu viele Verzweigungen (max: 10)${NC}"
@@ -629,8 +629,13 @@ if [ -n "$BACKEND_JAVA_FILES" ]; then
     echo ""
     echo -e "${YELLOW}   Report: backend/target/pmd.xml${NC}"
     echo ""
-    # TODO: Aktivieren sobald Issue #146 abgeschlossen:
-    # exit 1
+    echo -e "${YELLOW}   Lösungen:${NC}"
+    echo -e "   ${YELLOW}• Extract Method Refactoring für große Methoden${NC}"
+    echo -e "   ${YELLOW}• @SuppressWarnings(\"PMD.XYZ\") mit Begründung für legitime Fälle${NC}"
+    echo ""
+    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo ""
+    exit 1
   else
     echo ""
     echo -e "${GREEN}✅ PMD Code Complexity: PASSED${NC}"
