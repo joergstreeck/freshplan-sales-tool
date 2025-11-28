@@ -16,8 +16,9 @@
 # PRÜFUNG 7: Backend Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 7.1: Frontend Circular Dependency Check (BLOCKIEREND) - Sprint 2.1.7.7
 # PRÜFUNG 8: Test Cleanup - @AfterEach Validation (Check-Only) - Sprint 2.1.7.7
-# PRÜFUNG 9: OpenAPI Type Sync Check (INFO-ONLY) - Sprint 2.1.7.7 OpenAPI Contract-First
-# PRÜFUNG 10: fieldCatalog.json Removal Guard (BLOCKIEREND) - Sprint 2.1.7.x
+# PRÜFUNG 9: OpenAPI Type Sync Check (BLOCKIEREND) - Sprint 2.1.7.7 OpenAPI Contract-First
+# PRÜFUNG 10: PMD Code Complexity Check (INFO-ONLY) - Issue #146 Technical Debt
+# PRÜFUNG 11: fieldCatalog.json Removal Guard (BLOCKIEREND) - Sprint 2.1.7.x
 #
 # ============================================================================
 
@@ -596,7 +597,52 @@ else
 fi
 
 # ============================================================================
-# PRÜFUNG 10: fieldCatalog.json Removal Guard
+# PRÜFUNG 10: PMD Code Complexity Check (INFO-ONLY)
+# ============================================================================
+# TODO: Auf BLOCKIEREND umschalten sobald Issue #146 abgeschlossen ist
+# Änderung: `exit 1` auskommentieren entfernen
+
+echo ""
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}📊 PMD Code Complexity Check (INFO-ONLY)${NC}"
+echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo ""
+
+# Check if any backend Java files were changed
+BACKEND_JAVA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/src/main/java/.*\.java$" || true)
+
+if [ -n "$BACKEND_JAVA_FILES" ]; then
+  echo "📊 Backend Java files changed, running PMD complexity check..."
+  echo ""
+
+  # Run PMD check (quiet mode) - INFO-ONLY, nicht blockierend
+  if ! (cd backend && ./mvnw pmd:check -q 2>&1); then
+    echo ""
+    echo -e "${YELLOW}⚠️  PRE-COMMIT HOOK: PMD Code Complexity Violations detected!${NC}"
+    echo ""
+    echo -e "${YELLOW}   INFO-ONLY - Commit wird NICHT blockiert (Issue #146 in Arbeit)${NC}"
+    echo ""
+    echo -e "   ${YELLOW}• NPathComplexity: Zu viele mögliche Ausführungspfade (max: 200)${NC}"
+    echo -e "   ${YELLOW}• CyclomaticComplexity: Zu viele Verzweigungen (max: 10)${NC}"
+    echo -e "   ${YELLOW}• CognitiveComplexity: Code zu schwer verständlich (max: 15)${NC}"
+    echo -e "   ${YELLOW}• NcssCount: Methode zu lang (max: 100 Lines)${NC}"
+    echo ""
+    echo -e "${YELLOW}   Report: backend/target/pmd.xml${NC}"
+    echo ""
+    # TODO: Aktivieren sobald Issue #146 abgeschlossen:
+    # exit 1
+  else
+    echo ""
+    echo -e "${GREEN}✅ PMD Code Complexity: PASSED${NC}"
+    echo ""
+  fi
+else
+  echo "⏭️  No backend Java files changed, skipping PMD complexity check"
+  echo ""
+fi
+
+# ============================================================================
+# PRÜFUNG 11: fieldCatalog.json Removal Guard
 # ============================================================================
 
 echo ""
