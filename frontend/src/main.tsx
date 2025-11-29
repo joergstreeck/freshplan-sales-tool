@@ -7,47 +7,46 @@ import './styles/variables-mapping.css'; // Map legacy variables to new FreshPla
 import './styles/animations.css'; // Global animations for highlighting
 import { AppProviders } from './providers.tsx';
 
-// Enable MSW for development if backend is not available
+// Enable MSW for development or E2E testing
 async function enableMocking() {
-  // Security: MSW must be explicitly enabled via environment variable
+  // Security: MSW can be enabled via:
+  // - VITE_USE_MSW=true (for local development)
+  // - VITE_E2E_MODE=true (for E2E tests in CI - works with production builds)
   const USE_MSW = import.meta.env.VITE_USE_MSW === 'true';
+  const E2E_MODE = import.meta.env.VITE_E2E_MODE === 'true';
 
-  // Security: Never use MSW in production
-  if (!import.meta.env.DEV) {
+  // Enable MSW if either flag is set
+  // Note: E2E_MODE is baked into the build at compile time, allowing MSW in production builds
+  const shouldEnableMSW = USE_MSW || E2E_MODE;
+
+  if (!shouldEnableMSW) {
+    // MSW disabled: Using real backend API
     return;
   }
 
-  // Security: Only set mock token when MSW is explicitly enabled
-  if (USE_MSW) {
-    // Security: Use a more secure mock token format
-    const mockToken = `mock_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+  // Security: Set mock token for authentication bypass in E2E mode
+  if (E2E_MODE) {
+    const mockToken = `e2e_mock_${Date.now()}_${Math.random().toString(36).substring(7)}`;
     localStorage.setItem('auth-token', mockToken);
-
-    if (import.meta.env.DEV) {
-      // MSW enabled with mock authentication
-    }
-  } else {
-    // Security: Always clean up mock tokens when MSW is disabled
-    localStorage.removeItem('auth-token');
-
-    if (import.meta.env.DEV) {
-      // MSW disabled: Using real backend API
-    }
-    return;
   }
 
-  // For now, always use MSW in development when enabled
-  // TODO: Add backend detection when backend is implemented
+  try {
+    // Dynamic import of MSW browser module
+    const { worker } = await import('./mocks/browser');
 
-  const { worker } = await import('./mocks/browser');
-
-  // Start the worker
-  return worker.start({
-    onUnhandledRequest: 'bypass',
-    serviceWorker: {
-      url: '/mockServiceWorker.js',
-    },
-  });
+    // Start the worker with bypass for unhandled requests
+    // This allows real backend calls to pass through when needed
+    return worker.start({
+      onUnhandledRequest: 'bypass',
+      serviceWorker: {
+        url: '/mockServiceWorker.js',
+      },
+    });
+  } catch (error) {
+    // MSW failed to start - continue without mocking
+    console.warn('[MSW] Failed to start:', error);
+    return;
+  }
 }
 
 const rootElement = document.getElementById('root');

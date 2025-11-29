@@ -334,8 +334,8 @@ jobs:
       - name: Install dependencies
         run: cd frontend && npm ci
 
-      - name: Build frontend
-        run: cd frontend && npm run build
+      - name: Build frontend with E2E mode
+        run: cd frontend && VITE_E2E_MODE=true VITE_AUTH_BYPASS=true npm run build
 
       - name: Install Playwright ${{ matrix.browser }}
         run: |
