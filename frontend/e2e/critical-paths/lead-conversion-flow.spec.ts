@@ -14,229 +14,35 @@
  * - Self-Contained: Jeder Test erstellt seine Daten selbst
  * - UUID-Isolation: Keine Kollisionen mit anderen Tests
  * - Kein Cleanup nötig: Container-Lifecycle übernimmt
+ * - Keine waitForTimeout: Explizite Waits auf API-Responses
  *
  * @module E2E/CriticalPaths/LeadConversion
  * @since Sprint 2.1.7.7
  */
 
-import { test, expect, APIRequestContext } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import {
+  API_BASE,
+  LeadResponse,
+  OpportunityResponse,
+  CustomerResponse,
+  createLead,
+  qualifyLead,
+  convertLeadToOpportunity,
+  setOpportunityToWon,
+  convertOpportunityToCustomer,
+  searchAndWait,
+  generateTestPrefix,
+} from '../helpers/api-helpers';
 
-// API Base URL (vom CI-Workflow gesetzt)
-const API_BASE = process.env.VITE_API_URL || 'http://localhost:8080';
-
-// Unique Test-Prefix für Isolation - mit Random für Worker-Isolation
-const TEST_PREFIX = `[E2E-LC-${Date.now()}-${Math.random().toString(36).substring(7)}]`;
-
-interface LeadResponse {
-  id: number;
-  companyName: string;
-  status: string;
-  stage: number;
-  email?: string;
-  city?: string;
-}
-
-interface OpportunityResponse {
-  id: string;
-  name: string;
-  stage: string;
-  leadId?: number;
-  expectedValue?: number;
-}
-
-interface CustomerResponse {
-  id: string;
-  customerNumber: string;
-  companyName: string;
-  status: string;
-}
-
-/**
- * Helper: Erstellt einen Lead via API
- */
-async function createLead(request: APIRequestContext, name: string): Promise<LeadResponse> {
-  // Generate unique email using timestamp and random suffix to avoid duplicate key constraint
-  const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
-  const response = await request.post(`${API_BASE}/api/leads`, {
-    data: {
-      companyName: `${TEST_PREFIX} ${name}`,
-      stage: 1, // REGISTRIERUNG
-      contact: {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        email: `lead-${uniqueId}@test-e2e.local`,
-        phone: '+49 123 456789',
-      },
-      city: 'Berlin',
-      postalCode: '10115',
-      street: 'Teststraße 42',
-      countryCode: 'DE',
-      businessType: 'RESTAURANT',
-      estimatedVolume: 50000,
-      source: 'WEB',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create lead: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Helper: Qualifiziert einen Lead (setzt Status auf QUALIFIED)
- * Leads muessen QUALIFIED oder ACTIVE sein um zu Opportunity konvertiert zu werden
- *
- * Die Leads API erfordert PATCH mit ETag (optimistisches Locking):
- * - ETag Format: "lead-{id}-{version}"
- * - Neu erstellte Leads haben version 0
- */
-async function qualifyLead(
-  request: APIRequestContext,
-  leadId: number,
-  version: number = 0
-): Promise<LeadResponse> {
-  const etag = `"lead-${leadId}-${version}"`;
-  const response = await request.patch(`${API_BASE}/api/leads/${leadId}`, {
-    data: {
-      status: 'QUALIFIED',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-      'If-Match': etag,
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to qualify lead: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Helper: Konvertiert Lead zu Opportunity via API
- * Voraussetzung: Lead muss QUALIFIED oder ACTIVE sein
- */
-async function convertLeadToOpportunity(
-  request: APIRequestContext,
-  leadId: number
-): Promise<OpportunityResponse> {
-  const response = await request.post(`${API_BASE}/api/opportunities/from-lead/${leadId}`, {
-    data: {
-      name: `Opportunity from Lead ${leadId}`,
-      dealType: 'Liefervertrag',
-      expectedValue: 75000,
-      timeframe: 'Q2 2025',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to convert lead to opportunity: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Helper: Setzt Opportunity auf CLOSED_WON Stage via API
- *
- * WICHTIG: Das Backend hat strikte Stage-Transition-Regeln!
- * Man kann nicht direkt von NEW_LEAD auf CLOSED_WON springen.
- * Erlaubte Transitions (siehe OpportunityStage.java):
- *   NEW_LEAD → QUALIFICATION → NEEDS_ANALYSIS → PROPOSAL → NEGOTIATION → CLOSED_WON
- *
- * API-Endpoint für Stage-Änderung: PUT /api/opportunities/{id}/stage/{stage}
- * (NICHT PUT /api/opportunities/{id} mit {stage: "..."})
- *
- * Diese Funktion durchläuft alle notwendigen Stages automatisch.
- */
-async function setOpportunityToWon(
-  request: APIRequestContext,
-  opportunityId: string
-): Promise<OpportunityResponse> {
-  // Die Stages die durchlaufen werden müssen (in Reihenfolge)
-  const stageSequence = [
-    'QUALIFICATION',
-    'NEEDS_ANALYSIS',
-    'PROPOSAL',
-    'NEGOTIATION',
-    'CLOSED_WON',
-  ];
-
-  let currentOpp: OpportunityResponse | null = null;
-
-  for (const stage of stageSequence) {
-    // Korrekter Endpoint: PUT /api/opportunities/{id}/stage/{stage}
-    const response = await request.put(
-      `${API_BASE}/api/opportunities/${opportunityId}/stage/${stage}`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
-
-    if (!response.ok()) {
-      const body = await response.text();
-      throw new Error(`Failed to set opportunity to ${stage}: ${response.status()} - ${body}`);
-    }
-
-    currentOpp = await response.json();
-  }
-
-  return currentOpp!;
-}
-
-/**
- * Helper: Konvertiert Opportunity zu Customer via API
- */
-async function convertOpportunityToCustomer(
-  request: APIRequestContext,
-  opportunityId: string,
-  companyName: string
-): Promise<CustomerResponse> {
-  const response = await request.post(
-    `${API_BASE}/api/opportunities/${opportunityId}/convert-to-customer`,
-    {
-      data: {
-        companyName: companyName,
-        street: 'Kundenstraße 1',
-        postalCode: '10115',
-        city: 'Berlin',
-        country: 'Deutschland',
-        createContactFromLead: true,
-        hierarchyType: 'STANDALONE',
-      },
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to convert opportunity to customer: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
+// Unique Test-Prefix für Isolation
+const TEST_PREFIX = generateTestPrefix('E2E-LC');
 
 /**
  * Lead Conversion Flow Tests
  *
- * Backend-Bug GEFIXT (V10048):
- * - Timezone-Constraint von 1 Minute auf 6 Stunden erhöht
+ * Backend-Bug GEFIXT (V10048/V10049):
+ * - Timezone-Constraint mit UTC-Konfiguration
  * - Ermöglicht Lead-Erstellung auch bei Timezone-Differenzen
  */
 test.describe('Lead Conversion Flow - Critical Path', () => {
@@ -249,7 +55,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     console.log(`\n🎯 Setting up Lead Conversion test data (Prefix: ${TEST_PREFIX})\n`);
 
     // 1. Lead erstellen
-    lead = await createLead(request, 'ConversionTest GmbH');
+    lead = await createLead(request, 'ConversionTest GmbH', TEST_PREFIX);
     console.log(`✅ Lead created: ${lead.companyName} (ID: ${lead.id}) - Status: ${lead.status}`);
 
     // 2. Lead qualifizieren (Voraussetzung für Opportunity-Konversion)
@@ -305,59 +111,42 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     console.log(`✅ Customer created with number: ${customer.customerNumber}`);
   });
 
-  test('should display lead in leads list', async ({ page }) => {
+  test('should display lead in leads list (converted status)', async ({ page }) => {
     // Navigate zu Leads-Liste
     await page.goto('/leads');
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Seiten-Load (mehr Zeit für komplexe Seiten)
-    await page.waitForTimeout(2000);
+    // Warte auf ein sichtbares Element der Seite (nicht waitForTimeout!)
+    await expect(
+      page.locator('[data-testid="leads-list"], table, .MuiCard-root, h1').first()
+    ).toBeVisible({ timeout: 10000 });
 
-    // Die Leads-Seite könnte verschiedene Layouts haben:
-    // - Tabelle
-    // - Karten-Layout
-    // - Oder Lead wurde bereits konvertiert und ist nicht mehr sichtbar
-
-    // Prüfe ob Seite geladen ist
-    const pageLoaded =
-      (await page
-        .locator('[data-testid="leads-list"]')
-        .isVisible()
-        .catch(() => false)) ||
-      (await page
-        .locator('table')
-        .first()
-        .isVisible()
-        .catch(() => false)) ||
-      (await page
-        .locator('.MuiCard-root')
-        .first()
-        .isVisible()
-        .catch(() => false)) ||
-      (await page
-        .locator('text=/Lead|Leads/i')
-        .first()
-        .isVisible()
-        .catch(() => false));
-
-    if (pageLoaded) {
-      // Optionale Suche wenn Suchfeld vorhanden
-      const searchInput = page.locator('input[placeholder*="Such"]').first();
-      if (await searchInput.isVisible({ timeout: 1000 }).catch(() => false)) {
-        await searchInput.fill(TEST_PREFIX);
-        await page.waitForTimeout(500);
-      }
-
-      // Lead wurde konvertiert - Status sollte CONVERTED sein
-      // Das bedeutet er könnte nicht mehr in der "offenen" Leads-Liste erscheinen
-      console.log(`ℹ️ Lead was converted - may not appear in open leads list`);
-    } else {
-      console.log(`ℹ️ Leads page layout not recognized - API validation confirmed data exists`);
+    // Suche nach unserem Lead mit API-Response-Wait
+    const searchInput = page.locator('input[placeholder*="Such"]').first();
+    if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await searchAndWait(page, searchInput, TEST_PREFIX, /api\/leads/);
     }
 
-    // Der Test gilt als bestanden - die wichtige Validierung ist der API-Test
-    // Die UI kann je nach Implementation variieren
-    expect(lead.id).toBeTruthy();
+    // Lead wurde konvertiert - er sollte entweder:
+    // a) mit Status CONVERTED sichtbar sein, oder
+    // b) nicht in der "offenen" Leads-Liste erscheinen
+    const leadLocator = page.locator(`text=${lead.companyName}`);
+    const isLeadVisible = await leadLocator.isVisible({ timeout: 2000 }).catch(() => false);
+
+    if (isLeadVisible) {
+      // Lead ist sichtbar - prüfe Status
+      console.log(`✅ Lead visible in list (converted leads are shown)`);
+    } else {
+      // Lead nicht sichtbar - das ist korrekt für konvertierte Leads
+      console.log(`✅ Converted lead correctly not shown in open leads list`);
+    }
+
+    // API-Validierung als Haupttest (UI kann variieren)
+    const leadResponse = await page.request.get(`${API_BASE}/api/leads/${lead.id}`);
+    expect(leadResponse.ok()).toBe(true);
+    const leadData = await leadResponse.json();
+    expect(leadData.id).toBe(lead.id);
+    console.log(`✅ Lead exists in API with status: ${leadData.status}`);
   });
 
   test('should display customer in customer list', async ({ page }) => {
@@ -365,18 +154,17 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     await page.goto('/customers');
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Tabelle
+    // Warte auf Tabelle (expliziter Wait statt timeout)
     const table = page.locator('table').first();
     await expect(table).toBeVisible({ timeout: 10000 });
 
-    // Suche nach unserem Test-Kunden
+    // Suche nach unserem Test-Kunden mit API-Response-Wait
     const searchInput = page.locator('input[placeholder*="Such"]').first();
-    if (await searchInput.isVisible()) {
-      await searchInput.fill(TEST_PREFIX);
-      await page.waitForTimeout(500);
+    if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await searchAndWait(page, searchInput, TEST_PREFIX, /api\/customers/);
     }
 
-    // Verify: Kunde ist sichtbar
+    // Verify: Kunde MUSS sichtbar sein (harte Assertion)
     const customerRow = page.locator(`text=${customer.companyName}`);
     await expect(customerRow).toBeVisible({ timeout: 5000 });
 

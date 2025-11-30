@@ -18,153 +18,31 @@
  * Prinzipien:
  * - Self-Contained: Jeder Test erstellt seine Daten selbst
  * - UUID-Isolation: Keine Kollisionen mit anderen Tests
- * - Kein Cleanup noetig: Container-Lifecycle uebernimmt
+ * - Keine waitForTimeout: Explizite Waits auf API-Responses
  *
  * @module E2E/CriticalPaths/MultiLocation
  * @since Sprint 2.1.7.7
  */
 
-import { test, expect, APIRequestContext } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import {
+  API_BASE,
+  CustomerResponse,
+  HierarchyMetricsResponse,
+  createCustomer,
+  getCustomer,
+  updateCustomer,
+  createBranch,
+  getHierarchyMetrics,
+  searchAndWait,
+  generateTestPrefix,
+} from '../helpers/api-helpers';
 
-// API Base URL (vom CI-Workflow gesetzt)
-const API_BASE = process.env.VITE_API_URL || 'http://localhost:8080';
-
-// Unique Test-Prefix fuer Isolation - mit Random für Worker-Isolation
-const TEST_PREFIX = `[E2E-ML-${Date.now()}-${Math.random().toString(36).substring(7)}]`;
-
-interface CustomerResponse {
-  id: string;
-  customerNumber: string;
-  companyName: string;
-  hierarchyType: string | null;
-  status: string;
-  branchCount?: number;
-}
-
-interface HierarchyMetricsResponse {
-  branchCount: number;
-  totalRevenue: number;
-  averageRevenue: number;
-  totalOpenOpportunities: number;
-  branches: Array<{
-    branchId: string;
-    branchName: string;
-    city: string;
-    country: string;
-    revenue: number;
-    percentage: number;
-    openOpportunities: number;
-    status: string;
-  }>;
-}
-
-/**
- * Helper: Erstellt einen Customer via API (startet als STANDALONE)
- */
-async function createCustomer(request: APIRequestContext, name: string): Promise<CustomerResponse> {
-  const response = await request.post(`${API_BASE}/api/customers`, {
-    data: {
-      companyName: `${TEST_PREFIX} ${name}`,
-      customerType: 'UNTERNEHMEN',
-      businessType: 'RESTAURANT',
-      expectedAnnualVolume: 500000.0,
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create customer: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Helper: Erstellt eine Filiale unter einem Headquarter via API
- * Das Erstellen einer Filiale macht den Parent automatisch zum HEADQUARTER
- */
-async function createBranch(
-  request: APIRequestContext,
-  headquarterId: string,
-  name: string,
-  city: string
-): Promise<CustomerResponse> {
-  const response = await request.post(`${API_BASE}/api/customers/${headquarterId}/branches`, {
-    data: {
-      companyName: `${TEST_PREFIX} ${name}`,
-      customerType: 'UNTERNEHMEN',
-      businessType: 'RESTAURANT',
-      expectedAnnualVolume: 75000.0,
-      address: {
-        street: 'Teststrasse 1',
-        postalCode: '12345',
-        city: city,
-        country: 'DE',
-      },
-      contact: {
-        phone: '+49 123 456789',
-        email: `${name.toLowerCase().replace(/\s/g, '')}@test.local`,
-      },
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create branch: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Helper: Holt aktuellen Customer-Stand via API
- */
-async function getCustomer(
-  request: APIRequestContext,
-  customerId: string
-): Promise<CustomerResponse> {
-  const response = await request.get(`${API_BASE}/api/customers/${customerId}`);
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to get customer: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
-
-/**
- * Helper: Holt HierarchyMetrics fuer einen Headquarter
- * Endpoint: GET /api/customers/{id}/hierarchy/metrics
- */
-async function getHierarchyMetrics(
-  request: APIRequestContext,
-  headquarterId: string
-): Promise<HierarchyMetricsResponse> {
-  const response = await request.get(
-    `${API_BASE}/api/customers/${headquarterId}/hierarchy/metrics`
-  );
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to get hierarchy metrics: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
+// Unique Test-Prefix fuer Isolation
+const TEST_PREFIX = generateTestPrefix('E2E-ML');
 
 /**
  * Multi-Location Management Flow Tests
- *
- * Backend-Bug GEFIXT (V10048 + CustomerMapper):
- * - hierarchyType kann jetzt via PUT /api/customers/:id gesetzt werden
- * - STANDALONE -> HEADQUARTER möglich
  */
 test.describe('Multi-Location Management - Critical Path', () => {
   // Test-Daten die im Test erstellt werden
@@ -176,35 +54,25 @@ test.describe('Multi-Location Management - Critical Path', () => {
     console.log(`\n🏢 Setting up Multi-Location test data (Prefix: ${TEST_PREFIX})\n`);
 
     // 1. Customer erstellen (startet als STANDALONE)
-    headquarter = await createCustomer(request, 'FreshChain GmbH');
+    headquarter = await createCustomer(request, 'FreshChain GmbH', TEST_PREFIX, {
+      expectedAnnualVolume: 500000.0,
+    });
     console.log(
       `✅ Customer created: ${headquarter.companyName} (${headquarter.id}) - hierarchyType: ${headquarter.hierarchyType}`
     );
 
-    // 2. Customer zu HEADQUARTER machen via PUT (BUG FIX: jetzt möglich!)
-    const updateResponse = await request.put(`${API_BASE}/api/customers/${headquarter.id}`, {
-      data: {
-        hierarchyType: 'HEADQUARTER',
-      },
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    // 2. Customer zu HEADQUARTER machen via PUT
+    headquarter = await updateCustomer(request, headquarter.id, {
+      hierarchyType: 'HEADQUARTER',
     });
-
-    if (!updateResponse.ok()) {
-      const body = await updateResponse.text();
-      throw new Error(`Failed to set hierarchyType: ${updateResponse.status()} - ${body}`);
-    }
-
-    headquarter = await updateResponse.json();
     console.log(`✅ Customer set to HEADQUARTER: ${headquarter.hierarchyType}`);
 
     // 3. Erste Filiale erstellen
-    branch1 = await createBranch(request, headquarter.id, 'Filiale Berlin', 'Berlin');
+    branch1 = await createBranch(request, headquarter.id, 'Filiale Berlin', 'Berlin', TEST_PREFIX);
     console.log(`✅ Branch 1 created: ${branch1.companyName} (${branch1.id})`);
 
     // 4. Zweite Filiale erstellen
-    branch2 = await createBranch(request, headquarter.id, 'Filiale Hamburg', 'Hamburg');
+    branch2 = await createBranch(request, headquarter.id, 'Filiale Hamburg', 'Hamburg', TEST_PREFIX);
     console.log(`✅ Branch 2 created: ${branch2.companyName} (${branch2.id})`);
 
     // 5. Headquarter-Daten aktualisieren um hierarchyType zu pruefen
@@ -215,7 +83,7 @@ test.describe('Multi-Location Management - Critical Path', () => {
   });
 
   test('should have headquarter with HEADQUARTER hierarchy type after adding branches', async () => {
-    // Verify: Customer wurde automatisch zu HEADQUARTER nachdem Filialen hinzugefuegt wurden
+    // Verify: Customer wurde zu HEADQUARTER
     expect(headquarter).toBeDefined();
     expect(headquarter.id).toBeTruthy();
     expect(headquarter.companyName).toContain('FreshChain GmbH');
@@ -243,18 +111,17 @@ test.describe('Multi-Location Management - Critical Path', () => {
     await page.goto('/customers');
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Tabelle
+    // Warte auf Tabelle (expliziter Wait)
     const table = page.locator('table').first();
     await expect(table).toBeVisible({ timeout: 10000 });
 
-    // Suche nach unserem Test-Headquarter
+    // Suche nach unserem Test-Headquarter mit API-Response-Wait
     const searchInput = page.locator('input[placeholder*="Such"]').first();
-    if (await searchInput.isVisible()) {
-      await searchInput.fill(TEST_PREFIX);
-      await page.waitForTimeout(500); // Debounce
+    if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await searchAndWait(page, searchInput, TEST_PREFIX, /api\/customers/);
     }
 
-    // Verify: Headquarter ist sichtbar
+    // Verify: Headquarter MUSS sichtbar sein (harte Assertion)
     const headquarterRow = page.locator(`text=${headquarter.companyName}`);
     await expect(headquarterRow).toBeVisible({ timeout: 5000 });
 
@@ -270,12 +137,12 @@ test.describe('Multi-Location Management - Critical Path', () => {
 
     // Verify: branches array contains our branches
     expect(metrics.branches).toHaveLength(2);
-    expect(metrics.branches.map(b => b.branchName)).toContain(branch1.companyName);
-    expect(metrics.branches.map(b => b.branchName)).toContain(branch2.companyName);
+    expect(metrics.branches.map((b) => b.branchName)).toContain(branch1.companyName);
+    expect(metrics.branches.map((b) => b.branchName)).toContain(branch2.companyName);
 
     console.log(`✅ Hierarchy metrics verified:`);
     console.log(`   - Branch count: ${metrics.branchCount}`);
-    console.log(`   - Branches: ${metrics.branches.map(b => b.branchName).join(', ')}`);
+    console.log(`   - Branches: ${metrics.branches.map((b) => b.branchName).join(', ')}`);
   });
 
   test('should navigate to headquarter detail and show branch list', async ({ page }) => {
@@ -283,85 +150,56 @@ test.describe('Multi-Location Management - Critical Path', () => {
     await page.goto(`/customers/${headquarter.id}`);
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Detail-Seite - flexiblerer Selektor
-    // Die Seite könnte verschiedene Layouts haben
-    await page.waitForTimeout(2000); // Kurze Wartezeit für Seitenaufbau
+    // Warte auf Detail-Seite - mindestens eines dieser Elemente MUSS sichtbar sein
+    await expect(
+      page.locator('[data-testid="customer-detail"], h1, h2, .MuiCard-root').first()
+    ).toBeVisible({ timeout: 10000 });
 
-    // Prüfe ob Seite geladen ist (irgendeines dieser Elemente)
-    const pageLoaded =
-      (await page
-        .locator('[data-testid="customer-detail"]')
-        .isVisible()
-        .catch(() => false)) ||
-      (await page
-        .locator('text=' + headquarter.companyName)
-        .isVisible()
-        .catch(() => false)) ||
-      (await page
-        .locator('.MuiCard-root')
-        .first()
-        .isVisible()
-        .catch(() => false));
+    // Prüfe ob Filialen sichtbar sind
+    const hasBranches =
+      (await page.locator('text=/Filiale|Branch|Standort|Berlin|Hamburg/i').count()) > 0;
 
-    if (pageLoaded) {
-      // Suche nach Filialen-Tab oder -Bereich
-      const hasBranches =
-        (await page.locator('text=/Filiale|Branch|Standort|Berlin|Hamburg/i').count()) > 0;
-
-      if (hasBranches) {
-        console.log(`✅ Branch list visible in headquarter detail`);
-      } else {
-        console.log(`ℹ️ Branches section not visible - UI might need different navigation`);
-      }
+    if (hasBranches) {
+      console.log(`✅ Branch list visible in headquarter detail`);
     } else {
-      // Fallback: API-basierte Validierung
-      console.log(`ℹ️ Detail page structure unknown - API validation confirmed data exists`);
+      // API-basierte Validierung als Fallback
+      const metrics = await page.request.get(
+        `${API_BASE}/api/customers/${headquarter.id}/hierarchy/metrics`
+      );
+      expect(metrics.ok()).toBe(true);
+      console.log(`✅ Branch data verified via API (UI may need different navigation)`);
     }
-
-    // Der Test gilt als bestanden wenn die Seite lädt (Details sind UI-abhängig)
-    expect(true).toBe(true);
   });
 
-  test('should show correct branch count badge on headquarter', async ({ page }) => {
+  test('should show headquarter with branch info in list', async ({ page }) => {
     // Navigate zu Kundenliste
     await page.goto('/customers');
     await page.waitForLoadState('networkidle');
 
-    // Suche nach Headquarter - verwende spezifischere Suche
+    // Warte auf Tabelle
+    const table = page.locator('table').first();
+    await expect(table).toBeVisible({ timeout: 10000 });
+
+    // Suche nach Headquarter mit API-Response-Wait
     const searchInput = page.locator('input[placeholder*="Such"]').first();
-    if (await searchInput.isVisible()) {
-      // Suche nach exaktem Company Name statt TEST_PREFIX
-      await searchInput.fill(headquarter.companyName);
-      await page.waitForTimeout(500);
+    if (await searchInput.isVisible({ timeout: 2000 }).catch(() => false)) {
+      await searchAndWait(page, searchInput, headquarter.companyName, /api\/customers/);
     }
 
-    // Warte kurz auf Filterung
-    await page.waitForTimeout(500);
+    // Verify: Headquarter MUSS sichtbar sein
+    const headquarterLocator = page.locator(`text=${headquarter.companyName}`);
+    await expect(headquarterLocator).toBeVisible({ timeout: 5000 });
+    console.log(`✅ Headquarter visible in list`);
 
-    // Die Branch-Badge-Prüfung ist optional - das Feature könnte noch nicht implementiert sein
-    // Wichtig ist nur, dass der Headquarter in der Liste erscheint
-    const headquarterVisible = await page.locator(`text=${headquarter.companyName}`).isVisible();
+    // Optional: Prüfe auf Branch-Count-Badge (Feature könnte noch nicht implementiert sein)
+    const branchBadge = page.locator('text=/2.*Filiale|Filialen.*2/i').first();
+    const hasBadge = await branchBadge.isVisible({ timeout: 2000 }).catch(() => false);
 
-    if (headquarterVisible) {
-      console.log(`✅ Headquarter visible in list`);
-
-      // Optional: Prüfe auf Branch-Count-Badge mit .first() um Strict-Mode-Fehler zu vermeiden
-      const branchBadge = page.locator('text=/2.*Filiale|Filialen.*2/i').first();
-      try {
-        if (await branchBadge.isVisible({ timeout: 1000 })) {
-          console.log(`✅ Branch count badge shows 2 branches`);
-        } else {
-          console.log(`ℹ️ Branch count badge not visible - feature might not be implemented yet`);
-        }
-      } catch {
-        console.log(`ℹ️ Branch count badge check skipped`);
-      }
+    if (hasBadge) {
+      console.log(`✅ Branch count badge shows 2 branches`);
     } else {
-      console.log(`ℹ️ Search might need refinement`);
+      console.log(`ℹ️ Branch count badge not visible - feature might not be implemented yet`);
     }
-
-    // Test gilt als bestanden wenn Headquarter erstellt wurde (API-Tests haben das bestätigt)
-    expect(headquarter.id).toBeTruthy();
   });
 
   test('should validate end-to-end data integrity', async ({ request }) => {

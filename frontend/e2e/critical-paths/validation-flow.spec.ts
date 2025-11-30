@@ -19,62 +19,22 @@
  * @since Sprint 2.1.7.7
  */
 
-import { test, expect, APIRequestContext } from '@playwright/test';
-
-// API Base URL (vom CI-Workflow gesetzt)
-const API_BASE = process.env.VITE_API_URL || 'http://localhost:8080';
+import { test, expect } from '@playwright/test';
+import {
+  API_BASE,
+  LeadResponse,
+  OpportunityResponse,
+  createLead,
+  qualifyLead,
+  convertLeadToOpportunity,
+  createCustomer,
+  updateCustomer,
+  createBranch,
+  generateTestPrefix,
+} from '../helpers/api-helpers';
 
 // Unique Test-Prefix für Isolation
-const TEST_PREFIX = `[E2E-VAL-${Date.now()}-${Math.random().toString(36).substring(7)}]`;
-
-interface LeadResponse {
-  id: number;
-  companyName: string;
-  status: string;
-  stage: number;
-}
-
-interface OpportunityResponse {
-  id: string;
-  name: string;
-  stage: string;
-}
-
-/**
- * Helper: Erstellt einen Lead via API
- */
-async function createLead(request: APIRequestContext, name: string): Promise<LeadResponse> {
-  const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
-  const response = await request.post(`${API_BASE}/api/leads`, {
-    data: {
-      companyName: `${TEST_PREFIX} ${name}`,
-      stage: 1,
-      contact: {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        email: `validation-${uniqueId}@test-e2e.local`,
-        phone: '+49 123 456789',
-      },
-      city: 'Berlin',
-      postalCode: '10115',
-      street: 'Teststraße 42',
-      countryCode: 'DE',
-      businessType: 'RESTAURANT',
-      estimatedVolume: 50000,
-      source: 'WEB',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create lead: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
-}
+const TEST_PREFIX = generateTestPrefix('E2E-VAL');
 
 /**
  * Validation & Error Handling Tests
@@ -89,40 +49,16 @@ test.describe('Validation & Error Handling - Critical Path', () => {
     test.beforeAll(async ({ request }) => {
       console.log(`\n🔒 Setting up Validation test data (Prefix: ${TEST_PREFIX})\n`);
 
-      // Lead erstellen und qualifizieren
-      lead = await createLead(request, 'ValidationTest GmbH');
+      // Lead erstellen
+      lead = await createLead(request, 'ValidationTest GmbH', TEST_PREFIX);
       console.log(`✅ Lead created: ${lead.companyName} (ID: ${lead.id})`);
 
       // Lead qualifizieren
-      const etag = `"lead-${lead.id}-0"`;
-      const qualifyResponse = await request.patch(`${API_BASE}/api/leads/${lead.id}`, {
-        data: { status: 'QUALIFIED' },
-        headers: { 'Content-Type': 'application/json', 'If-Match': etag },
-      });
-
-      if (!qualifyResponse.ok()) {
-        const body = await qualifyResponse.text();
-        throw new Error(`Failed to qualify lead: ${qualifyResponse.status()} - ${body}`);
-      }
-      lead = await qualifyResponse.json();
+      lead = await qualifyLead(request, lead.id);
       console.log(`✅ Lead qualified`);
 
       // Opportunity erstellen
-      const oppResponse = await request.post(`${API_BASE}/api/opportunities/from-lead/${lead.id}`, {
-        data: {
-          name: `Opportunity from Lead ${lead.id}`,
-          dealType: 'Liefervertrag',
-          expectedValue: 75000,
-          timeframe: 'Q2 2025',
-        },
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!oppResponse.ok()) {
-        const body = await oppResponse.text();
-        throw new Error(`Failed to create opportunity: ${oppResponse.status()} - ${body}`);
-      }
-      opportunity = await oppResponse.json();
+      opportunity = await convertLeadToOpportunity(request, lead.id);
       console.log(`✅ Opportunity created: ${opportunity.name} (ID: ${opportunity.id})`);
     });
 
@@ -173,7 +109,7 @@ test.describe('Validation & Error Handling - Critical Path', () => {
   test.describe('Lead Conversion Validation', () => {
     test('should reject creating opportunity from unqualified lead', async ({ request }) => {
       // Neuen Lead erstellen (Status ist REGISTERED, nicht QUALIFIED)
-      const lead = await createLead(request, 'UnqualifiedLead GmbH');
+      const lead = await createLead(request, 'UnqualifiedLead GmbH', TEST_PREFIX);
 
       // Versuch Opportunity zu erstellen ohne Qualifizierung
       const response = await request.post(`${API_BASE}/api/opportunities/from-lead/${lead.id}`, {
@@ -201,23 +137,13 @@ test.describe('Validation & Error Handling - Critical Path', () => {
       const uniqueName = `${TEST_PREFIX} DuplicateTest GmbH`;
 
       // Ersten Customer erstellen
-      const firstResponse = await request.post(`${API_BASE}/api/customers`, {
-        data: {
-          companyName: uniqueName,
-          customerType: 'UNTERNEHMEN',
-          businessType: 'RESTAURANT',
-          expectedAnnualVolume: 100000.0,
-        },
-        headers: { 'Content-Type': 'application/json' },
-      });
+      const firstCustomer = await createCustomer(request, 'DuplicateTest GmbH', TEST_PREFIX);
+      console.log(`✅ First customer created: ${firstCustomer.companyName}`);
 
-      expect(firstResponse.ok()).toBe(true);
-      console.log(`✅ First customer created: ${uniqueName}`);
-
-      // Versuch denselben Customer nochmal zu erstellen
+      // Versuch denselben Customer nochmal zu erstellen (gleicher Name)
       const duplicateResponse = await request.post(`${API_BASE}/api/customers`, {
         data: {
-          companyName: uniqueName,
+          companyName: firstCustomer.companyName, // Exakt gleicher Name
           customerType: 'UNTERNEHMEN',
           businessType: 'RESTAURANT',
           expectedAnnualVolume: 200000.0,
@@ -239,37 +165,19 @@ test.describe('Validation & Error Handling - Critical Path', () => {
   test.describe('Hierarchy Validation', () => {
     test('should not allow FILIALE to have its own branches', async ({ request }) => {
       // Headquarter erstellen
-      const hqResponse = await request.post(`${API_BASE}/api/customers`, {
-        data: {
-          companyName: `${TEST_PREFIX} HQ für Hierarchy Test`,
-          customerType: 'UNTERNEHMEN',
-          businessType: 'RESTAURANT',
-          expectedAnnualVolume: 500000.0,
-        },
-        headers: { 'Content-Type': 'application/json' },
-      });
-      const headquarter = await hqResponse.json();
+      const headquarter = await createCustomer(request, 'HQ für Hierarchy Test', TEST_PREFIX);
 
       // Zu HEADQUARTER machen
-      await request.put(`${API_BASE}/api/customers/${headquarter.id}`, {
-        data: { hierarchyType: 'HEADQUARTER' },
-        headers: { 'Content-Type': 'application/json' },
-      });
+      await updateCustomer(request, headquarter.id, { hierarchyType: 'HEADQUARTER' });
 
       // Filiale erstellen
-      const branchResponse = await request.post(
-        `${API_BASE}/api/customers/${headquarter.id}/branches`,
-        {
-          data: {
-            companyName: `${TEST_PREFIX} Filiale Alpha`,
-            customerType: 'UNTERNEHMEN',
-            businessType: 'RESTAURANT',
-            expectedAnnualVolume: 75000.0,
-          },
-          headers: { 'Content-Type': 'application/json' },
-        }
+      const filiale = await createBranch(
+        request,
+        headquarter.id,
+        'Filiale Alpha',
+        'Berlin',
+        TEST_PREFIX
       );
-      const filiale = await branchResponse.json();
       console.log(`✅ Created branch: ${filiale.companyName}`);
 
       // Versuch eine Sub-Filiale unter der Filiale zu erstellen (sollte fehlschlagen)
