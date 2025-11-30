@@ -442,7 +442,7 @@ export async function waitForSearchResponse(
   searchPattern: RegExp | string = /api\/(customers|leads)/
 ): Promise<void> {
   await page.waitForResponse(
-    (resp) => {
+    resp => {
       const url = resp.url();
       if (typeof searchPattern === 'string') {
         return url.includes(searchPattern);
@@ -465,7 +465,7 @@ export async function searchAndWait(
 ): Promise<void> {
   // Starte das Warten auf die Antwort BEVOR wir tippen
   const responsePromise = page.waitForResponse(
-    (resp) => {
+    resp => {
       const url = resp.url();
       if (typeof apiPattern === 'string') {
         return url.includes(apiPattern);

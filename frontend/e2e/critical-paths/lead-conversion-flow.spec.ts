@@ -52,23 +52,23 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
   let customer: CustomerResponse;
 
   test.beforeAll(async ({ request }) => {
-    console.log(`\n🎯 Setting up Lead Conversion test data (Prefix: ${TEST_PREFIX})\n`);
+    console.log(`\n[TARGET] Setting up Lead Conversion test data (Prefix: ${TEST_PREFIX})\n`);
 
     // 1. Lead erstellen
     lead = await createLead(request, 'ConversionTest GmbH', TEST_PREFIX);
-    console.log(`✅ Lead created: ${lead.companyName} (ID: ${lead.id}) - Status: ${lead.status}`);
+    console.log(`[OK] Lead created: ${lead.companyName} (ID: ${lead.id}) - Status: ${lead.status}`);
 
     // 2. Lead qualifizieren (Voraussetzung für Opportunity-Konversion)
     lead = await qualifyLead(request, lead.id);
-    console.log(`✅ Lead qualified: Status now ${lead.status}`);
+    console.log(`[OK] Lead qualified: Status now ${lead.status}`);
 
     // 3. Lead → Opportunity konvertieren
     opportunity = await convertLeadToOpportunity(request, lead.id);
-    console.log(`✅ Opportunity created: ${opportunity.name} (ID: ${opportunity.id})`);
+    console.log(`[OK] Opportunity created: ${opportunity.name} (ID: ${opportunity.id})`);
 
     // 4. Opportunity auf WON setzen (Voraussetzung für Customer-Conversion)
     opportunity = await setOpportunityToWon(request, opportunity.id);
-    console.log(`✅ Opportunity set to WON stage`);
+    console.log(`[OK] Opportunity set to WON stage`);
 
     // 5. Opportunity → Customer konvertieren
     customer = await convertOpportunityToCustomer(
@@ -76,9 +76,9 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
       opportunity.id,
       `${TEST_PREFIX} Neukunde GmbH`
     );
-    console.log(`✅ Customer created: ${customer.companyName} (${customer.customerNumber})`);
+    console.log(`[OK] Customer created: ${customer.companyName} (${customer.customerNumber})`);
 
-    console.log('\n📊 Lead Conversion test data setup complete!\n');
+    console.log('\n[DATA] Lead Conversion test data setup complete!\n');
   });
 
   test('should create lead and qualify it for conversion', async () => {
@@ -88,7 +88,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     // Lead wurde qualifiziert im beforeAll - Status sollte QUALIFIED sein
     expect(lead.status).toBe('QUALIFIED');
 
-    console.log(`✅ Lead data verified: Status ${lead.status}`);
+    console.log(`[OK] Lead data verified: Status ${lead.status}`);
   });
 
   test('should create opportunity linked to lead', async () => {
@@ -99,7 +99,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     // Opportunity sollte auf CLOSED_WON stehen (nach Stage-Transition)
     expect(opportunity.stage).toBe('CLOSED_WON');
 
-    console.log(`✅ Opportunity linked to Lead, Stage: ${opportunity.stage}`);
+    console.log(`[OK] Opportunity linked to Lead, Stage: ${opportunity.stage}`);
   });
 
   test('should create customer from opportunity', async () => {
@@ -108,7 +108,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     expect(customer.customerNumber).toBeTruthy();
     expect(customer.companyName).toContain('Neukunde GmbH');
 
-    console.log(`✅ Customer created with number: ${customer.customerNumber}`);
+    console.log(`[OK] Customer created with number: ${customer.customerNumber}`);
   });
 
   test('should display lead in leads list (converted status)', async ({ page }) => {
@@ -135,10 +135,10 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
 
     if (isLeadVisible) {
       // Lead ist sichtbar - prüfe Status
-      console.log(`✅ Lead visible in list (converted leads are shown)`);
+      console.log(`[OK] Lead visible in list (converted leads are shown)`);
     } else {
       // Lead nicht sichtbar - das ist korrekt für konvertierte Leads
-      console.log(`✅ Converted lead correctly not shown in open leads list`);
+      console.log(`[OK] Converted lead correctly not shown in open leads list`);
     }
 
     // API-Validierung als Haupttest (UI kann variieren)
@@ -146,7 +146,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     expect(leadResponse.ok()).toBe(true);
     const leadData = await leadResponse.json();
     expect(leadData.id).toBe(lead.id);
-    console.log(`✅ Lead exists in API with status: ${leadData.status}`);
+    console.log(`[OK] Lead exists in API with status: ${leadData.status}`);
   });
 
   test('should display customer in customer list', async ({ page }) => {
@@ -168,7 +168,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     const customerRow = page.locator(`text=${customer.companyName}`);
     await expect(customerRow).toBeVisible({ timeout: 5000 });
 
-    console.log(`✅ Customer visible in customer list`);
+    console.log(`[OK] Customer visible in customer list`);
   });
 
   test('should validate end-to-end traceability', async ({ request }) => {
@@ -194,7 +194,7 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
     expect(custData.status).toBe('AKTIV');
     console.log(`   Customer status: ${custData.status}`);
 
-    console.log(`\n✅ End-to-end traceability validated!`);
+    console.log(`\n[OK] End-to-end traceability validated!`);
     console.log(`   Lead ${lead.id} → Opportunity ${opportunity.id} → Customer ${customer.id}`);
   });
 });

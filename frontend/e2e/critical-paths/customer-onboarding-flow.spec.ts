@@ -41,14 +41,14 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
   let secondaryContact: ContactResponse;
 
   test.beforeAll(async ({ request }) => {
-    console.log(`\n🏢 Setting up Customer Onboarding test data (Prefix: ${TEST_PREFIX})\n`);
+    console.log(`\n[CUSTOMER] Setting up Customer Onboarding test data (Prefix: ${TEST_PREFIX})\n`);
 
     // 1. Customer erstellen
     customer = await createCustomer(request, 'OnboardingTest GmbH', TEST_PREFIX, {
       status: 'PROSPECT',
       expectedAnnualVolume: 100000.0,
     });
-    console.log(`✅ Customer created: ${customer.companyName} (${customer.customerNumber})`);
+    console.log(`[OK] Customer created: ${customer.companyName} (${customer.customerNumber})`);
 
     // 2. Primary Contact hinzufügen
     primaryContact = await addContact(request, customer.id, {
@@ -58,7 +58,9 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
       phone: '+49 30 12345678',
       role: 'Geschäftsführer',
     });
-    console.log(`✅ Primary contact added: ${primaryContact.firstName} ${primaryContact.lastName}`);
+    console.log(
+      `[OK] Primary contact added: ${primaryContact.firstName} ${primaryContact.lastName}`
+    );
 
     // 3. Secondary Contact hinzufügen
     secondaryContact = await addContact(request, customer.id, {
@@ -69,7 +71,7 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
       role: 'Einkaufsleiter',
     });
     console.log(
-      `✅ Secondary contact added: ${secondaryContact.firstName} ${secondaryContact.lastName}`
+      `[OK] Secondary contact added: ${secondaryContact.firstName} ${secondaryContact.lastName}`
     );
 
     // 4. Customer auf AKTIV setzen (Onboarding abgeschlossen)
@@ -77,9 +79,9 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
       status: 'AKTIV',
       expectedAnnualVolume: 150000.0,
     });
-    console.log(`✅ Customer status updated to: ${customer.status}`);
+    console.log(`[OK] Customer status updated to: ${customer.status}`);
 
-    console.log('\n📊 Customer Onboarding test data setup complete!\n');
+    console.log('\n[DATA] Customer Onboarding test data setup complete!\n');
   });
 
   test('should create customer with correct initial status', async () => {
@@ -88,7 +90,7 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     expect(customer.customerNumber).toBeTruthy();
     expect(customer.companyName).toContain('OnboardingTest GmbH');
 
-    console.log(`✅ Customer data verified: ${customer.customerNumber}`);
+    console.log(`[OK] Customer data verified: ${customer.customerNumber}`);
   });
 
   test('should have primary contact', async () => {
@@ -98,7 +100,7 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     expect(primaryContact.lastName).toBe('Müller');
 
     console.log(
-      `✅ Primary contact verified: ${primaryContact.firstName} ${primaryContact.lastName}`
+      `[OK] Primary contact verified: ${primaryContact.firstName} ${primaryContact.lastName}`
     );
   });
 
@@ -109,13 +111,13 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     expect(secondaryContact.lastName).toBe('Schmidt');
 
     console.log(
-      `✅ Secondary contact verified: ${secondaryContact.firstName} ${secondaryContact.lastName}`
+      `[OK] Secondary contact verified: ${secondaryContact.firstName} ${secondaryContact.lastName}`
     );
   });
 
   test('should update customer status to AKTIV', async () => {
     expect(customer.status).toBe('AKTIV');
-    console.log(`✅ Customer status is AKTIV`);
+    console.log(`[OK] Customer status is AKTIV`);
   });
 
   test('should display customer in customer list', async ({ page }) => {
@@ -137,7 +139,7 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     const customerRow = page.locator(`text=${customer.companyName}`);
     await expect(customerRow).toBeVisible({ timeout: 5000 });
 
-    console.log(`✅ Customer visible in customer list`);
+    console.log(`[OK] Customer visible in customer list`);
   });
 
   test('should navigate to customer detail page', async ({ page }) => {
@@ -145,24 +147,20 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     await page.goto(`/customers/${customer.id}`);
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Detail-Seite - mindestens eines dieser Elemente MUSS sichtbar sein
+    // Warte auf Detail-Seite - mindestens eines dieser Elemente MUSS sichtbar sein (harte Assertion)
     await expect(
       page.locator('[data-testid="customer-detail"], h1, h2, .MuiCard-root').first()
     ).toBeVisible({ timeout: 10000 });
 
-    // Prüfe ob Company Name sichtbar ist
-    const companyNameVisible = await page
-      .locator(`text=${customer.companyName}`)
-      .isVisible({ timeout: 3000 })
-      .catch(() => false);
+    // Verify URL contains customer ID (harte Assertion)
+    expect(page.url()).toContain(customer.id);
 
-    if (companyNameVisible) {
-      console.log(`✅ Customer detail page shows company name`);
-    } else {
-      // Fallback: URL muss Customer-ID enthalten
-      expect(page.url()).toContain(customer.id);
-      console.log(`✅ Customer detail page loaded (URL verified)`);
-    }
+    // Prüfe ob Company Name sichtbar ist (Playwright wartet automatisch)
+    await expect(page.locator(`text=${customer.companyName}`).first()).toBeVisible({
+      timeout: 5000,
+    });
+
+    console.log(`[OK] Customer detail page shows company name`);
   });
 
   test('should show contacts on customer detail page', async ({ page }) => {
@@ -170,33 +168,24 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     await page.goto(`/customers/${customer.id}`);
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Seite
+    // Warte auf Seite (harte Assertion)
     await expect(
       page.locator('[data-testid="customer-detail"], .MuiCard-root, h1').first()
     ).toBeVisible({ timeout: 10000 });
 
-    // Suche nach Contacts-Tab oder -Bereich
+    // Suche nach Contacts-Tab oder -Bereich und klicke wenn vorhanden
     const contactsSection = page.locator('text=/Ansprechpartner|Kontakt|Contact/i').first();
-
     if (await contactsSection.isVisible({ timeout: 2000 }).catch(() => false)) {
-      // Klicke auf Contacts-Tab und warte auf Content-Update
       await contactsSection.click();
       await page.waitForLoadState('networkidle');
     }
 
-    // Verify: Mindestens einer der Contacts MUSS sichtbar sein (harte Assertion)
-    const muellerLocator = page.locator('text=/Müller/i').first();
-    const schmidtLocator = page.locator('text=/Schmidt/i').first();
+    // Verify: Mindestens einer der Contacts MUSS sichtbar sein (harte Assertion mit .or())
+    await expect(
+      page.locator('text=/Müller/i').first().or(page.locator('text=/Schmidt/i').first())
+    ).toBeVisible({ timeout: 5000 });
 
-    const hasMueller = await muellerLocator.isVisible({ timeout: 3000 }).catch(() => false);
-    const hasSchmidt = await schmidtLocator.isVisible({ timeout: 1000 }).catch(() => false);
-
-    expect(
-      hasMueller || hasSchmidt,
-      'At least one contact (Müller or Schmidt) should be visible'
-    ).toBe(true);
-
-    console.log(`✅ Contacts visible on customer detail page`);
+    console.log(`[OK] Contacts visible on customer detail page`);
   });
 
   test('should validate end-to-end data integrity', async ({ request }) => {
@@ -219,7 +208,7 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
     expect(contactsList.length).toBeGreaterThanOrEqual(2);
     console.log(`   Contacts: ${contactsList.length} found`);
 
-    console.log(`\n✅ End-to-end data integrity validated!`);
+    console.log(`\n[OK] End-to-end data integrity validated!`);
     console.log(`   Customer: ${customer.customerNumber}`);
     console.log(`   Contacts: ${contactsList.length}`);
   });

@@ -47,19 +47,19 @@ test.describe('Validation & Error Handling - Critical Path', () => {
     let opportunity: OpportunityResponse;
 
     test.beforeAll(async ({ request }) => {
-      console.log(`\n🔒 Setting up Validation test data (Prefix: ${TEST_PREFIX})\n`);
+      console.log(`\n[LOCK] Setting up Validation test data (Prefix: ${TEST_PREFIX})\n`);
 
       // Lead erstellen
       lead = await createLead(request, 'ValidationTest GmbH', TEST_PREFIX);
-      console.log(`✅ Lead created: ${lead.companyName} (ID: ${lead.id})`);
+      console.log(`[OK] Lead created: ${lead.companyName} (ID: ${lead.id})`);
 
       // Lead qualifizieren
       lead = await qualifyLead(request, lead.id);
-      console.log(`✅ Lead qualified`);
+      console.log(`[OK] Lead qualified`);
 
       // Opportunity erstellen
       opportunity = await convertLeadToOpportunity(request, lead.id);
-      console.log(`✅ Opportunity created: ${opportunity.name} (ID: ${opportunity.id})`);
+      console.log(`[OK] Opportunity created: ${opportunity.name} (ID: ${opportunity.id})`);
     });
 
     test('should reject direct jump from NEW_LEAD to CLOSED_WON', async ({ request }) => {
@@ -75,7 +75,7 @@ test.describe('Validation & Error Handling - Critical Path', () => {
       const body = await response.json();
       expect(body.error || body.message).toBeTruthy();
 
-      console.log(`✅ Correctly rejected invalid stage transition: ${JSON.stringify(body)}`);
+      console.log(`[OK] Correctly rejected invalid stage transition: ${JSON.stringify(body)}`);
     });
 
     test('should reject converting non-WON opportunity to customer', async ({ request }) => {
@@ -102,7 +102,7 @@ test.describe('Validation & Error Handling - Critical Path', () => {
       const body = await response.json();
       expect(body.error).toContain('won');
 
-      console.log(`✅ Correctly rejected conversion of non-WON opportunity`);
+      console.log(`[OK] Correctly rejected conversion of non-WON opportunity`);
     });
   });
 
@@ -127,18 +127,16 @@ test.describe('Validation & Error Handling - Critical Path', () => {
 
       const body = await response.json();
       console.log(
-        `✅ Correctly rejected opportunity from unqualified lead: ${JSON.stringify(body)}`
+        `[OK] Correctly rejected opportunity from unqualified lead: ${JSON.stringify(body)}`
       );
     });
   });
 
   test.describe('Duplicate Detection', () => {
     test('should detect duplicate customer creation', async ({ request }) => {
-      const uniqueName = `${TEST_PREFIX} DuplicateTest GmbH`;
-
       // Ersten Customer erstellen
       const firstCustomer = await createCustomer(request, 'DuplicateTest GmbH', TEST_PREFIX);
-      console.log(`✅ First customer created: ${firstCustomer.companyName}`);
+      console.log(`[OK] First customer created: ${firstCustomer.companyName}`);
 
       // Versuch denselben Customer nochmal zu erstellen (gleicher Name)
       const duplicateResponse = await request.post(`${API_BASE}/api/customers`, {
@@ -158,7 +156,7 @@ test.describe('Validation & Error Handling - Critical Path', () => {
       const body = await duplicateResponse.json();
       expect(body.error).toBe('CUSTOMER_ALREADY_EXISTS');
 
-      console.log(`✅ Correctly rejected duplicate customer creation`);
+      console.log(`[OK] Correctly rejected duplicate customer creation`);
     });
   });
 
@@ -178,7 +176,7 @@ test.describe('Validation & Error Handling - Critical Path', () => {
         'Berlin',
         TEST_PREFIX
       );
-      console.log(`✅ Created branch: ${filiale.companyName}`);
+      console.log(`[OK] Created branch: ${filiale.companyName}`);
 
       // Versuch eine Sub-Filiale unter der Filiale zu erstellen (sollte fehlschlagen)
       const subBranchResponse = await request.post(
@@ -197,7 +195,7 @@ test.describe('Validation & Error Handling - Critical Path', () => {
       // Erwartung: Fehler - FILIALE kann keine Sub-Branches haben
       expect(subBranchResponse.ok()).toBe(false);
 
-      console.log(`✅ Correctly rejected sub-branch under FILIALE`);
+      console.log(`[OK] Correctly rejected sub-branch under FILIALE`);
     });
   });
 });

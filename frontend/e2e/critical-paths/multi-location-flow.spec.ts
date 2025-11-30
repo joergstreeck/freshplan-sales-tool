@@ -28,7 +28,6 @@ import { test, expect } from '@playwright/test';
 import {
   API_BASE,
   CustomerResponse,
-  HierarchyMetricsResponse,
   createCustomer,
   getCustomer,
   updateCustomer,
@@ -51,35 +50,41 @@ test.describe('Multi-Location Management - Critical Path', () => {
   let branch2: CustomerResponse;
 
   test.beforeAll(async ({ request }) => {
-    console.log(`\n🏢 Setting up Multi-Location test data (Prefix: ${TEST_PREFIX})\n`);
+    console.log(`\n[CUSTOMER] Setting up Multi-Location test data (Prefix: ${TEST_PREFIX})\n`);
 
     // 1. Customer erstellen (startet als STANDALONE)
     headquarter = await createCustomer(request, 'FreshChain GmbH', TEST_PREFIX, {
       expectedAnnualVolume: 500000.0,
     });
     console.log(
-      `✅ Customer created: ${headquarter.companyName} (${headquarter.id}) - hierarchyType: ${headquarter.hierarchyType}`
+      `[OK] Customer created: ${headquarter.companyName} (${headquarter.id}) - hierarchyType: ${headquarter.hierarchyType}`
     );
 
     // 2. Customer zu HEADQUARTER machen via PUT
     headquarter = await updateCustomer(request, headquarter.id, {
       hierarchyType: 'HEADQUARTER',
     });
-    console.log(`✅ Customer set to HEADQUARTER: ${headquarter.hierarchyType}`);
+    console.log(`[OK] Customer set to HEADQUARTER: ${headquarter.hierarchyType}`);
 
     // 3. Erste Filiale erstellen
     branch1 = await createBranch(request, headquarter.id, 'Filiale Berlin', 'Berlin', TEST_PREFIX);
-    console.log(`✅ Branch 1 created: ${branch1.companyName} (${branch1.id})`);
+    console.log(`[OK] Branch 1 created: ${branch1.companyName} (${branch1.id})`);
 
     // 4. Zweite Filiale erstellen
-    branch2 = await createBranch(request, headquarter.id, 'Filiale Hamburg', 'Hamburg', TEST_PREFIX);
-    console.log(`✅ Branch 2 created: ${branch2.companyName} (${branch2.id})`);
+    branch2 = await createBranch(
+      request,
+      headquarter.id,
+      'Filiale Hamburg',
+      'Hamburg',
+      TEST_PREFIX
+    );
+    console.log(`[OK] Branch 2 created: ${branch2.companyName} (${branch2.id})`);
 
     // 5. Headquarter-Daten aktualisieren um hierarchyType zu pruefen
     headquarter = await getCustomer(request, headquarter.id);
-    console.log(`✅ Headquarter refreshed - hierarchyType: ${headquarter.hierarchyType}`);
+    console.log(`[OK] Headquarter refreshed - hierarchyType: ${headquarter.hierarchyType}`);
 
-    console.log('\n📊 Test data setup complete!\n');
+    console.log('\n[DATA] Test data setup complete!\n');
   });
 
   test('should have headquarter with HEADQUARTER hierarchy type after adding branches', async () => {
@@ -89,7 +94,7 @@ test.describe('Multi-Location Management - Critical Path', () => {
     expect(headquarter.companyName).toContain('FreshChain GmbH');
     expect(headquarter.hierarchyType).toBe('HEADQUARTER');
 
-    console.log(`✅ Headquarter hierarchy type verified: ${headquarter.hierarchyType}`);
+    console.log(`[OK] Headquarter hierarchy type verified: ${headquarter.hierarchyType}`);
   });
 
   test('should create branches with FILIALE hierarchy type', async () => {
@@ -103,7 +108,7 @@ test.describe('Multi-Location Management - Critical Path', () => {
     expect(branch1.hierarchyType).toBe('FILIALE');
     expect(branch2.hierarchyType).toBe('FILIALE');
 
-    console.log(`✅ Branches created with correct hierarchy type`);
+    console.log(`[OK] Branches created with correct hierarchy type`);
   });
 
   test('should display headquarter in customer list', async ({ page }) => {
@@ -125,7 +130,7 @@ test.describe('Multi-Location Management - Critical Path', () => {
     const headquarterRow = page.locator(`text=${headquarter.companyName}`);
     await expect(headquarterRow).toBeVisible({ timeout: 5000 });
 
-    console.log(`✅ Headquarter visible in customer list`);
+    console.log(`[OK] Headquarter visible in customer list`);
   });
 
   test('should show hierarchy metrics for headquarter', async ({ request }) => {
@@ -137,38 +142,36 @@ test.describe('Multi-Location Management - Critical Path', () => {
 
     // Verify: branches array contains our branches
     expect(metrics.branches).toHaveLength(2);
-    expect(metrics.branches.map((b) => b.branchName)).toContain(branch1.companyName);
-    expect(metrics.branches.map((b) => b.branchName)).toContain(branch2.companyName);
+    expect(metrics.branches.map(b => b.branchName)).toContain(branch1.companyName);
+    expect(metrics.branches.map(b => b.branchName)).toContain(branch2.companyName);
 
-    console.log(`✅ Hierarchy metrics verified:`);
+    console.log(`[OK] Hierarchy metrics verified:`);
     console.log(`   - Branch count: ${metrics.branchCount}`);
-    console.log(`   - Branches: ${metrics.branches.map((b) => b.branchName).join(', ')}`);
+    console.log(`   - Branches: ${metrics.branches.map(b => b.branchName).join(', ')}`);
   });
 
-  test('should navigate to headquarter detail and show branch list', async ({ page }) => {
+  test('should navigate to headquarter detail and show branch list', async ({ page, request }) => {
     // Navigate zu Headquarter Detail
     await page.goto(`/customers/${headquarter.id}`);
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Detail-Seite - mindestens eines dieser Elemente MUSS sichtbar sein
+    // Warte auf Detail-Seite (harte Assertion)
     await expect(
       page.locator('[data-testid="customer-detail"], h1, h2, .MuiCard-root').first()
     ).toBeVisible({ timeout: 10000 });
 
-    // Prüfe ob Filialen sichtbar sind
-    const hasBranches =
-      (await page.locator('text=/Filiale|Branch|Standort|Berlin|Hamburg/i').count()) > 0;
+    // Verify URL contains headquarter ID
+    expect(page.url()).toContain(headquarter.id);
 
-    if (hasBranches) {
-      console.log(`✅ Branch list visible in headquarter detail`);
-    } else {
-      // API-basierte Validierung als Fallback
-      const metrics = await page.request.get(
-        `${API_BASE}/api/customers/${headquarter.id}/hierarchy/metrics`
-      );
-      expect(metrics.ok()).toBe(true);
-      console.log(`✅ Branch data verified via API (UI may need different navigation)`);
-    }
+    // API-basierte Validierung - Filialen MUESSEN existieren (harte Assertion)
+    const metrics = await request.get(
+      `${API_BASE}/api/customers/${headquarter.id}/hierarchy/metrics`
+    );
+    expect(metrics.ok()).toBe(true);
+    const metricsData = await metrics.json();
+    expect(metricsData.branchCount).toBe(2);
+
+    console.log(`[OK] Branch data verified via API: ${metricsData.branchCount} branches`);
   });
 
   test('should show headquarter with branch info in list', async ({ page }) => {
@@ -176,7 +179,7 @@ test.describe('Multi-Location Management - Critical Path', () => {
     await page.goto('/customers');
     await page.waitForLoadState('networkidle');
 
-    // Warte auf Tabelle
+    // Warte auf Tabelle (harte Assertion)
     const table = page.locator('table').first();
     await expect(table).toBeVisible({ timeout: 10000 });
 
@@ -186,19 +189,20 @@ test.describe('Multi-Location Management - Critical Path', () => {
       await searchAndWait(page, searchInput, headquarter.companyName, /api\/customers/);
     }
 
-    // Verify: Headquarter MUSS sichtbar sein
+    // Verify: Headquarter MUSS sichtbar sein (harte Assertion)
     const headquarterLocator = page.locator(`text=${headquarter.companyName}`);
     await expect(headquarterLocator).toBeVisible({ timeout: 5000 });
-    console.log(`✅ Headquarter visible in list`);
+    console.log(`[OK] Headquarter visible in list`);
 
     // Optional: Prüfe auf Branch-Count-Badge (Feature könnte noch nicht implementiert sein)
+    // Dieses Feature ist UI-spezifisch - die harte Assertion ist die Headquarter-Sichtbarkeit oben
     const branchBadge = page.locator('text=/2.*Filiale|Filialen.*2/i').first();
     const hasBadge = await branchBadge.isVisible({ timeout: 2000 }).catch(() => false);
 
     if (hasBadge) {
-      console.log(`✅ Branch count badge shows 2 branches`);
+      console.log(`[OK] Branch count badge shows 2 branches`);
     } else {
-      console.log(`ℹ️ Branch count badge not visible - feature might not be implemented yet`);
+      console.log(`[INFO] Branch count badge not visible - feature might not be implemented yet`);
     }
   });
 
@@ -223,7 +227,7 @@ test.describe('Multi-Location Management - Critical Path', () => {
     const b2Data = await b2Response.json();
     expect(b2Data.hierarchyType).toBe('FILIALE');
 
-    console.log(`\n✅ End-to-end data integrity validated!`);
+    console.log(`\n[OK] End-to-end data integrity validated!`);
     console.log(`   - HQ: ${hqData.companyName} (${hqData.hierarchyType})`);
     console.log(`   - Branch 1: ${b1Data.companyName} (${b1Data.hierarchyType})`);
     console.log(`   - Branch 2: ${b2Data.companyName} (${b2Data.hierarchyType})`);
