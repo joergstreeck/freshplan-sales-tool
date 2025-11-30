@@ -179,12 +179,16 @@ jobs:
         run: |
           cd frontend
           echo "🎭 Running Critical Path E2E tests..."
+          echo "⚠️ Running with --workers=1 to avoid rate limiting (429)"
 
           # Run only critical-paths tests against real backend
+          # WICHTIG: workers=1 verhindert Rate Limiting durch parallele Requests
           npx playwright test \
             --config=playwright.config.ts \
             --project=chromium \
             --reporter=list \
+            --workers=1 \
+            --timeout=60000 \
             e2e/critical-paths/
         env:
           CI: true

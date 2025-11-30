@@ -17,12 +17,32 @@ export const API_BASE = process.env.VITE_API_URL || 'http://localhost:8080';
 // RETRY CONFIGURATION FOR RATE LIMITING
 // =============================================================================
 
-const MAX_RETRIES = 3;
-const INITIAL_BACKOFF_MS = 1000; // 1 second
+const MAX_RETRIES = 5;
+const DEFAULT_BACKOFF_MS = 5000; // 5 seconds default
+
+/**
+ * Extrahiert die retryAfter-Zeit aus dem Response-Body (in ms)
+ * Server kann "60 seconds" oder numerisch senden
+ */
+function parseRetryAfter(body: string): number {
+  try {
+    const json = JSON.parse(body);
+    if (json.retryAfter) {
+      const match = json.retryAfter.match(/(\d+)/);
+      if (match) {
+        return parseInt(match[1], 10) * 1000; // seconds to ms
+      }
+    }
+  } catch {
+    // Ignore parse errors
+  }
+  return DEFAULT_BACKOFF_MS;
+}
 
 /**
  * Wrapper fuer API-Requests mit automatischem Retry bei Rate Limit (429)
- * Verwendet exponentielles Backoff: 1s, 2s, 4s
+ * Respektiert den server-seitigen retryAfter Header/Body
+ * Verwendet: retryAfter vom Server, oder exponentielles Backoff 5s, 10s, 20s, 40s, 80s
  */
 async function withRetry<T>(
   operation: () => Promise<{ response: APIResponse; parseResult: () => Promise<T> }>,
@@ -39,23 +59,23 @@ async function withRetry<T>(
 
     // Bei Rate Limit (429) warten und retry
     if (response.status() === 429 && attempt < MAX_RETRIES) {
-      const backoffMs = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+      const body = await response.text();
+      // Respektiere server retryAfter, aber cap bei 30 Sekunden fuer CI
+      const serverRetryMs = parseRetryAfter(body);
+      const cappedRetryMs = Math.min(serverRetryMs, 30000);
+      const exponentialBackoffMs = DEFAULT_BACKOFF_MS * Math.pow(2, attempt);
+      const waitMs = Math.max(cappedRetryMs, exponentialBackoffMs);
+
       console.log(
-        `[RATE LIMIT] ${context}: 429 received, waiting ${backoffMs}ms before retry ${attempt + 1}/${MAX_RETRIES}`
+        `[RATE LIMIT] ${context}: 429 received (server says ${serverRetryMs}ms), waiting ${waitMs}ms before retry ${attempt + 1}/${MAX_RETRIES}`
       );
-      await new Promise(resolve => setTimeout(resolve, backoffMs));
+      await new Promise(resolve => setTimeout(resolve, waitMs));
       continue;
     }
 
-    // Andere Fehler oder max retries erreicht
+    // Andere Fehler
     const body = await response.text();
     lastError = new Error(`${context}: ${response.status()} - ${body}`);
-
-    // Bei 429 nach max retries weiter probieren
-    if (response.status() === 429 && attempt < MAX_RETRIES) {
-      continue;
-    }
-
     throw lastError;
   }
 
