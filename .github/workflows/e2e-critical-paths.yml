@@ -141,13 +141,14 @@ jobs:
       - name: Start Frontend Preview Server
         run: |
           cd frontend
-          echo "🚀 Starting frontend preview server..."
-          npm run preview > frontend.log 2>&1 &
+          echo "🚀 Starting frontend preview server on port 5173..."
+          # Port 5173 fuer Konsistenz mit playwright.config.ts baseURL
+          npm run preview -- --port 5173 > frontend.log 2>&1 &
 
           # Wait for frontend
           for i in {1..20}; do
-            if curl -sf http://localhost:4173 > /dev/null 2>&1; then
-              echo "✅ Frontend is ready!"
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              echo "✅ Frontend is ready on port 5173!"
               break
             fi
             echo "  Attempt $i/20..."
@@ -228,7 +229,7 @@ jobs:
           ps aux | grep -E 'quarkus|node|vite' || true
           echo ""
           echo "=== Port status ==="
-          netstat -tlnp 2>/dev/null | grep -E '8080|4173' || true
+          netstat -tlnp 2>/dev/null | grep -E '8080|5173' || true
 
       - name: Cleanup
         if: always()
