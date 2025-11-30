@@ -363,7 +363,7 @@ export async function createBranch(
       },
       contact: {
         phone: '+49 123 456789',
-        email: `${name.toLowerCase().replace(/\s/g, '')}@test.local`,
+        email: `${name.toLowerCase().replace(/[^a-z0-9.-]/g, '')}@test.local`,
       },
     },
     headers: {
