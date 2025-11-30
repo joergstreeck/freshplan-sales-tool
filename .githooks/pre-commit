@@ -4,22 +4,22 @@
 # Husky Pre-Commit Hook: Multi-Stage Quality Gate
 # ============================================================================
 #
-# PRÜFUNG 1: Design System Compliance (BLOCKIEREND)
-# PRÜFUNG 2: Server-Driven Architecture Parity (BLOCKIEREND)
-# PRÜFUNG 2.3: Enum Seed Data Case Validation (BLOCKIEREND) - NEW Sprint 2.1.7.7
-# PRÜFUNG 2.5: Enum-Rendering-Parity (BLOCKIEREND) - Sprint 2.1.7.7
-# PRÜFUNG 2.6: Field Type Architecture (BLOCKIEREND) - Sprint 2.1.7.7
-# PRÜFUNG 3: Server-Driven Sections Architecture (BLOCKIEREND)
-# PRÜFUNG 4: Backend Code Formatting (Spotless Auto-Format)
-# PRÜFUNG 5: Backend Compilation Check (BLOCKIEREND) - Sprint 2.1.7.7
-# PRÜFUNG 6: Frontend Code Formatting (Lint-Staged Auto-Format)
-# PRÜFUNG 7: Backend Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
-# PRÜFUNG 7.1: Frontend Circular Dependency Check (BLOCKIEREND) - Sprint 2.1.7.7
-# PRÜFUNG 8: Test Cleanup - @AfterEach Validation (Check-Only) - Sprint 2.1.7.7
-# PRÜFUNG 9: OpenAPI Type Sync Check (BLOCKIEREND) - Sprint 2.1.7.7 OpenAPI Contract-First
-# PRÜFUNG 10: PMD Code Complexity Check (BLOCKIEREND) - Issue #146 Technical Debt
-# PRÜFUNG 11: fieldCatalog.json Removal Guard (BLOCKIEREND) - Sprint 2.1.7.x
-# PRÜFUNG 12: WCAG Landmarks Check (BLOCKIEREND) - Sprint 2.1.7.7 WCAG Accessibility
+# PRUEFUNG 1: Design System Compliance (BLOCKIEREND)
+# PRUEFUNG 2: Server-Driven Architecture Parity (BLOCKIEREND)
+# PRUEFUNG 2.3: Enum Seed Data Case Validation (BLOCKIEREND) - NEW Sprint 2.1.7.7
+# PRUEFUNG 2.5: Enum-Rendering-Parity (BLOCKIEREND) - Sprint 2.1.7.7
+# PRUEFUNG 2.6: Field Type Architecture (BLOCKIEREND) - Sprint 2.1.7.7
+# PRUEFUNG 3: Server-Driven Sections Architecture (BLOCKIEREND)
+# PRUEFUNG 4: Backend Code Formatting (Spotless Auto-Format)
+# PRUEFUNG 5: Backend Compilation Check (BLOCKIEREND) - Sprint 2.1.7.7
+# PRUEFUNG 6: Frontend Code Formatting (Lint-Staged Auto-Format)
+# PRUEFUNG 7: Backend Dependency Cycles Check (BLOCKIEREND) - Sprint 2.1.7.7
+# PRUEFUNG 7.1: Frontend Circular Dependency Check (BLOCKIEREND) - Sprint 2.1.7.7
+# PRUEFUNG 8: Test Cleanup - @AfterEach Validation (Check-Only) - Sprint 2.1.7.7
+# PRUEFUNG 9: OpenAPI Type Sync Check (BLOCKIEREND) - Sprint 2.1.7.7 OpenAPI Contract-First
+# PRUEFUNG 10: PMD Code Complexity Check (BLOCKIEREND) - Issue #146 Technical Debt
+# PRUEFUNG 11: fieldCatalog.json Removal Guard (BLOCKIEREND) - Sprint 2.1.7.x
+# PRUEFUNG 12: WCAG Landmarks Check (BLOCKIEREND) - Sprint 2.1.7.7 WCAG Accessibility
 #
 # ============================================================================
 
@@ -36,13 +36,13 @@ NC='\033[0m' # No Color
 # HELPER FUNCTIONS
 # ============================================================================
 
-# Helper-Funktion für konsistentes Error-Reporting
+# Helper-Funktion fuer konsistentes Error-Reporting
 # Usage: print_error_and_exit "Header" "Hint1" "Hint2" ...
 print_error_and_exit() {
   local header="$1"
   shift
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: $header${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: $header${NC}"
   echo ""
   echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
   echo ""
@@ -50,303 +50,303 @@ print_error_and_exit() {
     echo -e "   ${YELLOW}$hint${NC}"
   done
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 }
 
-# Helper-Funktion für Section Header
+# Helper-Funktion fuer Section Header
 print_section_header() {
   local title="$1"
   echo ""
-  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${BLUE}================================================${NC}"
   echo -e "${BLUE}$title${NC}"
-  echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+  echo -e "${BLUE}================================================${NC}"
   echo ""
 }
 
-# Helper-Funktion für Success Message
+# Helper-Funktion fuer Success Message
 print_success() {
   local message="$1"
   echo ""
-  echo -e "${GREEN}✅ $message${NC}"
+  echo -e "${GREEN}[OK] $message${NC}"
   echo ""
 }
 
 # ============================================================================
-# PRÜFUNG 1: Design System Compliance Check
+# PRUEFUNG 1: Design System Compliance Check
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🎨 Design System Compliance Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[1/12] Design System Compliance Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run Design System Check (Python script)
 if ! python3 ./scripts/check-design-system.py; then
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: Design System Violations detected!${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Design System Violations detected!${NC}"
   echo ""
   echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die CRITICAL violations.${NC}"
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 fi
 
 echo ""
-echo -e "${GREEN}✅ Design System Compliance: PASSED${NC}"
+echo -e "${GREEN}[OK] Design System Compliance: PASSED${NC}"
 echo ""
 
 # ============================================================================
-# PRÜFUNG 2: Server-Driven Architecture Parity
+# PRUEFUNG 2: Server-Driven Architecture Parity
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔒 Server-Driven Architecture Parity Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[2/12] Server-Driven Architecture Parity Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run Server-Driven Parity Check (Python script)
 if ! python3 ./scripts/check-server-driven-parity.py; then
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: Server-Driven Parity Violations detected!${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Server-Driven Parity Violations detected!${NC}"
   echo ""
   echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
   echo ""
-  echo -e "   ${YELLOW}• STUFE 1: Alle Schema-Felder MÜSSEN in Entity existieren${NC}"
-  echo -e "   ${YELLOW}• STUFE 2: ENUM-Felder MÜSSEN enumSource haben (kein hardcoded options)${NC}"
+  echo -e "   ${YELLOW}* STUFE 1: Alle Schema-Felder MUESSEN in Entity existieren${NC}"
+  echo -e "   ${YELLOW}* STUFE 2: ENUM-Felder MUESSEN enumSource haben (kein hardcoded options)${NC}"
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 fi
 
 echo ""
-echo -e "${GREEN}✅ Server-Driven Parity: PASSED${NC}"
+echo -e "${GREEN}[OK] Server-Driven Parity: PASSED${NC}"
 echo ""
 
 # ============================================================================
-# PRÜFUNG 2.3: Enum Value Case Validation in Seed Data
+# PRUEFUNG 2.3: Enum Value Case Validation in Seed Data
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔢 Enum Seed Data Case Validation${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[2.3/12] Enum Seed Data Case Validation${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run Enum Seed Data Case Check (Python script)
 if ! python3 ./scripts/check-enum-seed-data-case.py; then
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: Enum Value Case Violations detected!${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Enum Value Case Violations detected!${NC}"
   echo ""
   echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
   echo ""
-  echo -e "   ${YELLOW}• ALLE Enum-Werte in V900*.sql MÜSSEN UPPERCASE sein${NC}"
-  echo -e "   ${YELLOW}• Beispiel: 'GmbH' → 'GMBH', 'Frau' → 'FRAU'${NC}"
+  echo -e "   ${YELLOW}* ALLE Enum-Werte in V900*.sql MUESSEN UPPERCASE sein${NC}"
+  echo -e "   ${YELLOW}* Beispiel: 'GmbH' -> 'GMBH', 'Frau' -> 'FRAU'${NC}"
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 fi
 
 echo ""
-echo -e "${GREEN}✅ Enum Seed Data Case: PASSED${NC}"
+echo -e "${GREEN}[OK] Enum Seed Data Case: PASSED${NC}"
 echo ""
 
 # ============================================================================
-# PRÜFUNG 2.5: Enum-Rendering-Parity Check (Context-Aware)
+# PRUEFUNG 2.5: Enum-Rendering-Parity Check (Context-Aware)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔍 Enum-Rendering-Parity Check (Context-Aware)${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[2.5/12] Enum-Rendering-Parity Check (Context-Aware)${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run Enum-Rendering-Parity Check (Python script)
 if ! python3 ./scripts/check-enum-rendering-parity.py; then
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: Enum-Rendering-Parity Violations detected!${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Enum-Rendering-Parity Violations detected!${NC}"
   echo ""
   echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die RAW Enum-Rendering Violations:${NC}"
   echo ""
-  echo -e "   ${YELLOW}• ZERO TOLERANCE: Backend = Single Source of Truth für ALLE Enum-Werte${NC}"
-  echo -e "   ${YELLOW}• Lösung: Nutze useEnumOptions() + Label-Lookup${NC}"
-  echo -e "   ${YELLOW}• Beispiel: decisionLevelLabels[contact.decisionLevel]${NC}"
+  echo -e "   ${YELLOW}* ZERO TOLERANCE: Backend = Single Source of Truth fuer ALLE Enum-Werte${NC}"
+  echo -e "   ${YELLOW}* Loesung: Nutze useEnumOptions() + Label-Lookup${NC}"
+  echo -e "   ${YELLOW}* Beispiel: decisionLevelLabels[contact.decisionLevel]${NC}"
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 fi
 
 echo ""
-echo -e "${GREEN}✅ Enum-Rendering-Parity: PASSED${NC}"
+echo -e "${GREEN}[OK] Enum-Rendering-Parity: PASSED${NC}"
 echo ""
 
 # ============================================================================
-# PRÜFUNG 2.6: Field Type Architecture Check
+# PRUEFUNG 2.6: Field Type Architecture Check
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔧 Field Type Architecture Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[2.6/12] Field Type Architecture Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run Field Type Architecture Check (Python script)
 if ! python3 ./scripts/check-field-type-architecture.py; then
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: Field Type Architecture Violations detected!${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Field Type Architecture Violations detected!${NC}"
   echo ""
   echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
   echo ""
-  echo -e "   ${YELLOW}• Verwende field.type statt field.fieldType (Server-Driven Property)${NC}"
-  echo -e "   ${YELLOW}• Field Types MÜSSEN UPPERCASE sein: 'TEXT', 'ENUM', 'NUMBER' (nicht 'text', 'enum')${NC}"
-  echo -e "   ${YELLOW}• Referenz: frontend/src/types/customer-schema.ts → FieldType enum${NC}"
+  echo -e "   ${YELLOW}* Verwende field.type statt field.fieldType (Server-Driven Property)${NC}"
+  echo -e "   ${YELLOW}* Field Types MUESSEN UPPERCASE sein: 'TEXT', 'ENUM', 'NUMBER' (nicht 'text', 'enum')${NC}"
+  echo -e "   ${YELLOW}* Referenz: frontend/src/types/customer-schema.ts -> FieldType enum${NC}"
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 fi
 
 echo ""
-echo -e "${GREEN}✅ Field Type Architecture: PASSED${NC}"
+echo -e "${GREEN}[OK] Field Type Architecture: PASSED${NC}"
 echo ""
 
 # ============================================================================
-# PRÜFUNG 3: Server-Driven Sections Architecture
+# PRUEFUNG 3: Server-Driven Sections Architecture
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🏗️  Server-Driven Sections Architecture Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[3/12] Server-Driven Sections Architecture Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run Server-Driven Sections Check (Bash script in backend/)
 if [ -f "backend/scripts/check-server-driven-sections.sh" ]; then
   if ! (cd backend && ./scripts/check-server-driven-sections.sh); then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Server-Driven Sections Violations detected!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Server-Driven Sections Violations detected!${NC}"
     echo ""
     echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
     echo ""
-    echo -e "   ${YELLOW}• STUFE 1: Wizard-Fields MÜSSEN wizardSectionId + wizardSectionTitle haben${NC}"
-    echo -e "   ${YELLOW}• STUFE 2: Frontend darf KEINE hardcodierten Section-Strukturen haben${NC}"
+    echo -e "   ${YELLOW}* STUFE 1: Wizard-Fields MUESSEN wizardSectionId + wizardSectionTitle haben${NC}"
+    echo -e "   ${YELLOW}* STUFE 2: Frontend darf KEINE hardcodierten Section-Strukturen haben${NC}"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Server-Driven Sections: PASSED${NC}"
+  echo -e "${GREEN}[OK] Server-Driven Sections: PASSED${NC}"
   echo ""
 else
   echo ""
-  echo -e "${YELLOW}⚠️  Server-Driven Sections Check: Script not found (skipped)${NC}"
+  echo -e "${YELLOW}[SKIP] Server-Driven Sections Check: Script not found (skipped)${NC}"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 4: Backend Code Formatting (Spotless Auto-Format)
+# PRUEFUNG 4: Backend Code Formatting (Spotless Auto-Format)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🧹 Backend Code Formatting (Spotless)${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[4/12] Backend Code Formatting (Spotless)${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if any backend files were changed
 BACKEND_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/" || true)
 
 if [ -n "$BACKEND_FILES" ]; then
-  echo "📝 Backend files changed, applying Spotless formatting..."
+  echo "[INFO] Backend files changed, applying Spotless formatting..."
   echo ""
 
   # Apply Spotless formatting
   if ! (cd backend && ./mvnw spotless:apply -q); then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Spotless formatting failed!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Spotless formatting failed!${NC}"
     echo ""
-    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte prüfe die Spotless-Konfiguration.${NC}"
+    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte pruefe die Spotless-Konfiguration.${NC}"
     echo ""
     exit 1
   fi
 
   # Add formatted files back to staging
-  echo "✨ Re-staging formatted backend files..."
+  echo "[INFO] Re-staging formatted backend files..."
   git add backend/
 
   echo ""
-  echo -e "${GREEN}✅ Backend Code Formatting: APPLIED${NC}"
+  echo -e "${GREEN}[OK] Backend Code Formatting: APPLIED${NC}"
   echo ""
 else
-  echo "⏭️  No backend files changed, skipping Spotless"
+  echo "[SKIP] No backend files changed, skipping Spotless"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 5: Backend Compilation Check
+# PRUEFUNG 5: Backend Compilation Check
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔨 Backend Compilation Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[5/12] Backend Compilation Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
-# Check if any backend files were changed (reuse variable from PRÜFUNG 4)
+# Check if any backend files were changed (reuse variable from PRUEFUNG 4)
 BACKEND_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/" || true)
 
 if [ -n "$BACKEND_FILES" ]; then
-  echo "🔨 Backend files changed, checking compilation..."
+  echo "[INFO] Backend files changed, checking compilation..."
   echo ""
 
   # Run Maven compile (quiet mode)
   if ! (cd backend && ./mvnw -B compile -q -DskipTests); then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Backend Compilation FAILED!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Backend Compilation FAILED!${NC}"
     echo ""
     echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Compilation-Fehler:${NC}"
     echo ""
-    echo -e "   ${YELLOW}• Prüfe Java-Syntax-Fehler${NC}"
-    echo -e "   ${YELLOW}• Prüfe fehlende Imports${NC}"
-    echo -e "   ${YELLOW}• Prüfe Type-Errors${NC}"
+    echo -e "   ${YELLOW}* Pruefe Java-Syntax-Fehler${NC}"
+    echo -e "   ${YELLOW}* Pruefe fehlende Imports${NC}"
+    echo -e "   ${YELLOW}* Pruefe Type-Errors${NC}"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Backend Compilation: PASSED${NC}"
+  echo -e "${GREEN}[OK] Backend Compilation: PASSED${NC}"
   echo ""
 else
-  echo "⏭️  No backend files changed, skipping compilation check"
+  echo "[SKIP] No backend files changed, skipping compilation check"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 6: Frontend Code Formatting (Lint-Staged)
+# PRUEFUNG 6: Frontend Code Formatting (Lint-Staged)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}💅 Frontend Code Formatting (lint-staged)${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[6/12] Frontend Code Formatting (lint-staged)${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Frontend lint-staged
 if [ -d "frontend" ]; then
   if ! (cd frontend && npm run lint-staged); then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Lint-Staged failed!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Lint-Staged failed!${NC}"
     echo ""
     echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Linting-Fehler.${NC}"
     echo ""
@@ -354,68 +354,68 @@ if [ -d "frontend" ]; then
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Frontend Lint-Staged: PASSED${NC}"
+  echo -e "${GREEN}[OK] Frontend Lint-Staged: PASSED${NC}"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 7: Dependency Cycles Check (Backend)
+# PRUEFUNG 7: Dependency Cycles Check (Backend)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔄 Backend Dependency Cycles Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[7/12] Backend Dependency Cycles Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if any backend files were changed
 BACKEND_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/.*\.java$" || true)
 
 if [ -n "$BACKEND_FILES" ]; then
-  echo "🔍 Backend Java files changed, checking for circular dependencies..."
+  echo "[INFO] Backend Java files changed, checking for circular dependencies..."
   echo ""
 
   # Run Dependency Cycles Check (Python script)
   if ! python3 ./scripts/check-dependency-cycles.py; then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Dependency Cycles detected!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Dependency Cycles detected!${NC}"
     echo ""
-    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die zirkulären Abhängigkeiten:${NC}"
+    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die zirkulaeren Abhaengigkeiten:${NC}"
     echo ""
-    echo -e "   ${YELLOW}• Lösung 1: Interface Abstraction (Dependency Inversion Principle)${NC}"
-    echo -e "   ${YELLOW}• Lösung 2: Shared Package für gemeinsame Klassen${NC}"
-    echo -e "   ${YELLOW}• Lösung 3: Dependency Richtung umkehren${NC}"
+    echo -e "   ${YELLOW}* Loesung 1: Interface Abstraction (Dependency Inversion Principle)${NC}"
+    echo -e "   ${YELLOW}* Loesung 2: Shared Package fuer gemeinsame Klassen${NC}"
+    echo -e "   ${YELLOW}* Loesung 3: Dependency Richtung umkehren${NC}"
     echo ""
     echo -e "${YELLOW}   Details siehe oben im Check-Output.${NC}"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Backend Dependency Cycles Check: PASSED (No cycles detected)${NC}"
+  echo -e "${GREEN}[OK] Backend Dependency Cycles Check: PASSED (No cycles detected)${NC}"
   echo ""
 else
-  echo "⏭️  No backend Java files changed, skipping backend dependency cycles check"
+  echo "[SKIP] No backend Java files changed, skipping backend dependency cycles check"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 7.1: Frontend Circular Dependency Check (BLOCKIEREND)
+# PRUEFUNG 7.1: Frontend Circular Dependency Check (BLOCKIEREND)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔄 Frontend Circular Dependency Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[7.1/12] Frontend Circular Dependency Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if any frontend TypeScript files were changed
 FRONTEND_TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E "^frontend/src/.*\.(ts|tsx)$" || true)
 
 if [ -n "$FRONTEND_TS_FILES" ]; then
-  echo "🔍 Frontend TypeScript files changed, checking for circular dependencies..."
+  echo "[INFO] Frontend TypeScript files changed, checking for circular dependencies..."
   echo ""
 
   # Run madge to check for circular dependencies
@@ -427,63 +427,63 @@ if [ -n "$FRONTEND_TS_FILES" ]; then
 
   if [ -n "$CYCLES" ]; then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Frontend Circular Dependencies detected!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Frontend Circular Dependencies detected!${NC}"
     echo ""
-    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die zirkulären Abhängigkeiten:${NC}"
+    echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die zirkulaeren Abhaengigkeiten:${NC}"
     echo ""
     echo "$CYCLES" | while read -r line; do
       echo -e "   ${RED}$line${NC}"
     done
     echo ""
-    echo -e "${YELLOW}   Lösungsstrategien:${NC}"
-    echo -e "   ${YELLOW}• Lösung 1: Direkten Import aus Modul statt Barrel (index.ts) verwenden${NC}"
-    echo -e "   ${YELLOW}• Lösung 2: Dynamischen Import (await import()) für lazy-loaded Code verwenden${NC}"
-    echo -e "   ${YELLOW}• Lösung 3: Types in separates Modul extrahieren${NC}"
-    echo -e "   ${YELLOW}• Lösung 4: Dependency Injection oder Context-Pattern verwenden${NC}"
+    echo -e "${YELLOW}   Loesungsstrategien:${NC}"
+    echo -e "   ${YELLOW}* Loesung 1: Direkten Import aus Modul statt Barrel (index.ts) verwenden${NC}"
+    echo -e "   ${YELLOW}* Loesung 2: Dynamischen Import (await import()) fuer lazy-loaded Code verwenden${NC}"
+    echo -e "   ${YELLOW}* Loesung 3: Types in separates Modul extrahieren${NC}"
+    echo -e "   ${YELLOW}* Loesung 4: Dependency Injection oder Context-Pattern verwenden${NC}"
     echo ""
-    echo -e "${YELLOW}   Prüfen mit: cd frontend && npx madge --circular --extensions ts,tsx src/${NC}"
+    echo -e "${YELLOW}   Pruefen mit: cd frontend && npx madge --circular --extensions ts,tsx src/${NC}"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Frontend Circular Dependency Check: PASSED (No cycles detected)${NC}"
+  echo -e "${GREEN}[OK] Frontend Circular Dependency Check: PASSED (No cycles detected)${NC}"
   echo ""
 else
-  echo "⏭️  No frontend TypeScript files changed, skipping frontend circular dependency check"
+  echo "[SKIP] No frontend TypeScript files changed, skipping frontend circular dependency check"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 8: Test Cleanup - @AfterEach Validation
+# PRUEFUNG 8: Test Cleanup - @AfterEach Validation
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🧪 Test Cleanup - @AfterEach Validation${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[8/12] Test Cleanup - @AfterEach Validation${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if any backend test files were changed
 BACKEND_TEST_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/src/test/.*\.java$" || true)
 
 if [ -n "$BACKEND_TEST_FILES" ]; then
-  echo "🧪 Backend test files changed, validating @AfterEach cleanup..."
+  echo "[INFO] Backend test files changed, validating @AfterEach cleanup..."
   echo ""
 
   # Run Test Cleanup Validation (Check-Only)
   if ! python3 ./backend/scripts/check-test-cleanup.py; then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: Test Cleanup Validation failed!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: Test Cleanup Validation failed!${NC}"
     echo ""
     echo -e "${YELLOW}   Commit BLOCKIERT. Tests ohne @AfterEach cleanup gefunden.${NC}"
-    echo -e "${YELLOW}   Bitte füge @AfterEach cleanup zu den betroffenen Tests hinzu.${NC}"
+    echo -e "${YELLOW}   Bitte fuege @AfterEach cleanup zu den betroffenen Tests hinzu.${NC}"
     echo ""
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BLUE}📚 CLEANUP BEISPIEL (aus BranchServiceTest.java):${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+    echo -e "${BLUE}================================================${NC}"
+    echo -e "${BLUE}CLEANUP BEISPIEL (aus BranchServiceTest.java):${NC}"
+    echo -e "${BLUE}================================================${NC}"
     echo ""
     echo "@AfterEach"
     echo "@Transactional"
@@ -499,42 +499,42 @@ if [ -n "$BACKEND_TEST_FILES" ]; then
     echo "}"
     echo ""
     echo -e "${BLUE}Wichtig:${NC}"
-    echo "  • @Transactional ist PFLICHT"
-    echo "  • EntityManager mit @Inject einbinden"
-    echo "  • CHILD-Entities ZUERST löschen (Foreign Keys!)"
-    echo "  • Pattern-Matching (TEST-%, KD-%) für Test-Daten"
+    echo "  * @Transactional ist PFLICHT"
+    echo "  * EntityManager mit @Inject einbinden"
+    echo "  * CHILD-Entities ZUERST loeschen (Foreign Keys!)"
+    echo "  * Pattern-Matching (TEST-%, KD-%) fuer Test-Daten"
     echo ""
     echo -e "${BLUE}Weitere Beispiele:${NC}"
-    echo "  • backend/src/test/java/de/freshplan/domain/customer/service/BranchServiceTest.java"
-    echo "  • backend/src/test/java/de/freshplan/domain/customer/service/timeline/query/TimelineQueryServiceTest.java"
+    echo "  * backend/src/test/java/de/freshplan/domain/customer/service/BranchServiceTest.java"
+    echo "  * backend/src/test/java/de/freshplan/domain/customer/service/timeline/query/TimelineQueryServiceTest.java"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Test Cleanup: All tests have proper @AfterEach cleanup${NC}"
+  echo -e "${GREEN}[OK] Test Cleanup: All tests have proper @AfterEach cleanup${NC}"
   echo ""
 else
-  echo "⏭️  No backend test files changed, skipping test cleanup validation"
+  echo "[SKIP] No backend test files changed, skipping test cleanup validation"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 9: OpenAPI Type Sync Check (BLOCKIEREND)
+# PRUEFUNG 9: OpenAPI Type Sync Check (BLOCKIEREND)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🔄 OpenAPI Type Sync Check${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[9/12] OpenAPI Type Sync Check${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if backend DTO files were changed (*Request.java, *Response.java)
 BACKEND_DTO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E "backend/src/main/java/.*(Request|Response)\.java$" || true)
 
 if [ -n "$BACKEND_DTO_FILES" ]; then
-  echo -e "${YELLOW}⚠️  Backend DTO files wurden geändert:${NC}"
-  echo "$BACKEND_DTO_FILES" | sed 's/^/   • /'
+  echo -e "${YELLOW}[WARN] Backend DTO files wurden geaendert:${NC}"
+  echo "$BACKEND_DTO_FILES" | sed 's/^/   * /'
   echo ""
 
   # Check if generated types directory exists and is up-to-date
@@ -542,9 +542,9 @@ if [ -n "$BACKEND_DTO_FILES" ]; then
 
   if [ ! -d "$GENERATED_DIR" ]; then
     echo ""
-    echo -e "${RED}❌ COMMIT BLOCKIERT: Generierte TypeScript-Types fehlen!${NC}"
+    echo -e "${RED}[BLOCKED] COMMIT BLOCKIERT: Generierte TypeScript-Types fehlen!${NC}"
     echo ""
-    echo -e "${YELLOW}   Backend DTOs wurden geändert, aber frontend/src/api/generated/ existiert nicht.${NC}"
+    echo -e "${YELLOW}   Backend DTOs wurden geaendert, aber frontend/src/api/generated/ existiert nicht.${NC}"
     echo ""
     echo -e "${YELLOW}   Bitte TypeScript-Types generieren:${NC}"
     echo -e "   ${BLUE}1. Backend starten:${NC}"
@@ -557,7 +557,7 @@ if [ -n "$BACKEND_DTO_FILES" ]; then
     echo -e "      git add frontend/src/api/generated/"
     echo -e "      git commit"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
@@ -567,9 +567,9 @@ if [ -n "$BACKEND_DTO_FILES" ]; then
 
   if [ -z "$STAGED_GENERATED_FILES" ]; then
     echo ""
-    echo -e "${RED}❌ COMMIT BLOCKIERT: Generierte TypeScript-Types nicht ge-staged!${NC}"
+    echo -e "${RED}[BLOCKED] COMMIT BLOCKIERT: Generierte TypeScript-Types nicht ge-staged!${NC}"
     echo ""
-    echo -e "${YELLOW}   Backend DTOs wurden geändert, aber generierte Types wurden nicht ge-staged.${NC}"
+    echo -e "${YELLOW}   Backend DTOs wurden geaendert, aber generierte Types wurden nicht ge-staged.${NC}"
     echo ""
     echo -e "${YELLOW}   Bitte TypeScript-Types aktualisieren und stagen:${NC}"
     echo -e "   ${BLUE}1. Backend starten (falls nicht gestartet):${NC}"
@@ -583,111 +583,111 @@ if [ -n "$BACKEND_DTO_FILES" ]; then
     echo -e "      git commit"
     echo ""
     echo -e "${YELLOW}   Hinweis: Wenn Types bereits aktuell sind, bitte trotzdem stagen.${NC}"
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ Generierte TypeScript-Types sind ge-staged.${NC}"
+  echo -e "${GREEN}[OK] Generierte TypeScript-Types sind ge-staged.${NC}"
   echo -e "${GREEN}   Contract-First Development: Backend ist Single Source of Truth.${NC}"
   echo ""
 else
-  echo "⏭️  No backend DTO files changed, OpenAPI types should be in sync"
+  echo "[SKIP] No backend DTO files changed, OpenAPI types should be in sync"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 10: PMD Code Complexity Check (BLOCKIEREND)
+# PRUEFUNG 10: PMD Code Complexity Check (BLOCKIEREND)
 # ============================================================================
 # Issue #146 abgeschlossen - PMD Check ist jetzt BLOCKIEREND
-# Alle 80 ursprünglichen Violations wurden behoben (Refactoring + @SuppressWarnings)
+# Alle 80 urspruenglichen Violations wurden behoben (Refactoring + @SuppressWarnings)
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}📊 PMD Code Complexity Check (BLOCKIEREND)${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[10/12] PMD Code Complexity Check (BLOCKIEREND)${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if any backend Java files were changed
 BACKEND_JAVA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep "^backend/src/main/java/.*\.java$" || true)
 
 if [ -n "$BACKEND_JAVA_FILES" ]; then
-  echo "📊 Backend Java files changed, running PMD complexity check..."
+  echo "[INFO] Backend Java files changed, running PMD complexity check..."
   echo ""
 
   # Run PMD check (quiet mode) - BLOCKIEREND
   if ! (cd backend && ./mvnw pmd:check -q 2>&1); then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: PMD Code Complexity Violations detected!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: PMD Code Complexity Violations detected!${NC}"
     echo ""
     echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Violations:${NC}"
     echo ""
-    echo -e "   ${YELLOW}• NPathComplexity: Zu viele mögliche Ausführungspfade (max: 200)${NC}"
-    echo -e "   ${YELLOW}• CyclomaticComplexity: Zu viele Verzweigungen (max: 10)${NC}"
-    echo -e "   ${YELLOW}• CognitiveComplexity: Code zu schwer verständlich (max: 15)${NC}"
-    echo -e "   ${YELLOW}• NcssCount: Methode zu lang (max: 100 Lines)${NC}"
+    echo -e "   ${YELLOW}* NPathComplexity: Zu viele moegliche Ausfuehrungspfade (max: 200)${NC}"
+    echo -e "   ${YELLOW}* CyclomaticComplexity: Zu viele Verzweigungen (max: 10)${NC}"
+    echo -e "   ${YELLOW}* CognitiveComplexity: Code zu schwer verstaendlich (max: 15)${NC}"
+    echo -e "   ${YELLOW}* NcssCount: Methode zu lang (max: 100 Lines)${NC}"
     echo ""
     echo -e "${YELLOW}   Report: backend/target/pmd.xml${NC}"
     echo ""
-    echo -e "${YELLOW}   Lösungen:${NC}"
-    echo -e "   ${YELLOW}• Extract Method Refactoring für große Methoden${NC}"
-    echo -e "   ${YELLOW}• @SuppressWarnings(\"PMD.XYZ\") mit Begründung für legitime Fälle${NC}"
+    echo -e "${YELLOW}   Loesungen:${NC}"
+    echo -e "   ${YELLOW}* Extract Method Refactoring fuer grosse Methoden${NC}"
+    echo -e "   ${YELLOW}* @SuppressWarnings(\"PMD.XYZ\") mit Begruendung fuer legitime Faelle${NC}"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   else
     echo ""
-    echo -e "${GREEN}✅ PMD Code Complexity: PASSED${NC}"
+    echo -e "${GREEN}[OK] PMD Code Complexity: PASSED${NC}"
     echo ""
   fi
 else
-  echo "⏭️  No backend Java files changed, skipping PMD complexity check"
+  echo "[SKIP] No backend Java files changed, skipping PMD complexity check"
   echo ""
 fi
 
 # ============================================================================
-# PRÜFUNG 11: fieldCatalog.json Removal Guard
+# PRUEFUNG 11: fieldCatalog.json Removal Guard
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}🗑️  fieldCatalog.json Removal Guard${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[11/12] fieldCatalog.json Removal Guard${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Run fieldCatalog.json Removal Guard (Python script)
 if ! python3 ./scripts/check-fieldcatalog-removed.py; then
   echo ""
-  echo -e "${RED}🚫 PRE-COMMIT HOOK: fieldCatalog.json Migration Regression detected!${NC}"
+  echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: fieldCatalog.json Migration Regression detected!${NC}"
   echo ""
-  echo -e "${YELLOW}   Commit BLOCKIERT. Server-Driven UI Migration wurde rückgängig gemacht!${NC}"
+  echo -e "${YELLOW}   Commit BLOCKIERT. Server-Driven UI Migration wurde rueckgaengig gemacht!${NC}"
   echo ""
-  echo -e "   ${YELLOW}• fieldCatalog.json wurde in Sprint 2.1.7.x gelöscht${NC}"
-  echo -e "   ${YELLOW}• Backend ist Single Source of Truth für Field Definitions${NC}"
-  echo -e "   ${YELLOW}• Use useCustomerSchema or useLocationServiceSchema instead${NC}"
+  echo -e "   ${YELLOW}* fieldCatalog.json wurde in Sprint 2.1.7.x geloescht${NC}"
+  echo -e "   ${YELLOW}* Backend ist Single Source of Truth fuer Field Definitions${NC}"
+  echo -e "   ${YELLOW}* Use useCustomerSchema or useLocationServiceSchema instead${NC}"
   echo ""
   echo -e "${YELLOW}   Migration Guide:${NC}"
   echo -e "   ${YELLOW}   /docs/planung/claude-work/MIGRATION_PLAN_fieldCatalog_removal.md${NC}"
   echo ""
-  echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+  echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
   echo ""
   exit 1
 fi
 
 echo ""
-echo -e "${GREEN}✅ fieldCatalog.json Removal Guard: PASSED${NC}"
+echo -e "${GREEN}[OK] fieldCatalog.json Removal Guard: PASSED${NC}"
 echo ""
 
 # ============================================================================
-# PRÜFUNG 12: WCAG Landmarks Check (BLOCKIEREND)
+# PRUEFUNG 12: WCAG Landmarks Check (BLOCKIEREND)
 # ============================================================================
 
 echo ""
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${BLUE}♿ WCAG Landmarks Check (Accessibility)${NC}"
-echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}================================================${NC}"
+echo -e "${BLUE}[12/12] WCAG Landmarks Check (Accessibility)${NC}"
+echo -e "${BLUE}================================================${NC}"
 echo ""
 
 # Check if any frontend page files were changed
@@ -695,29 +695,29 @@ FRONTEND_PAGE_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E 
 FRONTEND_APP_FILE=$(git diff --cached --name-only --diff-filter=ACM | grep -E "^frontend/src/App\.tsx$" || true)
 
 if [ -n "$FRONTEND_PAGE_FILES" ] || [ -n "$FRONTEND_APP_FILE" ]; then
-  echo "♿ Frontend page files changed, checking WCAG landmarks..."
+  echo "[INFO] Frontend page files changed, checking WCAG landmarks..."
   echo ""
 
   # Run WCAG Landmarks Check (Python script)
   if ! python3 ./scripts/check-wcag-landmarks.py; then
     echo ""
-    echo -e "${RED}🚫 PRE-COMMIT HOOK: WCAG Landmark Violations detected!${NC}"
+    echo -e "${RED}[BLOCKED] PRE-COMMIT HOOK: WCAG Landmark Violations detected!${NC}"
     echo ""
     echo -e "${YELLOW}   Commit BLOCKIERT. Bitte behebe die Accessibility Violations:${NC}"
     echo ""
-    echo -e "   ${YELLOW}• WCAG 2.1 Level AA: Jede Seite braucht <main> landmark${NC}"
-    echo -e "   ${YELLOW}• WCAG 2.1 Level AA: Jede Seite braucht <h1> heading${NC}"
+    echo -e "   ${YELLOW}* WCAG 2.1 Level AA: Jede Seite braucht <main> landmark${NC}"
+    echo -e "   ${YELLOW}* WCAG 2.1 Level AA: Jede Seite braucht <h1> heading${NC}"
     echo ""
-    echo -e "${YELLOW}   Zum Überspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
+    echo -e "${YELLOW}   Zum Ueberspringen (NOT RECOMMENDED): git commit --no-verify${NC}"
     echo ""
     exit 1
   fi
 
   echo ""
-  echo -e "${GREEN}✅ WCAG Landmarks: PASSED${NC}"
+  echo -e "${GREEN}[OK] WCAG Landmarks: PASSED${NC}"
   echo ""
 else
-  echo "⏭️  No frontend page files changed, skipping WCAG landmarks check"
+  echo "[SKIP] No frontend page files changed, skipping WCAG landmarks check"
   echo ""
 fi
 
@@ -726,9 +726,9 @@ fi
 # ============================================================================
 
 echo ""
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-echo -e "${GREEN}✅ All Pre-Commit Checks PASSED${NC}"
-echo -e "${GREEN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${GREEN}================================================${NC}"
+echo -e "${GREEN}[OK] All Pre-Commit Checks PASSED${NC}"
+echo -e "${GREEN}================================================${NC}"
 echo ""
 
 exit 0
