@@ -500,12 +500,20 @@ public class CustomerMapper {
   }
 
   /**
-   * Update parent customer relationship from request.
+   * Update parent customer relationship from request. Also allows setting hierarchyType directly
+   * without parent (e.g., STANDALONE -> HEADQUARTER).
    *
    * @param customer the customer to update
    * @param request the update request
    */
   private void updateParentCustomer(Customer customer, UpdateCustomerRequest request) {
+    // BUG FIX: Allow hierarchyType to be set even without parentCustomerId
+    // This enables changing STANDALONE -> HEADQUARTER via API
+    if (request.hierarchyType() != null && request.parentCustomerId() == null) {
+      customer.setHierarchyType(request.hierarchyType());
+      return;
+    }
+
     if (request.parentCustomerId() == null) {
       return;
     }
