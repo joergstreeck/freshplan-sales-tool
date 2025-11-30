@@ -141,9 +141,9 @@ jobs:
       - name: Start Frontend Preview Server
         run: |
           cd frontend
-          echo "🚀 Starting frontend preview server on port 5173..."
-          # Port 5173 fuer Konsistenz mit playwright.config.ts baseURL
-          npm run preview -- --port 5173 > frontend.log 2>&1 &
+          echo "🚀 Starting frontend preview server..."
+          # Port 5173 ist in vite.config.ts konfiguriert (gleich wie dev)
+          npm run preview > frontend.log 2>&1 &
 
           # Wait for frontend
           for i in {1..20}; do

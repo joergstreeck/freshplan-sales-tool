@@ -59,7 +59,7 @@ export default defineConfig({
             // Everything else from node_modules
             return 'vendor';
           }
-          
+
           // Split features into separate chunks
           if (id.includes('src/features/audit')) {
             return 'feature-audit';
@@ -92,6 +92,7 @@ export default defineConfig({
     sourcemap: false,
   },
   server: {
+    port: 5173,
     proxy: {
       '/api': {
         target: 'http://localhost:8080',
@@ -100,6 +101,9 @@ export default defineConfig({
       },
     },
   },
+  preview: {
+    port: 5173, // Gleicher Port wie dev für Konsistenz mit Playwright
+  },
   test: {
     environment: 'jsdom',
     globals: true,
@@ -107,12 +111,12 @@ export default defineConfig({
     testTimeout: 5000, // 5 seconds instead of default 30s
     hookTimeout: 10000, // 10 seconds for setup/teardown
     exclude: [
-      'tests/**', 
-      'node_modules/**', 
+      'tests/**',
+      'node_modules/**',
       'dist/**',
       '**/e2e/**',
       '**/*.e2e.*',
-      '**/*.spec.*'  // Exclude Playwright spec files
+      '**/*.spec.*', // Exclude Playwright spec files
     ],
     coverage: {
       provider: 'v8',
