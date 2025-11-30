@@ -8,10 +8,59 @@
  * @since Sprint 2.1.7.7 - Issue #149
  */
 
-import { APIRequestContext, Page } from '@playwright/test';
+import { APIRequestContext, Page, APIResponse } from '@playwright/test';
 
 // API Base URL (vom CI-Workflow gesetzt)
 export const API_BASE = process.env.VITE_API_URL || 'http://localhost:8080';
+
+// =============================================================================
+// RETRY CONFIGURATION FOR RATE LIMITING
+// =============================================================================
+
+const MAX_RETRIES = 3;
+const INITIAL_BACKOFF_MS = 1000; // 1 second
+
+/**
+ * Wrapper fuer API-Requests mit automatischem Retry bei Rate Limit (429)
+ * Verwendet exponentielles Backoff: 1s, 2s, 4s
+ */
+async function withRetry<T>(
+  operation: () => Promise<{ response: APIResponse; parseResult: () => Promise<T> }>,
+  context: string
+): Promise<T> {
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    const { response, parseResult } = await operation();
+
+    if (response.ok()) {
+      return parseResult();
+    }
+
+    // Bei Rate Limit (429) warten und retry
+    if (response.status() === 429 && attempt < MAX_RETRIES) {
+      const backoffMs = INITIAL_BACKOFF_MS * Math.pow(2, attempt);
+      console.log(
+        `[RATE LIMIT] ${context}: 429 received, waiting ${backoffMs}ms before retry ${attempt + 1}/${MAX_RETRIES}`
+      );
+      await new Promise(resolve => setTimeout(resolve, backoffMs));
+      continue;
+    }
+
+    // Andere Fehler oder max retries erreicht
+    const body = await response.text();
+    lastError = new Error(`${context}: ${response.status()} - ${body}`);
+
+    // Bei 429 nach max retries weiter probieren
+    if (response.status() === 429 && attempt < MAX_RETRIES) {
+      continue;
+    }
+
+    throw lastError;
+  }
+
+  throw lastError || new Error(`${context}: Max retries exceeded`);
+}
 
 // =============================================================================
 // INTERFACES
@@ -75,6 +124,7 @@ export interface HierarchyMetricsResponse {
 
 /**
  * Erstellt einen Lead via API
+ * Mit automatischem Retry bei Rate Limit (429)
  * @param request - Playwright API Request Context
  * @param name - Firmenname (wird mit TEST_PREFIX versehen)
  * @param testPrefix - Einzigartiges Test-Prefix für Isolation
@@ -85,35 +135,34 @@ export async function createLead(
   testPrefix: string
 ): Promise<LeadResponse> {
   const uniqueId = `${Date.now()}-${Math.random().toString(36).substring(7)}`;
-  const response = await request.post(`${API_BASE}/api/leads`, {
-    data: {
-      companyName: `${testPrefix} ${name}`,
-      stage: 1, // REGISTRIERUNG
-      contact: {
-        firstName: 'Max',
-        lastName: 'Mustermann',
-        email: `lead-${uniqueId}@test-e2e.local`,
-        phone: '+49 123 456789',
+  return withRetry(async () => {
+    const response = await request.post(`${API_BASE}/api/leads`, {
+      data: {
+        companyName: `${testPrefix} ${name}`,
+        stage: 1, // REGISTRIERUNG
+        contact: {
+          firstName: 'Max',
+          lastName: 'Mustermann',
+          email: `lead-${uniqueId}@test-e2e.local`,
+          phone: '+49 123 456789',
+        },
+        city: 'Berlin',
+        postalCode: '10115',
+        street: 'Teststraße 42',
+        countryCode: 'DE',
+        businessType: 'RESTAURANT',
+        estimatedVolume: 50000,
+        source: 'WEB',
       },
-      city: 'Berlin',
-      postalCode: '10115',
-      street: 'Teststraße 42',
-      countryCode: 'DE',
-      businessType: 'RESTAURANT',
-      estimatedVolume: 50000,
-      source: 'WEB',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create lead: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return {
+      response,
+      parseResult: () => response.json() as Promise<LeadResponse>,
+    };
+  }, 'Failed to create lead');
 }
 
 /**
@@ -265,6 +314,7 @@ export async function convertOpportunityToCustomer(
 
 /**
  * Erstellt einen Customer via API (startet als STANDALONE)
+ * Mit automatischem Retry bei Rate Limit (429)
  */
 export async function createCustomer(
   request: APIRequestContext,
@@ -276,26 +326,25 @@ export async function createCustomer(
     expectedAnnualVolume?: number;
   } = {}
 ): Promise<CustomerResponse> {
-  const response = await request.post(`${API_BASE}/api/customers`, {
-    data: {
-      companyName: `${testPrefix} ${name}`,
-      customerType: 'UNTERNEHMEN',
-      businessType: 'RESTAURANT',
-      status: options.status || 'AKTIV',
-      expectedAnnualVolume: options.expectedAnnualVolume || 500000.0,
-      hierarchyType: options.hierarchyType || 'STANDALONE',
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create customer: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
+  return withRetry(async () => {
+    const response = await request.post(`${API_BASE}/api/customers`, {
+      data: {
+        companyName: `${testPrefix} ${name}`,
+        customerType: 'UNTERNEHMEN',
+        businessType: 'RESTAURANT',
+        status: options.status || 'AKTIV',
+        expectedAnnualVolume: options.expectedAnnualVolume || 500000.0,
+        hierarchyType: options.hierarchyType || 'STANDALONE',
+      },
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return {
+      response,
+      parseResult: () => response.json() as Promise<CustomerResponse>,
+    };
+  }, 'Failed to create customer');
 }
 
 /**
@@ -317,30 +366,31 @@ export async function getCustomer(
 
 /**
  * Aktualisiert einen Customer via API
+ * Mit automatischem Retry bei Rate Limit (429)
  */
 export async function updateCustomer(
   request: APIRequestContext,
   customerId: string,
   data: Record<string, unknown>
 ): Promise<CustomerResponse> {
-  const response = await request.put(`${API_BASE}/api/customers/${customerId}`, {
-    data,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to update customer: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
+  return withRetry(async () => {
+    const response = await request.put(`${API_BASE}/api/customers/${customerId}`, {
+      data,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return {
+      response,
+      parseResult: () => response.json() as Promise<CustomerResponse>,
+    };
+  }, 'Failed to update customer');
 }
 
 /**
  * Erstellt eine Filiale unter einem Headquarter via API
  * Das Erstellen einer Filiale macht den Parent automatisch zum HEADQUARTER
+ * Mit automatischem Retry bei Rate Limit (429)
  */
 export async function createBranch(
   request: APIRequestContext,
@@ -349,34 +399,33 @@ export async function createBranch(
   city: string,
   testPrefix: string
 ): Promise<CustomerResponse> {
-  const response = await request.post(`${API_BASE}/api/customers/${headquarterId}/branches`, {
-    data: {
-      companyName: `${testPrefix} ${name}`,
-      customerType: 'UNTERNEHMEN',
-      businessType: 'RESTAURANT',
-      expectedAnnualVolume: 75000.0,
-      address: {
-        street: 'Teststrasse 1',
-        postalCode: '12345',
-        city: city,
-        country: 'DE',
+  return withRetry(async () => {
+    const response = await request.post(`${API_BASE}/api/customers/${headquarterId}/branches`, {
+      data: {
+        companyName: `${testPrefix} ${name}`,
+        customerType: 'UNTERNEHMEN',
+        businessType: 'RESTAURANT',
+        expectedAnnualVolume: 75000.0,
+        address: {
+          street: 'Teststrasse 1',
+          postalCode: '12345',
+          city: city,
+          country: 'DE',
+        },
+        contact: {
+          phone: '+49 123 456789',
+          email: `${name.toLowerCase().replace(/[^a-z0-9.-]/g, '')}@test.local`,
+        },
       },
-      contact: {
-        phone: '+49 123 456789',
-        email: `${name.toLowerCase().replace(/[^a-z0-9.-]/g, '')}@test.local`,
+      headers: {
+        'Content-Type': 'application/json',
       },
-    },
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to create branch: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
+    });
+    return {
+      response,
+      parseResult: () => response.json() as Promise<CustomerResponse>,
+    };
+  }, 'Failed to create branch');
 }
 
 /**
@@ -402,6 +451,7 @@ export async function getHierarchyMetrics(
 
 /**
  * Fügt einen Ansprechpartner zu einem Customer hinzu via API
+ * Mit automatischem Retry bei Rate Limit (429)
  */
 export async function addContact(
   request: APIRequestContext,
@@ -414,19 +464,18 @@ export async function addContact(
     role?: string;
   }
 ): Promise<ContactResponse> {
-  const response = await request.post(`${API_BASE}/api/customers/${customerId}/contacts`, {
-    data: contact,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  if (!response.ok()) {
-    const body = await response.text();
-    throw new Error(`Failed to add contact: ${response.status()} - ${body}`);
-  }
-
-  return response.json();
+  return withRetry(async () => {
+    const response = await request.post(`${API_BASE}/api/customers/${customerId}/contacts`, {
+      data: contact,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return {
+      response,
+      parseResult: () => response.json() as Promise<ContactResponse>,
+    };
+  }, 'Failed to add contact');
 }
 
 // =============================================================================
