@@ -7,13 +7,18 @@ import './styles/variables-mapping.css'; // Map legacy variables to new FreshPla
 import './styles/animations.css'; // Global animations for highlighting
 import { AppProviders } from './providers.tsx';
 
-// Enable MSW for development if backend is not available
+// Enable MSW for development or CI E2E testing
 async function enableMocking() {
   // Security: MSW must be explicitly enabled via environment variable
   const USE_MSW = import.meta.env.VITE_USE_MSW === 'true';
 
-  // Security: Never use MSW in production
-  if (!import.meta.env.DEV) {
+  // Security: Only enable mocking in development OR explicit E2E mode
+  // - DEV: Local development with `npm run dev`
+  // - VITE_E2E_MODE: CI builds for Stage 2 (UI Smoke Tests with MSW)
+  // In real production, both are false -> MSW code is dead-code-eliminated
+  const shouldEnableMocks = import.meta.env.DEV || import.meta.env.VITE_E2E_MODE === 'true';
+
+  if (!shouldEnableMocks) {
     return;
   }
 
