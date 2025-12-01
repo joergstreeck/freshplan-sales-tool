@@ -103,6 +103,7 @@ export default defineConfig({
   },
   preview: {
     port: 5173, // Gleicher Port wie dev für Konsistenz mit Playwright
+    host: '0.0.0.0', // Listen on all interfaces for CI compatibility
   },
   test: {
     environment: 'jsdom',
