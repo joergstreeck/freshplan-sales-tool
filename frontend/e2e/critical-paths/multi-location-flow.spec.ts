@@ -112,12 +112,43 @@ test.describe('Multi-Location Management - Critical Path', () => {
   });
 
   test('should display headquarter in customer list', async ({ page }) => {
-    // Navigate zu Kundenliste
-    await page.goto('/customers');
-    await page.waitForLoadState('networkidle');
+    // Navigate zu Kundenliste und warte auf API-Response
+    const responsePromise = page.waitForResponse(
+      resp => resp.url().includes('/api/customers') && resp.status() === 200,
+      { timeout: 15000 }
+    );
 
-    // Warte auf Tabelle (expliziter Wait)
+    await page.goto('/customers');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Warte auf die Customers-API Response
+    try {
+      const response = await responsePromise;
+      const data = await response.json();
+      console.log(`[API] /api/customers returned ${data?.content?.length || 0} customers`);
+    } catch (e) {
+      console.log(`[WARN] API response not captured: ${e}`);
+    }
+
+    // Warte kurz auf React-Rendering
+    await page.waitForTimeout(1000);
+
+    // Prüfe ob Tabelle ODER EmptyState sichtbar ist
     const table = page.locator('table').first();
+    const emptyState = page.locator('text=/Noch keine Kunden|No customers/i').first();
+
+    const tableVisible = await table.isVisible({ timeout: 3000 }).catch(() => false);
+    const emptyVisible = await emptyState.isVisible({ timeout: 1000 }).catch(() => false);
+
+    console.log(`[DEBUG] Table visible: ${tableVisible}, EmptyState visible: ${emptyVisible}`);
+
+    if (emptyVisible) {
+      throw new Error(
+        `Customer list is empty! Expected headquarter ${headquarter.companyName} (ID: ${headquarter.id}) to be visible.`
+      );
+    }
+
+    // Tabelle existiert - warte darauf
     await expect(table).toBeVisible({ timeout: 10000 });
 
     // Suche nach unserem Test-Headquarter mit API-Response-Wait
@@ -151,14 +182,29 @@ test.describe('Multi-Location Management - Critical Path', () => {
   });
 
   test('should navigate to headquarter detail and show branch list', async ({ page, request }) => {
-    // Navigate zu Headquarter Detail
-    await page.goto(`/customers/${headquarter.id}`);
-    await page.waitForLoadState('networkidle');
+    // Navigate zu Headquarter Detail und warte auf API-Response
+    const responsePromise = page.waitForResponse(
+      resp => resp.url().includes(`/api/customers/${headquarter.id}`) && resp.status() === 200,
+      { timeout: 15000 }
+    );
 
-    // Warte auf Detail-Seite (harte Assertion)
-    await expect(
-      page.locator('[data-testid="customer-detail"], h1, h2, .MuiCard-root').first()
-    ).toBeVisible({ timeout: 10000 });
+    await page.goto(`/customers/${headquarter.id}`);
+    await page.waitForLoadState('domcontentloaded');
+
+    // Warte auf die Customer-Detail-API Response
+    try {
+      await responsePromise;
+    } catch (e) {
+      console.log(`[WARN] Customer API response not captured: ${e}`);
+    }
+
+    // Warte kurz auf React-Rendering
+    await page.waitForTimeout(1000);
+
+    // Warte auf Detail-Seite - Paper/Card Container oder Breadcrumbs
+    await expect(page.locator('.MuiPaper-root, .MuiBreadcrumbs-root, h4').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Verify URL contains headquarter ID
     expect(page.url()).toContain(headquarter.id);

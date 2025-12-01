@@ -121,12 +121,46 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
   });
 
   test('should display customer in customer list', async ({ page }) => {
-    // Navigate zu Kundenliste
-    await page.goto('/customers');
-    await page.waitForLoadState('networkidle');
+    // Navigate zu Kundenliste und warte auf API-Response
+    const responsePromise = page.waitForResponse(
+      resp => resp.url().includes('/api/customers') && resp.status() === 200,
+      { timeout: 15000 }
+    );
 
-    // Warte auf Tabelle (expliziter Wait)
+    await page.goto('/customers');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Warte auf die Customers-API Response
+    try {
+      const response = await responsePromise;
+      const data = await response.json();
+      console.log(`[API] /api/customers returned ${data?.content?.length || 0} customers`);
+    } catch (e) {
+      console.log(`[WARN] API response not captured: ${e}`);
+    }
+
+    // Warte kurz auf React-Rendering
+    await page.waitForTimeout(1000);
+
+    // Prüfe ob Tabelle ODER EmptyState sichtbar ist
     const table = page.locator('table').first();
+    const emptyState = page.locator('text=/Noch keine Kunden|No customers/i').first();
+
+    const tableVisible = await table.isVisible({ timeout: 3000 }).catch(() => false);
+    const emptyVisible = await emptyState.isVisible({ timeout: 1000 }).catch(() => false);
+
+    console.log(`[DEBUG] Table visible: ${tableVisible}, EmptyState visible: ${emptyVisible}`);
+
+    if (emptyVisible) {
+      // Kein Table - das bedeutet API hat leere Daten zurückgegeben
+      // In diesem Fall muss der Test fehlschlagen mit klarer Meldung
+      throw new Error(
+        `Customer list is empty! Expected customer ${customer.companyName} (ID: ${customer.id}) to be visible. ` +
+          `This indicates the API either returned empty data or the customer was not created properly.`
+      );
+    }
+
+    // Tabelle existiert - warte darauf
     await expect(table).toBeVisible({ timeout: 10000 });
 
     // Suche nach unserem Test-Kunden mit API-Response-Wait
@@ -143,14 +177,30 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
   });
 
   test('should navigate to customer detail page', async ({ page }) => {
-    // Navigate direkt zur Customer Detail Seite
-    await page.goto(`/customers/${customer.id}`);
-    await page.waitForLoadState('networkidle');
+    // Navigate direkt zur Customer Detail Seite und warte auf API-Response
+    const responsePromise = page.waitForResponse(
+      resp => resp.url().includes(`/api/customers/${customer.id}`) && resp.status() === 200,
+      { timeout: 15000 }
+    );
 
-    // Warte auf Detail-Seite - mindestens eines dieser Elemente MUSS sichtbar sein (harte Assertion)
-    await expect(
-      page.locator('[data-testid="customer-detail"], h1, h2, .MuiCard-root').first()
-    ).toBeVisible({ timeout: 10000 });
+    await page.goto(`/customers/${customer.id}`);
+    await page.waitForLoadState('domcontentloaded');
+
+    // Warte auf die Customer-Detail-API Response
+    try {
+      const response = await responsePromise;
+      const data = await response.json();
+      console.log(`[API] Customer detail returned: ${data?.companyName || 'N/A'}`);
+    } catch (e) {
+      console.log(`[WARN] API response not captured: ${e}`);
+    }
+
+    // Warte kurz auf React-Rendering
+    await page.waitForTimeout(1000);
+
+    // Warte auf Detail-Seite - Paper/Card Container oder Breadcrumbs MÜSSEN sichtbar sein
+    const pageContent = page.locator('.MuiPaper-root, .MuiBreadcrumbs-root, h4').first();
+    await expect(pageContent).toBeVisible({ timeout: 10000 });
 
     // Verify URL contains customer ID (harte Assertion)
     expect(page.url()).toContain(customer.id);
@@ -164,20 +214,35 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
   });
 
   test('should show contacts on customer detail page', async ({ page }) => {
-    // Navigate zur Customer Detail Seite
-    await page.goto(`/customers/${customer.id}`);
-    await page.waitForLoadState('networkidle');
+    // Navigate zur Customer Detail Seite und warte auf API-Response
+    const responsePromise = page.waitForResponse(
+      resp => resp.url().includes(`/api/customers/${customer.id}`) && resp.status() === 200,
+      { timeout: 15000 }
+    );
 
-    // Warte auf Seite (harte Assertion)
-    await expect(
-      page.locator('[data-testid="customer-detail"], .MuiCard-root, h1').first()
-    ).toBeVisible({ timeout: 10000 });
+    await page.goto(`/customers/${customer.id}`);
+    await page.waitForLoadState('domcontentloaded');
+
+    // Warte auf die Customer-Detail-API Response
+    try {
+      await responsePromise;
+    } catch (e) {
+      console.log(`[WARN] Customer API response not captured: ${e}`);
+    }
+
+    // Warte kurz auf React-Rendering
+    await page.waitForTimeout(1000);
+
+    // Warte auf Seite (Paper oder Breadcrumbs)
+    await expect(page.locator('.MuiPaper-root, .MuiBreadcrumbs-root').first()).toBeVisible({
+      timeout: 10000,
+    });
 
     // Suche nach Contacts-Tab oder -Bereich und klicke wenn vorhanden
     const contactsSection = page.locator('text=/Ansprechpartner|Kontakt|Contact/i').first();
     if (await contactsSection.isVisible({ timeout: 2000 }).catch(() => false)) {
       await contactsSection.click();
-      await page.waitForLoadState('networkidle');
+      await page.waitForTimeout(500);
     }
 
     // Verify: Mindestens einer der Contacts MUSS sichtbar sein (harte Assertion mit .or())
