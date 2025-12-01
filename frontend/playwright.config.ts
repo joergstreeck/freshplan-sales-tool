@@ -39,7 +39,7 @@ export default defineConfig({
       ? 'npx serve dist -l 5173 --no-request-logging -s' // -s flag for SPA routing
       : 'npm run dev',
     port: 5173,
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: true, // Always reuse if server is already running (e2e-critical-paths workflow starts preview manually)
     timeout: 120 * 1000, // 2 minutes timeout for CI
     stdout: 'ignore',
     stderr: 'pipe',
