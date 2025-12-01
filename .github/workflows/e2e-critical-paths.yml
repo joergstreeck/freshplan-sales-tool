@@ -85,7 +85,11 @@ jobs:
           cd frontend
           echo "🔨 Building frontend for Critical Path E2E tests..."
           # Production build WITHOUT MSW (real backend only)
-          VITE_API_URL=http://localhost:8080 npm run build
+          # VITE_E2E_MODE + VITE_AUTH_BYPASS disable Keycloak auth for E2E tests
+          VITE_API_URL=http://localhost:8080 \
+          VITE_E2E_MODE=true \
+          VITE_AUTH_BYPASS=true \
+          npm run build
           echo "✅ Build completed"
           ls -la dist/
 

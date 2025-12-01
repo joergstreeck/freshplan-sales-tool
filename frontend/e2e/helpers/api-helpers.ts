@@ -455,7 +455,7 @@ export async function getHierarchyMetrics(
   request: APIRequestContext,
   customerId: string
 ): Promise<HierarchyMetricsResponse> {
-  const response = await request.get(`${API_BASE}/api/customers/${customerId}/hierarchy-metrics`);
+  const response = await request.get(`${API_BASE}/api/customers/${customerId}/hierarchy/metrics`);
 
   if (!response.ok()) {
     const body = await response.text();
