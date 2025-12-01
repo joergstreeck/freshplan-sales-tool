@@ -238,12 +238,13 @@ jobs:
         run: |
           cd frontend
           # Start preview server in background
+          # Port 5173 is configured in vite.config.ts preview.port
           npm run preview > frontend.log 2>&1 &
           # Wait for it to be ready
-          echo "Waiting for frontend preview server..."
+          echo "Waiting for frontend preview server on port 5173..."
           for i in {1..20}; do
-            if curl -f http://localhost:4173 2>/dev/null; then
-              echo "Frontend is ready!"
+            if curl -f http://localhost:5173 2>/dev/null; then
+              echo "Frontend is ready on port 5173!"
               break
             fi
             echo "Attempt $i/20 - Frontend not ready yet..."
@@ -298,7 +299,7 @@ jobs:
           echo "=== Check if processes are running ==="
           ps aux | grep -E 'quarkus|vite|node' || true
           echo "=== Check ports ==="
-          netstat -tlnp 2>/dev/null | grep -E '8080|4173|5173' || true
+          netstat -tlnp 2>/dev/null | grep -E '8080|5173' || true
 
       - name: Cleanup processes
         if: always()
