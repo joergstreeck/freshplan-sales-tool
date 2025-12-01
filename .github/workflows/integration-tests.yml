@@ -170,15 +170,19 @@ jobs:
 
       - name: Start Backend (background)
         run: |
-          # Use CI profile for stable configuration
-          export QUARKUS_PROFILE=ci
+          # Use dev profile for permit-all API access (same as e2e-critical-paths)
+          export QUARKUS_PROFILE=dev
 
           # First ensure it's compiled
           ./mvnw -B compile
 
-          # Start backend with CI profile
+          # Start backend with dev profile (permit-all enabled)
           ./mvnw -B quarkus:dev \
             -Dquarkus.http.host=0.0.0.0 \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.devservices.enabled=false \
             > backend.log 2>&1 &
 
           # Store PID
@@ -202,11 +206,10 @@ jobs:
         working-directory: ./backend
         shell: bash
         env:
-          QUARKUS_PROFILE: ci
+          QUARKUS_PROFILE: dev
           KEYCLOAK_CLIENT_SECRET: secret
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/freshplan
           QUARKUS_OIDC_ENABLED: false
-          QUARKUS_SECURITY_USERS_EMBEDDED_ENABLED: true
 
       - name: Wait for Backend
         run: |
