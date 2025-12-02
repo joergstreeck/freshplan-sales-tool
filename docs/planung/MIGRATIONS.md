@@ -639,9 +639,15 @@ DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVA
 
 ---
 
-**Letzte Aktualisierung:** 2025-10-31 23:30 (V10031-V10042 + V90006-V90012 dokumentiert - Sprint 2.1.7.2 + 2.1.7.4 COMPLETE)
+**Letzte Aktualisierung:** 2025-12-01 17:00 (V10048-V10049 dokumentiert - Sprint 2.1.7.7 E2E Tests COMPLETE)
 
-**Nächste Migration:** V10043+ (ermitteln via `./scripts/get-next-migration.sh`)
+**Neue Migrationen (Sprint 2.1.7.7 E2E Tests - PR #149):**
+| Version | Beschreibung | Sprint | Status |
+|---------|--------------|--------|--------|
+| V10048 | fix_leads_registered_at_timezone_constraint | 2.1.7.7 | ✅ Merged |
+| V10049 | fix_timezone_constraint_proper_solution | 2.1.7.7 | ✅ Merged |
 
-**Aktuelle Sprint:** Sprint 2.1.7.7 (Multi-Location Management - NEXT)
-**Letzter Merge:** PR #144 - Sprint 2.1.7.2 Customer-Management + Xentral-Integration (31.10.2025)
+**Nächste Migration:** V10050+ (ermitteln via `./scripts/get-next-migration.sh`)
+
+**Aktuelle Sprint:** Sprint 2.1.8 (NEXT)
+**Letzter Merge:** PR #149 - Sprint 2.1.7.7 E2E Critical Path Tests (01.12.2025)

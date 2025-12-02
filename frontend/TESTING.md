@@ -22,28 +22,32 @@ npm run test:ci
 ## 🎯 Vitest UI (Beste Developer Experience)
 
 **Start:**
+
 ```bash
 npm run test:ui
 ```
 
 **Features:**
+
 - 🔥 Live-Updates beim Code-Ändern
 - 📊 Coverage-Heatmaps direkt im Code
 - 🔍 Filtert Tests nach Name/File/Status
 - 🐛 Zeigt Failures übersichtlich mit Stack Traces
 - ⚡ Re-run einzelner Tests mit einem Klick
 
-**Browser öffnet sich automatisch:** http://localhost:51204/__vitest__/
+**Browser öffnet sich automatisch:** http://localhost:51204/**vitest**/
 
 ## 📊 Coverage-Report
 
 **HTML-Report generieren:**
+
 ```bash
 npm run test:coverage
 open coverage/index.html
 ```
 
 **Was zeigt der Report?**
+
 - ✅ Grün: Zeilen sind getestet
 - 🟡 Gelb: Branches teilweise getestet
 - 🔴 Rot: Zeilen/Branches nicht getestet
@@ -189,6 +193,7 @@ npm test -- --reporter=verbose
 ### Debug in VS Code
 
 `.vscode/launch.json`:
+
 ```json
 {
   "type": "node",
@@ -213,6 +218,7 @@ npm test -- --reporter=verbose
 ## 🔧 Troubleshooting
 
 **Test timeout:**
+
 ```typescript
 it('slow test', async () => {
   // ...
@@ -220,6 +226,7 @@ it('slow test', async () => {
 ```
 
 **Portal/Dialog not found:**
+
 ```typescript
 import { waitFor } from '@testing-library/react';
 
@@ -229,6 +236,7 @@ await waitFor(() => {
 ```
 
 **Act() warnings:**
+
 ```typescript
 import { act } from '@testing-library/react';
 
@@ -237,11 +245,70 @@ await act(async () => {
 });
 ```
 
+## 🎭 E2E Critical Path Tests (Playwright)
+
+### Übersicht
+
+E2E Critical Path Tests laufen gegen ein **echtes Backend** (kein Mock) und validieren die wichtigsten Business Flows.
+
+**Verzeichnis:** `frontend/e2e/critical-paths/`
+
+### Verfügbare Test-Flows
+
+| Test                               | Beschreibung                                                  |
+| ---------------------------------- | ------------------------------------------------------------- |
+| `customer-onboarding-flow.spec.ts` | Customer erstellen, Contacts hinzufügen, Status aktualisieren |
+| `lead-conversion-flow.spec.ts`     | Lead → Opportunity → Customer Konvertierung                   |
+| `multi-location-flow.spec.ts`      | HEADQUARTER + Filialen Management, HierarchyMetrics           |
+| `validation-flow.spec.ts`          | Backend Validierungen (Pflichtfelder, Formate)                |
+
+### Ausführung
+
+```bash
+# Lokal (gegen laufendes Backend auf localhost:8080)
+cd frontend
+VITE_API_URL=http://localhost:8080 npx playwright test e2e/critical-paths/
+
+# In CI (e2e-critical-paths.yml)
+# Backend wird automatisch gestartet mit QUARKUS_PROFILE=dev
+```
+
+### Test-Prinzipien
+
+1. **Pure API-Tests** - Keine Browser-Interaktionen (keine `page.goto()`)
+2. **Self-Contained** - Jeder Test erstellt seine Daten via `beforeAll`
+3. **UUID-Isolation** - Unique Prefixes (`E2E-CO-`, `E2E-LC-`, `E2E-ML-`) verhindern Kollisionen
+4. **Echtes Backend** - Keine Mocks, echte Datenbank-Interaktionen
+
+### API-Helfer
+
+Gemeinsame Funktionen in `e2e/helpers/api-helpers.ts`:
+
+```typescript
+import {
+  createCustomer,
+  createLead,
+  createBranch,
+  convertLeadToOpportunity,
+  generateTestPrefix,
+} from '../helpers/api-helpers';
+
+// Beispiel
+const customer = await createCustomer(request, 'Test GmbH', TEST_PREFIX);
+```
+
+### CI Pipeline
+
+- **Workflow:** `.github/workflows/e2e-critical-paths.yml`
+- **Trigger:** Push auf `main`, `develop` oder PRs
+- **Umgebung:** PostgreSQL + Quarkus Backend + Frontend Preview Server
+
 ## 📚 Docs & Resources
 
 - **Vitest:** https://vitest.dev
 - **Testing Library:** https://testing-library.com/react
 - **User Event:** https://testing-library.com/docs/user-event/intro
+- **Playwright:** https://playwright.dev
 - **Codecov Setup:** [../docs/CODECOV_SETUP.md](../docs/CODECOV_SETUP.md)
 
 ---

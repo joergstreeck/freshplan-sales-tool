@@ -305,6 +305,24 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Merge Commit:** 1eeb43b6a
    - Status: ✅ COMPLETE - MERGED TO MAIN (28.11.2025)
 
+✅ SPRINT 2.1.7.7 E2E Tests - E2E Critical Path Tests (01.12.2025) - **PR #149 MERGED**
+   - **SCOPE:** E2E Critical Path Tests gegen echtes Backend (Pure API-Tests)
+   - **4 Neue E2E Test-Flows:**
+     - **customer-onboarding-flow.spec.ts** - Customer Onboarding Flow
+     - **lead-conversion-flow.spec.ts** - Lead → Opportunity → Customer Flow
+     - **multi-location-flow.spec.ts** - Multi-Location/Filialen Management
+     - **validation-flow.spec.ts** - Backend Validierungen
+   - **api-helpers.ts** - Gemeinsame API-Helfer (~556 LOC)
+   - **Neue CI Pipeline:** e2e-critical-paths.yml (gegen echtes Backend)
+   - **Backend-Fixes:**
+     - V10048, V10049 - Timezone-Constraint Migration für Leads
+     - XentralApiServiceGracefulDegradationTest (~343 LOC)
+   - **Konfiguration:**
+     - vite.config.ts - Preview host auf 0.0.0.0 für CI
+     - integration-tests.yml - QUARKUS_PROFILE=dev für permit-all
+   - **PR #149:** https://github.com/joergstreeck/freshplan-sales-tool/pull/149
+   - Status: ✅ COMPLETE - MERGED TO MAIN (01.12.2025)
+
 📋 TRIGGER_SPRINT_2_1_7_5.md - Advanced Filters & Analytics (⚠️ DEFERRED - 16.10.2025)
    - **SCOPE:** Erweiterte Filter + Pipeline-Analytics (FÜR SPÄTER!)
    - **Phase 1:** High-Value Filter (minValue), Urgent Filter (maxCloseDate)
