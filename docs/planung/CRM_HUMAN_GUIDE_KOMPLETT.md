@@ -1,9 +1,9 @@
 # 👥 FreshPlan Sales Tool - Vollständiger System-Guide
 
-**📅 Letzte Aktualisierung:** 2025-11-28
+**📅 Letzte Aktualisierung:** 2025-12-01
 **🎯 Zielgruppe:** Entwickler, Sales Team, Manager, Admins
 **📊 Lesezeit:** ~25 Minuten (komplett) | ~10 Minuten (Quick Start)
-**🏷️ Aktueller Stand:** Sprint 2.1.7.7 - Multi-Location Management COMPLETE
+**🏷️ Aktueller Stand:** E2E Tests Sprint - Critical Path Validation COMPLETE (PR #149)
 
 ---
 
@@ -911,8 +911,11 @@ cd backend && ./mvnw test
 # Frontend Tests
 cd frontend && npm run test
 
-# E2E Tests
+# E2E Tests (Standard Playwright)
 cd frontend && npm run test:e2e
+
+# E2E Critical Path Tests (gegen echtes Backend - Pure API)
+cd frontend && VITE_API_URL=http://localhost:8080 npx playwright test e2e/critical-paths/
 ```
 
 ### Code-Qualität
@@ -947,7 +950,7 @@ cd frontend && npm run build
 
 | Sequenz | Bereich | Beispiel |
 |---------|---------|----------|
-| V10xxx | Production Migrations | V10047__contact_multi_location.sql |
+| V10xxx | Production Migrations | V10049__fix_timestamps_timezone_utc.sql |
 | V90xxx | DEV-SEED Data | V90016__fix_decision_levels.sql |
 
 ### Neue Migration erstellen
@@ -1040,7 +1043,8 @@ ALTER TABLE customers ADD COLUMN hierarchy_type VARCHAR(30)
 
 - **Backend:** 2400+ Tests GREEN
 - **Frontend:** Tests GREEN
-- **CI:** Performance-optimiert (JUnit parallel)
+- **E2E Critical Paths:** 28/28 Tests GREEN (Pure API-Tests gegen echtes Backend)
+- **CI:** Performance-optimiert (JUnit parallel), alle 8 Pipelines GREEN
 
 ---
 
@@ -1534,6 +1538,7 @@ Ein optimierter 90-Minuten-Block:
 
 | Sprint | Datum | PR | Inhalt |
 |--------|-------|-----|--------|
+| **E2E Tests** | 01.12.2025 | [#149](https://github.com/joergstreeck/freshplan-sales-tool/pull/149) | E2E Critical Path Validation + Timezone Fix |
 | **2.1.7.7** | 28.11.2025 | [#145](https://github.com/joergstreeck/freshplan-sales-tool/pull/145) | Multi-Location Management + Server-Driven Architecture |
 | **2.1.7.4** | 22.10.2025 | [#143](https://github.com/joergstreeck/freshplan-sales-tool/pull/143) | CustomerStatus Architecture + Seasonal Business |
 | **2.1.7.3** | 19.10.2025 | - | Business-Type-Matrix + OpportunitySettingsPage |
