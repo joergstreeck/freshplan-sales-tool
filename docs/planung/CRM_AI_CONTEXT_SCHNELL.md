@@ -3,7 +3,7 @@
 ```
 KONTEXT-TYP: System-Dokumentation für KI-Agenten
 PROJEKT: FreshFoodz B2B-Food-CRM (internes Vertriebstool)
-STAND: 2025-11-28
+STAND: 2025-12-01
 TOKENS: ~12.000 (komplett) | ~3.000 (Quick Start bis COMMON PITFALLS)
 ```
 
@@ -63,6 +63,7 @@ TOKENS: ~12.000 (komplett) | ~3.000 (Quick Start bis COMMON PITFALLS)
 - **COMPLETE:** Sprint 2.1.7.2 (Customer-Management + Xentral-Integration) ✅
 - **COMPLETE:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle) ✅
 - **COMPLETE:** Sprint 2.1.7.7 (Multi-Location Management + Server-Driven Architecture) ✅ PR #145 MERGED
+- **COMPLETE:** E2E Tests Sprint (E2E Critical Path Validation + Timezone Fix) ✅ PR #149 MERGED
 - **NÄCHSTER:** Sprint 2.1.7.5 (Advanced Filters & Analytics) oder Sprint 2.1.8 (Team Management)
 
 ---
@@ -112,7 +113,10 @@ cd frontend && npm install && npm run dev
 # Tests
 cd backend && ./mvnw test           # Backend
 cd frontend && npm run test         # Frontend
-cd frontend && npm run test:e2e     # E2E
+cd frontend && npm run test:e2e     # E2E (Standard Playwright)
+
+# E2E Critical Path Tests (gegen echtes Backend)
+cd frontend && VITE_API_URL=http://localhost:8080 npx playwright test e2e/critical-paths/
 ```
 
 ### Haupt-API-Endpoints
@@ -226,7 +230,7 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 ---
 
 <a id="system-status"></a>
-## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-11-28)
+## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-12-01)
 
 ### 🏗️ Architecture Flags (Production-Ready Features)
 
@@ -269,10 +273,10 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 
 **CURRENT STATUS:**
 - 📊 **Tests:** Backend 2400+ Tests GREEN, Frontend Tests GREEN
-- 📦 **Migrations:** Production V10047 (Latest: contact_multi_location_assignment), ~47 Migrations V10xxx → **Details:** `/docs/planung/MIGRATIONS.md`
+- 📦 **Migrations:** Production V10049 (Latest: fix_timestamps_timezone_utc), ~49 Migrations V10xxx → **Details:** `/docs/planung/MIGRATIONS.md`
 - 🚀 **Backend:** Multi-Location BranchService + HierarchyMetrics operational ✅, Server-Driven UI ✅
 - 🚀 **Frontend:** HierarchyDashboard + CreateBranchDialog operational ✅
-- 📋 **Latest:** Sprint 2.1.7.7 MERGED (28.11.2025) - PR #145 - Multi-Location Management + Server-Driven Architecture
+- 📋 **Latest:** E2E Tests Sprint MERGED (01.12.2025) - PR #149 - E2E Critical Path Validation + Timezone Fix
 
 ---
 
@@ -817,6 +821,7 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
   - `hierarchy_type` VARCHAR(30): STANDALONE | HEADQUARTER | FILIALE | ABTEILUNG | FRANCHISE
   - Index auf parent_customer_id für effiziente Child-Abfragen
 - **Supporting Migrations:** V10034 (fix seasonal_months to JSONB), V10035 (Xentral Integration Fields), V10036 (Customer Churn Threshold)
+- **Timezone Fix (E2E Tests Sprint):** V10048 (ensure_timestamps_utc function), V10049 (apply UTC fix to all tables)
 
 **Enum Pattern (Architektur-Entscheidung):**
 - **Pattern:** `VARCHAR(30) + CHECK CONSTRAINT` (NIEMALS PostgreSQL ENUM Type!)
@@ -958,6 +963,12 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 - Contract-Testing: OpenAPI-Schema-Validation für API-Compatibility
 - Performance-Testing: k6-Load-Tests für P95-Targets + Scalability
 
+**E2E Critical Path Tests (Pure API):**
+- **Verzeichnis:** `frontend/e2e/critical-paths/`
+- **4 Test-Flows:** customer-onboarding, lead-conversion, multi-location, validation
+- **Prinzipien:** Pure API-Tests (keine Browser), Self-Contained, UUID-Isolation
+- **CI Pipeline:** `.github/workflows/e2e-critical-paths.yml` - Echtes Backend (QUARKUS_PROFILE=dev)
+
 **Current Test Status:** → Siehe SEKTION 6: CODEBASE-REALITY für aktuelle Zahlen (2400+ Backend Tests)
 
 **Performance-Optimization:**
@@ -978,9 +989,14 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 <a id="sektion-6-codebase-reality"></a>
 ## 📦 SEKTION 6: CODEBASE-REALITY
 
-### 📊 Latest Implementation (Stand: 2025-11-28)
+### 📊 Latest Implementation (Stand: 2025-12-01)
 
 **Completed Sprints:**
+- ✅ **E2E Tests Sprint** (01.12.2025): E2E Critical Path Validation + Timezone Fix (PR #149 MERGED)
+  - 4 E2E Critical Path Test-Flows: customer-onboarding, lead-conversion, multi-location, validation
+  - Pure API-Tests (keine Browser-Interaktionen) für CI-Stabilität
+  - Timezone-Fix: V10048 + V10049 für UTC-konsistente Timestamps
+  - Shared API-Helpers in `e2e/helpers/api-helpers.ts`
 - ✅ **Sprint 2.1.7.7** (28.11.2025): Multi-Location Management + Server-Driven Architecture (PR #145 MERGED)
   - Multi-Location/Filialen Management: Parent-Child Hierarchie mit HierarchyType Enum (5 Werte)
   - Server-Driven UI: fieldCatalog.json ENTFERNT, Backend als Single Source of Truth
@@ -1001,7 +1017,9 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 **Test Status:**
 - Backend: 2400+ Tests GREEN ✅ - Multi-Location, Server-Driven UI, Xentral-Integration operational
 - Frontend: Tests GREEN ✅ - HierarchyDashboard, CreateBranchDialog Tests, ESLint passed
+- E2E Critical Paths: 28/28 Tests GREEN ✅ - Pure API-Tests gegen echtes Backend
 - CI: Performance optimiert (JUnit parallel, ValidatorFactory optimization)
+- All 8 CI Pipelines GREEN: E2E Critical Paths, Quality Gates, Accessibility, PR Fast Check, Security, Frontend, Integration, Backend
 
 ### 🎖️ Modul-Status-Matrix (Implementierungs-Stand)
 
