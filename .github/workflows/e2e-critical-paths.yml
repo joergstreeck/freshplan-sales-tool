@@ -1,0 +1,242 @@
+name: E2E Critical Paths (Real Backend)
+
+# Stage 3 der 3-Stage Pipeline
+# Sprint 2.1.7.7 - Issue #149
+#
+# Testet kritische Business-Flows gegen echtes Backend:
+# - Multi-Location Management (HierarchyMetrics)
+# - Customer Onboarding (vollständiger Flow)
+# - Lead Conversion (mit Business-Logik)
+#
+# Self-Contained Tests:
+# - Jeder Test erstellt seine eigenen Daten via API
+# - UUIDs garantieren Isolation
+# - Container-Lifecycle übernimmt Cleanup
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/src/main/**'
+      - 'frontend/src/features/**'
+      - 'frontend/e2e/critical-paths/**'
+      - '.github/workflows/e2e-critical-paths.yml'
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
+concurrency:
+  group: e2e-critical-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # E2E Critical Paths - Real Backend Integration Tests
+  # ============================================================================
+  e2e-critical-paths:
+    name: E2E Critical Paths (Real Backend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: freshplan
+          POSTGRES_USER: freshplan
+          POSTGRES_PASSWORD: freshplan
+        options: >-
+          --health-cmd="pg_isready -U freshplan -d freshplan"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Install frontend dependencies
+        run: cd frontend && npm ci
+
+      - name: Build frontend (production mode, no MSW)
+        run: |
+          cd frontend
+          echo "🔨 Building frontend for Critical Path E2E tests..."
+          # Production build WITHOUT MSW (real backend only)
+          # VITE_E2E_MODE + VITE_AUTH_BYPASS disable Keycloak auth for E2E tests
+          VITE_API_URL=http://localhost:8080 \
+          VITE_E2E_MODE=true \
+          VITE_AUTH_BYPASS=true \
+          npm run build
+          echo "✅ Build completed"
+          ls -la dist/
+
+      - name: Install Playwright (chromium only)
+        run: cd frontend && npx playwright install --with-deps chromium
+
+      - name: Compile Backend
+        run: |
+          cd backend
+          echo "🔨 Compiling backend..."
+          ./mvnw -B compile -DskipTests -q
+          echo "✅ Backend compiled"
+        env:
+          MAVEN_OPTS: -Xmx1024m
+
+      - name: Start Backend (quarkus:dev with permit-all)
+        run: |
+          cd backend
+          echo "🚀 Starting backend with quarkus:dev..."
+
+          # Start backend with dev profile (permit-all enabled)
+          ./mvnw -B quarkus:dev \
+            -Dquarkus.http.host=0.0.0.0 \
+            -Dquarkus.http.port=8080 \
+            -Dquarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/freshplan \
+            -Dquarkus.datasource.username=freshplan \
+            -Dquarkus.datasource.password=freshplan \
+            -Dquarkus.devservices.enabled=false \
+            > backend.log 2>&1 &
+
+          BACKEND_PID=$!
+          echo "Backend PID: $BACKEND_PID"
+
+          # Wait for backend to be ready
+          echo "⏳ Waiting for backend health check..."
+          for i in {1..60}; do
+            if curl -sf http://localhost:8080/q/health/ready > /dev/null 2>&1; then
+              echo "✅ Backend is ready!"
+              break
+            fi
+            if [ $i -eq 60 ]; then
+              echo "❌ Backend failed to start"
+              cat backend.log | tail -100
+              exit 1
+            fi
+            echo "  Attempt $i/60..."
+            sleep 2
+          done
+        shell: bash
+        env:
+          QUARKUS_PROFILE: dev
+
+      - name: Start Frontend Preview Server
+        run: |
+          cd frontend
+          echo "🚀 Starting frontend preview server..."
+          # Port 5173 ist in vite.config.ts konfiguriert (gleich wie dev)
+          npm run preview > frontend.log 2>&1 &
+
+          # Wait for frontend
+          for i in {1..20}; do
+            if curl -sf http://localhost:5173 > /dev/null 2>&1; then
+              echo "✅ Frontend is ready on port 5173!"
+              break
+            fi
+            echo "  Attempt $i/20..."
+            sleep 2
+          done
+
+      - name: Verify Backend API is accessible
+        run: |
+          echo "🔍 Verifying backend API..."
+
+          # Check health endpoint
+          curl -sf http://localhost:8080/q/health/ready || {
+            echo "❌ Health check failed"
+            exit 1
+          }
+
+          # Check customers endpoint (should return empty array or data)
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/customers)
+          echo "Customers endpoint: HTTP $HTTP_CODE"
+
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "⚠️ Customers endpoint returned $HTTP_CODE (expected 200)"
+            echo "This might be okay if auth is required - tests will handle it"
+          fi
+
+          echo "✅ Backend API is accessible"
+
+      - name: Run Critical Path E2E Tests
+        run: |
+          cd frontend
+          echo "🎭 Running Critical Path E2E tests..."
+          echo "⚠️ Running with --workers=1 to avoid rate limiting (429)"
+
+          # Run only critical-paths tests against real backend
+          # WICHTIG: workers=1 verhindert Rate Limiting durch parallele Requests
+          npx playwright test \
+            --config=playwright.config.ts \
+            --project=chromium \
+            --reporter=list \
+            --workers=1 \
+            --timeout=60000 \
+            e2e/critical-paths/
+        env:
+          CI: true
+          VITE_API_URL: http://localhost:8080
+          # No VITE_E2E_MODE - real backend only!
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-critical-paths-report
+          path: |
+            frontend/playwright-report/
+            frontend/test-results/
+          retention-days: 7
+
+      - name: Upload logs on failure
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: e2e-critical-paths-logs
+          path: |
+            backend/backend.log
+            frontend/frontend.log
+          retention-days: 7
+
+      - name: Debug on failure
+        if: failure()
+        run: |
+          echo "=== Backend logs ==="
+          cat backend/backend.log | tail -100 || true
+          echo ""
+          echo "=== Frontend logs ==="
+          cat frontend/frontend.log | tail -50 || true
+          echo ""
+          echo "=== Process status ==="
+          ps aux | grep -E 'quarkus|node|vite' || true
+          echo ""
+          echo "=== Port status ==="
+          netstat -tlnp 2>/dev/null | grep -E '8080|5173' || true
+
+      - name: Cleanup
+        if: always()
+        run: |
+          pkill -f quarkus:dev || true
+          pkill -f "npm run preview" || true

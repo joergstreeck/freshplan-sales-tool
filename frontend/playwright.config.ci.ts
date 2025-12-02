@@ -8,7 +8,7 @@ export default defineConfig({
   workers: 1,
   reporter: 'html',
   use: {
-    baseURL: 'http://localhost:4173', // Vite preview server port (used in CI)
+    baseURL: 'http://localhost:5173', // Vite preview server port (configured in vite.config.ts)
     trace: 'on-first-retry',
     // Add browser context options to handle storage issues
     contextOptions: {

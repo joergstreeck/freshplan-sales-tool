@@ -502,12 +502,27 @@ public class CustomerMapper {
   /**
    * Update parent customer relationship from request.
    *
+   * <p>Handles three cases:
+   *
+   * <ul>
+   *   <li>parentCustomerId is null: Only update hierarchyType if provided (e.g., STANDALONE ->
+   *       HEADQUARTER)
+   *   <li>parentCustomerId is blank: Remove parent and set to STANDALONE
+   *   <li>parentCustomerId is valid UUID: Set parent and update hierarchyType
+   * </ul>
+   *
    * @param customer the customer to update
    * @param request the update request
+   * @throws CustomerMapperException if parent not found, circular reference, or invalid UUID format
    */
   private void updateParentCustomer(Customer customer, UpdateCustomerRequest request) {
+    // If parentCustomerId is not provided, we can only update the hierarchyType.
     if (request.parentCustomerId() == null) {
-      return;
+      if (request.hierarchyType() != null) {
+        // This enables changing STANDALONE -> HEADQUARTER via API without a parent.
+        customer.setHierarchyType(request.hierarchyType());
+      }
+      return; // No parent to process.
     }
 
     if (request.parentCustomerId().isBlank()) {
