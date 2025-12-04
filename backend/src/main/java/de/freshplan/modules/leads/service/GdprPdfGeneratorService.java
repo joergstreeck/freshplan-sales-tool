@@ -264,6 +264,8 @@ public class GdprPdfGeneratorService {
     document.add(table);
   }
 
+  @SuppressWarnings(
+      "PMD.NPathComplexity") // PDF-Generierung erfordert viele Null-Checks für optionale Felder
   private void addProtectionSection(Document document, Lead lead) throws DocumentException {
     addSectionHeader(document, "5. Schutz-Status & Verarbeitung");
 

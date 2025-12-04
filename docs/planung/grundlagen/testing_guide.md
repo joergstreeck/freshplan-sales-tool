@@ -1,7 +1,7 @@
 # Testing Guide - FreshPlan Sales Tool
 
-**Stand:** 2025-10-14
-**Sprint:** Track 2C - Advanced Test Infrastructure
+**Stand:** 2025-12-04
+**Sprint:** Sprint 2.1.8 - DSGVO Compliance
 **Speicherort:** `docs/planung/grundlagen/testing_guide.md`
 
 > **💡 Hinweis:** Für Coverage-Tools, CI/CD Setup & Monitoring siehe: `TESTING_INFRASTRUCTURE.md`
@@ -11,10 +11,12 @@
 ## 📑 Inhaltsverzeichnis
 
 - [🎯 Wichtigster Grundsatz](#-wichtigster-grundsatz-tests-sind-kein-selbstzweck)
+- [🐳 3-Stage CI Pipeline](#-3-stage-ci-pipeline) ⭐ NEU!
+- [🔬 E2E-Tests gegen echte Datenbank](#-e2e-tests-gegen-echte-datenbank) ⭐ NEU!
 - [📊 Test-Strategie](#-test-strategie-was-soll-getestet-werden)
 - [🔍 Test-Gap-Analyse](#-test-gap-analyse-warum-fanden-tests-bugs-nicht)
 - [🛠️ Test-Typen im Detail](#️-test-typen-im-detail)
-- [🏭 TestDataFactory Pattern](#-testdatafactory-pattern) ⭐ NEU!
+- [🏭 TestDataFactory Pattern](#-testdatafactory-pattern)
 - [🌱 DEV-SEED](#-dev-seed-testdaten-für-lokale-entwicklung)
 - [📋 Test-Checklist](#-test-checklist-neue-features)
 - [🚀 Commands](#-commands)
@@ -47,6 +49,210 @@
 - "Ich will testen, ob ADMIN Stop-Clock nutzen kann, USER aber nicht"
 - "Ich will wissen, ob meine Scoring-Formel korrekt rechnet"
 - "Ich will verhindern, dass NULL-Werte Abstürze verursachen"
+
+---
+
+## 🐳 **3-Stage CI Pipeline**
+
+> **Eingeführt in PR #150** (2025-11-30) - Kritische Business-Flows gegen echte Datenbank testen
+
+### Die 3 Stages im Überblick
+
+| Stage | Beschreibung | Dauer | Tools |
+|-------|-------------|-------|-------|
+| **Stage 1** | Unit Tests (Backend + Frontend) | ~5 min | JUnit 5, Vitest |
+| **Stage 2** | UI Smoke Tests mit MSW | ~3 min | Playwright + MSW |
+| **Stage 3** | Critical Path E2E gegen echte DB | ~10 min | Playwright + Docker Compose |
+
+### Warum 3 Stages?
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Stage 1: Unit Tests (schnell, isoliert)                       │
+│  ├── Backend: 1826 Tests (JUnit + H2 in-memory)                │
+│  └── Frontend: 1399 Tests (Vitest + MSW Mocks)                 │
+│                                                                 │
+│  → Findet: Logikfehler, Regressions, Type-Fehler               │
+│  → Findet NICHT: DB-Constraints, RLS, Migrations               │
+├─────────────────────────────────────────────────────────────────┤
+│  Stage 2: UI Smoke Tests (optional)                            │
+│  ├── Playwright mit MSW (Mock Service Worker)                  │
+│  └── Testet UI-Flows ohne echtes Backend                       │
+│                                                                 │
+│  → Findet: UI-Bugs, Rendering-Probleme, Navigation             │
+│  → Findet NICHT: API-Integration, Datenbank-Verhalten          │
+├─────────────────────────────────────────────────────────────────┤
+│  Stage 3: E2E gegen echte DB (kritisch!)                       │
+│  ├── Docker Compose: PostgreSQL + Quarkus                      │
+│  └── Playwright testet komplette Business-Flows                │
+│                                                                 │
+│  → Findet: DB-Constraints, RLS-Policies, Timezone-Bugs,        │
+│            Flyway-Migrations, Race Conditions                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Stage 3: Kritische Business-Flows (PFLICHT)
+
+Diese Flows MÜSSEN gegen echte Datenbank getestet werden:
+
+1. **Lead → Opportunity → Customer Conversion** (`lead-conversion-flow.spec.ts`)
+   - Lead erstellen → Qualifizieren → Zu Kunde konvertieren
+   - Testet: Stage-Transitions, Duplicate-Detection, RLS
+
+2. **Customer Onboarding Wizard** (`customer-onboarding.spec.ts`)
+   - Multi-Step-Wizard durchlaufen
+   - Testet: Form-Validation, API-Integration, Xentral-Sync
+
+3. **Validation & Error Handling** (`validation-flow.spec.ts`)
+   - Invalid Stage Transitions (z.B. LEAD → CLOSED ohne Qualifikation)
+   - Duplicate Customer Detection (gleiche Email/Firmenname)
+   - Hierarchy Validation (FILIALE kann keine Sub-Branches haben)
+
+---
+
+## 🔬 **E2E-Tests gegen echte Datenbank**
+
+### Warum echte DB statt Mocks?
+
+**Mocks fangen NICHT:**
+
+| Problem | Beispiel | Mock findet? | Echte DB findet? |
+|---------|----------|--------------|------------------|
+| DB Constraints | `UNIQUE(email)` verletzt | ❌ | ✅ |
+| CHECK Constraints | `registered_at <= NOW()` | ❌ | ✅ |
+| RLS Policies | User sieht fremde Leads | ❌ | ✅ |
+| Flyway Migrations | Spalte fehlt nach Rename | ❌ | ✅ |
+| Timezone-Bugs | JVM UTC vs. PostgreSQL local | ❌ | ✅ |
+| Trigger/Events | NOTIFY/LISTEN funktioniert nicht | ❌ | ✅ |
+| N+1 Queries | Performance-Problem | ❌ | ✅ |
+
+### Self-Contained Test Pattern
+
+> **Goldene Regel:** Jeder Test erstellt seine eigenen Daten mit UUID-Präfix
+
+```typescript
+// ✅ RICHTIG: Self-Contained Test
+test('Lead → Customer Conversion', async ({ page }) => {
+  // Unique ID für diesen Testlauf
+  const uniqueId = crypto.randomUUID().slice(0, 8);
+  const companyName = `E2E-Test-${uniqueId}`;
+
+  // 1. Lead erstellen
+  await page.goto('/leads/new');
+  await page.fill('[name="companyName"]', companyName);
+  await page.click('button[type="submit"]');
+
+  // 2. Lead qualifizieren
+  await page.click('[data-testid="qualify-button"]');
+  await page.fill('[name="contactPerson"]', 'Max Mustermann');
+  await page.click('button[type="submit"]');
+
+  // 3. Zu Kunde konvertieren
+  await page.click('[data-testid="convert-button"]');
+  await page.waitForURL('/customers/*');
+
+  // 4. Assert: Kunde existiert
+  await expect(page.locator('h1')).toContainText(companyName);
+});
+```
+
+```typescript
+// ❌ FALSCH: Abhängig von DEV-SEED Daten
+test('Bad: Uses DEV-SEED data', async ({ page }) => {
+  // NIEMALS DEV-SEED IDs in E2E-Tests!
+  await page.goto('/leads/90001');  // ❌ Flaky! Existiert nicht in CI
+
+  // Stattdessen: Eigene Daten erstellen!
+});
+```
+
+### Timezone-Konfiguration (KRITISCH)
+
+> **Problem aus PR #150:** `registered_at <= NOW()` Check schlug fehl wegen JVM/DB Timezone-Differenz
+
+**Lösung: UTC überall**
+
+```properties
+# application.properties
+quarkus.hibernate-orm.jdbc.timezone=UTC
+```
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  use: {
+    timezoneId: 'UTC',
+  },
+});
+```
+
+```yaml
+# docker-compose.yml
+services:
+  postgres:
+    environment:
+      - TZ=UTC
+```
+
+### Rate-Limiting Awareness
+
+```typescript
+// E2E Tests haben max. 26 Requests pro Flow
+// Limit: 50 writes/min, 100 reads/min
+
+// ✅ Bei vielen Tests: Zwischen Flows warten
+afterEach(async () => {
+  if (process.env.CI) {
+    await new Promise(r => setTimeout(r, 500)); // 500ms Pause
+  }
+});
+```
+
+### Docker Compose Setup für Stage 3
+
+```yaml
+# e2e/docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: freshplan_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      TZ: UTC
+    ports:
+      - "5433:5432"  # Anderer Port als lokal!
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ../backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/freshplan_test
+      QUARKUS_DATASOURCE_USERNAME: test
+      QUARKUS_DATASOURCE_PASSWORD: test
+      QUARKUS_HIBERNATE_ORM_JDBC_TIMEZONE: UTC
+    ports:
+      - "8081:8080"
+```
+
+### Flaky Test Prevention
+
+| Problem | Lösung |
+|---------|--------|
+| Tests abhängig von Reihenfolge | Self-Contained: Jeder Test erstellt eigene Daten |
+| Race Conditions | `await page.waitForResponse()` statt `sleep()` |
+| Stale Data | Unique IDs pro Testlauf (UUID) |
+| Timezone-Differenzen | UTC überall (JVM, PostgreSQL, Playwright) |
+| DEV-SEED Abhängigkeit | NIEMALS DEV-SEED IDs in Tests referenzieren |
 
 ---
 
@@ -665,7 +871,7 @@ cd backend
 
 Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
 
-### ✅ **Backend**
+### ✅ **Stage 1: Backend Unit Tests**
 - [ ] Habe ich Business-Logic-Tests für die Kernfunktion?
 - [ ] Habe ich Integration-Tests für alle API-Endpoints?
 - [ ] Habe ich RBAC-Tests für alle Rollen (ADMIN, MANAGER, USER)?
@@ -673,12 +879,20 @@ Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
 - [ ] Habe ich DTO-Completeness-Tests für neue Felder?
 - [ ] Habe ich Optimistic-Locking-Tests (ETag, If-Match)?
 
-### ✅ **Frontend**
+### ✅ **Stage 1: Frontend Unit Tests**
 - [ ] Habe ich Component-Tests für alle UI-Elemente?
 - [ ] Habe ich RBAC-Tests für verschiedene User-Rollen?
 - [ ] Habe ich Interaction-Tests (Click, Input, Submit)?
 - [ ] Habe ich Validation-Tests (Required Fields, Formats)?
 - [ ] Habe ich Error-Handling-Tests (API-Fehler, Network-Fehler)?
+
+### ✅ **Stage 3: E2E Tests (für kritische Features)**
+- [ ] Ist dies ein **kritischer Business-Flow**? (Conversion, Wizard, Validation)
+- [ ] Habe ich Self-Contained Tests mit UUID-Isolation?
+- [ ] Teste ich gegen **echte Datenbank** (nicht Mocks)?
+- [ ] Sind meine Tests **unabhängig von DEV-SEED Daten**?
+- [ ] Habe ich Timezone-Handling berücksichtigt (UTC)?
+- [ ] Respektiere ich Rate-Limits (max. 50 writes/min)?
 
 ---
 
@@ -700,7 +914,7 @@ Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
 # Report: backend/target/site/jacoco/index.html
 ```
 
-### **Frontend Tests ausführen**
+### **Frontend Tests ausführen (Stage 1)**
 ```bash
 # Alle Tests
 npm test
@@ -714,6 +928,43 @@ npm test -- StopTheClockDialog.test.tsx
 # Mit Coverage
 npm run test:coverage
 # Report: frontend/coverage/index.html
+```
+
+### **E2E Tests ausführen (Stage 3)**
+```bash
+# 1. Docker Compose starten (PostgreSQL + Backend)
+cd e2e
+docker compose up -d
+
+# 2. Warten bis Backend ready ist
+until curl -s http://localhost:8081/q/health/ready; do sleep 2; done
+
+# 3. E2E Tests ausführen
+npx playwright test
+
+# 4. Einzelner Test
+npx playwright test lead-conversion-flow.spec.ts
+
+# 5. Mit UI (Debug-Mode)
+npx playwright test --ui
+
+# 6. Aufräumen
+docker compose down -v
+```
+
+### **Vollständige 3-Stage Pipeline (lokal)**
+```bash
+# Stage 1: Unit Tests
+cd backend && ./mvnw test
+cd frontend && npm test
+
+# Stage 2: UI Smoke Tests (optional)
+cd frontend && npm run test:e2e:msw
+
+# Stage 3: E2E gegen echte DB
+cd e2e && docker compose up -d
+npx playwright test
+docker compose down -v
 ```
 
 ---
@@ -867,15 +1118,35 @@ PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
 
 - **Backend:** [Quarkus Testing Guide](https://quarkus.io/guides/getting-started-testing)
 - **Frontend:** [Vitest Docs](https://vitest.dev/guide/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **E2E:** [Playwright Docs](https://playwright.dev/docs/intro)
 - **Coverage:** `/docs/COVERAGE_GUIDE.md`
 - **Master Plan:** `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
+- **PR #150:** 3-Stage Pipeline Implementierung (2025-11-30)
 
 ---
 
-**Letztes Update:** Track 2C - Advanced Test Infrastructure (2025-10-14)
-**Test-Count:** 193 Tests (133 Backend + 60 Frontend)
-  - **Backend:** 133 Tests (43 Domain + 90 TestDataFactories)
-  - **Frontend:** 60 Tests
-**Coverage:** Backend 87%, Frontend 82%
-**DEV-SEED:** V90001 (5 Customers), V90002 (10 Leads + 21 Contacts + 21 Activities)
-**TestDataFactories:** CustomerTestDataFactory, LeadTestDataFactory, LeadActivityTestDataFactory (Track 2C)
+**Letztes Update:** Sprint 2.1.8 - DSGVO Compliance (2025-12-04)
+
+### Test-Statistiken
+
+| Kategorie | Anzahl | Details |
+|-----------|--------|---------|
+| **Backend Unit Tests** | 1826 | JUnit 5 + RestAssured |
+| **Frontend Unit Tests** | 1399 | Vitest + React Testing Library |
+| **E2E Tests (Stage 3)** | 26 | Playwright + Docker Compose |
+| **Gesamt** | 3251 | |
+
+### Coverage-Ziele
+
+| Layer | Minimum | Aktuell |
+|-------|---------|---------|
+| Backend | ≥80% | 87% |
+| Frontend | ≥80% | 82% |
+| Kritische Module | ≥90% | ✅ |
+
+### Infrastruktur
+
+- **3-Stage Pipeline:** ✅ Aktiv seit PR #150 (2025-11-30)
+- **DEV-SEED:** V90001-V90004 (Customers, Leads, Users)
+- **TestDataFactories:** Customer, Lead, LeadActivity, User
+- **E2E Docker Compose:** PostgreSQL 15 + Quarkus

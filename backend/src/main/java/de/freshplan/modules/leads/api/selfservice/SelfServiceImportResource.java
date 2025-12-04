@@ -1,0 +1,223 @@
+package de.freshplan.modules.leads.api.selfservice;
+
+import de.freshplan.modules.leads.api.selfservice.dto.*;
+import de.freshplan.modules.leads.service.FileParserService.FileParseException;
+import de.freshplan.modules.leads.service.ImportQuotaService;
+import de.freshplan.modules.leads.service.ImportQuotaService.QuotaInfo;
+import de.freshplan.modules.leads.service.ImportQuotaService.UserRole;
+import de.freshplan.modules.leads.service.SelfServiceImportService;
+import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import java.io.InputStream;
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+/**
+ * Self-Service Lead-Import REST API - Sprint 2.1.8 Phase 2
+ *
+ * <p>4-Schritt Import-Wizard API:
+ *
+ * <ol>
+ *   <li>POST /upload - Datei hochladen
+ *   <li>POST /{uploadId}/preview - Mapping + Validierung
+ *   <li>POST /{uploadId}/execute - Import ausführen
+ *   <li>GET /quota - Quota-Informationen abrufen
+ * </ol>
+ *
+ * @since Sprint 2.1.8
+ */
+@Path("/api/leads/import")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+@RolesAllowed({"ROLE_SALES", "ROLE_MANAGER", "ROLE_ADMIN"})
+public class SelfServiceImportResource {
+
+  private static final Logger LOG = Logger.getLogger(SelfServiceImportResource.class);
+
+  @Inject SelfServiceImportService importService;
+
+  @Inject ImportQuotaService quotaService;
+
+  @Inject SecurityIdentity securityIdentity;
+
+  // ============================================================================
+  // Schritt 1: Upload
+  // ============================================================================
+
+  /**
+   * Lädt eine CSV/Excel-Datei hoch und gibt Spalten + Mapping-Vorschläge zurück.
+   *
+   * @param file Hochgeladene Datei
+   * @return Upload-Response mit Spalten und Auto-Mapping
+   */
+  @POST
+  @Path("/upload")
+  @Consumes(MediaType.MULTIPART_FORM_DATA)
+  public Response uploadFile(@RestForm("file") FileUpload file) {
+    String userId = getCurrentUserId();
+    LOG.infof("Upload request from user: %s", userId);
+
+    if (file == null) {
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse("Keine Datei hochgeladen"))
+          .build();
+    }
+
+    try (InputStream inputStream = file.uploadedFile().toFile().toURI().toURL().openStream()) {
+      ImportUploadResponse response =
+          importService.uploadFile(inputStream, file.fileName(), file.size());
+
+      return Response.ok(response).build();
+    } catch (FileParseException e) {
+      LOG.warnf("File parse error: %s", e.getMessage());
+      return Response.status(Response.Status.BAD_REQUEST)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      LOG.errorf(e, "Upload failed");
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Upload fehlgeschlagen: " + e.getMessage()))
+          .build();
+    }
+  }
+
+  // ============================================================================
+  // Schritt 2/3: Preview
+  // ============================================================================
+
+  /**
+   * Erstellt eine Vorschau mit Validierung und Duplikat-Check.
+   *
+   * @param uploadId Upload-ID aus Schritt 1
+   * @param request Mapping-Request
+   * @return Preview-Response mit Validierung
+   */
+  @POST
+  @Path("/{uploadId}/preview")
+  public Response preview(
+      @PathParam("uploadId") String uploadId, @Valid ImportPreviewRequest request) {
+
+    String userId = getCurrentUserId();
+    UserRole role = getCurrentUserRole();
+
+    LOG.infof("Preview request: uploadId=%s, user=%s, role=%s", uploadId, userId, role);
+
+    try {
+      ImportPreviewResponse response =
+          importService.preview(uploadId, request.mapping(), userId, role);
+
+      return Response.ok(response).build();
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      LOG.errorf(e, "Preview failed: uploadId=%s", uploadId);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Vorschau fehlgeschlagen: " + e.getMessage()))
+          .build();
+    }
+  }
+
+  // ============================================================================
+  // Schritt 4: Execute
+  // ============================================================================
+
+  /**
+   * Führt den Import aus.
+   *
+   * @param uploadId Upload-ID aus Schritt 1
+   * @param request Import-Request mit Mapping und Optionen
+   * @return Import-Ergebnis
+   */
+  @POST
+  @Path("/{uploadId}/execute")
+  public Response execute(
+      @PathParam("uploadId") String uploadId, @Valid ImportExecuteRequest request) {
+
+    String userId = getCurrentUserId();
+    UserRole role = getCurrentUserRole();
+
+    LOG.infof(
+        "Execute request: uploadId=%s, user=%s, role=%s, duplicateAction=%s",
+        uploadId, userId, role, request.duplicateAction());
+
+    try {
+      ImportExecuteResponse response = importService.execute(uploadId, request, userId, role);
+
+      if (response.success()) {
+        return Response.status(Response.Status.CREATED).entity(response).build();
+      } else if ("PENDING_APPROVAL".equals(response.status())) {
+        return Response.status(Response.Status.ACCEPTED).entity(response).build();
+      } else {
+        return Response.status(Response.Status.BAD_REQUEST).entity(response).build();
+      }
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      LOG.errorf(e, "Execute failed: uploadId=%s", uploadId);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Import fehlgeschlagen: " + e.getMessage()))
+          .build();
+    }
+  }
+
+  // ============================================================================
+  // Quota-Info
+  // ============================================================================
+
+  /**
+   * Gibt die aktuellen Quota-Informationen für den User zurück.
+   *
+   * @return Quota-Info
+   */
+  @GET
+  @Path("/quota")
+  public Response getQuota() {
+    String userId = getCurrentUserId();
+    UserRole role = getCurrentUserRole();
+
+    QuotaInfo quotaInfo = quotaService.getQuotaInfo(userId, role);
+
+    return Response.ok(quotaInfo).build();
+  }
+
+  // ============================================================================
+  // Helper Methods
+  // ============================================================================
+
+  private String getCurrentUserId() {
+    String userId = securityIdentity.getPrincipal().getName();
+    if (userId == null || userId.isBlank()) {
+      throw new NotAuthorizedException("User nicht authentifiziert");
+    }
+    return userId;
+  }
+
+  private UserRole getCurrentUserRole() {
+    if (securityIdentity.hasRole("ROLE_ADMIN") || securityIdentity.hasRole("admin")) {
+      return UserRole.ADMIN;
+    } else if (securityIdentity.hasRole("ROLE_MANAGER") || securityIdentity.hasRole("manager")) {
+      return UserRole.MANAGER;
+    } else if (securityIdentity.hasRole("ROLE_SALES") || securityIdentity.hasRole("sales")) {
+      return UserRole.SALES;
+    } else if (securityIdentity.hasRole("ROLE_AUDITOR") || securityIdentity.hasRole("auditor")) {
+      return UserRole.AUDITOR;
+    }
+    return UserRole.SALES; // Default
+  }
+
+  // ============================================================================
+  // DTOs
+  // ============================================================================
+
+  public record ErrorResponse(String message) {}
+}

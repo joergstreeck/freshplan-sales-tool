@@ -23,10 +23,10 @@ updated: "2025-12-04"
 
 | Deliverable | Priorität | Status |
 |-------------|-----------|--------|
-| DSGVO Art. 15 (Auskunft) | 🔴 PFLICHT | ⬜ TODO |
-| DSGVO Art. 17 (Löschung) | 🔴 PFLICHT | ⬜ TODO |
-| DSGVO Art. 7.3 (Widerruf) | 🟡 SOLLTE | ⬜ TODO |
-| Lead-Import (CSV/Excel) | 🔴 KRITISCH | ⬜ TODO |
+| DSGVO Art. 15 (Auskunft) | 🔴 PFLICHT | ✅ DONE |
+| DSGVO Art. 17 (Löschung) | 🔴 PFLICHT | ✅ DONE |
+| DSGVO Art. 7.3 (Widerruf) | 🟡 SOLLTE | ✅ DONE |
+| Lead-Import (CSV/Excel) | 🔴 KRITISCH | 🚧 IN PROGRESS |
 | Admin-UI (/admin/dsgvo, /admin/imports) | 🟡 WICHTIG | ⬜ TODO |
 | Advanced Search | 🟢 KANN | ⬜ DEFERRED |
 | BANT-Qualifizierung | 🟢 KANN | ⬜ DEFERRED |
@@ -81,28 +81,33 @@ cd frontend && npm run dev
 
 ## 📦 Phasen-Übersicht
 
-### Phase 1: DSGVO-Kern (Prio 1)
+### Phase 1: DSGVO-Kern (Prio 1) ✅ ABGESCHLOSSEN
 
 **Scope:** Art. 15, 17, 7.3 Implementierung
 
-- [ ] Migration: DSGVO-Felder + Tabellen
-- [ ] GdprService (Backend)
-- [ ] PdfGeneratorService (Apache PDFBox)
-- [ ] GdprResource (REST Endpoints)
-- [ ] Frontend: GdprActionsMenu, GdprDeleteDialog, ContactBlockedBadge
-- [ ] Tests: Unit + Integration
+- [x] Migration: DSGVO-Felder + Tabellen (V10050)
+- [x] GdprService (Backend) - Löschung, Auskunft, Widerruf
+- [x] GdprPdfGeneratorService (OpenPDF - Apache 2.0)
+- [x] GdprResource (REST Endpoints)
+- [x] Frontend: GdprActionsMenu, GdprDeleteDialog, GdprDeletedBadge
+- [x] Tests: 41 Tests (Unit + Integration) - ALLE GRÜN
+
+**Implementierte Entitäten:**
+- `GdprDataRequest.java` - Art. 15 Datenexport-Anfragen
+- `GdprDeletionLog.java` - Art. 17 Löschprotokolle
 
 **Details:** → `artefakte/sprint-2.1.8/DSGVO_TECHNICAL_SPEC.md`
 
-### Phase 2: Lead-Import (Prio 2)
+### Phase 2: Lead-Import (Prio 2) 🚧 IN PROGRESS
 
 **Scope:** Self-Service Import mit Quota-System
 
-- [ ] Migration: import_logs Tabelle
-- [ ] ImportQuotaService
+- [ ] Migration V10051: import_quotas + import_logs Tabellen
+- [ ] ImportQuotaService (Quota-Check + Management)
 - [ ] LeadImportService (CSV/Excel Parser)
-- [ ] LeadImportResource
-- [ ] Frontend: LeadImportWizard (4 Steps)
+- [ ] LeadImportResource (REST Endpoints)
+- [ ] Frontend: LeadImportWizard (4 Steps: Upload → Mapping → Preview → Confirm)
+- [ ] Frontend: ImportResultDialog
 - [ ] Tests: Unit + Integration
 
 **Details:** → `artefakte/sprint-2.1.8/LEAD_IMPORT_SPEC.md`
