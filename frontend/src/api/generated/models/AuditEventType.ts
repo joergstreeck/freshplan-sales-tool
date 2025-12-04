@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 export type AuditEventType =
   | 'OPPORTUNITY_CREATED'
   | 'OPPORTUNITY_UPDATED'

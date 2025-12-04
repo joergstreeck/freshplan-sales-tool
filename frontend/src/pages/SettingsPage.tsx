@@ -59,7 +59,7 @@ export function SettingsPage() {
 
   return (
     <MainLayoutV2>
-      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+      <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
         Einstellungen
       </Typography>
 

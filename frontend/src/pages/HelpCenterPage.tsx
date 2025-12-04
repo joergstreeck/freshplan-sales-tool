@@ -105,7 +105,11 @@ export const HelpCenterPage: React.FC = () => {
     return (
       <MainLayoutV2>
         <Box sx={{ py: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
+          >
             Hilfe-Center
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -167,7 +171,11 @@ export const HelpCenterPage: React.FC = () => {
 
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             {section.icon}
-            <Typography variant="h3" sx={{ ml: 2, color: theme.palette.secondary.main }}>
+            <Typography
+              variant="h3"
+              component="h1"
+              sx={{ ml: 2, color: theme.palette.secondary.main }}
+            >
               {section.title}
             </Typography>
           </Box>

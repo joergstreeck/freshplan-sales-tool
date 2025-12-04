@@ -169,7 +169,11 @@ export function ApiStatusPage() {
       <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
+          >
             API Status & System Health
           </Typography>
           <Typography variant="body1" color="text.secondary">

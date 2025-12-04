@@ -59,7 +59,7 @@ export function LazyLoadingDemo() {
   return (
     <MainLayoutV2>
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" component="h1" gutterBottom>
           Lazy Loading Demo
         </Typography>
 

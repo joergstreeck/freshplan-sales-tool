@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { JsonObject } from './JsonObject';
 import type { LocalDateTime } from './LocalDateTime';
 export type Territory = {

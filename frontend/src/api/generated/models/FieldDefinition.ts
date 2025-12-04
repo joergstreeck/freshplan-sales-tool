@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { FieldType } from './FieldType';
 export type FieldDefinition = {
   fieldKey?: string;

@@ -170,7 +170,7 @@ export const OpportunitySettingsPage = () => {
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
             <TrendingUpIcon color="secondary" sx={{ fontSize: 32 }} />
-            <Typography variant="h4" color="secondary">
+            <Typography variant="h4" component="h1" color="secondary">
               Verkaufschancen-Einstellungen
             </Typography>
           </Box>

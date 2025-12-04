@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { FollowUpMetric } from './FollowUpMetric';
 import type { LeadStatistics } from './LeadStatistics';
 import type { LocalDateTime } from './LocalDateTime';

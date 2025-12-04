@@ -413,7 +413,9 @@ export const KanbanBoardDndKit: React.FC = React.memo(() => {
       <Paper sx={{ p: 3, mb: 2, bgcolor: theme.palette.background.default, borderRadius: 2 }}>
         {/* Header Row mit Title + Filter Controls */}
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-          <Typography variant="h4">Pipeline Übersicht</Typography>
+          <Typography variant="h4" component="h1">
+            Pipeline Übersicht
+          </Typography>
 
           <Box sx={{ flexGrow: 1 }} />
 

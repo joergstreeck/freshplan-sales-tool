@@ -36,6 +36,7 @@ export function NotFoundPage() {
 
           <Typography
             variant="h4"
+            component="h1"
             sx={{
               color: 'secondary.main',
               mb: 2,

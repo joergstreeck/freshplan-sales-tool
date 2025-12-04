@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { CreateCommunicationRequest } from '../models/CreateCommunicationRequest';
 import type { CreateNoteRequest } from '../models/CreateNoteRequest';
 import type { CreateTimelineEventRequest } from '../models/CreateTimelineEventRequest';

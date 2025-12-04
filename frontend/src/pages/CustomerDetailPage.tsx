@@ -172,7 +172,7 @@ export function CustomerDetailPage() {
         <Paper sx={{ p: 3, mb: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <Box>
-              <Typography variant="h4" gutterBottom>
+              <Typography variant="h4" component="h1" gutterBottom>
                 {customer.companyName}
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 2 }}>

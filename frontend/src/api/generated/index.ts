@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 export { ApiError } from './core/ApiError';
 export { CancelablePromise, CancelError } from './core/CancelablePromise';
 export { OpenAPI } from './core/OpenAPI';
@@ -34,6 +34,7 @@ export type { ChangeStatusRequest } from './models/ChangeStatusRequest';
 export type { CheckDuplicatesRequest } from './models/CheckDuplicatesRequest';
 export type { Classification } from './models/Classification';
 export type { CompanyInfo } from './models/CompanyInfo';
+export type { ContactAllowedResponse } from './models/ContactAllowedResponse';
 export type { ContactData } from './models/ContactData';
 export type { ContactDTO } from './models/ContactDTO';
 export type { ContactDto } from './models/ContactDto';
@@ -70,6 +71,7 @@ export type { DataQualityMetricsDTO1 } from './models/DataQualityMetricsDTO1';
 export type { DeliveryCondition } from './models/DeliveryCondition';
 export type { EnumValue } from './models/EnumValue';
 export type { ErrorResponse } from './models/ErrorResponse';
+export type { ErrorResponse1 } from './models/ErrorResponse1';
 export type { EventCategory } from './models/EventCategory';
 export type { ExportOptions } from './models/ExportOptions';
 export type { FeedbackRequest } from './models/FeedbackRequest';
@@ -80,6 +82,9 @@ export type { FilterOperator } from './models/FilterOperator';
 export type { FinancialInfo } from './models/FinancialInfo';
 export type { FinancingType } from './models/FinancingType';
 export type { FollowUpMetric } from './models/FollowUpMetric';
+export type { GdprDataRequestDTO } from './models/GdprDataRequestDTO';
+export type { GdprDeleteRequest } from './models/GdprDeleteRequest';
+export type { GdprDeletionLogDTO } from './models/GdprDeletionLogDTO';
 export type { GrantPermissionRequest } from './models/GrantPermissionRequest';
 export type { HierarchyMetrics } from './models/HierarchyMetrics';
 export type { ImportanceLevel } from './models/ImportanceLevel';
@@ -168,6 +173,7 @@ export { DevelopmentTestDataService } from './services/DevelopmentTestDataServic
 export { DevUserResourceService } from './services/DevUserResourceService';
 export { EnumsService } from './services/EnumsService';
 export { ExportService } from './services/ExportService';
+export { GdprService } from './services/GdprService';
 export { HelpSystemResourceService } from './services/HelpSystemResourceService';
 export { LeadImportResourceService } from './services/LeadImportResourceService';
 export { LeadResourceService } from './services/LeadResourceService';
