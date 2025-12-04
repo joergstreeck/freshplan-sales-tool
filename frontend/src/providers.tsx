@@ -81,6 +81,13 @@ const OpportunitySettingsPage = lazy(() =>
     default: m.OpportunitySettingsPage,
   }))
 );
+// Sprint 2.1.8 Phase 3: DSGVO + Import Admin Pages
+const DsgvoAdminPage = lazy(() =>
+  import('./pages/admin/DsgvoAdminPage').then(m => ({ default: m.DsgvoAdminPage }))
+);
+const ImportsAdminPage = lazy(() =>
+  import('./pages/admin/ImportsAdminPage').then(m => ({ default: m.ImportsAdminPage }))
+);
 // Dashboards für Hauptmenüpunkte
 const NeukundengewinnungDashboard = lazy(() =>
   import('./pages/NeukundengewinnungDashboard').then(m => ({
@@ -381,6 +388,24 @@ export const AppProviders = ({ children: mainChildren }: AppProvidersProps) => {
                             element={
                               <ProtectedRoute allowedRoles={['admin']}>
                                 <OpportunitySettingsPage />
+                              </ProtectedRoute>
+                            }
+                          />
+                          {/* Sprint 2.1.8: DSGVO Admin */}
+                          <Route
+                            path="/admin/dsgvo"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                                <DsgvoAdminPage />
+                              </ProtectedRoute>
+                            }
+                          />
+                          {/* Sprint 2.1.8: Import Admin */}
+                          <Route
+                            path="/admin/imports"
+                            element={
+                              <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                                <ImportsAdminPage />
                               </ProtectedRoute>
                             }
                           />

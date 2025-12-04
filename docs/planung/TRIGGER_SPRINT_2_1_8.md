@@ -98,27 +98,27 @@ cd frontend && npm run dev
 
 **Details:** → `artefakte/sprint-2.1.8/DSGVO_TECHNICAL_SPEC.md`
 
-### Phase 2: Lead-Import (Prio 2) 🚧 IN PROGRESS
+### Phase 2: Lead-Import (Prio 2) ✅ ABGESCHLOSSEN
 
 **Scope:** Self-Service Import mit Quota-System
 
-- [ ] Migration V10051: import_quotas + import_logs Tabellen
-- [ ] ImportQuotaService (Quota-Check + Management)
-- [ ] LeadImportService (CSV/Excel Parser)
-- [ ] LeadImportResource (REST Endpoints)
-- [ ] Frontend: LeadImportWizard (4 Steps: Upload → Mapping → Preview → Confirm)
-- [ ] Frontend: ImportResultDialog
-- [ ] Tests: Unit + Integration
+- [x] Migration V10051: import_logs Tabelle
+- [x] ImportQuotaService (Quota-Check + Management)
+- [x] FileParserService (CSV/Excel Parser)
+- [x] SelfServiceImportService + REST Endpoints
+- [x] Frontend: LeadImportWizard (4 Steps: Upload → Mapping → Preview → Execute)
+- [x] Frontend: Integration in LeadsPage
+- [x] Tests: 13 Unit-Tests für ImportQuotaService
 
 **Details:** → `artefakte/sprint-2.1.8/LEAD_IMPORT_SPEC.md`
 
-### Phase 3: Admin-UI + Routing
+### Phase 3: Admin-UI + Routing ✅ ABGESCHLOSSEN
 
 **Scope:** Neue Admin-Routen
 
-- [ ] `/admin/dsgvo` - DSGVO-Verwaltung
-- [ ] `/admin/imports` - Import-Verwaltung
-- [ ] Navigation-Integration
+- [x] `/admin/dsgvo` - DsgvoAdminPage (Löschungen, Anfragen, gelöschte Leads)
+- [x] `/admin/imports` - ImportsAdminPage (Approve/Reject Workflow)
+- [x] Navigation-Integration (AdminDashboard Schnellzugriff)
 
 ### Phase 4: Advanced Search + BANT (Optional)
 

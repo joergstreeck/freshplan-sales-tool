@@ -204,6 +204,18 @@ export const navigationConfig: NavigationItemType[] = [
         permissions: ['admin.view'],
       },
       {
+        label: 'DSGVO-Verwaltung',
+        path: '/admin/dsgvo',
+        permissions: ['admin.view', 'manager.view'],
+        tooltip: 'Datenschutz-Compliance: Löschungen, Anfragen, gelöschte Leads',
+      },
+      {
+        label: 'Import-Verwaltung',
+        path: '/admin/imports',
+        permissions: ['admin.view', 'manager.view'],
+        tooltip: 'Lead-Imports überwachen und genehmigen',
+      },
+      {
         label: 'System',
         path: '/admin/system',
         permissions: ['admin.view'],

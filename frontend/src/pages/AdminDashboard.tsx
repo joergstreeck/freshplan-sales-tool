@@ -23,6 +23,8 @@ import ApiIcon from '@mui/icons-material/Api';
 import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import SecurityIcon from '@mui/icons-material/Security';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 interface QuickAccessCard {
   title: string;
@@ -71,6 +73,22 @@ export function AdminDashboard() {
       path: '/admin/reports',
       stats: 'Nächster Report in 5 Tagen',
       status: 'info',
+    },
+    {
+      title: 'DSGVO-Verwaltung',
+      description: 'Datenschutz-Compliance nach Art. 15, 17, 7.3',
+      icon: <SecurityIcon sx={{ fontSize: 40, color: theme.palette.error.main }} />,
+      path: '/admin/dsgvo',
+      stats: 'Löschungen & Anfragen',
+      status: 'active',
+    },
+    {
+      title: 'Import-Verwaltung',
+      description: 'Lead-Imports überwachen und genehmigen',
+      icon: <CloudUploadIcon sx={{ fontSize: 40, color: theme.palette.info.main }} />,
+      path: '/admin/imports',
+      stats: 'Quota-Management',
+      status: 'active',
     },
   ];
 
@@ -148,7 +166,7 @@ export function AdminDashboard() {
           </Typography>
           <Grid container spacing={3}>
             {quickAccessCards.map(card => (
-              <Grid key={card.title} size={{ xs: 12, md: 4 }}>
+              <Grid key={card.title} size={{ xs: 12, sm: 6, md: 4 }}>
                 <Card
                   sx={{
                     height: '100%',
