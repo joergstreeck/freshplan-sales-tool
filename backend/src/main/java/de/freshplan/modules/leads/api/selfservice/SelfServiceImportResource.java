@@ -175,6 +175,111 @@ public class SelfServiceImportResource {
   }
 
   // ============================================================================
+  // Error Report CSV-Download
+  // ============================================================================
+
+  /**
+   * Generiert einen CSV-Download mit allen Validierungsfehlern aus dem Preview.
+   *
+   * <p>Das CSV enthält: Zeile, Spalte, Fehlertyp, Fehlermeldung, Originalwert
+   *
+   * @param uploadId Upload-ID aus Schritt 1
+   * @param request Mapping für erneute Validierung
+   * @return CSV-Datei mit Fehlern
+   * @since Sprint 2.1.8
+   */
+  @POST
+  @Path("/{uploadId}/errors.csv")
+  @Produces("text/csv; charset=UTF-8")
+  public Response downloadErrorReport(
+      @PathParam("uploadId") String uploadId, @Valid ImportPreviewRequest request) {
+
+    String userId = getCurrentUserId();
+    UserRole role = getCurrentUserRole();
+
+    LOG.infof("Error report download: uploadId=%s, user=%s", uploadId, userId);
+
+    try {
+      // Preview erneut ausführen um aktuelle Fehler zu bekommen
+      ImportPreviewResponse preview =
+          importService.preview(uploadId, request.mapping(), userId, role);
+
+      // CSV generieren
+      StringBuilder csv = new StringBuilder();
+
+      // Header (BOM für Excel-Kompatibilität)
+      csv.append("\uFEFF"); // UTF-8 BOM
+      csv.append("Zeile;Spalte;Fehlertyp;Fehlermeldung;Originalwert\n");
+
+      // Validierungsfehler
+      for (var error : preview.errors()) {
+        csv.append(error.row()).append(";");
+        csv.append(escapeCsv(error.column())).append(";");
+        csv.append("VALIDATION;");
+        csv.append(escapeCsv(error.message())).append(";");
+        csv.append(escapeCsv(error.value())).append("\n");
+      }
+
+      // Duplikate auch als "Warnung" ausgeben
+      for (var dup : preview.duplicates()) {
+        csv.append(dup.row()).append(";");
+        csv.append("companyName;");
+        csv.append(dup.type()).append(";");
+        csv.append(
+                escapeCsv(
+                    "Mögliches Duplikat: "
+                        + dup.existingCompanyName()
+                        + " (ID: "
+                        + dup.existingLeadId()
+                        + ", Ähnlichkeit: "
+                        + Math.round(dup.similarity() * 100)
+                        + "%)"))
+            .append(";");
+        csv.append("-\n");
+      }
+
+      // Wenn keine Fehler, Info-Zeile hinzufügen
+      if (preview.errors().isEmpty() && preview.duplicates().isEmpty()) {
+        csv.append("-;-;INFO;Keine Validierungsfehler gefunden;-\n");
+      }
+
+      String fileName = "import-errors-" + uploadId.substring(0, 8) + ".csv";
+
+      return Response.ok(csv.toString())
+          .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"")
+          .header("Content-Type", "text/csv; charset=UTF-8")
+          .build();
+
+    } catch (IllegalArgumentException e) {
+      return Response.status(Response.Status.NOT_FOUND)
+          .entity(new ErrorResponse(e.getMessage()))
+          .build();
+    } catch (Exception e) {
+      LOG.errorf(e, "Error report generation failed: uploadId=%s", uploadId);
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+          .entity(new ErrorResponse("Fehlerreport konnte nicht erstellt werden: " + e.getMessage()))
+          .build();
+    }
+  }
+
+  /**
+   * Escaped einen Wert für CSV (Semikolon-getrennt). Wenn der Wert Semikolon, Anführungszeichen
+   * oder Zeilenumbruch enthält, wird er in Anführungszeichen eingeschlossen.
+   */
+  private String escapeCsv(String value) {
+    if (value == null) {
+      return "";
+    }
+    if (value.contains(";")
+        || value.contains("\"")
+        || value.contains("\n")
+        || value.contains("\r")) {
+      return "\"" + value.replace("\"", "\"\"") + "\"";
+    }
+    return value;
+  }
+
+  // ============================================================================
   // Quota-Info
   // ============================================================================
 

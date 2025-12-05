@@ -58,6 +58,8 @@ public class SelfServiceImportService {
 
   @Inject ImportQuotaService quotaService;
 
+  @Inject ImportNotificationService notificationService;
+
   @Inject EntityManager em;
 
   // ============================================================================
@@ -254,6 +256,10 @@ public class SelfServiceImportService {
       ImportLog importLog = createImportLog(userId, cache, 0, 0, errorCount, duplicateRate);
       importLog.markPendingApproval(BigDecimal.valueOf(duplicateRate * 100));
       importLog.persist();
+
+      // Email-Notification an Admins (async)
+      notificationService.notifyApprovalRequired(
+          importLog.id, userId, cache.fileName, cache.rows.size(), duplicateRate);
 
       LOG.infof(
           "Import requires approval: uploadId=%s, duplicateRate=%.2f%%",

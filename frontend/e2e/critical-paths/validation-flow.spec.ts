@@ -31,6 +31,8 @@ import {
   updateCustomer,
   createBranch,
   generateTestPrefix,
+  deleteTestLeadsByPrefix,
+  deleteTestCustomersByPrefix,
 } from '../helpers/api-helpers';
 
 // Unique Test-Prefix für Isolation
@@ -42,6 +44,17 @@ const TEST_PREFIX = generateTestPrefix('E2E-VAL');
  * Diese Tests prüfen dass das System ungültige Operationen ablehnt
  */
 test.describe('Validation & Error Handling - Critical Path', () => {
+  // =============================================================================
+  // CLEANUP: Entferne alle Test-Daten nach Test-Run
+  // =============================================================================
+  test.afterAll(async ({ request }) => {
+    console.log('\n[CLEANUP] Removing test data created during this test run\n');
+    const deletedLeads = await deleteTestLeadsByPrefix(request, '[E2E-VAL-');
+    console.log(`[CLEANUP] Deleted ${deletedLeads} test leads`);
+    const deletedCustomers = await deleteTestCustomersByPrefix(request, '[E2E-VAL-');
+    console.log(`[CLEANUP] Deleted ${deletedCustomers} test customers`);
+  });
+
   test.describe('Stage Transition Validation', () => {
     let lead: LeadResponse;
     let opportunity: OpportunityResponse;

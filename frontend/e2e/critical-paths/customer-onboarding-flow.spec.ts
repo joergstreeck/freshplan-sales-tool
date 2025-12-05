@@ -28,6 +28,7 @@ import {
   updateCustomer,
   addContact,
   generateTestPrefix,
+  deleteTestCustomersByPrefix,
 } from '../helpers/api-helpers';
 
 // Unique Test-Prefix für Isolation
@@ -38,6 +39,15 @@ test.describe('Customer Onboarding Flow - Critical Path', () => {
   let customer: CustomerResponse;
   let primaryContact: ContactResponse;
   let secondaryContact: ContactResponse;
+
+  // =============================================================================
+  // CLEANUP: Entferne alle Test-Customers nach Test-Run
+  // =============================================================================
+  test.afterAll(async ({ request }) => {
+    console.log('\n[CLEANUP] Removing test customers created during this test run\n');
+    const deletedCount = await deleteTestCustomersByPrefix(request, '[E2E-CO-');
+    console.log(`[CLEANUP] Deleted ${deletedCount} test customers`);
+  });
 
   test.beforeAll(async ({ request }) => {
     console.log(`\n[CUSTOMER] Setting up Customer Onboarding test data (Prefix: ${TEST_PREFIX})\n`);

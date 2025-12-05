@@ -31,6 +31,8 @@ import {
   setOpportunityToWon,
   convertOpportunityToCustomer,
   generateTestPrefix,
+  deleteTestLeadsByPrefix,
+  deleteTestCustomersByPrefix,
 } from '../helpers/api-helpers';
 
 // Unique Test-Prefix für Isolation
@@ -48,6 +50,17 @@ test.describe('Lead Conversion Flow - Critical Path', () => {
   let lead: LeadResponse;
   let opportunity: OpportunityResponse;
   let customer: CustomerResponse;
+
+  // =============================================================================
+  // CLEANUP: Entferne alle Test-Leads und Test-Customers nach Test-Run
+  // =============================================================================
+  test.afterAll(async ({ request }) => {
+    console.log('\n[CLEANUP] Removing test data created during this test run\n');
+    const deletedLeads = await deleteTestLeadsByPrefix(request, '[E2E-LC-');
+    console.log(`[CLEANUP] Deleted ${deletedLeads} test leads`);
+    const deletedCustomers = await deleteTestCustomersByPrefix(request, '[E2E-LC-');
+    console.log(`[CLEANUP] Deleted ${deletedCustomers} test customers`);
+  });
 
   test.beforeAll(async ({ request }) => {
     console.log(`\n[TARGET] Setting up Lead Conversion test data (Prefix: ${TEST_PREFIX})\n`);

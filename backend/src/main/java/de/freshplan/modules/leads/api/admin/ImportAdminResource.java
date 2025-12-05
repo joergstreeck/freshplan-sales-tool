@@ -2,7 +2,9 @@ package de.freshplan.modules.leads.api.admin;
 
 import de.freshplan.modules.leads.domain.ImportLog;
 import de.freshplan.modules.leads.domain.ImportLog.ImportLogStatus;
+import de.freshplan.modules.leads.service.ImportNotificationService;
 import jakarta.annotation.security.RolesAllowed;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Context;
@@ -43,6 +45,8 @@ import org.jboss.logging.Logger;
 public class ImportAdminResource {
 
   private static final Logger LOG = Logger.getLogger(ImportAdminResource.class);
+
+  @Inject ImportNotificationService notificationService;
 
   // ============================================================================
   // Statistiken
@@ -143,6 +147,12 @@ public class ImportAdminResource {
     importLog.approve(userId);
     LOG.infof("Import %s approved by %s", importId, userId);
 
+    // Notify user about approval (async, non-blocking)
+    // Note: userEmail would need to be fetched from Keycloak/User service
+    // For now we use userId which might be an email in some setups
+    notificationService.notifyImportApproved(
+        importLog.id, importLog.userId, importLog.fileName, importLog.importedCount);
+
     return Response.ok(ImportLogDTO.fromEntity(importLog)).build();
   }
 
@@ -176,6 +186,10 @@ public class ImportAdminResource {
 
     importLog.reject(userId, request.reason());
     LOG.infof("Import %s rejected by %s", importId, userId);
+
+    // Notify user about rejection (async, non-blocking)
+    notificationService.notifyImportRejected(
+        importLog.id, importLog.userId, importLog.fileName, request.reason());
 
     return Response.ok(ImportLogDTO.fromEntity(importLog)).build();
   }

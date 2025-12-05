@@ -819,7 +819,96 @@ export async function deleteTestLeadsByPrefix(
 }
 
 /**
+ * Löscht einen Customer via API
+ */
+export async function deleteCustomer(
+  request: APIRequestContext,
+  customerId: string
+): Promise<boolean> {
+  const response = await request.delete(`${API_BASE}/api/customers/${customerId}`);
+
+  if (response.status() === 429) {
+    // Rate limit - wait and retry once
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    const retryResponse = await request.delete(`${API_BASE}/api/customers/${customerId}`);
+    return retryResponse.ok() || retryResponse.status() === 404;
+  }
+
+  return response.ok() || response.status() === 404; // 404 = already deleted
+}
+
+/**
+ * Löscht alle Test-Customers die mit einem bestimmten Prefix beginnen
+ * Nützlich für Cleanup nach E2E-Tests
+ *
+ * @param request - Playwright API Request Context
+ * @param prefixPattern - Pattern zum Matchen (z.B. "[E2E-CO-")
+ * @returns Anzahl der gelöschten Customers
+ */
+export async function deleteTestCustomersByPrefix(
+  request: APIRequestContext,
+  prefixPattern: string
+): Promise<number> {
+  let deletedCount = 0;
+  let page = 0;
+  const pageSize = 50;
+
+  console.log(`[CLEANUP] Searching for customers matching: ${prefixPattern}`);
+
+  // Durchsuche alle Seiten nach Test-Customers
+  while (true) {
+    const response = await request.get(`${API_BASE}/api/customers?page=${page}&size=${pageSize}`);
+
+    if (!response.ok()) {
+      console.log(`[CLEANUP] Failed to fetch customers page ${page}`);
+      break;
+    }
+
+    const data = await response.json();
+    const customers = data.content || data;
+
+    if (customers.length === 0) {
+      break;
+    }
+
+    // Filtere Customers die mit dem Prefix beginnen
+    const testCustomers = customers.filter(
+      (cust: CustomerResponse) => cust.companyName && cust.companyName.includes(prefixPattern)
+    );
+
+    // Lösche gefundene Test-Customers
+    for (const cust of testCustomers) {
+      const deleted = await deleteCustomer(request, cust.id);
+      if (deleted) {
+        deletedCount++;
+        console.log(`[CLEANUP] Deleted customer ${cust.id}: ${cust.companyName}`);
+      }
+      // Kleine Pause um Rate-Limiting zu vermeiden
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    page++;
+
+    // Safety limit - nicht mehr als 10 Seiten durchsuchen
+    if (page >= 10) {
+      console.log(`[CLEANUP] Reached page limit, stopping search`);
+      break;
+    }
+  }
+
+  console.log(`[CLEANUP] Deleted ${deletedCount} test customers`);
+  return deletedCount;
+}
+
+/**
  * Generiert eine CSV-Datei mit Test-Leads
+ *
+ * @param testPrefix - Prefix für Firmennamen (zur Isolation)
+ * @param count - Anzahl der zu generierenden Leads
+ * @param options - Optionale Konfiguration
+ * @param options.includeErrors - Fügt eine Zeile mit Validierungsfehlern hinzu
+ * @param options.includeDuplicates - Fügt ein Duplikat der ersten Zeile hinzu
+ * @param options.includeHistoricalDates - Fügt originalCreatedAt Spalte hinzu (Sprint 2.1.8)
  */
 export function generateTestLeadsCsv(
   testPrefix: string,
@@ -827,9 +916,12 @@ export function generateTestLeadsCsv(
   options: {
     includeErrors?: boolean;
     includeDuplicates?: boolean;
+    includeHistoricalDates?: boolean;
   } = {}
 ): string {
-  const headers = ['Firma', 'E-Mail', 'Telefon', 'Stadt', 'PLZ', 'Branche'];
+  const headers = options.includeHistoricalDates
+    ? ['Firma', 'E-Mail', 'Telefon', 'Stadt', 'PLZ', 'Branche', 'Erstelldatum']
+    : ['Firma', 'E-Mail', 'Telefon', 'Stadt', 'PLZ', 'Branche'];
   const rows: string[] = [headers.join(';')];
 
   for (let i = 0; i < count; i++) {
@@ -843,31 +935,48 @@ export function generateTestLeadsCsv(
       email = 'invalid-email'; // Ungültiges Format
     }
 
-    rows.push(
-      [
-        companyName,
-        email,
-        `+49 ${100 + i} 123456`,
-        i % 2 === 0 ? 'Berlin' : 'München',
-        i % 2 === 0 ? '10115' : '80331',
-        'RESTAURANT',
-      ].join(';')
-    );
+    // Basis-Zeile
+    const rowData = [
+      companyName,
+      email,
+      `+49 ${100 + i} 123456`,
+      i % 2 === 0 ? 'Berlin' : 'München',
+      i % 2 === 0 ? '10115' : '80331',
+      'RESTAURANT',
+    ];
+
+    // Historisches Datum hinzufügen (Sprint 2.1.8)
+    if (options.includeHistoricalDates) {
+      // Generiere Datum: 6 Monate bis 2 Jahre in der Vergangenheit
+      const monthsAgo = 6 + i * 3; // 6, 9, 12, 15, ... Monate
+      const historicalDate = new Date();
+      historicalDate.setMonth(historicalDate.getMonth() - monthsAgo);
+      // Format: YYYY-MM-DD (ISO 8601 Date)
+      rowData.push(historicalDate.toISOString().split('T')[0]);
+    }
+
+    rows.push(rowData.join(';'));
   }
 
   // Füge Duplikat hinzu (gleiche Firma wie erste Zeile)
   if (options.includeDuplicates && count > 0) {
     const uniqueId = `${Date.now()}-dup`;
-    rows.push(
-      [
-        `${testPrefix} TestFirma 1`, // Duplikat der ersten Zeile
-        `dup-${uniqueId}@e2e-import.local`,
-        '+49 999 999999',
-        'Hamburg',
-        '20095',
-        'RESTAURANT',
-      ].join(';')
-    );
+    const dupRow = [
+      `${testPrefix} TestFirma 1`, // Duplikat der ersten Zeile
+      `dup-${uniqueId}@e2e-import.local`,
+      '+49 999 999999',
+      'Hamburg',
+      '20095',
+      'RESTAURANT',
+    ];
+
+    if (options.includeHistoricalDates) {
+      const historicalDate = new Date();
+      historicalDate.setMonth(historicalDate.getMonth() - 12); // 1 Jahr
+      dupRow.push(historicalDate.toISOString().split('T')[0]);
+    }
+
+    rows.push(dupRow.join(';'));
   }
 
   return rows.join('\n');
