@@ -1353,8 +1353,8 @@ PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
 |-----------|--------|---------|
 | **Backend Unit Tests** | 1826 | JUnit 5 + RestAssured |
 | **Frontend Unit Tests** | 1399 | Vitest + React Testing Library |
-| **E2E Tests (Stage 3)** | 37 | Playwright + Docker Compose (inkl. Lead-Import) |
-| **Gesamt** | 3262 | |
+| **E2E Tests (Stage 3)** | 39 | Playwright + Docker Compose (inkl. Lead-Import + Historical Import) |
+| **Gesamt** | 3264 | |
 
 ### Coverage-Ziele
 

@@ -37,6 +37,9 @@ import { FieldMappingStep } from './FieldMappingStep';
 import { PreviewStep } from './PreviewStep';
 import { ExecuteStep } from './ExecuteStep';
 
+// Central Help System
+import { HelpTooltip } from '@/features/help';
+
 // API
 import {
   createPreview,
@@ -320,9 +323,12 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
             {STEPS[activeStep]?.description}
           </Typography>
         </Box>
-        <IconButton onClick={handleClose} size="small" aria-label="Schließen">
-          <CloseIcon />
-        </IconButton>
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <HelpTooltip feature="lead-import" placement="bottom" />
+          <IconButton onClick={handleClose} size="small" aria-label="Schließen">
+            <CloseIcon />
+          </IconButton>
+        </Box>
       </DialogTitle>
 
       {/* Stepper */}

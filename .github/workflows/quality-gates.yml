@@ -110,6 +110,68 @@ jobs:
             })
 
   # ============================================================================
+  # 2.5. OpenAPI Type Sync Check (Sprint 2.1.8) - NON-BLOCKING
+  # ============================================================================
+  # This check is currently NON-BLOCKING (informational only).
+  # Technical debt will be addressed in Sprint 2.2.8.1 (Issue #152).
+  # Once migration is complete, remove continue-on-error and add to blocking checks.
+  openapi-type-sync:
+    name: OpenAPI Type Sync Check (Informational)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run OpenAPI Type Sync Check
+        continue-on-error: true  # NON-BLOCKING - informational only until Sprint 2.2.8.1
+        run: |
+          echo "🔍 Validating OpenAPI Type Sync (Contract-First Development)..."
+          echo ""
+          echo "⚠️  NOTE: This check is currently INFORMATIONAL (non-blocking)."
+          echo "   Technical debt will be addressed in Sprint 2.2.8.1."
+          echo ""
+          echo "Checking for:"
+          echo "  • NEW manual type definitions in frontend/src/features/*/types.ts"
+          echo "  • Type parity between Backend DTOs and Frontend types"
+          echo ""
+          echo "Note: Baseline technical debt (existing manual types) is allowed."
+          echo "      Only NEW manual type definitions will be flagged."
+          echo ""
+          python3 scripts/check-openapi-type-sync.py --new-fields-only
+
+      - name: Comment on PR (informational)
+        if: failure() && github.event_name == 'pull_request'
+        continue-on-error: true  # Don't fail the job if comment fails
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## ⚠️ OpenAPI Type Sync Check (Informational)\n\n' +
+                    'NEW manual type definitions detected in frontend.\n\n' +
+                    '**Note:** This check is currently **non-blocking** (informational only).\n' +
+                    'Technical debt migration is planned for Sprint 2.2.8.1.\n\n' +
+                    '**Contract-First Development Policy:**\n' +
+                    '- Backend DTOs are the Single Source of Truth\n' +
+                    '- Frontend types should be auto-generated from OpenAPI spec\n' +
+                    '- Manual type definitions can lead to drift and bugs\n\n' +
+                    '**Recommended action:**\n' +
+                    '1. Consider removing the new manual type definition\n' +
+                    '2. Add `@Schema` annotation to backend DTO if needed\n' +
+                    '3. Run `cd frontend && npm run generate-api`\n' +
+                    '4. Import types from `api/generated` instead\n\n' +
+                    'See workflow logs for details.'
+            })
+
+  # ============================================================================
   # 3. Test Data Coverage Check
   # ============================================================================
   test-data-coverage:
@@ -734,6 +796,7 @@ jobs:
     needs:
       - design-system
       - field-parity
+      - openapi-type-sync  # Sprint 2.1.8: Contract-First Development
       - test-data-coverage
       - mock-guard
       - structure-guard
@@ -751,7 +814,7 @@ jobs:
       - name: Check all jobs status
         run: |
           # Check if any BLOCKING job failed
-          # Note: code-complexity is non-blocking (informational only)
+          # Note: code-complexity and openapi-type-sync are non-blocking (informational only)
           if [[ "${{ needs.design-system.result }}" == "failure" ]] || \
              [[ "${{ needs.field-parity.result }}" == "failure" ]] || \
              [[ "${{ needs.test-data-coverage.result }}" == "failure" ]] || \
@@ -765,6 +828,11 @@ jobs:
              [[ "${{ needs.dependency-cycles.result }}" == "failure" ]]; then
             echo "❌ Quality Gates FAILED - At least one check failed"
             exit 1
+          fi
+
+          # Report openapi-type-sync status (informational - Sprint 2.2.8.1)
+          if [[ "${{ needs.openapi-type-sync.result }}" == "failure" ]]; then
+            echo "⚠️  OpenAPI Type Sync Check found issues (non-blocking until Sprint 2.2.8.1)"
           fi
 
           # Report code-complexity status (informational)

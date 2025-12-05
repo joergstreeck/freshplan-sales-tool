@@ -270,6 +270,8 @@ export const LEAD_FIELDS = [
   { key: 'contactPosition', label: 'Position', required: false },
   { key: 'website', label: 'Website', required: false },
   { key: 'notes', label: 'Notizen', required: false },
+  // Sprint 2.1.8: Historical Lead Import
+  { key: 'originalCreatedAt', label: 'Erstelldatum', required: false },
 ] as const;
 
 export type LeadFieldKey = (typeof LEAD_FIELDS)[number]['key'];

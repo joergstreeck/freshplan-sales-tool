@@ -228,6 +228,12 @@ export type Lead = {
   createdAt?: string;
   updatedAt?: string;
 
+  // Sprint 2.1.8: Historical Lead Import
+  // originalCreatedAt: Original lead generation date (for imported historical data)
+  // effectiveCreatedAt: COALESCE(originalCreatedAt, createdAt) - use for reports/UI
+  originalCreatedAt?: string; // NULL = createdAt ist Generierungsdatum
+  effectiveCreatedAt?: string; // Computed: originalCreatedAt ?? createdAt
+
   // Legacy fields for backward compatibility
   name?: string; // Maps to companyName
 };
