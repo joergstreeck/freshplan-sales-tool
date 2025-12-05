@@ -1,0 +1,222 @@
+name: AI Code Review (Optional)
+
+# ⚠️ DISABLED BY DEFAULT
+# To enable: Rename to ai-code-review.yml and configure GitHub Secrets
+# See: /docs/planung/AI_CODE_REVIEW_SETUP.md
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [main, develop]
+    paths:
+      - 'backend/src/**/*.java'
+      - 'frontend/src/**/*.ts'
+      - 'frontend/src/**/*.tsx'
+      - 'backend/src/**/*.sql'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  # ============================================================================
+  # AI Code Review with Comments
+  # ============================================================================
+  ai-review:
+    name: AI Code Review
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Full history for better context
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+        with:
+          files: |
+            backend/src/**/*.java
+            frontend/src/**/*.ts
+            frontend/src/**/*.tsx
+            backend/src/main/resources/db/**/*.sql
+
+      - name: AI Code Review Comment
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const changedFiles = '${{ steps.changed-files.outputs.all_changed_files }}'.split(' ');
+            
+            // Create AI Review Summary Comment
+            const comment = `## 🤖 AI Code Review
+            
+            **Status:** ⚠️ Automatische AI-Reviews sind derzeit nicht konfiguriert
+            
+            **Geänderte Dateien:** ${changedFiles.length} Dateien
+            
+            ### 🔧 Setup benötigt
+            
+            Um automatische AI Code Reviews zu aktivieren, wähle eine der folgenden Optionen:
+            
+            #### Option 1: GitHub Copilot (Empfohlen)
+            - Aktiviere GitHub Copilot für dieses Repository in den Settings
+            - Settings → Code & automation → Copilot → Enable
+            - Keine zusätzliche Konfiguration nötig
+            
+            #### Option 2: CodeRabbit
+            - Installiere die CodeRabbit App: https://github.com/apps/coderabbitai
+            - Konfiguriere \`.coderabbit.yaml\` im Repository
+            
+            #### Option 3: Gemini Code Assist
+            - Füge \`GEMINI_API_KEY\` als Repository Secret hinzu
+            - Aktiviere Workflow: \`.github/workflows/ai-code-review.yml\`
+            
+            ### 📚 Weitere Infos
+            Siehe: [\`docs/planung/AI_CODE_REVIEW_SETUP.md\`](docs/planung/AI_CODE_REVIEW_SETUP.md)
+            
+            ---
+            
+            **Hinweis:** Dieser Kommentar wird nur einmal pro PR angezeigt.
+            `;
+            
+            // Check if we already commented
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🤖 AI Code Review')
+            );
+            
+            if (!botComment) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
+
+      - name: Code Review Checklist
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "📋 Manual Code Review Checklist"
+          echo ""
+          echo "Da keine automatischen AI-Reviews konfiguriert sind, hier eine manuelle Checklist:"
+          echo ""
+          echo "✅ Code Quality:"
+          echo "  - [ ] Code folgt SOLID-Prinzipien"
+          echo "  - [ ] Keine Duplikate (DRY-Prinzip)"
+          echo "  - [ ] Sprechende Variablen-/Methodennamen"
+          echo "  - [ ] Komplexität ist angemessen"
+          echo ""
+          echo "✅ Security:"
+          echo "  - [ ] Keine hardcoded Secrets"
+          echo "  - [ ] Input Validation vorhanden"
+          echo "  - [ ] SQL Injection Prevention"
+          echo "  - [ ] CORS korrekt konfiguriert"
+          echo ""
+          echo "✅ Performance:"
+          echo "  - [ ] Keine N+1 Queries"
+          echo "  - [ ] Effiziente Algorithmen"
+          echo "  - [ ] Keine Memory Leaks"
+          echo ""
+          echo "✅ Tests:"
+          echo "  - [ ] Unit Tests vorhanden (≥80%)"
+          echo "  - [ ] Integration Tests wo nötig"
+          echo "  - [ ] Alle Tests grün"
+          echo ""
+          echo "✅ Documentation:"
+          echo "  - [ ] Komplexe Logik kommentiert"
+          echo "  - [ ] ADRs bei architektonischen Entscheidungen"
+          echo "  - [ ] README/Docs aktualisiert"
+          echo ""
+          echo "📚 Siehe auch: /docs/planung/AI_CODE_REVIEW_SETUP.md"
+
+  # ============================================================================
+  # Optional: Gemini Code Assist Review (requires API Key)
+  # ============================================================================
+  gemini-review:
+    name: Gemini Code Assist Review
+    runs-on: ubuntu-latest
+    if: |
+      github.event_name == 'pull_request' && 
+      (secrets.GEMINI_API_KEY != '' || github.event.action == 'labeled')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Gemini API Key
+        id: check-key
+        run: |
+          if [ -z "${{ secrets.GEMINI_API_KEY }}" ]; then
+            echo "has_key=false" >> $GITHUB_OUTPUT
+            echo "⚠️ GEMINI_API_KEY nicht konfiguriert"
+            echo "Füge den API Key als Repository Secret hinzu:"
+            echo "Settings → Secrets → Actions → New repository secret"
+          else
+            echo "has_key=true" >> $GITHUB_OUTPUT
+            echo "✅ GEMINI_API_KEY gefunden"
+          fi
+
+      - name: Run Gemini Code Review (if key exists)
+        if: steps.check-key.outputs.has_key == 'true'
+        run: |
+          echo "🤖 Gemini Code Review würde hier ausgeführt werden"
+          echo ""
+          echo "Implementierung erfordert:"
+          echo "1. Google Cloud SDK Installation"
+          echo "2. Gemini API Client Setup"
+          echo "3. Code-Analyse-Script"
+          echo "4. Review-Kommentar-Posting"
+          echo ""
+          echo "Siehe: https://cloud.google.com/gemini/docs/codeassist/overview"
+
+      - name: Post setup instructions
+        if: steps.check-key.outputs.has_key == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: '## ⚠️ Gemini Code Review Setup benötigt\n\n' +
+                    'Um Gemini Code Assist Reviews zu aktivieren:\n\n' +
+                    '1. Erstelle einen Google Cloud Service Account\n' +
+                    '2. Aktiviere Gemini Code Assist API\n' +
+                    '3. Füge API Key als GitHub Secret hinzu: `GEMINI_API_KEY`\n\n' +
+                    'Siehe: [`docs/planung/AI_CODE_REVIEW_SETUP.md`](docs/planung/AI_CODE_REVIEW_SETUP.md)'
+            });
+
+  # ============================================================================
+  # Summary
+  # ============================================================================
+  ai-review-summary:
+    name: AI Review Complete
+    needs: [ai-review]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "## 🤖 AI Code Review Status" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "⚠️ **Hinweis:** Automatische AI-Reviews sind nicht vollständig konfiguriert" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 🔧 Empfohlene Aktionen:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "1. **GitHub Copilot aktivieren** (einfachste Lösung)" >> $GITHUB_STEP_SUMMARY
+          echo "2. **CodeRabbit installieren** (feature-reich)" >> $GITHUB_STEP_SUMMARY
+          echo "3. **Gemini API konfigurieren** (custom solution)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📚 Siehe: \`docs/planung/AI_CODE_REVIEW_SETUP.md\`" >> $GITHUB_STEP_SUMMARY

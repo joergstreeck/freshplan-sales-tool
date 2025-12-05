@@ -161,6 +161,25 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-12-05 23:45 - AI Code Review Setup & Dokumentation
+
+**Kontext:** User fragte "warum bekomme ich bei meiner PR kein Gemini review?" - Untersuchung ergab, dass keine automatische AI-Review-Integration konfiguriert ist.
+
+**Erledigt:**
+- ✅ **Problem analysiert:** Frühere "Gemini Reviews" (PR #133, #135, #139) waren manuelle Reviews, keine automatische Integration
+- ✅ **Dokumentation erstellt:** `/docs/planung/AI_CODE_REVIEW_SETUP.md` - Vollständiger Guide mit 3 Lösungsoptionen
+- ✅ **Optional Workflow:** `.github/workflows/ai-code-review.yml.disabled` - Aktivierbarer Workflow für AI-Reviews
+- ✅ **Quick-Guide:** `.github/workflows/README_AI_REVIEW.md` - Schnellstart-Anleitung
+
+**Lösungen dokumentiert:**
+- **Option 1 (Empfohlen):** GitHub Copilot aktivieren in Repository Settings (5 Minuten Setup, native Integration)
+- **Option 2:** CodeRabbit App installieren (15 Minuten Setup, feature-reich)
+- **Option 3:** Custom Gemini Workflow mit API-Key (30 Minuten Setup, vollständige Kontrolle)
+
+**Status:** ✅ Dokumentation & Workflows bereit - User/Admin muss eine Option aktivieren
+
+---
+
 ### 2025-12-04 19:24 - Dokumentations-Update für PR #149
 
 **Kontext:** Nachbereitende Dokumentations-Aktualisierung nach PR #149 Merge.
@@ -2035,19 +2054,22 @@
 
 ## Next Steps
 <!-- MP5:NEXT_STEPS:START -->
-**Aktueller Fokus (2025-12-01): E2E Critical Path Tests MERGED ✅ - Ready for Sprint 2.1.8**
+**Aktueller Fokus (2025-12-05): AI Code Review Setup dokumentiert - User-Action erforderlich**
 
-**✅ Sprint 2.1.7.7 E2E Tests COMPLETE (PR #149 MERGED):**
-- ✅ E2E Critical Path Test-Suite (4 Flows gegen echtes Backend)
-- ✅ Neue CI Pipeline: e2e-critical-paths.yml
-- ✅ Timezone-Fix für Leads (V10048, V10049)
-- ✅ Pure API-Tests für maximale CI-Stabilität
+**✅ AI Code Review Dokumentation COMPLETE:**
+- ✅ Problem analysiert: Keine automatische AI-Review-Integration konfiguriert
+- ✅ Vollständiger Setup-Guide: `/docs/planung/AI_CODE_REVIEW_SETUP.md`
+- ✅ Optional Workflow: `.github/workflows/ai-code-review.yml.disabled`
+- ✅ Quick-Guide: `.github/workflows/README_AI_REVIEW.md`
 
-**✅ Sprint 2.1.7.7 Multi-Location COMPLETE (PR #145 MERGED):**
-- ✅ Multi-Location Data Model + UI Integration
-- ✅ Server-Driven fieldCatalog Migration
-- ✅ CI/CD Konsolidierung + Pre-Commit Hooks
-- ✅ HierarchyDashboard Frontend-Tests
+**🎯 USER-ACTION ERFORDERLICH (Repository Admin):**
+1. **GitHub Copilot aktivieren** (EMPFOHLEN - 5 Min):
+   - Settings → Code & automation → Copilot → Enable
+2. **ODER: CodeRabbit installieren** (15 Min):
+   - https://github.com/apps/coderabbitai
+3. **ODER: Gemini API konfigurieren** (30 Min):
+   - API Key als Secret `GEMINI_API_KEY` hinzufügen
+   - Workflow umbenennen: `ai-code-review.yml.disabled` → `ai-code-review.yml`
 
 **Nächste Schritte (Sprint 2.1.8):**
 1. **User-Testing** - Multi-Location Flow testen (HEADQUARTER → Filialen → Opportunities)
@@ -2055,7 +2077,7 @@
 3. **Optional: HierarchyTreeView** - Tree-Struktur für große Ketten (>5 Filialen)
 4. **Sprint 2.1.6 Phase 5** - Frontend UI Polish + Excel Upload (pending)
 
-**Status:** ✅ CI/CD vollständig grün - Bereit für Sprint 2.1.8
+**Status:** ✅ Dokumentation bereit - User muss AI-Review-Option aktivieren
 
 ---
 
