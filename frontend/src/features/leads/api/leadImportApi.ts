@@ -38,7 +38,9 @@ export interface ImportUploadResponse {
   uploadId: string;
   columns: string[];
   rowCount: number;
-  autoMapping: Record<string, string>;
+  /** Backend returns 'suggestedMapping', we alias it to 'autoMapping' for consistency */
+  suggestedMapping?: Record<string, string>;
+  autoMapping?: Record<string, string>;
   fileName: string;
   fileSize: number;
 }

@@ -153,10 +153,12 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
 
   // Step 1: Upload Complete
   const handleUploadComplete = useCallback((data: ImportUploadResponse) => {
+    // Backend returns 'suggestedMapping', fallback to 'autoMapping' for compatibility
+    const autoMapping = data.suggestedMapping || data.autoMapping || {};
     setState(prev => ({
       ...prev,
       uploadData: data,
-      mapping: data.autoMapping || {},
+      mapping: autoMapping,
     }));
     setActiveStep(1);
     setError(null);
