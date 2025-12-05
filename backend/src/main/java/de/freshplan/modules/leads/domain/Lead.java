@@ -358,6 +358,18 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt = LocalDateTime.now();
 
+  /**
+   * Original Lead-Generierungsdatum (Sprint 2.1.8).
+   *
+   * <p>Für Import von Altdaten: Das tatsächliche Datum, an dem der Lead ursprünglich generiert
+   * wurde. Falls NULL, gilt createdAt als Generierungsdatum.
+   *
+   * <p>Business Rule: Für Reports/Analysen sollte originalCreatedAt bevorzugt werden, falls
+   * vorhanden.
+   */
+  @Column(name = "original_created_at")
+  public LocalDateTime originalCreatedAt;
+
   @Column(name = "updated_at", nullable = false)
   public LocalDateTime updatedAt = LocalDateTime.now();
 

@@ -430,6 +430,12 @@ public class SelfServiceImportService {
       }
     }
 
+    // Original-Erstelldatum (Sprint 2.1.8 - Altdaten-Import)
+    String originalCreatedAt = mappedData.get("originalCreatedAt");
+    if (originalCreatedAt != null && !originalCreatedAt.isBlank()) {
+      lead.originalCreatedAt = parseDate(originalCreatedAt);
+    }
+
     // Status und Metadaten
     lead.status = LeadStatus.REGISTERED;
     lead.stage = LeadStage.VORMERKUNG;
@@ -484,6 +490,51 @@ public class SelfServiceImportService {
     log.status = ImportLog.ImportLogStatus.PENDING;
 
     return log;
+  }
+
+  /**
+   * Parst ein Datum aus verschiedenen Formaten (DE/EN/ISO).
+   *
+   * <p>Unterstützte Formate: - dd.MM.yyyy (DE Standard) - dd/MM/yyyy - yyyy-MM-dd (ISO) -
+   * yyyy-MM-dd'T'HH:mm:ss (ISO DateTime) - dd.MM.yyyy HH:mm
+   *
+   * @param dateStr Datumsstring
+   * @return LocalDateTime oder null bei Parse-Fehler
+   */
+  private LocalDateTime parseDate(String dateStr) {
+    if (dateStr == null || dateStr.isBlank()) {
+      return null;
+    }
+
+    // Typische Formate für deutsche Excel/CSV-Exporte
+    String[] patterns = {
+      "dd.MM.yyyy", // DE Standard
+      "dd/MM/yyyy", // DE Alternative
+      "yyyy-MM-dd", // ISO Date
+      "yyyy-MM-dd'T'HH:mm:ss", // ISO DateTime
+      "dd.MM.yyyy HH:mm", // DE mit Zeit
+      "dd.MM.yyyy HH:mm:ss", // DE mit Sekunden
+      "MM/dd/yyyy", // US Format
+      "d.M.yyyy", // DE ohne führende Nullen
+      "d/M/yyyy" // DE Alternative ohne führende Nullen
+    };
+
+    for (String pattern : patterns) {
+      try {
+        java.time.format.DateTimeFormatter formatter =
+            java.time.format.DateTimeFormatter.ofPattern(pattern);
+        if (pattern.contains("HH:mm")) {
+          return LocalDateTime.parse(dateStr.trim(), formatter);
+        } else {
+          return java.time.LocalDate.parse(dateStr.trim(), formatter).atStartOfDay();
+        }
+      } catch (Exception ignored) {
+        // Try next pattern
+      }
+    }
+
+    LOG.warnf("Could not parse date: %s - tried %d patterns", dateStr, patterns.length);
+    return null;
   }
 
   /** Cleanup abgelaufener Uploads (aufgerufen via Scheduler) */

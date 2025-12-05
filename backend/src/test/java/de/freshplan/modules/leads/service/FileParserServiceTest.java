@@ -235,7 +235,7 @@ class FileParserServiceTest {
               "Straße", // Exakt
               "Anmerkungen", // Token (notes)
               "ID", // Ignoriert
-              "Erstelldatum" // Ignoriert
+              "Erstelldatum" // Sprint 2.1.8: originalCreatedAt
               );
 
       Map<String, String> mapping = fileParserService.autoDetectMapping(columns);
@@ -248,7 +248,79 @@ class FileParserServiceTest {
       assertEquals("street", mapping.get("Straße"));
       assertEquals("notes", mapping.get("Anmerkungen"));
       assertFalse(mapping.containsKey("ID"));
-      assertFalse(mapping.containsKey("Erstelldatum"));
+      assertEquals("originalCreatedAt", mapping.get("Erstelldatum")); // Sprint 2.1.8
+    }
+  }
+
+  // ============================================================================
+  // Original Created At Tests (Sprint 2.1.8)
+  // ============================================================================
+
+  @Nested
+  @DisplayName("Original Created At (Sprint 2.1.8)")
+  class OriginalCreatedAtTests {
+
+    @Test
+    @DisplayName("Erkennt deutsche Datum-Spaltennamen")
+    void shouldMatchGermanDateColumns() {
+      List<String> columns =
+          List.of(
+              "Erstelldatum",
+              "Erstellt am",
+              "Generiert am",
+              "Generierungsdatum",
+              "Lead Datum",
+              "Datum");
+
+      // Nur erstes Match, da originalCreatedAt nur einmal gemappt werden kann
+      Map<String, String> mapping = fileParserService.autoDetectMapping(columns);
+
+      assertTrue(mapping.containsValue("originalCreatedAt"));
+      assertEquals(1, mapping.values().stream().filter(v -> v.equals("originalCreatedAt")).count());
+    }
+
+    @Test
+    @DisplayName("Erkennt englische Datum-Spaltennamen")
+    void shouldMatchEnglishDateColumns() {
+      List<String> columns = List.of("Created At", "Date", "Lead Date");
+
+      Map<String, String> mapping = fileParserService.autoDetectMapping(columns);
+
+      assertTrue(mapping.containsValue("originalCreatedAt"));
+    }
+
+    @Test
+    @DisplayName("Erkennt 'Erstellt' durch Token-Match")
+    void shouldMatchCreatedViaToken() {
+      List<String> columns = List.of("Firma erstellt am Datum");
+
+      Map<String, String> mapping = fileParserService.autoDetectMapping(columns);
+
+      assertEquals("originalCreatedAt", mapping.get("Firma erstellt am Datum"));
+    }
+
+    @Test
+    @DisplayName("Real-World Import mit Datum-Spalte")
+    void shouldHandleRealWorldImportWithDate() {
+      List<String> columns =
+          List.of(
+              "Firmenname",
+              "E-Mail",
+              "Telefon",
+              "PLZ",
+              "Stadt",
+              "Lead-Datum", // Altdaten-Import
+              "Quelle");
+
+      Map<String, String> mapping = fileParserService.autoDetectMapping(columns);
+
+      assertEquals("companyName", mapping.get("Firmenname"));
+      assertEquals("email", mapping.get("E-Mail"));
+      assertEquals("phone", mapping.get("Telefon"));
+      assertEquals("postalCode", mapping.get("PLZ"));
+      assertEquals("city", mapping.get("Stadt"));
+      assertEquals("originalCreatedAt", mapping.get("Lead-Datum"));
+      assertEquals("source", mapping.get("Quelle"));
     }
   }
 }

@@ -131,6 +131,18 @@ public class LeadDTO {
 
   // Metadata
   public LocalDateTime createdAt;
+
+  /**
+   * Original Lead-Generierungsdatum (für Altdaten-Import). NULL = createdAt ist Generierungsdatum
+   */
+  public LocalDateTime originalCreatedAt;
+
+  /**
+   * Effektives Generierungsdatum: originalCreatedAt falls vorhanden, sonst createdAt. Für
+   * Reports/UI-Anzeige verwenden.
+   */
+  public LocalDateTime effectiveCreatedAt;
+
   public String createdBy;
   public LocalDateTime updatedAt;
   public String updatedBy;
@@ -266,6 +278,10 @@ public class LeadDTO {
 
   private static void mapMetadataFields(LeadDTO dto, Lead lead) {
     dto.createdAt = lead.createdAt;
+    dto.originalCreatedAt = lead.originalCreatedAt;
+    // effectiveCreatedAt: Use originalCreatedAt if set (imported lead), otherwise createdAt
+    dto.effectiveCreatedAt =
+        lead.originalCreatedAt != null ? lead.originalCreatedAt : lead.createdAt;
     dto.createdBy = lead.createdBy;
     dto.updatedAt = lead.updatedAt;
     dto.updatedBy = lead.updatedBy;

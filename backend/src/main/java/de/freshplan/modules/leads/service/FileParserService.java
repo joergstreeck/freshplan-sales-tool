@@ -135,6 +135,21 @@ public class FileParserService {
     COLUMN_MAPPING.put("homepage", "website");
     COLUMN_MAPPING.put("url", "website");
 
+    // Original-Erstelldatum (Sprint 2.1.8 - Altdaten-Import)
+    COLUMN_MAPPING.put("erstelldatum", "originalCreatedAt");
+    COLUMN_MAPPING.put("erstellt am", "originalCreatedAt");
+    COLUMN_MAPPING.put("erstellt", "originalCreatedAt");
+    COLUMN_MAPPING.put("generiert am", "originalCreatedAt");
+    COLUMN_MAPPING.put("generierungsdatum", "originalCreatedAt");
+    COLUMN_MAPPING.put("datum", "originalCreatedAt");
+    COLUMN_MAPPING.put("lead datum", "originalCreatedAt");
+    COLUMN_MAPPING.put("lead-datum", "originalCreatedAt");
+    COLUMN_MAPPING.put("created", "originalCreatedAt");
+    COLUMN_MAPPING.put("created at", "originalCreatedAt");
+    COLUMN_MAPPING.put("createdat", "originalCreatedAt");
+    COLUMN_MAPPING.put("date", "originalCreatedAt");
+    COLUMN_MAPPING.put("lead date", "originalCreatedAt");
+
     // ============================================================================
     // Synonym-Gruppen für Fuzzy-Matching
     // ============================================================================
@@ -173,6 +188,17 @@ public class FileParserService {
         Set.of("notiz", "notizen", "bemerkung", "notes", "kommentar", "anmerkung", "hinweis"));
     FIELD_SYNONYMS.put(
         "website", Set.of("website", "webseite", "homepage", "url", "web", "internet", "seite"));
+    FIELD_SYNONYMS.put(
+        "originalCreatedAt",
+        Set.of(
+            "erstelldatum",
+            "erstellt",
+            "generiert",
+            "generierungsdatum",
+            "datum",
+            "date",
+            "created",
+            "lead"));
   }
 
   // ============================================================================
