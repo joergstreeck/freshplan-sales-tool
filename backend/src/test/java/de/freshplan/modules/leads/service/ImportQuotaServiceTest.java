@@ -57,6 +57,7 @@ class ImportQuotaServiceTest {
       territory.countryCode = "DE";
       territory.currencyCode = "EUR";
       territory.taxRate = new BigDecimal("19.0");
+      territory.languageCode = "de-DE";
       territory.persist();
     }
   }

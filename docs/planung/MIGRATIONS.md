@@ -243,6 +243,11 @@ ALTER TABLE {table} DROP COLUMN IF EXISTS {column};
 | **V10040** | Add Customer Addresses | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | customer_addresses (Multi-Location Prep) |
 | **V10041** | Refactor Customer Addresses Structured | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | Strukturierte Adressen (street, city, postalCode, country, addressType) |
 | **V10042** | Add Contact V2 Fields | 2.1.7.2 | @joergstreeck | #144 | ✅ Yes | 🟢 Low | None | Contact V2 Schema-Erweiterung für Multi-Location |
+| **V10050** | GDPR Compliance Fields | 2.1.8 | @joergstreeck | - | ✅ Yes | 🟢 Low | None | gdpr_data_requests + gdpr_deletion_logs Tables, Lead GDPR Fields (deletedAt, consentRevokedAt, exportedAt) |
+| **V10051** | Self-Service Import Infrastructure | 2.1.8 | @joergstreeck | - | ✅ Yes | 🟢 Low | None | import_logs Table (Quota-Tracking, Status, Duplikate-Info) |
+| **V10052** | Fuzzy Search pg_trgm Extension | 2.1.8 | @joergstreeck | - | ✅ Yes | 🟢 Low | None | CREATE EXTENSION pg_trgm, GIN Index für Leads (company_name, contact_person, email, city) |
+| **V10053** | Historical Import Date Fields | 2.1.8 | @joergstreeck | - | ✅ Yes | 🟢 Low | None | original_created_at TIMESTAMP, effective_created_at computed (COALESCE) |
+| **V10054** | Help Content View Tracking | 2.1.8 | @joergstreeck | - | ✅ Yes | 🟢 Low | None | help_content.view_count column + tracking support |
 
 **Rollback Scripts:**
 
@@ -639,15 +644,18 @@ DELETE FROM customers WHERE is_test_data = true AND created_at < NOW() - INTERVA
 
 ---
 
-**Letzte Aktualisierung:** 2025-12-01 17:00 (V10048-V10049 dokumentiert - Sprint 2.1.7.7 E2E Tests COMPLETE)
+**Letzte Aktualisierung:** 2025-12-05 22:30 (V10050-V10054 dokumentiert - Sprint 2.1.8 COMPLETE)
 
-**Neue Migrationen (Sprint 2.1.7.7 E2E Tests - PR #149):**
+**Neue Migrationen (Sprint 2.1.8 DSGVO & Lead-Import):**
 | Version | Beschreibung | Sprint | Status |
 |---------|--------------|--------|--------|
-| V10048 | fix_leads_registered_at_timezone_constraint | 2.1.7.7 | ✅ Merged |
-| V10049 | fix_timezone_constraint_proper_solution | 2.1.7.7 | ✅ Merged |
+| V10050 | GDPR Compliance Fields | 2.1.8 | ✅ Deployed |
+| V10051 | Self-Service Import Infrastructure | 2.1.8 | ✅ Deployed |
+| V10052 | Fuzzy Search pg_trgm Extension | 2.1.8 | ✅ Deployed |
+| V10053 | Historical Import Date Fields | 2.1.8 | ✅ Deployed |
+| V10054 | Help Content View Tracking | 2.1.8 | ✅ Deployed |
 
-**Nächste Migration:** V10050+ (ermitteln via `./scripts/get-next-migration.sh`)
+**Nächste Migration:** V10055+ (ermitteln via `./scripts/get-next-migration.sh`)
 
-**Aktuelle Sprint:** Sprint 2.1.8 (NEXT)
-**Letzter Merge:** PR #149 - Sprint 2.1.7.7 E2E Critical Path Tests (01.12.2025)
+**Aktueller Sprint:** Sprint 2.1.8 COMPLETE ✅
+**Letzter Merge:** Sprint 2.1.8 - DSGVO Compliance & Lead-Import (05.12.2025)

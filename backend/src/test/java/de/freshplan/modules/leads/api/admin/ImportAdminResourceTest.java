@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import de.freshplan.modules.leads.domain.ImportLog;
 import de.freshplan.modules.leads.domain.ImportLog.ImportLogStatus;
+import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import io.quarkus.test.security.TestSecurity;
 import io.restassured.http.ContentType;
@@ -302,20 +303,30 @@ class ImportAdminResourceTest {
   // Helper Methods (outside @Nested classes for CDI compatibility)
   // ============================================================================
 
-  @Transactional
-  ImportLog createFreshPendingImport() {
-    ImportLog fresh = new ImportLog();
-    fresh.userId = testUserId;
-    fresh.importedAt = LocalDateTime.now();
-    fresh.totalRows = 50;
-    fresh.importedCount = 40;
-    fresh.skippedCount = 8;
-    fresh.errorCount = 2;
-    fresh.duplicateRate = new BigDecimal("16.00");
-    fresh.status = ImportLogStatus.PENDING_APPROVAL;
-    fresh.persist();
-    em.flush();
-    return fresh;
+  /**
+   * Creates a fresh pending import in a new transaction.
+   *
+   * <p>Uses QuarkusTransaction.requiringNew() to ensure the entity is persisted and committed
+   * before the REST call is made. This avoids the CDI "self-invocation problem"
+   * where @Transactional annotations are not applied when calling methods within the same class.
+   */
+  UUID createFreshPendingImport() {
+    return QuarkusTransaction.requiringNew()
+        .call(
+            () -> {
+              ImportLog fresh = new ImportLog();
+              fresh.userId = testUserId;
+              fresh.importedAt = LocalDateTime.now();
+              fresh.totalRows = 50;
+              fresh.importedCount = 40;
+              fresh.skippedCount = 8;
+              fresh.errorCount = 2;
+              fresh.duplicateRate = new BigDecimal("16.00");
+              fresh.status = ImportLogStatus.PENDING_APPROVAL;
+              fresh.persist();
+              em.flush();
+              return fresh.id;
+            });
   }
 
   // ============================================================================
@@ -332,9 +343,12 @@ class ImportAdminResourceTest {
         roles = {"ADMIN"})
     @DisplayName("ADMIN kann Import genehmigen")
     void testApproveImport_AdminSuccess() {
+      // Create fresh pending import for this test to avoid test interference
+      UUID freshPendingId = createFreshPendingImport();
+
       given()
           .when()
-          .post("/api/admin/imports/" + pendingImport.id + "/approve")
+          .post("/api/admin/imports/" + freshPendingId + "/approve")
           .then()
           .statusCode(200)
           .body("status", equalTo("COMPLETED"))
@@ -349,11 +363,11 @@ class ImportAdminResourceTest {
     @DisplayName("MANAGER kann Import genehmigen")
     void testApproveImport_ManagerSuccess() {
       // Create fresh pending import for this test
-      ImportLog freshPending = createFreshPendingImport();
+      UUID freshPendingId = createFreshPendingImport();
 
       given()
           .when()
-          .post("/api/admin/imports/" + freshPending.id + "/approve")
+          .post("/api/admin/imports/" + freshPendingId + "/approve")
           .then()
           .statusCode(200)
           .body("status", equalTo("COMPLETED"))
@@ -419,13 +433,13 @@ class ImportAdminResourceTest {
     @DisplayName("ADMIN kann Import ablehnen mit Begründung")
     void testRejectImport_AdminSuccess() {
       // Create fresh pending import for this test
-      ImportLog freshPending = createFreshPendingImport();
+      UUID freshPendingId = createFreshPendingImport();
 
       given()
           .contentType(ContentType.JSON)
           .body(Map.of("reason", "Datenqualität unzureichend"))
           .when()
-          .post("/api/admin/imports/" + freshPending.id + "/reject")
+          .post("/api/admin/imports/" + freshPendingId + "/reject")
           .then()
           .statusCode(200)
           .body("status", equalTo("REJECTED"))
@@ -439,13 +453,13 @@ class ImportAdminResourceTest {
         roles = {"MANAGER"})
     @DisplayName("MANAGER kann Import ablehnen")
     void testRejectImport_ManagerSuccess() {
-      ImportLog freshPending = createFreshPendingImport();
+      UUID freshPendingId = createFreshPendingImport();
 
       given()
           .contentType(ContentType.JSON)
           .body(Map.of("reason", "Zu viele Duplikate"))
           .when()
-          .post("/api/admin/imports/" + freshPending.id + "/reject")
+          .post("/api/admin/imports/" + freshPendingId + "/reject")
           .then()
           .statusCode(200)
           .body("status", equalTo("REJECTED"))

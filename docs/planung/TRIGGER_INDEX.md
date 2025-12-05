@@ -336,11 +336,22 @@ Für Modul‑konkrete Navigation verweisen die Trigger auf die **SPRINT_MAP.md**
    - **Migrations:** Keine (nur Frontend-State)
    - Status: 📋 PLANNING - NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
-📋 TRIGGER_SPRINT_2_1_8.md - Team Management & Test Infrastructure (VERSCHOBEN)
-   - **Track 1 - Business:** Lead-Transfer, RLS, Team Management, Fuzzy-Matching
-   - **Track 2 - Test Infra:** CRM Szenario-Builder, Faker-Integration, Test-Patterns
-   - Strategisches Investment: Test-Qualität für Sprint 2.2+ Velocity
-   - Status: 📋 PLANNED (Start: TBD)
+✅ TRIGGER_SPRINT_2_1_8.md - DSGVO Compliance & Lead-Import (05.12.2025) - **16 Commits MERGED**
+   - **DSGVO Compliance (Art. 15, 17, 7.3):**
+     - ✅ GdprService + GdprPdfGeneratorService (OpenPDF)
+     - ✅ GdprResource: /api/gdpr/leads/{id}/data-export, DELETE, revoke-consent
+     - ✅ Frontend: GdprActionsMenu, GdprDeleteDialog, GdprDeletedBadge
+   - **Self-Service Lead-Import:**
+     - ✅ 4-Schritt Wizard (Upload → Mapping → Preview → Execute)
+     - ✅ Quota-System (SALES 100/MANAGER 200/ADMIN ∞)
+     - ✅ Fuzzy Auto-Mapping (3-Tier: Exact → Token → Levenshtein 70%)
+     - ✅ Historical Import mit originalCreatedAt
+   - **Admin-Dashboards:** /admin/dsgvo, /admin/imports
+   - **Advanced Search:** pg_trgm Fuzzy-Suche
+   - **Migrations:** V10050-V10054 (GDPR, Import, Search, Historical, Help Content)
+   - **Tests:** 100+ Unit-Tests (Backend + Frontend)
+   - **Metriken:** 16 Commits, 285 Files, +21.526/-806 LOC
+   - Status: ✅ COMPLETE (05.12.2025)
 
 📋 TRIGGER_SPRINT_2_1_9.md - DSGVO Compliance & Lead-Import (VERSCHOBEN)
    - **🔴 GESETZLICH PFLICHT:** DSGVO-Auskunfts-Recht (Art. 15), DSGVO-Lösch-Recht (Art. 17)

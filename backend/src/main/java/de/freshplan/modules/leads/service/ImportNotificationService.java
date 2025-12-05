@@ -5,8 +5,11 @@ import io.quarkus.mailer.reactive.ReactiveMailer;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -25,13 +28,17 @@ public class ImportNotificationService {
   private static final DateTimeFormatter DATE_FORMAT =
       DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
+  /** Simple email validation pattern (RFC 5322 simplified). */
+  private static final Pattern EMAIL_PATTERN =
+      Pattern.compile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$");
+
   @Inject ReactiveMailer mailer;
 
   @ConfigProperty(name = "freshplan.import.notification.enabled", defaultValue = "true")
   boolean notificationsEnabled;
 
-  @ConfigProperty(name = "freshplan.import.notification.admin-emails", defaultValue = "")
-  List<String> adminEmails;
+  @ConfigProperty(name = "freshplan.import.notification.admin-emails")
+  Optional<List<String>> adminEmails;
 
   @ConfigProperty(
       name = "freshplan.import.notification.from",
@@ -58,7 +65,8 @@ public class ImportNotificationService {
       return;
     }
 
-    if (adminEmails.isEmpty()) {
+    List<String> emails = adminEmails.orElse(Collections.emptyList());
+    if (emails.isEmpty()) {
       LOG.warnf(
           "No admin emails configured, cannot send approval notification for importId=%d",
           importId);
@@ -74,7 +82,7 @@ public class ImportNotificationService {
     String body =
         buildApprovalEmailHtml(importId, userId, fileName, totalRows, duplicateRate, approvalUrl);
 
-    for (String adminEmail : adminEmails) {
+    for (String adminEmail : emails) {
       if (adminEmail == null || adminEmail.isBlank()) {
         continue;
       }
@@ -113,7 +121,10 @@ public class ImportNotificationService {
   public void notifyImportApproved(
       UUID importId, String userEmail, String fileName, int importedCount) {
 
-    if (!notificationsEnabled || userEmail == null || userEmail.isBlank()) {
+    if (!notificationsEnabled || !isValidEmail(userEmail)) {
+      LOG.debugf(
+          "Skipping approval notification - notifications disabled or invalid email: %s",
+          userEmail);
       return;
     }
 
@@ -144,7 +155,10 @@ public class ImportNotificationService {
   public void notifyImportRejected(
       UUID importId, String userEmail, String fileName, String reason) {
 
-    if (!notificationsEnabled || userEmail == null || userEmail.isBlank()) {
+    if (!notificationsEnabled || !isValidEmail(userEmail)) {
+      LOG.debugf(
+          "Skipping rejection notification - notifications disabled or invalid email: %s",
+          userEmail);
       return;
     }
 
@@ -162,6 +176,20 @@ public class ImportNotificationService {
                 LOG.infof("Rejection notification sent to %s for importId=%d", userEmail, importId),
             failure ->
                 LOG.errorf("Failed to send rejection notification: %s", failure.getMessage()));
+  }
+
+  // ============================================================================
+  // Validation
+  // ============================================================================
+
+  /**
+   * Validates if the given string is a valid email address.
+   *
+   * @param email the email address to validate
+   * @return true if valid, false otherwise
+   */
+  private boolean isValidEmail(String email) {
+    return email != null && !email.isBlank() && EMAIL_PATTERN.matcher(email.trim()).matches();
   }
 
   // ============================================================================

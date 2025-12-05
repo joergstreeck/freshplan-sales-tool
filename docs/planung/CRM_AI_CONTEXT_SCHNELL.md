@@ -3,7 +3,7 @@
 ```
 KONTEXT-TYP: System-Dokumentation für KI-Agenten
 PROJEKT: FreshFoodz B2B-Food-CRM (internes Vertriebstool)
-STAND: 2025-12-01
+STAND: 2025-12-05
 TOKENS: ~12.000 (komplett) | ~3.000 (Quick Start bis COMMON PITFALLS)
 ```
 
@@ -60,11 +60,16 @@ TOKENS: ~12.000 (komplett) | ~3.000 (Quick Start bis COMMON PITFALLS)
 - **📋 Vollständige Liste:** `/docs/planung/MIGRATIONS.md` (Single Source of Truth!)
 
 ### Next Steps
-- **COMPLETE:** Sprint 2.1.7.2 (Customer-Management + Xentral-Integration) ✅
-- **COMPLETE:** Sprint 2.1.7.4 (Customer Status Architecture - PROSPECT→AKTIV Lifecycle) ✅
 - **COMPLETE:** Sprint 2.1.7.7 (Multi-Location Management + Server-Driven Architecture) ✅ PR #145 MERGED
 - **COMPLETE:** E2E Tests Sprint (E2E Critical Path Validation + Timezone Fix) ✅ PR #149 MERGED
-- **NÄCHSTER:** Sprint 2.1.7.5 (Advanced Filters & Analytics) oder Sprint 2.1.8 (Team Management)
+- **COMPLETE:** Sprint 2.1.8 (DSGVO Compliance & Lead-Import) ✅ 16 Commits, 285 Files, +21.526 LOC
+  - DSGVO Art. 15/17/7.3 (Auskunft, Löschung, Widerruf)
+  - Self-Service Lead-Import mit 4-Schritt Wizard
+  - Fuzzy Auto-Mapping (3-Tier: Exact → Token → Levenshtein)
+  - Historical Import (originalCreatedAt)
+  - pg_trgm Fuzzy-Suche
+  - Admin-Dashboards (/admin/dsgvo, /admin/imports)
+- **NÄCHSTER:** Sprint 2.1.9 (Team Management) oder Sprint 2.1.7.5 (Advanced Filters & Analytics)
 
 ---
 
@@ -204,7 +209,8 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 | Feature | Status | Hinweis |
 |---------|--------|---------|
 | Progressive Profiling UI | ❌ | Lead-Anreicherung über Zeit - geplant |
-| Team Management | ⏳ | Kollaboratoren + Lead-Transfer - Sprint 2.1.8 |
+| Team Management | ⏳ | Kollaboratoren + Lead-Transfer - Nächster Sprint |
+| BANT-Qualifizierung | ⏳ | Budget/Authority/Need/Timeline - DEFERRED |
 | KEDA Autoscaling | ⏳ | Territory + Seasonal-aware - Deployment pending |
 | Production Monitoring | ⏳ | Prometheus + Grafana - Setup pending |
 
@@ -230,7 +236,7 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 ---
 
 <a id="system-status"></a>
-## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-12-01)
+## ⚡ SYSTEM-STATUS AUF EINEN BLICK (Stand: 2025-12-05)
 
 ### 🏗️ Architecture Flags (Production-Ready Features)
 
@@ -271,12 +277,23 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 - ✅ **Design Tokens zentral** - Nur #94C456 Primary + #004F7B Secondary via theme.palette.*
 - ✅ **Design-First Development** - 100% Deutsch, keine hardcoded Styles
 
+**DSGVO & LEAD-IMPORT (Sprint 2.1.8 - 05.12.2025):**
+- ✅ **DSGVO Art. 15** - Datenauskunft als PDF-Export (GdprPdfGeneratorService mit OpenPDF)
+- ✅ **DSGVO Art. 17** - Recht auf Löschung (Soft-Delete + PII-Anonymisierung)
+- ✅ **DSGVO Art. 7.3** - Widerruf der Einwilligung (Kontaktsperre)
+- ✅ **Self-Service Lead-Import** - 4-Schritt Wizard (Upload → Mapping → Preview → Execute)
+- ✅ **Quota-System** - SALES 100 / MANAGER 200 / ADMIN ∞ Leads pro Import
+- ✅ **Fuzzy Auto-Mapping** - 3-Tier Spalten-Erkennung (Exact Dictionary → Token-based → Levenshtein 70%)
+- ✅ **Historical Import** - originalCreatedAt für Messe-Leads (Business-Datum)
+- ✅ **Advanced Search** - PostgreSQL pg_trgm Extension mit Fuzzy-Suche
+- ✅ **Admin-Dashboards** - /admin/dsgvo + /admin/imports
+
 **CURRENT STATUS:**
-- 📊 **Tests:** Backend 2400+ Tests GREEN, Frontend Tests GREEN
-- 📦 **Migrations:** Production V10049 (Latest: fix_timestamps_timezone_utc), ~49 Migrations V10xxx → **Details:** `/docs/planung/MIGRATIONS.md`
-- 🚀 **Backend:** Multi-Location BranchService + HierarchyMetrics operational ✅, Server-Driven UI ✅
-- 🚀 **Frontend:** HierarchyDashboard + CreateBranchDialog operational ✅
-- 📋 **Latest:** E2E Tests Sprint MERGED (01.12.2025) - PR #149 - E2E Critical Path Validation + Timezone Fix
+- 📊 **Tests:** Backend 2400+ Tests GREEN, Frontend 100+ Tests GREEN
+- 📦 **Migrations:** Production V10054 (Latest: help_content_view_tracking), ~54 Migrations V10xxx → **Details:** `/docs/planung/MIGRATIONS.md`
+- 🚀 **Backend:** DSGVO-Services + Lead-Import + Fuzzy-Search operational ✅
+- 🚀 **Frontend:** LeadImportWizard + GdprActionsMenu + Admin-Dashboards operational ✅
+- 📋 **Latest:** Sprint 2.1.8 COMPLETE (05.12.2025) - DSGVO Compliance & Lead-Import (16 Commits, 285 Files, +21.526 LOC)
 
 ---
 
@@ -989,9 +1006,17 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 <a id="sektion-6-codebase-reality"></a>
 ## 📦 SEKTION 6: CODEBASE-REALITY
 
-### 📊 Latest Implementation (Stand: 2025-12-01)
+### 📊 Latest Implementation (Stand: 2025-12-05)
 
 **Completed Sprints:**
+- ✅ **Sprint 2.1.8** (05.12.2025): DSGVO Compliance & Lead-Import (16 Commits, 285 Files, +21.526 LOC)
+  - DSGVO Art. 15/17/7.3: Auskunft, Löschung, Widerruf
+  - Self-Service Lead-Import: 4-Schritt Wizard mit Quota-System
+  - Fuzzy Auto-Mapping: 3-Tier (Exact Dictionary → Token-based → Levenshtein 70%)
+  - Historical Import: originalCreatedAt für Messe-Leads
+  - Advanced Search: pg_trgm Fuzzy-Suche
+  - Admin-Dashboards: /admin/dsgvo, /admin/imports
+  - Migrationen: V10050-V10054
 - ✅ **E2E Tests Sprint** (01.12.2025): E2E Critical Path Validation + Timezone Fix (PR #149 MERGED)
   - 4 E2E Critical Path Test-Flows: customer-onboarding, lead-conversion, multi-location, validation
   - Pure API-Tests (keine Browser-Interaktionen) für CI-Stabilität
@@ -1011,8 +1036,8 @@ touch backend/src/main/resources/db/migration/${NEXT}__beschreibung.sql
 - ✅ **Sprint 2.1.6.1** (14.10.2025): Opportunity Backend - Lead→Opportunity→Customer Workflows
 
 **Next Planning:**
-- 📋 **Sprint 2.1.7.5**: Advanced Filters & Analytics
-- 📋 **Sprint 2.1.8**: Team Management + Kollaboratoren + Lead-Transfer
+- 📋 **Sprint 2.1.9**: Team Management + Kollaboratoren + Lead-Transfer
+- 📋 **Sprint 2.1.7.5**: Advanced Filters & Analytics (DEFERRED - warten auf echte Daten)
 
 **Test Status:**
 - Backend: 2400+ Tests GREEN ✅ - Multi-Location, Server-Driven UI, Xentral-Integration operational

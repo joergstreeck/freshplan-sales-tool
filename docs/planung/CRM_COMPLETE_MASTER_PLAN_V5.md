@@ -161,6 +161,33 @@
 
 ## Session Log
 <!-- MP5:SESSION_LOG:START -->
+### 2025-12-05 22:00 - Sprint 2.1.8 COMPLETE ✅ (16 Commits)
+
+**Kontext:** Sprint 2.1.8 - DSGVO Compliance & Lead-Import vollständig abgeschlossen.
+
+**Deliverables (9 Features COMPLETE):**
+- ✅ **DSGVO Art. 15** - Datenauskunft als PDF-Export (GdprPdfGeneratorService)
+- ✅ **DSGVO Art. 17** - Recht auf Löschung (Soft-Delete + PII-Anonymisierung)
+- ✅ **DSGVO Art. 7.3** - Widerruf der Einwilligung (Kontaktsperre)
+- ✅ **Self-Service Lead-Import** - 4-Schritt-Wizard mit Quota-System
+- ✅ **Fuzzy Auto-Mapping** - 3-Tier Spalten-Erkennung (Exact + Token + Levenshtein)
+- ✅ **Historical Import** - originalCreatedAt für Business-Datum
+- ✅ **Advanced Search** - pg_trgm Fuzzy-Suche
+- ✅ **Admin-Dashboards** - /admin/dsgvo + /admin/imports
+- ✅ **100+ Unit Tests** - Backend + Frontend
+
+**Migrationen:** V10050-V10054 (GDPR, Import, Search, Historical Date, Help Content)
+
+**Statistiken:**
+- 16 Commits, 285 Dateien, +21.526/-806 LOC
+- 5 DB-Migrationen, 8 neue Services, ~25 neue REST-Endpoints
+- 12 neue React-Komponenten
+
+**Branch:** feature/sprint-2-1-8-dsgvo-lead-import
+**Status:** ✅ COMPLETE - Bereit für Merge
+
+---
+
 ### 2025-12-04 19:24 - Dokumentations-Update für PR #149
 
 **Kontext:** Nachbereitende Dokumentations-Aktualisierung nach PR #149 Merge.

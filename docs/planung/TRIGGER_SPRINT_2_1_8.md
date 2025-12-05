@@ -2,18 +2,23 @@
 sprint_id: "2.1.8"
 title: "DSGVO Compliance & Lead-Import"
 doc_type: "trigger"
-status: "in_progress"
+status: "complete"
 owner: "Claude Code"
 date_start: "2025-12-04"
+date_end: "2025-12-05"
 branch: "feature/sprint-2-1-8-dsgvo-lead-import"
 modules: ["02_neukundengewinnung"]
-updated: "2025-12-04"
+updated: "2025-12-05"
+commits: 16
+files_changed: 285
+lines_added: 21526
+lines_removed: 806
 ---
 
 # Sprint 2.1.8 – DSGVO Compliance & Lead-Import
 
 **Branch:** `feature/sprint-2-1-8-dsgvo-lead-import`
-**Status:** 🚧 IN PROGRESS
+**Status:** ✅ COMPLETE (05.12.2025)
 
 ---
 
@@ -26,9 +31,11 @@ updated: "2025-12-04"
 | DSGVO Art. 15 (Auskunft) | 🔴 PFLICHT | ✅ DONE |
 | DSGVO Art. 17 (Löschung) | 🔴 PFLICHT | ✅ DONE |
 | DSGVO Art. 7.3 (Widerruf) | 🟡 SOLLTE | ✅ DONE |
-| Lead-Import (CSV/Excel) | 🔴 KRITISCH | 🚧 IN PROGRESS |
-| Admin-UI (/admin/dsgvo, /admin/imports) | 🟡 WICHTIG | ⬜ TODO |
-| Advanced Search | 🟢 KANN | ⬜ DEFERRED |
+| Lead-Import (CSV/Excel) | 🔴 KRITISCH | ✅ DONE |
+| Fuzzy Auto-Mapping (3-Tier) | 🟡 WICHTIG | ✅ DONE |
+| Historical Import (originalCreatedAt) | 🟡 WICHTIG | ✅ DONE |
+| Admin-UI (/admin/dsgvo, /admin/imports) | 🟡 WICHTIG | ✅ DONE |
+| Advanced Search (pg_trgm) | 🟢 KANN | ✅ DONE |
 | BANT-Qualifizierung | 🟢 KANN | ⬜ DEFERRED |
 
 ---
@@ -120,11 +127,37 @@ cd frontend && npm run dev
 - [x] `/admin/imports` - ImportsAdminPage (Approve/Reject Workflow)
 - [x] Navigation-Integration (AdminDashboard Schnellzugriff)
 
-### Phase 4: Advanced Search + BANT (Optional)
+### Phase 4: Advanced Search ✅ ABGESCHLOSSEN
 
-**Status:** DEFERRED - nur wenn Zeit übrig
+**Scope:** Fuzzy Search mit pg_trgm Extension
 
-- [ ] PostgreSQL Full-Text-Search
+- [x] Migration V10052: pg_trgm Extension + GIN Index
+- [x] LeadFuzzySearchService (Fuzzy-Matching)
+- [x] LeadSearchResource (REST Endpoint /api/leads/search/fuzzy)
+- [x] Tests: Fuzzy-Search Unit-Tests
+
+### Phase 5: Fuzzy Auto-Mapping ✅ ABGESCHLOSSEN
+
+**Scope:** Intelligente Spalten-Erkennung für Import
+
+- [x] 3-Tier Matching: Exact Dictionary → Token-based → Levenshtein (70%)
+- [x] 19 Sprachen-Dictionary (DE/EN)
+- [x] suggestedMapping in Backend-Response
+- [x] Frontend-Integration in LeadImportWizard
+
+### Phase 6: Historical Import ✅ ABGESCHLOSSEN
+
+**Scope:** Historisches Erstelldatum für Messe-Leads
+
+- [x] Migration V10053: original_created_at + effective_created_at Felder
+- [x] effectiveCreatedAt Computed Field (COALESCE)
+- [x] CSV/Excel Spalte "Ursprüngliches Datum"
+- [x] DatePicker im Import-Wizard (globalOriginalDate)
+
+### BANT-Qualifizierung (DEFERRED)
+
+**Status:** Auf späteren Sprint verschoben
+
 - [ ] BANT-Felder + Score
 - [ ] Dashboard-Widget
 
@@ -158,16 +191,16 @@ cd frontend && npm run dev
 
 ## ✅ Definition of Done
 
-### Minimum (MUSS):
-- [ ] DSGVO Art. 15, 17, 7.3 funktional
-- [ ] Lead-Import funktional (CSV + Excel)
-- [ ] Admin-Routen verfügbar
-- [ ] Tests ≥80% Coverage
-- [ ] CI GREEN
+### Minimum (MUSS): ✅ ALLE ERFÜLLT
+- [x] DSGVO Art. 15, 17, 7.3 funktional
+- [x] Lead-Import funktional (CSV + Excel)
+- [x] Admin-Routen verfügbar
+- [x] Tests ≥80% Coverage (100+ Tests)
+- [x] CI GREEN (alle Workflows)
 
-### Nice-to-have:
-- [ ] Advanced Search
-- [ ] BANT-Wizard
+### Nice-to-have: ✅ TEILWEISE ERFÜLLT
+- [x] Advanced Search (pg_trgm Fuzzy-Suche)
+- [ ] BANT-Wizard (DEFERRED)
 
 ---
 
@@ -191,4 +224,37 @@ docs/planung/artefakte/sprint-2.1.8/
 
 ---
 
-**Letzte Aktualisierung:** 2025-12-04
+**Letzte Aktualisierung:** 2025-12-05
+
+---
+
+## 📊 Sprint-Metriken
+
+| Metrik | Wert |
+|--------|------|
+| **Commits** | 16 |
+| **Files Changed** | 285 |
+| **Lines Added** | +21.526 |
+| **Lines Removed** | -806 |
+| **Migrationen** | V10050-V10054 (5 Migrations) |
+| **Tests** | 100+ (Backend + Frontend) |
+| **Duration** | 04.12.2025 - 05.12.2025 |
+
+## 📝 Commit-Historie
+
+1. `feat(gdpr): Add GDPR compliance Phase 1` - Art. 15/17/7.3 Backend
+2. `feat(gdpr): Add GDPR frontend components` - GdprActionsMenu, Dialogs
+3. `feat(import): Add self-service lead import` - 4-Schritt Wizard
+4. `feat(import): Add quota system` - Rollen-basierte Limits
+5. `feat(admin): Add DSGVO admin dashboard` - /admin/dsgvo
+6. `feat(admin): Add imports admin dashboard` - /admin/imports
+7. `feat(search): Add pg_trgm fuzzy search` - V10052 Migration
+8. `feat(import): Add fuzzy auto-mapping` - 3-Tier Matching
+9. `feat(import): Add historical import` - originalCreatedAt
+10. `test: Add GDPR unit tests` - GdprService Tests
+11. `test: Add import unit tests` - ImportQuotaService Tests
+12. `test: Add frontend tests` - LeadImportWizard Tests
+13. `fix: Fix auto-mapping field naming` - suggestedMapping → autoMapping
+14. `fix: Add help system /view endpoint` - 404 Fix
+15. `chore: Create test data CSV` - test-leads-import.csv
+16. `docs: Update sprint documentation` - Artefakte

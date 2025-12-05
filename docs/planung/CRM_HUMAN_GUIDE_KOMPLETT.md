@@ -1,9 +1,9 @@
 # 👥 FreshPlan Sales Tool - Vollständiger System-Guide
 
-**📅 Letzte Aktualisierung:** 2025-12-01
+**📅 Letzte Aktualisierung:** 2025-12-05
 **🎯 Zielgruppe:** Entwickler, Sales Team, Manager, Admins
 **📊 Lesezeit:** ~25 Minuten (komplett) | ~10 Minuten (Quick Start)
-**🏷️ Aktueller Stand:** E2E Tests Sprint - Critical Path Validation COMPLETE (PR #149)
+**🏷️ Aktueller Stand:** Sprint 2.1.8 - DSGVO Compliance & Lead-Import COMPLETE (16 Commits)
 
 ---
 
@@ -327,12 +327,39 @@ Rechte Spalte - Insights:
 - Lead Scoring (0-100, 4 Dimensionen)
 - Enterprise Security (5-Layer)
 - Idempotency Service (24h TTL)
+- **Self-Service Lead-Import** (Sprint 2.1.8) ✅
+- **Fuzzy-Suche mit pg_trgm** (Sprint 2.1.8) ✅
 
-### Frontend-Status: 🟡 IN PROGRESS
+### Frontend-Status: ✅ PRODUCTION-READY
 
 - Lead List + Create Dialog ✅
 - ActivityDialog ✅
+- **LeadImportWizard** (4-Schritt: Upload → Mapping → Preview → Execute) ✅
 - Opportunities UI 🔶 In Planung
+
+### Self-Service Lead-Import (Sprint 2.1.8)
+
+**4-Schritt-Wizard für Massen-Import:**
+
+1. **Upload:** CSV oder Excel-Datei hochladen
+2. **Mapping:** Spalten auf Lead-Felder mappen (mit Fuzzy Auto-Mapping)
+3. **Preview:** Vorschau + Duplikat-Erkennung
+4. **Execute:** Import ausführen
+
+**Quota-System nach Rolle:**
+
+| Rolle | Max. offene Leads | Imports/Tag | Leads/Import |
+|-------|-------------------|-------------|--------------|
+| SALES | 100 | 3 | 100 |
+| MANAGER | 200 | 5 | 200 |
+| ADMIN | ∞ | ∞ | 1000 |
+
+**Fuzzy Auto-Mapping (3-Tier):**
+- Tier 1: Exact Dictionary Match (z.B. "Firma" → company_name)
+- Tier 2: Token-based Match (z.B. "Firmen Name" → company_name)
+- Tier 3: Levenshtein Distance ≥70% (z.B. "Firmenname" → company_name)
+
+**Historical Import:** `originalCreatedAt` für Messe-Leads mit historischem Datum
 
 ### Lead-Status Lifecycle
 
@@ -582,6 +609,22 @@ System erkennt:
 - Xentral ERP-Integration (Umsatz, Zahlungsverhalten)
 - Integration-Monitoring (Keycloak, E-Mail, ERP)
 - Audit-Trail und DSGVO-Compliance
+- **DSGVO Admin-Dashboard** `/admin/dsgvo` (Sprint 2.1.8) ✅
+- **Import Admin-Dashboard** `/admin/imports` (Sprint 2.1.8) ✅
+
+### DSGVO-Compliance (Sprint 2.1.8)
+
+**Gesetzliche Pflicht-Features implementiert:**
+
+| DSGVO Artikel | Feature | Beschreibung |
+|---------------|---------|--------------|
+| **Art. 15** | Datenauskunft | PDF-Export aller personenbezogenen Daten |
+| **Art. 17** | Recht auf Löschung | Soft-Delete + PII-Anonymisierung |
+| **Art. 7.3** | Widerruf | Kontaktsperre bei Widerruf der Einwilligung |
+
+**Admin-Routen:**
+- `/admin/dsgvo` - Löschungen, Anfragen, gelöschte Leads verwalten
+- `/admin/imports` - Import-Approve/Reject Workflow für Manager
 
 ### Xentral-Integration
 
@@ -1538,6 +1581,7 @@ Ein optimierter 90-Minuten-Block:
 
 | Sprint | Datum | PR | Inhalt |
 |--------|-------|-----|--------|
+| **2.1.8** | 05.12.2025 | - | DSGVO Compliance (Art. 15/17/7.3) + Self-Service Lead-Import + Fuzzy Auto-Mapping + pg_trgm Search |
 | **E2E Tests** | 01.12.2025 | [#149](https://github.com/joergstreeck/freshplan-sales-tool/pull/149) | E2E Critical Path Validation + Timezone Fix |
 | **2.1.7.7** | 28.11.2025 | [#145](https://github.com/joergstreeck/freshplan-sales-tool/pull/145) | Multi-Location Management + Server-Driven Architecture |
 | **2.1.7.4** | 22.10.2025 | [#143](https://github.com/joergstreeck/freshplan-sales-tool/pull/143) | CustomerStatus Architecture + Seasonal Business |
@@ -1546,7 +1590,7 @@ Ein optimierter 90-Minuten-Block:
 | **2.1.7.1** | 18.10.2025 | - | Lead → Opportunity UI + Kanban Pipeline |
 | **2.1.7.0** | 15.10.2025 | - | FreshFoodz CI V2 (Design System Migration) |
 
-**Nächster Sprint:** 2.1.7.5 (Advanced Filters) oder 2.1.8 (Team Management)
+**Nächster Sprint:** 2.1.9 (Team Management) oder 2.1.7.5 (Advanced Filters)
 
 ---
 
@@ -1556,7 +1600,8 @@ Ein optimierter 90-Minuten-Block:
 | Feature | Status | Hinweis |
 |---------|--------|---------|
 | Progressive Profiling UI | ❌ Geplant | Lead-Anreicherung über Zeit |
-| Team Management | ⏳ In Entwicklung | Kollaboratoren + Lead-Transfer - Sprint 2.1.8 |
+| Team Management | ⏳ Geplant | Kollaboratoren + Lead-Transfer - Sprint 2.1.9 |
+| BANT-Qualifizierung | ⏳ DEFERRED | Budget/Authority/Need/Timeline Scoring |
 | KEDA Autoscaling | ⏳ In Entwicklung | Territory + Seasonal-aware - Deployment pending |
 | Production Monitoring | ⏳ In Entwicklung | Prometheus + Grafana - Setup pending |
 

@@ -9,6 +9,7 @@ import io.quarkus.mailer.reactive.ReactiveMailer;
 import io.smallrye.mutiny.Uni;
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -45,7 +46,8 @@ class ImportNotificationServiceTest {
     // Inject mock mailer via reflection
     setField(service, "mailer", mockMailer);
     setField(service, "notificationsEnabled", true);
-    setField(service, "adminEmails", List.of("admin1@freshplan.de", "admin2@freshplan.de"));
+    setField(
+        service, "adminEmails", Optional.of(List.of("admin1@freshplan.de", "admin2@freshplan.de")));
     setField(service, "fromAddress", "noreply@freshplan.de");
     setField(service, "appBaseUrl", "https://app.freshplan.de");
 
@@ -150,7 +152,7 @@ class ImportNotificationServiceTest {
     @DisplayName("should not send when no admin emails configured")
     void shouldNotSendWhenNoAdminEmails() throws Exception {
       // Given
-      setField(service, "adminEmails", List.of());
+      setField(service, "adminEmails", Optional.empty());
       UUID importId = UUID.randomUUID();
 
       // When
@@ -165,7 +167,9 @@ class ImportNotificationServiceTest {
     void shouldSkipBlankAdminEmails() throws Exception {
       // Given - List.of() doesn't allow null, use Arrays.asList for test
       setField(
-          service, "adminEmails", java.util.Arrays.asList("admin@freshplan.de", "", "  ", null));
+          service,
+          "adminEmails",
+          Optional.of(java.util.Arrays.asList("admin@freshplan.de", "", "  ", null)));
       UUID importId = UUID.randomUUID();
 
       // When
