@@ -129,6 +129,34 @@ public class LeadDTO {
   // Contacts (Sprint 2.1.6 Phase 5+ - ADR-007 Option C)
   public List<LeadContactDTO> contacts = new ArrayList<>();
 
+  // ================================================================================
+  // Sprint 2.1.8: BANT Qualification System
+  // ================================================================================
+
+  // BANT - Budget
+  public String bantBudgetStatus; // UNKNOWN, CONFIRMED, PENDING, REJECTED, NO_BUDGET
+  public BigDecimal bantBudgetAmount;
+  public String bantBudgetTimeline;
+
+  // BANT - Authority
+  public String bantAuthorityLevel; // DECISION_MAKER, INFLUENCER, CHAMPION, BLOCKER, USER
+  public String bantAuthorityDecisionProcess;
+
+  // BANT - Need
+  public String bantNeedLevel; // CRITICAL, HIGH, MEDIUM, LOW, NONE
+  public String bantNeedPainPoints;
+  public String bantNeedCurrentSolution;
+
+  // BANT - Timeline
+  public String bantTimelineStatus; // IMMEDIATE, QUARTER, HALF_YEAR, YEAR, FUTURE, NO_TIMELINE
+  public java.time.LocalDate bantTimelineTargetDate;
+  public String bantTimelineUrgency;
+
+  // BANT Composite
+  public Integer bantScore; // 0-100 composite score
+  public LocalDateTime bantQualifiedAt;
+  public String bantQualifiedBy;
+
   // Metadata
   public LocalDateTime createdAt;
   public String createdBy;
@@ -147,6 +175,7 @@ public class LeadDTO {
     mapScoringFields(dto, lead);
     mapPainFields(dto, lead);
     mapRelationshipFields(dto, lead);
+    mapBantFields(dto, lead);
     mapMetadataFields(dto, lead);
     mapContacts(dto, lead);
 
@@ -262,6 +291,28 @@ public class LeadDTO {
         lead.decisionMakerAccess != null ? lead.decisionMakerAccess.name() : null;
     dto.competitorInUse = lead.competitorInUse;
     dto.internalChampionName = lead.internalChampionName;
+  }
+
+  private static void mapBantFields(LeadDTO dto, Lead lead) {
+    // BANT Qualification System (Sprint 2.1.8 Phase 4)
+    dto.bantBudgetStatus = lead.bantBudgetStatus;
+    dto.bantBudgetAmount = lead.bantBudgetAmount;
+    dto.bantBudgetTimeline = lead.bantBudgetTimeline;
+
+    dto.bantAuthorityLevel = lead.bantAuthorityLevel;
+    dto.bantAuthorityDecisionProcess = lead.bantAuthorityDecisionProcess;
+
+    dto.bantNeedLevel = lead.bantNeedLevel;
+    dto.bantNeedPainPoints = lead.bantNeedPainPoints;
+    dto.bantNeedCurrentSolution = lead.bantNeedCurrentSolution;
+
+    dto.bantTimelineStatus = lead.bantTimelineStatus;
+    dto.bantTimelineTargetDate = lead.bantTimelineTargetDate;
+    dto.bantTimelineUrgency = lead.bantTimelineUrgency;
+
+    dto.bantScore = lead.bantScore;
+    dto.bantQualifiedAt = lead.bantQualifiedAt;
+    dto.bantQualifiedBy = lead.bantQualifiedBy;
   }
 
   private static void mapMetadataFields(LeadDTO dto, Lead lead) {

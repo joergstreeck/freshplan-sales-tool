@@ -343,6 +343,67 @@ public class Lead extends PanacheEntityBase {
 
   // Note: leadScore (total 0-100) already exists above
 
+  // ================================================================================
+  // Sprint 2.1.8: BANT Qualification System
+  // Budget - Authority - Need - Timeline
+  // ================================================================================
+
+  // Budget Dimension
+  @Size(max = 20)
+  @Column(name = "bant_budget_status")
+  public String bantBudgetStatus; // UNKNOWN, CONFIRMED, PENDING, REJECTED, NO_BUDGET
+
+  @Column(name = "bant_budget_amount", precision = 12, scale = 2)
+  public java.math.BigDecimal bantBudgetAmount;
+
+  @Size(max = 30)
+  @Column(name = "bant_budget_timeline")
+  public String bantBudgetTimeline;
+
+  // Authority Dimension
+  @Size(max = 30)
+  @Column(name = "bant_authority_level")
+  public String bantAuthorityLevel; // DECISION_MAKER, INFLUENCER, CHAMPION, BLOCKER, USER
+
+  @Column(name = "bant_authority_decision_process", columnDefinition = "TEXT")
+  public String bantAuthorityDecisionProcess;
+
+  // Need Dimension
+  @Size(max = 20)
+  @Column(name = "bant_need_level")
+  public String bantNeedLevel; // CRITICAL, HIGH, MEDIUM, LOW, NONE
+
+  @Column(name = "bant_need_pain_points", columnDefinition = "TEXT")
+  public String bantNeedPainPoints;
+
+  @Size(max = 255)
+  @Column(name = "bant_need_current_solution")
+  public String bantNeedCurrentSolution;
+
+  // Timeline Dimension
+  @Size(max = 30)
+  @Column(name = "bant_timeline_status")
+  public String bantTimelineStatus; // IMMEDIATE, QUARTER, HALF_YEAR, YEAR, FUTURE, NO_TIMELINE
+
+  @Column(name = "bant_timeline_target_date")
+  public java.time.LocalDate bantTimelineTargetDate;
+
+  @Size(max = 20)
+  @Column(name = "bant_timeline_urgency")
+  public String bantTimelineUrgency;
+
+  // BANT Composite Score (0-100)
+  @Column(name = "bant_score")
+  public Integer bantScore;
+
+  // BANT Qualification Tracking
+  @Column(name = "bant_qualified_at")
+  public LocalDateTime bantQualifiedAt;
+
+  @Size(max = 50)
+  @Column(name = "bant_qualified_by")
+  public String bantQualifiedBy;
+
   // Metadata
   @Enumerated(EnumType.STRING)
   @Column(length = 50)
