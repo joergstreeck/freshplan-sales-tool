@@ -1,7 +1,7 @@
 # Testing Guide - FreshPlan Sales Tool
 
-**Stand:** 2025-12-04
-**Sprint:** Sprint 2.1.8 - DSGVO Compliance
+**Stand:** 2025-12-05
+**Sprint:** Sprint 2.1.8 - Self-Service Lead-Import
 **Speicherort:** `docs/planung/grundlagen/testing_guide.md`
 
 > **💡 Hinweis:** Für Coverage-Tools, CI/CD Setup & Monitoring siehe: `TESTING_INFRASTRUCTURE.md`
@@ -13,9 +13,11 @@
 - [🎯 Wichtigster Grundsatz](#-wichtigster-grundsatz-tests-sind-kein-selbstzweck)
 - [🐳 3-Stage CI Pipeline](#-3-stage-ci-pipeline) ⭐ NEU!
 - [🔬 E2E-Tests gegen echte Datenbank](#-e2e-tests-gegen-echte-datenbank) ⭐ NEU!
+  - [🔐 Security/Auth für E2E-Tests (Dev-Mode)](#-securityauth-für-e2e-tests-dev-mode) ⭐ NEU!
 - [📊 Test-Strategie](#-test-strategie-was-soll-getestet-werden)
 - [🔍 Test-Gap-Analyse](#-test-gap-analyse-warum-fanden-tests-bugs-nicht)
 - [🛠️ Test-Typen im Detail](#️-test-typen-im-detail)
+- [🧪 Container/Presentational Pattern](#-containerpresentational-pattern-für-testbarkeit) ⭐ NEU!
 - [🏭 TestDataFactory Pattern](#-testdatafactory-pattern)
 - [🌱 DEV-SEED](#-dev-seed-testdaten-für-lokale-entwicklung)
 - [📋 Test-Checklist](#-test-checklist-neue-features)
@@ -254,6 +256,102 @@ services:
 | Timezone-Differenzen | UTC überall (JVM, PostgreSQL, Playwright) |
 | DEV-SEED Abhängigkeit | NIEMALS DEV-SEED IDs in Tests referenzieren |
 
+### 🔐 Security/Auth für E2E-Tests (Dev-Mode)
+
+> **WICHTIG:** E2E-Tests laufen im Dev-Mode ohne echte Keycloak-Authentifizierung.
+> Das Backend verwendet einen Fallback-Mechanismus für User-ID und Rollen.
+
+#### Dev-Mode Auth-Bypass Pattern
+
+Im Dev-Mode (`quarkus.profile=dev`) ist Keycloak deaktiviert:
+- `SecurityIdentity.getPrincipal()` gibt `null` zurück
+- `SecurityIdentity.hasRole()` gibt `false` zurück
+
+**Lösung: Fallback-Pattern in jedem Resource:**
+
+```java
+@Path("/api/resource")
+@RolesAllowed({"USER", "MANAGER", "ADMIN"})  // ⚠️ IMMER ohne ROLE_ Prefix!
+public class MyResource {
+
+  @Inject SecurityIdentity securityIdentity;
+
+  @ConfigProperty(name = "app.dev.fallback-user-id", defaultValue = "dev-admin-001")
+  String fallbackUserId;
+
+  /**
+   * Get current user ID with dev mode fallback.
+   * In dev mode, auth is disabled and SecurityContext returns null.
+   */
+  private String getCurrentUserId() {
+    if (securityIdentity.getPrincipal() != null
+        && securityIdentity.getPrincipal().getName() != null
+        && !securityIdentity.getPrincipal().getName().isBlank()) {
+      return securityIdentity.getPrincipal().getName();
+    }
+    return fallbackUserId; // Fallback for dev mode
+  }
+
+  /**
+   * Get current user role with dev mode fallback.
+   * Checks both UPPER and lowercase role names for flexibility.
+   */
+  private UserRole getCurrentUserRole() {
+    if (securityIdentity.hasRole("ADMIN") || securityIdentity.hasRole("admin")) {
+      return UserRole.ADMIN;
+    } else if (securityIdentity.hasRole("MANAGER") || securityIdentity.hasRole("manager")) {
+      return UserRole.MANAGER;
+    } else if (securityIdentity.hasRole("USER") || securityIdentity.hasRole("sales")) {
+      return UserRole.SALES;
+    }
+    // Default: ADMIN in dev mode for full access
+    return UserRole.ADMIN;
+  }
+}
+```
+
+#### Konsistente Rollen-Benennung (KRITISCH!)
+
+| ✅ RICHTIG | ❌ FALSCH |
+|-----------|----------|
+| `@RolesAllowed({"USER", "MANAGER", "ADMIN"})` | `@RolesAllowed({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})` |
+| `securityIdentity.hasRole("ADMIN")` | `securityIdentity.hasRole("ROLE_ADMIN")` |
+
+**Problem:** Verschiedene Konventionen führen zu 401 Unauthorized in E2E-Tests!
+
+**Prüfe bei neuen Resources:**
+1. `@RolesAllowed` verwendet **keine** `ROLE_` Prefixe
+2. `hasRole()` prüft **beide** Varianten (upper + lower case)
+3. Fallback auf `ADMIN` im Dev-Mode für maximale Test-Abdeckung
+
+#### E2E-Tests ohne Browser-UI (Pure API)
+
+Für maximale CI-Stabilität verwenden wir Pure API Tests:
+
+```typescript
+// e2e/helpers/api-helpers.ts
+export const API_BASE = 'http://localhost:8081';
+
+export async function getImportQuota(request: APIRequestContext): Promise<QuotaInfoResponse> {
+  const response = await request.get(`${API_BASE}/api/leads/import/quota`);
+  // Dev-Mode: Keine Auth-Header nötig, Backend verwendet Fallback
+  expect(response.ok()).toBe(true);
+  return response.json();
+}
+```
+
+**Vorteile:**
+- Keine Browser-Interaktionen → schneller, stabiler
+- Keine Login-UI → keine Keycloak-Abhängigkeit
+- Backend-Fallback → Tests funktionieren im Dev-Mode
+
+#### Referenz-Implementierung
+
+Siehe: `SelfServiceImportResource.java` (Sprint 2.1.8)
+- Vollständiges Fallback-Pattern für userId und userRole
+- Konsistente `@RolesAllowed` ohne `ROLE_` Prefix
+- `@ConfigProperty` für konfigurierbaren Fallback-User
+
 ---
 
 ## 📊 **Test-Strategie: Was soll getestet werden?**
@@ -449,6 +547,128 @@ describe('StopTheClockDialog - RBAC', () => {
   });
 });
 ```
+
+---
+
+## 🧪 **Container/Presentational Pattern für Testbarkeit**
+
+> **Eingeführt in Sprint 2.1.8** (2025-12-05) - Lösung für schwer testbare Komponenten mit useEffect-API-Calls
+
+### Das Problem
+
+Komponenten mit `useEffect`-API-Calls sind schwer testbar:
+
+```typescript
+// ❌ SCHLECHT: API-Call in der Komponente
+function PreviewStep({ uploadId, mapping, onComplete }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const result = await createPreview(uploadId, mapping);  // API-Call!
+      setData(result);
+    }
+    load();
+  }, [uploadId, mapping]);
+
+  return <div>{data?.validRows} gültige Zeilen</div>;
+}
+```
+
+**Probleme beim Testen:**
+- MSW-Mocking ist instabil (Timing-Issues)
+- Tests brauchen lange Timeouts (10+ Sekunden)
+- Race Conditions zwischen Render und API-Response
+- Coverage bleibt niedrig (~47%)
+
+### Die Lösung: Container/Presentational Pattern
+
+**Architektur-Prinzip: "Lift State Up"**
+
+```
+┌─────────────────────────────────────┐
+│ Container (Parent)                  │
+│   └── API-Call + State Management   │
+│         └── Daten als Props         │
+└─────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────┐
+│ Presentational (Child)              │
+│   └── Nur Props → UI                │  ← Einfach testbar!
+└─────────────────────────────────────┘
+```
+
+```typescript
+// ✅ GUT: API-Call im Parent (Container)
+function LeadImportWizard() {
+  const [previewData, setPreviewData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleMappingComplete = async (mapping) => {
+    setIsLoading(true);
+    const data = await createPreview(uploadId, mapping);
+    setPreviewData(data);
+    setIsLoading(false);
+  };
+
+  return (
+    <PreviewStep
+      previewData={previewData}
+      isLoading={isLoading}
+      onContinue={handleContinue}
+    />
+  );
+}
+
+// ✅ GUT: Presentational Component (nur Props)
+function PreviewStep({ previewData, isLoading, onContinue }) {
+  if (isLoading) return <Loading />;
+  return <div>{previewData?.validRows} gültige Zeilen</div>;
+}
+```
+
+### Vorteile für Tests
+
+```typescript
+// Test ist jetzt trivial - keine API-Calls, keine Mocks!
+describe('PreviewStep', () => {
+  it('zeigt Validierungsergebnis', () => {
+    const mockData = {
+      validation: { validRows: 85, errorRows: 5 },
+      quotaCheck: { approved: true }
+    };
+
+    render(<PreviewStep previewData={mockData} isLoading={false} />);
+
+    expect(screen.getByText('85')).toBeInTheDocument();
+  });
+});
+```
+
+**Ergebnis:** Coverage von 47% → 97%!
+
+### Wann dieses Pattern anwenden?
+
+| Situation | Pattern anwenden? |
+|-----------|-------------------|
+| Komponente hat `useEffect` mit API-Call | ✅ JA |
+| Komponente rendert nur Props | ❌ NEIN (schon gut) |
+| Komponente verwendet React Query Hook | ⚠️ PRÜFEN (meist ok) |
+| Multi-Step Wizard mit API zwischen Schritten | ✅ JA |
+
+### Best Practices
+
+1. **Loading-State als Prop**: Nicht intern verwalten, vom Parent übergeben
+2. **Error-Handling im Parent**: Fehler im Container abfangen, nicht im Child
+3. **Callback-Props für Interaktionen**: `onContinue`, `onBack`, nicht `navigate()`
+4. **Separate Loading-Komponente**: Für bessere Testbarkeit exportieren
+
+### Referenz-Implementierung
+
+**Dateien:**
+- `frontend/src/features/leads/components/import/PreviewStep.tsx` - Presentational
+- `frontend/src/features/leads/components/import/LeadImportWizard.tsx` - Container
+- `frontend/src/features/leads/components/import/__tests__/PreviewStep.test.tsx` - 22 Tests
 
 ---
 
@@ -1125,7 +1345,7 @@ PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
 
 ---
 
-**Letztes Update:** Sprint 2.1.8 - DSGVO Compliance (2025-12-04)
+**Letztes Update:** Sprint 2.1.8 - Self-Service Lead-Import (2025-12-05)
 
 ### Test-Statistiken
 
@@ -1133,8 +1353,8 @@ PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
 |-----------|--------|---------|
 | **Backend Unit Tests** | 1826 | JUnit 5 + RestAssured |
 | **Frontend Unit Tests** | 1399 | Vitest + React Testing Library |
-| **E2E Tests (Stage 3)** | 26 | Playwright + Docker Compose |
-| **Gesamt** | 3251 | |
+| **E2E Tests (Stage 3)** | 37 | Playwright + Docker Compose (inkl. Lead-Import) |
+| **Gesamt** | 3262 | |
 
 ### Coverage-Ziele
 

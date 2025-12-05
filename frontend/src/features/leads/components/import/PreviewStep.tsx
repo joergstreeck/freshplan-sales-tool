@@ -3,6 +3,11 @@
  *
  * Schritt 3 des Import-Wizards: Vorschau & Validierung.
  *
+ * REFACTORED für bessere Testbarkeit:
+ * - API-Call wurde in den Parent (LeadImportWizard) verschoben
+ * - Diese Komponente ist jetzt "pure" - nur Props rein, UI raus
+ * - Siehe testing_guide.md: "Container/Presentational Pattern"
+ *
  * Features:
  * - Validierungs-Zusammenfassung (Gültig/Fehler/Duplikate)
  * - Quota-Check Anzeige
@@ -14,7 +19,7 @@
  * @since Sprint 2.1.8
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback } from 'react';
 import {
   Box,
   Typography,
@@ -43,19 +48,24 @@ import {
   Info as InfoIcon,
 } from '@mui/icons-material';
 
-// API
-import { createPreview, type ImportPreviewResponse } from '../../api/leadImportApi';
+// API Types
+import type { ImportPreviewResponse } from '../../api/leadImportApi';
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export interface PreviewStepProps {
-  uploadId: string;
+  /** Preview-Daten vom Parent (nach API-Call) */
+  previewData: ImportPreviewResponse | null;
+  /** Loading-State (Parent macht API-Call) */
+  isLoading: boolean;
+  /** Mapping für Spalten-Anzeige */
   mapping: Record<string, string>;
-  onPreviewComplete: (data: ImportPreviewResponse) => void;
+  /** Callback wenn User auf "Weiter" klickt */
+  onContinue: () => void;
+  /** Callback für "Zurück" */
   onBack: () => void;
-  onError: (error: string) => void;
 }
 
 // ============================================================================
@@ -99,64 +109,47 @@ function StatCard({ label, value, color, icon }: StatCardProps) {
 }
 
 // ============================================================================
-// Component
+// Loading Component (exported for testing)
+// ============================================================================
+
+export function PreviewStepLoading() {
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+        <CircularProgress size={24} />
+        <Typography>Daten werden validiert...</Typography>
+      </Box>
+      <Grid container spacing={2} sx={{ mb: 3 }}>
+        {[1, 2, 3, 4].map(i => (
+          <Grid key={i} size={{ xs: 6, sm: 3 }}>
+            <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 1 }} />
+          </Grid>
+        ))}
+      </Grid>
+      <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 1 }} />
+    </Box>
+  );
+}
+
+// ============================================================================
+// Main Component
 // ============================================================================
 
 export function PreviewStep({
-  uploadId,
+  previewData,
+  isLoading,
   mapping,
-  onPreviewComplete,
+  onContinue,
   onBack,
-  onError,
 }: PreviewStepProps) {
-  const [loading, setLoading] = useState(true);
-  const [previewData, setPreviewData] = useState<ImportPreviewResponse | null>(null);
-
-  // Lade Preview-Daten
-  useEffect(() => {
-    async function loadPreview() {
-      setLoading(true);
-      try {
-        const data = await createPreview(uploadId, mapping);
-        setPreviewData(data);
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error
-            ? err.message
-            : (err as { detail?: string })?.detail || 'Vorschau konnte nicht geladen werden';
-        onError(errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadPreview();
-  }, [uploadId, mapping, onError]);
-
   // Continue Handler
   const handleContinue = useCallback(() => {
-    if (previewData) {
-      onPreviewComplete(previewData);
-    }
-  }, [previewData, onPreviewComplete]);
+    onContinue();
+  }, [onContinue]);
 
   // Loading State
-  if (loading) {
-    return (
-      <Box>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
-          <CircularProgress size={24} />
-          <Typography>Daten werden validiert...</Typography>
-        </Box>
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          {[1, 2, 3, 4].map(i => (
-            <Grid key={i} size={{ xs: 6, sm: 3 }}>
-              <Skeleton variant="rectangular" height={100} sx={{ borderRadius: 1 }} />
-            </Grid>
-          ))}
-        </Grid>
-        <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 1 }} />
-      </Box>
-    );
+  if (isLoading) {
+    return <PreviewStepLoading />;
   }
 
   // No Data

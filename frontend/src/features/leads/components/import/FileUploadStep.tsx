@@ -3,18 +3,24 @@
  *
  * Schritt 1 des Import-Wizards: Datei-Upload mit Drag & Drop.
  *
+ * REFACTORED für bessere Testbarkeit:
+ * - Quota-API-Call wurde in den Parent (LeadImportWizard) verschoben
+ * - Diese Komponente ist jetzt "pure" für Quota-Anzeige
+ * - Upload-Call bleibt hier (User-Initiated Action)
+ * - Siehe testing_guide.md: "Container/Presentational Pattern"
+ *
  * Features:
  * - Drag & Drop Support
  * - CSV und Excel Unterstützung
  * - Max. 5 MB Dateigröße
- * - Quota-Check vor Upload
+ * - Quota-Check Anzeige (Daten vom Parent)
  *
  * @module FileUploadStep
  * @since Sprint 2.1.8
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { Box, Typography, Alert, LinearProgress, Chip, Paper } from '@mui/material';
+import { Box, Typography, Alert, LinearProgress, Chip, Paper, Skeleton } from '@mui/material';
 import {
   CloudUpload as UploadIcon,
   Description as FileIcon,
@@ -23,19 +29,20 @@ import {
 import { useDropzone } from 'react-dropzone';
 
 // API
-import {
-  uploadFile,
-  getQuotaInfo,
-  type ImportUploadResponse,
-  type QuotaInfo,
-} from '../../api/leadImportApi';
+import { uploadFile, type ImportUploadResponse, type QuotaInfo } from '../../api/leadImportApi';
 
 // ============================================================================
 // Types
 // ============================================================================
 
 export interface FileUploadStepProps {
+  /** Quota-Info vom Parent (nach API-Call) */
+  quotaInfo: QuotaInfo | null;
+  /** Loading-State für Quota (Parent lädt) */
+  quotaLoading: boolean;
+  /** Callback wenn Upload erfolgreich */
   onUploadComplete: (data: ImportUploadResponse) => void;
+  /** Callback bei Fehler */
   onError: (error: string) => void;
 }
 
@@ -52,31 +59,50 @@ const ACCEPTED_TYPES = {
 };
 
 // ============================================================================
-// Component
+// Quota Display Component (exported for testing)
 // ============================================================================
 
-export function FileUploadStep({ onUploadComplete, onError }: FileUploadStepProps) {
+export interface QuotaDisplayProps {
+  quotaInfo: QuotaInfo | null;
+  isLoading: boolean;
+}
+
+export function QuotaDisplay({ quotaInfo, isLoading }: QuotaDisplayProps) {
+  if (isLoading) {
+    return <Skeleton variant="rectangular" height={80} sx={{ borderRadius: 1, mb: 3 }} />;
+  }
+
+  if (!quotaInfo) {
+    return null;
+  }
+
+  return (
+    <Alert severity={quotaInfo.canImport ? 'info' : 'warning'} sx={{ mb: 3 }}>
+      <Typography variant="body2">
+        <strong>Ihre Kapazität:</strong> {quotaInfo.remainingCapacity} Leads verfügbar (Aktuell:{' '}
+        {quotaInfo.currentOpenLeads} / {quotaInfo.maxOpenLeads} offene Leads)
+      </Typography>
+      <Typography variant="caption" color="text.secondary">
+        Heute: {quotaInfo.importsToday} / {quotaInfo.maxImportsPerDay} Imports &bull; Max.{' '}
+        {quotaInfo.maxLeadsPerImport} Leads pro Import
+      </Typography>
+    </Alert>
+  );
+}
+
+// ============================================================================
+// Main Component
+// ============================================================================
+
+export function FileUploadStep({
+  quotaInfo,
+  quotaLoading,
+  onUploadComplete,
+  onError,
+}: FileUploadStepProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [quotaInfo, setQuotaInfo] = useState<QuotaInfo | null>(null);
-  const [quotaLoading, setQuotaLoading] = useState(true);
-
-  // Lade Quota-Info beim Mounten
-  useEffect(() => {
-    async function loadQuota() {
-      try {
-        const info = await getQuotaInfo();
-        setQuotaInfo(info);
-      } catch (err) {
-        console.error('Fehler beim Laden der Quota-Info:', err);
-        // Nicht als Fehler anzeigen - Wizard funktioniert auch ohne Quota-Anzeige
-      } finally {
-        setQuotaLoading(false);
-      }
-    }
-    loadQuota();
-  }, []);
 
   // Handle File Upload
   const handleUpload = useCallback(
@@ -160,18 +186,7 @@ export function FileUploadStep({ onUploadComplete, onError }: FileUploadStepProp
   return (
     <Box>
       {/* Quota Info */}
-      {!quotaLoading && quotaInfo && (
-        <Alert severity={quotaInfo.canImport ? 'info' : 'warning'} sx={{ mb: 3 }}>
-          <Typography variant="body2">
-            <strong>Ihre Kapazität:</strong> {quotaInfo.remainingCapacity} Leads verfügbar (Aktuell:{' '}
-            {quotaInfo.currentOpenLeads} / {quotaInfo.maxOpenLeads} offene Leads)
-          </Typography>
-          <Typography variant="caption" color="text.secondary">
-            Heute: {quotaInfo.importsToday} / {quotaInfo.maxImportsPerDay} Imports &bull; Max.{' '}
-            {quotaInfo.maxLeadsPerImport} Leads pro Import
-          </Typography>
-        </Alert>
-      )}
+      <QuotaDisplay quotaInfo={quotaInfo} isLoading={quotaLoading} />
 
       {/* Dropzone */}
       <Paper

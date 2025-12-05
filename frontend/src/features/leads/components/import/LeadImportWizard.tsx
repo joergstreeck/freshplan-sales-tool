@@ -7,11 +7,15 @@
  * 3. Vorschau & Validierung
  * 4. Import ausführen
  *
+ * REFACTORED für bessere Testbarkeit:
+ * - API-Calls für Preview werden hier gemacht, nicht in PreviewStep
+ * - Siehe testing_guide.md: "Container/Presentational Pattern"
+ *
  * @module LeadImportWizard
  * @since Sprint 2.1.8
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -33,11 +37,14 @@ import { FieldMappingStep } from './FieldMappingStep';
 import { PreviewStep } from './PreviewStep';
 import { ExecuteStep } from './ExecuteStep';
 
-// API Types
-import type {
-  ImportUploadResponse,
-  ImportPreviewResponse,
-  ImportExecuteResponse,
+// API
+import {
+  createPreview,
+  getQuotaInfo,
+  type ImportUploadResponse,
+  type ImportPreviewResponse,
+  type ImportExecuteResponse,
+  type QuotaInfo,
 } from '../../api/leadImportApi';
 
 // ============================================================================
@@ -54,10 +61,14 @@ interface WizardState {
   uploadData: ImportUploadResponse | null;
   mapping: Record<string, string>;
   previewData: ImportPreviewResponse | null;
+  previewLoading: boolean;
   executeResult: ImportExecuteResponse | null;
   source: string;
   duplicateAction: 'SKIP' | 'CREATE';
   ignoreErrors: boolean;
+  // Quota State (für FileUploadStep)
+  quotaInfo: QuotaInfo | null;
+  quotaLoading: boolean;
 }
 
 // ============================================================================
@@ -85,10 +96,13 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
     uploadData: null,
     mapping: {},
     previewData: null,
+    previewLoading: false,
     executeResult: null,
     source: '',
     duplicateAction: 'SKIP',
     ignoreErrors: false,
+    quotaInfo: null,
+    quotaLoading: true, // Starten mit Loading
   });
 
   // Reset Wizard
@@ -99,12 +113,34 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
       uploadData: null,
       mapping: {},
       previewData: null,
+      previewLoading: false,
       executeResult: null,
       source: '',
       duplicateAction: 'SKIP',
       ignoreErrors: false,
+      quotaInfo: null,
+      quotaLoading: true,
     });
   }, []);
+
+  // Load Quota on Dialog Open
+  useEffect(() => {
+    async function loadQuota() {
+      if (!open) return;
+
+      setState(prev => ({ ...prev, quotaLoading: true }));
+      try {
+        const quota = await getQuotaInfo();
+        setState(prev => ({ ...prev, quotaInfo: quota, quotaLoading: false }));
+      } catch (err) {
+        console.error('Failed to load quota info:', err);
+        // Quota-Fehler nicht als Block behandeln, nur nicht anzeigen
+        setState(prev => ({ ...prev, quotaInfo: null, quotaLoading: false }));
+      }
+    }
+
+    loadQuota();
+  }, [open]);
 
   // Handle Close
   const handleClose = useCallback(() => {
@@ -123,16 +159,38 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
     setError(null);
   }, []);
 
-  // Step 2: Mapping Complete
+  // Step 2: Mapping Complete - triggers Preview API call
   const handleMappingComplete = useCallback((mapping: Record<string, string>) => {
-    setState(prev => ({ ...prev, mapping }));
+    setState(prev => ({ ...prev, mapping, previewData: null, previewLoading: true }));
     setActiveStep(2);
     setError(null);
   }, []);
 
-  // Step 3: Preview Complete (Navigate to Execute)
-  const handlePreviewComplete = useCallback((previewData: ImportPreviewResponse) => {
-    setState(prev => ({ ...prev, previewData }));
+  // Load Preview Data when entering Step 2
+  useEffect(() => {
+    async function loadPreview() {
+      if (activeStep !== 2 || !state.uploadData || !state.previewLoading) {
+        return;
+      }
+
+      try {
+        const data = await createPreview(state.uploadData.uploadId, state.mapping);
+        setState(prev => ({ ...prev, previewData: data, previewLoading: false }));
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : (err as { detail?: string })?.detail || 'Vorschau konnte nicht geladen werden';
+        setError(errorMessage);
+        setState(prev => ({ ...prev, previewLoading: false }));
+      }
+    }
+
+    loadPreview();
+  }, [activeStep, state.uploadData, state.mapping, state.previewLoading]);
+
+  // Step 3: Preview Continue (Navigate to Execute)
+  const handlePreviewContinue = useCallback(() => {
     setActiveStep(3);
     setError(null);
   }, []);
@@ -177,7 +235,14 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
   const renderStepContent = () => {
     switch (activeStep) {
       case 0:
-        return <FileUploadStep onUploadComplete={handleUploadComplete} onError={setError} />;
+        return (
+          <FileUploadStep
+            quotaInfo={state.quotaInfo}
+            quotaLoading={state.quotaLoading}
+            onUploadComplete={handleUploadComplete}
+            onError={setError}
+          />
+        );
 
       case 1:
         return state.uploadData ? (
@@ -191,15 +256,15 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
         ) : null;
 
       case 2:
-        return state.uploadData ? (
+        return (
           <PreviewStep
-            uploadId={state.uploadData.uploadId}
+            previewData={state.previewData}
+            isLoading={state.previewLoading}
             mapping={state.mapping}
-            onPreviewComplete={handlePreviewComplete}
+            onContinue={handlePreviewContinue}
             onBack={handleBack}
-            onError={setError}
           />
-        ) : null;
+        );
 
       case 3:
         return state.uploadData && state.previewData ? (

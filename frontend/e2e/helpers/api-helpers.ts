@@ -554,3 +554,224 @@ export async function searchAndWait(
 export function generateTestPrefix(prefix: string): string {
   return `[${prefix}-${Date.now()}-${Math.random().toString(36).substring(7)}]`;
 }
+
+// =============================================================================
+// LEAD IMPORT HELPERS (Sprint 2.1.8 - Self-Service Import)
+// =============================================================================
+
+export interface QuotaInfoResponse {
+  currentOpenLeads: number;
+  maxOpenLeads: number;
+  todayImports: number; // API returns todayImports, not importsToday
+  maxImportsPerDay: number;
+  maxLeadsPerImport: number;
+  remainingCapacity: number;
+  canImport?: boolean; // Computed from remainingCapacity > 0
+}
+
+export interface ImportUploadResponse {
+  uploadId: string;
+  columns: string[];
+  rowCount: number;
+  suggestedMapping: Record<string, string>; // API returns suggestedMapping
+  fileType: string;
+  charset: string;
+  availableFields: Array<{ key: string; label: string; required: boolean }>;
+}
+
+export interface ImportPreviewResponse {
+  uploadId: string;
+  validation: {
+    totalRows: number;
+    validRows: number;
+    errorRows: number;
+    duplicateRows: number;
+  };
+  previewRows: Array<{
+    row: number;
+    status: string;
+    data: Record<string, string>;
+  }>;
+  errors: Array<{
+    row: number;
+    column: string;
+    message: string;
+    value: string;
+  }>;
+  duplicates: Array<{
+    row: number;
+    existingLeadId: number;
+    existingCompanyName: string;
+    type: string;
+    similarity: number;
+  }>;
+  quotaCheck: {
+    approved: boolean;
+    message: string;
+    currentOpenLeads: number;
+    maxOpenLeads: number;
+    remainingCapacity: number;
+  };
+}
+
+export interface ImportExecuteResponse {
+  success: boolean;
+  importId: string | null;
+  imported: number;
+  skipped: number;
+  errors: number;
+  status: string;
+  message: string;
+}
+
+/**
+ * Holt die Quota-Info für den aktuellen User
+ */
+export async function getImportQuota(request: APIRequestContext): Promise<QuotaInfoResponse> {
+  const response = await request.get(`${API_BASE}/api/leads/import/quota`);
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to get import quota: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Lädt eine CSV-Datei für den Import hoch
+ */
+export async function uploadImportFile(
+  request: APIRequestContext,
+  csvContent: string,
+  fileName: string = 'test-import.csv'
+): Promise<ImportUploadResponse> {
+  // Create multipart form data with CSV content
+  const response = await request.post(`${API_BASE}/api/leads/import/upload`, {
+    multipart: {
+      file: {
+        name: fileName,
+        mimeType: 'text/csv',
+        buffer: Buffer.from(csvContent, 'utf-8'),
+      },
+    },
+  });
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to upload import file: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Erstellt eine Import-Vorschau mit Validierung
+ */
+export async function createImportPreview(
+  request: APIRequestContext,
+  uploadId: string,
+  mapping: Record<string, string>
+): Promise<ImportPreviewResponse> {
+  const response = await request.post(`${API_BASE}/api/leads/import/${uploadId}/preview`, {
+    data: { mapping },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to create import preview: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Führt den Import aus
+ */
+export async function executeImport(
+  request: APIRequestContext,
+  uploadId: string,
+  options: {
+    mapping: Record<string, string>;
+    duplicateAction?: 'SKIP' | 'CREATE';
+    source?: string;
+    ignoreErrors?: boolean;
+  }
+): Promise<ImportExecuteResponse> {
+  const response = await request.post(`${API_BASE}/api/leads/import/${uploadId}/execute`, {
+    data: {
+      mapping: options.mapping,
+      duplicateAction: options.duplicateAction || 'SKIP',
+      source: options.source || 'E2E-TEST',
+      ignoreErrors: options.ignoreErrors || false,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to execute import: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Generiert eine CSV-Datei mit Test-Leads
+ */
+export function generateTestLeadsCsv(
+  testPrefix: string,
+  count: number,
+  options: {
+    includeErrors?: boolean;
+    includeDuplicates?: boolean;
+  } = {}
+): string {
+  const headers = ['Firma', 'E-Mail', 'Telefon', 'Stadt', 'PLZ', 'Branche'];
+  const rows: string[] = [headers.join(';')];
+
+  for (let i = 0; i < count; i++) {
+    const uniqueId = `${Date.now()}-${i}`;
+    let companyName = `${testPrefix} TestFirma ${i + 1}`;
+    let email = `test-${uniqueId}@e2e-import.local`;
+
+    // Füge Fehler hinzu (leere Firma)
+    if (options.includeErrors && i === count - 1) {
+      companyName = ''; // Pflichtfeld fehlt
+      email = 'invalid-email'; // Ungültiges Format
+    }
+
+    rows.push(
+      [
+        companyName,
+        email,
+        `+49 ${100 + i} 123456`,
+        i % 2 === 0 ? 'Berlin' : 'München',
+        i % 2 === 0 ? '10115' : '80331',
+        'RESTAURANT',
+      ].join(';')
+    );
+  }
+
+  // Füge Duplikat hinzu (gleiche Firma wie erste Zeile)
+  if (options.includeDuplicates && count > 0) {
+    const uniqueId = `${Date.now()}-dup`;
+    rows.push(
+      [
+        `${testPrefix} TestFirma 1`, // Duplikat der ersten Zeile
+        `dup-${uniqueId}@e2e-import.local`,
+        '+49 999 999999',
+        'Hamburg',
+        '20095',
+        'RESTAURANT',
+      ].join(';')
+    );
+  }
+
+  return rows.join('\n');
+}
