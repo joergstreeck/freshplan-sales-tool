@@ -21,12 +21,14 @@ import org.jboss.logging.Logger;
  * <ul>
  *   <li>CSV (UTF-8, Windows-1252, ISO-8859-1)
  *   <li>XLSX (Excel 2007+)
- *   <li>Auto-Detection von Spalten-Mapping
+ *   <li>Fuzzy Auto-Detection von Spalten-Mapping (Levenshtein + Token-Match)
  * </ul>
  *
  * @since Sprint 2.1.8
  */
 @ApplicationScoped
+@SuppressWarnings(
+    "PMD.CyclomaticComplexity") // High CC due to declarative synonym mappings, not logic complexity
 public class FileParserService {
 
   private static final Logger LOG = Logger.getLogger(FileParserService.class);
@@ -40,11 +42,17 @@ public class FileParserService {
   /** Unterstützte Datei-Endungen */
   public static final Set<String> SUPPORTED_EXTENSIONS = Set.of("csv", "xlsx");
 
+  /** Fuzzy-Matching Threshold: Minimum Similarity (0.0-1.0) für Auto-Mapping */
+  public static final double FUZZY_THRESHOLD = 0.7;
+
   // ============================================================================
   // Auto-Detection Mapping (DE/EN → Lead-Feld)
   // ============================================================================
 
   private static final Map<String, String> COLUMN_MAPPING = new LinkedHashMap<>();
+
+  /** Synonym-Gruppen für Fuzzy-Matching: Lead-Feld → Set von Synonymen */
+  private static final Map<String, Set<String>> FIELD_SYNONYMS = new LinkedHashMap<>();
 
   static {
     // Firmenname
@@ -126,6 +134,45 @@ public class FileParserService {
     COLUMN_MAPPING.put("webseite", "website");
     COLUMN_MAPPING.put("homepage", "website");
     COLUMN_MAPPING.put("url", "website");
+
+    // ============================================================================
+    // Synonym-Gruppen für Fuzzy-Matching
+    // ============================================================================
+    // Hinweis: "name" allein ist zu generisch - sollte nur in Kombination matchen
+    FIELD_SYNONYMS.put(
+        "companyName",
+        Set.of(
+            "firma",
+            "firmenname",
+            "unternehmen",
+            "unternehmensname",
+            "betrieb",
+            "company",
+            "business",
+            "firmen"));
+    FIELD_SYNONYMS.put(
+        "email", Set.of("email", "e-mail", "mail", "mailadresse", "emailadresse", "elektronisch"));
+    FIELD_SYNONYMS.put(
+        "phone", Set.of("telefon", "tel", "fon", "phone", "rufnummer", "nummer", "handy", "mobil"));
+    FIELD_SYNONYMS.put(
+        "postalCode", Set.of("plz", "postleitzahl", "postal", "zip", "code", "postcode"));
+    FIELD_SYNONYMS.put("city", Set.of("stadt", "ort", "city", "town", "gemeinde", "wohnort"));
+    FIELD_SYNONYMS.put(
+        "street", Set.of("straße", "strasse", "str", "adresse", "street", "address", "anschrift"));
+    FIELD_SYNONYMS.put(
+        "businessType",
+        Set.of("branche", "industry", "geschäft", "bereich", "sektor", "typ", "art"));
+    FIELD_SYNONYMS.put(
+        "contactPerson",
+        Set.of("ansprechpartner", "kontakt", "contact", "person", "name", "verantwortlich"));
+    FIELD_SYNONYMS.put(
+        "contactPosition",
+        Set.of("position", "funktion", "title", "titel", "job", "rolle", "aufgabe"));
+    FIELD_SYNONYMS.put(
+        "notes",
+        Set.of("notiz", "notizen", "bemerkung", "notes", "kommentar", "anmerkung", "hinweis"));
+    FIELD_SYNONYMS.put(
+        "website", Set.of("website", "webseite", "homepage", "url", "web", "internet", "seite"));
   }
 
   // ============================================================================
@@ -164,24 +211,165 @@ public class FileParserService {
   }
 
   /**
-   * Auto-Erkennung von Spalten-Mapping.
+   * Auto-Erkennung von Spalten-Mapping mit Fuzzy-Matching.
+   *
+   * <p>Verwendet 3-stufiges Matching:
+   *
+   * <ol>
+   *   <li>Exakter Match (Dictionary-basiert)
+   *   <li>Token-basiertes Match (enthält Synonym)
+   *   <li>Levenshtein-Fuzzy-Match (Tippfehler-Toleranz)
+   * </ol>
    *
    * @param columns Spalten-Header aus der Datei
    * @return Map von Datei-Spalte → Lead-Feld
    */
   public Map<String, String> autoDetectMapping(List<String> columns) {
     Map<String, String> mapping = new LinkedHashMap<>();
+    Set<String> usedFields = new HashSet<>(); // Verhindert doppelte Zuordnungen
 
     for (String column : columns) {
       String normalized = column.toLowerCase().trim();
+
+      // 1. Exakter Match (schnellster Pfad)
       String leadField = COLUMN_MAPPING.get(normalized);
+      if (leadField != null && !usedFields.contains(leadField)) {
+        mapping.put(column, leadField);
+        usedFields.add(leadField);
+        LOG.debugf("Exact match: '%s' → %s", column, leadField);
+        continue;
+      }
+
+      // 2. Token-basiertes Match (enthält Synonym)
+      leadField = findTokenMatch(normalized, usedFields);
       if (leadField != null) {
         mapping.put(column, leadField);
+        usedFields.add(leadField);
+        LOG.debugf("Token match: '%s' → %s", column, leadField);
+        continue;
+      }
+
+      // 3. Fuzzy-Match (Levenshtein-Distanz)
+      leadField = findFuzzyMatch(normalized, usedFields);
+      if (leadField != null) {
+        mapping.put(column, leadField);
+        usedFields.add(leadField);
+        LOG.debugf("Fuzzy match: '%s' → %s", column, leadField);
       }
     }
 
-    LOG.infof("Auto-detected %d of %d columns", mapping.size(), columns.size());
+    LOG.infof(
+        "Auto-detected %d of %d columns (exact + token + fuzzy)", mapping.size(), columns.size());
     return mapping;
+  }
+
+  /**
+   * Findet Match basierend auf Token-Enthaltensein.
+   *
+   * <p>Beispiel: "E-Mail-Adresse" enthält Token "mail" → email
+   */
+  private String findTokenMatch(String column, Set<String> usedFields) {
+    // Entferne Sonderzeichen und splitte in Tokens
+    String[] tokens = column.replaceAll("[^a-zäöüß0-9]", " ").split("\\s+");
+
+    String bestMatch = null;
+    int bestScore = 0;
+
+    for (Map.Entry<String, Set<String>> entry : FIELD_SYNONYMS.entrySet()) {
+      String fieldKey = entry.getKey();
+      if (usedFields.contains(fieldKey)) continue;
+
+      Set<String> synonyms = entry.getValue();
+      int matchScore = 0;
+
+      for (String token : tokens) {
+        if (token.length() < 3) continue; // Ignoriere zu kurze Tokens
+
+        for (String synonym : synonyms) {
+          // Token enthält Synonym oder Synonym enthält Token
+          if (token.contains(synonym) || synonym.contains(token)) {
+            matchScore += synonym.length(); // Längere Matches = bessere Score
+          }
+        }
+      }
+
+      if (matchScore > bestScore) {
+        bestScore = matchScore;
+        bestMatch = fieldKey;
+      }
+    }
+
+    // Mindestens ein signifikanter Match erforderlich
+    return bestScore >= 4 ? bestMatch : null;
+  }
+
+  /**
+   * Findet Match basierend auf Levenshtein-Distanz.
+   *
+   * <p>Beispiel: "Teleofn" → "telefon" (Tippfehler) → phone
+   */
+  private String findFuzzyMatch(String column, Set<String> usedFields) {
+    String bestMatch = null;
+    double bestSimilarity = 0;
+
+    for (Map.Entry<String, Set<String>> entry : FIELD_SYNONYMS.entrySet()) {
+      String fieldKey = entry.getKey();
+      if (usedFields.contains(fieldKey)) continue;
+
+      for (String synonym : entry.getValue()) {
+        double similarity = calculateSimilarity(column, synonym);
+        if (similarity > bestSimilarity && similarity >= FUZZY_THRESHOLD) {
+          bestSimilarity = similarity;
+          bestMatch = fieldKey;
+        }
+      }
+    }
+
+    return bestMatch;
+  }
+
+  /**
+   * Berechnet Ähnlichkeit (0.0-1.0) basierend auf Levenshtein-Distanz.
+   *
+   * <p>Formel: 1 - (levenshtein / max(len1, len2))
+   */
+  private double calculateSimilarity(String s1, String s2) {
+    if (s1 == null || s2 == null) return 0;
+    if (s1.equals(s2)) return 1.0;
+
+    int distance = levenshteinDistance(s1, s2);
+    int maxLen = Math.max(s1.length(), s2.length());
+
+    return maxLen == 0 ? 1.0 : 1.0 - ((double) distance / maxLen);
+  }
+
+  /**
+   * Berechnet Levenshtein-Distanz zwischen zwei Strings.
+   *
+   * <p>Standard Dynamic-Programming-Implementierung.
+   */
+  private int levenshteinDistance(String s1, String s2) {
+    int len1 = s1.length();
+    int len2 = s2.length();
+
+    int[][] dp = new int[len1 + 1][len2 + 1];
+
+    for (int i = 0; i <= len1; i++) {
+      dp[i][0] = i;
+    }
+    for (int j = 0; j <= len2; j++) {
+      dp[0][j] = j;
+    }
+
+    for (int i = 1; i <= len1; i++) {
+      for (int j = 1; j <= len2; j++) {
+        int cost = s1.charAt(i - 1) == s2.charAt(j - 1) ? 0 : 1;
+        dp[i][j] =
+            Math.min(Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1), dp[i - 1][j - 1] + cost); // sub
+      }
+    }
+
+    return dp[len1][len2];
   }
 
   /**
