@@ -29,6 +29,7 @@ import {
   createImportPreview,
   executeImport,
   generateTestLeadsCsv,
+  deleteTestLeadsByPrefix,
   type ImportUploadResponse,
   type ImportPreviewResponse,
   type ImportExecuteResponse,
@@ -54,6 +55,14 @@ const STANDARD_MAPPING: Record<string, string> = {
  * mit Quota-System, Validierung und Duplikat-Erkennung.
  */
 test.describe('Lead Import Flow - Critical Path', () => {
+  // =============================================================================
+  // CLEANUP: Entferne alle Test-Leads nach Test-Run
+  // =============================================================================
+  test.afterAll(async ({ request }) => {
+    console.log('\n[CLEANUP] Removing test leads created during this test run\n');
+    const deletedCount = await deleteTestLeadsByPrefix(request, '[E2E-IMP-');
+    console.log(`[CLEANUP] Deleted ${deletedCount} test leads`);
+  });
   // =============================================================================
   // TEST 1: Quota Check - Rollen-basierte Limits
   // =============================================================================

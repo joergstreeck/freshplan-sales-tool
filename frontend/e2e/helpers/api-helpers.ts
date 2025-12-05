@@ -721,6 +721,103 @@ export async function executeImport(
   return response.json();
 }
 
+// =============================================================================
+// CLEANUP HELPERS (für Test-Daten Bereinigung)
+// =============================================================================
+
+/**
+ * Löscht einen Lead via API mit ETag-Header
+ * Die API erfordert If-Match Header für optimistisches Locking
+ */
+export async function deleteLead(
+  request: APIRequestContext,
+  leadId: number,
+  version: number = 0
+): Promise<boolean> {
+  const etag = `"lead-${leadId}-${version}"`;
+  const response = await request.delete(`${API_BASE}/api/leads/${leadId}`, {
+    headers: {
+      'If-Match': etag,
+    },
+  });
+
+  if (response.status() === 429) {
+    // Rate limit - wait and retry once
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    const retryResponse = await request.delete(`${API_BASE}/api/leads/${leadId}`, {
+      headers: {
+        'If-Match': etag,
+      },
+    });
+    return retryResponse.ok() || retryResponse.status() === 404;
+  }
+
+  return response.ok() || response.status() === 404; // 404 = already deleted
+}
+
+/**
+ * Löscht alle Test-Leads die mit einem bestimmten Prefix beginnen
+ * Nützlich für Cleanup nach E2E-Tests
+ *
+ * @param request - Playwright API Request Context
+ * @param prefixPattern - Pattern zum Matchen (z.B. "[E2E-IMP-")
+ * @returns Anzahl der gelöschten Leads
+ */
+export async function deleteTestLeadsByPrefix(
+  request: APIRequestContext,
+  prefixPattern: string
+): Promise<number> {
+  let deletedCount = 0;
+  let page = 0;
+  const pageSize = 50;
+
+  console.log(`[CLEANUP] Searching for leads matching: ${prefixPattern}`);
+
+  // Durchsuche alle Seiten nach Test-Leads
+  while (true) {
+    const response = await request.get(`${API_BASE}/api/leads?page=${page}&size=${pageSize}`);
+
+    if (!response.ok()) {
+      console.log(`[CLEANUP] Failed to fetch leads page ${page}`);
+      break;
+    }
+
+    const data = await response.json();
+    const leads = data.data || data.content || [];
+
+    if (leads.length === 0) {
+      break;
+    }
+
+    // Filtere Leads die mit dem Prefix beginnen
+    const testLeads = leads.filter(
+      (lead: LeadResponse) => lead.companyName && lead.companyName.includes(prefixPattern)
+    );
+
+    // Lösche gefundene Test-Leads
+    for (const lead of testLeads) {
+      const deleted = await deleteLead(request, lead.id, 0);
+      if (deleted) {
+        deletedCount++;
+        console.log(`[CLEANUP] Deleted lead ${lead.id}: ${lead.companyName}`);
+      }
+      // Kleine Pause um Rate-Limiting zu vermeiden
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    page++;
+
+    // Safety limit - nicht mehr als 10 Seiten durchsuchen
+    if (page >= 10) {
+      console.log(`[CLEANUP] Reached page limit, stopping search`);
+      break;
+    }
+  }
+
+  console.log(`[CLEANUP] Deleted ${deletedCount} test leads`);
+  return deletedCount;
+}
+
 /**
  * Generiert eine CSV-Datei mit Test-Leads
  */
