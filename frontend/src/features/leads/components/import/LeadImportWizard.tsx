@@ -153,7 +153,9 @@ export function LeadImportWizard({ open, onClose, onSuccess }: LeadImportWizardP
 
   // Step 1: Upload Complete
   const handleUploadComplete = useCallback((data: ImportUploadResponse) => {
-    // Backend returns 'suggestedMapping', fallback to 'autoMapping' for compatibility
+    // Backend API standardized on 'suggestedMapping' (Sprint 2.1.8).
+    // Legacy fallback to 'autoMapping' preserved for backwards compatibility during migration.
+    // TODO: Remove 'autoMapping' fallback after confirming all API clients are updated.
     const autoMapping = data.suggestedMapping || data.autoMapping || {};
     setState(prev => ({
       ...prev,

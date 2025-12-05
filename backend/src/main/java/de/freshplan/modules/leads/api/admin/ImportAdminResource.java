@@ -82,9 +82,9 @@ public class ImportAdminResource {
         pendingApprovals,
         completedImports,
         rejectedImports,
-        totalImported != null ? totalImported : 0,
-        totalSkipped != null ? totalSkipped : 0,
-        totalErrors != null ? totalErrors : 0);
+        totalImported,
+        totalSkipped,
+        totalErrors);
   }
 
   // ============================================================================
@@ -98,7 +98,12 @@ public class ImportAdminResource {
 
     List<ImportLog> logs;
     if (status != null && !status.isEmpty()) {
-      ImportLogStatus statusEnum = ImportLogStatus.valueOf(status.toUpperCase());
+      ImportLogStatus statusEnum;
+      try {
+        statusEnum = ImportLogStatus.valueOf(status.toUpperCase());
+      } catch (IllegalArgumentException e) {
+        throw new BadRequestException("Ungültiger Status-Parameter: " + status);
+      }
       logs = ImportLog.list("status = ?1 ORDER BY importedAt DESC", statusEnum);
     } else {
       logs = ImportLog.list("ORDER BY importedAt DESC");

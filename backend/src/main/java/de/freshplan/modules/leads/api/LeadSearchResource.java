@@ -229,7 +229,7 @@ public class LeadSearchResource {
 
   /** Hilfsmethode: Ermittelt welche Felder beim Duplikat-Match übereinstimmen. */
   private List<String> getMatchedFields(Lead lead, String companyName, String email) {
-    java.util.ArrayList<String> fields = new java.util.ArrayList<>();
+    List<String> fields = new java.util.ArrayList<>();
 
     if (companyName != null
         && lead.companyName != null

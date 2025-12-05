@@ -232,6 +232,7 @@ describe('ExecuteStep - Business Logic', () => {
      * NOTE: Test "zeigt Fortschritts-Indikator während Import" entfernt.
      * Race Condition: MSW-Response ist schneller als React-Render.
      * Loading-State wird durch E2E-Tests abgedeckt.
+     * @see frontend/e2e/critical-paths/lead-import-flow.spec.ts
      */
   });
 
