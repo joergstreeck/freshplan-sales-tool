@@ -60,6 +60,7 @@ class GdprPdfGeneratorServiceTest {
       territory.name = "Deutschland";
       territory.countryCode = "DE";
       territory.currencyCode = "EUR";
+      territory.languageCode = "de-DE";
       territory.taxRate = new BigDecimal("19.0");
       territory.persist();
     }

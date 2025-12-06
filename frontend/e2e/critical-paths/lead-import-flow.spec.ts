@@ -63,8 +63,10 @@ const HISTORICAL_MAPPING: Record<string, string> = {
 test.describe('Lead Import Flow - Critical Path', () => {
   // =============================================================================
   // CLEANUP: Entferne alle Test-Leads nach Test-Run
+  // NOTE: Erhöhter Timeout (60s) für CI, da Bulk-Delete langsamer sein kann
   // =============================================================================
   test.afterAll(async ({ request }) => {
+    test.setTimeout(60000); // 60s timeout for cleanup
     console.log('\n[CLEANUP] Removing test leads created during this test run\n');
     const deletedCount = await deleteTestLeadsByPrefix(request, '[E2E-IMP-');
     console.log(`[CLEANUP] Deleted ${deletedCount} test leads`);
