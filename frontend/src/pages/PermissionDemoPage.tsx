@@ -67,10 +67,12 @@ export const PermissionDemoPage: React.FC = () => {
   }
 
   return (
-    <Box p={3}>
+    <Box component="main" p={3}>
       <Box display="flex" alignItems="center" mb={2}>
         <SecurityIcon sx={{ mr: 1, fontSize: 32 }} />
-        <Typography variant="h4">🔒 FC-009 Permission System Demo</Typography>
+        <Typography variant="h4" component="h1">
+          🔒 FC-009 Permission System Demo
+        </Typography>
       </Box>
 
       <Alert severity="info" sx={{ mb: 3 }}>

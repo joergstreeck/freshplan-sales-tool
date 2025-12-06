@@ -208,8 +208,6 @@ class TimelineCommandServiceTest {
 
   @TestTransaction
   @Test
-  @org.junit.jupiter.api.Disabled(
-      "FIXME: Repository.update() in @TestTransaction doesn't reflect changes - needs investigation")
   void testCompleteFollowUp_shouldUpdateFollowUpStatus() {
     // Given - Create test customer within test transaction
     Customer testCustomer = createAndPersistTestCustomer();
@@ -232,8 +230,9 @@ class TimelineCommandServiceTest {
     // When
     commandService.completeFollowUp(eventId, "testuser");
 
-    // Then - Verify follow-up was completed
-    // Note: Repository.update() commits directly, reload to see changes
+    // Then - Clear L1 cache to see bulk UPDATE changes, then reload
+    em.flush();
+    em.clear(); // Invalidate Hibernate L1 cache after bulk UPDATE
     CustomerTimelineEvent updatedEvent = timelineRepository.find("id = ?1", eventId).firstResult();
     assertNotNull(updatedEvent);
     assertTrue(updatedEvent.getFollowUpCompleted(), "Follow-up should be marked as completed");
@@ -303,8 +302,6 @@ class TimelineCommandServiceTest {
 
   @TestTransaction
   @Test
-  @org.junit.jupiter.api.Disabled(
-      "FIXME: Repository.update() in @TestTransaction doesn't reflect changes - needs investigation")
   void testDeleteEvent_shouldSoftDeleteEvent() {
     // Given - Create test customer within test transaction
     Customer testCustomer = createAndPersistTestCustomer();
@@ -321,8 +318,9 @@ class TimelineCommandServiceTest {
     // When
     commandService.deleteEvent(eventId, "testuser");
 
-    // Then - Verify soft delete
-    // Note: Repository.update() commits directly, reload to see changes
+    // Then - Clear L1 cache to see bulk UPDATE changes, then reload
+    em.flush();
+    em.clear(); // Invalidate Hibernate L1 cache after bulk UPDATE
     CustomerTimelineEvent deletedEvent = timelineRepository.find("id = ?1", eventId).firstResult();
     assertNotNull(deletedEvent);
     assertTrue(deletedEvent.getIsDeleted(), "Event should be marked as deleted");

@@ -10,7 +10,7 @@ import { Box, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { SalesCockpitMUI } from '@/features/cockpit/components/SalesCockpitMUI';
 
-const PageContainer = styled(Box)(() => ({
+const PageContainer = styled(Box)(({ component: _component }) => ({
   // Reset any inherited styles
   position: 'relative',
   width: '100%',
@@ -26,7 +26,7 @@ export function CockpitViewV2() {
   // Diese wird in Phase 2 durch einzelne MUI-Komponenten ersetzt
 
   return (
-    <PageContainer>
+    <PageContainer component="main">
       <Container maxWidth={false} sx={{ height: '100%', p: 0 }}>
         <SalesCockpitMUI />
       </Container>

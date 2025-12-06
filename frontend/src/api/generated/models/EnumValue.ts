@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 export type EnumValue = {
   /**
    * Enum name (e.g., 'MESSE', 'RESTAURANT')

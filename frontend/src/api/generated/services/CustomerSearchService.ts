@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { CustomerSearchRequest } from '../models/CustomerSearchRequest';
 import type { PagedCustomerResponse } from '../models/PagedCustomerResponse';
 import type { SmartSearchRequest } from '../models/SmartSearchRequest';

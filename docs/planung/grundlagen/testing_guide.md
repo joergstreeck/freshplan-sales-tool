@@ -1,7 +1,7 @@
 # Testing Guide - FreshPlan Sales Tool
 
-**Stand:** 2025-10-14
-**Sprint:** Track 2C - Advanced Test Infrastructure
+**Stand:** 2025-12-05
+**Sprint:** Sprint 2.1.8 - Self-Service Lead-Import
 **Speicherort:** `docs/planung/grundlagen/testing_guide.md`
 
 > **💡 Hinweis:** Für Coverage-Tools, CI/CD Setup & Monitoring siehe: `TESTING_INFRASTRUCTURE.md`
@@ -11,10 +11,14 @@
 ## 📑 Inhaltsverzeichnis
 
 - [🎯 Wichtigster Grundsatz](#-wichtigster-grundsatz-tests-sind-kein-selbstzweck)
+- [🐳 3-Stage CI Pipeline](#-3-stage-ci-pipeline) ⭐ NEU!
+- [🔬 E2E-Tests gegen echte Datenbank](#-e2e-tests-gegen-echte-datenbank) ⭐ NEU!
+  - [🔐 Security/Auth für E2E-Tests (Dev-Mode)](#-securityauth-für-e2e-tests-dev-mode) ⭐ NEU!
 - [📊 Test-Strategie](#-test-strategie-was-soll-getestet-werden)
 - [🔍 Test-Gap-Analyse](#-test-gap-analyse-warum-fanden-tests-bugs-nicht)
 - [🛠️ Test-Typen im Detail](#️-test-typen-im-detail)
-- [🏭 TestDataFactory Pattern](#-testdatafactory-pattern) ⭐ NEU!
+- [🧪 Container/Presentational Pattern](#-containerpresentational-pattern-für-testbarkeit) ⭐ NEU!
+- [🏭 TestDataFactory Pattern](#-testdatafactory-pattern)
 - [🌱 DEV-SEED](#-dev-seed-testdaten-für-lokale-entwicklung)
 - [📋 Test-Checklist](#-test-checklist-neue-features)
 - [🚀 Commands](#-commands)
@@ -47,6 +51,306 @@
 - "Ich will testen, ob ADMIN Stop-Clock nutzen kann, USER aber nicht"
 - "Ich will wissen, ob meine Scoring-Formel korrekt rechnet"
 - "Ich will verhindern, dass NULL-Werte Abstürze verursachen"
+
+---
+
+## 🐳 **3-Stage CI Pipeline**
+
+> **Eingeführt in PR #150** (2025-11-30) - Kritische Business-Flows gegen echte Datenbank testen
+
+### Die 3 Stages im Überblick
+
+| Stage | Beschreibung | Dauer | Tools |
+|-------|-------------|-------|-------|
+| **Stage 1** | Unit Tests (Backend + Frontend) | ~5 min | JUnit 5, Vitest |
+| **Stage 2** | UI Smoke Tests mit MSW | ~3 min | Playwright + MSW |
+| **Stage 3** | Critical Path E2E gegen echte DB | ~10 min | Playwright + Docker Compose |
+
+### Warum 3 Stages?
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  Stage 1: Unit Tests (schnell, isoliert)                       │
+│  ├── Backend: 1826 Tests (JUnit + H2 in-memory)                │
+│  └── Frontend: 1399 Tests (Vitest + MSW Mocks)                 │
+│                                                                 │
+│  → Findet: Logikfehler, Regressions, Type-Fehler               │
+│  → Findet NICHT: DB-Constraints, RLS, Migrations               │
+├─────────────────────────────────────────────────────────────────┤
+│  Stage 2: UI Smoke Tests (optional)                            │
+│  ├── Playwright mit MSW (Mock Service Worker)                  │
+│  └── Testet UI-Flows ohne echtes Backend                       │
+│                                                                 │
+│  → Findet: UI-Bugs, Rendering-Probleme, Navigation             │
+│  → Findet NICHT: API-Integration, Datenbank-Verhalten          │
+├─────────────────────────────────────────────────────────────────┤
+│  Stage 3: E2E gegen echte DB (kritisch!)                       │
+│  ├── Docker Compose: PostgreSQL + Quarkus                      │
+│  └── Playwright testet komplette Business-Flows                │
+│                                                                 │
+│  → Findet: DB-Constraints, RLS-Policies, Timezone-Bugs,        │
+│            Flyway-Migrations, Race Conditions                  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Stage 3: Kritische Business-Flows (PFLICHT)
+
+Diese Flows MÜSSEN gegen echte Datenbank getestet werden:
+
+1. **Lead → Opportunity → Customer Conversion** (`lead-conversion-flow.spec.ts`)
+   - Lead erstellen → Qualifizieren → Zu Kunde konvertieren
+   - Testet: Stage-Transitions, Duplicate-Detection, RLS
+
+2. **Customer Onboarding Wizard** (`customer-onboarding.spec.ts`)
+   - Multi-Step-Wizard durchlaufen
+   - Testet: Form-Validation, API-Integration, Xentral-Sync
+
+3. **Validation & Error Handling** (`validation-flow.spec.ts`)
+   - Invalid Stage Transitions (z.B. LEAD → CLOSED ohne Qualifikation)
+   - Duplicate Customer Detection (gleiche Email/Firmenname)
+   - Hierarchy Validation (FILIALE kann keine Sub-Branches haben)
+
+---
+
+## 🔬 **E2E-Tests gegen echte Datenbank**
+
+### Warum echte DB statt Mocks?
+
+**Mocks fangen NICHT:**
+
+| Problem | Beispiel | Mock findet? | Echte DB findet? |
+|---------|----------|--------------|------------------|
+| DB Constraints | `UNIQUE(email)` verletzt | ❌ | ✅ |
+| CHECK Constraints | `registered_at <= NOW()` | ❌ | ✅ |
+| RLS Policies | User sieht fremde Leads | ❌ | ✅ |
+| Flyway Migrations | Spalte fehlt nach Rename | ❌ | ✅ |
+| Timezone-Bugs | JVM UTC vs. PostgreSQL local | ❌ | ✅ |
+| Trigger/Events | NOTIFY/LISTEN funktioniert nicht | ❌ | ✅ |
+| N+1 Queries | Performance-Problem | ❌ | ✅ |
+
+### Self-Contained Test Pattern
+
+> **Goldene Regel:** Jeder Test erstellt seine eigenen Daten mit UUID-Präfix
+
+```typescript
+// ✅ RICHTIG: Self-Contained Test
+test('Lead → Customer Conversion', async ({ page }) => {
+  // Unique ID für diesen Testlauf
+  const uniqueId = crypto.randomUUID().slice(0, 8);
+  const companyName = `E2E-Test-${uniqueId}`;
+
+  // 1. Lead erstellen
+  await page.goto('/leads/new');
+  await page.fill('[name="companyName"]', companyName);
+  await page.click('button[type="submit"]');
+
+  // 2. Lead qualifizieren
+  await page.click('[data-testid="qualify-button"]');
+  await page.fill('[name="contactPerson"]', 'Max Mustermann');
+  await page.click('button[type="submit"]');
+
+  // 3. Zu Kunde konvertieren
+  await page.click('[data-testid="convert-button"]');
+  await page.waitForURL('/customers/*');
+
+  // 4. Assert: Kunde existiert
+  await expect(page.locator('h1')).toContainText(companyName);
+});
+```
+
+```typescript
+// ❌ FALSCH: Abhängig von DEV-SEED Daten
+test('Bad: Uses DEV-SEED data', async ({ page }) => {
+  // NIEMALS DEV-SEED IDs in E2E-Tests!
+  await page.goto('/leads/90001');  // ❌ Flaky! Existiert nicht in CI
+
+  // Stattdessen: Eigene Daten erstellen!
+});
+```
+
+### Timezone-Konfiguration (KRITISCH)
+
+> **Problem aus PR #150:** `registered_at <= NOW()` Check schlug fehl wegen JVM/DB Timezone-Differenz
+
+**Lösung: UTC überall**
+
+```properties
+# application.properties
+quarkus.hibernate-orm.jdbc.timezone=UTC
+```
+
+```typescript
+// playwright.config.ts
+export default defineConfig({
+  use: {
+    timezoneId: 'UTC',
+  },
+});
+```
+
+```yaml
+# docker-compose.yml
+services:
+  postgres:
+    environment:
+      - TZ=UTC
+```
+
+### Rate-Limiting Awareness
+
+```typescript
+// E2E Tests haben max. 26 Requests pro Flow
+// Limit: 50 writes/min, 100 reads/min
+
+// ✅ Bei vielen Tests: Zwischen Flows warten
+afterEach(async () => {
+  if (process.env.CI) {
+    await new Promise(r => setTimeout(r, 500)); // 500ms Pause
+  }
+});
+```
+
+### Docker Compose Setup für Stage 3
+
+```yaml
+# e2e/docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: freshplan_test
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      TZ: UTC
+    ports:
+      - "5433:5432"  # Anderer Port als lokal!
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build: ../backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres:5432/freshplan_test
+      QUARKUS_DATASOURCE_USERNAME: test
+      QUARKUS_DATASOURCE_PASSWORD: test
+      QUARKUS_HIBERNATE_ORM_JDBC_TIMEZONE: UTC
+    ports:
+      - "8081:8080"
+```
+
+### Flaky Test Prevention
+
+| Problem | Lösung |
+|---------|--------|
+| Tests abhängig von Reihenfolge | Self-Contained: Jeder Test erstellt eigene Daten |
+| Race Conditions | `await page.waitForResponse()` statt `sleep()` |
+| Stale Data | Unique IDs pro Testlauf (UUID) |
+| Timezone-Differenzen | UTC überall (JVM, PostgreSQL, Playwright) |
+| DEV-SEED Abhängigkeit | NIEMALS DEV-SEED IDs in Tests referenzieren |
+
+### 🔐 Security/Auth für E2E-Tests (Dev-Mode)
+
+> **WICHTIG:** E2E-Tests laufen im Dev-Mode ohne echte Keycloak-Authentifizierung.
+> Das Backend verwendet einen Fallback-Mechanismus für User-ID und Rollen.
+
+#### Dev-Mode Auth-Bypass Pattern
+
+Im Dev-Mode (`quarkus.profile=dev`) ist Keycloak deaktiviert:
+- `SecurityIdentity.getPrincipal()` gibt `null` zurück
+- `SecurityIdentity.hasRole()` gibt `false` zurück
+
+**Lösung: Fallback-Pattern in jedem Resource:**
+
+```java
+@Path("/api/resource")
+@RolesAllowed({"USER", "MANAGER", "ADMIN"})  // ⚠️ IMMER ohne ROLE_ Prefix!
+public class MyResource {
+
+  @Inject SecurityIdentity securityIdentity;
+
+  @ConfigProperty(name = "app.dev.fallback-user-id", defaultValue = "dev-admin-001")
+  String fallbackUserId;
+
+  /**
+   * Get current user ID with dev mode fallback.
+   * In dev mode, auth is disabled and SecurityContext returns null.
+   */
+  private String getCurrentUserId() {
+    if (securityIdentity.getPrincipal() != null
+        && securityIdentity.getPrincipal().getName() != null
+        && !securityIdentity.getPrincipal().getName().isBlank()) {
+      return securityIdentity.getPrincipal().getName();
+    }
+    return fallbackUserId; // Fallback for dev mode
+  }
+
+  /**
+   * Get current user role with dev mode fallback.
+   * Checks both UPPER and lowercase role names for flexibility.
+   */
+  private UserRole getCurrentUserRole() {
+    if (securityIdentity.hasRole("ADMIN") || securityIdentity.hasRole("admin")) {
+      return UserRole.ADMIN;
+    } else if (securityIdentity.hasRole("MANAGER") || securityIdentity.hasRole("manager")) {
+      return UserRole.MANAGER;
+    } else if (securityIdentity.hasRole("USER") || securityIdentity.hasRole("sales")) {
+      return UserRole.SALES;
+    }
+    // Default: ADMIN in dev mode for full access
+    return UserRole.ADMIN;
+  }
+}
+```
+
+#### Konsistente Rollen-Benennung (KRITISCH!)
+
+| ✅ RICHTIG | ❌ FALSCH |
+|-----------|----------|
+| `@RolesAllowed({"USER", "MANAGER", "ADMIN"})` | `@RolesAllowed({"ROLE_USER", "ROLE_MANAGER", "ROLE_ADMIN"})` |
+| `securityIdentity.hasRole("ADMIN")` | `securityIdentity.hasRole("ROLE_ADMIN")` |
+
+**Problem:** Verschiedene Konventionen führen zu 401 Unauthorized in E2E-Tests!
+
+**Prüfe bei neuen Resources:**
+1. `@RolesAllowed` verwendet **keine** `ROLE_` Prefixe
+2. `hasRole()` prüft **beide** Varianten (upper + lower case)
+3. Fallback auf `ADMIN` im Dev-Mode für maximale Test-Abdeckung
+
+#### E2E-Tests ohne Browser-UI (Pure API)
+
+Für maximale CI-Stabilität verwenden wir Pure API Tests:
+
+```typescript
+// e2e/helpers/api-helpers.ts
+export const API_BASE = 'http://localhost:8081';
+
+export async function getImportQuota(request: APIRequestContext): Promise<QuotaInfoResponse> {
+  const response = await request.get(`${API_BASE}/api/leads/import/quota`);
+  // Dev-Mode: Keine Auth-Header nötig, Backend verwendet Fallback
+  expect(response.ok()).toBe(true);
+  return response.json();
+}
+```
+
+**Vorteile:**
+- Keine Browser-Interaktionen → schneller, stabiler
+- Keine Login-UI → keine Keycloak-Abhängigkeit
+- Backend-Fallback → Tests funktionieren im Dev-Mode
+
+#### Referenz-Implementierung
+
+Siehe: `SelfServiceImportResource.java` (Sprint 2.1.8)
+- Vollständiges Fallback-Pattern für userId und userRole
+- Konsistente `@RolesAllowed` ohne `ROLE_` Prefix
+- `@ConfigProperty` für konfigurierbaren Fallback-User
 
 ---
 
@@ -243,6 +547,128 @@ describe('StopTheClockDialog - RBAC', () => {
   });
 });
 ```
+
+---
+
+## 🧪 **Container/Presentational Pattern für Testbarkeit**
+
+> **Eingeführt in Sprint 2.1.8** (2025-12-05) - Lösung für schwer testbare Komponenten mit useEffect-API-Calls
+
+### Das Problem
+
+Komponenten mit `useEffect`-API-Calls sind schwer testbar:
+
+```typescript
+// ❌ SCHLECHT: API-Call in der Komponente
+function PreviewStep({ uploadId, mapping, onComplete }) {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    async function load() {
+      const result = await createPreview(uploadId, mapping);  // API-Call!
+      setData(result);
+    }
+    load();
+  }, [uploadId, mapping]);
+
+  return <div>{data?.validRows} gültige Zeilen</div>;
+}
+```
+
+**Probleme beim Testen:**
+- MSW-Mocking ist instabil (Timing-Issues)
+- Tests brauchen lange Timeouts (10+ Sekunden)
+- Race Conditions zwischen Render und API-Response
+- Coverage bleibt niedrig (~47%)
+
+### Die Lösung: Container/Presentational Pattern
+
+**Architektur-Prinzip: "Lift State Up"**
+
+```
+┌─────────────────────────────────────┐
+│ Container (Parent)                  │
+│   └── API-Call + State Management   │
+│         └── Daten als Props         │
+└─────────────────────────────────────┘
+                  ↓
+┌─────────────────────────────────────┐
+│ Presentational (Child)              │
+│   └── Nur Props → UI                │  ← Einfach testbar!
+└─────────────────────────────────────┘
+```
+
+```typescript
+// ✅ GUT: API-Call im Parent (Container)
+function LeadImportWizard() {
+  const [previewData, setPreviewData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleMappingComplete = async (mapping) => {
+    setIsLoading(true);
+    const data = await createPreview(uploadId, mapping);
+    setPreviewData(data);
+    setIsLoading(false);
+  };
+
+  return (
+    <PreviewStep
+      previewData={previewData}
+      isLoading={isLoading}
+      onContinue={handleContinue}
+    />
+  );
+}
+
+// ✅ GUT: Presentational Component (nur Props)
+function PreviewStep({ previewData, isLoading, onContinue }) {
+  if (isLoading) return <Loading />;
+  return <div>{previewData?.validRows} gültige Zeilen</div>;
+}
+```
+
+### Vorteile für Tests
+
+```typescript
+// Test ist jetzt trivial - keine API-Calls, keine Mocks!
+describe('PreviewStep', () => {
+  it('zeigt Validierungsergebnis', () => {
+    const mockData = {
+      validation: { validRows: 85, errorRows: 5 },
+      quotaCheck: { approved: true }
+    };
+
+    render(<PreviewStep previewData={mockData} isLoading={false} />);
+
+    expect(screen.getByText('85')).toBeInTheDocument();
+  });
+});
+```
+
+**Ergebnis:** Coverage von 47% → 97%!
+
+### Wann dieses Pattern anwenden?
+
+| Situation | Pattern anwenden? |
+|-----------|-------------------|
+| Komponente hat `useEffect` mit API-Call | ✅ JA |
+| Komponente rendert nur Props | ❌ NEIN (schon gut) |
+| Komponente verwendet React Query Hook | ⚠️ PRÜFEN (meist ok) |
+| Multi-Step Wizard mit API zwischen Schritten | ✅ JA |
+
+### Best Practices
+
+1. **Loading-State als Prop**: Nicht intern verwalten, vom Parent übergeben
+2. **Error-Handling im Parent**: Fehler im Container abfangen, nicht im Child
+3. **Callback-Props für Interaktionen**: `onContinue`, `onBack`, nicht `navigate()`
+4. **Separate Loading-Komponente**: Für bessere Testbarkeit exportieren
+
+### Referenz-Implementierung
+
+**Dateien:**
+- `frontend/src/features/leads/components/import/PreviewStep.tsx` - Presentational
+- `frontend/src/features/leads/components/import/LeadImportWizard.tsx` - Container
+- `frontend/src/features/leads/components/import/__tests__/PreviewStep.test.tsx` - 22 Tests
 
 ---
 
@@ -665,7 +1091,7 @@ cd backend
 
 Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
 
-### ✅ **Backend**
+### ✅ **Stage 1: Backend Unit Tests**
 - [ ] Habe ich Business-Logic-Tests für die Kernfunktion?
 - [ ] Habe ich Integration-Tests für alle API-Endpoints?
 - [ ] Habe ich RBAC-Tests für alle Rollen (ADMIN, MANAGER, USER)?
@@ -673,12 +1099,20 @@ Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
 - [ ] Habe ich DTO-Completeness-Tests für neue Felder?
 - [ ] Habe ich Optimistic-Locking-Tests (ETag, If-Match)?
 
-### ✅ **Frontend**
+### ✅ **Stage 1: Frontend Unit Tests**
 - [ ] Habe ich Component-Tests für alle UI-Elemente?
 - [ ] Habe ich RBAC-Tests für verschiedene User-Rollen?
 - [ ] Habe ich Interaction-Tests (Click, Input, Submit)?
 - [ ] Habe ich Validation-Tests (Required Fields, Formats)?
 - [ ] Habe ich Error-Handling-Tests (API-Fehler, Network-Fehler)?
+
+### ✅ **Stage 3: E2E Tests (für kritische Features)**
+- [ ] Ist dies ein **kritischer Business-Flow**? (Conversion, Wizard, Validation)
+- [ ] Habe ich Self-Contained Tests mit UUID-Isolation?
+- [ ] Teste ich gegen **echte Datenbank** (nicht Mocks)?
+- [ ] Sind meine Tests **unabhängig von DEV-SEED Daten**?
+- [ ] Habe ich Timezone-Handling berücksichtigt (UTC)?
+- [ ] Respektiere ich Rate-Limits (max. 50 writes/min)?
 
 ---
 
@@ -700,7 +1134,7 @@ Wenn du ein neues Feature implementierst, stelle dir diese Fragen:
 # Report: backend/target/site/jacoco/index.html
 ```
 
-### **Frontend Tests ausführen**
+### **Frontend Tests ausführen (Stage 1)**
 ```bash
 # Alle Tests
 npm test
@@ -714,6 +1148,43 @@ npm test -- StopTheClockDialog.test.tsx
 # Mit Coverage
 npm run test:coverage
 # Report: frontend/coverage/index.html
+```
+
+### **E2E Tests ausführen (Stage 3)**
+```bash
+# 1. Docker Compose starten (PostgreSQL + Backend)
+cd e2e
+docker compose up -d
+
+# 2. Warten bis Backend ready ist
+until curl -s http://localhost:8081/q/health/ready; do sleep 2; done
+
+# 3. E2E Tests ausführen
+npx playwright test
+
+# 4. Einzelner Test
+npx playwright test lead-conversion-flow.spec.ts
+
+# 5. Mit UI (Debug-Mode)
+npx playwright test --ui
+
+# 6. Aufräumen
+docker compose down -v
+```
+
+### **Vollständige 3-Stage Pipeline (lokal)**
+```bash
+# Stage 1: Unit Tests
+cd backend && ./mvnw test
+cd frontend && npm test
+
+# Stage 2: UI Smoke Tests (optional)
+cd frontend && npm run test:e2e:msw
+
+# Stage 3: E2E gegen echte DB
+cd e2e && docker compose up -d
+npx playwright test
+docker compose down -v
 ```
 
 ---
@@ -867,15 +1338,35 @@ PGPASSWORD=freshplan123 psql -h localhost -U freshplan_user -d freshplan_db \
 
 - **Backend:** [Quarkus Testing Guide](https://quarkus.io/guides/getting-started-testing)
 - **Frontend:** [Vitest Docs](https://vitest.dev/guide/) + [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/)
+- **E2E:** [Playwright Docs](https://playwright.dev/docs/intro)
 - **Coverage:** `/docs/COVERAGE_GUIDE.md`
 - **Master Plan:** `/docs/planung/CRM_COMPLETE_MASTER_PLAN_V5.md`
+- **PR #150:** 3-Stage Pipeline Implementierung (2025-11-30)
 
 ---
 
-**Letztes Update:** Track 2C - Advanced Test Infrastructure (2025-10-14)
-**Test-Count:** 193 Tests (133 Backend + 60 Frontend)
-  - **Backend:** 133 Tests (43 Domain + 90 TestDataFactories)
-  - **Frontend:** 60 Tests
-**Coverage:** Backend 87%, Frontend 82%
-**DEV-SEED:** V90001 (5 Customers), V90002 (10 Leads + 21 Contacts + 21 Activities)
-**TestDataFactories:** CustomerTestDataFactory, LeadTestDataFactory, LeadActivityTestDataFactory (Track 2C)
+**Letztes Update:** Sprint 2.1.8 - Self-Service Lead-Import (2025-12-05)
+
+### Test-Statistiken
+
+| Kategorie | Anzahl | Details |
+|-----------|--------|---------|
+| **Backend Unit Tests** | 1826 | JUnit 5 + RestAssured |
+| **Frontend Unit Tests** | 1399 | Vitest + React Testing Library |
+| **E2E Tests (Stage 3)** | 39 | Playwright + Docker Compose (inkl. Lead-Import + Historical Import) |
+| **Gesamt** | 3264 | |
+
+### Coverage-Ziele
+
+| Layer | Minimum | Aktuell |
+|-------|---------|---------|
+| Backend | ≥80% | 87% |
+| Frontend | ≥80% | 82% |
+| Kritische Module | ≥90% | ✅ |
+
+### Infrastruktur
+
+- **3-Stage Pipeline:** ✅ Aktiv seit PR #150 (2025-11-30)
+- **DEV-SEED:** V90001-V90004 (Customers, Leads, Users)
+- **TestDataFactories:** Customer, Lead, LeadActivity, User
+- **E2E Docker Compose:** PostgreSQL 15 + Quarkus

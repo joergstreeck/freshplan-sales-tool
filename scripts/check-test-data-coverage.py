@@ -55,6 +55,10 @@ EXCLUDED_ENTITIES = {
     "CostTransaction",    # Cost-Tracking (optional)
     "HelpContent",        # Help-System Content
     "XentralSettings",    # Xentral-Config (Singleton)
+    # Sprint 2.1.8 DSGVO/Import Entities (System-generiert)
+    "GdprDataRequest",    # DSGVO-Anfragen (Art. 15/17 - System-generiert)
+    "GdprDeletionLog",    # DSGVO-Löschprotokoll (System-generiert)
+    "ImportLog",          # Import-Protokoll (System-generiert)
 }
 
 # Entities die im SEED-Data erwähnt werden SOLLTEN (Kritisch für Testing)

@@ -227,6 +227,21 @@ public class HelpSystemResource {
     }
   }
 
+  /** Registriert einen View für ein Hilfe-Element (Analytics) */
+  @POST
+  @Path("/content/{helpId}/view")
+  public Response trackView(@PathParam("helpId") UUID helpId) {
+    try {
+      LOG.debug("Tracking view for help content: {}", helpId);
+      helpService.trackView(helpId);
+      return Response.ok(new SuccessResponse("View tracked")).build();
+    } catch (Exception e) {
+      LOG.warn("Error tracking view for help: {} - {}", helpId, e.getMessage());
+      // Don't fail on tracking errors - return OK anyway
+      return Response.ok(new SuccessResponse("View tracking skipped")).build();
+    }
+  }
+
   /** Aktiviert/Deaktiviert Hilfe-Inhalt */
   @PUT
   @Path("/content/{helpId}/toggle")

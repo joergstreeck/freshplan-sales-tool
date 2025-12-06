@@ -202,7 +202,7 @@ export function LeadDetailPage() {
 
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <Box>
-              <Typography variant="h4" gutterBottom>
+              <Typography variant="h4" component="h1" gutterBottom>
                 {lead.companyName}
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap">

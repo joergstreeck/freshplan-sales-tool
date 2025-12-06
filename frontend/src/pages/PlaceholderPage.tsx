@@ -56,7 +56,11 @@ export const PlaceholderPage: React.FC<PlaceholderPageProps> = ({
         {/* Main Content */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           {displayIcon}
-          <Typography variant="h3" sx={{ mt: 3, mb: 2, color: theme.palette.secondary.main }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ mt: 3, mb: 2, color: theme.palette.secondary.main }}
+          >
             {title}
           </Typography>
           <Typography variant="h5" color="text.secondary" sx={{ mb: 1 }}>

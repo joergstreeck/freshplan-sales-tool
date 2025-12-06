@@ -133,6 +133,8 @@ export const useUniversalSearch = (
 
   /**
    * Performs the search API call
+   * For leads context: Uses pg_trgm fuzzy search (Sprint 2.1.8)
+   * For customers context: Uses standard universal search
    */
   const performSearch = useCallback(
     async (query: string) => {
@@ -163,41 +165,115 @@ export const useUniversalSearch = (
       setError(null);
 
       try {
-        const params = new URLSearchParams({
-          query,
-          includeContacts: includeContacts.toString(),
-          includeInactive: includeInactive.toString(),
-          limit: limit.toString(),
-          context: context, // NEW: Pass context parameter
-        });
-
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080';
-        const response = await fetch(`${apiUrl}/api/search/universal?${params.toString()}`, {
-          signal: abortControllerRef.current.signal,
-          credentials: 'include', // ✅ Include cookies for authentication
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-        });
+        let transformedResults: SearchResults;
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (context === 'leads') {
+          // Sprint 2.1.8: Use pg_trgm fuzzy search for leads
+          const fuzzyParams = new URLSearchParams({
+            q: query,
+            limit: limit.toString(),
+            includeInactive: includeInactive.toString(),
+          });
+
+          const response = await fetch(
+            `${apiUrl}/api/leads/search/fuzzy?${fuzzyParams.toString()}`,
+            {
+              signal: abortControllerRef.current.signal,
+              credentials: 'include',
+              headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const fuzzyData = await response.json();
+
+          // Transform fuzzy search response to SearchResults format
+          // fuzzyData format: { data: Lead[], total: number, query: string, fuzzyEnabled: boolean }
+          transformedResults = {
+            customers: (fuzzyData.data || []).map(
+              (lead: {
+                id: string | number;
+                companyName?: string;
+                status?: string;
+                email?: string;
+                phone?: string;
+                city?: string;
+                contacts?: unknown[];
+              }) => ({
+                type: 'customer' as const,
+                id: String(lead.id),
+                data: {
+                  id: String(lead.id),
+                  companyName: lead.companyName || '',
+                  customerNumber: '', // Leads don't have customer numbers
+                  status: lead.status || 'REGISTERED',
+                  contactEmail: lead.email,
+                  contactPhone: lead.phone,
+                  contactCount: lead.contacts?.length || 0,
+                },
+                relevanceScore: 100, // pg_trgm already sorted by relevance
+                matchedFields: [
+                  'companyName',
+                  lead.city ? 'city' : '',
+                  lead.email ? 'email' : '',
+                ].filter(Boolean),
+              })
+            ),
+            contacts: [], // Fuzzy search doesn't include separate contact results
+            totalCount: fuzzyData.total || 0,
+            executionTime: 0,
+            metadata: {
+              query: fuzzyData.query || query,
+              queryType: 'TEXT' as const,
+              truncated: false,
+              suggestions: fuzzyData.fuzzyEnabled
+                ? ['Tippfehler-tolerante Suche aktiv']
+                : undefined,
+            },
+          };
+        } else {
+          // Standard universal search for customers
+          const params = new URLSearchParams({
+            query,
+            includeContacts: includeContacts.toString(),
+            includeInactive: includeInactive.toString(),
+            limit: limit.toString(),
+            context: context,
+          });
+
+          const response = await fetch(`${apiUrl}/api/search/universal?${params.toString()}`, {
+            signal: abortControllerRef.current.signal,
+            credentials: 'include',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+
+          const data = (await response.json()) as SearchResults;
+
+          transformedResults = {
+            customers: data.customers || [],
+            contacts: data.contacts || [],
+            totalCount: data.totalCount || 0,
+            executionTime: data.executionTime || 0,
+            metadata: data.metadata,
+          };
         }
 
-        const data = (await response.json()) as SearchResults;
-
-        // Transform backend response to frontend format
-        const transformedResults: SearchResults = {
-          customers: data.customers || [],
-          contacts: data.contacts || [],
-          totalCount: data.totalCount || 0,
-          executionTime: data.executionTime || 0,
-          metadata: data.metadata,
-        };
-
         // Update cache with size limit check
-        evictOldestCacheEntry(); // Ensure we don't exceed cache size
+        evictOldestCacheEntry();
         searchCache.set(cacheKey, transformedResults);
         cacheTimestamps.set(cacheKey, Date.now());
 

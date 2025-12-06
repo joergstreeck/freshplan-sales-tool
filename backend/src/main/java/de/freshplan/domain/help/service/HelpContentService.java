@@ -414,6 +414,22 @@ public class HelpContentService {
         "Help content '{}' {}: {}", content.title, active ? "activated" : "deactivated", helpId);
   }
 
+  /** Trackt einen View für ein Hilfe-Element (Analytics) */
+  @Transactional
+  public void trackView(UUID helpId) {
+    LOG.debug("Tracking view for help content: {}", helpId);
+
+    Optional<HelpContent> contentOpt = helpRepository.findByIdOptional(helpId);
+    if (contentOpt.isEmpty()) {
+      LOG.debug("Help content not found for view tracking: {}", helpId);
+      return;
+    }
+
+    HelpContent content = contentOpt.get();
+    content.incrementViewCount();
+    helpRepository.persist(content);
+  }
+
   /** Holt Feature Coverage Report */
   public List<String> getFeatureCoverageGaps() {
     if (cqrsEnabled) {

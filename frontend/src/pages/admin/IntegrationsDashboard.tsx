@@ -214,6 +214,7 @@ export function IntegrationsDashboard() {
           <Box sx={{ flex: 1 }}>
             <Typography
               variant="h3"
+              component="h1"
               sx={{
                 mb: 1,
                 color: theme.palette.secondary.main,

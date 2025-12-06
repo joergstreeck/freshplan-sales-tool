@@ -222,6 +222,146 @@ export async function recalculateLeadScore(leadId: number): Promise<{
   return res.json();
 }
 
+// ===========================
+// Fuzzy Search API - Sprint 2.1.8 Phase 4
+// ===========================
+
+/**
+ * Fuzzy search response type
+ */
+export interface FuzzySearchResponse {
+  data: Lead[];
+  total: number;
+  query: string;
+  fuzzyEnabled: boolean;
+}
+
+/**
+ * Duplicate check response type
+ */
+export interface DuplicateCheckResponse {
+  duplicates: Array<{
+    lead: Lead;
+    similarity: number;
+    matchedFields: string[];
+  }>;
+  count: number;
+  searchCriteria: {
+    companyName: string;
+    email: string;
+  };
+}
+
+/**
+ * Fuzzy-Suche für Leads mit pg_trgm.
+ * Findet auch bei Tippfehlern und Varianten.
+ *
+ * @param query Suchbegriff
+ * @param limit Maximale Anzahl Ergebnisse (default: 20)
+ * @param includeInactive Auch inaktive Leads einschließen
+ */
+export async function fuzzySearchLeads(
+  query: string,
+  limit: number = 20,
+  includeInactive: boolean = false
+): Promise<FuzzySearchResponse> {
+  const params = new URLSearchParams({
+    q: query,
+    limit: limit.toString(),
+    includeInactive: includeInactive.toString(),
+  });
+
+  const res = await fetch(`${BASE}/api/leads/search/fuzzy?${params}`, {
+    headers: {
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
+/**
+ * Prüft auf potentielle Duplikate.
+ * Nützlich für Import-Vorschau und Lead-Erstellung.
+ *
+ * @param companyName Firmenname (required)
+ * @param email E-Mail (optional, erhöht Genauigkeit)
+ * @param limit Maximale Anzahl Ergebnisse (default: 5)
+ */
+export async function checkDuplicates(
+  companyName: string,
+  email?: string,
+  limit: number = 5
+): Promise<DuplicateCheckResponse> {
+  const params = new URLSearchParams({
+    companyName,
+    limit: limit.toString(),
+  });
+
+  if (email) {
+    params.append('email', email);
+  }
+
+  const res = await fetch(`${BASE}/api/leads/search/duplicates?${params}`, {
+    headers: {
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
+/**
+ * Berechnet die Ähnlichkeit zwischen zwei Strings.
+ *
+ * @param text1 Erster String
+ * @param text2 Zweiter String
+ * @returns Ähnlichkeit (0-100%)
+ */
+export async function calculateSimilarity(
+  text1: string,
+  text2: string
+): Promise<{ similarity: number; isMatch: boolean }> {
+  const params = new URLSearchParams({ text1, text2 });
+
+  const res = await fetch(`${BASE}/api/leads/search/similarity?${params}`, {
+    headers: {
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
+/**
+ * Prüft ob pg_trgm Extension verfügbar ist.
+ */
+export async function getSearchStatus(): Promise<{
+  pgTrgmEnabled: boolean;
+  fuzzySearchAvailable: boolean;
+  fallbackMode: boolean;
+}> {
+  const res = await fetch(`${BASE}/api/leads/search/status`, {
+    headers: {
+      Accept: 'application/json',
+      ...authHeaders(),
+    },
+    credentials: 'include',
+  });
+
+  if (!res.ok) throw await toProblem(res);
+  return res.json();
+}
+
 // RFC7807 Error Handling
 export async function toProblem(res: Response): Promise<Problem> {
   try {

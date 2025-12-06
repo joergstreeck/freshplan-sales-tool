@@ -111,7 +111,11 @@ export const HelpSystemDemoPageV2: React.FC = () => {
       <Box sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Typography variant="h3" sx={{ mb: 1, color: theme.palette.secondary.main }}>
+          <Typography
+            variant="h3"
+            component="h1"
+            sx={{ mb: 1, color: theme.palette.secondary.main }}
+          >
             Hilfe-System Konfiguration
           </Typography>
           <Typography variant="body1" color="text.secondary">

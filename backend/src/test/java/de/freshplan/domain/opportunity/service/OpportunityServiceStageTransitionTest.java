@@ -302,26 +302,9 @@ public class OpportunityServiceStageTransitionTest {
   @DisplayName("Stage Transition Business Rules")
   class StageTransitionBusinessRules {
 
-    @Test
-    @org.junit.jupiter.api.Disabled(
-        "CDI limitation: @Transactional cannot be used in nested test classes")
-    @DisplayName("Should update probability according to stage default")
-    void changeStage_shouldUpdateProbabilityToStageDefault() {
-      // Arrange
-      var opportunity = createTestOpportunity("Test Opportunity", OpportunityStage.NEW_LEAD);
-      // Manually update probability after creation to test override behavior
-      opportunity.setProbability(50); // Custom probability
-      opportunityRepository.persist(opportunity);
-      opportunityRepository.flush();
-
-      var request = ChangeStageRequest.builder().stage(OpportunityStage.PROPOSAL).build();
-
-      // Act
-      var result = opportunityService.changeStage(opportunity.getId(), request);
-
-      // Assert
-      assertThat(result.getProbability()).isEqualTo(60); // Default for PROPOSAL, not custom 50
-    }
+    // NOTE: Test moved to main class as
+    // stageTransitionBusinessRules_changeStage_shouldUpdateProbabilityToStageDefault()
+    // due to CDI limitation with @TestTransaction in nested classes
 
     @Test
     @DisplayName("Should allow custom probability override after stage change")
@@ -550,6 +533,32 @@ public class OpportunityServiceStageTransitionTest {
     // Verify independence - changing one doesn't affect the other
     var result1Updated = opportunityRepository.findById(opp1.getId());
     assertThat(result1Updated.getStage()).isEqualTo(OpportunityStage.CLOSED_WON);
+  }
+
+  @Test
+  @ActivateRequestContext
+  @DisplayName(
+      "Should update probability according to stage default (moved from StageTransitionBusinessRules)")
+  void stageTransitionBusinessRules_changeStage_shouldUpdateProbabilityToStageDefault() {
+    // Arrange - Create opportunity with custom probability to test override behavior
+    var opportunity = createTestOpportunity("Test Opportunity", OpportunityStage.NEW_LEAD);
+
+    // Update probability in a separate transaction to simulate custom probability
+    TestTx.committed(
+        () -> {
+          var opp = opportunityRepository.findById(opportunity.getId());
+          opp.setProbability(50); // Custom probability
+          opportunityRepository.persist(opp);
+          return null;
+        });
+
+    var request = ChangeStageRequest.builder().stage(OpportunityStage.PROPOSAL).build();
+
+    // Act
+    var result = opportunityService.changeStage(opportunity.getId(), request);
+
+    // Assert
+    assertThat(result.getProbability()).isEqualTo(60); // Default for PROPOSAL, not custom 50
   }
 
   // Helper methods

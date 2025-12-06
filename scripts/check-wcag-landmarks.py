@@ -60,6 +60,21 @@ SKIP_PATTERNS = [
 KNOWN_EXCEPTIONS = [
     "PlaceholderPage.tsx",  # Uses MainLayoutV2 internally
     "index.tsx",  # Barrel exports
+    # Cockpit pages that delegate to child components with h1
+    "CockpitPage.tsx",  # Uses SalesCockpitV2 which has h1
+    "CockpitPageV2.tsx",  # Uses CockpitViewV2 -> SalesCockpitMUI which has h1
+    "CockpitViewV2.tsx",  # Uses SalesCockpitMUI which has h1
+    # Pipeline page delegates to Kanban which has h1
+    "OpportunityPipelinePage.tsx",  # Uses KanbanBoardDndKit which has h1
+    # Test pages that delegate to test components
+    "TestAuditTimeline.tsx",  # Uses SmartContactCardTest which has h1
+    # Placeholder re-exports (use PlaceholderPage with h1 internally)
+    "integrationen.tsx",
+    "kommunikation.tsx",
+    # Modal components (not full pages)
+    "LeadWizard.tsx",  # Dialog, not a page
+    # Dashboard components (used within pages, not standalone)
+    "AuditDashboard.tsx",  # Used in AuditAdminPage
 ]
 
 

@@ -11,11 +11,11 @@
 
 **🚨 AKTUELLER STATUS:**
 - **Phase:** ✅ Phase 1 COMPLETE | 🚀 Phase 2 IN PROGRESS (99% complete)
-- **Current Sprint:** ✅ Sprint 2.1.7.7 E2E Tests - **MERGED TO MAIN** (2025-12-01, PR #149)
-- **Status:** ✅ E2E Critical Path Tests + Multi-Location Management gemergt - Ready for Sprint 2.1.8!
-- **Active Branch:** main (Sprint complete)
-- **Progress:** 30/36 PRs completed - 83% done
-- **Blockers:** ❌ Keine - Ready for next sprint
+- **Current Sprint:** ✅ Sprint 2.1.8 DSGVO & Lead-Import - **COMPLETE** (2025-12-05, 16 Commits)
+- **Status:** ✅ DSGVO Art. 15/17/7.3 + Self-Service Lead-Import + Admin-Dashboards + pg_trgm Search
+- **Active Branch:** feature/sprint-2-1-8-dsgvo-lead-import (Ready for Merge)
+- **Progress:** 31/36 PRs completed - 86% done
+- **Blockers:** ❌ Keine
 - **Foundation Status:** ✅ COMPLETE - CQRS/Security/Settings/CI/RLS operational + DEV-SEED Infrastructure
 - **Performance:** ✅ P95 <7ms (Backend) + CI 24min → 7min (70% schneller) + Frontend 90% Test-Coverage + Bundle 178 KB
 - **Latest:** 🎉🎉🎉 **Sprint 2.1.7.2 - Customer-Management + Xentral-Integration MERGED (31.10.2025)** - PR #144 + 946/946 Tests GREEN
@@ -366,23 +366,28 @@ Sprint 2.1.7.5: Advanced Filters     ⚠️ DEFERRED (16.10.2025) - Aufwand: 13h
                                       → **Trigger:** [TRIGGER_SPRINT_2_1_7_5.md](TRIGGER_SPRINT_2_1_7_5.md)
                                       → **Status:** NOCH NICHT READY FÜR KICKOFF! (warten auf Produktionsdaten)
 
-Sprint 2.1.8: Team Mgmt & Test Infra 📅 VERSCHOBEN (19-25.10.2025) - VORMALS Sprint 2.1.7
-                                      → **Track 1 - Business (verschoben aus 2.1.6):**
-                                        - Lead-Transfer Workflow (V260: lead_transfers, POST /api/leads/{id}/transfer, 48h SLA)
-                                        - Fuzzy-Matching & Review (Scoring-Algorithmus: Email 40%, Phone 30%, Company 20%, Address 10%)
-                                        - Row-Level-Security (V261: RLS Policies - owner, team, admin, transfer_recipient)
-                                        - Team Management (V262: teams + team_members, CRUD-API, Quotenregelung)
-                                      → **Track 2 - Test Infrastructure (NEU - STRATEGISCH!):**
-                                        - CRM Szenario-Builder (Lead-Journey, Customer-Journey, Opportunity-Pipeline)
-                                        - Faker-Integration (RealisticDataGenerator für deutsche Testdaten)
-                                        - Lead-spezifische TestDataFactories (LeadTestDataFactory, LeadActivityTestDataFactory)
-                                        - Test-Pattern Library (TESTING_PATTERNS.md, TEST_DATA_CHEATSHEET.md)
-                                      → **Track 3 - Code Quality (NEU - aus PR #133 Review):**
-                                        - **Issue #135:** Name Parsing Robustness (LeadConvertService - Library-basiert statt String.split)
-                                        - EnumResource Refactoring: LeadSource + KitchenSize als Backend-Enums (konsistent mit BusinessType)
-                                        - Backend DTOs: Kapselung (private fields + getters statt public fields)
-                                      → **Begründung Track 2:** Quality Investment für Sprint 2.2+ Velocity, Test-Szenarien für Onboarding
-                                      → **Begründung Track 3:** Gemini Code Review Feedback (Medium Priority - verbessert Datenqualität)
+Sprint 2.1.8: DSGVO & Lead-Import    ✅ COMPLETE (05.12.2025) - **16 Commits, 285 Files, +21.526 LOC**
+                                      → **DSGVO Compliance (Art. 15, 17, 7.3):**
+                                        - ✅ GdprService + GdprPdfGeneratorService (OpenPDF)
+                                        - ✅ GdprResource: /api/gdpr/leads/{id}/data-export, DELETE, revoke-consent
+                                        - ✅ Frontend: GdprActionsMenu, GdprDeleteDialog, Badges
+                                        - ✅ Migrationen V10050 (GDPR fields + tables)
+                                      → **Self-Service Lead-Import:**
+                                        - ✅ 4-Schritt Wizard (Upload → Mapping → Preview → Execute)
+                                        - ✅ Quota-System (SALES 100/MANAGER 200/ADMIN ∞)
+                                        - ✅ Fuzzy Auto-Mapping (Exact + Token + Levenshtein 70%)
+                                        - ✅ Historical Import (originalCreatedAt)
+                                        - ✅ Migrationen V10051-V10054
+                                      → **Admin-Dashboards:**
+                                        - ✅ /admin/dsgvo (Löschprotokolle, Datenexport-Anfragen)
+                                        - ✅ /admin/imports (Approve/Reject Workflow)
+                                      → **Advanced Search:**
+                                        - ✅ pg_trgm Extension + Fuzzy-Suche
+                                        - ✅ LeadFuzzySearchService + LeadSearchResource
+                                      → **Tests:** 100+ Unit Tests (Backend + Frontend)
+                                      → **Branch:** feature/sprint-2-1-8-dsgvo-lead-import
+                                      → **Trigger:** [TRIGGER_SPRINT_2_1_8.md](TRIGGER_SPRINT_2_1_8.md)
+                                      → **Status:** ✅ COMPLETE - Ready for Merge
 Sprint 2.2: 03 Kundenmanagement       📋 Ready → 39 Artefakte + nutzt Security/Performance Patterns
 Sprint 2.3: 05 Kommunikation          📋 Ready → Security-Gate ✅ + nutzt Event-System Pattern
 Sprint 2.4: 01 Cockpit                🟡 Planning → CQRS-optimiert

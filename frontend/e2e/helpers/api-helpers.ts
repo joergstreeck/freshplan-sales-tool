@@ -554,3 +554,430 @@ export async function searchAndWait(
 export function generateTestPrefix(prefix: string): string {
   return `[${prefix}-${Date.now()}-${Math.random().toString(36).substring(7)}]`;
 }
+
+// =============================================================================
+// LEAD IMPORT HELPERS (Sprint 2.1.8 - Self-Service Import)
+// =============================================================================
+
+export interface QuotaInfoResponse {
+  currentOpenLeads: number;
+  maxOpenLeads: number;
+  todayImports: number; // API returns todayImports, not importsToday
+  maxImportsPerDay: number;
+  maxLeadsPerImport: number;
+  remainingCapacity: number;
+  canImport?: boolean; // Computed from remainingCapacity > 0
+}
+
+export interface ImportUploadResponse {
+  uploadId: string;
+  columns: string[];
+  rowCount: number;
+  suggestedMapping: Record<string, string>; // API returns suggestedMapping
+  fileType: string;
+  charset: string;
+  availableFields: Array<{ key: string; label: string; required: boolean }>;
+}
+
+export interface ImportPreviewResponse {
+  uploadId: string;
+  validation: {
+    totalRows: number;
+    validRows: number;
+    errorRows: number;
+    duplicateRows: number;
+  };
+  previewRows: Array<{
+    row: number;
+    status: string;
+    data: Record<string, string>;
+  }>;
+  errors: Array<{
+    row: number;
+    column: string;
+    message: string;
+    value: string;
+  }>;
+  duplicates: Array<{
+    row: number;
+    existingLeadId: number;
+    existingCompanyName: string;
+    type: string;
+    similarity: number;
+  }>;
+  quotaCheck: {
+    approved: boolean;
+    message: string;
+    currentOpenLeads: number;
+    maxOpenLeads: number;
+    remainingCapacity: number;
+  };
+}
+
+export interface ImportExecuteResponse {
+  success: boolean;
+  importId: string | null;
+  imported: number;
+  skipped: number;
+  errors: number;
+  status: string;
+  message: string;
+}
+
+/**
+ * Holt die Quota-Info für den aktuellen User
+ */
+export async function getImportQuota(request: APIRequestContext): Promise<QuotaInfoResponse> {
+  const response = await request.get(`${API_BASE}/api/leads/import/quota`);
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to get import quota: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Lädt eine CSV-Datei für den Import hoch
+ */
+export async function uploadImportFile(
+  request: APIRequestContext,
+  csvContent: string,
+  fileName: string = 'test-import.csv'
+): Promise<ImportUploadResponse> {
+  // Create multipart form data with CSV content
+  const response = await request.post(`${API_BASE}/api/leads/import/upload`, {
+    multipart: {
+      file: {
+        name: fileName,
+        mimeType: 'text/csv',
+        buffer: Buffer.from(csvContent, 'utf-8'),
+      },
+    },
+  });
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to upload import file: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Erstellt eine Import-Vorschau mit Validierung
+ */
+export async function createImportPreview(
+  request: APIRequestContext,
+  uploadId: string,
+  mapping: Record<string, string>
+): Promise<ImportPreviewResponse> {
+  const response = await request.post(`${API_BASE}/api/leads/import/${uploadId}/preview`, {
+    data: { mapping },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to create import preview: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * Führt den Import aus
+ */
+export async function executeImport(
+  request: APIRequestContext,
+  uploadId: string,
+  options: {
+    mapping: Record<string, string>;
+    duplicateAction?: 'SKIP' | 'CREATE';
+    source?: string;
+    ignoreErrors?: boolean;
+  }
+): Promise<ImportExecuteResponse> {
+  const response = await request.post(`${API_BASE}/api/leads/import/${uploadId}/execute`, {
+    data: {
+      mapping: options.mapping,
+      duplicateAction: options.duplicateAction || 'SKIP',
+      source: options.source || 'E2E-TEST',
+      ignoreErrors: options.ignoreErrors || false,
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok()) {
+    const body = await response.text();
+    throw new Error(`Failed to execute import: ${response.status()} - ${body}`);
+  }
+
+  return response.json();
+}
+
+// =============================================================================
+// CLEANUP HELPERS (für Test-Daten Bereinigung)
+// =============================================================================
+
+/**
+ * Löscht einen Lead via API mit ETag-Header
+ * Die API erfordert If-Match Header für optimistisches Locking
+ */
+export async function deleteLead(
+  request: APIRequestContext,
+  leadId: number,
+  version: number = 0
+): Promise<boolean> {
+  const etag = `"lead-${leadId}-${version}"`;
+  const response = await request.delete(`${API_BASE}/api/leads/${leadId}`, {
+    headers: {
+      'If-Match': etag,
+    },
+  });
+
+  if (response.status() === 429) {
+    // Rate limit - wait and retry once
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    const retryResponse = await request.delete(`${API_BASE}/api/leads/${leadId}`, {
+      headers: {
+        'If-Match': etag,
+      },
+    });
+    return retryResponse.ok() || retryResponse.status() === 404;
+  }
+
+  return response.ok() || response.status() === 404; // 404 = already deleted
+}
+
+/**
+ * Löscht alle Test-Leads die mit einem bestimmten Prefix beginnen
+ * Nützlich für Cleanup nach E2E-Tests
+ *
+ * @param request - Playwright API Request Context
+ * @param prefixPattern - Pattern zum Matchen (z.B. "[E2E-IMP-")
+ * @returns Anzahl der gelöschten Leads
+ */
+export async function deleteTestLeadsByPrefix(
+  request: APIRequestContext,
+  prefixPattern: string
+): Promise<number> {
+  let deletedCount = 0;
+  let page = 0;
+  const pageSize = 50;
+
+  console.log(`[CLEANUP] Searching for leads matching: ${prefixPattern}`);
+
+  // Durchsuche alle Seiten nach Test-Leads
+  while (true) {
+    const response = await request.get(`${API_BASE}/api/leads?page=${page}&size=${pageSize}`);
+
+    if (!response.ok()) {
+      console.log(`[CLEANUP] Failed to fetch leads page ${page}`);
+      break;
+    }
+
+    const data = await response.json();
+    const leads = data.data || data.content || [];
+
+    if (leads.length === 0) {
+      break;
+    }
+
+    // Filtere Leads die mit dem Prefix beginnen
+    const testLeads = leads.filter(
+      (lead: LeadResponse) => lead.companyName && lead.companyName.includes(prefixPattern)
+    );
+
+    // Lösche gefundene Test-Leads
+    for (const lead of testLeads) {
+      const deleted = await deleteLead(request, lead.id, 0);
+      if (deleted) {
+        deletedCount++;
+        console.log(`[CLEANUP] Deleted lead ${lead.id}: ${lead.companyName}`);
+      }
+      // Kleine Pause um Rate-Limiting zu vermeiden
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    page++;
+
+    // Safety limit - nicht mehr als 10 Seiten durchsuchen
+    if (page >= 10) {
+      console.log(`[CLEANUP] Reached page limit, stopping search`);
+      break;
+    }
+  }
+
+  console.log(`[CLEANUP] Deleted ${deletedCount} test leads`);
+  return deletedCount;
+}
+
+/**
+ * Löscht einen Customer via API
+ */
+export async function deleteCustomer(
+  request: APIRequestContext,
+  customerId: string
+): Promise<boolean> {
+  const response = await request.delete(`${API_BASE}/api/customers/${customerId}`);
+
+  if (response.status() === 429) {
+    // Rate limit - wait and retry once
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    const retryResponse = await request.delete(`${API_BASE}/api/customers/${customerId}`);
+    return retryResponse.ok() || retryResponse.status() === 404;
+  }
+
+  return response.ok() || response.status() === 404; // 404 = already deleted
+}
+
+/**
+ * Löscht alle Test-Customers die mit einem bestimmten Prefix beginnen
+ * Nützlich für Cleanup nach E2E-Tests
+ *
+ * @param request - Playwright API Request Context
+ * @param prefixPattern - Pattern zum Matchen (z.B. "[E2E-CO-")
+ * @returns Anzahl der gelöschten Customers
+ */
+export async function deleteTestCustomersByPrefix(
+  request: APIRequestContext,
+  prefixPattern: string
+): Promise<number> {
+  let deletedCount = 0;
+  let page = 0;
+  const pageSize = 50;
+
+  console.log(`[CLEANUP] Searching for customers matching: ${prefixPattern}`);
+
+  // Durchsuche alle Seiten nach Test-Customers
+  while (true) {
+    const response = await request.get(`${API_BASE}/api/customers?page=${page}&size=${pageSize}`);
+
+    if (!response.ok()) {
+      console.log(`[CLEANUP] Failed to fetch customers page ${page}`);
+      break;
+    }
+
+    const data = await response.json();
+    const customers = data.content || data;
+
+    if (customers.length === 0) {
+      break;
+    }
+
+    // Filtere Customers die mit dem Prefix beginnen
+    const testCustomers = customers.filter(
+      (cust: CustomerResponse) => cust.companyName && cust.companyName.includes(prefixPattern)
+    );
+
+    // Lösche gefundene Test-Customers
+    for (const cust of testCustomers) {
+      const deleted = await deleteCustomer(request, cust.id);
+      if (deleted) {
+        deletedCount++;
+        console.log(`[CLEANUP] Deleted customer ${cust.id}: ${cust.companyName}`);
+      }
+      // Kleine Pause um Rate-Limiting zu vermeiden
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    page++;
+
+    // Safety limit - nicht mehr als 10 Seiten durchsuchen
+    if (page >= 10) {
+      console.log(`[CLEANUP] Reached page limit, stopping search`);
+      break;
+    }
+  }
+
+  console.log(`[CLEANUP] Deleted ${deletedCount} test customers`);
+  return deletedCount;
+}
+
+/**
+ * Generiert eine CSV-Datei mit Test-Leads
+ *
+ * @param testPrefix - Prefix für Firmennamen (zur Isolation)
+ * @param count - Anzahl der zu generierenden Leads
+ * @param options - Optionale Konfiguration
+ * @param options.includeErrors - Fügt eine Zeile mit Validierungsfehlern hinzu
+ * @param options.includeDuplicates - Fügt ein Duplikat der ersten Zeile hinzu
+ * @param options.includeHistoricalDates - Fügt originalCreatedAt Spalte hinzu (Sprint 2.1.8)
+ */
+export function generateTestLeadsCsv(
+  testPrefix: string,
+  count: number,
+  options: {
+    includeErrors?: boolean;
+    includeDuplicates?: boolean;
+    includeHistoricalDates?: boolean;
+  } = {}
+): string {
+  const headers = options.includeHistoricalDates
+    ? ['Firma', 'E-Mail', 'Telefon', 'Stadt', 'PLZ', 'Branche', 'Erstelldatum']
+    : ['Firma', 'E-Mail', 'Telefon', 'Stadt', 'PLZ', 'Branche'];
+  const rows: string[] = [headers.join(';')];
+
+  for (let i = 0; i < count; i++) {
+    const uniqueId = `${Date.now()}-${i}`;
+    let companyName = `${testPrefix} TestFirma ${i + 1}`;
+    let email = `test-${uniqueId}@e2e-import.local`;
+
+    // Füge Fehler hinzu (leere Firma)
+    if (options.includeErrors && i === count - 1) {
+      companyName = ''; // Pflichtfeld fehlt
+      email = 'invalid-email'; // Ungültiges Format
+    }
+
+    // Basis-Zeile
+    const rowData = [
+      companyName,
+      email,
+      `+49 ${100 + i} 123456`,
+      i % 2 === 0 ? 'Berlin' : 'München',
+      i % 2 === 0 ? '10115' : '80331',
+      'RESTAURANT',
+    ];
+
+    // Historisches Datum hinzufügen (Sprint 2.1.8)
+    if (options.includeHistoricalDates) {
+      // Generiere Datum: 6 Monate bis 2 Jahre in der Vergangenheit
+      const monthsAgo = 6 + i * 3; // 6, 9, 12, 15, ... Monate
+      const historicalDate = new Date();
+      historicalDate.setMonth(historicalDate.getMonth() - monthsAgo);
+      // Format: YYYY-MM-DD (ISO 8601 Date)
+      rowData.push(historicalDate.toISOString().split('T')[0]);
+    }
+
+    rows.push(rowData.join(';'));
+  }
+
+  // Füge Duplikat hinzu (gleiche Firma wie erste Zeile)
+  if (options.includeDuplicates && count > 0) {
+    const uniqueId = `${Date.now()}-dup`;
+    const dupRow = [
+      `${testPrefix} TestFirma 1`, // Duplikat der ersten Zeile
+      `dup-${uniqueId}@e2e-import.local`,
+      '+49 999 999999',
+      'Hamburg',
+      '20095',
+      'RESTAURANT',
+    ];
+
+    if (options.includeHistoricalDates) {
+      const historicalDate = new Date();
+      historicalDate.setMonth(historicalDate.getMonth() - 12); // 1 Jahr
+      dupRow.push(historicalDate.toISOString().split('T')[0]);
+    }
+
+    rows.push(dupRow.join(';'));
+  }
+
+  return rows.join('\n');
+}

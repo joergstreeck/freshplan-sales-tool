@@ -87,7 +87,7 @@ export function IntegrationTestPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-8">
+    <main className="min-h-screen bg-background p-8">
       <div className="mx-auto max-w-4xl space-y-8">
         <div className="text-center">
           <h1 className="text-4xl font-bold text-foreground mb-4">
@@ -156,6 +156,6 @@ export function IntegrationTestPage() {
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

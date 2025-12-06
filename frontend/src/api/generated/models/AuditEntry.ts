@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { AuditEventType } from './AuditEventType';
 import type { AuditSource } from './AuditSource';
 import type { Instant } from './Instant';

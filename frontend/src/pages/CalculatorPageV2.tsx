@@ -9,7 +9,7 @@ export function CalculatorPageV2() {
   return (
     <MainLayoutV2>
       <Box sx={{ py: 4 }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 4 }}>
           FreshPlan Rabatt-Kalkulator
         </Typography>
 

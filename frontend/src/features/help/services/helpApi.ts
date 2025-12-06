@@ -5,7 +5,63 @@ import type {
   HelpResponse,
   HelpAnalytics,
   HelpFeedback,
+  HelpType,
 } from '../types/help.types';
+
+// Backend Response Format (unterschiedlich von Frontend HelpResponse)
+interface BackendHelpResponse {
+  id: string;
+  feature: string;
+  title: string;
+  type: HelpType;
+  content: string;
+  videoUrl?: string;
+  interactionData?: string;
+  priority: number;
+  struggleDetected: boolean;
+  struggleType?: string;
+  suggestionLevel: number;
+  viewCount: number;
+  helpfulnessRate: number;
+}
+
+// Konvertiert Backend-Format zu Frontend-Format
+function convertBackendResponse(backend: BackendHelpResponse, request: HelpRequest): HelpResponse {
+  const helpContent: HelpContent = {
+    id: backend.id,
+    feature: backend.feature,
+    helpType: backend.type || 'TOOLTIP',
+    title: backend.title,
+    shortContent: backend.content,
+    mediumContent: backend.content,
+    detailedContent: undefined,
+    videoUrl: backend.videoUrl,
+    priority: backend.priority,
+    targetUserLevel: request.userLevel || 'BEGINNER',
+    targetRoles: request.userRoles,
+    viewCount: backend.viewCount,
+    helpfulCount: 0,
+    notHelpfulCount: 0,
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+
+  return {
+    feature: backend.feature,
+    helpContents: [helpContent],
+    context: {
+      userLevel: request.userLevel || 'BEGINNER',
+      userRoles: request.userRoles || [],
+      isFirstTime: false,
+      previousInteractions: backend.viewCount,
+    },
+    struggleDetected: backend.struggleDetected,
+    struggleType: backend.struggleType,
+    suggestionLevel:
+      backend.suggestionLevel === 0 ? 'low' : backend.suggestionLevel === 1 ? 'medium' : 'high',
+  };
+}
 
 export const helpApi = {
   // Health Check
@@ -28,10 +84,12 @@ export const helpApi = {
       request.userRoles.forEach(role => params.append('userRoles', role));
     }
 
-    const response = await httpClient.get<HelpResponse>(
+    const response = await httpClient.get<BackendHelpResponse>(
       `/api/help/content/${request.feature}?${params.toString()}`
     );
-    return response.data;
+
+    // Konvertiere Backend-Format zu Frontend-Format
+    return convertBackendResponse(response.data, request);
   },
 
   // Search help content

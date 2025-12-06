@@ -32,6 +32,9 @@ import DeleteLeadDialog from '../features/leads/DeleteLeadDialog';
 import StopTheClockDialog from '../features/leads/StopTheClockDialog';
 import LeadActivityTimeline from '../features/leads/LeadActivityTimeline';
 
+// Lead Import (Sprint 2.1.8)
+import { LeadImportWizard } from '../features/leads/components/import';
+
 // Shared Components (M1)
 import { DataTable } from '../features/shared/components/data-table';
 import { IntelligentFilterBar } from '../features/shared/components/IntelligentFilterBar';
@@ -71,6 +74,7 @@ export default function LeadsPage({
 }: LeadsPageProps) {
   // State
   const [wizardOpen, setWizardOpen] = useState(openWizard);
+  const [importWizardOpen, setImportWizardOpen] = useState(false); // Sprint 2.1.8
   const [activeTab, setActiveTab] = useState(0);
   const [filterConfig, setFilterConfig] = useState<FilterConfig>(defaultFilter);
   const [activeColumns, setActiveColumns] = useState<ColumnConfig[]>([]);
@@ -94,10 +98,13 @@ export default function LeadsPage({
   // Create fast lookup map (O(1) statt O(n) mit .find())
   const businessTypeLabels = useMemo(() => {
     if (!businessTypeOptions) return {};
-    return businessTypeOptions.reduce((acc, item) => {
-      acc[item.value] = item.label;
-      return acc;
-    }, {} as Record<string, string>);
+    return businessTypeOptions.reduce(
+      (acc, item) => {
+        acc[item.value] = item.label;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }, [businessTypeOptions]);
 
   // Column Configuration mit Server-Driven Labels
@@ -105,15 +112,16 @@ export default function LeadsPage({
     const columns = getLeadTableColumns();
 
     // Apply user column preferences if available
-    const columnsWithPreferences = activeColumns.length > 0
-      ? columns.map(col => {
-          const userCol = activeColumns.find(uc => uc.id === col.id);
-          if (userCol) {
-            return { ...col, visible: userCol.visible };
-          }
-          return col;
-        })
-      : columns;
+    const columnsWithPreferences =
+      activeColumns.length > 0
+        ? columns.map(col => {
+            const userCol = activeColumns.find(uc => uc.id === col.id);
+            if (userCol) {
+              return { ...col, visible: userCol.visible };
+            }
+            return col;
+          })
+        : columns;
 
     // Override businessType column with Server-Driven labels
     return columnsWithPreferences.map(col => {
@@ -121,7 +129,7 @@ export default function LeadsPage({
         return {
           ...col,
           render: (lead: Lead) =>
-            businessTypeLabels[lead.businessType || ''] || lead.businessType || '-'
+            businessTypeLabels[lead.businessType || ''] || lead.businessType || '-',
         };
       }
       return col;
@@ -407,6 +415,9 @@ export default function LeadsPage({
           createButtonLabel={createButtonLabel}
           onAddEntity={() => setWizardOpen(true)}
           entityType="lead"
+          showImportButton={true}
+          onImport={() => setImportWizardOpen(true)}
+          importButtonLabel="CSV/Excel Import"
         />
 
         {/* Tab Navigation - LEAD-SPEZIFISCH */}
@@ -533,6 +544,17 @@ export default function LeadsPage({
             />
           </>
         )}
+
+        {/* Lead Import Wizard - Sprint 2.1.8 */}
+        <LeadImportWizard
+          open={importWizardOpen}
+          onClose={() => setImportWizardOpen(false)}
+          onSuccess={async () => {
+            setImportWizardOpen(false);
+            await refetch();
+            toast.success('Leads erfolgreich importiert!');
+          }}
+        />
       </Box>
     </MainLayoutV2>
   );

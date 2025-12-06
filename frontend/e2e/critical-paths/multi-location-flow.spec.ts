@@ -34,6 +34,7 @@ import {
   createBranch,
   getHierarchyMetrics,
   generateTestPrefix,
+  deleteTestCustomersByPrefix,
 } from '../helpers/api-helpers';
 
 // Unique Test-Prefix fuer Isolation
@@ -47,6 +48,15 @@ test.describe('Multi-Location Management - Critical Path', () => {
   let headquarter: CustomerResponse;
   let branch1: CustomerResponse;
   let branch2: CustomerResponse;
+
+  // =============================================================================
+  // CLEANUP: Entferne alle Test-Customers nach Test-Run
+  // =============================================================================
+  test.afterAll(async ({ request }) => {
+    console.log('\n[CLEANUP] Removing test customers created during this test run\n');
+    const deletedCount = await deleteTestCustomersByPrefix(request, '[E2E-ML-');
+    console.log(`[CLEANUP] Deleted ${deletedCount} test customers`);
+  });
 
   test.beforeAll(async ({ request }) => {
     console.log(`\n[CUSTOMER] Setting up Multi-Location test data (Prefix: ${TEST_PREFIX})\n`);

@@ -1,7 +1,7 @@
 /* generated using openapi-typescript-codegen -- do not edit */
 /* istanbul ignore file */
 /* tslint:disable */
-
+/* eslint-disable */
 import type { FilterCriteria } from './FilterCriteria';
 import type { LogicalOperator } from './LogicalOperator';
 import type { SortCriteria } from './SortCriteria';

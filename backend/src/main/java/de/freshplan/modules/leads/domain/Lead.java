@@ -281,6 +281,36 @@ public class Lead extends PanacheEntityBase {
   @Column(name = "pseudonymized_at")
   public LocalDateTime pseudonymizedAt;
 
+  // ================================================================================
+  // Sprint 2.1.8: DSGVO Compliance - Art. 7.3, 15, 17
+  // ================================================================================
+
+  // Art. 7.3: Einwilligungswiderruf (Consent Revocation)
+  @Column(name = "consent_revoked_at")
+  public LocalDateTime consentRevokedAt;
+
+  @Size(max = 50)
+  @Column(name = "consent_revoked_by")
+  public String consentRevokedBy;
+
+  @Column(name = "contact_blocked")
+  public Boolean contactBlocked = false;
+
+  // Art. 17: DSGVO-Löschung (Soft-Delete + PII-Anonymisierung)
+  @Column(name = "gdpr_deleted")
+  public Boolean gdprDeleted = false;
+
+  @Column(name = "gdpr_deleted_at")
+  public LocalDateTime gdprDeletedAt;
+
+  @Size(max = 50)
+  @Column(name = "gdpr_deleted_by")
+  public String gdprDeletedBy;
+
+  @Size(max = 500)
+  @Column(name = "gdpr_deletion_reason")
+  public String gdprDeletionReason;
+
   // Lead Scoring (Sprint 2.1.6 Phase 4 - ADR-006 Phase 2 - V269)
   @Column(name = "lead_score")
   // Note: Spotless may reformat - keeping compact for readability
@@ -327,6 +357,18 @@ public class Lead extends PanacheEntityBase {
 
   @Column(name = "created_at", nullable = false)
   public LocalDateTime createdAt = LocalDateTime.now();
+
+  /**
+   * Original Lead-Generierungsdatum (Sprint 2.1.8).
+   *
+   * <p>Für Import von Altdaten: Das tatsächliche Datum, an dem der Lead ursprünglich generiert
+   * wurde. Falls NULL, gilt createdAt als Generierungsdatum.
+   *
+   * <p>Business Rule: Für Reports/Analysen sollte originalCreatedAt bevorzugt werden, falls
+   * vorhanden.
+   */
+  @Column(name = "original_created_at")
+  public LocalDateTime originalCreatedAt;
 
   @Column(name = "updated_at", nullable = false)
   public LocalDateTime updatedAt = LocalDateTime.now();

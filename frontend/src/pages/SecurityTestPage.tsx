@@ -56,7 +56,7 @@ export const SecurityTestPage: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6">
+    <main className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-8">Security Foundation Test (FC-008)</h1>
 
       {/* Current User Info */}
@@ -149,6 +149,6 @@ export const SecurityTestPage: React.FC = () => {
           <li>apiClient: TODO für AuthContext Integration noch offen</li>
         </ol>
       </Card>
-    </div>
+    </main>
   );
 };

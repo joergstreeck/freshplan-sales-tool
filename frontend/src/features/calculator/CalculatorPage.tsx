@@ -4,7 +4,7 @@ import { ScenarioSelector } from './ScenarioSelector';
 
 export function CalculatorPage() {
   return (
-    <div className="min-h-screen bg-background p-8">
+    <main className="min-h-screen bg-background p-8">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -73,6 +73,6 @@ export function CalculatorPage() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

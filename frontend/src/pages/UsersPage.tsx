@@ -1,5 +1,5 @@
 // Users management page
-import { Box, Dialog, DialogContent, IconButton } from '@mui/material';
+import { Box, Dialog, DialogContent, IconButton, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { UserTableMUI } from '../features/users/UserTableMUI';
 import { UserFormMUI } from '../features/users/UserFormMUI';
@@ -23,6 +23,9 @@ export const UsersPage = () => {
   return (
     <MainLayoutV2 maxWidth="full">
       <Box sx={{ p: 3 }}>
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mb: 3 }}>
+          Benutzerverwaltung
+        </Typography>
         {/* Main content - Always show table */}
         <UserTableMUI />
 
